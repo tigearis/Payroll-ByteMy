@@ -1,6 +1,5 @@
+// app/(auth)/signin/page.tsx
 "use client"
-
-import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -34,15 +33,17 @@ export default function SignInPage() {
   }
 
   return (
-    <Card className="w-[350px]">
-      <CardHeader>
-        <CardTitle>Sign In</CardTitle>
-        <CardDescription>Enter your credentials to access your account</CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent>
-          <div className="grid w-full items-center gap-4">
-            <div className="flex flex-col space-y-1.5">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Card className="w-[350px] shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
+          <CardDescription className="text-center">
+            Enter your credentials to access your account
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -53,8 +54,13 @@ export default function SignInPage() {
                 required
               />
             </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <a href="#" className="text-xs text-primary hover:underline">
+                  Forgot password?
+                </a>
+              </div>
               <Input
                 id="password"
                 type="password"
@@ -63,16 +69,15 @@ export default function SignInPage() {
                 required
               />
             </div>
-          </div>
-          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
-        </CardContent>
-        <CardFooter>
-          <Button className="w-full" type="submit">
-            Sign In
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+            {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+          </CardContent>
+          <CardFooter>
+            <Button className="w-full" type="submit">
+              Sign In
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+    </div>
   )
 }
-

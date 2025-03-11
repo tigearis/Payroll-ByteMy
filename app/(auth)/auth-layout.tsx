@@ -1,4 +1,6 @@
+// app/(auth)/layout.tsx
 import type React from "react"
+
 interface AuthLayoutProps {
   children: React.ReactNode
 }
@@ -16,4 +18,3 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     </div>
   )
 }
-
