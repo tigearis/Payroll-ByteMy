@@ -23,9 +23,16 @@ interface PayrollScheduleProps {
   payrollId: number;
 }
 
+interface SchedulePeriod {
+  periodNumber: number;
+  baseDate: string;
+  processingDate: string;
+  eftDate: string;
+}
+
 export function PayrollScheduleView({ payrollId }: PayrollScheduleProps) {
   const [loading, setLoading] = useState(true);
-  const [scheduleData, setScheduleData] = useState<any[]>([]);
+  const [scheduleData, setScheduleData] = useState<SchedulePeriod[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

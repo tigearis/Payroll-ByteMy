@@ -11,10 +11,16 @@ type Mutation {
   createPayroll(input: PayrollInput!): Payroll!
   updatePayroll(id: ID!, input: PayrollInput!): Payroll!
   deletePayroll(id: ID!): Boolean!
+  addPayrollNote(payrollId: ID!, content: String!, isImportant: Boolean): Note!
+  updatePayrollNote(noteId: ID!, content: String, isImportant: Boolean): Note!
+  deletePayrollNote(noteId: ID!): Boolean!
 
   createClient(input: ClientInput!): Client!
   updateClient(id: ID!, input: ClientInput!): Client!
   deleteClient(id: ID!): Boolean!
+  addClientNote(clientId: ID!, content: String!, isImportant: Boolean): Note!
+  updateClientNote(noteId: ID!, content: String, isImportant: Boolean): Note!
+  deleteClientNote(noteId: ID!): Boolean!
 
   createStaff(input: StaffInput!): Staff!
   updateStaff(id: ID!, input: StaffInput!): Staff!
@@ -40,6 +46,7 @@ type Payroll {
   backupConsultant: Staff
   manager: Staff
   payroll_system: String
+  notes: [Note!]!
 }
 
 type Client {
@@ -52,6 +59,7 @@ type Client {
   created_at: String!
   updated_at: String!
   payrolls: [Payroll!]!
+  notes: [Note!]!
 }
 
 type Staff {
@@ -95,5 +103,17 @@ input StaffInput {
   phone: String!
   position: String!
   active: Boolean!
+}
+
+type Note {
+  id: ID!
+  entityType: String!
+  entityId: ID!
+  userId: ID!
+  content: String!
+  isImportant: Boolean
+  createdAt: String!
+  updatedAt: String!
+  user: User
 }
 

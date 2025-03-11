@@ -1,88 +1,133 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { payrolls } from "@/drizzle/schema"
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "../auth/[...nextauth]/route"
+// app/api/payrolls/route.ts
 
+import { type NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { payrolls, clients, payrollCycles, payrollDateTypes, staff } from "@/drizzle/schema";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { eq } from "drizzle-orm";
+
+// ✅ Enum for Payroll Status
+enum PayrollStatus {
+  Implementation = "Implementation",
+  Active = "Active",
+  Inactive = "Inactive",
+}
+
+// ✅ GET Payrolls with Human-Readable Cycle & Date Type
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions)
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch payrolls
-    const allPayrolls = await db.select().from(payrolls)
+    // ✅ Fetch Payrolls with Relationships
+    const allPayrolls = await db
+      .select({
+        id: payrolls.id,
+        name: payrolls.name,
+        client: clients.name,
+        cycle: payrollCycles.name, // ✅ FIX: Ensure Cycle Name is Fetched
+        dateType: payrollDateTypes.name, // ✅ FIX: Ensure Date Type Name is Fetched
+        dateValue: payrolls.dateValue,
+        processingDaysBeforeEft: payrolls.processingDaysBeforeEft,
+        primaryConsultant: staff.name, // ✅ Fetch consultant name
+        backupConsultant: staff.name, // ✅ Fetch backup consultant name
+        manager: staff.name, // ✅ Fetch manager name
+        status: payrolls.status,
+      })
+      .from(payrolls)
+      .innerJoin(clients, eq(payrolls.clientId, clients.id))
+      .innerJoin(payrollCycles, eq(payrolls.cycleId, payrollCycles.id)) // ✅ FIXED: Ensuring Cycle Join
+      .innerJoin(payrollDateTypes, eq(payrolls.dateTypeId, payrollDateTypes.id));
 
-    return NextResponse.json(allPayrolls)
+    return NextResponse.json(allPayrolls);
   } catch (error) {
-    console.error("Payroll fetch error:", error)
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 })
+    console.error("Payroll fetch error:", error);
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
 
+// ✅ POST: Create a New Payroll
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions)
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Check role-based access
-    const userRole = session.user.role
-    if (!userRole || !["manager", "admin", "dev"].includes(userRole)) {
-      return NextResponse.json({ error: "Forbidden: Manager, admin, or dev access required" }, { status: 403 })
+    const userRole = session.user.role;
+    if (!["manager", "admin", "dev"].includes(userRole)) {
+      return NextResponse.json(
+        { error: "Forbidden: Manager, admin, or dev access required" },
+        { status: 403 }
+      );
     }
 
-    // Process payroll creation
+    // Parse request body
+    const body = await req.json();
     const {
-      client_id,
+      clientId,
       name,
-      cycle_id,
-      date_type_id,
-      date_value,
-      primary_consultant_id,
-      backup_consultant_id,
-      manager_id,
-      processing_days_before_eft,
-    } = await req.json()
+      cycleId,
+      dateTypeId,
+      dateValue,
+      primaryConsultantId,
+      backupConsultantId,
+      managerId,
+      payrollSystem,
+      processingDaysBeforeEft,
+      status,
+    } = body;
 
-    // Validate inputs (add more validation as needed)
-    if (!client_id || !name || !cycle_id || !date_type_id || !processing_days_before_eft) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    // ✅ Validate Required Fields
+    if (!clientId || !name || !cycleId || !dateTypeId) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Create payroll
+    // ✅ Validate UUIDs
+    const uuidFields = [clientId, cycleId, dateTypeId, primaryConsultantId, backupConsultantId, managerId];
+    if (uuidFields.some((field) => field && typeof field !== "string")) {
+      return NextResponse.json({ error: "Invalid UUID format" }, { status: 400 });
+    }
+
+    // ✅ Validate Status Enum
+    const validStatuses = Object.values(PayrollStatus);
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
+    }
+
+    // ✅ Create Payroll
     const newPayroll = await db
       .insert(payrolls)
       .values({
-        client_id,
+        clientId,
         name,
-        cycle_id,
-        date_type_id,
-        date_value,
-        primary_consultant_id,
-        backup_consultant_id,
-        manager_id,
-        processing_days_before_eft,
-        active: true,
-        created_at: new Date(),
-        updated_at: new Date(),
+        cycleId,
+        dateTypeId,
+        dateValue: dateValue || null,
+        primaryConsultantId: primaryConsultantId || null,
+        backupConsultantId: backupConsultantId || null,
+        managerId: managerId || null,
+        payrollSystem: payrollSystem || null,
+        processingDaysBeforeEft: processingDaysBeforeEft || 2, // Default value
+        status,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
-      .returning()
+      .returning({ id: payrolls.id });
 
     return NextResponse.json({
       success: true,
       message: "Payroll created successfully",
       payroll: newPayroll[0],
-    })
+    });
   } catch (error) {
-    console.error("Payroll creation error:", error)
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 })
+    console.error("Payroll creation error:", error);
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
-

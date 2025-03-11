@@ -1,7 +1,7 @@
 // app/api/payroll-dates/[payrollId]/route.ts
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { payroll_dates } from "@/db/schema"
+import { payroll_dates } from "@/drizzle/schema"
 import { eq, and, gte, lte } from "drizzle-orm"
 import { ensurePayrollDatesExist } from "@/lib/payroll-date-service"
 
