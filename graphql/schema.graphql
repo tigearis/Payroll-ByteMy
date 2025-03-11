@@ -1,0 +1,99 @@
+type Query {
+  payrolls: [Payroll!]!
+  payroll(id: ID!): Payroll
+  clients: [Client!]!
+  client(id: ID!): Client
+  staff: [Staff!]!
+  staffMember(id: ID!): Staff
+}
+
+type Mutation {
+  createPayroll(input: PayrollInput!): Payroll!
+  updatePayroll(id: ID!, input: PayrollInput!): Payroll!
+  deletePayroll(id: ID!): Boolean!
+
+  createClient(input: ClientInput!): Client!
+  updateClient(id: ID!, input: ClientInput!): Client!
+  deleteClient(id: ID!): Boolean!
+
+  createStaff(input: StaffInput!): Staff!
+  updateStaff(id: ID!, input: StaffInput!): Staff!
+  deleteStaff(id: ID!): Boolean!
+}
+
+type Payroll {
+  id: ID!
+  client_id: ID!
+  name: String!
+  cycle_id: ID!
+  date_type_id: ID!
+  date_value: String
+  primary_consultant_id: ID
+  backup_consultant_id: ID
+  manager_id: ID
+  processing_days_before_eft: Int!
+  status: Enum!
+  created_at: String!
+  updated_at: String!
+  client: Client!
+  primaryConsultant: Staff
+  backupConsultant: Staff
+  manager: Staff
+  payroll_system: String
+}
+
+type Client {
+  id: ID!
+  name: String!
+  contact_person: String!
+  contact_email: String!
+  contact_phone: String!
+  active: Boolean!
+  created_at: String!
+  updated_at: String!
+  payrolls: [Payroll!]!
+}
+
+type Staff {
+  id: ID!
+  name: String!
+  email: String!
+  phone: String!
+  position: String!
+  active: Boolean!
+  created_at: String!
+  updated_at: String!
+  primaryPayrolls: [Payroll!]!
+  backupPayrolls: [Payroll!]!
+  managedPayrolls: [Payroll!]!
+}
+
+input PayrollInput {
+  client_id: ID!
+  name: String!
+  cycle_id: ID!
+  date_type_id: ID!
+  date_value: String
+  primary_consultant_id: ID
+  backup_consultant_id: ID
+  manager_id: ID
+  processing_days_before_eft: Int!
+  status: Enum!
+}
+
+input ClientInput {
+  name: String!
+  contact_person: String!
+  contact_email: String!
+  contact_phone: String!
+  active: Boolean!
+}
+
+input StaffInput {
+  name: String!
+  email: String!
+  phone: String!
+  position: String!
+  active: Boolean!
+}
+
