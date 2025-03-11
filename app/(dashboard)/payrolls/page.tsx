@@ -170,7 +170,7 @@ export default function PayrollsPage() {
                       </Link>
                     </TableCell>
                     <TableCell>{cycleName}</TableCell>
-                    <TableCell>{dateTypeName}</TableCell>
+                    <TableCell>{dateTypeName} - {displayDate}</TableCell>
                     <TableCell>{displayDate}</TableCell>
                     <TableCell>{payroll.processing_days_before_eft}</TableCell>
                     <TableCell>{payroll.payroll_system}</TableCell>

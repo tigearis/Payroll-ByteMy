@@ -34,6 +34,11 @@ const staffMembers = [
   { id: 2, name: "Bob Smith" },
   { id: 3, name: "Carol Williams" },
   { id: 4, name: "David Brown" },
+  { id: 5, name: "Bobby Jones" },
+  { id: 6, name: "Keith Richards" },
+  { id: 7, name: "Jason Bourne" },
+  { id: 8, name: "Mark Bowen" },
+  { id: 9, name: "Milly Silver" },
 ]
 
 // Sample client data
@@ -46,11 +51,16 @@ const clients = [
 
 // Sample payroll data
 const payrolls = [
-  { id: 1, name: "Main Office", clientId: 1 },
-  { id: 2, name: "Engineering", clientId: 2 },
-  { id: 3, name: "Retail Staff", clientId: 3 },
-  { id: 4, name: "Administrative", clientId: 4 },
-  { id: 5, name: "Sales Team", clientId: 1 },
+  { id: 1, name: "Payroll 1", clientId: 1 },
+  { id: 2, name: "Payroll 2", clientId: 2 },
+  { id: 3, name: "Payroll Staff", clientId: 3 },
+  { id: 4, name: "Payroll", clientId: 4 },
+  { id: 5, name: "Payroll Team", clientId: 1 },
+  { id: 6, name: "Payroll 4", clientId: 1 },
+  { id: 7, name: "Payroll", clientId: 2 },
+  { id: 8, name: "Payroll Weekly Staff", clientId: 3 },
+  { id: 9, name: "Administrative", clientId: 4 },
+  { id: 8, name: "Payroll Team", clientId: 1 },
 ]
 
 // Sample payroll assignments with duration
@@ -60,9 +70,10 @@ const payrollAssignments = [
   { staffId: 2, payrollId: 3, startDate: new Date(2025, 2, 20), duration: 8 }, // 1 day
   { staffId: 3, payrollId: 4, startDate: new Date(2025, 2, 22), duration: 16 }, // 2 days
   { staffId: 4, payrollId: 5, startDate: new Date(2025, 2, 25), duration: 24 }, // 3 days
-  { staffId: 2, payrollId: 1, startDate: new Date(2025, 2, 30), duration: 16 }, // 2 days
-  { staffId: 3, payrollId: 2, startDate: new Date(2025, 3, 1), duration: 24 }, // 3 days
-  { staffId: 4, payrollId: 3, startDate: new Date(2025, 3, 5), duration: 8 }, // 1 day
+  { staffId: 5, payrollId: 6, startDate: new Date(2025, 2, 30), duration: 16 }, // 2 days
+  { staffId: 6, payrollId: 7, startDate: new Date(2025, 3, 1), duration: 24 }, // 3 days
+  { staffId: 7, payrollId: 8, startDate: new Date(2025, 3, 5), duration: 8 }, // 1 day
+  { staffId: 8, payrollId: 9, startDate: new Date(2025, 3, 5), duration: 8 }, // 1 day
 ]
 
 // Sample holidays
