@@ -12,12 +12,18 @@ export default withAuth(
       "/settings": ["dev", "admin"],
       "/clients": ["dev", "admin", "manager", "consultant"],
       "/payrolls": ["dev", "admin", "manager", "consultant"],
+      "/tax-calculator": ["dev", "admin", "manager", "consultant"],
+      "/calendar": ["dev", "admin", "manager", "consultant"],
+      "/payroll-schedule": ["dev", "admin", "manager", "consultant"],
+      "/staff": ["dev", "admin", "manager"],
+      "/onboarding": ["dev", "admin", "manager"],
+      "/ai-assistant": ["dev", "admin", "manager", "consultant"],
       // Add more rules as needed
     }
 
     for (const [route, allowedRoles] of Object.entries(accessRules)) {
       if (path.startsWith(route) && !allowedRoles.includes(token?.role as string)) {
-        return NextResponse.rewrite(new URL("/unauthorized", req.url))
+        return NextResponse.redirect(new URL("/unauthorized", req.url))
       }
     }
 
@@ -27,10 +33,24 @@ export default withAuth(
     callbacks: {
       authorized: ({ token }) => !!token,
     },
+    pages: {
+      signIn: "/signin",
+    },
   },
 )
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/clients/:path*", "/payrolls/:path*", "/settings/:path*", "/developer/:path*"],
+  matcher: [
+    "/dashboard/:path*", 
+    "/clients/:path*", 
+    "/payrolls/:path*", 
+    "/settings/:path*", 
+    "/developer/:path*",
+    "/calendar/:path*",
+    "/payroll-schedule/:path*",
+    "/staff/:path*",
+    "/onboarding/:path*",
+    "/tax-calculator/:path*",
+    "/ai-assistant/:path*"
+  ],
 }
-
