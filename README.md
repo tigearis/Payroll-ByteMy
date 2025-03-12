@@ -75,3 +75,56 @@ Key Terms
 
 EFT (Electronic Funds Transfer): Electronic transfer of employee wages.
 processing_days_before_eft: Time between payroll processing and the EFT date.
+
+Let me summarize the key points to ensure I understand correctly:
+Key Principles:
+
+Each payroll cycle has specific date calculation rules
+Day of week (DOW) is represented as 1-7 (Sunday-Saturday)
+Business day adjustments vary by cycle type
+Different date types (DOW, SOM, EOM, Fixed Date) have unique handling
+
+Specific Rules Breakdown:
+
+Weekly
+
+Always DOW type
+DOW value 1-7
+Always use Previous Business Day rule
+
+
+Fortnightly
+
+DOW type only
+Supports Week A (first week of Jan) and Week B (second week of Jan)
+DOW value 1-7
+Always use Previous Business Day rule
+
+
+Bi-Monthly
+
+SOM: 1st and 15th, use Next Business Day
+EOM: 30th and 15th, use Previous Business Day
+February special case: use 14th
+No Date Value needed
+
+
+Monthly
+
+Supports Fixed Date, EOM, SOM
+SOM: Next Business Day
+EOM and Fixed Date: Previous Business Day
+Fixed Date uses a day of month as Date Value
+
+
+Quarterly
+
+Same as Monthly
+Only on months 3, 6, 9, 12
+
+curl -X POST http://localhost:3000/api/holidays/sync \
+     -H "Authorization: Bearer sk_test_Vmcx7vTwGJWmXtwVc5hWUxKGIF7BiwA2GevfPUNCVv" \
+     -H "x-hasura-admin-secret: KIATiwETsv3yBwN7e73W2kJwA0t5hf6UK94HDkPZrIQAtpLmK8fCPYE9bIc0Sd8B"
+     -H "X-Hasura-Role: admin" \
+     -H "Content-Type: application/json" \
+     -d '{"year": 2025, "countryCode": "AU"}'

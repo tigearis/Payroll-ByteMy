@@ -101,19 +101,21 @@ export async function syncHolidaysForCountry(year: number, countryCode: string, 
 }
 
 export async function syncAustralianHolidays() {
-  const currentYear = new Date().getFullYear()
+    const currentYear = new Date().getFullYear();
+    const states = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"]; // All states
   
-  try {
-    // Sync for current year and next year
-    await Promise.all([
-      syncHolidaysForCountry(currentYear, 'AU', 'NSW'),
-      syncHolidaysForCountry(currentYear + 1, 'AU', 'NSW')
-    ])
-    
-    console.log('Successfully synced Australian holidays')
-    return true
-  } catch (error) {
-    console.error('Failed to sync Australian holidays:', error)
-    throw error
+    try {
+      await Promise.all(
+        states.flatMap(state => [
+          syncHolidaysForCountry(currentYear, "AU", state),
+          syncHolidaysForCountry(currentYear + 1, "AU", state),
+        ])
+      );
+  
+      console.log("Successfully synced Australian holidays for all states");
+      return true;
+    } catch (error) {
+      console.error("Failed to sync Australian holidays:", error);
+      throw error;
+    }
   }
-}

@@ -92,6 +92,9 @@ importers:
       fs:
         specifier: ^0.0.1-security
         version: 0.0.1-security
+      graphql:
+        specifier: ^16.10.0
+        version: 16.10.0
       lucide-react:
         specifier: ^0.479.0
         version: 0.479.0(react@19.0.0)

@@ -1,17 +1,10 @@
-// utils/roles.ts
-import { auth } from '@clerk/nextjs/server'
+export {}
 
-export type Role = 'org_admin' | 'manager' | 'consultant' | 'viewer'
+declare global {
+  type HasuraRole = "admin" | "org_admin" | "admin" | "manager" | "user";
 
-export async function checkRole(role: Role | Role[]): Promise<boolean> {
-  const { sessionClaims } = await auth()
-  const userRole = sessionClaims?.metadata?.role as Role | undefined
-  
-  if (!userRole) return false
-  
-  if (Array.isArray(role)) {
-    return role.includes(userRole)
+  interface ClerkAuthorization {
+    permission: "org:holiday:sync" | "org:holiday:view" | "org:holiday:manage";
+    role: HasuraRole;
   }
-  
-  return userRole === role
 }
