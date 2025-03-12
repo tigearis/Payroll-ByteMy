@@ -17,51 +17,61 @@ SQL Dump
 PGPASSWORD="npg_WavFRZ1lEx4U" pg_dump -s -U neondb_owner -h ep-black-sunset-a7wbc0zq-pooler.ap-southeast-2.aws.neon.tech neondb > schema.sql
 PGPASSWORD="npg_WavFRZ1lEx4U" pg_dump -U neondb_owner -d neondb -h ep-black-sunset-a7wbc0zq-pooler.ap-southeast-2.aws.neon.tech -t table1,table2 -f dump.sql
 
+Payroll Cycles and Processing Rules
 
-Use gql directly in the route.ts
+This document outlines payroll cycles and the rules governing processing dates and business day adjustments.
 
-example for payrolls/route.ts
+1. Weekly Payroll
 
-import { type NextRequest, NextResponse } from "next/server";
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+Frequency: Weekly
+Timing: Specific day of the week (e.g., Friday)
+Date Type: Day of Week (DOW)
+Date Value: 1 = Sunday, 2 = Monday, ..., 7 = Saturday
+Business Day Rule: Previous Business Day
+2. Fortnightly Payroll
 
-// ✅ Define Apollo Client (Replace with your actual GraphQL API URL)
-const client = new ApolloClient({
-  uri: "https://your-graphql-api.com/graphql", // Replace with your GraphQL server URL
-  cache: new InMemoryCache(),
-});
+Frequency: Fortnightly
+Timing: Specific day of the week
+Week Assignment: Week A (first week of January) or Week B (second week of January)
+Date Type: Week A or Week B
+Date Value: 1 = Sunday, 2 = Monday, ..., 7 = Saturday
+Business Day Rule: Previous Business Day
+3. Bi-Monthly Payroll
 
-// ✅ Define GraphQL Query
-const GET_PAYROLLS = gql`
-  query MyQuery {
-    payrolls {
-      name
-      payroll_system
-      processing_days_before_eft
-      status
-      date_value
-      client {
-        name
-      }
-      payroll_cycle {
-        name
-      }
-      payroll_date_type {
-        name
-      }
-    }
-  }
-`;
+Frequency: Twice per month
+Date Types:
+Start of Month (SOM): 1st and 15th of the month; Next Business Day rule.
+End of Month (EOM): 30th and 15th of the month; Previous Business Day rule.
+February Exception: For both SOM and EOM, use the 14th instead of the 15th.
+4. Monthly Payroll
 
-export async function GET(req: NextRequest) {
-  try {
-    // ✅ Execute GraphQL Query via Apollo Client
-    const { data } = await client.query({ query: GET_PAYROLLS });
+Frequency: Monthly
+Date Types:
+Start of Month (SOM): Next Business Day rule.
+End of Month (EOM) or Fixed Date: Previous Business Day rule.
+Date Value: (Only used with Fixed Date) 1 = Sunday, 2 = Monday, ..., 7 = Saturday
+5. Quarterly Payroll
 
-    // ✅ Return Data in JSON Response
-    return NextResponse.json({ payrolls: data.payrolls });
-  } catch (error) {
-    console.error("Payroll fetch error:", error);
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
-  }
-}
+Frequency: Quarterly (March, June, September, December)
+Rules: Same as Monthly Payroll
+Key Terms
+
+DOW (Day of Week): Specific day of the week.
+SOM (Start of Month): First day of the month.
+EOM (End of Month): Last day of the month.
+Fixed Date: Predetermined date in the month.
+Previous Business Day: The business day before the scheduled date.
+Next Business Day: The business day after the scheduled date.
+EFT Processing Rules
+
+1. Processing Lead Time
+
+processing_days_before_eft is a value used to determine how many day before the Eft Date processing is done.
+If the processing date falls on a weekend or public holiday, adjust to the Previous Business Day.
+2. EFT Date Adjustment
+
+If the EFT date is changed, the payroll processing date must be recalculated to maintain the required lead time.
+Key Terms
+
+EFT (Electronic Funds Transfer): Electronic transfer of employee wages.
+processing_days_before_eft: Time between payroll processing and the EFT date.

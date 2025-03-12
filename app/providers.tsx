@@ -2,19 +2,19 @@
 "use client"
 
 import type React from "react"
-import { SessionProvider } from "next-auth/react"
 import { ThemeProvider } from "next-themes" 
 import { ApolloProvider } from "@apollo/client"
-import { apolloClient } from "@/lib/apollo-client"
+import { createApolloClient } from "@/lib/apollo-client"
+
+// Create a client-side Apollo client instance
+const clientSideApolloClient = createApolloClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <ApolloProvider client={apolloClient}>
-          {children}
-        </ApolloProvider>
-      </ThemeProvider>
-    </SessionProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ApolloProvider client={clientSideApolloClient}>
+        {children}
+      </ApolloProvider>
+    </ThemeProvider>
   )
 }

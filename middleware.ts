@@ -7,6 +7,8 @@ const publicRoutes = createRouteMatcher([
   '/',
   '/sign-in(.*)',
   '/api/webhooks(.*)'
+
+// Rest of your middleware remains the same
 ])
 
 const adminRoutes = createRouteMatcher([

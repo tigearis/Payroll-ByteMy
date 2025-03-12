@@ -33,18 +33,31 @@ export async function getServerApolloClient() {
   })
 }
 
-// Admin Apollo client (bypasses permissions)
-export function getAdminApolloClient() {
-  const adminLink = setContext((_, { headers }) => ({
-    headers: {
-      ...headers,
-      "x-hasura-admin-secret": process.env.HASURA_ADMIN_SECRET,
-    },
-  }))
-  
+// Client-side Apollo client for browser components
+export function createApolloClient() {
+  const authLink = setContext(async (_, { headers }) => {
+    // For client-side, we'll need to fetch the token from an API endpoint
+    try {
+      const response = await fetch('/api/auth/token');
+      const data = await response.json();
+      
+      if (data.token) {
+        return {
+          headers: {
+            ...headers,
+            Authorization: `Bearer ${data.token}`,
+          }
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching auth token:', error);
+    }
+    
+    return { headers };
+  });
+
   return new ApolloClient({
-    link: adminLink.concat(httpLink),
+    link: authLink.concat(httpLink),
     cache: new InMemoryCache(),
-    ssrMode: true,
-  })
+  });
 }
