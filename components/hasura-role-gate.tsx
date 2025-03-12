@@ -1,9 +1,23 @@
-import HasuraRoleGate from "@/components/hasura-role-gate";
+// components/hasura-role-gate.tsx
+import { ReactNode } from 'react'
+import { checkHasuraRole, HasuraRole } from '@/utils/auth'
 
-export default async function AdminDashboard() {
-  return (
-    <HasuraRoleGate allowedRoles={["org_admin", "admin"]}>
-      <h1>Admin Dashboard</h1>
-    </HasuraRoleGate>
-  );
+type HasuraRoleGateProps = {
+  children: ReactNode
+  allowedRoles: HasuraRole[]
+  fallback?: ReactNode
+}
+
+export default async function HasuraRoleGate({ 
+  children, 
+  allowedRoles,
+  fallback = <div>You dont have permission to view this content</div>
+}: HasuraRoleGateProps) {
+  const hasPermission = await checkHasuraRole(allowedRoles)
+  
+  if (!hasPermission) {
+    return fallback
+  }
+  
+  return <>{children}</>
 }
