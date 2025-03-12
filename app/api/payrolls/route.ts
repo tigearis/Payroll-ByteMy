@@ -3,52 +3,51 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { payrolls, clients, payrollCycles, payrollDateTypes, staff } from "@/drizzle/schema";
-import { getServerSession } from "next-auth/next";
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { eq } from "drizzle-orm";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
-// ✅ Enum for Payroll Status
-enum PayrollStatus {
-  Implementation = "Implementation",
-  Active = "Active",
-  Inactive = "Inactive",
-}
+// ✅ Define Apollo Client (Replace with your actual GraphQL API URL)
+const client = new ApolloClient({
+  uri: "https://your-graphql-api.com/graphql", // Replace with your GraphQL server URL
+  cache: new InMemoryCache(),
+});
 
-// ✅ GET Payrolls with Human-Readable Cycle & Date Type
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// ✅ Define GraphQL Query
+const GET_PAYROLLS = gql`
+  query MyQuery {
+    payrolls {
+      name
+      payroll_system
+      processing_days_before_eft
+      status
+      date_value
+      client {
+        name
+      }
+      payroll_cycle {
+        name
+      }
+      payroll_date_type {
+        name
+      }
+    }
+  }
+`;
+
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // ✅ Execute GraphQL Query via Apollo Client
+    const { data } = await client.query({ query: GET_PAYROLLS });
 
-    // ✅ Fetch Payrolls with Relationships
-    const allPayrolls = await db
-      .select({
-        id: payrolls.id,
-        name: payrolls.name,
-        client: clients.name,
-        cycle: payrollCycles.name, // ✅ FIX: Ensure Cycle Name is Fetched
-        dateType: payrollDateTypes.name, // ✅ FIX: Ensure Date Type Name is Fetched
-        dateValue: payrolls.dateValue,
-        processingDaysBeforeEft: payrolls.processingDaysBeforeEft,
-        primaryConsultant: staff.name, // ✅ Fetch consultant name
-        backupConsultant: staff.name, // ✅ Fetch backup consultant name
-        manager: staff.name, // ✅ Fetch manager name
-        status: payrolls.status,
-      })
-      .from(payrolls)
-      .innerJoin(clients, eq(payrolls.clientId, clients.id))
-      .innerJoin(payrollCycles, eq(payrolls.cycleId, payrollCycles.id)) // ✅ FIXED: Ensuring Cycle Join
-      .innerJoin(payrollDateTypes, eq(payrolls.dateTypeId, payrollDateTypes.id));
-
-    return NextResponse.json(allPayrolls);
+    // ✅ Return Data in JSON Response
+    return NextResponse.json({ payrolls: data.payrolls });
   } catch (error) {
     console.error("Payroll fetch error:", error);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
+
 
 // ✅ POST: Create a New Payroll
 export async function POST(req: NextRequest) {

@@ -96,6 +96,30 @@ CREATE TYPE public.user_role AS ENUM (
 
 ALTER TYPE public.user_role OWNER TO neondb_owner;
 
+--
+-- Name: enforce_entity_relation(); Type: FUNCTION; Schema: public; Owner: neondb_owner
+--
+
+CREATE FUNCTION public.enforce_entity_relation() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF NEW.entity_type = 'payroll' AND NOT EXISTS (
+    SELECT 1 FROM payrolls WHERE id = NEW.entity_id
+  ) THEN
+    RAISE EXCEPTION 'Invalid entity_id: No matching payroll found';
+  ELSIF NEW.entity_type = 'client' AND NOT EXISTS (
+    SELECT 1 FROM clients WHERE id = NEW.entity_id
+  ) THEN
+    RAISE EXCEPTION 'Invalid entity_id: No matching client found';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.enforce_entity_relation() OWNER TO neondb_owner;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -223,6 +247,25 @@ CREATE TABLE public.holidays (
 
 
 ALTER TABLE public.holidays OWNER TO neondb_owner;
+
+--
+-- Name: notes; Type: TABLE; Schema: public; Owner: neondb_owner
+--
+
+CREATE TABLE public.notes (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    entity_type text NOT NULL,
+    entity_id uuid NOT NULL,
+    user_id uuid,
+    content text NOT NULL,
+    is_important boolean DEFAULT false,
+    created_at timestamp without time zone DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now(),
+    CONSTRAINT notes_entity_type_check CHECK ((entity_type = ANY (ARRAY['payroll'::text, 'client'::text])))
+);
+
+
+ALTER TABLE public.notes OWNER TO neondb_owner;
 
 --
 -- Name: payroll_cycles; Type: TABLE; Schema: public; Owner: neondb_owner
@@ -463,6 +506,14 @@ ALTER TABLE ONLY public.holidays
 
 
 --
+-- Name: notes notes_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
+--
+
+ALTER TABLE ONLY public.notes
+    ADD CONSTRAINT notes_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: payroll_cycles payroll_cycles_name_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
@@ -622,6 +673,13 @@ CREATE INDEX idx_users_role ON public.users USING btree (role);
 
 
 --
+-- Name: notes check_entity_relation; Type: TRIGGER; Schema: public; Owner: neondb_owner
+--
+
+CREATE TRIGGER check_entity_relation BEFORE INSERT OR UPDATE ON public.notes FOR EACH ROW EXECUTE FUNCTION public.enforce_entity_relation();
+
+
+--
 -- Name: adjustment_rules adjustment_rules_cycle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
@@ -651,6 +709,14 @@ ALTER TABLE ONLY public.client_external_systems
 
 ALTER TABLE ONLY public.client_external_systems
     ADD CONSTRAINT client_external_systems_system_id_fkey FOREIGN KEY (system_id) REFERENCES public.external_systems(id) ON DELETE CASCADE;
+
+
+--
+-- Name: notes notes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
+--
+
+ALTER TABLE ONLY public.notes
+    ADD CONSTRAINT notes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 
 
 --
