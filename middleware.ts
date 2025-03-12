@@ -1,56 +1,76 @@
-import { withAuth } from "next-auth/middleware"
-import { NextResponse } from "next/server"
+// middleware.ts
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 
-export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token
-    const path = req.nextUrl.pathname
+// Define route patterns
+const publicRoutes = createRouteMatcher([
+  '/',
+  '/sign-in(.*)',
+  '/api/webhooks(.*)'
+])
 
-    // Define role-based access rules
-    const accessRules = {
-      "/developer": ["dev"],
-      "/settings": ["dev", "admin"],
-      "/clients": ["dev", "admin", "manager", "consultant"],
-      "/payrolls": ["dev", "admin", "manager", "consultant"],
-      "/tax-calculator": ["dev", "admin", "manager", "consultant"],
-      "/calendar": ["dev", "admin", "manager", "consultant"],
-      "/payroll-schedule": ["dev", "admin", "manager", "consultant"],
-      "/staff": ["dev", "admin", "manager"],
-      "/onboarding": ["dev", "admin", "manager"],
-      "/ai-assistant": ["dev", "admin", "manager", "consultant"],
-      // Add more rules as needed
+const adminRoutes = createRouteMatcher([
+  '/admin(.*)',
+  '/sign-up(.*)',
+  '/settings(.*)'
+])
+
+const managerRoutes = createRouteMatcher([
+  '/clients/new(.*)',
+  '/payrolls/new(.*)',
+  '/staff(.*)'
+])
+
+export default clerkMiddleware(async (auth, req) => {
+  // Allow public routes for everyone
+  if (publicRoutes(req)) {
+    return
+  }
+
+  const { userId, getToken } = await auth()
+
+  // Redirect to sign-in if not authenticated
+  if (!userId) {
+    const signInUrl = new URL('/sign-in', req.url)
+    signInUrl.searchParams.set('redirect_url', req.url)
+    return NextResponse.redirect(signInUrl)
+  }
+
+  try {
+    // Get the token with Hasura claims
+    const token = await getToken({ template: 'hasura' })
+
+    if (!token) {
+      return NextResponse.redirect(new URL('/', req.url))
     }
 
-    for (const [route, allowedRoles] of Object.entries(accessRules)) {
-      if (path.startsWith(route) && !allowedRoles.includes(token?.role as string)) {
-        return NextResponse.redirect(new URL("/unauthorized", req.url))
-      }
+    // Decode the JWT to get the claims
+    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
+    const hasuraClaims = payload['https://hasura.io/jwt/claims']
+
+    if (!hasuraClaims) {
+      return NextResponse.redirect(new URL('/', req.url))
     }
 
-    return NextResponse.next()
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token,
-    },
-    pages: {
-      signIn: "/signin",
-    },
-  },
-)
+    const userRole = hasuraClaims['x-hasura-default-role']
+
+    // Protect admin routes
+    if (adminRoutes(req) && userRole !== 'org_admin') {
+      return NextResponse.redirect(new URL('/', req.url))
+    }
+
+    // Protect manager routes
+    if (managerRoutes(req) && !['org_admin', 'manager'].includes(userRole)) {
+      return NextResponse.redirect(new URL('/', req.url))
+    }
+  } catch (error) {
+    console.error('Error in auth middleware:', error)
+    return NextResponse.redirect(new URL('/', req.url))
+  }
+})
 
 export const config = {
   matcher: [
-    "/dashboard/:path*", 
-    "/clients/:path*", 
-    "/payrolls/:path*", 
-    "/settings/:path*", 
-    "/developer/:path*",
-    "/calendar/:path*",
-    "/payroll-schedule/:path*",
-    "/staff/:path*",
-    "/onboarding/:path*",
-    "/tax-calculator/:path*",
-    "/ai-assistant/:path*"
-  ],
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.png$).*)'
+  ]
 }
