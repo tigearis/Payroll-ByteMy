@@ -18,6 +18,7 @@ export async function POST(_req: NextRequest) {
       success: true, 
       message: "Australian holidays synced successfully" 
     })
+    
   } catch (error) {
     console.error("Holiday sync error:", error)
     return NextResponse.json({ 
