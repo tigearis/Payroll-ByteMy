@@ -238,9 +238,14 @@ ALTER TABLE public.external_systems OWNER TO neondb_owner;
 CREATE TABLE public.holidays (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     date date NOT NULL,
-    name character varying(255) NOT NULL,
-    recurring boolean DEFAULT false,
-    region character varying(100) DEFAULT 'national'::character varying,
+    local_name text NOT NULL,
+    name text NOT NULL,
+    country_code character(2) NOT NULL,
+    region text,
+    is_fixed boolean DEFAULT false,
+    is_global boolean DEFAULT false,
+    launch_year integer,
+    types text[] NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
@@ -617,10 +622,10 @@ CREATE INDEX users_sync_deleted_at_idx ON neon_auth.users_sync USING btree (dele
 
 
 --
--- Name: idx_holidays_date; Type: INDEX; Schema: public; Owner: neondb_owner
+-- Name: idx_holidays_date_country_region; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
-CREATE INDEX idx_holidays_date ON public.holidays USING btree (date);
+CREATE INDEX idx_holidays_date_country_region ON public.holidays USING btree (date, country_code, region);
 
 
 --

@@ -1,115 +1,160 @@
-type Query {
-  payrolls: [Payroll!]!
-  payroll(id: ID!): Payroll
-  clients: [Client!]!
-  client(id: ID!): Client
-  staff: [Staff!]!
-  staffMember(id: ID!): Staff
+
+enum UserRole {
+  admin
+  manager
+  consultant
+  viewer
 }
 
-type Mutation {
-  createPayroll(input: PayrollInput!): Payroll!
-  updatePayroll(id: ID!, input: PayrollInput!): Payroll!
-  deletePayroll(id: ID!): Boolean!
-  addPayrollNote(payrollId: ID!, content: String!, isImportant: Boolean): Note!
-  updatePayrollNote(noteId: ID!, content: String, isImportant: Boolean): Note!
-  deletePayrollNote(noteId: ID!): Boolean!
-
-  createClient(input: ClientInput!): Client!
-  updateClient(id: ID!, input: ClientInput!): Client!
-  deleteClient(id: ID!): Boolean!
-  addClientNote(clientId: ID!, content: String!, isImportant: Boolean): Note!
-  updateClientNote(noteId: ID!, content: String, isImportant: Boolean): Note!
-  deleteClientNote(noteId: ID!): Boolean!
-
-  createStaff(input: StaffInput!): Staff!
-  updateStaff(id: ID!, input: StaffInput!): Staff!
-  deleteStaff(id: ID!): Boolean!
+enum PayrollStatus {
+  Active
+  Implementation
+  Inactive
 }
 
-type Payroll {
+enum PayrollCycleType {
+  weekly
+  fortnightly
+  bi_monthly
+  monthly
+  quarterly
+}
+
+enum PayrollDateType {
+  fixed_date
+  eom
+  som
+  week_a
+  week_b
+  dow
+}
+
+enum HolidayType {
+  Public
+  Bank
+  School
+  Authorities
+  Optional
+  Observance
+}
+
+type User {
   id: ID!
-  client_id: ID!
   name: String!
-  cycle_id: ID!
-  date_type_id: ID!
-  date_value: String
-  primary_consultant_id: ID
-  backup_consultant_id: ID
-  manager_id: ID
-  processing_days_before_eft: Int!
-  status: Enum!
-  created_at: String!
-  updated_at: String!
-  client: Client!
-  primaryConsultant: Staff
-  backupConsultant: Staff
-  manager: Staff
-  payroll_system: String
-  notes: [Note!]!
+  email: String!
+  role: UserRole!
+  username: String
+  image: String
+  password: String
+  createdAt: String!
+  updatedAt: String!
+  accounts: [Account!]
+  staff: Staff
+}
+
+type Account {
+  id: ID!
+  userId: ID!
+  type: String!
+  provider: String!
+  providerAccountId: String!
+  refreshToken: String
+  accessToken: String
+  expiresAt: Int
+  idToken: String
+  scope: String
+  sessionState: String
+  tokenType: String
 }
 
 type Client {
   id: ID!
   name: String!
-  contact_person: String!
-  contact_email: String!
-  contact_phone: String!
+  contactPerson: String
+  contactEmail: String
+  contactPhone: String
   active: Boolean!
-  created_at: String!
-  updated_at: String!
+  createdAt: String!
+  updatedAt: String!
   payrolls: [Payroll!]!
   notes: [Note!]!
+  externalSystems: [ClientExternalSystem!]!
 }
 
 type Staff {
   id: ID!
+  userId: ID
   name: String!
   email: String!
-  phone: String!
-  position: String!
+  phone: String
+  position: String
   active: Boolean!
-  created_at: String!
-  updated_at: String!
+  createdAt: String!
+  updatedAt: String!
+  user: User
   primaryPayrolls: [Payroll!]!
   backupPayrolls: [Payroll!]!
   managedPayrolls: [Payroll!]!
 }
 
-input PayrollInput {
-  client_id: ID!
+type Payroll {
+  id: ID!
+  clientId: ID!
   name: String!
-  cycle_id: ID!
-  date_type_id: ID!
-  date_value: String
-  primary_consultant_id: ID
-  backup_consultant_id: ID
-  manager_id: ID
-  processing_days_before_eft: Int!
-  status: Enum!
+  cycleId: ID!
+  dateTypeId: ID!
+  dateValue: Int
+  primaryConsultantId: ID
+  backupConsultantId: ID
+  managerId: ID
+  processingDaysBeforeEft: Int!
+  payrollSystem: String
+  status: PayrollStatus!
+  createdAt: String!
+  updatedAt: String!
+  client: Client!
+  cycle: PayrollCycle!
+  dateType: PayrollDateType!
+  primaryConsultant: Staff
+  backupConsultant: Staff
+  manager: Staff
+  notes: [Note!]!
+  payrollDates: [PayrollDate!]!
 }
 
-input ClientInput {
-  name: String!
-  contact_person: String!
-  contact_email: String!
-  contact_phone: String!
-  active: Boolean!
+type PayrollCycle {
+  id: ID!
+  name: PayrollCycleType!
+  description: String
+  createdAt: String!
+  updatedAt: String!
 }
 
-input StaffInput {
-  name: String!
-  email: String!
-  phone: String!
-  position: String!
-  active: Boolean!
+type PayrollDateType {
+  id: ID!
+  name: PayrollDateType!
+  description: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type PayrollDate {
+  id: ID!
+  payrollId: ID!
+  originalEftDate: String!
+  adjustedEftDate: String!
+  processingDate: String!
+  notes: String
+  createdAt: String!
+  updatedAt: String!
+  payroll: Payroll!
 }
 
 type Note {
   id: ID!
   entityType: String!
   entityId: ID!
-  userId: ID!
+  userId: ID
   content: String!
   isImportant: Boolean
   createdAt: String!
@@ -117,3 +162,144 @@ type Note {
   user: User
 }
 
+type Holiday {
+  id: ID!
+  date: String!
+  localName: String!
+  name: String!
+  countryCode: String!
+  region: String
+  isFixed: Boolean
+  isGlobal: Boolean
+  launchYear: Int
+  types: [HolidayType!]!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type ExternalSystem {
+  id: ID!
+  name: String!
+  url: String!
+  description: String
+  icon: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type ClientExternalSystem {
+  id: ID!
+  clientId: ID!
+  systemId: ID!
+  systemClientId: String
+  createdAt: String!
+  updatedAt: String!
+  client: Client!
+  system: ExternalSystem!
+}
+
+type AdjustmentRule {
+  id: ID!
+  cycleId: ID!
+  dateTypeId: ID!
+  ruleDescription: String!
+  ruleCode: String!
+  createdAt: String!
+  updatedAt: String!
+  cycle: PayrollCycle!
+  dateType: PayrollDateType!
+}
+
+# Input Types
+input UserInput {
+  name: String!
+  email: String!
+  role: UserRole!
+  username: String
+  image: String
+  password: String
+}
+
+input ClientInput {
+  name: String!
+  contactPerson: String
+  contactEmail: String
+  contactPhone: String
+  active: Boolean!
+}
+
+input StaffInput {
+  userId: ID
+  name: String!
+  email: String!
+  phone: String
+  position: String
+  active: Boolean!
+}
+
+input PayrollInput {
+  clientId: ID!
+  name: String!
+  cycleId: ID!
+  dateTypeId: ID!
+  dateValue: Int
+  primaryConsultantId: ID
+  backupConsultantId: ID
+  managerId: ID
+  processingDaysBeforeEft: Int!
+  payrollSystem: String
+  status: PayrollStatus!
+}
+
+input NoteInput {
+  entityType: String!
+  entityId: ID!
+  userId: ID
+  content: String!
+  isImportant: Boolean
+}
+
+# Query and Mutation types
+type Query {
+  users: [User!]!
+  user(id: ID!): User
+
+  clients: [Client!]!
+  client(id: ID!): Client
+
+  payrolls: [Payroll!]!
+  payroll(id: ID!): Payroll
+
+  staff: [Staff!]!
+  staffMember(id: ID!): Staff
+
+  holidays: [Holiday!]!
+  holiday(id: ID!): Holiday
+}
+
+type Mutation {
+  # User mutations
+  createUser(input: UserInput!): User!
+  updateUser(id: ID!, input: UserInput!): User!
+  deleteUser(id: ID!): Boolean!
+
+  # Client mutations
+  createClient(input: ClientInput!): Client!
+  updateClient(id: ID!, input: ClientInput!): Client!
+  deleteClient(id: ID!): Boolean!
+
+  # Payroll mutations
+  createPayroll(input: PayrollInput!): Payroll!
+  updatePayroll(id: ID!, input: PayrollInput!): Payroll!
+  deletePayroll(id: ID!): Boolean!
+
+  # Staff mutations
+  createStaff(input: StaffInput!): Staff!
+  updateStaff(id: ID!, input: StaffInput!): Staff!
+  deleteStaff(id: ID!): Boolean!
+
+  # Note mutations
+  addNote(input: NoteInput!): Note!
+  updateNote(id: ID!, input: NoteInput!): Note!
+  deleteNote(id: ID!): Boolean!
+}
