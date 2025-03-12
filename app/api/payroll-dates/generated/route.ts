@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
     const endDate = addMonths(new Date(startDate), months)
 
     // Call the PostgreSQL procedure via GraphQL
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { data } = await adminClient.mutate({
       mutation: gql`
         mutation GeneratePayrollDates($payrollId: uuid!, $startDate: date!, $endDate: date!) {

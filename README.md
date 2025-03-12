@@ -1,4 +1,4 @@
-## Getting Started
+# Getting Started
 
 First, run the development server:
 
@@ -92,14 +92,12 @@ Always DOW type
 DOW value 1-7
 Always use Previous Business Day rule
 
-
 Fortnightly
 
 DOW type only
 Supports Week A (first week of Jan) and Week B (second week of Jan)
 DOW value 1-7
 Always use Previous Business Day rule
-
 
 Bi-Monthly
 
@@ -108,7 +106,6 @@ EOM: 30th and 15th, use Previous Business Day
 February special case: use 14th
 No Date Value needed
 
-
 Monthly
 
 Supports Fixed Date, EOM, SOM
@@ -116,13 +113,12 @@ SOM: Next Business Day
 EOM and Fixed Date: Previous Business Day
 Fixed Date uses a day of month as Date Value
 
-
 Quarterly
 
 Same as Monthly
 Only on months 3, 6, 9, 12
 
-curl -X POST http://localhost:3000/api/holidays/sync \
+curl -X POST "<http://localhost:3000/api/holidays/sync>" \
      -H "Authorization: Bearer sk_test_Vmcx7vTwGJWmXtwVc5hWUxKGIF7BiwA2GevfPUNCVv" \
      -H "x-hasura-admin-secret: KIATiwETsv3yBwN7e73W2kJwA0t5hf6UK94HDkPZrIQAtpLmK8fCPYE9bIc0Sd8B"
      -H "X-Hasura-Role: admin" \

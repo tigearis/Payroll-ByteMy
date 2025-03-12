@@ -3,22 +3,14 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@clerk/nextjs/server"
 import { syncAustralianHolidays } from "@/lib/holiday-sync-service"
 
-const CLERK_SECRET_KEY = process.env.ADMIN_BYPASS_TOKEN;
+export async function POST(_req: NextRequest) {
+  try {
+    // Check authentication
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
-export async function POST(req: NextRequest) {
-    try {
-      // Check for admin bypass token in headers
-      const authHeader = req.headers.get("authorization");
-  
-      if (authHeader && authHeader === `Bearer ${CLERK_SECRET_KEY}`) {
-        console.log("Admin key used: Bypassing Clerk authentication");
-      } else {
-        // Default Clerk authentication
-        const { userId } = await auth();
-        if (!userId) {
-          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-      }
     // Trigger holiday sync
     await syncAustralianHolidays()
 
@@ -26,6 +18,7 @@ export async function POST(req: NextRequest) {
       success: true, 
       message: "Australian holidays synced successfully" 
     })
+    
   } catch (error) {
     console.error("Holiday sync error:", error)
     return NextResponse.json({ 

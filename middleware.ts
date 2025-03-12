@@ -7,6 +7,7 @@ const publicRoutes = createRouteMatcher([
   '/',
   '/sign-in(.*)',
   '/api/webhooks(.*)',
+  '/api/holidays/sync',
 ]);
 
 const adminRoutes = createRouteMatcher([
