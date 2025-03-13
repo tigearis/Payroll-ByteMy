@@ -1,46 +1,25 @@
-import { notFound } from "next/navigation"
-import { gql } from "@apollo/client"
-import { apolloClient } from "@/lib/apollo-client"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+// app/(dashboard)/payrolls/[id]/page.tsx
 
-const GET_PAYROLL = gql`
-  query GetPayroll($id: ID!) {
-    payroll(id: $id) {
-      id
-      name
-      processing_days_before_eft
-      active
-      created_at
-      updated_at
-      client {
-        name
-      }
-      primaryConsultant {
-        name
-      }
-      backupConsultant {
-        name
-      }
-      manager {
-        name
-      }
-    }
-  }
-`
+"use client";
 
-async function getPayroll(id: string) {
-  const { data } = await apolloClient.query({
-    query: GET_PAYROLL,
-    variables: { id },
-  })
+import { useQuery } from "@apollo/client";
+import { GET_PAYROLL_BY_ID } from "@/graphql/queries/payrolls/getPayrollById";
+import { notFound } from "next/navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-  if (!data.payroll) notFound()
-  return data.payroll
-}
+export default function PayrollPage({ params }: { params: { id: string } }) {
+  const { loading, error, data } = useQuery(GET_PAYROLL_BY_ID, {
+    variables: { id: params.id },
+  });
 
-export default async function PayrollPage({ params }: { params: { id: string } }) {
-  const payroll = await getPayroll(params.id)
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error loading payroll.</p>;
+
+  // Ensure data exists
+  if (!data || !data.payrolls || data.payrolls.length === 0) return notFound();
+
+  const payroll = data.payrolls[0];
 
   return (
     <div className="space-y-6">
@@ -52,25 +31,31 @@ export default async function PayrollPage({ params }: { params: { id: string } }
       <Card>
         <CardHeader>
           <CardTitle>{payroll.name}</CardTitle>
-          <CardDescription>Client: {payroll.client.name}</CardDescription>
+          <CardDescription>Client: {payroll.client?.name || "N/A"}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
             <div className="flex justify-between">
               <span>Status:</span>
-              <Badge variant={payroll.active ? "default" : "secondary"}>{payroll.active ? "Active" : "Inactive"}</Badge>
+              <Badge variant={payroll.status === "active" ? "default" : "secondary"}>
+                {payroll.status === "active" ? "Active" : "Inactive"}
+              </Badge>
+            </div>
+            <div className="flex justify-between">
+              <span>Payroll System:</span>
+              <span>{payroll.payroll_system || "N/A"}</span>
             </div>
             <div className="flex justify-between">
               <span>Primary Consultant:</span>
-              <span>{payroll.primaryConsultant?.name || "Not assigned"}</span>
+              <span>{payroll.staffByPrimaryConsultantId?.name || "Not assigned"}</span>
             </div>
             <div className="flex justify-between">
               <span>Backup Consultant:</span>
-              <span>{payroll.backupConsultant?.name || "Not assigned"}</span>
+              <span>{payroll.staff?.name || "Not assigned"}</span>
             </div>
             <div className="flex justify-between">
               <span>Manager:</span>
-              <span>{payroll.manager?.name || "Not assigned"}</span>
+              <span>{payroll.staffByManagerId?.name || "Not assigned"}</span>
             </div>
             <div className="flex justify-between">
               <span>Processing Days Before EFT:</span>
@@ -87,7 +72,53 @@ export default async function PayrollPage({ params }: { params: { id: string } }
           </div>
         </CardContent>
       </Card>
-    </div>
-  )
-}
 
+      {/* Payroll Dates Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Payroll Dates</CardTitle>
+          <CardDescription>Important payroll schedule details</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4">
+            {payroll.payroll_dates?.length > 0 ? (
+              payroll.payroll_dates.map(
+                (
+                  date: {
+                    original_eft_date: string;
+                    adjusted_eft_date: string;
+                    processing_date: string;
+                    notes?: string;
+                  },
+                  index: number
+                ) => (
+                  <div key={index} className="border p-3 rounded-md">
+                    <div className="flex justify-between">
+                      <span>Original EFT Date:</span>
+                      <span>{new Date(date.original_eft_date).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Adjusted EFT Date:</span>
+                      <span>{new Date(date.adjusted_eft_date).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Processing Date:</span>
+                      <span>{new Date(date.processing_date).toLocaleDateString()}</span>
+                    </div>
+                    {date.notes && (
+                      <div className="mt-2">
+                        <span className="font-medium">Notes:</span> {date.notes}
+                      </div>
+                    )}
+                  </div>
+                )
+              )
+            ) : (
+              <p>No payroll dates available.</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

@@ -1,6 +1,6 @@
 // components/hasura-role-gate.tsx
 import { ReactNode } from 'react'
-import { checkHasuraRole, HasuraRole } from '@/utils/auth'
+import { checkHasuraRole, HasuraRole } from '@/lib/auth'
 
 type HasuraRoleGateProps = {
   children: ReactNode

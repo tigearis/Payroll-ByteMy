@@ -3,7 +3,7 @@
 
 import { useAuth } from '@clerk/nextjs'
 import { ReactNode, useState, useEffect } from 'react'
-import { HasuraRole } from '@/utils/auth'
+import { HasuraRole } from '@/lib/auth'
 
 type ClientHasuraRoleGateProps = {
   children: ReactNode
