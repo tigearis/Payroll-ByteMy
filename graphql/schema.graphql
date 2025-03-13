@@ -302,4 +302,20 @@ type Mutation {
   addNote(input: NoteInput!): Note!
   updateNote(id: ID!, input: NoteInput!): Note!
   deleteNote(id: ID!): Boolean!
+
+  
+}
+
+type PayrollDateResult {
+  success: Boolean!
+}
+
+extend type Mutation {
+  call_generate_payroll_dates(args: GeneratePayrollDatesInput!): PayrollDateResult
+}
+
+input GeneratePayrollDatesInput {
+  p_payroll_id: ID!
+  p_start_date: String!
+  p_end_date: String!
 }

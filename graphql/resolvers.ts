@@ -104,14 +104,14 @@ const verifyUserRole = (userRole: string | undefined, allowedRoles: HasuraRole[]
       }
     })
   }
-  
+
   return true
 }
 
 // Helper function to check note access
 const checkNoteAccess = async (userId: string, noteId: string, entityType: 'client' | 'payroll', context: GraphQLContext): Promise<boolean> => {
   const userRole = context.hasuraClaims?.['x-hasura-default-role']
-  
+
   // Admin and managers can do anything
   if (['org_admin', 'manager'].includes(userRole || '')) {
     return true
@@ -156,7 +156,7 @@ const checkNoteAccess = async (userId: string, noteId: string, entityType: 'clie
             }
           }
         `,
-        variables: { 
+        variables: {
           payrollId: note.entity_id,
           userId
         }
@@ -634,7 +634,7 @@ export const resolvers = {
               }
             }
           `,
-          variables: { 
+          variables: {
             payrollId,
             userId: context.userId
           }
@@ -707,7 +707,7 @@ export const resolvers = {
             }
           }
         `,
-        variables: { 
+        variables: {
           id: noteId,
           input: updateData
         }
@@ -811,7 +811,7 @@ export const resolvers = {
             }
           }
         `,
-        variables: { 
+        variables: {
           id: noteId,
           input: updateData
         }
@@ -864,12 +864,12 @@ export const resolvers = {
         `,
         variables: { id: parent.client_id }
       });
-      
+
       return data.client as Client;
     },
     primaryConsultant: async (parent: Payroll) => {
       if (!parent.primary_consultant_id) return null;
-      
+
       const { data } = await adminClient.query({
         query: gql`
           query GetStaffMember($id: ID!) {
@@ -882,12 +882,12 @@ export const resolvers = {
         `,
         variables: { id: parent.primary_consultant_id }
       });
-      
+
       return data.staff_member as StaffMember;
     },
     backupConsultant: async (parent: Payroll) => {
       if (!parent.backup_consultant_id) return null;
-      
+
       const { data } = await adminClient.query({
         query: gql`
           query GetStaffMember($id: ID!) {
@@ -900,12 +900,12 @@ export const resolvers = {
         `,
         variables: { id: parent.backup_consultant_id }
       });
-      
+
       return data.staff_member as StaffMember;
     },
     manager: async (parent: Payroll) => {
       if (!parent.manager_id) return null;
-      
+
       const { data } = await adminClient.query({
         query: gql`
           query GetStaffMember($id: ID!) {
@@ -918,7 +918,7 @@ export const resolvers = {
         `,
         variables: { id: parent.manager_id }
       });
-      
+
       return data.staff_member as StaffMember;
     },
     notes: async (parent: Payroll) => {
@@ -941,7 +941,7 @@ export const resolvers = {
         `,
         variables: { payrollId: parent.id }
       });
-      
+
       return data.notes as Note[];
     }
   },
@@ -960,7 +960,7 @@ export const resolvers = {
         `,
         variables: { clientId: parent.id }
       });
-      
+
       return data.payrolls as Payroll[];
     },
     notes: async (parent: Client) => {
@@ -983,7 +983,7 @@ export const resolvers = {
         `,
         variables: { clientId: parent.id }
       });
-      
+
       return data.notes as Note[];
     }
   },
@@ -1002,7 +1002,7 @@ export const resolvers = {
         `,
         variables: { staffId: parent.id }
       });
-      
+
       return data.payrolls as Payroll[];
     },
     backupPayrolls: async (parent: StaffMember) => {
@@ -1018,7 +1018,7 @@ export const resolvers = {
         `,
         variables: { staffId: parent.id }
       });
-      
+
       return data.payrolls as Payroll[];
     },
     managedPayrolls: async (parent: StaffMember) => {
@@ -1034,7 +1034,7 @@ export const resolvers = {
         `,
         variables: { staffId: parent.id }
       });
-      
+
       return data.payrolls as Payroll[];
     },
   },
@@ -1042,7 +1042,7 @@ export const resolvers = {
   Note: {
     user: async (parent: Note) => {
       if (!parent.user_id) return null;
-      
+
       const { data } = await adminClient.query({
         query: gql`
           query GetUser($id: ID!) {
@@ -1055,8 +1055,40 @@ export const resolvers = {
         `,
         variables: { id: parent.user_id }
       });
-      
+
       return data.user as User;
+    }
+  },
+  call_generate_payroll_dates: async (
+    _: unknown,
+    { args }: { args: { p_payroll_id: string; p_start_date: string; p_end_date: string } }
+  ) => {
+    try {
+      // Directly call PostgreSQL function via adminClient
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { data } = await adminClient.query({
+        query: gql`
+        query CallGeneratePayrollDates($payrollId: uuid!, $startDate: date!, $endDate: date!) {
+          generate_payroll_dates(p_payroll_id: $payrollId, p_start_date: $startDate, p_end_date: $endDate){
+    id
+    payroll_id
+    original_eft_date
+    adjusted_eft_date
+    processing_date
+  }
+        }
+      `,
+        variables: {
+          payrollId: args.p_payroll_id,
+          startDate: args.p_start_date,
+          endDate: args.p_end_date
+        }
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error calling generate_payroll_dates:", error);
+      return { success: false };
     }
   }
 }

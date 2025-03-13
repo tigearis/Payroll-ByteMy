@@ -1,47 +1,32 @@
 // app/api/hasura-actions/generate-payroll-dates/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { adminClient } from "@/lib/apollo-admin";
-import { gql } from "@apollo/client";
+import { db } from "@/lib/db"; // Import your database connection
 
-// GraphQL mutation to call the generate_payroll_dates function
-const CALL_FUNCTION = gql`
-  mutation CallGeneratePayrollDates($payrollId: uuid!, $startDate: date!, $endDate: date!) {
-    call_generate_payroll_dates(args: {
-      p_payroll_id: $payrollId,
-      p_start_date: $startDate,
-      p_end_date: $endDate
-    }) {
-      success
-    }
-  }
-`;
-
-// This endpoint will be called by Hasura when the generatePayrollDates action is triggered
 export async function POST(req: NextRequest) {
   try {
     // Parse the Hasura action payload
-    const { input, session_variables } = await req.json();
+    const { input } = await req.json();
     
     // Extract parameters
-    const { payrollId, startDate, endDate } = input;
+    const { payrollId, startDate, endDate } = input.args;
     
-    // Call the database function via GraphQL
-    const { data } = await adminClient.mutate({
-      mutation: CALL_FUNCTION,
-      variables: {
-        payrollId,
-        startDate,
-        endDate
-      }
-    });
+    // Call the function directly
+    const result = await db.query(
+      'SELECT generate_payroll_dates($1, $2, $3) as success',
+      [payrollId, startDate, endDate]
+    );
+    
+    const success = result.rows[0]?.success === true;
     
     return NextResponse.json({
-      success: data.call_generate_payroll_dates.success
+      success
     });
   } catch (error) {
     console.error("Error in generate-payroll-dates action:", error);
+    
     return NextResponse.json({
-      success: false
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error"
     }, { status: 500 });
   }
 }
