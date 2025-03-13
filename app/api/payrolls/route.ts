@@ -5,6 +5,7 @@ import { adminClient } from "@/lib/apollo-admin"; // Use the admin client direct
 import { gql } from "@apollo/client";
 
 // GraphQL query to list all payrolls
+// Updated GraphQL query to include next payroll dates
 const GET_PAYROLLS = gql`
   query GetPayrolls {
     payrolls {
@@ -22,6 +23,15 @@ const GET_PAYROLLS = gql`
       }
       payroll_date_type {
         name
+      }
+      # Add the next upcoming payroll date
+      payroll_dates(
+        where: {adjusted_eft_date: {_gte: "now()"}}
+        order_by: {adjusted_eft_date: asc}
+        limit: 1
+      ) {
+        adjusted_eft_date
+        processing_date
       }
     }
   }
