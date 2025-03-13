@@ -1,20 +1,34 @@
-// app/providers.tsx
-"use client"
+import React, { useMemo } from "react"
+import { ApolloProvider, ApolloClient, HttpLink, from, InMemoryCache } from "@apollo/client"
+import { setContext } from "@apollo/client/link/context"
+import { useAuth } from "@clerk/nextjs"
 
-import type React from "react"
-import { ThemeProvider } from "next-themes" 
-import { ApolloProvider } from "@apollo/client"
-import { createApolloClient } from "@/lib/apollo-client"
+export const ApolloProviderWrapper = ({ children }: { children: React.ReactNode }) => {
+  const { getToken } = useAuth()
 
-// Create a client-side Apollo client instance
-const clientSideApolloClient = createApolloClient();
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <ApolloProvider client={clientSideApolloClient}>
-        {children}
-      </ApolloProvider>
-    </ThemeProvider>
-  )
+  const apolloClient = useMemo(() => {
+    const authMiddleware = setContext(async (_, { headers }) => {
+      const token = await getToken({ template: "hasura" })
+      return {
+        headers: {
+          ...headers,
+          authorization: token ? `Bearer ${token}` : "",
+        },
+      }
+    })
+
+    return new ApolloClient({
+      link: from([
+        authMiddleware, 
+        new HttpLink({
+          uri: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
+          credentials: "include",
+        }),
+      ]),
+      cache: new InMemoryCache(),
+    })
+  }, [getToken]) 
+
+  return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
 }

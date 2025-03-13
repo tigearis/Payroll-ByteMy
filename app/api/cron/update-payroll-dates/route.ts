@@ -1,65 +1,84 @@
-// app/api/cron/update-payroll-dates/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { adminClient } from "@/lib/apollo-admin";
 import { gql } from "@apollo/client";
-import { addMonths, format } from "date-fns";
+import { format, addMonths } from "date-fns";
 
-// GraphQL query to get payrolls
-const GET_PAYROLLS = gql`
-  query GetPayrolls($where: payrolls_bool_exp) {
-    payrolls(where: $where) {
-      id
-    }
-  }
-`;
-
-// GraphQL mutation to generate payroll dates
 const GENERATE_PAYROLL_DATES = gql`
   mutation GeneratePayrollDates(
     $payrollId: uuid!,
     $startDate: date!,
     $endDate: date!
   ) {
-    call_generate_payroll_dates(args: {
-      p_payroll_id: $payrollId,
-      p_start_date: $startDate,
-      p_end_date: $endDate
-    }) {
-      success
+    generate_payroll_dates(
+      args: {
+        p_payroll_id: $payrollId,
+        p_start_date: $startDate,
+        p_end_date: $endDate
+      }
+    ) {
+      id
+      payroll_id
+      original_eft_date
+      adjusted_eft_date
+      processing_date
     }
   }
 `;
 
-/**
- * Core function to update payroll dates
- * Can be called by both GET (cron job) and POST (manual trigger) handlers
- */
-async function updatePayrollDates(req: NextRequest, specificPayrollIds?: string[]) {
+const UPDATE_PAYROLL_STATUS = gql`
+  mutation UpdatePayrollStatus(
+    $payrollId: uuid!, 
+    $status: payroll_status_enum!
+  ) {
+    update_payrolls_by_pk(
+      pk_columns: { id: $payrollId }, 
+      _set: { status: $status }
+    ) {
+      id
+      status
+    }
+  }
+`;
+
+export async function POST(req: NextRequest) {
   try {
-    // Authorization check for manual requests
-    if (req.method === 'POST') {
-      const { userId, getToken } = await auth();
-      
-      if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
-      
-      // Check user permissions
-      const token = await getToken({ template: "hasura" });
-      let userRole = "viewer";
-      
-      if (token) {
-        const tokenParts = token.split('.');
-        const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString());
-        const hasuraClaims = payload['https://hasura.io/jwt/claims'];
-        userRole = hasuraClaims?.['x-hasura-default-role'] || "viewer";
-      }
-      
-      // Only allow admin to manually trigger
-      if (userRole !== "org_admin" && userRole !== "admin") {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
+    // Authentication and authorization check
+    const { userId, getToken } = await auth();
+    
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
+    // Check user permissions
+    const token = await getToken({ template: "hasura" });
+    let userRole = "viewer";
+    
+    if (token) {
+      const tokenParts = token.split('.');
+      const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString());
+      const hasuraClaims = payload['https://hasura.io/jwt/claims'];
+      userRole = hasuraClaims?.['x-hasura-default-role'] || "viewer";
+    }
+    
+    // Only allow certain roles to generate dates and update payrolls
+    const allowedRoles = ['org_admin', 'admin', 'manager'];
+    if (!allowedRoles.includes(userRole)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    
+    // Parse request body
+    const { 
+      payrollIds, 
+      updateStatus = false,  // Optional flag to update status
+      newStatus = 'Active'   // Default new status
+    } = await req.json();
+    
+    // Validate input
+    if (!payrollIds || !Array.isArray(payrollIds) || payrollIds.length === 0) {
+      return NextResponse.json({ 
+        error: "Invalid input: Provide an array of payroll IDs" 
+      }, { status: 400 });
     }
     
     // Set up date range for generated dates
@@ -70,90 +89,96 @@ async function updatePayrollDates(req: NextRequest, specificPayrollIds?: string[
     const formattedStart = format(startDate, "yyyy-MM-dd");
     const formattedEnd = format(endDate, "yyyy-MM-dd");
     
-    // Build where clause based on whether specific payrolls were requested
-    const whereClause = specificPayrollIds && specificPayrollIds.length > 0
-      ? { id: { _in: specificPayrollIds } }
-      : { status: { _eq: "Active" } };  // Default to all active payrolls
-    
-    // Get the payrolls to process
-    const { data: payrollsData } = await adminClient.query({
-      query: GET_PAYROLLS,
-      variables: { where: whereClause }
-    });
-    
-    const payrolls = payrollsData.payrolls || [];
-    
-    if (payrolls.length === 0) {
-      return NextResponse.json({ 
-        message: specificPayrollIds 
-          ? "No matching payrolls found" 
-          : "No active payrolls found to update"
-      });
-    }
-    
     // Process each payroll
     const results = {
-      total: payrolls.length,
+      total: payrollIds.length,
       processed: 0,
       failed: 0,
       errors: [] as { payrollId: string, error: string }[]
     };
     
-    for (const payroll of payrolls) {
+    for (const payrollId of payrollIds) {
       try {
-        // Generate dates for this payroll
-        await adminClient.mutate({
+        console.log(`Processing payroll: ${payrollId}`);
+        
+        // Generate dates
+        const { data: dateData, errors: dateErrors } = await adminClient.mutate({
           mutation: GENERATE_PAYROLL_DATES,
           variables: {
-            payrollId: payroll.id,
+            payrollId: payrollId,
             startDate: formattedStart,
             endDate: formattedEnd
           }
         });
-        
+
+        if (dateErrors) {
+          console.error(`Date Generation Errors for payroll ${payrollId}:`, dateErrors);
+          results.failed++;
+          results.errors.push({
+            payrollId,
+            error: dateErrors.map(e => e.message).join(', ')
+          });
+          continue;
+        }
+
+        // Optional status update
+        if (updateStatus) {
+          try {
+            const { data: _statusData, errors: statusErrors } = await adminClient.mutate({
+              mutation: UPDATE_PAYROLL_STATUS,
+              variables: {
+                payrollId: payrollId,
+                status: newStatus
+              }
+            });
+
+            if (statusErrors) {
+              console.warn(`Status update errors for payroll ${payrollId}:`, statusErrors);
+              // Non-fatal, so we continue processing
+            }
+          } catch (statusUpdateError) {
+            console.error(`Error updating status for payroll ${payrollId}:`, statusUpdateError);
+          }
+        }
+
+        // Check if dates were generated
+        const generatedDates = dateData.generate_payroll_dates;
+        if (!generatedDates || generatedDates.length === 0) {
+          console.warn(`No dates generated for payroll: ${payrollId}`);
+          results.failed++;
+          results.errors.push({
+            payrollId,
+            error: "No dates generated"
+          });
+          continue;
+        }
+
         results.processed++;
+        console.log(`Successfully processed payroll: ${payrollId}`);
       } catch (error) {
+        console.error(`Error processing payroll ${payrollId}:`, error);
         results.failed++;
         results.errors.push({
-          payrollId: payroll.id,
+          payrollId,
           error: error instanceof Error ? error.message : String(error)
         });
       }
     }
     
+    // Prepare and return response
     return NextResponse.json({
-      success: true,
-      message: `Updated payroll dates for ${results.processed} of ${results.total} payrolls`,
+      success: results.processed > 0,
+      message: `Processed ${results.processed} of ${results.total} payrolls`,
+      total: results.total,
+      processed: results.processed,
+      failed: results.failed,
       errors: results.errors.length > 0 ? results.errors : undefined
     });
   } catch (error) {
-    console.error("Error in payroll date update:", error);
+    console.error("Error in payroll processing:", error);
     return NextResponse.json({ 
-      error: "Failed to update payroll dates", 
+      error: "Failed to process payrolls", 
       details: error instanceof Error ? error.message : "Unknown error" 
     }, { status: 500 });
-  }
-}
-
-// GET handler for cron jobs
-export async function GET(req: NextRequest) {
-  // For scheduled cron jobs, process all active payrolls
-  return updatePayrollDates(req);
-}
-
-// POST handler for manual triggers
-export async function POST(req: NextRequest) {
-  try {
-    // Parse request body for specific payroll IDs
-    const body = await req.json();
-    const payrollIds = body.payrollIds || [];
-    
-    return updatePayrollDates(req, payrollIds);
-  } catch (error) {
-    console.error("Error parsing request:", error);
-    return NextResponse.json({ 
-      error: "Invalid request format", 
-      details: error instanceof Error ? error.message : "Unknown error" 
-    }, { status: 400 });
   }
 }

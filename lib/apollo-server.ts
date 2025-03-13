@@ -1,14 +1,26 @@
-import { ApolloServer } from "@apollo/server"
-import { startServerAndCreateNextHandler } from "@as-integrations/next"
-import { readFileSync } from "fs"
-import { resolvers } from "@/graphql/resolvers"
+import { ApolloClient, HttpLink, from, InMemoryCache } from "@apollo/client"
+import { setContext } from "@apollo/client/link/context"
+import { auth } from "@clerk/nextjs/server"
 
-const typeDefs = readFileSync("./graphql/schema.graphql", { encoding: "utf-8" })
+export const getServerApolloClient = async () => {
+  const authInstance = await auth() // ✅ FIX: Await `auth()` before accessing `getToken`
+  const token = await authInstance.getToken({ template: "hasura" })
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-})
+  const authMiddleware = setContext((_, { headers }) => ({
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  }))
 
-export default startServerAndCreateNextHandler(server)
-
+  return new ApolloClient({
+    link: from([
+      authMiddleware,
+      new HttpLink({
+        uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
+        credentials: "include",
+      }),
+    ]),
+    cache: new InMemoryCache(),
+  })
+}
