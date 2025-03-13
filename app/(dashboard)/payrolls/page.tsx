@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useQuery, gql } from "@apollo/client";
 import { PlusCircle, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -29,44 +28,43 @@ interface Payroll {
   status: PayrollStatus;
 }
 
-// ✅ GraphQL Query to Fetch Payroll Data
-const GET_PAYROLLS = gql`
-  query MyQuery {
-    payrolls {
-      id
-      name
-      payroll_system
-      processing_days_before_eft
-      status
-      date_value
-      client {
-        name
-      }
-      payroll_cycle {
-        name
-      }
-      payroll_date_type {
-        name
-      }
-    }
-  }
-`;
-
 export default function PayrollsPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { loading, error, data } = useQuery(GET_PAYROLLS);
+  const [payrolls, setPayrolls] = useState<Payroll[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchPayrolls() {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/payrolls');
+        
+        if (!response.ok) {
+          throw new Error(`Error fetching payrolls: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        setPayrolls(data.payrolls || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPayrolls();
+  }, []);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
-  const payrolls: Payroll[] = data.payrolls;
+  if (error) return <p>Error: {error}</p>;
 
   const filteredPayrolls = payrolls.filter((payroll) =>
     payroll.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     payroll.client.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // ✅ Day of the Week Mapping (1 = Sunday, 7 = Saturday)
+  // Day of the Week Mapping (1 = Sunday, 7 = Saturday)
   const dayOfWeekMap: { [key: number]: string } = {
     1: "Sunday",
     2: "Monday",
@@ -122,74 +120,82 @@ export default function PayrollsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredPayrolls.map((payroll) => {
-                // ✅ Ensure payroll_cycle & payroll_date_type exist
-                let cycleName = payroll.payroll_cycle?.name || "N/A";
-                let dateTypeName = payroll.payroll_date_type?.name || "N/A";
+              {filteredPayrolls.length > 0 ? (
+                filteredPayrolls.map((payroll) => {
+                  // Ensure payroll_cycle & payroll_date_type exist
+                  let cycleName = payroll.payroll_cycle?.name || "N/A";
+                  let dateTypeName = payroll.payroll_date_type?.name || "N/A";
 
-                // ✅ Fix casing issues ("week_a" → "Week A", "eom" → "EOM", etc.)
-                dateTypeName = dateTypeName
-                  .replace("_", " ") // Convert underscores to spaces
-                  .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize each word
+                  // Fix casing issues ("week_a" → "Week A", "eom" → "EOM", etc.)
+                  dateTypeName = dateTypeName
+                    .replace("_", " ") // Convert underscores to spaces
+                    .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize each word
 
-                // Special handling for "eom" and "som"
-                if (dateTypeName === "Eom") dateTypeName = "EOM";
-                if (dateTypeName === "Som") dateTypeName = "SOM";
-                cycleName = cycleName
-                  .toLowerCase() 
-                  .replace("_", " ")// Convert to lowercase first
-                  .split(" ") // Split into words
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
-                  .join(" ");
+                  // Special handling for "eom" and "som"
+                  if (dateTypeName === "Eom") dateTypeName = "EOM";
+                  if (dateTypeName === "Som") dateTypeName = "SOM";
+                  cycleName = cycleName
+                    .toLowerCase() 
+                    .replace("_", " ")// Convert to lowercase first
+                    .split(" ") // Split into words
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+                    .join(" ");
 
-                // ✅ Format `date_value` based on cycle type
-                let displayDate: string = "N/A";
+                  // Format `date_value` based on cycle type
+                  let displayDate: string = "N/A";
 
-                if (["Weekly", "Fortnightly"].includes(cycleName)) {
-                  // Convert date_value (1-7) into day names (Monday, Tuesday, etc.)
-                  const dayName = dayOfWeekMap[payroll.date_value ?? 0] || "Invalid Day";
-                  displayDate = dateTypeName.includes("Week")
-                    ? `${dayName}` // Example: "Monday - Week A"
-                    : dayName; // Example: "Tuesday"
-                }
-                else if (cycleName === "Monthly" && payroll.payroll_date_type?.name === "fixed_date") {
-                  // Show date_value as "26th"
-                  displayDate = payroll.date_value ? `${payroll.date_value}th` : "N/A";
-                }
-                else if (["Bi-Monthly", "Quarterly"].includes(cycleName)) {
-                  // Show "EOM", "SOM"
-                  displayDate = dateTypeName;
-                }
+                  if (["Weekly", "Fortnightly"].includes(cycleName)) {
+                    // Convert date_value (1-7) into day names (Monday, Tuesday, etc.)
+                    const dayName = dayOfWeekMap[payroll.date_value ?? 0] || "Invalid Day";
+                    displayDate = dateTypeName.includes("Week")
+                      ? `${dayName}` // Example: "Monday - Week A"
+                      : dayName; // Example: "Tuesday"
+                  }
+                  else if (cycleName === "Monthly" && payroll.payroll_date_type?.name === "fixed_date") {
+                    // Show date_value as "26th"
+                    displayDate = payroll.date_value ? `${payroll.date_value}th` : "N/A";
+                  }
+                  else if (["Bi-Monthly", "Quarterly"].includes(cycleName)) {
+                    // Show "EOM", "SOM"
+                    displayDate = dateTypeName;
+                  }
 
-                return (
-                  <TableRow key={payroll.id}>
-                    <TableCell>{payroll.client.name}</TableCell>
-                    <TableCell>
-                      <Link href={`/payrolls/${payroll.id}`} className="text-primary hover:underline">
-                        {payroll.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{cycleName}</TableCell>
-                    <TableCell>{dateTypeName} - {displayDate}</TableCell>
-                    <TableCell>{displayDate}</TableCell>
-                    <TableCell>{payroll.processing_days_before_eft}</TableCell>
-                    <TableCell>{payroll.payroll_system}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          payroll.status === PayrollStatus.Active
-                            ? "default"
-                            : payroll.status === PayrollStatus.Implementation
-                              ? "outline"
-                              : "secondary"
-                        }
-                      >
-                        {payroll.status}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                  return (
+                    <TableRow key={payroll.id}>
+                      <TableCell>{payroll.client.name}</TableCell>
+                      <TableCell>
+                        <Link href={`/payrolls/${payroll.id}`} className="text-primary hover:underline">
+                          {payroll.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{cycleName}</TableCell>
+                      <TableCell>{dateTypeName} - {displayDate}</TableCell>
+                      <TableCell>{displayDate}</TableCell>
+                      <TableCell>{payroll.processing_days_before_eft}</TableCell>
+                      <TableCell>{payroll.payroll_system}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            payroll.status === PayrollStatus.Active
+                              ? "default"
+                              : payroll.status === PayrollStatus.Implementation
+                                ? "outline"
+                                : "secondary"
+                          }
+                        >
+                          {payroll.status}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={8} className="h-24 text-center">
+                    No payrolls found.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

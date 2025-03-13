@@ -14,16 +14,19 @@ export async function getServerApolloClient() {
   const token = await getToken({ template: "hasura" })
   
   const authLink = setContext((_, { headers }) => {
-    // Add the JWT token to the Authorization header
+    // Create a new headers object
+    const newHeaders = { ...headers };
+    
+    // Add the JWT token to the Authorization header if available
     if (token) {
-      return {
-        headers: {
-          ...headers,
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      newHeaders.Authorization = `Bearer ${token}`;
+    } 
+    // If no token is available, use admin secret as fallback
+    else if (process.env.HASURA_ADMIN_SECRET) {
+      newHeaders["x-hasura-admin-secret"] = process.env.HASURA_ADMIN_SECRET;
     }
-    return { headers }
+    
+    return { headers: newHeaders };
   })
 
   return new ApolloClient({

@@ -1,47 +1,65 @@
 // app/api/payroll-dates/[payrollId]/route.ts
-import { NextRequest, NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { payroll_dates } from "@/drizzle/schema"
-import { eq, and, gte, lte } from "drizzle-orm"
-import { ensurePayrollDatesExist } from "@/lib/payroll-date-service"
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { adminClient } from "@/lib/apollo-admin";
+import { gql } from "@apollo/client";
+
+// GraphQL query to get payroll dates
+const GET_PAYROLL_DATES = gql`
+  query GetPayrollDates($payrollId: uuid!, $limit: Int) {
+    payroll_dates(
+      where: {payroll_id: {_eq: $payrollId}},
+      order_by: {adjusted_eft_date: asc},
+      limit: $limit
+    ) {
+      id
+      original_eft_date
+      adjusted_eft_date
+      processing_date
+      notes
+    }
+  }
+`;
 
 export async function GET(
-  req: NextRequest, 
+  req: NextRequest,
   { params }: { params: { payrollId: string } }
 ) {
   try {
-    const { payrollId } = params
-    const url = new URL(req.url)
+    // Check authentication
+    const { userId } = await auth();
     
-    // Parse date range filters
-    const startDate = url.searchParams.get('startDate') ? 
-      new Date(url.searchParams.get('startDate')!) : 
-      new Date()
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     
-    const endDate = url.searchParams.get('endDate') ? 
-      new Date(url.searchParams.get('endDate')!) : 
-      new Date(startDate)
-    endDate.setMonth(endDate.getMonth() + 3) // Default to 3 months ahead
+    const { payrollId } = params;
+    const searchParams = req.nextUrl.searchParams;
+    const months = parseInt(searchParams.get("months") || "12");
     
-    // Ensure dates exist
-    await ensurePayrollDatesExist(payrollId, startDate, endDate)
+    // Calculate the number of entries to fetch (approximation based on cycle)
+    // For monthly, we need 12 entries per year
+    // For weekly, we need 52 entries per year
+    // We'll use a rough average of 30 entries per year to be safe
+    const limit = Math.max(12, Math.ceil(months * 2.5));
     
-    // Fetch requested date range
-    const dates = await db.query.payroll_dates.findMany({
-      where: and(
-        eq(payroll_dates.payroll_id, payrollId),
-        gte(payroll_dates.adjusted_eft_date, startDate),
-        lte(payroll_dates.adjusted_eft_date, endDate)
-      ),
-      orderBy: [payroll_dates.adjusted_eft_date]
-    })
+    // Fetch payroll dates
+    const { data } = await adminClient.query({
+      query: GET_PAYROLL_DATES,
+      variables: {
+        payrollId,
+        limit
+      }
+    });
     
-    return NextResponse.json(dates)
+    return NextResponse.json({ 
+      dates: data.payroll_dates 
+    });
   } catch (error) {
-    console.error("Error fetching payroll dates:", error)
-    return NextResponse.json(
-      { error: "Failed to fetch payroll dates" }, 
-      { status: 500 }
-    )
+    console.error("Error fetching payroll dates:", error);
+    return NextResponse.json({ 
+      error: "Failed to fetch payroll dates", 
+      details: error instanceof Error ? error.message : "Unknown error" 
+    }, { status: 500 });
   }
 }
