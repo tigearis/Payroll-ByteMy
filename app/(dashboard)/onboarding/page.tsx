@@ -1,3 +1,4 @@
+// app/(dashboard)/onboarding/page.tsx
 "use client"
 
 import { useState } from "react"
@@ -89,4 +90,3 @@ export default function OnboardingPage() {
     </div>
   )
 }
-

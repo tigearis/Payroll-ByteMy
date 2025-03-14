@@ -1,3 +1,4 @@
+// app/(dashboard)/staff/[id]/page.tsx
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { staff } from "@/drizzle/schema"
@@ -111,4 +112,3 @@ export default async function StaffPage({ params }: { params: { id: string } }) 
     </div>
   )
 }
-

@@ -1,3 +1,4 @@
+// app/(dashboard)/settings/page.tsx
 "use client"
 
 import type React from "react"
@@ -448,4 +449,3 @@ export default function SettingsPage() {
     </div>
   )
 }
-

@@ -1,3 +1,4 @@
+// components/sidebar.tsx
 "use client"
 
 import { useState } from "react"
@@ -113,4 +114,3 @@ export function Sidebar() {
     </div>
   )
 }
-

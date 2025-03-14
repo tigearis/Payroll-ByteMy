@@ -1,4 +1,4 @@
-// app/lib/apollo-admin.ts
+// lib/apollo-admin.ts
 import { ApolloClient, HttpLink, from, InMemoryCache } from "@apollo/client"
 
 export const adminApolloClient = new ApolloClient({

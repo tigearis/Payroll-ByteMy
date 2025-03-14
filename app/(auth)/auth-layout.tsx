@@ -1,4 +1,4 @@
-// app/(auth)/layout.tsx
+// app/(auth)/auth-layout.tsx
 import type React from "react"
 
 interface AuthLayoutProps {

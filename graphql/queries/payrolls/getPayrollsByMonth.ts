@@ -1,3 +1,4 @@
+// graphql/queries/payrolls/getPayrollsByMonth.ts
 import { gql } from "@apollo/client";
 
 export const GET_PAYROLLS_BY_MONTH = gql`

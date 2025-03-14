@@ -1,3 +1,4 @@
+// app/api/payrolls/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getServerApolloClient } from "@/lib/apollo-client";
 import { GET_PAYROLLS } from "@/graphql/queries/payrolls/getPayrolls";

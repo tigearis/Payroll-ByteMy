@@ -1,3 +1,4 @@
+// app/(dashboard)/clients/new/page.tsx
 "use client"
 
 import type React from "react"
@@ -233,4 +234,3 @@ export default function NewClientPage() {
     </div>
   )
 }
-

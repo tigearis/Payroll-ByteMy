@@ -1,3 +1,4 @@
+// app/api/user/[id]/route.ts
 // Example API route to set a user's role
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'

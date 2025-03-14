@@ -1,5 +1,6 @@
+// components/payroll-dates-view.tsx
 "use client";
-
+import { GET_PAYROLLS } from "@/graphql/queries/payrolls/getPayrolls";
 import { useState, useEffect } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { format, parseISO, isEqual, addMonths } from "date-fns";

@@ -1,3 +1,4 @@
+// app/(dashboard)/clients/[id]/page.tsx
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { clients } from "@/drizzle/schema"
@@ -83,4 +84,3 @@ export default async function ClientPage({ params }: { params: { id: string } })
     </div>
   )
 }
-

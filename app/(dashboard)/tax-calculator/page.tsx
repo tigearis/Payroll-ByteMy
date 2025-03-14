@@ -1,3 +1,4 @@
+// app/(dashboard)/tax-calculator/page.tsx
 import { AustralianTaxCalculator } from "@/components/australian-tax-calculator"
 
 export default function TaxCalculatorPage() {
@@ -11,4 +12,3 @@ export default function TaxCalculatorPage() {
     </div>
   )
 }
-
