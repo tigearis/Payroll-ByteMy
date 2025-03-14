@@ -1,3 +1,4 @@
+// graphql/queries/payrolls/getPayrollById.ts
 import { gql } from "@apollo/client"
 
 export const GET_PAYROLL_BY_ID = gql`

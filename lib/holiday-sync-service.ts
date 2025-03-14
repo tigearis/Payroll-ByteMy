@@ -1,3 +1,4 @@
+// lib/holiday-sync-service.ts
 import { gql } from '@apollo/client'
 import { getAdminClient } from '@/lib/apollo-admin'
 

@@ -1,3 +1,4 @@
+// app/(dashboard)/payroll-schedule/loading.tsx
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -47,4 +48,3 @@ export default function Loading() {
     </div>
   )
 }
-

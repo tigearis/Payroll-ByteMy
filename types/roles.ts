@@ -1,3 +1,4 @@
+// types/roles.ts
 export enum Role {
   Admin = 'org_admin',
   Manager = 'manager',

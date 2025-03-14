@@ -1,3 +1,4 @@
+// app/(dashboard)/clients/page.tsx
 "use client"
 
 import { useState } from "react"
@@ -135,4 +136,3 @@ export default function ClientsPage() {
     </div>
   )
 }
-

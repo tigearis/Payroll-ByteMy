@@ -1,3 +1,4 @@
+// lib/apollo-server.ts
 import { ApolloClient, HttpLink, from, InMemoryCache } from "@apollo/client"
 import { setContext } from "@apollo/client/link/context"
 import { auth } from "@clerk/nextjs/server"

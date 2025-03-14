@@ -1,3 +1,4 @@
+// app/(dashboard)/payroll-schedule/page.tsx
 "use client"
 
 import { useState } from "react"
@@ -343,4 +344,3 @@ export default function PayrollSchedulePage() {
     </div>
   )
 }
-

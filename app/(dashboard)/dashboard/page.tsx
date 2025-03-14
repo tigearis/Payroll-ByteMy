@@ -1,3 +1,4 @@
+// app/(dashboard)/dashboard/page.tsx
 import { CalendarDays, Users, Calculator, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 
@@ -97,4 +98,3 @@ export default function DashboardPage() {
     </div>
   )
 }
-

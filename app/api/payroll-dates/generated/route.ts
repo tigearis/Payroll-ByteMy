@@ -1,4 +1,4 @@
-// app/api/payroll-dates/generate/route.ts
+// app/api/payroll-dates/generated/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { adminClient } from "@/lib/apollo-admin";

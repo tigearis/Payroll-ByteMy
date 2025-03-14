@@ -1,3 +1,4 @@
+// components/upcoming-payrolls.tsx
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 const upcomingPayrolls = [
@@ -33,4 +34,3 @@ export function UpcomingPayrolls() {
     </Table>
   )
 }
-

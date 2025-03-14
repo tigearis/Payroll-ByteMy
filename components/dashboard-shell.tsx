@@ -1,3 +1,4 @@
+// components/dashboard-shell.tsx
 import type React from "react"
 import { MainNav } from "@/components/main-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -28,4 +29,3 @@ export function DashboardShell({ children }: DashboardShellProps) {
     </div>
   )
 }
-

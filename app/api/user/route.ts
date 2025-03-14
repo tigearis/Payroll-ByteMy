@@ -1,4 +1,4 @@
-// app/api/users/route.ts
+// app/api/user/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 
