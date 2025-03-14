@@ -89,14 +89,14 @@ Specific Rules Breakdown:
 Weekly
 
 Always DOW type
-DOW value 1-7
+DOW value 0-6
 Always use Previous Business Day rule
 
 Fortnightly
 
 DOW type only
 Supports Week A (first week of Jan) and Week B (second week of Jan)
-DOW value 1-7
+DOW value 0-6
 Always use Previous Business Day rule
 
 Bi-Monthly

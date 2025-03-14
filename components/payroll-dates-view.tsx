@@ -1,10 +1,10 @@
 // components/payroll-dates-view.tsx
 "use client";
-import { GET_PAYROLLS } from "@/graphql/queries/payrolls/getPayrolls";
+import { GET_PAYROLLS_BY_ID } from "@/graphql/queries/payrolls/getPayrollsByID";
 import { useState, useEffect } from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { format, parseISO, isEqual, addMonths } from "date-fns";
+import { format, parseISO, isEqual } from "date-fns";
 import { Download, RefreshCw } from "lucide-react";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   Card,
   CardContent,
@@ -35,6 +35,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+// Assuming you'll create these GraphQL mutations
+import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
+
 interface PayrollDate {
   id: string;
   original_eft_date: string;
@@ -50,70 +53,44 @@ interface PayrollDatesViewProps {
 }
 
 export function PayrollDatesView({ payrollId, payrollName, cycleType }: PayrollDatesViewProps) {
-  const [dates, setDates] = useState<PayrollDate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [regenerateOpen, setRegenerateOpen] = useState(false);
   const [regenerateMonths, setRegenerateMonths] = useState(12);
-  const [regenerateLoading, setRegenerateLoading] = useState(false);
+  
+  // Use GraphQL query to fetch payroll dates
+  const { loading, error, data, refetch } = useQuery(GET_PAYROLLS_BY_ID, {
+    variables: { 
+      id: payrollId,
+      months: 12
+    },
+    skip: !payrollId
+  });
 
-  // Fetch payroll dates
-  useEffect(() => {
-    async function fetchPayrollDates() {
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/payroll-dates/${payrollId}?months=12`);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch payroll dates: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        setDates(data.dates || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : String(err));
-      } finally {
-        setLoading(false);
-      }
-    }
+  // Use GraphQL mutation to regenerate dates
+  const [generatePayrollDates, { loading: regenerateLoading }] = useMutation(GENERATE_PAYROLL_DATES);
 
-    if (payrollId) {
-      fetchPayrollDates();
-    }
-  }, [payrollId]);
+  // Extract dates from GraphQL response
+  const dates: PayrollDate[] = data?.payroll?.dates || [];
 
-  // Regenerate payroll dates
+  // Regenerate payroll dates using GraphQL mutation
   const handleRegenerate = async () => {
     try {
-      setRegenerateLoading(true);
-      
-      const response = await fetch('/api/payroll-dates/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      await generatePayrollDates({
+        variables: {
           payrollId,
           startDate: new Date().toISOString(),
           months: regenerateMonths,
-        }),
+        },
       });
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to regenerate dates');
-      }
-      
-      // Refresh the dates after regeneration
-      const datesResponse = await fetch(`/api/payroll-dates/${payrollId}?months=${regenerateMonths}`);
-      const datesData = await datesResponse.json();
-      setDates(datesData.dates || []);
+      // Refresh the data after regeneration
+      await refetch({ 
+        id: payrollId, 
+        months: regenerateMonths 
+      });
       
       setRegenerateOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setRegenerateLoading(false);
+      console.error("Error regenerating payroll dates:", err);
     }
   };
 
@@ -167,7 +144,7 @@ export function PayrollDatesView({ payrollId, payrollName, cycleType }: PayrollD
           <CardDescription>Error loading payroll dates</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-red-500">{error}</div>
+          <div className="text-red-500">{error.message}</div>
         </CardContent>
       </Card>
     );
