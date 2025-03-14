@@ -6,6 +6,7 @@ import {
 import { Geist, Geist_Mono } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import './globals.css'
+import { ApolloProviderWrapper } from './providers'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,9 +37,10 @@ export default function RootLayout({
       }}
     >
       <html lang="en">
+        
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
+          <ApolloProviderWrapper>{children}</ApolloProviderWrapper>
           </ThemeProvider>
         </body>
       </html>

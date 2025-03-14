@@ -1,33 +1,40 @@
-// app/(dashboard)/payrolls/[id]/page.tsx
-
 "use client";
 
 import { useQuery } from "@apollo/client";
+import { useParams, notFound } from "next/navigation";
 import { GET_PAYROLL_BY_ID } from "@/graphql/queries/payrolls/getPayrollById";
-import { notFound } from "next/navigation";
+import { PayrollDate } from "@/types/globals"; // Ensure you have a type defined for payroll dates
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-export default function PayrollPage({ params }: { params: { id: string } }) {
+
+export default function PayrollPage() {
+  const params = useParams();
+  const id = params?.id as string;
+
   const { loading, error, data } = useQuery(GET_PAYROLL_BY_ID, {
-    variables: { id: params.id },
+    variables: { id },
+    skip: !id,
   });
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading payroll.</p>;
-
-  // Ensure data exists
+  if (error) return <p>Error: {error.message}</p>;
   if (!data || !data.payrolls || data.payrolls.length === 0) return notFound();
 
   const payroll = data.payrolls[0];
+  const capitalize = (str: string | undefined) => {
+    if (!str) return "N/A"; // Handle undefined case
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   return (
     <div className="space-y-6">
+      {/* Page Title */}
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Payroll Details</h2>
-        <p className="text-muted-foreground">Viewing details for payroll ID: {payroll.id}</p>
       </div>
 
+      {/* Payroll Information */}
       <Card>
         <CardHeader>
           <CardTitle>{payroll.name}</CardTitle>
@@ -44,6 +51,14 @@ export default function PayrollPage({ params }: { params: { id: string } }) {
             <div className="flex justify-between">
               <span>Payroll System:</span>
               <span>{payroll.payroll_system || "N/A"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Payroll Cycle:</span>
+              <span>{capitalize(payroll.payroll_cycle?.name)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Payroll Date Type:</span>
+              <span>{capitalize(payroll.payroll_date_type?.name)}</span>
             </div>
             <div className="flex justify-between">
               <span>Primary Consultant:</span>
@@ -72,7 +87,6 @@ export default function PayrollPage({ params }: { params: { id: string } }) {
           </div>
         </CardContent>
       </Card>
-
       {/* Payroll Dates Section */}
       <Card>
         <CardHeader>
@@ -80,43 +94,40 @@ export default function PayrollPage({ params }: { params: { id: string } }) {
           <CardDescription>Important payroll schedule details</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
-            {payroll.payroll_dates?.length > 0 ? (
-              payroll.payroll_dates.map(
-                (
-                  date: {
-                    original_eft_date: string;
-                    adjusted_eft_date: string;
-                    processing_date: string;
-                    notes?: string;
-                  },
-                  index: number
-                ) => (
-                  <div key={index} className="border p-3 rounded-md">
-                    <div className="flex justify-between">
-                      <span>Original EFT Date:</span>
-                      <span>{new Date(date.original_eft_date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Adjusted EFT Date:</span>
-                      <span>{new Date(date.adjusted_eft_date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Processing Date:</span>
-                      <span>{new Date(date.processing_date).toLocaleDateString()}</span>
-                    </div>
-                    {date.notes && (
-                      <div className="mt-2">
-                        <span className="font-medium">Notes:</span> {date.notes}
+          {payroll.payroll_dates?.length > 0 ? (
+            <>
+              {/* Table Headers */}
+              <div className="grid grid-cols-3 font-medium text-gray-500 border-b pb-2 px-4">
+                <div className="text-left">Original EFT Date</div>
+                <div className="text-left">Adjusted EFT Date</div>
+                <div className="text-left">Processing Date</div>
+              </div>
+
+              {/* Table Body (Cards) */}
+              <div className="space-y-2">
+                {payroll.payroll_dates.map((date: PayrollDate, index: number) => (
+                  <Card key={index} className="shadow-sm border rounded-lg w-full">
+                    <CardContent className="p-4">
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="text-lg font-semibold">
+                          {new Date(date.original_eft_date).toLocaleDateString()}
+                        </div>
+                        <div className="text-lg font-semibold">
+                          {new Date(date.adjusted_eft_date).toLocaleDateString()}
+                        </div>
+                        <div className="text-lg font-semibold">
+                          {new Date(date.processing_date).toLocaleDateString()}
+                        </div>
                       </div>
-                    )}
-                  </div>
-                )
-              )
-            ) : (
-              <p>No payroll dates available.</p>
-            )}
-          </div>
+                      
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-muted-foreground">No payroll dates available.</p>
+          )}
         </CardContent>
       </Card>
     </div>
