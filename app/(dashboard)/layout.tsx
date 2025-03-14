@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import { Sidebar } from "@/components/sidebar"
 
@@ -13,4 +15,3 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     </div>
   )
 }
-

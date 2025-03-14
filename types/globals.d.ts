@@ -27,6 +27,14 @@ declare global {
 // Enum for Payroll Status
 export type PayrollStatus = "Active" | "Inactive" | "Implementation";
 
+// Payroll Dates Interface (Matches Hasura Schema)
+export interface PayrollDate {
+  original_eft_date: string;
+  adjusted_eft_date: string;
+  processing_date: string;
+  notes?: string;
+}
+
 // Main Payroll Interface for UI & API
 export interface Payroll {
   id: string;
@@ -38,7 +46,7 @@ export interface Payroll {
   payroll_system?: string;
   date_value?: number;
   status: PayrollStatus;
-  payroll_dates?: { adjusted_eft_date: string; processing_date: string }[];
+  payroll_dates?: PayrollDate[]; // ✅ Updated type reference
   created_at: string;
   updated_at: string;
 }
