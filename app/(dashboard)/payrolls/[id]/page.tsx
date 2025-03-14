@@ -1,13 +1,12 @@
-// app/(dashboard)/payrolls/[id]/page.tsx
 "use client";
 
 import { useQuery } from "@apollo/client";
 import { useParams, notFound } from "next/navigation";
 import { GET_PAYROLL_BY_ID } from "@/graphql/queries/payrolls/getPayrollById";
-import { PayrollDate } from "@/types/globals"; // Ensure you have a type defined for payroll dates
+import { PayrollDatesView } from "@/components/payroll-dates-view"; // ✅ Import the component
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
+import Link from "next/link";
 
 export default function PayrollPage() {
   const params = useParams();
@@ -23,8 +22,9 @@ export default function PayrollPage() {
   if (!data || !data.payrolls || data.payrolls.length === 0) return notFound();
 
   const payroll = data.payrolls[0];
+
   const capitalize = (str: string | undefined) => {
-    if (!str) return "N/A"; // Handle undefined case
+    if (!str) return "N/A";
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
@@ -35,102 +35,83 @@ export default function PayrollPage() {
         <h2 className="text-3xl font-bold tracking-tight">Payroll Details</h2>
       </div>
 
-      {/* Payroll Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{payroll.name}</CardTitle>
-          <CardDescription>Client: {payroll.client?.name || "N/A"}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4">
-            <div className="flex justify-between">
-              <span>Status:</span>
-              <Badge variant={payroll.status === "active" ? "default" : "secondary"}>
-                {payroll.status === "active" ? "Active" : "Inactive"}
-              </Badge>
-            </div>
-            <div className="flex justify-between">
-              <span>Payroll System:</span>
-              <span>{payroll.payroll_system || "N/A"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Payroll Cycle:</span>
-              <span>{capitalize(payroll.payroll_cycle?.name)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Payroll Date Type:</span>
-              <span>{capitalize(payroll.payroll_date_type?.name)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Primary Consultant:</span>
-              <span>{payroll.staffByPrimaryConsultantId?.name || "Not assigned"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Backup Consultant:</span>
-              <span>{payroll.staff?.name || "Not assigned"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Manager:</span>
-              <span>{payroll.staffByManagerId?.name || "Not assigned"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Processing Days Before EFT:</span>
-              <span>{payroll.processing_days_before_eft}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Created At:</span>
-              <span>{new Date(payroll.created_at).toLocaleDateString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Last Updated:</span>
-              <span>{new Date(payroll.updated_at).toLocaleDateString()}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      {/* Payroll Dates Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payroll Dates</CardTitle>
-          <CardDescription>Important payroll schedule details</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {payroll.payroll_dates?.length > 0 ? (
-            <>
-              {/* Table Headers */}
-              <div className="grid grid-cols-3 font-medium text-gray-500 border-b pb-2 px-4">
-                <div className="text-left">Original EFT Date</div>
-                <div className="text-left">Adjusted EFT Date</div>
-                <div className="text-left">Processing Date</div>
+      {/* Top Cards - Split into Client & Payroll Details */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Client Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Client Details</CardTitle>
+            <CardDescription>Information about the associated client</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              <div className="flex justify-between">
+                <span>Client Name:</span>
+                <Link href={`/clients/${payroll.client?.id}`} className="text-primary hover:underline">
+                  {payroll.client?.name || "N/A"}
+                </Link>
               </div>
+              <div className="flex justify-between">
+                <span>Contact Person:</span>
+                <span>{payroll.client?.contact || "N/A"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Email:</span>
+                <span>{payroll.client?.email || "N/A"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Phone:</span>
+                <span>{payroll.client?.phone || "N/A"}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-              {/* Table Body (Cards) */}
-              <div className="space-y-2">
-                {payroll.payroll_dates.map((date: PayrollDate, index: number) => (
-                  <Card key={index} className="shadow-sm border rounded-lg w-full">
-                    <CardContent className="p-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="text-lg font-semibold">
-                          {new Date(date.original_eft_date).toLocaleDateString()}
-                        </div>
-                        <div className="text-lg font-semibold">
-                          {new Date(date.adjusted_eft_date).toLocaleDateString()}
-                        </div>
-                        <div className="text-lg font-semibold">
-                          {new Date(date.processing_date).toLocaleDateString()}
-                        </div>
-                      </div>
-                      
-                    </CardContent>
-                  </Card>
-                ))}
+        {/* Payroll Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Payroll Details</CardTitle>
+            <CardDescription>Specific details for this payroll</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              <div className="flex justify-between">
+                <span>Status:</span>
+                <Badge variant={payroll.status === "active" ? "default" : "secondary"}>
+                  {payroll.status === "active" ? "Active" : "Inactive"}
+                </Badge>
               </div>
-            </>
-          ) : (
-            <p className="text-muted-foreground">No payroll dates available.</p>
-          )}
-        </CardContent>
-      </Card>
+              <div className="flex justify-between">
+                <span>Payroll System:</span>
+                <span>{payroll.payroll_system || "N/A"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Payroll Cycle:</span>
+                <span>{capitalize(payroll.payroll_cycle?.name)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Processing Days Before EFT:</span>
+                <span>{payroll.processing_days_before_eft}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Created At:</span>
+                <span>{new Date(payroll.created_at).toLocaleDateString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Last Updated:</span>
+                <span>{new Date(payroll.updated_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ✅ Use PayrollDatesView Component */}
+      <PayrollDatesView
+        payrollId={id}
+        payrollName={payroll.name}
+        cycleType={payroll.payroll_cycle?.name}
+      />
     </div>
   );
 }
