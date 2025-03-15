@@ -4,9 +4,10 @@
 import type React from "react"
 import { Sidebar } from "@/components/sidebar"
 import { Toaster } from "@/components/ui/sonner"
+import { ClientWrapper } from "@/components/client-wrapper";
 
 interface DashboardLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -14,7 +15,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="flex h-screen">
       <Sidebar />
       <main className="flex-1 overflow-y-auto p-6">
-        {children}
+        <ClientWrapper>
+          {children}
+        </ClientWrapper>
         <Toaster />
       </main>
     </div>

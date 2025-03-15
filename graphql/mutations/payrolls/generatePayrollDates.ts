@@ -1,3 +1,4 @@
+// graphql/mutations/payrolls/generatePayrollDates.ts
 import { gql } from "@apollo/client";
 
 export const GENERATE_PAYROLL_DATES = gql`
@@ -7,4 +8,3 @@ export const GENERATE_PAYROLL_DATES = gql`
     }
   }
 `;
-

@@ -1,5 +1,4 @@
-
-
+// components/payroll-subscription.tsx
 import { useSubscription } from "@apollo/client";
 import { PAYROLLS_SUBSCRIPTION } from "@/graphql/subscriptions/payrolls/payrollUpdates";
 import { ApolloQueryResult } from '@apollo/client';
@@ -15,4 +14,3 @@ export const PayrollUpdatesComponent = ({ refetchPayrolls }: { refetchPayrolls: 
 
   return null; // This component doesn't need to render anything
 };
-

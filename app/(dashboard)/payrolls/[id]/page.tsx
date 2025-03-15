@@ -1,117 +1,97 @@
-"use client";
+// pages/payroll-page.tsx
+'use client'
 
-import { useQuery } from "@apollo/client";
 import { useParams, notFound } from "next/navigation";
+import { useQuery } from "@apollo/client";
 import { GET_PAYROLL_BY_ID } from "@/graphql/queries/payrolls/getPayrollById";
-import { PayrollDatesView } from "@/components/payroll-dates-view"; // ✅ Import the component
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { PayrollDatesView } from "@/components/payroll-dates-view";
+import { ClientCard } from "@/components/client-card";
+import { PayrollDetailsCard } from "@/components/payroll-details-card";
+import { ExportCsv } from "@/components/export-csv";
+import { ExportPdf } from "@/components/export-pdf";
+import { toast } from 'sonner';
+import NotesList from "@/components/notes-list";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Pencil, PlusCircle } from "lucide-react";
+
 
 export default function PayrollPage() {
   const params = useParams();
   const id = params?.id as string;
+
+  if (!id) {
+    toast.error('Error: Payroll ID is required.');
+    return <div>Error: Payroll ID is required.</div>;
+  }
 
   const { loading, error, data } = useQuery(GET_PAYROLL_BY_ID, {
     variables: { id },
     skip: !id,
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-  if (!data || !data.payrolls || data.payrolls.length === 0) return notFound();
+  if (loading) {
+    setTimeout(() => {
+      if (loading) {
+        toast.info('Loading payroll data...');
+      }
+    }, 2000);
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    toast.error(`Error: ${error.message}`);
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!data || !data.payrolls || data.payrolls.length === 0) {
+    toast.error('No payroll data found.');
+    return notFound();
+  }
 
   const payroll = data.payrolls[0];
+  const client = payroll.client;
 
-  const capitalize = (str: string | undefined) => {
-    if (!str) return "N/A";
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
+  const payrollDates = payroll.payroll_dates.map((date: any) => ({
+    ...date,
+  }));
 
   return (
+    
     <div className="space-y-6">
-      {/* Page Title */}
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Payroll Details</h2>
+      
+      {/* Page Header */}
+      <div> <h1 className="text-2xl font-bold">{payroll.name}</h1>
+            {/* Edit Button */}
+            <div className="flex justify-end">
+        <Button asChild>
+          <Link href="/payrolls/new" className="flex items-center">
+            <Pencil className="mr-2 h-4 w-4" /> Edit Payroll
+          </Link>
+        </Button>
+        </div>
+        </div>
+<div>
+            {/* Export Buttons */}
+            <div className="flex space-x-2 mb-4">
+        <ExportCsv payrollId={id} />
+        <ExportPdf payrollId={id} />
       </div>
-
-      {/* Top Cards - Split into Client & Payroll Details */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Client Details */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Client Details</CardTitle>
-            <CardDescription>Information about the associated client</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4">
-              <div className="flex justify-between">
-                <span>Client Name:</span>
-                <Link href={`/clients/${payroll.client?.id}`} className="text-primary hover:underline">
-                  {payroll.client?.name || "N/A"}
-                </Link>
-              </div>
-              <div className="flex justify-between">
-                <span>Contact Person:</span>
-                <span>{payroll.client?.contact || "N/A"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Email:</span>
-                <span>{payroll.client?.email || "N/A"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Phone:</span>
-                <span>{payroll.client?.phone || "N/A"}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Payroll Details */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Payroll Details</CardTitle>
-            <CardDescription>Specific details for this payroll</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4">
-              <div className="flex justify-between">
-                <span>Status:</span>
-                <Badge variant={payroll.status === "active" ? "default" : "secondary"}>
-                  {payroll.status === "active" ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-              <div className="flex justify-between">
-                <span>Payroll System:</span>
-                <span>{payroll.payroll_system || "N/A"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Payroll Cycle:</span>
-                <span>{capitalize(payroll.payroll_cycle?.name)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Processing Days Before EFT:</span>
-                <span>{payroll.processing_days_before_eft}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Created At:</span>
-                <span>{new Date(payroll.created_at).toLocaleDateString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Last Updated:</span>
-                <span>{new Date(payroll.updated_at).toLocaleDateString()}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
+      {/* Main Layout */}
+      <div className="grid grid-cols-3 gap-6">
+  {/* Table Column */}
+  <div className="col-span-2">
+    <PayrollDatesView payrollId={id} />
+  </div>
 
-      {/* ✅ Use PayrollDatesView Component */}
-      <PayrollDatesView
-        payrollId={id}
-        payrollName={payroll.name}
-        cycleType={payroll.payroll_cycle?.name}
-      />
+  {/* Cards and Notes Column */}
+  <div className="col-span-1 space-y-4">
+    <ClientCard client={client} />
+    <PayrollDetailsCard payroll={payroll} />
+    <NotesList notes={payroll.notes || []} />
+  </div>
+</div>
     </div>
   );
 }
