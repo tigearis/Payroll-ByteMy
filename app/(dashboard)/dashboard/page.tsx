@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { UpcomingPayrolls } from "@/components/upcoming-payrolls"
 import { UrgentAlerts } from "@/components/urgent-alerts"
 
+
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
@@ -16,7 +17,8 @@ export default function DashboardPage() {
           <p className="text-muted-foreground">Welcome back! Here&apos;s an overview of your payroll operations.</p>
         </div>
       </div>
-
+      <div className="mb-6">
+      </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -96,5 +98,6 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
     </div>
+    
   )
 }
