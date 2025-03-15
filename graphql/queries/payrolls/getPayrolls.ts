@@ -9,12 +9,14 @@ export const GET_PAYROLLS = gql`
       client { id name }
       payroll_cycle { id name }
       payroll_date_type { id name }
-      primary_consultant_user { id name }
-      backup_consultant_user { id name }
-      manager_user { id name }
+      userByPrimaryConsultantUserId { id name }
+      userByBackupConsultantUserId { id name }
+      userByManagerUserId { id name }
       processing_days_before_eft
       payroll_system
       date_value
+      employee_count
+      processing_time
       status
       created_at
       updated_at

@@ -2,9 +2,9 @@
 import { gql } from "@apollo/client";
 
 export const GET_PAYROLL_DATES = gql`
-  query GetPayrollDates($payroll_id: uuid!) {
+  query GetPayrollDates($id: uuid!) {
     payroll_dates(
-      where: { payroll_id: { _eq: $payroll_id } },
+      where: { payroll_id: { _eq: $id } },
       order_by: { adjusted_eft_date: asc }
     ) {
       id

@@ -129,6 +129,7 @@ export type PayrollDate = {
 };
 
 export interface Payroll {
+  employee_count: undefined;
   id: string;
   name: string;
   clientId: string;
@@ -143,6 +144,7 @@ export interface Payroll {
   status: PayrollStatus;
   createdAt: string;
   updatedAt: string;
+  employeeCount?: number;
   
   // Relationships
   client: Client;
@@ -240,5 +242,3 @@ export interface UserDetails {
     status?: "Approved" | "Pending" | "Rejected"; // Enum for leave status
   }>;
 }
-
-

@@ -1,7 +1,7 @@
 // app/(dashboard)/payroll-schedule/page.tsx
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   format,
   addMonths,
@@ -16,9 +16,11 @@ import {
   startOfWeek,
   endOfWeek,
   addDays,
-  differenceInHours,
+  parseISO,
+  isWithinInterval
 } from "date-fns"
 import { ChevronLeft, ChevronRight, CalendarIcon, Download } from "lucide-react"
+import { useQuery } from "@apollo/client"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,68 +30,107 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { GET_PAYROLLS_BY_MONTH } from "@/graphql/queries/payrolls/getPayrollsByMonth"
+import { GET_HOLIDAYS } from "@/graphql/queries/holidays/getHolidays"
 
-// Sample staff data
-const staffMembers = [
-  { id: 1, name: "Alice Johnson" },
-  { id: 2, name: "Bob Smith" },
-  { id: 3, name: "Carol Williams" },
-  { id: 4, name: "David Brown" },
-  { id: 5, name: "Bobby Jones" },
-  { id: 6, name: "Keith Richards" },
-  { id: 7, name: "Jason Bourne" },
-  { id: 8, name: "Mark Bowen" },
-  { id: 9, name: "Milly Silver" },
-]
+// Types for our data
+interface Leave {
+  start_date: string;
+  end_date: string;
+  reason: string;
+  leave_type: string;
+  status: string;
+}
 
-// Sample client data
-const clients = [
-  { id: 1, name: "Acme Inc." },
-  { id: 2, name: "TechCorp" },
-  { id: 3, name: "Global Foods" },
-  { id: 4, name: "City Services" },
-]
+interface User {
+  name: string;
+  leaves?: Leave[];
+}
 
-// Sample payroll data
-const payrolls = [
-  { id: 1, name: "Payroll 1", clientId: 1 },
-  { id: 2, name: "Payroll 2", clientId: 2 },
-  { id: 3, name: "Payroll Staff", clientId: 3 },
-  { id: 4, name: "Payroll", clientId: 4 },
-  { id: 5, name: "Payroll Team", clientId: 1 },
-  { id: 6, name: "Payroll 4", clientId: 1 },
-  { id: 7, name: "Payroll", clientId: 2 },
-  { id: 8, name: "Payroll Weekly Staff", clientId: 3 },
-  { id: 9, name: "Administrative", clientId: 4 },
-  { id: 8, name: "Payroll Team", clientId: 1 },
-]
+interface PayrollDate {
+  processing_date: string;
+  adjusted_eft_date: string;
+}
 
-// Sample payroll assignments with duration
-const payrollAssignments = [
-  { staffId: 1, payrollId: 1, startDate: new Date(2025, 2, 15), duration: 16 }, // 2 days
-  { staffId: 1, payrollId: 2, startDate: new Date(2025, 2, 18), duration: 24 }, // 3 days
-  { staffId: 2, payrollId: 3, startDate: new Date(2025, 2, 20), duration: 8 }, // 1 day
-  { staffId: 3, payrollId: 4, startDate: new Date(2025, 2, 22), duration: 16 }, // 2 days
-  { staffId: 4, payrollId: 5, startDate: new Date(2025, 2, 25), duration: 24 }, // 3 days
-  { staffId: 5, payrollId: 6, startDate: new Date(2025, 2, 30), duration: 16 }, // 2 days
-  { staffId: 6, payrollId: 7, startDate: new Date(2025, 3, 1), duration: 24 }, // 3 days
-  { staffId: 7, payrollId: 8, startDate: new Date(2025, 3, 5), duration: 8 }, // 1 day
-  { staffId: 8, payrollId: 9, startDate: new Date(2025, 3, 5), duration: 8 }, // 1 day
-]
+interface Payroll {
+  id: string;
+  name: string;
+  client: { name: string };
+  payroll_system: string;
+  status: string;
+  payroll_dates: PayrollDate[];
+  payroll_cycle: { name: string };
+  payroll_date_type: { name: string };
+  processing_time: number;
+  userByPrimaryConsultantUserId: User;
+  userByBackupConsultantUserId: User;
+  userByManagerUserId: User;
+}
 
-// Sample holidays
-const holidays = [
-  { date: new Date(2025, 2, 17), name: "St. Patrick's Day" },
-  { date: new Date(2025, 3, 18), name: "Good Friday" },
-  { date: new Date(2025, 3, 20), name: "Easter Monday" },
-]
+interface Holiday {
+  country_code: string;
+  date: string;
+  local_name: string;
+  types: string[];
+  region: string;
+}
 
 export default function PayrollSchedulePage() {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date(2025, 2, 1)) // March 2025
+  const [currentDate, setCurrentDate] = useState<Date>(new Date())
   const [selectedClient, setSelectedClient] = useState<string>("all")
   const [selectedPayroll, setSelectedPayroll] = useState<string>("all")
   const [selectedStaff, setSelectedStaff] = useState<string>("all")
   const [view, setView] = useState<"month" | "week">("month")
+  const [weekViewOrientation, setWeekViewOrientation] = useState<"daysAsRows" | "consultantsAsRows">("daysAsRows")
+
+  // Calculate date range for query based on current view
+  const startDate = view === "month" 
+    ? format(startOfMonth(currentDate), "yyyy-MM-dd")
+    : format(startOfWeek(currentDate), "yyyy-MM-dd")
+  
+  const endDate = view === "month"
+    ? format(endOfMonth(currentDate), "yyyy-MM-dd") 
+    : format(endOfWeek(currentDate), "yyyy-MM-dd")
+
+  // Fetch payroll data with date range
+  const { 
+    loading: payrollsLoading, 
+    error: payrollsError, 
+    data: payrollsData,
+    refetch: refetchPayrolls
+  } = useQuery(GET_PAYROLLS_BY_MONTH, {
+    variables: { 
+      start_date: startDate,
+      end_date: endDate
+    },
+    fetchPolicy: "network-only" // Ensure we get fresh data when dates change
+  })
+
+  // Fetch holidays
+  const {
+    loading: holidaysLoading,
+    error: holidaysError,
+    data: holidaysData
+  } = useQuery(GET_HOLIDAYS)
+
+  // Refetch when date range changes
+  useEffect(() => {
+    refetchPayrolls({ 
+      start_date: startDate,
+      end_date: endDate
+    })
+  }, [startDate, endDate, refetchPayrolls])
+
+  const loading = payrollsLoading || holidaysLoading
+  const error = payrollsError || holidaysError
+
+  if (loading) return <div>Loading payroll schedule...</div>
+  if (error) return <div className="text-red-500">Error: {error.message}</div>
+
+  const payrolls: Payroll[] = payrollsData?.payrolls || []
+  const holidays: Holiday[] = holidaysData?.holidays || []
 
   const previousPeriod = () => {
     setCurrentDate(view === "month" ? subMonths(currentDate, 1) : subWeeks(currentDate, 1))
@@ -105,145 +146,461 @@ export default function PayrollSchedulePage() {
     end: view === "month" ? endOfMonth(currentDate) : endOfWeek(currentDate),
   })
 
-  // Filter staff members
-  const filteredStaff =
-    selectedStaff === "all" ? staffMembers : staffMembers.filter((staff) => staff.id.toString() === selectedStaff)
+  // Extract unique clients from payrolls
+  const clients = Array.from(
+    new Map(
+      payrolls
+        .filter(p => p.client)
+        .map(p => [p.client?.name, { id: p.client?.name, name: p.client?.name }])
+    ).values()
+  )
 
-  // Filter payroll assignments
-  const filteredAssignments = payrollAssignments.filter((assignment) => {
-    const payroll = payrolls.find((p) => p.id === assignment.payrollId)
-    const isClientMatch = selectedClient === "all" || payroll?.clientId.toString() === selectedClient
-    const isPayrollMatch = selectedPayroll === "all" || assignment.payrollId.toString() === selectedPayroll
-    const isStaffMatch = selectedStaff === "all" || assignment.staffId.toString() === selectedStaff
+  // Function to format name (removes underscores, capitalizes, and keeps DOW/EOM/SOM uppercase)
+  const formatName = (name?: string) => {
+    if (!name) return "N/A"
+
+    return name
+      .replace(/_/g, " ") // Remove underscores
+      .split(" ")
+      .map((word) => {
+        const specialCases = ["DOW", "EOM", "SOM"]
+        return specialCases.includes(word.toUpperCase())
+          ? word.toUpperCase() // Keep these fully capitalized
+          : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() // Capitalize first letter
+      })
+      .join(" ")
+  }
+
+  // Get all primary consultants
+  const primaryConsultants = payrolls
+    .filter(p => p.userByPrimaryConsultantUserId)
+    .map(p => ({
+      name: p.userByPrimaryConsultantUserId.name,
+      leaves: p.userByPrimaryConsultantUserId.leaves || []
+    }))
+
+  // Get all backup consultants
+  const backupConsultants = payrolls
+    .filter(p => p.userByBackupConsultantUserId)
+    .map(p => ({
+      name: p.userByBackupConsultantUserId.name,
+      leaves: []  // Assuming backup consultants don't have leaves in the data
+    }))
+
+  // Combine and remove duplicates
+  const allConsultants = Array.from(
+    new Map(
+      [...primaryConsultants, ...backupConsultants]
+        .map(c => [c.name, c])
+    ).values()
+  )
+
+  // Filter consultants based on selection
+  const filteredConsultants = selectedStaff === "all" 
+    ? allConsultants 
+    : allConsultants.filter(c => c.name === selectedStaff)
+
+  // Filter payrolls based on selections
+  const filteredPayrolls = payrolls.filter(payroll => {
+    const isClientMatch = selectedClient === "all" || payroll.client?.name === selectedClient
+    const isPayrollMatch = selectedPayroll === "all" || payroll.id === selectedPayroll
+    const isStaffMatch = selectedStaff === "all" || 
+      payroll.userByPrimaryConsultantUserId?.name === selectedStaff ||
+      payroll.userByBackupConsultantUserId?.name === selectedStaff
+    
     return isClientMatch && isPayrollMatch && isStaffMatch
   })
 
+  // Check if a consultant is on leave for a specific day
+  const isOnLeave = (consultant: User, day: Date) => {
+    if (!consultant.leaves || consultant.leaves.length === 0) return false
+    
+    return consultant.leaves.some(leave => {
+      const leaveStart = parseISO(leave.start_date)
+      const leaveEnd = parseISO(leave.end_date)
+      
+      return leave.status === "Approved" && 
+        isWithinInterval(day, { start: leaveStart, end: leaveEnd })
+    })
+  }
+
+  // Get leave details for a specific day if any
+  const getLeaveDetails = (consultant: User, day: Date) => {
+    if (!consultant.leaves || consultant.leaves.length === 0) return null
+    
+    const leave = consultant.leaves.find(leave => {
+      const leaveStart = parseISO(leave.start_date)
+      const leaveEnd = parseISO(leave.end_date)
+      
+      return leave.status === "Approved" && 
+        isWithinInterval(day, { start: leaveStart, end: leaveEnd })
+    })
+    
+    return leave || null
+  }
+
   const renderMonthView = () => (
-    <table className="w-full border-collapse">
-      <thead>
-        <tr>
-          <th className="border bg-muted p-2 text-left font-medium sticky left-0 z-10">Date</th>
-          {filteredStaff.map((staff) => (
-            <th key={staff.id} className="border p-2 text-center font-medium min-w-[150px]">
-              {staff.name}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {daysInPeriod.map((day) => {
-          const holiday = holidays.find((h) => isSameDay(h.date, day))
-          const isWeekendDay = isWeekend(day)
-          return (
-            <tr
-              key={day.toString()}
-              className={cn("hover:bg-muted/50", isWeekendDay && "bg-sky-100", holiday && "bg-green-100")}
-            >
-              <td
-                className={cn(
+    <div className="relative overflow-auto max-h-[70vh]">
+      <table className="w-full border-collapse">
+        <thead className="sticky top-0 z-20 bg-background">
+          <tr>
+            <th className="border bg-muted p-2 text-left font-medium sticky left-0 z-30">Date</th>
+            {filteredConsultants.map((consultant) => (
+              <th key={consultant.name} className="border p-2 text-center font-medium min-w-[180px] bg-muted">
+                {consultant.name}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {daysInPeriod.map((day) => {
+            const holiday = holidays.find((h) => isSameDay(parseISO(h.date), day) && h.country_code === "AU")
+            // Highlight if it's a NSW holiday or a National holiday
+            const isHighlightedHoliday = holiday && (
+              (Array.isArray(holiday.region) && (holiday.region.includes("NSW") || holiday.region.includes("National"))) || 
+              holiday.region === "NSW" ||
+              holiday.region === "National"
+            )
+            const isWeekendDay = isWeekend(day)
+            return (
+              <tr
+                key={day.toString()}
+                className={cn("hover:bg-muted/50", isWeekendDay && "bg-sky-100", isHighlightedHoliday && "bg-green-100")}
+              >
+                <td
+                  className={cn(
+                    "border p-2 sticky left-0 z-10",
+                    isWeekendDay ? "bg-sky-100" : "bg-background",
+                    isHighlightedHoliday && "bg-green-100",
+                  )}
+                >
+                  <div className="font-medium">{format(day, "d")}</div>
+                  <div className="text-xs text-muted-foreground">{format(day, "EEE")}</div>
+                  {holiday && (
+                    <Badge variant="outline" className="mt-1 bg-gray-100 text-red-800 border-red-200">
+                      {holiday.local_name}
+                    </Badge>
+                  )}
+                </td>
+                {filteredConsultants.map((consultant) => {
+                  // Check if consultant is on leave this day
+                  const consultantLeave = getLeaveDetails(consultant, day)
+                  const consultantOnLeave = !!consultantLeave
+                  
+                  // Find payrolls where this person is the primary consultant
+                  const primaryPayrolls = filteredPayrolls.filter(payroll => {
+                    if (!payroll.payroll_dates || payroll.payroll_dates.length === 0) return false
+                    
+                    return payroll.userByPrimaryConsultantUserId?.name === consultant.name && 
+                      isSameDay(parseISO(payroll.payroll_dates[0].processing_date), day)
+                  })
+                  
+                  // Find payrolls where this person is the backup consultant and primary is on leave
+                  const backupPayrolls = filteredPayrolls.filter(payroll => {
+                    if (!payroll.payroll_dates || payroll.payroll_dates.length === 0) return false
+                    if (!payroll.userByBackupConsultantUserId) return false
+                    if (payroll.userByBackupConsultantUserId.name !== consultant.name) return false
+                    
+                    const primaryConsultant = payroll.userByPrimaryConsultantUserId
+                    const primaryOnLeave = isOnLeave(primaryConsultant, day)
+                    
+                    return primaryOnLeave && 
+                      isSameDay(parseISO(payroll.payroll_dates[0].processing_date), day)
+                  })
+                  
+                  return (
+                    <td 
+                      key={`${consultant.name}-${day.toString()}`} 
+                      className={cn(
+                        "border p-2 text-center",
+                        consultantOnLeave && "bg-red-100"
+                      )}
+                    >
+                      {consultantOnLeave && (
+                        <Badge variant="outline" className="w-full mb-2 bg-red-50 text-red-800 border-red-200">
+                          {consultantLeave.leave_type}: {consultantLeave.reason}
+                        </Badge>
+                      )}
+                      
+                      {primaryPayrolls.map((payroll) => (
+                        <div key={payroll.id} className="mb-2">
+                          <Badge className="mb-1 bg-blue-100 text-blue-800 border-blue-200">
+                            {payroll.name}
+                          </Badge>
+                          <div className="text-xs text-muted-foreground">{payroll.client?.name}</div>
+                          <div className="text-xs font-medium">
+                            EFT: {format(parseISO(payroll.payroll_dates[0].adjusted_eft_date), "MMM d")}
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {backupPayrolls.map((payroll) => (
+                        <div key={payroll.id} className="mb-2">
+                          <Badge className="mb-1 bg-amber-100 text-amber-800 border-amber-200">
+                            {payroll.name} (Backup)
+                          </Badge>
+                          <div className="text-xs text-muted-foreground">{payroll.client?.name}</div>
+                          <div className="text-xs font-medium">
+                            EFT: {format(parseISO(payroll.payroll_dates[0].adjusted_eft_date), "MMM d")}
+                          </div>
+                        </div>
+                      ))}
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+
+  // Week view with days as rows (consultants as columns)
+  const renderWeekViewDaysAsRows = () => (
+    <div className="relative overflow-auto max-h-[70vh]">
+      <table className="w-full border-collapse">
+        <thead className="sticky top-0 z-20 bg-background">
+          <tr>
+            <th className="border bg-muted p-2 text-left font-medium sticky left-0 z-30">Day</th>
+            {filteredConsultants.map((consultant) => (
+              <th key={consultant.name} className="border p-2 text-center font-medium min-w-[180px] bg-muted">
+                {consultant.name}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {daysInPeriod.map((day) => {
+            const holiday = holidays.find((h) => isSameDay(parseISO(h.date), day) && h.country_code === "AU")
+            // Highlight if it's a NSW holiday or a National holiday
+            const isHighlightedHoliday = holiday && (
+              (Array.isArray(holiday.region) && (holiday.region.includes("NSW") || holiday.region.includes("National"))) || 
+              holiday.region === "NSW" ||
+              holiday.region === "National"
+            )
+            const isWeekendDay = isWeekend(day)
+            
+            return (
+              <tr key={day.toString()}>
+                <td className={cn(
                   "border p-2 sticky left-0 z-10",
                   isWeekendDay ? "bg-sky-100" : "bg-background",
-                  holiday && "bg-green-100",
-                )}
-              >
-                <div className="font-medium">{format(day, "d")}</div>
-                <div className="text-xs text-muted-foreground">{format(day, "EEE")}</div>
-                {holiday && (
-                  <Badge variant="outline" className="mt-1 bg-gray-100 text-red-800 border-red-200">
-                    {holiday.name}
-                  </Badge>
-                )}
-              </td>
-              {filteredStaff.map((staff) => {
-                const assignments = filteredAssignments.filter(
-                  (a) => a.staffId === staff.id && isSameDay(a.startDate, day),
-                )
-                return (
-                  <td key={`${staff.id}-${day.toString()}`} className="border p-2 text-center">
-                    {assignments.map((assignment) => {
-                      const payroll = payrolls.find((p) => p.id === assignment.payrollId)
-                      const client = clients.find((c) => c.id === payroll?.clientId)
-                      return (
-                        <div key={assignment.payrollId} className="mb-1">
-                          <Badge className="mb-1">{payroll?.name}</Badge>
-                          <div className="text-xs text-muted-foreground">{client?.name}</div>
+                  isHighlightedHoliday && "bg-green-100",
+                )}>
+                  <div className="font-medium">{format(day, "EEE")}</div>
+                  <div className="text-xs">{format(day, "MMM d")}</div>
+                  {holiday && (
+                    <Badge variant="outline" className="mt-1 bg-gray-100 text-red-800 border-red-200 w-full">
+                      {holiday.local_name}
+                    </Badge>
+                  )}
+                </td>
+                
+                {filteredConsultants.map((consultant) => {
+                  // Check if consultant is on leave this day
+                  const consultantLeave = getLeaveDetails(consultant, day)
+                  const consultantOnLeave = !!consultantLeave
+                  
+                  // Find payrolls where this person is the primary consultant
+                  const primaryPayrolls = filteredPayrolls.filter(payroll => {
+                    if (!payroll.payroll_dates || payroll.payroll_dates.length === 0) return false
+                    
+                    return payroll.userByPrimaryConsultantUserId?.name === consultant.name && 
+                      isSameDay(parseISO(payroll.payroll_dates[0].processing_date), day)
+                  })
+                  
+                  // Find payrolls where this person is the backup consultant and primary is on leave
+                  const backupPayrolls = filteredPayrolls.filter(payroll => {
+                    if (!payroll.payroll_dates || payroll.payroll_dates.length === 0) return false
+                    if (!payroll.userByBackupConsultantUserId) return false
+                    if (payroll.userByBackupConsultantUserId.name !== consultant.name) return false
+                    
+                    const primaryConsultant = payroll.userByPrimaryConsultantUserId
+                    const primaryOnLeave = isOnLeave(primaryConsultant, day)
+                    
+                    return primaryOnLeave && 
+                      isSameDay(parseISO(payroll.payroll_dates[0].processing_date), day)
+                  })
+                  
+                  return (
+                    <td
+                      key={`${consultant.name}-${day.toString()}`}
+                      className={cn(
+                        "border p-2",
+                        isWeekendDay && "bg-sky-100",
+                        isHighlightedHoliday && "bg-green-100",
+                        consultantOnLeave && "bg-red-100"
+                      )}
+                    >
+                      {consultantOnLeave && (
+                        <Badge variant="outline" className="w-full mb-2 bg-red-50 text-red-800 border-red-200">
+                          {consultantLeave.leave_type}
+                        </Badge>
+                      )}
+                      
+                      {primaryPayrolls.map((payroll) => (
+                        <div
+                          key={payroll.id}
+                          className="bg-blue-100 p-1 text-xs rounded mb-1 border border-blue-200"
+                        >
+                          <div className="font-medium truncate">{payroll.name}</div>
+                          <div className="truncate">{payroll.client?.name}</div>
+                          <div className="font-medium">
+                            EFT: {format(parseISO(payroll.payroll_dates[0].adjusted_eft_date), "MMM d")}
+                          </div>
                         </div>
-                      )
-                    })}
+                      ))}
+                      
+                      {backupPayrolls.map((payroll) => (
+                        <div
+                          key={payroll.id}
+                          className="bg-amber-100 p-1 text-xs rounded mb-1 border border-amber-200"
+                        >
+                          <div className="font-medium truncate">{payroll.name} (Backup)</div>
+                          <div className="truncate">{payroll.client?.name}</div>
+                          <div className="font-medium">
+                            EFT: {format(parseISO(payroll.payroll_dates[0].adjusted_eft_date), "MMM d")}
+                          </div>
+                        </div>
+                      ))}
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+
+  // Week view with consultants as rows (days as columns)
+  const renderWeekViewConsultantsAsRows = () => (
+    <div className="relative overflow-auto max-h-[70vh]">
+      <table className="w-full border-collapse">
+        <thead className="sticky top-0 z-20 bg-background">
+          <tr>
+            <th className="border bg-muted p-2 text-left font-medium sticky left-0 z-30">Staff</th>
+            {daysInPeriod.map((day) => {
+              const holiday = holidays.find((h) => isSameDay(parseISO(h.date), day) && h.country_code === "AU")
+              const isHighlightedHoliday = holiday && (
+                (Array.isArray(holiday.region) && (holiday.region.includes("NSW") || holiday.region.includes("National"))) || 
+                holiday.region === "NSW" ||
+                holiday.region === "National"
+              )
+              
+              return (
+                <th 
+                  key={day.toString()} 
+                  className={cn(
+                    "border p-2 text-center font-medium min-w-[150px] bg-muted",
+                    isWeekend(day) && "bg-sky-100",
+                    isHighlightedHoliday && "bg-green-100"
+                  )}
+                >
+                  <div>{format(day, "EEE")}</div>
+                  <div className="text-xs">{format(day, "MMM d")}</div>
+                  {holiday && (
+                    <Badge variant="outline" className="text-xs mt-1 bg-gray-100 text-red-800 border-red-200">
+                      {holiday.local_name}
+                    </Badge>
+                  )}
+                </th>
+              )
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {filteredConsultants.map((consultant) => (
+            <tr key={consultant.name}>
+              <td className="border p-2 sticky left-0 z-10 bg-background font-medium">
+                {consultant.name}
+              </td>
+              {daysInPeriod.map((day) => {
+                const holiday = holidays.find((h) => isSameDay(parseISO(h.date), day) && h.country_code === "AU")
+                // Highlight if it's a NSW holiday or a National holiday
+                const isHighlightedHoliday = holiday && (
+                  (Array.isArray(holiday.region) && (holiday.region.includes("NSW") || holiday.region.includes("National"))) || 
+                  holiday.region === "NSW" ||
+                  holiday.region === "National"
+                )
+                const isWeekendDay = isWeekend(day)
+                
+                // Check if consultant is on leave this day
+                const consultantLeave = getLeaveDetails(consultant, day)
+                const consultantOnLeave = !!consultantLeave
+                
+                // Find payrolls where this person is the primary consultant
+                const primaryPayrolls = filteredPayrolls.filter(payroll => {
+                  if (!payroll.payroll_dates || payroll.payroll_dates.length === 0) return false
+                  
+                  return payroll.userByPrimaryConsultantUserId?.name === consultant.name && 
+                    isSameDay(parseISO(payroll.payroll_dates[0].processing_date), day)
+                })
+                
+                // Find payrolls where this person is the backup consultant and primary is on leave
+                const backupPayrolls = filteredPayrolls.filter(payroll => {
+                  if (!payroll.payroll_dates || payroll.payroll_dates.length === 0) return false
+                  if (!payroll.userByBackupConsultantUserId) return false
+                  if (payroll.userByBackupConsultantUserId.name !== consultant.name) return false
+                  
+                  const primaryConsultant = payroll.userByPrimaryConsultantUserId
+                  const primaryOnLeave = isOnLeave(primaryConsultant, day)
+                  
+                  return primaryOnLeave && 
+                    isSameDay(parseISO(payroll.payroll_dates[0].processing_date), day)
+                })
+
+                return (
+                  <td
+                    key={day.toString()}
+                    className={cn(
+                      "border p-2 relative",
+                      isWeekendDay && "bg-sky-100",
+                      isHighlightedHoliday && "bg-green-100",
+                      consultantOnLeave && "bg-red-100"
+                    )}
+                  >
+                    {consultantOnLeave && (
+                      <Badge variant="outline" className="w-full mb-2 bg-red-50 text-red-800 border-red-200">
+                        {consultantLeave.leave_type}
+                      </Badge>
+                    )}
+                    
+                    {primaryPayrolls.map((payroll) => (
+                      <div
+                        key={payroll.id}
+                        className="bg-blue-100 p-1 text-xs rounded mb-1 border border-blue-200"
+                      >
+                        <div className="font-medium truncate">{payroll.name}</div>
+                        <div className="truncate">{payroll.client?.name}</div>
+                        <div className="font-medium">
+                          EFT: {format(parseISO(payroll.payroll_dates[0].adjusted_eft_date), "MMM d")}
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {backupPayrolls.map((payroll) => (
+                      <div
+                        key={payroll.id}
+                        className="bg-amber-100 p-1 text-xs rounded mb-1 border border-amber-200"
+                      >
+                        <div className="font-medium truncate">{payroll.name} (Backup)</div>
+                        <div className="truncate">{payroll.client?.name}</div>
+                        <div className="font-medium">
+                          EFT: {format(parseISO(payroll.payroll_dates[0].adjusted_eft_date), "MMM d")}
+                        </div>
+                      </div>
+                    ))}
                   </td>
                 )
               })}
             </tr>
-          )
-        })}
-      </tbody>
-    </table>
-  )
-
-  const renderWeekView = () => (
-    <table className="w-full border-collapse">
-      <thead>
-        <tr>
-          <th className="border bg-muted p-2 text-left font-medium sticky left-0 z-10">Staff</th>
-          {daysInPeriod.map((day) => (
-            <th key={day.toString()} className="border p-2 text-center font-medium min-w-[150px]">
-              <div>{format(day, "EEE")}</div>
-              <div className="text-xs">{format(day, "MMM d")}</div>
-            </th>
           ))}
-        </tr>
-      </thead>
-      <tbody>
-        {filteredStaff.map((staff) => (
-          <tr key={staff.id}>
-            <td className="border p-2 sticky left-0 z-10 bg-background font-medium">{staff.name}</td>
-            {daysInPeriod.map((day) => {
-              const holiday = holidays.find((h) => isSameDay(h.date, day))
-              const isWeekendDay = isWeekend(day)
-              const assignments = filteredAssignments.filter((a) => {
-                const startDate = a.startDate
-                const endDate = addDays(startDate, Math.ceil(a.duration / 8) - 1)
-                return a.staffId === staff.id && day >= startDate && day <= endDate
-              })
-
-              return (
-                <td
-                  key={day.toString()}
-                  className={cn("border p-2 relative", isWeekendDay && "bg-sky-100", holiday && "bg-green-100")}
-                >
-                  {holiday && (
-                    <Badge variant="outline" className="absolute top-0 right-0 m-1 text-xs">
-                      {holiday.name}
-                    </Badge>
-                  )}
-                  {assignments.map((assignment) => {
-                    const payroll = payrolls.find((p) => p.id === assignment.payrollId)
-                    const client = clients.find((c) => c.id === payroll?.clientId)
-                    const startDate = assignment.startDate
-                    const daysFromStart = differenceInHours(day, startDate) / 24
-                    const hoursToday = Math.min(8, assignment.duration - daysFromStart * 8)
-
-                    if (hoursToday <= 0) return null
-
-                    return (
-                      <div
-                        key={assignment.payrollId}
-                        className="bg-blue-200 p-1 text-xs rounded mb-1"
-                        style={{ height: `${(hoursToday / 8) * 100}%` }}
-                      >
-                        <div className="font-medium truncate">{payroll?.name}</div>
-                        <div className="truncate">{client?.name}</div>
-                        <div>{hoursToday}h</div>
-                      </div>
-                    )
-                  })}
-                </td>
-              )
-            })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   )
 
   return (
@@ -253,7 +610,7 @@ export default function PayrollSchedulePage() {
           <h2 className="text-3xl font-bold tracking-tight">Payroll Schedule</h2>
           <p className="text-muted-foreground">View of all payroll assignments</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" size="icon" onClick={previousPeriod}>
             <ChevronLeft className="h-4 w-4" />
             <span className="sr-only">Previous {view}</span>
@@ -287,7 +644,7 @@ export default function PayrollSchedulePage() {
             <SelectContent>
               <SelectItem value="all">All Clients</SelectItem>
               {clients.map((client) => (
-                <SelectItem key={client.id} value={client.id.toString()}>
+                <SelectItem key={client.id} value={client.name}>
                   {client.name}
                 </SelectItem>
               ))}
@@ -299,8 +656,8 @@ export default function PayrollSchedulePage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Payrolls</SelectItem>
-              {payrolls.map((payroll) => (
-                <SelectItem key={payroll.id} value={payroll.id.toString()}>
+              {filteredPayrolls.map((payroll) => (
+                <SelectItem key={payroll.id} value={payroll.id}>
                   {payroll.name}
                 </SelectItem>
               ))}
@@ -312,9 +669,9 @@ export default function PayrollSchedulePage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Staff</SelectItem>
-              {staffMembers.map((staff) => (
-                <SelectItem key={staff.id} value={staff.id.toString()}>
-                  {staff.name}
+              {allConsultants.map((consultant) => (
+                <SelectItem key={consultant.name} value={consultant.name}>
+                  {consultant.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -338,7 +695,35 @@ export default function PayrollSchedulePage() {
               <TabsTrigger value="week">Week View</TabsTrigger>
             </TabsList>
           </Tabs>
-          <div className="overflow-x-auto">{view === "month" ? renderMonthView() : renderWeekView()}</div>
+
+          {view === "week" && (
+            <div className="flex items-center mb-4 space-x-2">
+              <Switch
+                id="week-view-orientation"
+                checked={weekViewOrientation === "consultantsAsRows"}
+                onCheckedChange={(checked) => 
+                  setWeekViewOrientation(checked ? "consultantsAsRows" : "daysAsRows")
+                }
+              />
+              <Label htmlFor="week-view-orientation">
+                {weekViewOrientation === "consultantsAsRows" 
+                  ? "Consultants as Rows" 
+                  : "Days as Rows"}
+              </Label>
+            </div>
+          )}
+
+          {filteredConsultants.length === 0 ? (
+            <div className="text-center p-6 text-muted-foreground">
+              No staff members found with the current filters.
+            </div>
+          ) : view === "month" ? (
+            renderMonthView()
+          ) : weekViewOrientation === "daysAsRows" ? (
+            renderWeekViewDaysAsRows()
+          ) : (
+            renderWeekViewConsultantsAsRows()
+          )}
         </CardContent>
       </Card>
     </div>
