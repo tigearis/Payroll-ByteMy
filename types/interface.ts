@@ -93,7 +93,10 @@ export type Note = {
   updatedAt: string;
   
   // Relationships
-  user?: User;
+  user?: {
+    id: string;
+    name: string;
+  } | null;
 };
 
 export type PayrollCycle = {
@@ -242,3 +245,4 @@ export interface UserDetails {
     status?: "Approved" | "Pending" | "Rejected"; // Enum for leave status
   }>;
 }
+

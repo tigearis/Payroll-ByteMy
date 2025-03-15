@@ -11,6 +11,7 @@ import { PayrollUpdatesComponent } from "@/components/payroll-subscription";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { PayrollListCard } from "@/components/payroll-list-card";
+import { PayrollUpdatesListener } from "@/components/real-time-updates";
 
 export default function PayrollsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,11 +40,16 @@ export default function PayrollsPage() {
           <p className="text-muted-foreground">Manage payrolls for your clients</p>
         </div>
         <div className="flex gap-2">
-          {(isAdmin || isDeveloper) && <PayrollsMissingDates />}
-          <PayrollUpdatesComponent
-            refetchPayrolls={async () => {
-              console.log("Refetching payrolls...");
-              return Promise.resolve({} as ApolloQueryResult<unknown>);
+        {(isAdmin || isDeveloper) && <PayrollsMissingDates />}
+          <PayrollUpdatesListener
+            refetchQueries={[
+              'GET_PAYROLLS',
+              'GET_PAYROLLS_MISSING_DATES'
+            ]} 
+            showToasts={true}
+            onUpdate={(data) => {
+              console.log("Received payroll update:", data);
+              // We could trigger a more targeted UI update here if needed
             }} />
           {(isAdmin || isManager || isDeveloper) && (
             <Button asChild>
