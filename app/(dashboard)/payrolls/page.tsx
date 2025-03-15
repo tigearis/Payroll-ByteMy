@@ -1,11 +1,10 @@
-// app/(dashboard)/payrolls/page.tsx
-"use client"; 
-import { useState } from "react";
-import { format, addMonths } from "date-fns";
+"use client";
+
+import { useState, useEffect } from "react";
+import { format, addMonths } from "date-fns"; // Removed isDate
 import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import { PlusCircle, Search, ChevronLeft, ChevronRight } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,26 +13,29 @@ import { Badge } from "@/components/ui/badge";
 import { GET_PAYROLLS_BY_MONTH } from "@/graphql/queries/payrolls/getPayrollsByMonth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Payroll } from "@/types/globals";
+import { PayrollsMissingDates } from "@/components/payrolls-missing-dates";
+import { PayrollUpdatesComponent } from "@/components/payroll-subscription";
+import { toast } from "sonner";
+
 
 export default function PayrollsPage() {
   // State for current month and search query
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Format dates for GraphQL query
+  const start_date = format(currentMonth, "yyyy-MM-dd");
+  const end_date = format(addMonths(currentMonth, 1), "yyyy-MM-dd");
 
-  const startDate = format(currentMonth, "yyyy-MM-01");
-  const endDate = format(addMonths(currentMonth, 1), "yyyy-MM-01");
-  
-  const { loading, error, data } = useQuery(GET_PAYROLLS_BY_MONTH, {
-    variables: { startDate, endDate },
+  const { loading, error, data, refetch } = useQuery(GET_PAYROLLS_BY_MONTH, {
+    variables: {
+      start_date,
+      end_date
+    },
   });
-  
-  
+
   // Use our custom hook
-  const { isAdmin, isManager, isLoading: roleLoading } = useUserRole();
-  
-  // Role-based permissions
-  const canManagePayrolls = isAdmin || isManager;
+  const { isAdmin, isManager, isDeveloper, isLoading: roleLoading } = useUserRole();
 
   // Month navigation handlers
   const goToPreviousMonth = () => {
@@ -44,11 +46,32 @@ export default function PayrollsPage() {
     setCurrentMonth(prevMonth => addMonths(prevMonth, 1));
   };
 
-  if (loading || roleLoading) return <p>Loading...</p>;
-  if (error) return <p>Error loading payrolls: {error.message}</p>;
+  useEffect(() => {
+    if (loading || roleLoading) {
+      const timeout = setTimeout(() => {
+        toast.info("Loading payrolls...", {
+          duration: 3000,
+          closeButton: true,
+        });
+      }, 2000);
+  
+      return () => clearTimeout(timeout); // Cleanup timeout when loading state changes
+    }
+  }, [loading, roleLoading]);
+  
+  if (loading || roleLoading) {
+    return null; // Return null or a placeholder if needed
+  }
+  if (error) {
+    toast.error(`Error loading payrolls: ${error.message}`, {
+      duration: 5000,
+      closeButton: true,
+      onDismiss: (t) => console.log(`Toast with id ${t.id} was dismissed`),
+    });
+  }
 
   const payrolls: Payroll[] = data?.payrolls || [];
-  
+
   const filteredPayrolls = payrolls.filter(
     (payroll) =>
       payroll.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -63,13 +86,13 @@ export default function PayrollsPage() {
           <p className="text-muted-foreground">Manage payrolls for your clients</p>
         </div>
         <div className="flex gap-2">
-          {isAdmin && (
-            <Button variant="outline">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Generate Missing Dates
-            </Button>
-          )}
-          {canManagePayrolls && (
+          {/* Only show for admin users */}
+          {(isAdmin || isDeveloper) && <PayrollsMissingDates />}
+          {/* ... */}
+          <PayrollUpdatesComponent refetchPayrolls={refetch} />
+          {/* ... */}
+          {/* Allow admins & managers to add payrolls */}
+          {(isAdmin || isManager || isDeveloper) && (
             <Button asChild>
               <Link href="/payrolls/new">
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -80,25 +103,27 @@ export default function PayrollsPage() {
         </div>
       </div>
 
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Payroll List</CardTitle>
             <CardDescription>
-              Payrolls for {format(currentMonth, 'MMMM yyyy')}
+              Payrolls for this month
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               onClick={goToPreviousMonth}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <span className="text-xl font-bold">{format(currentMonth, 'MMMM yyyy')}</span>
+            <Button
+              variant="outline"
+              size="icon"
               onClick={goToNextMonth}
             >
               <ChevronRight className="h-4 w-4" />
@@ -138,13 +163,13 @@ export default function PayrollsPage() {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      {payroll.payroll_dates?.[0]?.processing_date 
-                        ? format(new Date(payroll.payroll_dates[0].processing_date), 'MMM d, yyyy') 
+                      {payroll.payroll_dates?.[0]?.processing_date
+                        ? format(new Date(payroll.payroll_dates[0].processing_date), 'MMM d, yyyy')
                         : 'N/A'}
                     </TableCell>
                     <TableCell>
-                      {payroll.payroll_dates?.[0]?.adjusted_eft_date 
-                        ? format(new Date(payroll.payroll_dates[0].adjusted_eft_date), 'MMM d, yyyy') 
+                      {payroll.payroll_dates?.[0]?.adjusted_eft_date
+                        ? format(new Date(payroll.payroll_dates[0].adjusted_eft_date), 'MMM d, yyyy')
                         : 'N/A'}
                     </TableCell>
                     <TableCell>{payroll.payroll_system || "N/A"}</TableCell>

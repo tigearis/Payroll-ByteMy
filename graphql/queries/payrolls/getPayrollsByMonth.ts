@@ -2,16 +2,16 @@
 import { gql } from "@apollo/client";
 
 export const GET_PAYROLLS_BY_MONTH = gql`
-  query GetPayrollsByMonth($startDate: date!, $endDate: date!) {
+  query GetPayrollsByMonth($start_date: date!, $end_date: date!) {
     payrolls(
       where: {
         payroll_dates: {
           _or: [
             { 
-              processing_date: { _gte: $startDate, _lt: $endDate }
+              processing_date: { _gte: $start_date, _lt: $end_date }
             },
             { 
-              adjusted_eft_date: { _gte: $startDate, _lt: $endDate }
+              adjusted_eft_date: { _gte: $start_date, _lt: $end_date }
             }
           ]
         }
@@ -27,8 +27,8 @@ export const GET_PAYROLLS_BY_MONTH = gql`
       payroll_dates(
         where: {
           _or: [
-            { processing_date: { _gte: $startDate, _lt: $endDate } },
-            { adjusted_eft_date: { _gte: $startDate, _lt: $endDate } }
+            { processing_date: { _gte: $start_date, _lt: $end_date } },
+            { adjusted_eft_date: { _gte: $start_date, _lt: $end_date } }
           ]
         }
         order_by: { adjusted_eft_date: asc }

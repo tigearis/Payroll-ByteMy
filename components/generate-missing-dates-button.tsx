@@ -1,82 +1,94 @@
-// components/generate-missing-dates-button.tsx
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@clerk/nextjs";
-import { RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { useMutation } from '@apollo/client';
+import { GENERATE_PAYROLL_DATES } from '@/graphql/mutations/payrolls/generatePayrollDates';
+
 
 interface GenerateMissingDatesButtonProps {
   payrollIds: string[];
   onSuccess?: () => void;
 }
 
-export function GenerateMissingDatesButton({ 
-  payrollIds, 
-  onSuccess 
-}: GenerateMissingDatesButtonProps) {
-  const { isLoaded, userId, getToken } = useAuth();
-  const [userRole, setUserRole] = useState<string | null>(null);
+export function GenerateMissingDatesButton({ payrollIds, onSuccess }: GenerateMissingDatesButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-
-  useEffect(() => {
-    async function getUserRole() {
-      if (isLoaded && userId) {
-        try {
-          const token = await getToken({ template: "hasura" });
-          if (token) {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const role = payload['https://hasura.io/jwt/claims']?.['x-hasura-default-role'];
-            setUserRole(role);
-          }
-        } catch (error) {
-          console.error('Error getting user role:', error);
-        }
-      }
-    }
-    
-    getUserRole();
-  }, [isLoaded, userId, getToken]);
+  const [generatePayrollDates] = useMutation(GENERATE_PAYROLL_DATES);
 
   const handleGenerateMissingDates = async () => {
-    if (payrollIds.length === 0) return;
-
+    if (payrollIds.length === 0) {
+      console.warn("No payroll IDs provided.");
+      return;
+    }
+  
     try {
       setIsGenerating(true);
-      const response = await fetch('/api/cron/generate-batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payrollIds }),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate dates');
+  
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setMonth(startDate.getMonth() + 24);
+      const maxDates = 104;
+  
+      const formattedStartDate = startDate.toISOString().split('T')[0];
+      const formattedEndDate = endDate.toISOString().split('T')[0];
+  
+      console.log("Starting generation for payrolls:", payrollIds);
+  
+      let successCount = 0;
+      let errorCount = 0;
+  
+      for (const id of payrollIds) {
+        try {
+          console.log(`Processing payroll ID: ${id}`);
+  
+          const response = await generatePayrollDates({
+            variables: {
+              args: {
+                p_payroll_id: id,
+                p_start_date: formattedStartDate,
+                p_end_date: formattedEndDate,
+                p_max_dates: maxDates,
+              },
+            },
+            refetchQueries: ['GET_PAYROLLS_MISSING_DATES'], // Refetch relevant query
+          });
+  
+          if (response.errors || !response.data) {
+            console.error(`Error generating dates for payroll ${id}:`, response.errors || "No data returned");
+            errorCount++;
+          } else {
+            console.log(`Successfully generated dates for payroll ${id}`);
+            successCount++;
+          }
+        } catch (err) {
+          console.error(`Error generating dates for payroll ${id}:`, err);
+          errorCount++;
+        }
       }
-      
-      if (onSuccess) {
-        onSuccess();
+  
+      if (errorCount === 0) {
+        toast.success(`Successfully generated dates for all ${successCount} payrolls.`);
+      } else if (successCount > 0) {
+        toast.warning(`Generated dates for ${successCount} payrolls. Failed for ${errorCount} payrolls.`);
+      } else {
+        toast.error("Failed to generate dates for all payrolls.");
+      }
+  
+      if (onSuccess && successCount > 0) {
+        onSuccess(); // Trigger any additional success logic
       }
     } catch (error) {
-      console.error('Error generating dates:', error);
-      // You could add a toast notification here
+      console.error("Error generating dates:", error);
+      toast.error(error instanceof Error ? error.message : "An unknown error occurred");
     } finally {
       setIsGenerating(false);
     }
   };
-
-  // Only render if user is admin and there are payrolls to process
-  if (!userRole || !['org_admin', 'admin'].includes(userRole) || payrollIds.length === 0) {
-    return null;
-  }
+  
 
   return (
-    <Button 
-      variant="outline" 
-      onClick={handleGenerateMissingDates}
-      disabled={isGenerating}
-    >
-      <RefreshCw className={`mr-2 h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`} />
+    <Button onClick={handleGenerateMissingDates} disabled={isGenerating}>
       {isGenerating ? 'Generating...' : 'Generate Missing Dates'}
     </Button>
   );
