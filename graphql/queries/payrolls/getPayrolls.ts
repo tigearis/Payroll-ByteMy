@@ -1,37 +1,29 @@
 // graphql/queries/payrolls/getPayrolls.ts
-import { gql } from "@apollo/client"
+import { gql } from '@apollo/client';
 
 export const GET_PAYROLLS = gql`
-query GetPayrolls {
-  payrolls {
-    id
-    name
-    client_id
-    cycle_id
-    date_type_id
-    date_value
-    primary_consultant_id
-    backup_consultant_id
-    manager_id
-    processing_days_before_eft
-    payroll_system
-    status
-    created_at
-    updated_at
-    client {
+  query GetPayrolls {
+    payrolls {
+      id
       name
-    }
-    payroll_cycle {
-      name
-    }
-    payroll_date_type {
-      name
-    }
-    payroll_dates {
-      adjusted_eft_date
-      original_eft_date
-      processing_date
+      client { id name }
+      payroll_cycle { id name }
+      payroll_date_type { id name }
+      primary_consultant_user { id name }
+      backup_consultant_user { id name }
+      manager_user { id name }
+      processing_days_before_eft
+      payroll_system
+      date_value
+      status
+      created_at
+      updated_at
+      payroll_dates { 
+        id
+        original_eft_date
+        adjusted_eft_date
+        processing_date
+      }
     }
   }
-}
-`
+`;

@@ -1,10 +1,14 @@
 // components/payroll-dates-view.tsx
 "use client";
-import { GET_PAYROLLS_BY_ID } from "@/graphql/queries/payrolls/getPayrollsByID";
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
 import { format, parseISO, isEqual } from "date-fns";
 import { Download, RefreshCw } from "lucide-react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
+
+import { GET_PAYROLL_DATES } from "@/graphql/queries/payrolls/getPayrollDates";
+import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
+
 import {
   Card,
   CardContent,
@@ -35,9 +39,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// Assuming you'll create these GraphQL mutations
-import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
-
 interface PayrollDate {
   id: string;
   original_eft_date: string;
@@ -56,39 +57,50 @@ export function PayrollDatesView({ payrollId, payrollName, cycleType }: PayrollD
   const [regenerateOpen, setRegenerateOpen] = useState(false);
   const [regenerateMonths, setRegenerateMonths] = useState(12);
   
-  // Use GraphQL query to fetch payroll dates
-  const { loading, error, data, refetch } = useQuery(GET_PAYROLLS_BY_ID, {
+  // Use Apollo useQuery hook to fetch payroll dates
+  const { loading, error, data, refetch } = useQuery(GET_PAYROLL_DATES, {
     variables: { 
-      id: payrollId,
-      months: 12
+      payrollId,
+      months: 24
     },
     skip: !payrollId
   });
 
-  // Use GraphQL mutation to regenerate dates
-  const [generatePayrollDates, { loading: regenerateLoading }] = useMutation(GENERATE_PAYROLL_DATES);
+  // Use Apollo useMutation hook to regenerate payroll dates
+  const [generateDates, { loading: regenerateLoading }] = useMutation(GENERATE_PAYROLL_DATES);
 
-  // Extract dates from GraphQL response
-  const dates: PayrollDate[] = data?.payroll?.dates || [];
+  // Extract dates from the GraphQL response
+  const dates: PayrollDate[] = data?.payroll_dates || [];
 
   // Regenerate payroll dates using GraphQL mutation
   const handleRegenerate = async () => {
     try {
-      await generatePayrollDates({
+      const today = new Date();
+      const endDate = new Date();
+      endDate.setMonth(today.getMonth() + regenerateMonths);
+      
+      // Format as YYYY-MM-DD for GraphQL date type
+      const formatDate = (date: Date) => format(date, 'yyyy-MM-dd');
+      
+      const result = await generateDates({
         variables: {
           payrollId,
-          startDate: new Date().toISOString(),
-          months: regenerateMonths,
+          startDate: formatDate(today),
+          endDate: formatDate(endDate)
         },
       });
       
-      // Refresh the data after regeneration
-      await refetch({ 
-        id: payrollId, 
-        months: regenerateMonths 
-      });
-      
-      setRegenerateOpen(false);
+      if (result.data?.generate_payroll_dates && result.data.generate_payroll_dates.length > 0) {
+        // Refresh the data after successful regeneration
+        await refetch({ 
+          payrollId, 
+          months: regenerateMonths 
+        });
+        
+        setRegenerateOpen(false);
+      } else {
+        console.error("Failed to generate payroll dates - no dates returned");
+      }
     } catch (err) {
       console.error("Error regenerating payroll dates:", err);
     }
@@ -183,7 +195,7 @@ export function PayrollDatesView({ payrollId, payrollName, cycleType }: PayrollD
                     min="1"
                     max="36"
                     value={regenerateMonths}
-                    onChange={(e) => setRegenerateMonths(parseInt(e.target.value) || 12)}
+                    onChange={(e) => setRegenerateMonths(parseInt(e.target.value) || 24)}
                   />
                 </div>
               </div>

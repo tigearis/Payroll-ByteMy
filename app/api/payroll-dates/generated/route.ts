@@ -1,26 +1,10 @@
 // app/api/payroll-dates/generated/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { adminClient } from "@/lib/apollo-admin";
+import { getServerApolloClient } from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
 import { addMonths, format } from "date-fns";
 
-// GraphQL mutation to call the PostgreSQL function
-const GENERATE_PAYROLL_DATES = gql`
-  mutation GeneratePayrollDates(
-    $payrollId: uuid!,
-    $startDate: date!,
-    $endDate: date!
-  ) {
-    call_generate_payroll_dates(args: {
-      p_payroll_id: $payrollId,
-      p_start_date: $startDate,
-      p_end_date: $endDate
-    }) {
-      success
-    }
-  }
-`;
 
 export async function POST(req: NextRequest) {
   try {

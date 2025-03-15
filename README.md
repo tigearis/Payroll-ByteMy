@@ -111,7 +111,7 @@ Monthly
 Supports Fixed Date, EOM, SOM
 SOM: Next Business Day
 EOM and Fixed Date: Previous Business Day
-Fixed Date uses a day of month as Date Value
+Fixed Date uses a day of month as Date Value, EOM and SOM dont use it
 
 Quarterly
 
