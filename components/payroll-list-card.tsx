@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { GET_PAYROLLS } from "@/graphql/queries/payrolls/getPayrolls";
 import { Payroll } from "@/types/interface";
+import { useSmartPolling } from "@/hooks/usePolling";
 
 interface PayrollListCardProps {
   searchQuery: string;
@@ -32,7 +33,22 @@ export function PayrollListCard({
   const [selectedPayroll, setSelectedPayroll] = useState("all");
   const [selectedConsultant, setSelectedConsultant] = useState("all");
 
-  const { loading, error, data } = useQuery(GET_PAYROLLS);
+  // Use polling to periodically refresh data
+  const { loading, error, data, startPolling, stopPolling, refetch } = useQuery(GET_PAYROLLS, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+    pollInterval: 45000  // Poll every 45 seconds
+  });
+  
+  // Use our smart polling hook to manage polling
+  useSmartPolling(
+    { startPolling, stopPolling, refetch },
+    {
+      defaultInterval: 45000,  // Poll every 45 seconds
+      pauseOnHidden: true,     // Save resources when tab not visible
+      refetchOnVisible: true   // Get fresh data when returning to tab
+    }
+  );
 
   if (loading) return <div>Loading payrolls...</div>;
   if (error) return <div className="text-red-500">Error: {error.message}</div>;

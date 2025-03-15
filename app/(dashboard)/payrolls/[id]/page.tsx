@@ -14,6 +14,8 @@ import NotesList from "@/components/notes-list";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Pencil, PlusCircle } from "lucide-react";
+import { RefreshButton } from "@/components/refresh-button";
+import { NotesListWithAdd } from "@/components/notes-list-with-add";
 
 
 export default function PayrollPage() {
@@ -57,41 +59,51 @@ export default function PayrollPage() {
   }));
 
   return (
-    
+
     <div className="space-y-6">
-      
+
       {/* Page Header */}
       <div> <h1 className="text-2xl font-bold">{payroll.name}</h1>
-            {/* Edit Button */}
-            <div className="flex justify-end">
-        <Button asChild>
-          <Link href="/payrolls/new" className="flex items-center">
-            <Pencil className="mr-2 h-4 w-4" /> Edit Payroll
-          </Link>
-        </Button>
+        {/* Edit Button */}
+        <div className="flex justify-end gap-2">
+          <RefreshButton
+            type="entity"
+            data={{ typename: "payrolls", id: payroll.id }}
+            text="Refresh"
+            showToast={true}
+          />
+          <Button >
+            <Link href="/payrolls/new" className="flex items-center">
+              <Pencil className="mr-2 h-4 w-4" /> Edit Payroll
+            </Link>
+          </Button>
         </div>
-        </div>
-<div>
-            {/* Export Buttons */}
-            <div className="flex space-x-2 mb-4">
-        <ExportCsv payrollId={id} />
-        <ExportPdf payrollId={id} />
       </div>
+      <div>
+        {/* Export Buttons */}
+        <div className="flex space-x-2 mb-4">
+          <ExportCsv payrollId={id} />
+          <ExportPdf payrollId={id} />
+        </div>
       </div>
       {/* Main Layout */}
       <div className="grid grid-cols-3 gap-6">
-  {/* Table Column */}
-  <div className="col-span-2">
-    <PayrollDatesView payrollId={id} />
-  </div>
+        {/* Table Column */}
+        <div className="col-span-2">
+          <PayrollDatesView payrollId={id} />
+        </div>
 
-  {/* Cards and Notes Column */}
-  <div className="col-span-1 space-y-4">
-    <ClientCard client={client} />
-    <PayrollDetailsCard payroll={payroll} />
-    <NotesList notes={payroll.notes || []} />
-  </div>
-</div>
+        {/* Cards and Notes Column */}
+        <div className="col-span-1 space-y-4">
+          <ClientCard client={client} />
+          <PayrollDetailsCard payroll={payroll} />
+          <NotesListWithAdd 
+            entityType="payroll"
+            entityId={payroll.id}
+            title="Payroll Notes"
+          />
+        </div>
+      </div>
     </div>
   );
 }

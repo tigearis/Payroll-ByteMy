@@ -94,18 +94,22 @@ export default function PayrollSchedulePage() {
     ? format(endOfMonth(currentDate), "yyyy-MM-dd") 
     : format(endOfWeek(currentDate), "yyyy-MM-dd")
 
-  // Fetch payroll data with date range
+  // Fetch payroll data with date range and polling
   const { 
     loading: payrollsLoading, 
     error: payrollsError, 
     data: payrollsData,
-    refetch: refetchPayrolls
+    refetch: refetchPayrolls,
+    startPolling,
+    stopPolling
   } = useQuery(GET_PAYROLLS_BY_MONTH, {
     variables: { 
       start_date: startDate,
       end_date: endDate
     },
-    fetchPolicy: "network-only" // Ensure we get fresh data when dates change
+    fetchPolicy: "cache-and-network", // Show cached data while fetching fresh data
+    nextFetchPolicy: "cache-first",   // Use cache for repeated renders
+    pollInterval: 30000               // Poll every 30 seconds
   })
 
   // Fetch holidays
