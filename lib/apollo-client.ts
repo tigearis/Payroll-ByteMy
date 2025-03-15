@@ -1,9 +1,6 @@
 // lib/apollo-client.ts
-import { ApolloClient, HttpLink, InMemoryCache, split, NormalizedCacheObject, ApolloLink } from "@apollo/client";
-import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
-import { createClient } from "graphql-ws";
+import { ApolloClient, HttpLink, InMemoryCache, ApolloLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { getMainDefinition } from "@apollo/client/utilities";
 import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
 import { auth } from "@clerk/nextjs/server";
@@ -93,7 +90,7 @@ export const getServerApolloClient = async () => {
     }
   });
 
-  // Combine links for server-side (no WebSocket on server)
+  // Combine links for server-side
   const link = ApolloLink.from([
     errorLink,
     retryLink,
@@ -114,7 +111,7 @@ export const getServerApolloClient = async () => {
 };
 
 // Create a singleton Apollo client for the client-side
-let clientSideApolloClient: ApolloClient<NormalizedCacheObject> | null = null;
+let clientSideApolloClient: ApolloClient<any> | null = null;
 
 // **Client-side Apollo Client**
 export function useApolloClient() {
@@ -140,54 +137,16 @@ export function useApolloClient() {
     credentials: "include",
   });
 
-  // Improved WebSocket link configuration for subscriptions
-  const wsLink =
-    typeof window !== "undefined"
-      ? new GraphQLWsLink(
-          createClient({
-            url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_WS_URL || 
-                 process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL?.replace('https://', 'wss://') || 
-                 "wss://your-hasura-instance/v1/graphql",
-            connectionParams: async () => {
-              const token = await getToken({ template: "hasura" });
-              return {
-                headers: {
-                  authorization: token ? `Bearer ${token}` : "",
-                },
-              };
-            },
-            lazy: true,           // Only connect when needed
-            retryAttempts: 5,     // Number of reconnection attempts
-            connectionAckWaitTimeout: 10000, // Wait 10s for connection acknowledgement
-            retryWait: async (retries) => {
-              // Exponential backoff for reconnection
-              await new Promise(resolve => setTimeout(resolve, retries * 1000));
-            },
-            onNonLazyError: (error) => {
-              console.error('WebSocket connection error:', error);
-            },
-          })
-        )
-      : null;
-
-  // **Split Links Based on Operation Type**
-  const splitLink =
-    wsLink !== null
-      ? split(
-          ({ query }) => {
-            const definition = getMainDefinition(query);
-            return (
-              definition.kind === "OperationDefinition" &&
-              definition.operation === "subscription"
-            );
-          },
-          wsLink,
-          ApolloLink.from([errorLink, retryLink, authMiddleware, httpLink])
-        )
-      : ApolloLink.from([errorLink, retryLink, authMiddleware, httpLink]);
+  // Create the link chain without WebSocket support
+  const link = ApolloLink.from([
+    errorLink,
+    retryLink,
+    authMiddleware,
+    httpLink
+  ]);
 
   clientSideApolloClient = new ApolloClient({
-    link: splitLink,
+    link,
     cache: createCache(),
     connectToDevTools: process.env.NODE_ENV !== 'production',
     defaultOptions: {
