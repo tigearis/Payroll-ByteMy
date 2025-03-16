@@ -15,6 +15,7 @@ import {
 import { AddNote } from '@/components/add-note';
 import { Note } from '@/types/interface';
 import { GET_NOTES } from '@/graphql/queries/notes/get-notes';
+import { Button } from './ui/button';
 
 
 interface NotesListWithAddProps {
@@ -27,6 +28,9 @@ interface NotesListWithAddProps {
     id: string;
   }
 }
+
+// In components/notes-list-with-add.tsx
+// Update the component to handle missing user field:
 
 export function NotesListWithAdd({ 
   entityType, 
@@ -47,7 +51,15 @@ export function NotesListWithAdd({
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-red-500">Error loading notes: {error.message}</p>
+          <p className="text-red-500">Error loading notes. Please try again later.</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => refetch()}
+            className="mt-2"
+          >
+            Try Again
+          </Button>
         </CardContent>
       </Card>
     );

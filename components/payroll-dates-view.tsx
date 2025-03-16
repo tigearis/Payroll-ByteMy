@@ -40,6 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { NotesModal } from "./notes-modal";
 
 interface PayrollDate {
   id: string;
@@ -63,7 +64,7 @@ export function PayrollDatesView({ payrollId }: PayrollDatesViewProps) {
   const [selectedNote, setSelectedNote] = React.useState<string | null>(null);
 
   // UseQuery hook
-  const { loading, error, data } = useQuery(GET_PAYROLL_DATES, {
+  const { loading, error, data, refetch } = useQuery(GET_PAYROLL_DATES, {
     variables: { id: payrollId },
     skip: !payrollId,
   });
@@ -136,28 +137,28 @@ export function PayrollDatesView({ payrollId }: PayrollDatesViewProps) {
         return format(parseISO(row.original.processing_date), "MMM d, yyyy");
       },
     },
-    {
-      accessorKey: "notes",
-      header: "Notes",
-      cell: ({ row }) => (
-        <div>
-          {row.original.notes ? (
-            <Button 
-              variant="ghost" 
-              className="p-0 text-blue-600 hover:text-blue-800 underline"
-              onClick={() => {
-                setSelectedNote(row.original.notes || "");
-                setShowNoteDialog(true);
-              }}
-            >
-              View Note
-            </Button>
-          ) : (
-            <span className="text-gray-500">-</span>
-          )}
-        </div>
-      ),
-    },
+// In the PayrollDatesView component, update the "View Note" cell rendering:
+
+// In the columns definition
+{
+  accessorKey: "notes",
+  header: "Notes",
+  cell: ({ row }) => (
+    <div>
+      {row.original.notes ? (
+        <NotesModal 
+          note={{
+            id: row.original.id,
+            content: row.original.notes
+          }}
+          refetchNotes={() => refetch()} // Add a refetch function
+        />
+      ) : (
+        <span className="text-gray-500">-</span>
+      )}
+    </div>
+  ),
+}
   ];
 
   // Prepare data for the table - use an empty array if data isn't loaded yet

@@ -1,6 +1,7 @@
 // components/user-nav.tsx
 "use client"
 
+import { useUser, useClerk } from "@clerk/nextjs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,31 +17,55 @@ import { useRouter } from "next/navigation"
 
 export function UserNav() {
   const router = useRouter()
+  const { user, isLoaded } = useUser()
+  const { signOut } = useClerk()
+
+  // Get user initials for avatar fallback
+  const getUserInitials = () => {
+    if (!isLoaded || !user?.fullName) return "U";
+    
+    // Split the name and get initials (up to 2 characters)
+    const nameParts = user.fullName.split(' ');
+    if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
+    return (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase();
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/");
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+        <Button variant="ghost" className="relative h-8 flex items-center gap-2 rounded-full">
+          <span className="hidden md:inline-block text-sm font-medium">
+            {isLoaded && user?.fullName ? user.fullName : ''}
+          </span>
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder.svg" alt="User avatar" />
-            <AvatarFallback>JD</AvatarFallback>
+            <AvatarImage src={user?.imageUrl} alt={user?.fullName || "User avatar"} />
+            <AvatarFallback>{getUserInitials()}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">John Doe</p>
-            <p className="text-xs leading-none text-muted-foreground">john.doe@example.com</p>
+            <p className="text-sm font-medium leading-none">
+              {isLoaded && user?.fullName ? user.fullName : 'User'}
+            </p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {isLoaded && user?.primaryEmailAddress ? user.primaryEmailAddress.emailAddress : 'email@example.com'}
+            </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => router.push("/profile")}>Profile</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/settings")}>Settings</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings/account")}>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push("/auth/signin")}>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

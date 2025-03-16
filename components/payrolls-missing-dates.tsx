@@ -1,4 +1,4 @@
-// components/payrolls-missing-dates.tsx
+// components/payrolls-missing-dates.tsx - UPDATED VERSION
 "use client";
 
 import { useEffect } from "react";
@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { GET_PAYROLLS_MISSING_DATES } from "@/graphql/queries/payrolls/getPayrollsMissingDates";
 import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
+import { useSmartPolling } from "@/hooks/usePolling";
 
 interface PayrollWithDateCount {
   id: string;
@@ -40,7 +41,21 @@ interface PayrollWithDateCount {
 
 export function PayrollsMissingDates() {
   const { userRole } = useUserRole();
-  const { loading, error, data, refetch } = useQuery(GET_PAYROLLS_MISSING_DATES);
+  const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(GET_PAYROLLS_MISSING_DATES, {
+    fetchPolicy: "cache-and-network",
+    pollInterval: 60000, // Poll every minute
+  });
+  
+  // Use our smart polling hook to manage polling
+  useSmartPolling(
+    { startPolling, stopPolling, refetch },
+    {
+      defaultInterval: 60000, // Poll every minute
+      pauseOnHidden: true,    // Save resources when tab not visible
+      refetchOnVisible: true  // Get fresh data when returning to tab
+    }
+  );
+  
   const [generatePayrollDates, { loading: generating }] = useMutation(GENERATE_PAYROLL_DATES);
 
   useEffect(() => {

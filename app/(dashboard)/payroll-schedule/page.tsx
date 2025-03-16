@@ -34,6 +34,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { GET_PAYROLLS_BY_MONTH } from "@/graphql/queries/payrolls/getPayrollsByMonth"
 import { GET_HOLIDAYS } from "@/graphql/queries/holidays/getHolidays"
+import { useSmartPolling } from "@/hooks/usePolling"
 
 // Types for our data
 interface Leave {
@@ -111,7 +112,15 @@ export default function PayrollSchedulePage() {
     nextFetchPolicy: "cache-first",   // Use cache for repeated renders
     pollInterval: 30000               // Poll every 30 seconds
   })
-
+// Add this after your useQuery call
+useSmartPolling(
+  { startPolling, stopPolling, refetch: refetchPayrolls },
+  {
+    defaultInterval: 30000,  // Poll every 30 seconds
+    pauseOnHidden: true,     // Save resources when tab not visible
+    refetchOnVisible: true   // Get fresh data when returning to tab
+  }
+);
   // Fetch holidays
   const {
     loading: holidaysLoading,

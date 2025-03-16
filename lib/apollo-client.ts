@@ -90,13 +90,15 @@ export const getServerApolloClient = async () => {
     }
   });
 
-  // Combine links for server-side
-  const link = ApolloLink.from([
-    errorLink,
-    retryLink,
-    authMiddleware,
-    httpLink
-  ]);
+// Create the link chain - HTTP ONLY (NO WEBSOCKET SUPPORT)
+const link = ApolloLink.from([
+  errorLink,
+  retryLink,
+  authMiddleware,
+  httpLink
+]);
+
+// ...rest of the file...
 
   return new ApolloClient({
     link,

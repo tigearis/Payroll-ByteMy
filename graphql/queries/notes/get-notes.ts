@@ -14,10 +14,6 @@ export const GET_NOTES = gql`
       is_important
       created_at
       updated_at
-      user {
-        id
-        name
-      }
     }
   }
 `;
