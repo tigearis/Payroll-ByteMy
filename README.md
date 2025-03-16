@@ -17,6 +17,8 @@ SQL Dump
 PGPASSWORD="npg_WavFRZ1lEx4U" pg_dump -s -U neondb_owner -h ep-black-sunset-a7wbc0zq-pooler.ap-southeast-2.aws.neon.tech neondb > schema.sql
 PGPASSWORD="npg_WavFRZ1lEx4U" pg_dump -U neondb_owner -d neondb -h ep-black-sunset-a7wbc0zq-pooler.ap-southeast-2.aws.neon.tech -t table1,table2 -f dump.sql
 
+Clerk.session.getToken({ template: "hasura" }).then(token => console.log("Hasura Token:", token));
+
 Payroll Cycles and Processing Rules
 
 This document outlines payroll cycles and the rules governing processing dates and business day adjustments.

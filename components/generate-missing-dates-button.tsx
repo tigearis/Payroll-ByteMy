@@ -6,41 +6,8 @@ import { useMutation, gql } from '@apollo/client';
 import { format, addMonths } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-
-// Define the mutation
-const GENERATE_PAYROLL_DATES = gql`
-  mutation GeneratePayrollDates($payrollId: uuid!, $startDate: date!, $endDate: date!) {
-    generate_payroll_dates(
-      p_payroll_id: $payrollId, 
-      p_start_date: $startDate, 
-      p_end_date: $endDate
-    ) {
-      id
-      original_eft_date
-      adjusted_eft_date
-      processing_date
-    }
-  }
-`;
-
-// Query to check for missing dates
-const GET_PAYROLLS_MISSING_DATES = gql`
-  query GetPayrollsMissingDates {
-    payrolls {
-      id
-      name
-      client {
-        name
-      }
-      status
-      payroll_dates_aggregate {
-        aggregate {
-          count
-        }
-      }
-    }
-  }
-`;
+import { GET_PAYROLLS_MISSING_DATES } from '@/graphql/queries/payrolls/getPayrollsMissingDates';
+import { GENERATE_PAYROLL_DATES } from '@/graphql/mutations/payrolls/generatePayrollDates';
 
 interface GenerateMissingDatesButtonProps {
   payrollIds: string[];

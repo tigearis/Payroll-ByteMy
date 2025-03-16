@@ -21,6 +21,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { ThemeToggle } from "./theme-toggle"
 
 const routes = [
   {
@@ -82,14 +83,12 @@ const routes = [
 
 export function Sidebar() {
   const pathname = usePathname()
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(true)
 
   return (
     <div className={cn("flex flex-col border-r bg-gray-100/40 dark:bg-gray-800/40", isCollapsed ? "w-16" : "w-64")}>
-      <div className="flex h-14 items-center border-b px-3">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          {!isCollapsed && <span>Payroll Matrix</span>}
-        </Link>
+      <div className="flex h-16 items-center border-b px-4">
+          {!isCollapsed && <span><ThemeToggle /></span>}
         <Button variant="ghost" size="icon" className="ml-auto" onClick={() => setIsCollapsed(!isCollapsed)}>
           {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </Button>

@@ -288,159 +288,292 @@ CREATE TABLE public.payroll_dates (
 ALTER TABLE public.payroll_dates OWNER TO neondb_owner;
 
 --
--- Name: generate_payroll_dates(uuid, date, date); Type: FUNCTION; Schema: public; Owner: neondb_owner
+-- Name: generate_payroll_dates(uuid, date, date, integer); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
-CREATE FUNCTION public.generate_payroll_dates(p_payroll_id uuid, p_start_date date, p_end_date date) RETURNS SETOF public.payroll_dates
+CREATE FUNCTION public.generate_payroll_dates(p_payroll_id uuid, p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date, p_max_dates integer DEFAULT 52) RETURNS SETOF public.payroll_dates
     LANGUAGE plpgsql
-    AS $$
-DECLARE
+    AS $$ 
+DECLARE 
   -- Payroll configuration variables
-  v_cycle_name TEXT;
-  v_date_type_name TEXT;
-  v_date_value INTEGER;
-  v_processing_days_before_eft INTEGER;
-  v_rule_code TEXT;
-  
+  v_cycle_name public.payroll_cycle_type;
+  v_date_type_name public.payroll_date_type;
+  v_date_value integer;
+  v_processing_days_before_eft integer;
+  v_rule_code text;
   -- Date calculation variables
-  v_current_date DATE := p_start_date;
-  v_original_eft_date DATE;
-  v_adjusted_eft_date DATE;
-  v_processing_date DATE;
-  v_next_date DATE;
-  
+  v_current_date date := COALESCE(p_start_date, CURRENT_DATE);
+  v_end_calculation_date date := COALESCE(p_end_date, v_current_date + INTERVAL '1 year');
+  v_original_eft_date date;
+  v_adjusted_eft_date date;
+  v_processing_date date;
   -- Tracking variables
-  v_dates_generated INTEGER := 0;
-  v_max_dates INTEGER;
-  v_existing_date RECORD;
-  v_special_rule_code TEXT;
-
-  -- Helper variables
-  v_week_of_year INTEGER;
-  v_is_week_a BOOLEAN;
-  v_mid_month_date DATE;
-  v_end_month_date DATE;
-  v_month INTEGER;
-  v_year INTEGER;
+  v_dates_generated integer := 0;
+  v_month integer;
+  v_year integer;
+  v_week_of_year integer;
+  v_is_week_a boolean;
+  v_mid_month_date date;
+  v_end_month_date date;
+  -- Return variable for Hasura compatibility
+  r public.payroll_dates%ROWTYPE;
 BEGIN
   -- Retrieve payroll configuration
-  SELECT 
-    pc.name, 
-    pdt.name, 
-    p.date_value, 
-    p.processing_days_before_eft, 
-    COALESCE(ar.rule_code, 'previous')
-  INTO v_cycle_name, v_date_type_name, v_date_value, v_processing_days_before_eft, v_rule_code
-  FROM payrolls p
-  JOIN payroll_cycles pc ON p.cycle_id = pc.id
-  JOIN payroll_date_types pdt ON p.date_type_id = pdt.id
-  LEFT JOIN adjustment_rules ar ON p.cycle_id = ar.cycle_id AND p.date_type_id = ar.date_type_id
-  WHERE p.id = p_payroll_id;
-
-  -- Validate payroll exists
+  SELECT
+    pc.name,
+    pdt.name,
+    p.date_value,
+    p.processing_days_before_eft,
+    COALESCE(ar.rule_code, 'previous') INTO v_cycle_name,
+    v_date_type_name,
+    v_date_value,
+    v_processing_days_before_eft,
+    v_rule_code
+  FROM
+    payrolls p
+    JOIN payroll_cycles pc ON p.cycle_id = pc.id
+    JOIN payroll_date_types pdt ON p.date_type_id = pdt.id
+    LEFT JOIN adjustment_rules ar ON p.cycle_id = ar.cycle_id
+    AND p.date_type_id = ar.date_type_id
+  WHERE
+    p.id = p_payroll_id;
+  
+  -- Validate payroll configuration
   IF v_cycle_name IS NULL THEN 
-    RAISE EXCEPTION 'Payroll not found with ID: %', p_payroll_id;
+    RAISE EXCEPTION 'Payroll configuration not found for ID: %', p_payroll_id;
   END IF;
-
-  -- Determine max dates based on cycle type
-  v_max_dates := CASE 
-    WHEN v_cycle_name = 'weekly' THEN 52
-    WHEN v_cycle_name = 'fortnightly' THEN 26
-    WHEN v_cycle_name = 'monthly' THEN 12
-    WHEN v_cycle_name = 'quarterly' THEN 4
-    WHEN v_cycle_name = 'bi_monthly' THEN 24
-    ELSE 36
-  END;
-
+  
   -- Main date generation loop
-  WHILE v_current_date <= p_end_date AND v_dates_generated < v_max_dates LOOP
-    -- Reset special rule for each iteration
-    v_special_rule_code := v_rule_code;
-
-    -- Calculate next EFT date based on cycle type
-    CASE v_cycle_name
-      WHEN 'weekly' THEN
-        -- Ensure it falls on the correct weekday
-        v_next_date := v_current_date + ((7 + v_date_value - EXTRACT(DOW FROM v_current_date)) % 7) * INTERVAL '1 day';
-        IF v_next_date = v_current_date THEN 
-          v_next_date := v_next_date + INTERVAL '7 days'; -- Move to next week if same day
+  WHILE v_current_date <= v_end_calculation_date
+  AND v_dates_generated < p_max_dates LOOP 
+    -- Reset variables for each iteration
+    v_original_eft_date := NULL;
+    v_adjusted_eft_date := NULL;
+    v_processing_date := NULL;
+    
+    -- Cycle type specific date calculations
+    CASE
+      v_cycle_name
+      WHEN 'weekly' THEN 
+        -- Weekly payroll: Ensure date falls on specified weekday
+        v_original_eft_date := v_current_date + (
+          (
+            7 + v_date_value - EXTRACT(
+              DOW
+              FROM
+                v_current_date
+            )
+          ) % 7
+        ) * INTERVAL '1 day';
+        
+        -- If calculated date is current date, move to next week
+        IF v_original_eft_date = v_current_date THEN 
+          v_original_eft_date := v_original_eft_date + INTERVAL '7 days';
         END IF;
-        v_original_eft_date := v_next_date;
-
-      WHEN 'fortnightly' THEN
-        -- Determine if this is a Week A or Week B payroll
-        v_week_of_year := EXTRACT(WEEK FROM v_current_date);
+        
+      WHEN 'fortnightly' THEN 
+        -- Fortnightly payroll: Determine Week A or Week B
+        v_week_of_year := EXTRACT(
+          WEEK
+          FROM
+            v_current_date
+        );
         v_is_week_a := (v_week_of_year % 2) = 1; -- Odd weeks are Week A
-
-        -- Ensure it falls on the correct weekday
-        v_original_eft_date := v_current_date + ((7 + v_date_value - EXTRACT(DOW FROM v_current_date)) % 7) * INTERVAL '1 day';
-
-        -- If it's Week B, shift forward by 1 week
+        
+        -- Calculate date based on weekday and week type
+        v_original_eft_date := v_current_date + (
+          (
+            7 + v_date_value - EXTRACT(
+              DOW
+              FROM
+                v_current_date
+            )
+          ) % 7
+        ) * INTERVAL '1 day';
+        
+        -- For Week B, shift forward by a week
         IF NOT v_is_week_a THEN 
           v_original_eft_date := v_original_eft_date + INTERVAL '7 days';
         END IF;
-
-      WHEN 'bi_monthly' THEN
-        -- Handle February special case
-        v_month := EXTRACT(MONTH FROM v_current_date);
-        IF v_month = 2 THEN
-          v_mid_month_date := MAKE_DATE(EXTRACT(YEAR FROM v_current_date), 2, 14);
-          v_end_month_date := MAKE_DATE(EXTRACT(YEAR FROM v_current_date), 2, 28);
-        ELSE
-          v_mid_month_date := MAKE_DATE(EXTRACT(YEAR FROM v_current_date), v_month, 15);
-          v_end_month_date := MAKE_DATE(EXTRACT(YEAR FROM v_current_date), v_month, 30);
+        
+      WHEN 'bi_monthly' THEN 
+        -- Bi-monthly payroll: Handle 1st/15th (or 14th in February)
+        v_month := EXTRACT(
+          MONTH
+          FROM
+            v_current_date
+        );
+        v_year := EXTRACT(
+          YEAR
+          FROM
+            v_current_date
+        );
+        
+        -- Special handling for February
+        IF v_month = 2 THEN 
+          v_mid_month_date := MAKE_DATE(v_year, 2, 14);
+          v_end_month_date := MAKE_DATE(v_year, 2, 28);
+        ELSE 
+          -- Standard months: 15th and end of month
+          v_mid_month_date := MAKE_DATE(v_year, v_month, 15);
+          v_end_month_date := (
+            DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day'
+          ) :: DATE;
         END IF;
-
-        -- Adjust both dates to previous business days
-        v_adjusted_eft_date := adjust_for_non_business_day(v_mid_month_date, 'previous');
-        INSERT INTO payroll_dates (payroll_id, original_eft_date, adjusted_eft_date, processing_date, created_at, updated_at)
-        VALUES (p_payroll_id, v_mid_month_date, v_adjusted_eft_date, subtract_business_days(v_adjusted_eft_date, v_processing_days_before_eft), NOW(), NOW());
-
-        v_adjusted_eft_date := adjust_for_non_business_day(v_end_month_date, 'previous');
-        INSERT INTO payroll_dates (payroll_id, original_eft_date, adjusted_eft_date, processing_date, created_at, updated_at)
-        VALUES (p_payroll_id, v_end_month_date, v_adjusted_eft_date, subtract_business_days(v_adjusted_eft_date, v_processing_days_before_eft), NOW(), NOW());
-
-      WHEN 'monthly', 'quarterly' THEN
-        -- Ensure this only runs for quarterly months
-        IF v_cycle_name = 'quarterly' THEN
-          v_month := EXTRACT(MONTH FROM v_current_date);
-          IF v_month NOT IN (3, 6, 9, 12) THEN
-            v_current_date := DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month'; -- Skip to next valid quarter
-            CONTINUE;
-          END IF;
+        
+        -- Separate handling for each date based on date type
+        IF v_date_type_name = 'som' THEN 
+          -- Next business day rule for start of month
+          v_original_eft_date := adjust_for_non_business_day(v_mid_month_date, 'next');
+        ELSE 
+          -- Previous business day rule for end of month
+          v_original_eft_date := adjust_for_non_business_day(v_end_month_date, 'previous');
         END IF;
-
-        -- Monthly EOM Payrolls
-        v_original_eft_date := (DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day')::DATE;
-        v_adjusted_eft_date := adjust_for_non_business_day(v_original_eft_date, 'previous');
-
-      ELSE
-        -- Default case (fallback to monthly EOM)
-        v_original_eft_date := (DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day')::DATE;
-        v_adjusted_eft_date := adjust_for_non_business_day(v_original_eft_date, 'previous');
+        
+      WHEN 'monthly' THEN 
+        -- Monthly payroll: Based on date type
+        CASE
+          v_date_type_name
+          WHEN 'som' THEN 
+            -- Start of month, next business day
+            v_original_eft_date := adjust_for_non_business_day(
+              DATE_TRUNC('MONTH', v_current_date) :: DATE,
+              'next'
+            );
+          WHEN 'eom' THEN 
+            -- End of month, previous business day
+            v_original_eft_date := adjust_for_non_business_day(
+              (
+                DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day'
+              ) :: DATE,
+              'previous'
+            );
+          WHEN 'fixed_date' THEN 
+            -- Fixed date: Create date with specified day
+            -- If date_value is not applicable, use a default or specific logic
+            IF v_date_value IS NULL THEN 
+              v_original_eft_date := MAKE_DATE(
+                EXTRACT(
+                  YEAR
+                  FROM
+                    v_current_date
+                ) :: int,
+                EXTRACT(
+                  MONTH
+                  FROM
+                    v_current_date
+                ) :: int,
+                15 -- Default to 15th for fixed date if not specified
+              );
+            ELSE 
+              v_original_eft_date := MAKE_DATE(
+                EXTRACT(
+                  YEAR
+                  FROM
+                    v_current_date
+                ) :: int,
+                EXTRACT(
+                  MONTH
+                  FROM
+                    v_current_date
+                ) :: int,
+                LEAST(v_date_value, 28) -- Prevent invalid dates
+              );
+            END IF;
+            v_original_eft_date := adjust_for_non_business_day(v_original_eft_date, 'previous');
+        END CASE;
+        
+      WHEN 'quarterly' THEN 
+        -- Quarterly payroll: Only in March, June, September, December
+        v_month := EXTRACT(
+          MONTH
+          FROM
+            v_current_date
+        );
+        IF v_month IN (3, 6, 9, 12) THEN 
+          -- Use end of month with previous business day rule
+          v_original_eft_date := adjust_for_non_business_day(
+            (
+              DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day'
+            ) :: DATE,
+            'previous'
+          );
+        ELSE 
+          -- Skip to next valid quarter
+          v_current_date := DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month';
+          CONTINUE;
+        END IF;
+        
+      ELSE 
+        RAISE EXCEPTION 'Unsupported payroll cycle type: %', v_cycle_name;
     END CASE;
-
-    -- Adjust EFT date for weekends and holidays
-    v_adjusted_eft_date := adjust_for_non_business_day(v_original_eft_date, v_special_rule_code);
-
-    -- Calculate processing date
-    v_processing_date := subtract_business_days(v_adjusted_eft_date, v_processing_days_before_eft);
-
-    -- Insert into payroll_dates
-    INSERT INTO payroll_dates (payroll_id, original_eft_date, adjusted_eft_date, processing_date, created_at, updated_at)
-    VALUES (p_payroll_id, v_original_eft_date, v_adjusted_eft_date, v_processing_date, NOW(), NOW());
-
+    
+    -- Adjust EFT date based on business day rules
+    v_adjusted_eft_date := adjust_for_non_business_day(
+      v_original_eft_date,
+      COALESCE(v_rule_code, 'previous')
+    );
+    
+    -- Calculate processing date by subtracting business days
+    v_processing_date := subtract_business_days(
+      v_adjusted_eft_date,
+      v_processing_days_before_eft
+    );
+    
+    -- Insert generated payroll date
+    INSERT INTO
+      payroll_dates (
+        payroll_id,
+        original_eft_date,
+        adjusted_eft_date,
+        processing_date,
+        created_at,
+        updated_at,
+        notes
+      )
+    VALUES
+      (
+        p_payroll_id,
+        v_original_eft_date,
+        v_adjusted_eft_date,
+        v_processing_date,
+        NOW(),
+        NOW(),
+        CASE
+          WHEN v_original_eft_date != v_adjusted_eft_date THEN 'Date adjusted due to non-business day'
+          ELSE NULL
+        END
+      ) RETURNING * INTO r;
+      
+    -- Return the inserted record for Hasura
+    RETURN NEXT r;
+    
+    -- Increment tracking variables
     v_dates_generated := v_dates_generated + 1;
-    v_current_date := v_original_eft_date + INTERVAL '1 day';
+    
+    -- Move to next calculation period
+    CASE
+      v_cycle_name
+      WHEN 'weekly' THEN v_current_date := v_original_eft_date + INTERVAL '7 days';
+      WHEN 'fortnightly' THEN v_current_date := v_original_eft_date + INTERVAL '14 days';
+      WHEN 'bi_monthly' THEN -- For bi-monthly, we've already inserted both dates in the previous section
+        v_current_date := DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month';
+      WHEN 'monthly' THEN v_current_date := DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month';
+      WHEN 'quarterly' THEN v_current_date := DATE_TRUNC('MONTH', v_current_date) + INTERVAL '3 months';
+      ELSE -- Fallback: increment by 1 month
+        v_current_date := v_current_date + INTERVAL '1 month';
+    END CASE;
   END LOOP;
 
-  RETURN QUERY SELECT * FROM payroll_dates WHERE payroll_id = p_payroll_id AND original_eft_date BETWEEN p_start_date AND p_end_date ORDER BY original_eft_date;
-
+EXCEPTION
+  WHEN OTHERS THEN 
+    RAISE NOTICE 'Error in generate_payroll_dates: %', SQLERRM;
+    RAISE;
 END;
 $$;
 
 
-ALTER FUNCTION public.generate_payroll_dates(p_payroll_id uuid, p_start_date date, p_end_date date) OWNER TO neondb_owner;
+ALTER FUNCTION public.generate_payroll_dates(p_payroll_id uuid, p_start_date date, p_end_date date, p_max_dates integer) OWNER TO neondb_owner;
 
 --
 -- Name: is_business_day(date); Type: FUNCTION; Schema: public; Owner: neondb_owner
@@ -523,39 +656,29 @@ $$;
 ALTER FUNCTION public.subtract_business_days(p_date date, p_days integer) OWNER TO neondb_owner;
 
 --
--- Name: update_payroll_dates_trigger(); Type: FUNCTION; Schema: public; Owner: neondb_owner
+-- Name: update_payroll_dates(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
-CREATE FUNCTION public.update_payroll_dates_trigger() RETURNS trigger
+CREATE FUNCTION public.update_payroll_dates() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-  -- Only recalculate if relevant fields changed
-  IF TG_OP = 'UPDATE' THEN
-    IF (NEW.cycle_id = OLD.cycle_id AND
-        NEW.date_type_id = OLD.date_type_id AND
-        NEW.date_value IS NOT DISTINCT FROM OLD.date_value AND
-        NEW.processing_days_before_eft = OLD.processing_days_before_eft AND
-        NEW.status = OLD.status) THEN
-      RETURN NEW;
+    -- Check if any relevant fields have changed
+    IF (NEW.cycle_id != OLD.cycle_id OR NEW.date_type_id != OLD.date_type_id OR NEW.date_value != OLD.date_value) THEN
+        -- Generate new payroll dates
+        PERFORM public.generate_payroll_dates(
+            p_payroll_id := NEW.id,
+            p_start_date := NULL,
+            p_end_date := NULL
+        );
     END IF;
-  END IF;
-  
-  -- Generate dates for both Active and Implementation payrolls
-  IF NEW.status IN ('Active', 'Implementation') THEN
-    PERFORM generate_payroll_dates(
-      NEW.id,
-      CURRENT_DATE,
-      (CURRENT_DATE + INTERVAL '1 year')::date  -- Explicitly cast to date type
-    );
-  END IF;
-  
-  RETURN NEW;
+    
+    RETURN NEW;
 END;
 $$;
 
 
-ALTER FUNCTION public.update_payroll_dates_trigger() OWNER TO neondb_owner;
+ALTER FUNCTION public.update_payroll_dates() OWNER TO neondb_owner;
 
 --
 -- Name: users_sync; Type: TABLE; Schema: neon_auth; Owner: neondb_owner
@@ -773,7 +896,8 @@ CREATE TABLE public.payrolls (
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     payroll_system character varying(255),
     status public.payroll_status DEFAULT 'Implementation'::public.payroll_status NOT NULL,
-    processing_time integer DEFAULT 1 NOT NULL
+    processing_time integer DEFAULT 1 NOT NULL,
+    employee_count integer
 );
 
 
@@ -828,9 +952,9 @@ CREATE TABLE public.users (
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     username character varying(255),
     image text,
-    password text,
     is_staff boolean DEFAULT false,
-    manager_id uuid
+    manager_id uuid,
+    clerk_user_id text
 );
 
 
@@ -1027,6 +1151,14 @@ ALTER TABLE ONLY public.work_schedule
 
 
 --
+-- Name: users users_clerk_user_id_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_clerk_user_id_key UNIQUE (clerk_user_id);
+
+
+--
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
@@ -1165,17 +1297,17 @@ CREATE TRIGGER enforce_staff_on_payrolls BEFORE INSERT OR UPDATE ON public.payro
 
 
 --
--- Name: payrolls payroll_dates_update_trigger; Type: TRIGGER; Schema: public; Owner: neondb_owner
---
-
-CREATE TRIGGER payroll_dates_update_trigger AFTER INSERT OR UPDATE ON public.payrolls FOR EACH ROW EXECUTE FUNCTION public.update_payroll_dates_trigger();
-
-
---
 -- Name: work_schedule trigger_prevent_duplicate_insert; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER trigger_prevent_duplicate_insert BEFORE INSERT ON public.work_schedule FOR EACH ROW EXECUTE FUNCTION public.prevent_duplicate_workday_insert();
+
+
+--
+-- Name: payrolls update_payroll_dates_trigger; Type: TRIGGER; Schema: public; Owner: neondb_owner
+--
+
+CREATE TRIGGER update_payroll_dates_trigger AFTER UPDATE ON public.payrolls FOR EACH ROW EXECUTE FUNCTION public.update_payroll_dates();
 
 
 --
@@ -1211,11 +1343,27 @@ ALTER TABLE ONLY public.client_external_systems
 
 
 --
+-- Name: payrolls fk_backup_consultant_user; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
+--
+
+ALTER TABLE ONLY public.payrolls
+    ADD CONSTRAINT fk_backup_consultant_user FOREIGN KEY (backup_consultant_user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: leave fk_leave_user; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.leave
     ADD CONSTRAINT fk_leave_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: payrolls fk_manager_user; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
+--
+
+ALTER TABLE ONLY public.payrolls
+    ADD CONSTRAINT fk_manager_user FOREIGN KEY (manager_user_id) REFERENCES public.users(id);
 
 
 --
@@ -1232,6 +1380,14 @@ ALTER TABLE ONLY public.payrolls
 
 ALTER TABLE ONLY public.work_schedule
     ADD CONSTRAINT fk_work_schedule_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: notes id_user; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
+--
+
+ALTER TABLE ONLY public.notes
+    ADD CONSTRAINT id_user FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
