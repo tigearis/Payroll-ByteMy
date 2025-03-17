@@ -8,7 +8,7 @@ import { adminApolloClient } from "@/lib/apollo-client";
 const UPDATE_USER_PROFILE = gql`
   mutation UpdateUserProfile($clerkId: String!, $name: String) {
     update_users(
-      where: { clerk_id: { _eq: $clerkId } },
+      where: { clerk_user_id: { _eq: $clerkId } },
       _set: { 
         name: $name,
         updated_at: "now()"
