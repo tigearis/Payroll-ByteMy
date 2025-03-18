@@ -1,10 +1,10 @@
 // graphql/queries/staff/getStaffById.ts
-
 import { gql } from "@apollo/client";
 
 export const GET_STAFF_BY_ID = gql`
-query Staff ($id: uuid!){
-    users(where: {is_staff: {_eq: true},id: {_eq: $id}}) {
+  query Staff ($id: uuid!){
+    users(where: {is_staff: {_eq: true}, id: {_eq: $id}}) {
+      id
       email
       image
       is_staff
@@ -26,6 +26,7 @@ query Staff ($id: uuid!){
         role
       }
       leaves {
+        id
         end_date
         leave_type
         reason
@@ -34,5 +35,4 @@ query Staff ($id: uuid!){
       }
     }
   }
-  `
-  ;
+`;

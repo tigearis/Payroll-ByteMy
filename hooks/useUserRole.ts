@@ -2,16 +2,14 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 
-
 export function useUserRole() {
   const { isLoaded, userId, getToken } = useAuth();
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUserRole() {
       if (!isLoaded) return;
-      
       try {
         if (userId) {
           const token = await getToken({ template: "hasura" });
@@ -26,7 +24,7 @@ export function useUserRole() {
         setIsLoading(false);
       }
     }
-    
+
     fetchUserRole();
   }, [isLoaded, userId, getToken]);
 
@@ -36,24 +34,24 @@ export function useUserRole() {
   const isManager = userRole === 'manager';
   const isConsultant = userRole === 'consultant';
   const isViewer = userRole === 'viewer';
-  
+
   // Check if user has admin-level permissions (either Developer or Admin role)
   const hasAdminAccess = isDeveloper || isAdmin;
-  
+
   // Function to check if user has one of the specified roles
   const hasRole = (roles: string[]) => {
     return userRole ? roles.includes(userRole) : false;
   };
 
-  return { 
-    userRole, 
-    isLoading, 
+  return {
+    userRole,
+    isLoading,
     isDeveloper,
-    isAdmin, 
-    isManager, 
-    isConsultant, 
+    isAdmin,
+    isManager,
+    isConsultant,
     isViewer,
     hasAdminAccess,
-    hasRole 
+    hasRole
   };
 }
