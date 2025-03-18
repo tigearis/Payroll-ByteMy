@@ -1,114 +1,66 @@
-// app/(dashboard)/staff/[id]/page.tsx
-import { notFound } from "next/navigation"
-import { db } from "@/lib/db"
-import { staff } from "@/drizzle/schema"
-import { eq } from "drizzle-orm"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+"use client";
 
-async function getStaffMember(id: string) {
-  const staffMember = await db.query.staff.findFirst({
-    where: eq(staff.id, Number.parseInt(id)),
-    with: {
-      primaryPayrolls: true,
-      backupPayrolls: true,
-      managedPayrolls: true,
-    },
-  })
+import { useRouter } from "next/navigation";
+import { useQuery } from "@apollo/client";
+import { UserDetails } from "@/types/interface";
+import { GET_STAFF_BY_ID } from "@/graphql/queries/staff/getStaffById";
+import { useUserRole } from "@/hooks/useUserRole";
+import { Button } from "@/components/ui/button";
+import { Table, TableHead, TableRow, TableCell, TableBody } from "@/components/ui/table";
+import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
 
-  if (!staffMember) notFound()
-  return staffMember
-}
+export default function UserInfoPage({ params }: { params: { id: string } }) {
+  const { id } = params;
+  const router = useRouter();
+  const { isAdmin, isManager, isDeveloper, isConsultant } = useUserRole();
+  const { loading, error, data } = useQuery(GET_STAFF_BY_ID, {
+    variables: { id },
+  });
 
-export default async function StaffPage({ params }: { params: { id: string } }) {
-  const staffMember = await getStaffMember(params.id)
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error loading user data.</p>;
+
+  const user = data.users.find((u: UserDetails) => u.id === id);
+  if (!user) return <p>User not found.</p>;
+
+  const canEditLeave = isAdmin || isManager || isDeveloper || isConsultant;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Staff Details</h2>
-        <p className="text-muted-foreground">Viewing details for staff ID: {staffMember.id}</p>
-      </div>
+    <div className="max-w-3xl mx-auto mt-10">
+      <h2 className="text-2xl font-semibold mb-4">{user.name}'s Profile</h2>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{staffMember.name}</CardTitle>
-          <CardDescription>Position: {staffMember.position}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4">
-            <div className="flex justify-between">
-              <span>Status:</span>
-              <Badge variant={staffMember.active ? "default" : "secondary"}>
-                {staffMember.active ? "Active" : "Inactive"}
-              </Badge>
-            </div>
-            <div className="flex justify-between">
-              <span>Email:</span>
-              <span>{staffMember.email}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Phone:</span>
-              <span>{staffMember.phone}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Created At:</span>
-              <span>{staffMember.created_at.toLocaleDateString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Last Updated:</span>
-              <span>{staffMember.updated_at.toLocaleDateString()}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Assigned Payrolls</CardTitle>
-          <CardDescription>Payrolls this staff member is involved with</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-semibold">Primary Consultant For:</h4>
-              {staffMember.primaryPayrolls.length > 0 ? (
-                <ul className="list-disc pl-5">
-                  {staffMember.primaryPayrolls.map((payroll) => (
-                    <li key={payroll.id}>{payroll.name}</li>
-                  ))}
-                </ul>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Email</TableCell>
+            <TableCell>Role</TableCell>
+            <TableCell>Leave Dates</TableCell>
+            {canEditLeave && <TableCell>Actions</TableCell>}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell>{user.email}</TableCell>
+            <TableCell>{user.role}</TableCell>
+            <TableCell>
+              {user.leave_dates.length > 0 ? (
+                user.leave_dates.map((leave: { id: Key | null | undefined; start_date: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; end_date: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }) => (
+                  <p key={leave.id}>{leave.start_date} - {leave.end_date}</p>
+                ))
               ) : (
-                <p>Not a primary consultant for any payrolls.</p>
+                "No leave dates"
               )}
-            </div>
-            <div>
-              <h4 className="font-semibold">Backup Consultant For:</h4>
-              {staffMember.backupPayrolls.length > 0 ? (
-                <ul className="list-disc pl-5">
-                  {staffMember.backupPayrolls.map((payroll) => (
-                    <li key={payroll.id}>{payroll.name}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p>Not a backup consultant for any payrolls.</p>
-              )}
-            </div>
-            <div>
-              <h4 className="font-semibold">Manager For:</h4>
-              {staffMember.managedPayrolls.length > 0 ? (
-                <ul className="list-disc pl-5">
-                  {staffMember.managedPayrolls.map((payroll) => (
-                    <li key={payroll.id}>{payroll.name}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p>Not a manager for any payrolls.</p>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </TableCell>
+            {canEditLeave && (
+              <TableCell>
+                <Button variant="outline" onClick={() => router.push(`/users/${id}/add-leave`)}>
+                  Add Leave
+                </Button>
+              </TableCell>
+            )}
+          </TableRow>
+        </TableBody>
+      </Table>
     </div>
-  )
+  );
 }

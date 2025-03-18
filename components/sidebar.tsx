@@ -83,7 +83,7 @@ const routes = [
 
 export function Sidebar() {
   const pathname = usePathname()
-  const [isCollapsed, setIsCollapsed] = useState(true)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
     <div className={cn("flex flex-col border-r bg-gray-100/40 dark:bg-gray-800/40", isCollapsed ? "w-16" : "w-64")}>

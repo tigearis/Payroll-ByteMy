@@ -1,22 +1,9 @@
-// components/client-payrolls-table.tsx
+"use client";
+
 import Link from "next/link";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
-interface Payroll {
-  id: string;
-  name: string;
-  status: string;
-  payroll_cycle?: {
-    name: string;
-  };
-  payroll_date_type?: {
-    name: string;
-  };
-  payroll_dates?: Array<{
-    adjusted_eft_date: string;
-  }>;
-}
+import { Payroll } from "@/types/interface";
 
 interface ClientPayrollsTableProps {
   payrolls: Payroll[];
@@ -29,15 +16,63 @@ export function ClientPayrollsTable({ payrolls, isLoading = false }: ClientPayro
     const date = new Date(dateString);
     return date.toLocaleDateString();
   };
-  
-  // Format cycle and date type names
+
+  // Function to format name (removes underscores, capitalizes, and keeps DOW/EOM/SOM uppercase)
   const formatName = (name?: string) => {
     if (!name) return "N/A";
     return name
-      .replace(/_/g, " ")
+      .replace(/_/g, " ") // Remove underscores
       .split(" ")
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .map((word) => {
+        const specialCases = ["DOW", "EOM", "SOM"];
+        return specialCases.includes(word.toUpperCase())
+          ? word.toUpperCase() // Keep these fully capitalized
+          : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(); // Capitalize first letter
+      })
       .join(" ");
+  };
+
+  // Function to format the day of week
+  const formatDayOfWeek = (dayValue?: number) => {
+    if (dayValue === undefined || dayValue === null) return "N/A";
+
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return days[dayValue % 7]; // Ensure it's within 0-6 range
+  };
+
+  // Function to format fixed date with ordinal suffix
+  const formatFixedDate = (dateValue?: number) => {
+    if (dateValue === undefined || dateValue === null) return "N/A";
+
+    const suffix = (num: number) => {
+      if (num >= 11 && num <= 13) return "th";
+
+      switch (num % 10) {
+        case 1:
+          return "st";
+        case 2:
+          return "nd";
+        case 3:
+          return "rd";
+        default:
+          return "th";
+      }
+    };
+
+    return `${dateValue}${suffix(dateValue)}`;
+  };
+
+  // Function to display the appropriate date value based on date type
+  const displayDateValue = (payroll: Payroll) => {
+    if (!payroll.payroll_date_type || !payroll.payroll_date_type.name) return "N/A";
+
+    const dateTypeName = payroll.payroll_date_type.name.toUpperCase();
+
+    if (dateTypeName.includes("DOW") || dateTypeName.includes("WEEK A") || dateTypeName.includes("WEEK B")) {
+      return formatDayOfWeek(payroll.date_value);
+    } else {
+      return formatFixedDate(payroll.date_value);
+    }
   };
 
   return (
@@ -47,7 +82,7 @@ export function ClientPayrollsTable({ payrolls, isLoading = false }: ClientPayro
           <TableHead>Name</TableHead>
           <TableHead>Cycle</TableHead>
           <TableHead>Date Type</TableHead>
-          <TableHead>Next EFT</TableHead>
+          <TableHead>Day/Date</TableHead>
           <TableHead>Status</TableHead>
         </TableRow>
       </TableHeader>
@@ -66,12 +101,10 @@ export function ClientPayrollsTable({ payrolls, isLoading = false }: ClientPayro
                   {payroll.name}
                 </Link>
               </TableCell>
-              <TableCell>{formatName(payroll.payroll_cycle?.name)}</TableCell>
+              <TableCell>{formatName(payroll.payroll_cycle?.name) || "N/A"}</TableCell>
               <TableCell>{formatName(payroll.payroll_date_type?.name)}</TableCell>
               <TableCell>
-                {payroll.payroll_dates && payroll.payroll_dates.length > 0
-                  ? formatDate(payroll.payroll_dates[0].adjusted_eft_date)
-                  : "N/A"}
+                {displayDateValue(payroll)}
               </TableCell>
               <TableCell>
                 <Badge variant={payroll.status === "Active" ? "default" : "secondary"}>

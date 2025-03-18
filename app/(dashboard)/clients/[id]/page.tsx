@@ -14,42 +14,13 @@ import { Badge } from "@/components/ui/badge";
 import { NotesListWithAdd } from "@/components/notes-list-with-add";
 import { useSmartPolling } from "@/hooks/usePolling";
 import { ClientPayrollsTable } from "@/components/client-payroll-table";
-
-// Define your GraphQL query for a single client
-const GET_CLIENT = gql`
-  query GetClient($id: uuid!) {
-    clients_by_pk(id: $id) {
-      id
-      name
-      contact_person
-      contact_email
-      contact_phone
-      active
-      created_at
-      updated_at
-      payrolls {
-        id
-        name
-        status
-        payroll_cycle {
-          name
-        }
-        payroll_date_type {
-          name
-        }
-        payroll_dates(order_by: {adjusted_eft_date: desc}, limit: 1) {
-          adjusted_eft_date
-        }
-      }
-    }
-  }
-`;
+import { GET_CLIENTS_BY_ID } from "@/graphql/queries/clients/getClientById";
 
 export default function ClientPage() {
   const params = useParams();
   const id = params?.id as string;
 
-  const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(GET_CLIENT, {
+  const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(GET_CLIENTS_BY_ID, {
     variables: { id },
     skip: !id,
     fetchPolicy: "cache-and-network",
