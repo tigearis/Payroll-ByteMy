@@ -10,13 +10,14 @@ export async function POST(req: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    
+
     // Get the token to check user role
     const token = await getToken({ template: 'hasura' })
+    
     if (!token) {
       return NextResponse.json({ error: 'Failed to verify permissions' }, { status: 403 })
     }
-    
+
     // Decode the JWT to get the claims
     const tokenParts = token.split('.')
     const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString())
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
     if (!['admin', 'org_admin', 'manager'].includes(userRole)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
-    
+
     // Parse request body
     const { email, password, firstName, lastName, role } = await req.json()
     
@@ -35,18 +36,18 @@ export async function POST(req: NextRequest) {
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
     }
-    
+
     // Validate role
     const validRoles = ['org_admin', 'manager', 'consultant', 'viewer']
     if (!validRoles.includes(role)) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
     }
-    
+
     // Managers can't create admin users
     if (userRole === 'manager' && role === 'org_admin') {
       return NextResponse.json({ error: 'Managers cannot create admin users' }, { status: 403 })
     }
-    
+
     // Create user in Clerk
     const response = await fetch(`${process.env.CLERK_API_URL}/users`, {
       method: 'POST',
@@ -62,12 +63,12 @@ export async function POST(req: NextRequest) {
         public_metadata: { role }
       })
     })
-    
+
     if (!response.ok) {
       const errorData = await response.text()
       throw new Error(`Failed to create user: ${errorData}`)
     }
-    
+
     const userData = await response.json()
     
     return NextResponse.json({
@@ -83,8 +84,8 @@ export async function POST(req: NextRequest) {
     })
   } catch (error) {
     console.error('Error creating user:', error)
-    return NextResponse.json({ 
-      error: error instanceof Error ? error.message : 'Failed to create user' 
+    return NextResponse.json({
+      error: error instanceof Error ? error.message : 'Failed to create user'
     }, { status: 500 })
   }
 }

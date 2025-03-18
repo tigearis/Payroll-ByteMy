@@ -2,8 +2,9 @@
 import { gql } from "@apollo/client";
 
 export const GET_STAFF_LIST = gql`
-query Staff {
+  query Staff {
     users(where: {is_staff: {_eq: true}}) {
+      id
       email
       image
       is_staff
@@ -25,6 +26,7 @@ query Staff {
         role
       }
       leaves {
+        id
         end_date
         leave_type
         reason
@@ -33,5 +35,4 @@ query Staff {
       }
     }
   }
-  `
-  ;
+`;
