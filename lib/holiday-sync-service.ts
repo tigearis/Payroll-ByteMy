@@ -1,6 +1,6 @@
 // lib/holiday-sync-service.ts
 import { gql } from '@apollo/client'
-import { getAdminClient } from '@/lib/apollo-admin'
+import { adminApolloClient } from '@/lib/apollo-client'
 
 // Type definition for holiday API response
 export interface PublicHoliday {
@@ -85,7 +85,7 @@ export async function syncHolidaysForCountry(year: number, countryCode: string, 
 
 
         // Use admin client to insert holidays
-        const adminClient = getAdminClient();
+        const adminClient = adminApolloClient;
 
         // Insert national holidays first (only once)
         if (!region) {  // ✅ Insert National Holidays only once (when region is undefined)
