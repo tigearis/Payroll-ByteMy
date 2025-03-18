@@ -1,9 +1,9 @@
 // graphql/queries/clients/getClientById.ts
 import { gql } from '@apollo/client';
 
-export const GET_CLIENTS = gql`
-  query GetClients {
-    clients {
+export const GET_CLIENTS_BY_ID = gql`
+  query GetClient($id: uuid!) {
+    clients_by_pk(id: $id) {
       id
       name
       contact_person
@@ -12,9 +12,19 @@ export const GET_CLIENTS = gql`
       active
       created_at
       updated_at
-      payrolls_aggregate {
-        aggregate {
-          count
+      payrolls {
+        id
+        name
+        status
+        date_value
+        payroll_cycle {
+          name
+        }
+        payroll_date_type {
+          name
+        }
+        payroll_dates(order_by: {adjusted_eft_date: desc}, limit: 1) {
+          adjusted_eft_date
         }
       }
     }

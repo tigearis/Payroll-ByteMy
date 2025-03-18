@@ -1,138 +1,196 @@
-// app/(dashboard)/staff/page.tsx
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { PlusCircle, Search } from "lucide-react"
+import * as React from "react";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { useQuery } from "@apollo/client";
+import { GET_STAFF_LIST } from "@/graphql/queries/staff/getStaffList";
+import { useUserRole } from "@/hooks/useUserRole";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { ChevronDown } from "lucide-react";
+import { toast } from "sonner"; // ✅ Import toast notifications
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+// 🛠 Define Staff Type
+interface Staff {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  manager_id?: string;
+  manager?: {
+    name: string;
+    id: string;
+    email: string;
+  };
+}
 
-// Sample staff data
-const staffMembers = [
-  {
-    id: "STF-001",
-    name: "Alice Johnson",
-    role: "Payroll Consultant",
-    email: "alice@payrollmatrix.com",
-    phone: "(555) 123-4567",
-    assignedPayrolls: 8,
-    status: "Active",
-  },
-  {
-    id: "STF-002",
-    name: "Bob Smith",
-    role: "Payroll Manager",
-    email: "bob@payrollmatrix.com",
-    phone: "(555) 234-5678",
-    assignedPayrolls: 12,
-    status: "Active",
-  },
-  {
-    id: "STF-003",
-    name: "Carol Williams",
-    role: "Payroll Specialist",
-    email: "carol@payrollmatrix.com",
-    phone: "(555) 345-6789",
-    assignedPayrolls: 6,
-    status: "Active",
-  },
-  {
-    id: "STF-004",
-    name: "David Brown",
-    role: "Payroll Consultant",
-    email: "david@payrollmatrix.com",
-    phone: "(555) 456-7890",
-    assignedPayrolls: 7,
-    status: "On Leave",
-  },
-]
+// 🛠 Users Page Component
+export default function UsersPage() {
+  const { isAdmin, isManager, isConsultant, isDeveloper } = useUserRole();
+  const { loading, error, data } = useQuery(GET_STAFF_LIST);
+  const [staffList, setStaffList] = React.useState<Staff[]>([]);
 
-export default function StaffPage() {
-  const [searchQuery, setSearchQuery] = useState("")
+  React.useEffect(() => {
+    if (data?.users) {
+      setStaffList(data.users);
+    }
+  }, [data]);
 
-  const filteredStaff = staffMembers.filter(
-    (staff) =>
-      staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      staff.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      staff.email.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (error) return <p className="text-red-500 text-center mt-10">Error loading staff data.</p>;
+
+  // ✅ Managers see only their staff
+  const filteredStaff = isManager
+    ? staffList.filter((staff) => staff.manager_id === data?.currentUserId)
+    : staffList;
+
+  // ✅ Developers & Admins can edit roles
+  const canEditRoles = isAdmin || isDeveloper;
+  const canSelectUser = isAdmin || isManager || isDeveloper;
+
+  // ✅ Update Role Function
+  const updateRole = async (userId: string, newRole: string) => {
+    if (!canEditRoles) return;
+
+    try {
+      const response = await fetch("/api/update-user-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, newRole }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update role");
+
+      setStaffList((prevStaff) =>
+        prevStaff.map((staff) => (staff.id === userId ? { ...staff, role: newRole } : staff))
+      );
+
+      toast.success(`Role updated to ${newRole} successfully!`); // ✅ Success toast
+    } catch (err) {
+      console.error("Error updating role:", err);
+      toast.error("Failed to update role. Please try again."); // ✅ Error toast
+    }
+  };
+
+  // ✅ Define Columns for TanStack Table
+  const columns: ColumnDef<Staff>[] = React.useMemo(() => [
+    { accessorKey: "id", header: "ID", cell: ({ row }) => row.original.id },
+    { accessorKey: "email", header: "Email", cell: ({ row }) => row.original.email },
+    { accessorKey: "name", header: "Name", cell: ({ row }) => row.original.name },
+    {
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) =>
+        canEditRoles ? (
+          <Select
+            value={row.original.role}
+            onValueChange={(newRole) => updateRole(row.original.id, newRole)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a role" />
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="developer">Developer</SelectItem>
+              <SelectItem value="org_admin">Admin</SelectItem>
+              <SelectItem value="manager">Manager</SelectItem>
+              <SelectItem value="consultant">Consultant</SelectItem>
+              <SelectItem value="viewer">Viewer</SelectItem>
+            </SelectContent>
+          </Select>
+        ) : (
+          row.original.role
+        ),
+    },
+    {
+      accessorKey: "manager",
+      header: "Manager",
+      cell: ({ row }) => (row.original.manager ? row.original.manager.name : "None"),
+    },
+    {
+      accessorKey: "actions",
+      header: "Actions",
+      cell: ({ row }) =>
+        canSelectUser ? (
+          <Button variant="outline" onClick={() => console.log(`Viewing ${row.original.id}`)}>
+            View
+          </Button>
+        ) : (
+          <span className="text-gray-400">Restricted</span>
+        ),
+    },
+  ], []);
+
+  // ✅ Setup TanStack Table
+  const table = useReactTable({
+    data: filteredStaff,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Staff Management</h2>
-          <p className="text-muted-foreground">Manage your payroll consultants and staff members.</p>
+    <div className="max-w-5xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-semibold mb-4">Staff List</h2>
+
+      {isAdmin && (
+        <div className="mb-4">
+          <Button onClick={() => console.log("Create Staff Member")}>Create Staff Member</Button>
         </div>
-        <Button asChild>
-          <Link href="/staff/new">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add New Staff
-          </Link>
-        </Button>
+      )}
+
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} style={{ width: "auto" }}>
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No staff found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Staff List</CardTitle>
-          <CardDescription>View and manage all your staff members in one place.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4 flex items-center gap-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search staff..."
-              className="max-w-sm"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Assigned Payrolls</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredStaff.map((staff) => (
-                <TableRow key={staff.id}>
-                  <TableCell className="font-medium">{staff.id}</TableCell>
-                  <TableCell>
-                    <Link href={`/staff/${staff.id}`} className="text-primary hover:underline">
-                      {staff.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{staff.role}</TableCell>
-                  <TableCell>{staff.email}</TableCell>
-                  <TableCell>{staff.phone}</TableCell>
-                  <TableCell>{staff.assignedPayrolls}</TableCell>
-                  <TableCell>
-                    <Badge variant={staff.status === "Active" ? "default" : "secondary"}>{staff.status}</Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {filteredStaff.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
-                    No staff members found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+          Previous
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          Next
+        </Button>
+      </div>
     </div>
-  )
+  );
 }

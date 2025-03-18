@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { useSmartPolling } from "@/hooks/usePolling";
 import { useUserRole } from "@/hooks/useUserRole";
-import { GET_CLIENTS } from "@/graphql/queries/clients/getClientById"; 
+import { GET_CLIENTS } from "@/graphql/queries/clients/getClientsList"; 
 import { Client } from "@/types/interface";
 import { ClientsTable } from "@/components/clients-table";
 

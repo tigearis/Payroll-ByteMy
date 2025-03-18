@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const userRole = hasuraClaims?.['x-hasura-default-role']
     
     // Only admins and managers can create users
-    if (!['org_admin', 'manager'].includes(userRole)) {
+    if (!['admin', 'org_admin', 'manager'].includes(userRole)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
     

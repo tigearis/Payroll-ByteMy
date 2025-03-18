@@ -132,6 +132,7 @@ export type PayrollDate = {
 };
 
 export interface Payroll {
+  dayValue: { original_eft_date?: string; adjusted_eft_date?: string; processing_date?: string; id: string; notes?: string; }[] | undefined;
   employee_count: undefined;
   id: string;
   name: string;
