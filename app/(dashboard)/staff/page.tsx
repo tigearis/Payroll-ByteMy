@@ -45,7 +45,7 @@ import {
   Filter,
   RefreshCcw,
   Users,
-  MoreHorizontal,
+  Pencil,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -70,15 +70,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ErrorBoundaryWrapper } from "@/components/error-boundary";
 import { StaffLoading } from "@/components/ui/loading-states";
 
@@ -283,59 +276,6 @@ export default function StaffManagementPage() {
     }
   );
 
-  console.log("🔍 StaffManagementPage Debug:");
-  console.log("- Clerk userId:", userId);
-  console.log("- Clerk isLoaded:", isLoaded);
-  console.log("- currentUser:", currentUser);
-  console.log("- currentUserId (database UUID):", currentUserId);
-  console.log("- userLoading:", userLoading);
-  console.log("- userError:", userError);
-  console.log("- isManager:", isManager);
-  console.log("🔍 Role Debug Information:");
-  console.log("- isDeveloper:", isDeveloper);
-  console.log("- isAdmin:", isAdmin);
-  console.log(
-    "- canEditRoles (should be true for developers):",
-    isAdmin || isDeveloper
-  );
-  console.log("- userRole from useUserRole context:", {
-    isDeveloper,
-    isAdmin,
-    isManager,
-    isConsultant,
-  });
-
-  // Early return if auth is not loaded yet
-  if (!isLoaded) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="text-center space-y-4">
-          <p>Loading authentication...</p>
-          <div className="animate-pulse">
-            <div className="h-4 bg-gray-200 rounded w-48 mx-auto"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Handle unauthenticated users
-  if (!userId) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="text-center space-y-4">
-          <h2 className="text-xl font-semibold">Authentication Required</h2>
-          <p className="text-gray-600">
-            Please sign in to access the staff management page.
-          </p>
-          <Button onClick={() => (window.location.href = "/sign-in")}>
-            Sign In
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   // Handle setting staffList with useEffect - only dependency is data
   React.useEffect(() => {
     if (data?.users) {
@@ -467,6 +407,213 @@ export default function StaffManagementPage() {
     return filteredStaff.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredStaff, currentPage, itemsPerPage]);
 
+  // Move isCurrentUser function before table setup
+  const isCurrentUser = (staff: Staff): boolean => {
+    const isMatch = currentUserId === staff.id;
+    console.log(
+      `🔍 isCurrentUser check for ${staff.name}: currentUserId(${currentUserId}) === staff.id(${staff.id}) = ${isMatch}`
+    );
+    return isMatch;
+  };
+
+  // Define columns for the table
+  const columns = React.useMemo<ColumnDef<Staff>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Name",
+        cell: ({ row }) => {
+          const staff = row.original;
+          return (
+            <div className="flex items-center space-x-3">
+              <Avatar className="h-8 w-8">
+                {staff.image ? (
+                  <img
+                    src={staff.image}
+                    alt={staff.name}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <AvatarFallback>
+                    {staff.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <div>
+                <div className="font-medium">{staff.name}</div>
+                <div className="text-sm text-gray-500">{staff.email}</div>
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "role",
+        header: "Role",
+        cell: ({ row }) => {
+          const role = row.getValue("role") as string;
+          const getRoleVariant = (
+            role: string
+          ): "destructive" | "default" | "secondary" | "outline" => {
+            switch (role) {
+              case "admin":
+              case "org_admin":
+                return "destructive";
+              case "manager":
+                return "default";
+              case "consultant":
+                return "secondary";
+              default:
+                return "outline";
+            }
+          };
+          return (
+            <Badge variant={getRoleVariant(role)}>
+              {roleMapping[role] || role}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: "is_staff",
+        header: "Status",
+        cell: ({ row }) => {
+          const isStaff = row.getValue("is_staff") as boolean;
+          return (
+            <Badge variant={isStaff ? "default" : "secondary"}>
+              {isStaff ? "Active" : "Inactive"}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: "manager",
+        header: "Manager",
+        cell: ({ row }) => {
+          const manager = row.original.manager;
+          return manager ? manager.name : "No Manager";
+        },
+      },
+      {
+        accessorKey: "clerk_user_id",
+        header: "Auth Status",
+        cell: ({ row }) => {
+          const clerkUserId = row.getValue("clerk_user_id") as string;
+          return (
+            <Badge variant={clerkUserId ? "default" : "destructive"}>
+              {clerkUserId ? "Authenticated" : "No Auth"}
+            </Badge>
+          );
+        },
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+          const staff = row.original;
+          const canEdit = isAdmin || isDeveloper || isCurrentUser(staff);
+          const canDelete = (isAdmin || isDeveloper) && !isCurrentUser(staff);
+
+          return (
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openViewModal(staff)}
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+              {canEdit && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => openEditModal(staff)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              )}
+              {canDelete && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDeleteStaff(staff)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          );
+        },
+      },
+    ],
+    [isAdmin, isDeveloper, currentUserId, isCurrentUser]
+  );
+
+  // Table setup - must be after all other hooks and useMemo calls
+  const table = useReactTable({
+    data: paginatedStaff,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  console.log("🔍 StaffManagementPage Debug:");
+  console.log("- Clerk userId:", userId);
+  console.log("- Clerk isLoaded:", isLoaded);
+  console.log("- currentUser:", currentUser);
+  console.log("- currentUserId (database UUID):", currentUserId);
+  console.log("- userLoading:", userLoading);
+  console.log("- userError:", userError);
+  console.log("- isManager:", isManager);
+  console.log("🔍 Role Debug Information:");
+  console.log("- isDeveloper:", isDeveloper);
+  console.log("- isAdmin:", isAdmin);
+  console.log(
+    "- canEditRoles (should be true for developers):",
+    isAdmin || isDeveloper
+  );
+  console.log("- userRole from useUserRole context:", {
+    isDeveloper,
+    isAdmin,
+    isManager,
+    isConsultant,
+  });
+
+  // Early return if auth is not loaded yet
+  if (!isLoaded) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center space-y-4">
+          <p>Loading authentication...</p>
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-48 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle unauthenticated users
+  if (!userId) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center space-y-4">
+          <h2 className="text-xl font-semibold">Authentication Required</h2>
+          <p className="text-gray-600">
+            Please sign in to access the staff management page.
+          </p>
+          <Button onClick={() => (window.location.href = "/sign-in")}>
+            Sign In
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   // Handlers
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -527,11 +674,6 @@ export default function StaffManagementPage() {
         toast.error("Error clearing cache. Please refresh manually.");
       }
     }
-  };
-
-  // Helper function to check if staff member is the current user
-  const isCurrentUser = (staff: Staff): boolean => {
-    return staff.clerk_user_id === userId;
   };
 
   // Open edit modal and populate form
@@ -813,188 +955,6 @@ export default function StaffManagementPage() {
     }
   };
 
-  // Define columns
-  const columns = React.useMemo<ColumnDef<Staff>[]>(
-    () => [
-      {
-        accessorKey: "name",
-        header: "Name",
-        cell: ({ row }) => {
-          const staff = row.original;
-          return (
-            <div className="flex items-center space-x-3">
-              {staff.image ? (
-                <img
-                  src={staff.image}
-                  alt={staff.name}
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                  <User className="w-4 h-4 text-gray-500" />
-                </div>
-              )}
-              <div>
-                <div className="font-medium">{staff.name}</div>
-                <div className="text-sm text-muted-foreground">
-                  {staff.username || "No username"}
-                </div>
-              </div>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "email",
-        header: "Email",
-        cell: ({ row }) => (
-          <div className="flex items-center space-x-2">
-            <Mail className="w-4 h-4 text-muted-foreground" />
-            <span>{row.original.email}</span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "role",
-        header: "Role",
-        cell: ({ row }) => {
-          const role = row.original.role;
-          const displayRole = roleMapping[role] || role;
-
-          // Define role colors with proper typing
-          const getRoleVariant = (
-            role: string
-          ): "destructive" | "default" | "secondary" | "outline" => {
-            switch (role) {
-              case "admin":
-                return "destructive";
-              case "org_admin":
-              case "manager":
-                return "default";
-              case "consultant":
-                return "secondary";
-              case "viewer":
-              default:
-                return "outline";
-            }
-          };
-
-          return <Badge variant={getRoleVariant(role)}>{displayRole}</Badge>;
-        },
-      },
-      {
-        accessorKey: "manager",
-        header: "Manager",
-        cell: ({ row }) =>
-          row.original.manager ? (
-            <div className="text-sm">
-              <div className="font-medium">{row.original.manager.name}</div>
-            </div>
-          ) : (
-            <span className="text-muted-foreground">No manager</span>
-          ),
-      },
-      {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
-          const hasClerkId = !!row.original.clerk_user_id;
-          return (
-            <div className="space-y-1">
-              <Badge variant={row.original.is_staff ? "default" : "secondary"}>
-                {row.original.is_staff ? "Staff" : "External"}
-              </Badge>
-              <Badge
-                variant={hasClerkId ? "default" : "outline"}
-                className="ml-1"
-              >
-                {hasClerkId ? "Active Auth" : "No Auth"}
-              </Badge>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "actions",
-        header: () => <div className="text-right">Actions</div>,
-        cell: ({ row }) => {
-          const staff = row.original;
-          const canViewUser = isAdmin || isManager || isDeveloper;
-          const canEditRoles = isAdmin || isDeveloper;
-
-          if (!canViewUser) {
-            return <div className="text-muted-foreground">Restricted</div>;
-          }
-
-          return (
-            <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => openViewModal(staff)}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    View Details
-                  </DropdownMenuItem>
-                  {canEditRoles && (
-                    <DropdownMenuItem
-                      onClick={() => {
-                        openEditModal(staff);
-                      }}
-                    >
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit User
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator />
-                  {canEditRoles && (
-                    <DropdownMenuItem
-                      className={
-                        isCurrentUser(staff)
-                          ? "text-muted-foreground cursor-not-allowed"
-                          : "text-destructive"
-                      }
-                      onClick={() => {
-                        if (!isCurrentUser(staff)) {
-                          handleDeleteStaff(staff);
-                        } else {
-                          toast.error("You cannot delete your own account");
-                        }
-                      }}
-                      disabled={isCurrentUser(staff)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      {isCurrentUser(staff)
-                        ? "Cannot delete yourself"
-                        : "Delete User"}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          );
-        },
-      },
-    ],
-    [isAdmin, isManager, isDeveloper, isDeleting]
-  );
-
-  // Set up TanStack Table
-  const table = useReactTable({
-    data: paginatedStaff,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-  });
-
-  const canViewUser = isAdmin || isManager || isDeveloper;
-  const canEditRoles = isAdmin || isDeveloper;
-
   // Loading state with enhanced loading component
   if (userLoading || loading) {
     return (
@@ -1041,12 +1001,13 @@ export default function StaffManagementPage() {
             </p>
           </div>
 
-          {canEditRoles && (
-            <Button onClick={openCreateModal}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Add Staff Member
-            </Button>
-          )}
+          {isAdmin ||
+            (isDeveloper && (
+              <Button onClick={openCreateModal}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Add Staff Member
+              </Button>
+            ))}
         </div>
 
         {/* Stats Cards */}
@@ -1254,10 +1215,9 @@ export default function StaffManagementPage() {
                               : "No staff found."}
                           </p>
                           <p className="text-sm">
-                            {canEditRoles &&
-                              (isDeveloper
-                                ? "Start by creating your first user."
-                                : "Start by creating your first staff member.")}
+                            {isAdmin ||
+                              (isDeveloper &&
+                                "Start by creating your first staff member.")}
                           </p>
                         </div>
                       </TableCell>
@@ -1552,17 +1512,18 @@ export default function StaffManagementPage() {
               >
                 Close
               </Button>
-              {canEditRoles && viewingStaff && (
-                <Button
-                  onClick={() => {
-                    setIsViewModalOpen(false);
-                    openEditModal(viewingStaff);
-                  }}
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit User
-                </Button>
-              )}
+              {isAdmin ||
+                (isDeveloper && viewingStaff && (
+                  <Button
+                    onClick={() => {
+                      setIsViewModalOpen(false);
+                      openEditModal(viewingStaff);
+                    }}
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit User
+                  </Button>
+                ))}
             </DialogFooter>
           </DialogContent>
         </Dialog>

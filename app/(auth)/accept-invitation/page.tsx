@@ -16,6 +16,15 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 
+interface InvitationData {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  role?: string;
+  organizationId?: string;
+  [key: string]: unknown;
+}
+
 function AcceptInvitationContent() {
   const { user } = useUser();
   const router = useRouter();
@@ -24,7 +33,8 @@ function AcceptInvitationContent() {
   const [lastName, setLastName] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
-  const [invitationData, setInvitationData] = React.useState<any>(null);
+  const [invitationData, setInvitationData] =
+    React.useState<InvitationData | null>(null);
 
   // Handle signed-in users visiting this page
   React.useEffect(() => {
@@ -161,11 +171,14 @@ function AcceptInvitationContent() {
         console.error("Sign-up not complete:", signUpAttempt);
         toast.error("Sign-up could not be completed. Please try again.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Sign-up error:", err);
-      toast.error(
-        err?.errors?.[0]?.message || "An error occurred during sign-up"
-      );
+      const errorMessage =
+        err && typeof err === "object" && "errors" in err
+          ? (err as { errors?: Array<{ message?: string }> }).errors?.[0]
+              ?.message
+          : "An error occurred during sign-up";
+      toast.error(errorMessage || "An error occurred during sign-up");
     } finally {
       setIsLoading(false);
     }
@@ -177,7 +190,8 @@ function AcceptInvitationContent() {
         <CardHeader>
           <CardTitle>Complete Your Registration</CardTitle>
           <CardDescription>
-            You've been invited to join. Please complete your account setup.
+            You&apos;ve been invited to join. Please complete your account
+            setup.
           </CardDescription>
         </CardHeader>
         <CardContent>
