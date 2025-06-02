@@ -46,7 +46,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/express": "^5.0.2",
-    "@types/pg": "^8.15.2",
+    "@types/pg": "^8.15.4",
     "add": "^2.0.6",
     "ai": "^4.3.16",
     "bcryptjs": "^3.0.2",
@@ -68,7 +68,7 @@
     "react": "^19.1.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^19.1.0",
-    "react-hook-form": "^7.56.4",
+    "react-hook-form": "^7.57.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.9",
     "recharts": "^2.15.3",
@@ -78,7 +78,8 @@
     "svix": "^1.66.0",
     "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.25.42"
+    "vercel": "^42.3.0",
+    "zod": "^3.25.47"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

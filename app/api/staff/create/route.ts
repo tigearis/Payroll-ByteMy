@@ -53,6 +53,14 @@ const CHECK_EMAIL_EXISTS = gql`
   }
 `;
 
+interface ClerkError {
+  errors?: Array<{
+    code?: string;
+    message?: string;
+    longMessage?: string;
+  }>;
+}
+
 export async function POST(req: NextRequest) {
   try {
     console.log("🔧 API called: /api/staff/create");
@@ -108,7 +116,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let clerkUserId = null;
+    const clerkUserId = null;
 
     // Send Clerk invitation if requested
     if (inviteToClerk) {
@@ -161,12 +169,12 @@ export async function POST(req: NextRequest) {
         if (
           clerkError instanceof Error &&
           "errors" in clerkError &&
-          Array.isArray((clerkError as any).errors)
+          Array.isArray((clerkError as ClerkError).errors)
         ) {
-          const errors = (clerkError as any).errors;
+          const errors = (clerkError as ClerkError).errors || [];
           console.error("📋 Clerk error details:", errors);
 
-          errors.forEach((error: any, index: number) => {
+          errors.forEach((error, index: number) => {
             console.error(`   Error ${index + 1}:`, {
               code: error.code,
               message: error.message,
@@ -181,9 +189,9 @@ export async function POST(req: NextRequest) {
         if (
           clerkError instanceof Error &&
           "errors" in clerkError &&
-          Array.isArray((clerkError as any).errors)
+          Array.isArray((clerkError as ClerkError).errors)
         ) {
-          const firstError = (clerkError as any).errors[0];
+          const firstError = (clerkError as ClerkError).errors?.[0];
           if (firstError?.code === "form_identifier_exists") {
             console.log("ℹ️ User already exists in Clerk");
           } else if (firstError?.code === "form_invitation_duplicate") {
