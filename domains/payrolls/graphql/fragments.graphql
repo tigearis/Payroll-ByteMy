@@ -1,0 +1,50 @@
+fragment PayrollBasicInfo on payrolls {
+  id
+  name
+  status
+  employee_count
+  created_at
+  updated_at
+  client {
+    id
+    name
+  }
+  payroll_cycle {
+    id
+    name
+  }
+  payroll_date_type {
+    id
+    name
+  }
+  userByPrimaryConsultantUserId {
+    id
+    name
+  }
+  userByManagerUserId {
+    id
+    name
+  }
+}
+
+fragment PayrollWithDates on payrolls {
+  ...PayrollBasicInfo
+  payroll_dates(order_by: { original_eft_date: desc }, limit: 5) {
+    id
+    original_eft_date
+    adjusted_eft_date
+    processing_date
+    notes
+  }
+}
+
+fragment PayrollDetailed on payrolls {
+  ...PayrollWithDates
+  billing_items_aggregate {
+    aggregate {
+      sum {
+        amount
+      }
+    }
+  }
+}

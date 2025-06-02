@@ -1,0 +1,11 @@
+table:
+  name: billing_plan
+  schema: public
+array_relationships:
+  - name: client_billing_assignments
+    using:
+      foreign_key_constraint_on:
+        column: billing_plan_id
+        table:
+          name: client_billing_assignment
+          schema: public

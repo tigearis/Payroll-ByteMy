@@ -1,0 +1,81 @@
+table:
+  name: payroll_date_types
+  schema: public
+array_relationships:
+  - name: adjustment_rules
+    using:
+      foreign_key_constraint_on:
+        column: date_type_id
+        table:
+          name: adjustment_rules
+          schema: public
+  - name: payrolls
+    using:
+      foreign_key_constraint_on:
+        column: date_type_id
+        table:
+          name: payrolls
+          schema: public
+insert_permissions:
+  - role: org_admin
+    permission:
+      check: {}
+      columns:
+        - name
+        - description
+    comment: Org Admins can insert payroll date types
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - name
+        - description
+      filter: {}
+    comment: Consultants can view payroll date types
+  - role: manager
+    permission:
+      columns:
+        - id
+        - name
+        - description
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view payroll date types
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - name
+        - description
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org Admins can view payroll date types
+  - role: viewer
+    permission:
+      columns:
+        - id
+        - name
+        - description
+      filter: {}
+    comment: All users need to see payroll date types
+update_permissions:
+  - role: org_admin
+    permission:
+      columns:
+        - name
+        - description
+      filter: {}
+      check: {}
+    comment: Org Admins can update payroll date types
+delete_permissions:
+  - role: org_admin
+    permission:
+      filter: {}
+    comment: Org Admins can delete payroll date types
+apollo_federation_config:
+  enable: v1

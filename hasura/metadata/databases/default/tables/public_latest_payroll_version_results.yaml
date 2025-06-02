@@ -1,0 +1,3 @@
+table:
+  name: latest_payroll_version_results
+  schema: public

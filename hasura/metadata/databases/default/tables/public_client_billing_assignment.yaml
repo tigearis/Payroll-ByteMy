@@ -1,0 +1,10 @@
+table:
+  name: client_billing_assignment
+  schema: public
+object_relationships:
+  - name: billing_plan
+    using:
+      foreign_key_constraint_on: billing_plan_id
+  - name: client
+    using:
+      foreign_key_constraint_on: client_id

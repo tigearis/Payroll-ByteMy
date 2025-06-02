@@ -1,7 +1,7 @@
 // app/api/cron/update-payroll-dates/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { getServerApolloClient } from "@/lib/apollo-client";
+import { getServerApolloClient } from "@/lib/server-apollo-client";
 import { format, addMonths } from "date-fns";
 import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
 import { UPDATE_PAYROLL_STATUS } from "@/graphql/mutations/payrolls/updatePayrollStatus";
@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
     const token = await getToken({ template: "hasura" });
 
     if (!token) {
-      return NextResponse.json({ error: "Failed to obtain authentication token" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Failed to obtain authentication token" },
+        { status: 401 }
+      );
     }
 
     // Initialize Apollo Client
@@ -78,7 +81,10 @@ export async function POST(req: NextRequest) {
         });
 
         if (dateErrors) {
-          console.error(`Date Generation Errors for payroll ${payrollId}:`, dateErrors);
+          console.error(
+            `Date Generation Errors for payroll ${payrollId}:`,
+            dateErrors
+          );
           results.failed++;
           results.errors.push({
             payrollId,
@@ -90,24 +96,31 @@ export async function POST(req: NextRequest) {
         // Optional status update
         if (updateStatus) {
           try {
-            const { data: _statusData, errors: statusErrors } = await client.mutate({
-              mutation: UPDATE_PAYROLL_STATUS,
-              variables: {
-                payrollId: payrollId,
-                status: newStatus,
-              },
-              context: {
-                headers: {
-                  authorization: `Bearer ${token}`,
+            const { data: _statusData, errors: statusErrors } =
+              await client.mutate({
+                mutation: UPDATE_PAYROLL_STATUS,
+                variables: {
+                  payrollId: payrollId,
+                  status: newStatus,
                 },
-              },
-            });
+                context: {
+                  headers: {
+                    authorization: `Bearer ${token}`,
+                  },
+                },
+              });
 
             if (statusErrors) {
-              console.warn(`Status update errors for payroll ${payrollId}:`, statusErrors);
+              console.warn(
+                `Status update errors for payroll ${payrollId}:`,
+                statusErrors
+              );
             }
           } catch (statusUpdateError) {
-            console.error(`Error updating status for payroll ${payrollId}:`, statusUpdateError);
+            console.error(
+              `Error updating status for payroll ${payrollId}:`,
+              statusUpdateError
+            );
           }
         }
 

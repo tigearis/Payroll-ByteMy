@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 🔐 Clerk + Hasura Auth Rules
+
+## Rule Type: Always
+
+- All operations must include a Hasura-compatible JWT with Clerk integration.
+- JWT must include: `x-hasura-user-id`, `x-hasura-default-role`, `x-hasura-allowed-roles`.
+- Middleware must enforce authentication and redirect unauthorised users.
+- Tokens must be applied via Apollo `authLink` using `getToken({ template: 'hasura' })`.

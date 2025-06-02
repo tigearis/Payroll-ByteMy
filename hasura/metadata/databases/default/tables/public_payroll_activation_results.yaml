@@ -1,0 +1,3 @@
+table:
+  name: payroll_activation_results
+  schema: public

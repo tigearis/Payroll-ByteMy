@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 🗂 Project Structure Rules
+
+## Rule Type: Auto Attached
+
+- All domains must live under `domains/<name>/`.
+- Do not place GraphQL logic inside `app/` folders.
+- Valid folder structure: `graphql/`, `components/`, `hooks/`, `types/`.
+- Codegen types and fragments live in `shared/types/generated/`.

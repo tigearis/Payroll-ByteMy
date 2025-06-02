@@ -1,0 +1,234 @@
+# ================================
+# RBAC SYSTEM GRAPHQL QUERIES
+# Following project GraphQL standards
+# ================================
+
+# Get current user's roles and permissions
+query GetCurrentUserRoles {
+  users(limit: 1) {
+    id
+    email
+    is_active
+    is_staff
+    user_roles {
+      role {
+        id
+        name
+        display_name
+        description
+        priority
+        is_system_role
+        role_permissions {
+          permission {
+            id
+            action
+            description
+            resource {
+              id
+              name
+              display_name
+              description
+            }
+          }
+          conditions
+        }
+      }
+      created_at
+      updated_at
+    }
+  }
+}
+
+# Get user's effective permissions (includes inheritance)
+query GetUserEffectivePermissions($userId: uuid!) {
+  get_user_effective_permissions(args: { p_user_id: $userId }) {
+    resource
+    action
+    granted_by
+    source_type
+    conditions
+  }
+}
+
+# Check if user can perform specific action
+query CanUserPerformAction(
+  $userId: uuid!
+  $resource: String!
+  $action: String!
+) {
+  user_can_perform_action(
+    args: { p_user_id: $userId, p_resource: $resource, p_action: $action }
+  )
+}
+
+# Get Hasura JWT claims for user
+query GetHasuraClaimsForUser($clerkUserId: String!) {
+  get_hasura_claims(args: { user_clerk_id: $clerkUserId })
+}
+
+# Get all available roles (for admin interfaces)
+query GetAllRoles {
+  roles(order_by: { priority: desc }) {
+    id
+    name
+    display_name
+    description
+    priority
+    is_system_role
+    created_at
+    updated_at
+    role_permissions {
+      id
+      conditions
+      permission {
+        id
+        action
+        description
+        resource {
+          id
+          name
+          display_name
+          description
+        }
+      }
+    }
+  }
+}
+
+# Get all resources and their permissions
+query GetResourcesAndPermissions {
+  resources(order_by: { name: asc }) {
+    id
+    name
+    display_name
+    description
+    permissions {
+      id
+      action
+      description
+    }
+  }
+}
+
+# Get users with their role assignments (admin view)
+query GetUsersWithRoles($limit: Int = 50, $offset: Int = 0) {
+  users(limit: $limit, offset: $offset, order_by: { created_at: desc }) {
+    id
+    email
+    is_active
+    is_staff
+    created_at
+    user_roles {
+      id
+      created_at
+      role {
+        id
+        name
+        display_name
+        priority
+      }
+    }
+  }
+}
+
+# Get permission overrides for a user
+query GetUserPermissionOverrides($userId: uuid!) {
+  permission_overrides(
+    where: { user_id: { _eq: $userId } }
+    order_by: { created_at: desc }
+  ) {
+    id
+    resource
+    operation
+    granted
+    conditions
+    expires_at
+    created_at
+    updated_at
+  }
+}
+
+# Get role-based permission overrides
+query GetRolePermissionOverrides($roleName: String!) {
+  permission_overrides(
+    where: { role: { _eq: $roleName } }
+    order_by: { created_at: desc }
+  ) {
+    id
+    resource
+    operation
+    granted
+    conditions
+    expires_at
+    created_at
+    updated_at
+  }
+}
+
+# Search users by email (for role assignment)
+query SearchUsersByEmail($emailPattern: String!) {
+  users(
+    where: { email: { _ilike: $emailPattern } }
+    limit: 10
+    order_by: { email: asc }
+  ) {
+    id
+    email
+    is_active
+    user_roles {
+      role {
+        name
+        display_name
+      }
+    }
+  }
+}
+
+# Get role hierarchy with inheritance visualization
+query GetRoleHierarchy {
+  roles(order_by: { priority: desc }) {
+    id
+    name
+    display_name
+    description
+    priority
+    is_system_role
+    # Count of direct permissions
+    role_permissions_aggregate {
+      aggregate {
+        count
+      }
+    }
+    # Count of users with this role
+    user_roles_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Get audit logs related to permission changes
+query GetPermissionAuditLogs(
+  $limit: Int = 50
+  $offset: Int = 0
+  $userId: uuid = null
+) {
+  permission_audit_log(
+    limit: $limit
+    offset: $offset
+    order_by: { timestamp: desc }
+    where: { user_id: { _eq: $userId } }
+  ) {
+    id
+    user_id
+    action
+    resource_type
+    resource_id
+    old_permissions
+    new_permissions
+    changed_by
+    timestamp
+    reason
+  }
+}

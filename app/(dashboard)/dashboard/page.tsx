@@ -1,67 +1,156 @@
 // app/(dashboard)/dashboard/page.tsx
-import { CalendarDays, Users, Calculator, AlertTriangle } from "lucide-react"
-import Link from "next/link"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { UpcomingPayrolls } from "@/components/upcoming-payrolls"
-import { UrgentAlerts } from "@/components/urgent-alerts"
+import { useQuery } from "@apollo/client";
+import { CalendarDays, Users, Calculator } from "lucide-react";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { UrgentAlerts } from "@/components/urgent-alerts";
+import {
+  GET_DASHBOARD_STATS,
+  GET_UPCOMING_PAYROLLS,
+} from "@/graphql/queries/dashboard/getDashboardStats";
+import { format } from "date-fns";
+
+interface DashboardStatsData {
+  clients_aggregate: { aggregate: { count: number } };
+  payrolls_aggregate: { aggregate: { count: number } };
+  active_payrolls: { aggregate: { count: number } };
+  processing_queue: { aggregate: { count: number } };
+}
+
+interface PayrollDate {
+  id: string;
+  adjusted_eft_date: string;
+  processing_date: string;
+}
+
+interface UpcomingPayroll {
+  id: string;
+  name: string;
+  status: string;
+  client: { name: string };
+  payroll_dates: PayrollDate[];
+}
+
+interface UpcomingPayrollsData {
+  payrolls: UpcomingPayroll[];
+}
 
 export default function DashboardPage() {
+  const today = new Date().toISOString().split("T")[0];
+
+  // Fetch dashboard statistics
+  const {
+    data: statsData,
+    loading: statsLoading,
+    error: statsError,
+  } = useQuery<DashboardStatsData>(GET_DASHBOARD_STATS, { errorPolicy: "all" });
+
+  // Fetch upcoming payrolls for the count and next payroll date
+  const { data: upcomingData, loading: upcomingLoading } =
+    useQuery<UpcomingPayrollsData>(GET_UPCOMING_PAYROLLS, {
+      variables: { from_date: today, limit: 1 },
+      errorPolicy: "all",
+    });
+
+  // Extract stats with fallbacks
+  const totalClients = statsData?.clients_aggregate?.aggregate?.count ?? 0;
+  const totalPayrolls = statsData?.payrolls_aggregate?.aggregate?.count ?? 0;
+  const activePayrolls = statsData?.active_payrolls?.aggregate?.count ?? 0;
+  const urgentAlerts = statsData?.processing_queue?.aggregate?.count ?? 0;
+
+  // Get next payroll date
+  const nextPayroll = upcomingData?.payrolls?.[0];
+  const nextPayrollDate = nextPayroll?.payroll_dates?.[0]?.adjusted_eft_date;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground">Welcome back! Here&apos;s an overview of your payroll operations.</p>
+          <p className="text-muted-foreground">
+            Welcome back! Here&apos;s an overview of your payroll operations.
+          </p>
         </div>
       </div>
-      <div className="mb-6">
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-6"></div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">28</div>
-            <p className="text-xs text-muted-foreground">+2 from last month</p>
+            {statsLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{totalClients}</div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              {statsError ? "Error loading data" : "Active clients"}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Payrolls</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Payrolls
+            </CardTitle>
             <Calculator className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">42</div>
-            <p className="text-xs text-muted-foreground">+5 from last month</p>
+            {statsLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{totalPayrolls}</div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              {activePayrolls} currently active
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Payrolls</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Upcoming Payrolls
+            </CardTitle>
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">Next: March 15, 2025</p>
+            {upcomingLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{activePayrolls}</div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              {nextPayrollDate
+                ? `Next: ${format(new Date(nextPayrollDate), "MMM dd, yyyy")}`
+                : "No upcoming payrolls"}
+            </p>
           </CardContent>
         </Card>
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Urgent Alerts</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Processing Queue
+            </CardTitle>
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">Requires immediate attention</p>
+            {statsLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{urgentAlerts}</div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              {urgentAlerts > 0 ? "Requires attention" : "All up to date"}
+            </p>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
-
+      {/* 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
@@ -81,23 +170,22 @@ export default function DashboardPage() {
         </Card>
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Upcoming Payrolls</CardTitle>
+            <CardTitle>My Upcoming Payrolls</CardTitle>
           </CardHeader>
           <CardContent>
             <UpcomingPayrolls />
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
       <Card>
         <CardHeader>
-          <CardTitle>Urgent Alerts</CardTitle>
+          <CardTitle>My Upcoming Payrolls</CardTitle>
         </CardHeader>
         <CardContent>
           <UrgentAlerts />
         </CardContent>
       </Card>
     </div>
-    
-  )
+  );
 }

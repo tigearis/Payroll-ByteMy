@@ -1,0 +1,40 @@
+table:
+  name: app_settings
+  schema: public
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - permissions
+      filter: {}
+    comment: All roles can view app settings
+  - role: manager
+    permission:
+      columns:
+        - id
+        - permissions
+      filter: {}
+    comment: All roles can view app settings
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - permissions
+      filter: {}
+    comment: Org admins can view app settings
+  - role: viewer
+    permission:
+      columns:
+        - id
+        - permissions
+      filter: {}
+    comment: All roles can view app settings
+update_permissions:
+  - role: org_admin
+    permission:
+      columns:
+        - permissions
+      filter: {}
+      check: {}
+    comment: Only org admins can update app settings
