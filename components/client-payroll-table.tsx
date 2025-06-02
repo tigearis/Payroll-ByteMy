@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Payroll } from "@/types/interface";
 
@@ -10,7 +17,10 @@ interface ClientPayrollsTableProps {
   isLoading?: boolean;
 }
 
-export function ClientPayrollsTable({ payrolls, isLoading = false }: ClientPayrollsTableProps) {
+export function ClientPayrollsTable({
+  payrolls,
+  isLoading = false,
+}: ClientPayrollsTableProps) {
   // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -36,7 +46,15 @@ export function ClientPayrollsTable({ payrolls, isLoading = false }: ClientPayro
   const formatDayOfWeek = (dayValue?: number) => {
     if (dayValue === undefined || dayValue === null) return "N/A";
 
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
     return days[dayValue % 7]; // Ensure it's within 0-6 range
   };
 
@@ -64,14 +82,18 @@ export function ClientPayrollsTable({ payrolls, isLoading = false }: ClientPayro
 
   // Function to display the appropriate date value based on date type
   const displayDateValue = (payroll: Payroll) => {
-    if (!payroll.payroll_date_type || !payroll.payroll_date_type.name) return "N/A";
+    if (!payroll.payrollDateType || !payroll.payrollDateType.name) return "N/A";
 
-    const dateTypeName = payroll.payroll_date_type.name.toUpperCase();
+    const dateTypeName = payroll.payrollDateType.name.toUpperCase();
 
-    if (dateTypeName.includes("DOW") || dateTypeName.includes("WEEK A") || dateTypeName.includes("WEEK B")) {
-      return formatDayOfWeek(payroll.date_value);
+    if (
+      dateTypeName.includes("DOW") ||
+      dateTypeName.includes("WEEK A") ||
+      dateTypeName.includes("WEEK B")
+    ) {
+      return formatDayOfWeek(payroll.dateValue);
     } else {
-      return formatFixedDate(payroll.date_value);
+      return formatFixedDate(payroll.dateValue);
     }
   };
 
@@ -97,17 +119,24 @@ export function ClientPayrollsTable({ payrolls, isLoading = false }: ClientPayro
           payrolls.map((payroll) => (
             <TableRow key={payroll.id}>
               <TableCell>
-                <Link href={`/payrolls/${payroll.id}`} className="text-primary hover:underline">
+                <Link
+                  href={`/payrolls/${payroll.id}`}
+                  className="text-primary hover:underline"
+                >
                   {payroll.name}
                 </Link>
               </TableCell>
-              <TableCell>{formatName(payroll.payroll_cycle?.name) || "N/A"}</TableCell>
-              <TableCell>{formatName(payroll.payroll_date_type?.name)}</TableCell>
               <TableCell>
-                {displayDateValue(payroll)}
+                {formatName(payroll.payrollCycle?.name) || "N/A"}
               </TableCell>
+              <TableCell>{formatName(payroll.payrollDateType?.name)}</TableCell>
+              <TableCell>{displayDateValue(payroll)}</TableCell>
               <TableCell>
-                <Badge variant={payroll.status === "Active" ? "default" : "secondary"}>
+                <Badge
+                  variant={
+                    payroll.status === "Active" ? "default" : "secondary"
+                  }
+                >
                   {payroll.status}
                 </Badge>
               </TableCell>

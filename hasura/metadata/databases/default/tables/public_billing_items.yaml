@@ -1,0 +1,10 @@
+table:
+  name: billing_items
+  schema: public
+object_relationships:
+  - name: invoice_reference
+    using:
+      foreign_key_constraint_on: invoice_id
+  - name: payroll
+    using:
+      foreign_key_constraint_on: payroll_id

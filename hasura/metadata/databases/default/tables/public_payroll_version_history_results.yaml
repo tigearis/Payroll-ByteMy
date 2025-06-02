@@ -1,0 +1,3 @@
+table:
+  name: payroll_version_history_results
+  schema: public

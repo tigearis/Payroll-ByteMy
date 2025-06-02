@@ -2,43 +2,56 @@
 import { gql } from "@apollo/client";
 
 export const GET_PAYROLLS_BY_MONTH = gql`
-query GetPayrollsByMonth($start_date: date!, $end_date: date!) {
-  payrolls(where: {payroll_dates: {_or: [{processing_date: {_gte: $start_date, _lt: $end_date}}, {adjusted_eft_date: {_gte: $start_date, _lt: $end_date}}]}}) {
-    id
-    name
-    client {
+  query GetPayrollsByMonth($start_date: date!, $end_date: date!) {
+    payrolls(
+      where: {
+        payroll_dates: {
+          adjusted_eft_date: { _gte: $start_date, _lt: $end_date }
+        }
+      }
+    ) {
+      id
       name
-    }
-    payroll_system
-    status
-    payroll_dates(where: {_or: [{processing_date: {_gte: $start_date, _lt: $end_date}}, {adjusted_eft_date: {_gte: $start_date, _lt: $end_date}}]}, order_by: {adjusted_eft_date: asc}, limit: 1) {
-      processing_date
-      adjusted_eft_date
-    }
-    payroll_cycle {
-      name
-    }
-    payroll_date_type {
-      name
-    }
-    processing_time
-    userByPrimaryConsultantUserId {
-      name
-      leaves {
-        start_date
-        end_date
-        reason
-        leave_type
-        status
+      client {
+        name
+      }
+      payroll_system
+      status
+      employee_count
+      processing_time
+      payroll_dates(
+        where: { adjusted_eft_date: { _gte: $start_date, _lt: $end_date } }
+        order_by: { adjusted_eft_date: asc }
+      ) {
+        processing_date
+        adjusted_eft_date
+        original_eft_date
+      }
+      payroll_cycle {
+        name
+      }
+      payroll_date_type {
+        name
+      }
+      userByPrimaryConsultantUserId {
+        id
+        name
+        leaves {
+          start_date
+          end_date
+          reason
+          leave_type
+          status
+        }
+      }
+      userByBackupConsultantUserId {
+        id
+        name
+      }
+      userByManagerUserId {
+        id
+        name
       }
     }
-    userByBackupConsultantUserId {
-      name
-    }
-    userByManagerUserId {
-      name
-    }
   }
-}
-
 `;

@@ -1,0 +1,19 @@
+actions:
+  - name: commitPayrollAssignments
+    definition:
+      kind: synchronous
+      handler: http://localhost:3000/api/commit-payroll-assignments
+      forward_client_headers: true
+      headers:
+        - name: Content-Type
+          value: application/json
+    permissions:
+      - role: user
+custom_types:
+  enums: []
+  input_objects:
+    - name: PayrollAssignmentInput
+  objects:
+    - name: AffectedAssignment
+    - name: CommitPayrollAssignmentsOutput
+  scalars: []

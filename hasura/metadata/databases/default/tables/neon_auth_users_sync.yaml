@@ -1,0 +1,15 @@
+table:
+  name: users_sync
+  schema: neon_auth
+select_permissions:
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - name
+        - email
+        - created_at
+        - updated_at
+        - deleted_at
+      filter: {}
+    comment: Org admins can view Neon Auth sync data

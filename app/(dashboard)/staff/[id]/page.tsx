@@ -1,22 +1,37 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import { UserDetails } from "@/types/interface";
 import { GET_STAFF_BY_ID } from "@/graphql/queries/staff/getStaffById";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
-import { Table, TableHead, TableRow, TableCell, TableBody } from "@/components/ui/table";
-import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
+import {
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from "@/components/ui/table";
+import {
+  Key,
+  ReactElement,
+  JSXElementConstructor,
+  ReactNode,
+  ReactPortal,
+} from "react";
 
-export default function UserInfoPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function UserInfoPage() {
+  const params = useParams();
+  const id = params.id as string;
   const router = useRouter();
   const { isAdmin, isManager, isDeveloper, isConsultant } = useUserRole();
   const { loading, error, data } = useQuery(GET_STAFF_BY_ID, {
     variables: { id },
+    skip: !id, // Skip query if id is not available
   });
 
+  if (!id) return <p>Loading...</p>;
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading user data.</p>;
 
@@ -43,17 +58,78 @@ export default function UserInfoPage({ params }: { params: { id: string } }) {
             <TableCell>{user.email}</TableCell>
             <TableCell>{user.role}</TableCell>
             <TableCell>
-              {user.leave_dates.length > 0 ? (
-                user.leave_dates.map((leave: { id: Key | null | undefined; start_date: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; end_date: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }) => (
-                  <p key={leave.id}>{leave.start_date} - {leave.end_date}</p>
-                ))
-              ) : (
-                "No leave dates"
-              )}
+              {user.leave_dates.length > 0
+                ? user.leave_dates.map(
+                    (leave: {
+                      id: Key | null | undefined;
+                      start_date:
+                        | string
+                        | number
+                        | bigint
+                        | boolean
+                        | ReactElement<
+                            unknown,
+                            string | JSXElementConstructor<any>
+                          >
+                        | Iterable<ReactNode>
+                        | ReactPortal
+                        | Promise<
+                            | string
+                            | number
+                            | bigint
+                            | boolean
+                            | ReactPortal
+                            | ReactElement<
+                                unknown,
+                                string | JSXElementConstructor<any>
+                              >
+                            | Iterable<ReactNode>
+                            | null
+                            | undefined
+                          >
+                        | null
+                        | undefined;
+                      end_date:
+                        | string
+                        | number
+                        | bigint
+                        | boolean
+                        | ReactElement<
+                            unknown,
+                            string | JSXElementConstructor<any>
+                          >
+                        | Iterable<ReactNode>
+                        | ReactPortal
+                        | Promise<
+                            | string
+                            | number
+                            | bigint
+                            | boolean
+                            | ReactPortal
+                            | ReactElement<
+                                unknown,
+                                string | JSXElementConstructor<any>
+                              >
+                            | Iterable<ReactNode>
+                            | null
+                            | undefined
+                          >
+                        | null
+                        | undefined;
+                    }) => (
+                      <p key={leave.id}>
+                        {leave.start_date} - {leave.end_date}
+                      </p>
+                    )
+                  )
+                : "No leave dates"}
             </TableCell>
             {canEditLeave && (
               <TableCell>
-                <Button variant="outline" onClick={() => router.push(`/users/${id}/add-leave`)}>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push(`/users/${id}/add-leave`)}
+                >
                   Add Leave
                 </Button>
               </TableCell>

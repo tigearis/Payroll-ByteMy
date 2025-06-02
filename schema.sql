@@ -116,6 +116,7 @@ ALTER TYPE public.status OWNER TO neondb_owner;
 
 CREATE TYPE public.user_role AS ENUM (
     'admin',
+    'org_admin',
     'manager',
     'consultant',
     'viewer'

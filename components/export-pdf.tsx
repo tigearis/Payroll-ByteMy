@@ -2,7 +2,7 @@
 import { useQuery } from "@apollo/client";
 import { GET_PAYROLL_DATES } from "@/graphql/queries/payrolls/getPayrollDates";
 import { jsPDF } from "jspdf";
-import {autoTable} from "jspdf-autotable";
+import { autoTable } from "jspdf-autotable";
 import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
 
@@ -32,14 +32,22 @@ export function ExportPdf({ payrollId }: ExportPdfProps) {
     const doc = new jsPDF();
     const tableData = dates.map((date: PayrollDate, index: number) => [
       index + 1,
-      format(parseISO(date.original_eft_date), 'yyyy-MM-dd'),
-      format(parseISO(date.adjusted_eft_date), 'yyyy-MM-dd'),
-      format(parseISO(date.processing_date), 'yyyy-MM-dd'),
-      date.notes || '',
-    ]);    
+      format(parseISO(date.original_eft_date), "yyyy-MM-dd"),
+      format(parseISO(date.adjusted_eft_date), "yyyy-MM-dd"),
+      format(parseISO(date.processing_date), "yyyy-MM-dd"),
+      date.notes || "",
+    ]);
 
     autoTable(doc, {
-      head: [['Period', 'Original EFT Date', 'Adjusted EFT Date', 'Processing Date', 'Notes']],
+      head: [
+        [
+          "Period",
+          "Original EFT Date",
+          "Adjusted EFT Date",
+          "Processing Date",
+          "Notes",
+        ],
+      ],
       body: tableData,
     });
 
@@ -47,7 +55,7 @@ export function ExportPdf({ payrollId }: ExportPdfProps) {
   };
 
   return (
-    <Button onClick={downloadPdf}>
+    <Button onClick={downloadPdf} data-export="pdf" variant="outline" size="sm">
       Export PDF
     </Button>
   );

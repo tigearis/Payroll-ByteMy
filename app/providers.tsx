@@ -1,42 +1,29 @@
 // app/providers.tsx
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { ApolloProvider, ApolloClient, HttpLink, from, InMemoryCache, NormalizedCacheObject } from '@apollo/client'
-import { setContext } from '@apollo/client/link/context'
-import { useAuth } from '@clerk/nextjs'
+import { ClerkProvider } from "@clerk/nextjs";
+import { ApolloProvider } from "@apollo/client";
+import client from "@/lib/apollo-client";
+import { AuthProvider } from "@/lib/auth-context";
 
-export const ApolloProviderWrapper = ({ children }: { children: React.ReactNode }) => {
-  const { getToken } = useAuth();
-  const [apolloClient, setApolloClient] = useState<ApolloClient<NormalizedCacheObject> | null>(null);
+// ================================
+// TYPES
+// ================================
 
-  useEffect(() => {
-    const initializeApolloClient = async () => {
-      const token = await getToken({ template: 'hasura' });
+interface ProvidersProps {
+  children: React.ReactNode;
+}
 
-      const authMiddleware = setContext((_, { headers }) => ({
-        headers: {
-          ...headers,
-          authorization: token ? `Bearer ${token}` : "",
-        },
-      }));
+// ================================
+// PROVIDERS COMPONENT
+// ================================
 
-      const httpLink = new HttpLink({
-        uri: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
-      });
-
-      const client = new ApolloClient({
-        link: from([authMiddleware, httpLink]),
-        cache: new InMemoryCache(),
-      });
-
-      setApolloClient(client);
-    };
-
-    initializeApolloClient();
-  }, [getToken]);
-
-  if (!apolloClient) return null; // Prevent rendering until ApolloClient is initialized
-
-  return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
-};
+export function Providers({ children }: ProvidersProps) {
+  return (
+    <ClerkProvider>
+      <ApolloProvider client={client}>
+        <AuthProvider>{children}</AuthProvider>
+      </ApolloProvider>
+    </ClerkProvider>
+  );
+}

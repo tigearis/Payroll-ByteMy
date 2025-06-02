@@ -33,17 +33,17 @@ export interface Client {
   active: boolean;
   createdAt: string;
   updatedAt: string;
-  
+
   // Relationships
   payrolls?: Payroll[];
-};
+}
 
 export type ClientExternalSystem = {
   id: string;
   clientId: string;
   systemId: string;
   systemClientId?: string;
-  
+
   // Relationships
   client: Client;
 };
@@ -56,18 +56,20 @@ export type ExternalSystem = {
   icon?: string;
 };
 
-export type Holiday = {
+export interface Holiday {
   id: string;
   date: string;
-  localName: string;
+  local_name: string;
   name: string;
-  countryCode: string;
-  region?: string;
-  isFixed: boolean;
-  isGlobal: boolean;
-  launchYear?: number;
-  types?: string[];
-};
+  country_code: string;
+  region?: string[];
+  is_fixed: boolean;
+  is_global: boolean;
+  launch_year?: number;
+  types: string[];
+  created_at: string;
+  updated_at: string;
+}
 
 export type Leave = {
   id: string;
@@ -82,29 +84,24 @@ export type Leave = {
   user: User; // Associated user
 };
 
-export type Note = {
+export interface Note {
   id: string;
-  entityType: "payroll" | "client";
-  entityId: string;
-  userId?: string;
+  entity_id: string;
+  entity_type: "payroll" | "client";
+  user_id?: string;
   content: string;
-  isImportant: boolean;
-  createdAt: string;
-  updatedAt: string;
-  
-  // Relationships
-  user?: {
-    id: string;
-    name: string;
-  } | null;
-};
+  is_important: boolean;
+  user?: any; // Using any to avoid circular dependency
+  created_at: string;
+  updated_at: string;
+}
 
 export type PayrollCycle = {
   id: string;
   name: string;
   payrollCycleType: string;
   description?: string;
-  
+
   // Relationships
   payrolls?: Payroll[];
 };
@@ -114,7 +111,7 @@ export type PayrollDateType = {
   name: string;
   payrollDateType: string;
   description?: string;
-  
+
   // Relationships
   payrolls?: Payroll[];
 };
@@ -126,13 +123,21 @@ export type PayrollDate = {
   adjustedEftDate: string;
   processingDate: string;
   notes?: string;
-  
+
   // Relationships
   payroll: Payroll;
 };
 
 export interface Payroll {
-  dayValue: { original_eft_date?: string; adjusted_eft_date?: string; processing_date?: string; id: string; notes?: string; }[] | undefined;
+  dayValue:
+    | {
+        original_eft_date?: string;
+        adjusted_eft_date?: string;
+        processing_date?: string;
+        id: string;
+        notes?: string;
+      }[]
+    | undefined;
   employee_count: undefined;
   id: string;
   name: string;
@@ -149,7 +154,7 @@ export interface Payroll {
   createdAt: string;
   updatedAt: string;
   employeeCount?: number;
-  
+
   // Relationships
   client: Client;
   payrollCycle?: PayrollCycle;
@@ -165,7 +170,7 @@ export interface User {
   name: string;
   email: string;
   role: "admin" | "org_admin" | "manager" | "consultant" | "viewer";
-  
+
   // Relationships
   managedPayrolls?: Payroll[];
   primaryPayrolls?: Payroll[];
@@ -173,17 +178,25 @@ export interface User {
   leaves?: Leave[];
   notes?: Note[];
   workSchedules?: WorkSchedule[];
-};
+}
 
-export type WorkSchedule = {
+export interface WorkSchedule {
   id: string;
-  userId: string;
-  workDay: string;
-  workHours: number;
-  
-  // Relationships
-  user: User;
-};
+  user_id: string;
+  work_day:
+    | "Monday"
+    | "Tuesday"
+    | "Wednesday"
+    | "Thursday"
+    | "Friday"
+    | "Saturday"
+    | "Sunday";
+  work_hours: number;
+  user?: any; // Using any to avoid circular dependency
+  work_schedule_user?: any;
+  created_at: string;
+  updated_at: string;
+}
 
 export type Session = {
   id: string;
@@ -201,34 +214,6 @@ export interface GeneratePayrollDatesArgs {
   p_start_date: string; // Start date for generating payroll dates (ISO format)
   p_end_date: string; // End date for generating payroll dates (ISO format)
   p_max_dates: number; // Maximum number of payroll dates to generate
-};
-
-export interface Payroll {
-  id: string;
-  name: string;
-  date_value?: number;
-  status: "Active" | "Inactive" | "Implementation";
-  processing_time?: string;
-  processing_days_before_eft?: number;
-  payroll_system?: string;
-  payroll_cycle?: {
-    name: string;
-    id: string;
-  };
-  payroll_date_type?: {
-    name: string;
-    id: string;
-  };
-  payroll_dates?: Array<{
-    original_eft_date?: string;
-    adjusted_eft_date?: string;
-    processing_date?: string;
-    id: string;
-    notes?: string;
-  }>;
-  userByBackupConsultantUserId?: UserDetails;
-  userByManagerUserId?: UserDetails;
-  userByPrimaryConsultantUserId?: UserDetails;
 }
 
 export interface UserDetails {
@@ -247,3 +232,51 @@ export interface UserDetails {
   }>;
 }
 
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  date: Date;
+  type: "payroll" | "holiday" | "leave";
+  color: string;
+}
+
+export interface FeatureFlag {
+  id: string;
+  feature_name: string;
+  is_enabled: boolean;
+  allowed_roles: string[]; // Using string[] to avoid circular dependency
+  updated_at: string;
+}
+
+export interface AppSettings {
+  id: string;
+  permissions?: Record<string, any>;
+}
+
+// Weekday interface for payroll scheduling
+export interface Weekday {
+  value: string; // "1" to "5" representing Monday to Friday
+  label: string; // "Monday", "Tuesday", etc.
+}
+
+// Business weekday type for internal calculations
+export type BusinessWeekday = 0 | 1 | 2 | 3 | 4 | 5; // 0 = non-business day, 1-5 = Monday-Friday
+
+// Calendar day info interface for enhanced calendar components
+export interface CalendarDayInfo {
+  date: Date;
+  day: number; // Day of month (1-31)
+  businessWeekday: BusinessWeekday; // Business weekday number (0-5)
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  weekType?: "A" | "B"; // For fortnightly payrolls
+}
+
+// Enhanced calendar props interface
+export interface EnhancedCalendarProps {
+  mode: "fortnightly" | "fixed";
+  selectedWeek?: string;
+  selectedDay?: string;
+  onWeekSelect?: (week: string) => void;
+  onDaySelect: (day: string) => void;
+}

@@ -1,83 +1,115 @@
 // app/(dashboard)/settings/page.tsx
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Loader2, Save } from "lucide-react"
-import { useSession } from "next-auth/react"
+import { useState } from "react";
+import { Loader2, Save } from "lucide-react";
+import { useAuthContext } from "@/lib/auth-context";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { UserRoleManagement } from "@/components/user-role-management"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { UserRoleManagement } from "@/components/user-role-management";
 
-const roles = ["dev", "admin", "manager", "consultant"]
+const roles = ["admin", "org_admin", "manager", "consultant", "viewer"];
 const features = [
   { id: "create", name: "Create" },
   { id: "modify", name: "Modify" },
   { id: "delete", name: "Delete" },
   { id: "view", name: "View" },
-]
+];
 
 export default function SettingsPage() {
-  const { data: session } = useSession()
-  const [isLoading, setIsLoading] = useState(false)
+  const { userRole, hasAdminAccess, isLoading: authLoading } = useAuthContext();
+  const [isLoading, setIsLoading] = useState(false);
   const [roleAccess, setRoleAccess] = useState({
-    dev: { create: true, modify: true, delete: true, view: true },
     admin: { create: true, modify: true, delete: true, view: true },
+    org_admin: { create: true, modify: true, delete: true, view: true },
     manager: { create: true, modify: true, delete: false, view: true },
     consultant: { create: false, modify: true, delete: false, view: true },
-  })
+    viewer: { create: false, modify: false, delete: false, view: true },
+  });
 
   const handleToggle = (role: string, feature: string) => {
     setRoleAccess((prev) => ({
       ...prev,
       [role]: {
         ...prev[role as keyof typeof prev],
-        [feature]: !prev[role as keyof typeof prev][feature as keyof (typeof prev)[keyof typeof prev]],
+        [feature]:
+          !prev[role as keyof typeof prev][
+            feature as keyof (typeof prev)[keyof typeof prev]
+          ],
       },
-    }))
-  }
+    }));
+  };
 
   const handleSave = async () => {
     // Here you would typically save the role access settings to your backend
-    console.log("Role access settings:", roleAccess)
+    console.log("Role access settings:", roleAccess);
     // Implement API call to save settings
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     // Simulate saving settings
     setTimeout(() => {
-      setIsLoading(false)
-    }, 1500)
-  }
+      setIsLoading(false);
+    }, 1500);
+  };
 
-  if (session?.user.role !== "admin" && session?.user.role !== "dev") {
+  if (authLoading) {
     return (
       <div className="space-y-6">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
-          <p className="text-muted-foreground">Manage your account settings and preferences.</p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
-        <div>Unauthorized</div>
       </div>
-    )
+    );
+  }
+
+  if (!hasAdminAccess) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
+          <p className="text-muted-foreground">
+            Manage your account settings and preferences.
+          </p>
+        </div>
+        <div>Unauthorized - Admin access required</div>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
-        <p className="text-muted-foreground">Manage your account settings and preferences.</p>
+        <p className="text-muted-foreground">
+          Manage your account settings and preferences.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -93,11 +125,15 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>General Settings</CardTitle>
-                <CardDescription>Configure your organization and application settings.</CardDescription>
+                <CardDescription>
+                  Configure your organization and application settings.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Organization Information</h3>
+                  <h3 className="text-lg font-medium">
+                    Organization Information
+                  </h3>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="org-name">Organization Name</Label>
@@ -105,15 +141,27 @@ export default function SettingsPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="org-email">Email</Label>
-                      <Input id="org-email" type="email" defaultValue="admin@payrollmatrix.com" />
+                      <Input
+                        id="org-email"
+                        type="email"
+                        defaultValue="admin@payrollmatrix.com"
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="org-phone">Phone</Label>
-                      <Input id="org-phone" type="tel" defaultValue="(555) 987-6543" />
+                      <Input
+                        id="org-phone"
+                        type="tel"
+                        defaultValue="(555) 987-6543"
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="org-website">Website</Label>
-                      <Input id="org-website" type="url" defaultValue="https://payrollmatrix.com" />
+                      <Input
+                        id="org-website"
+                        type="url"
+                        defaultValue="https://payrollmatrix.com"
+                      />
                     </div>
                   </div>
                 </div>
@@ -143,10 +191,18 @@ export default function SettingsPage() {
                           <SelectValue placeholder="Select timezone" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="utc-8">Pacific Time (UTC-8)</SelectItem>
-                          <SelectItem value="utc-7">Mountain Time (UTC-7)</SelectItem>
-                          <SelectItem value="utc-6">Central Time (UTC-6)</SelectItem>
-                          <SelectItem value="utc-5">Eastern Time (UTC-5)</SelectItem>
+                          <SelectItem value="utc-8">
+                            Pacific Time (UTC-8)
+                          </SelectItem>
+                          <SelectItem value="utc-7">
+                            Mountain Time (UTC-7)
+                          </SelectItem>
+                          <SelectItem value="utc-6">
+                            Central Time (UTC-6)
+                          </SelectItem>
+                          <SelectItem value="utc-5">
+                            Eastern Time (UTC-5)
+                          </SelectItem>
                           <SelectItem value="utc">UTC</SelectItem>
                         </SelectContent>
                       </Select>
@@ -204,7 +260,9 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Notification Settings</CardTitle>
-                <CardDescription>Configure how and when you receive notifications.</CardDescription>
+                <CardDescription>
+                  Configure how and when you receive notifications.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
@@ -212,7 +270,9 @@ export default function SettingsPage() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="email-payroll">Payroll Processing</Label>
+                        <Label htmlFor="email-payroll">
+                          Payroll Processing
+                        </Label>
                         <p className="text-sm text-muted-foreground">
                           Receive notifications when payrolls are processed
                         </p>
@@ -221,8 +281,12 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="email-reminders">Payroll Reminders</Label>
-                        <p className="text-sm text-muted-foreground">Receive reminders before payroll due dates</p>
+                        <Label htmlFor="email-reminders">
+                          Payroll Reminders
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          Receive reminders before payroll due dates
+                        </p>
                       </div>
                       <Switch id="email-reminders" defaultChecked />
                     </div>
@@ -239,7 +303,8 @@ export default function SettingsPage() {
                       <div className="space-y-0.5">
                         <Label htmlFor="email-system">System Updates</Label>
                         <p className="text-sm text-muted-foreground">
-                          Receive notifications about system updates and maintenance
+                          Receive notifications about system updates and
+                          maintenance
                         </p>
                       </div>
                       <Switch id="email-system" defaultChecked />
@@ -255,14 +320,18 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="app-payroll">Payroll Processing</Label>
-                        <p className="text-sm text-muted-foreground">Show notifications when payrolls are processed</p>
+                        <p className="text-sm text-muted-foreground">
+                          Show notifications when payrolls are processed
+                        </p>
                       </div>
                       <Switch id="app-payroll" defaultChecked />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="app-reminders">Payroll Reminders</Label>
-                        <p className="text-sm text-muted-foreground">Show reminders before payroll due dates</p>
+                        <p className="text-sm text-muted-foreground">
+                          Show reminders before payroll due dates
+                        </p>
                       </div>
                       <Switch id="app-reminders" defaultChecked />
                     </div>
@@ -300,7 +369,9 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Users & Roles</CardTitle>
-                <CardDescription>Manage users and their access permissions.</CardDescription>
+                <CardDescription>
+                  Manage users and their access permissions.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <UserRoleManagement />
@@ -312,7 +383,9 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Security Settings</CardTitle>
-                <CardDescription>Configure security settings for your account.</CardDescription>
+                <CardDescription>
+                  Configure security settings for your account.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
@@ -321,15 +394,20 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="password-expiry">Password Expiry</Label>
-                        <p className="text-sm text-muted-foreground">Require password change every 90 days</p>
+                        <p className="text-sm text-muted-foreground">
+                          Require password change every 90 days
+                        </p>
                       </div>
                       <Switch id="password-expiry" defaultChecked />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="password-complexity">Password Complexity</Label>
+                        <Label htmlFor="password-complexity">
+                          Password Complexity
+                        </Label>
                         <p className="text-sm text-muted-foreground">
-                          Require complex passwords (uppercase, lowercase, numbers, symbols)
+                          Require complex passwords (uppercase, lowercase,
+                          numbers, symbols)
                         </p>
                       </div>
                       <Switch id="password-complexity" defaultChecked />
@@ -340,19 +418,25 @@ export default function SettingsPage() {
                 <Separator />
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Two-Factor Authentication</h3>
+                  <h3 className="text-lg font-medium">
+                    Two-Factor Authentication
+                  </h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="2fa-required">Require 2FA</Label>
-                        <p className="text-sm text-muted-foreground">Require two-factor authentication for all users</p>
+                        <p className="text-sm text-muted-foreground">
+                          Require two-factor authentication for all users
+                        </p>
                       </div>
                       <Switch id="2fa-required" defaultChecked />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="2fa-method">2FA Method</Label>
-                        <p className="text-sm text-muted-foreground">Select the preferred 2FA method</p>
+                        <p className="text-sm text-muted-foreground">
+                          Select the preferred 2FA method
+                        </p>
                       </div>
                       <Select defaultValue="app">
                         <SelectTrigger id="2fa-method" className="w-[180px]">
@@ -376,10 +460,15 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="session-timeout">Session Timeout</Label>
-                        <p className="text-sm text-muted-foreground">Automatically log out inactive users</p>
+                        <p className="text-sm text-muted-foreground">
+                          Automatically log out inactive users
+                        </p>
                       </div>
                       <Select defaultValue="30">
-                        <SelectTrigger id="session-timeout" className="w-[180px]">
+                        <SelectTrigger
+                          id="session-timeout"
+                          className="w-[180px]"
+                        >
                           <SelectValue placeholder="Select timeout" />
                         </SelectTrigger>
                         <SelectContent>
@@ -424,7 +513,10 @@ export default function SettingsPage() {
                 <h3 className="text-lg font-medium capitalize">{role}</h3>
                 <div className="grid grid-cols-2 gap-4">
                   {features.map((feature) => (
-                    <div key={feature.id} className="flex items-center space-x-2">
+                    <div
+                      key={feature.id}
+                      className="flex items-center space-x-2"
+                    >
                       <Switch
                         id={`${role}-${feature.id}`}
                         checked={
@@ -434,7 +526,9 @@ export default function SettingsPage() {
                         }
                         onCheckedChange={() => handleToggle(role, feature.id)}
                       />
-                      <Label htmlFor={`${role}-${feature.id}`}>{feature.name}</Label>
+                      <Label htmlFor={`${role}-${feature.id}`}>
+                        {feature.name}
+                      </Label>
                     </div>
                   ))}
                 </div>
@@ -447,5 +541,5 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

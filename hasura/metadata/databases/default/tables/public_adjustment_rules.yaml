@@ -1,0 +1,82 @@
+table:
+  name: adjustment_rules
+  schema: public
+object_relationships:
+  - name: payroll_cycle
+    using:
+      foreign_key_constraint_on: cycle_id
+  - name: payroll_date_type
+    using:
+      foreign_key_constraint_on: date_type_id
+insert_permissions:
+  - role: org_admin
+    permission:
+      check: {}
+      columns:
+        - cycle_id
+        - date_type_id
+        - rule_description
+        - rule_code
+    comment: Org admins can insert adjustment rules
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - cycle_id
+        - date_type_id
+        - rule_code
+        - rule_description
+      filter: {}
+    comment: All users can view adjustment rules as they're system-wide settings
+  - role: manager
+    permission:
+      columns:
+        - id
+        - cycle_id
+        - date_type_id
+        - rule_code
+        - rule_description
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view and aggregate adjustment rules
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - cycle_id
+        - date_type_id
+        - rule_code
+        - rule_description
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins have full view access to adjustment rules
+  - role: viewer
+    permission:
+      columns:
+        - id
+        - rule_code
+        - rule_description
+      filter: {}
+    comment: Viewers can view basic adjustment rule information
+update_permissions:
+  - role: org_admin
+    permission:
+      columns:
+        - rule_code
+        - rule_description
+        - updated_at
+      filter: {}
+      check: {}
+    comment: Org admins can update adjustment rules
+delete_permissions:
+  - role: org_admin
+    permission:
+      filter: {}
+    comment: Org admins can delete adjustment rules
+apollo_federation_config:
+  enable: v1
