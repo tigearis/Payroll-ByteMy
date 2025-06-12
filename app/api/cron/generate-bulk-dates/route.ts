@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { validateCronRequest } from "@/lib/api-auth";
+import { secureHasuraService } from "@/lib/secure-hasura-service";
+import { gql } from "@apollo/client";
 
 // GraphQL query for bulk date generation
-const GENERATE_BULK_DATES_QUERY = `
+const GENERATE_BULK_DATES_QUERY = gql`
   query GenerateBulkPayrollDates($yearsAhead: Int!) {
     generate_all_payroll_dates_bulk(p_years_ahead: $yearsAhead) {
       payroll_id
@@ -14,7 +17,7 @@ const GENERATE_BULK_DATES_QUERY = `
 `;
 
 // GraphQL query to check coverage
-const CHECK_COVERAGE_QUERY = `
+const CHECK_COVERAGE_QUERY = gql`
   query CheckPayrollDateCoverage {
     check_payroll_date_coverage {
       payroll_id
@@ -28,7 +31,7 @@ const CHECK_COVERAGE_QUERY = `
 `;
 
 // GraphQL query for stats
-const GET_STATS_QUERY = `
+const GET_STATS_QUERY = gql`
   query GetPayrollDateStats {
     get_payroll_date_stats {
       total_active_payrolls
@@ -44,8 +47,7 @@ const GET_STATS_QUERY = `
 export async function POST(request: NextRequest) {
   try {
     // Verify this is a legitimate cron request
-    const cronSecret = request.headers.get("x-cron-secret");
-    if (cronSecret !== process.env.CRON_SECRET) {
+    if (!validateCronRequest(request)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -53,51 +55,34 @@ export async function POST(request: NextRequest) {
 
     const { yearsAhead = 2, checkOnly = false } = await request.json();
 
-    // Get Hasura admin token for database operations
-    const hasuraAdminSecret = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
-    if (!hasuraAdminSecret) {
-      throw new Error("Hasura admin secret not configured");
-    }
-
     // First, check current coverage
     console.log("📊 Checking current date coverage...");
-    const coverageResponse = await fetch(process.env.HASURA_GRAPHQL_URL!, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": hasuraAdminSecret,
-      },
-      body: JSON.stringify({
-        query: CHECK_COVERAGE_QUERY,
-      }),
-    });
+    const { data: coverageData, errors: coverageErrors } =
+      await secureHasuraService.executeAdminQuery(
+        CHECK_COVERAGE_QUERY,
+        {},
+        { skipAuth: true } // System operation
+      );
 
-    const coverageData = await coverageResponse.json();
-    if (coverageData.errors) {
+    if (coverageErrors) {
       throw new Error(
-        `Coverage check failed: ${JSON.stringify(coverageData.errors)}`
+        `Coverage check failed: ${JSON.stringify(coverageErrors)}`
       );
     }
 
-    const coverage = coverageData.data.check_payroll_date_coverage;
+    const coverage = coverageData.check_payroll_date_coverage;
     console.log(
       `📈 Coverage check complete: ${coverage.length} payrolls analyzed`
     );
 
     // Get current stats
-    const statsResponse = await fetch(process.env.HASURA_GRAPHQL_URL!, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": hasuraAdminSecret,
-      },
-      body: JSON.stringify({
-        query: GET_STATS_QUERY,
-      }),
-    });
+    const { data: statsData } = await secureHasuraService.executeAdminQuery(
+      GET_STATS_QUERY,
+      {},
+      { skipAuth: true }
+    );
 
-    const statsData = await statsResponse.json();
-    const stats = statsData.data?.get_payroll_date_stats?.[0];
+    const stats = statsData?.get_payroll_date_stats?.[0];
 
     // If checkOnly, return analysis without generating
     if (checkOnly) {
@@ -114,26 +99,20 @@ export async function POST(request: NextRequest) {
       `🚀 Generating ${yearsAhead} years of dates for all active payrolls...`
     );
 
-    const generateResponse = await fetch(process.env.HASURA_GRAPHQL_URL!, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": hasuraAdminSecret,
-      },
-      body: JSON.stringify({
-        query: GENERATE_BULK_DATES_QUERY,
-        variables: { yearsAhead },
-      }),
-    });
+    const { data: generateData, errors: generateErrors } =
+      await secureHasuraService.executeAdminQuery(
+        GENERATE_BULK_DATES_QUERY,
+        { yearsAhead },
+        { skipAuth: true }
+      );
 
-    const generateData = await generateResponse.json();
-    if (generateData.errors) {
+    if (generateErrors) {
       throw new Error(
-        `Bulk generation failed: ${JSON.stringify(generateData.errors)}`
+        `Bulk generation failed: ${JSON.stringify(generateErrors)}`
       );
     }
 
-    const results = generateData.data.generate_all_payroll_dates_bulk;
+    const results = generateData.generate_all_payroll_dates_bulk;
 
     // Calculate summary statistics
     const successful = results.filter((r: any) => r.status === "success");
@@ -189,25 +168,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const hasuraAdminSecret = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
-    if (!hasuraAdminSecret) {
-      throw new Error("Hasura admin secret not configured");
-    }
-
     // Get current stats only
-    const statsResponse = await fetch(process.env.HASURA_GRAPHQL_URL!, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": hasuraAdminSecret,
-      },
-      body: JSON.stringify({
-        query: GET_STATS_QUERY,
-      }),
-    });
+    const { data: statsData } = await secureHasuraService.executeAdminQuery(
+      GET_STATS_QUERY,
+      {},
+      { skipAuth: true }
+    );
 
-    const statsData = await statsResponse.json();
-    const stats = statsData.data?.get_payroll_date_stats?.[0];
+    const stats = statsData?.get_payroll_date_stats?.[0];
 
     return NextResponse.json({
       status: "healthy",

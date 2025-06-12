@@ -83,7 +83,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { PayrollDetailsLoading } from "@/components/ui/modern-loading";
+import { PayrollDetailsLoading } from "@/components/ui/loading-states";
 
 // Add error boundary component for debugging
 function ErrorBoundary({ children }: { children: React.ReactNode }) {

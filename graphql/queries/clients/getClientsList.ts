@@ -15,6 +15,7 @@ export const GET_CLIENTS = gql`
         id
         name
         status
+        employee_count
         payroll_cycle {
           name
         }

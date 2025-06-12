@@ -15,7 +15,7 @@ export default function OnboardingPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Onboarding</h2>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Onboarding</h1>
         <p className="text-muted-foreground">Manage onboarding for new clients and payrolls</p>
       </div>
 

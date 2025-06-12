@@ -16,11 +16,18 @@ import {
   ChevronLeft,
   ChevronRight,
   Code,
+  Shield,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ThemeToggle } from "./theme-toggle";
+
+// Local utility function
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 // Role display mapping
 const roleDisplayNames: Record<string, string> = {
@@ -30,7 +37,7 @@ const roleDisplayNames: Record<string, string> = {
   org_admin: "Admin",
 };
 
-const routes = [
+const allRoutes = [
   {
     href: "/dashboard",
     label: "Dashboard",
@@ -66,6 +73,7 @@ const routes = [
     label: "Tax Calculator",
     icon: DollarSign,
     roles: ["admin"],
+    devOnly: true, // Only show in development
   },
   {
     href: "/settings",
@@ -78,8 +86,23 @@ const routes = [
     label: "Developer",
     icon: Code,
     roles: ["admin"], // Admin only
+    devOnly: true, // Only show in development
+  },
+  {
+    href: "/security",
+    label: "Security",
+    icon: Shield,
+    roles: ["admin", "org_admin"], // Admin and org_admin only
   },
 ];
+
+// Filter out dev-only routes in production
+const routes = allRoutes.filter(route => {
+  if (route.devOnly && process.env.NODE_ENV === 'production') {
+    return false;
+  }
+  return true;
+});
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -133,7 +156,7 @@ export function Sidebar() {
           <ThemeToggle />
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-sm text-muted-foreground text-center px-4">
+          <p className="text-sm text-gray-500 text-center px-4">
             Access restricted. Please contact your administrator.
           </p>
         </div>
@@ -183,7 +206,7 @@ export function Sidebar() {
         {/* Optional: Show role indicator */}
         {!isCollapsed && (
           <div className="mt-auto p-4 border-t">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-500">
               Role:{" "}
               <span className="font-medium">
                 {roleDisplayNames[userRole] || userRole}

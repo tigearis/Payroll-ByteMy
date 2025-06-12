@@ -15,7 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Copy, Eye, EyeOff, RefreshCw, User, Shield } from "lucide-react";
-import FixedPayrollSchedulerV3 from "../../../fixed_payroll_scheduler_v3";
 
 const features = [
   {
@@ -960,7 +959,7 @@ export default function DeveloperPage() {
         </CardContent>
       </Card> */}
       {/* Fixed Payroll Scheduler */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>V3 Fixed Payroll Scheduler</CardTitle>
           <CardDescription>
@@ -971,7 +970,7 @@ export default function DeveloperPage() {
         <CardContent>
           <FixedPayrollSchedulerV3 />
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Feature Toggles */}
       {/* <Card>

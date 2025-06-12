@@ -1,10 +1,36 @@
+# Payroll Fragments
+
 fragment PayrollBasicInfo on payrolls {
   id
   name
   status
   employee_count
+  processing_time
   created_at
   updated_at
+}
+
+fragment PayrollFullDetails on payrolls {
+  id
+  name
+  status
+  employee_count
+  processing_time
+  processing_days_before_eft
+  payroll_system
+  date_value
+  version_number
+  parent_payroll_id
+  go_live_date
+  superseded_date
+  version_reason
+  created_by_user_id
+  created_at
+  updated_at
+}
+
+fragment PayrollWithRelations on payrolls {
+  ...PayrollFullDetails
   client {
     id
     name
@@ -20,31 +46,34 @@ fragment PayrollBasicInfo on payrolls {
   userByPrimaryConsultantUserId {
     id
     name
+    email
+  }
+  userByBackupConsultantUserId {
+    id
+    name
+    email
   }
   userByManagerUserId {
     id
     name
+    email
   }
+}
+
+fragment PayrollDate on payroll_dates {
+  id
+  payroll_id
+  original_eft_date
+  adjusted_eft_date
+  processing_date
+  notes
+  created_at
+  updated_at
 }
 
 fragment PayrollWithDates on payrolls {
-  ...PayrollBasicInfo
-  payroll_dates(order_by: { original_eft_date: desc }, limit: 5) {
-    id
-    original_eft_date
-    adjusted_eft_date
-    processing_date
-    notes
-  }
-}
-
-fragment PayrollDetailed on payrolls {
-  ...PayrollWithDates
-  billing_items_aggregate {
-    aggregate {
-      sum {
-        amount
-      }
-    }
+  ...PayrollWithRelations
+  payroll_dates(order_by: { adjusted_eft_date: asc }) {
+    ...PayrollDate
   }
 }

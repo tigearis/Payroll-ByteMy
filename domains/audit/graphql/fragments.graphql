@@ -1,0 +1,95 @@
+# Audit Domain Fragments
+
+fragment AuditLogCore on audit_log {
+  id
+  user_id
+  user_role
+  action
+  entity_type
+  entity_id
+  data_classification
+  fields_affected
+  ip_address
+  user_agent
+  session_id
+  request_id
+  success
+  error_message
+  created_at
+}
+
+fragment AuditLogWithUser on audit_log {
+  ...AuditLogCore
+  user {
+    id
+    name
+    email
+    role
+  }
+}
+
+fragment DataAccessLogCore on data_access_log {
+  id
+  user_id
+  data_type
+  data_classification
+  record_count
+  access_purpose
+  export_format
+  accessed_at
+}
+
+fragment DataAccessLogWithUser on data_access_log {
+  ...DataAccessLogCore
+  user {
+    id
+    name
+    email
+    role
+  }
+}
+
+fragment SecurityEventLogCore on security_event_log {
+  id
+  event_type
+  severity
+  user_id
+  details
+  ip_address
+  resolved
+  resolution_notes
+  created_at
+  resolved_at
+}
+
+fragment SecurityEventLogWithUser on security_event_log {
+  ...SecurityEventLogCore
+  user {
+    id
+    name
+    email
+    role
+  }
+}
+
+fragment ComplianceCheckCore on compliance_check {
+  id
+  check_type
+  status
+  findings
+  remediation_required
+  remediation_notes
+  performed_by
+  performed_at
+  next_check_due
+}
+
+fragment ComplianceCheckWithUser on compliance_check {
+  ...ComplianceCheckCore
+  user {
+    id
+    name
+    email
+    role
+  }
+}

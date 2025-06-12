@@ -1,0 +1,36 @@
+table:
+  name: user_access_summary
+  schema: audit
+
+select_permissions:
+  - role: org_admin
+    permission:
+      columns:
+        - user_id
+        - user_name
+        - email
+        - role
+        - is_active
+        - total_actions
+        - read_actions
+        - write_actions
+        - successful_logins
+        - failed_logins
+        - last_activity
+        - last_login
+      filter:
+        role:
+          _nin: ["admin"]
+      allow_aggregations: true
+
+  - role: manager
+    permission:
+      columns:
+        - user_name
+        - role
+        - is_active
+        - last_activity
+      filter:
+        role:
+          _in: ["consultant", "viewer"]
+      allow_aggregations: false

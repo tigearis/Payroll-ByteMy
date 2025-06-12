@@ -7,14 +7,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Badge } from "../../components/ui/badge";
 import { AlertTriangle, RefreshCw, Shield, HelpCircle } from "lucide-react";
 import {
   isPermissionError,
   parsePermissionError,
-} from "@/lib/apollo-error-handler";
+} from "../../lib/apollo-error-handler";
 
 interface Props {
   children: ReactNode;

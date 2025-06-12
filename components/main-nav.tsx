@@ -1,17 +1,30 @@
 // components/main-nav.tsx
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { LayoutDashboard, Users, Calculator, CalendarDays, UserCog, Settings, DollarSign } from "lucide-react"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Users,
+  Calculator,
+  CalendarDays,
+  UserCog,
+  Settings,
+  DollarSign,
+} from "lucide-react";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { Button } from "@/components/ui/button";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+// Local utility function
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export function MainNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
-  const routes = [
+  const allRoutes = [
     {
       href: "/dashboard",
       label: "Dashboard",
@@ -35,6 +48,7 @@ export function MainNav() {
       label: "Calendar",
       icon: CalendarDays,
       active: pathname === "/calendar",
+      devOnly: true, // Only show in development
     },
     {
       href: "/payroll-schedule",
@@ -53,6 +67,7 @@ export function MainNav() {
       label: "Tax Calculator",
       icon: DollarSign,
       active: pathname === "/tax-calculator",
+      devOnly: true, // Only show in development
     },
     {
       href: "/settings",
@@ -60,17 +75,31 @@ export function MainNav() {
       icon: Settings,
       active: pathname === "/settings",
     },
-  ]
+  ];
+
+  // Filter out dev-only routes in production
+  const routes = allRoutes.filter(route => {
+    if (route.devOnly && process.env.NODE_ENV === 'production') {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <nav className="flex items-center space-x-4 lg:space-x-6">
       {routes.map((route) => (
-        <Button key={route.href} variant={route.active ? "default" : "ghost"} asChild>
+        <Button
+          key={route.href}
+          variant={route.active ? "default" : "ghost"}
+          asChild
+        >
           <Link
             href={route.href}
             className={cn(
-              "flex items-center gap-2",
-              route.active ? "text-primary-foreground" : "text-muted-foreground hover:text-primary",
+              "flex items-center space-x-2",
+              route.active
+                ? "text-white"
+                : "text-gray-600 hover:text-blue-600"
             )}
           >
             <route.icon className="h-4 w-4" />
@@ -79,5 +108,5 @@ export function MainNav() {
         </Button>
       ))}
     </nav>
-  )
+  );
 }

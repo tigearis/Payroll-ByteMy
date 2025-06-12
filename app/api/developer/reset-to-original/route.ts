@@ -6,6 +6,11 @@ const pool = new Pool({
 });
 
 export async function POST(request: NextRequest) {
+  // Restrict to development environment only
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+  }
+
   try {
     console.log("🔄 Starting reset to original state...");
 

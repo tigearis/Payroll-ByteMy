@@ -6,10 +6,14 @@ import {
   from,
   ApolloLink,
   Observable,
+  split,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { createApolloErrorHandler } from "./apollo-error-handler";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
+import { getMainDefinition } from "@apollo/client/utilities";
 
 // ================================
 // TOKEN CACHE
@@ -33,9 +37,15 @@ async function getAuthToken(): Promise<string | null> {
   }
 
   try {
+    console.log("🔍 Apollo client requesting auth token from /api/auth/token");
     const response = await fetch("/api/auth/token");
+    console.log("🔍 Token response status:", response.status);
+    
     if (response.ok) {
-      const { token, expiresIn = 3600 } = await response.json();
+      const data = await response.json();
+      console.log("🔍 Token response data:", { hasToken: !!data.token, expiresIn: data.expiresIn });
+      
+      const { token, expiresIn = 3600 } = data;
 
       // Cache the token (expires 1 minute before actual expiry for safety)
       tokenCache = {
@@ -45,7 +55,8 @@ async function getAuthToken(): Promise<string | null> {
 
       return token;
     } else {
-      console.warn("Failed to get auth token, status:", response.status);
+      const errorText = await response.text();
+      console.warn("Failed to get auth token, status:", response.status, "response:", errorText);
       tokenCache = { token: null, expiresAt: 0 };
       return null;
     }
@@ -116,6 +127,12 @@ const authLink = setContext(async (_, { headers }) => {
   // Only add auth header on client-side
   if (typeof window !== "undefined") {
     const token = await getAuthToken();
+    
+    console.log("🔍 Apollo authLink - Token status:", { hasToken: !!token });
+    
+    if (!token) {
+      console.warn("🚨 Apollo authLink - No token available, request may fail");
+    }
 
     return {
       headers: {
@@ -232,11 +249,65 @@ const shouldRetry = (error: any): boolean => {
 };
 
 // ================================
+// WEBSOCKET LINK - For subscriptions
+// ================================
+
+// Only create WebSocket link on the client side
+const wsLink =
+  typeof window !== "undefined"
+    ? new GraphQLWsLink(
+        createClient({
+          url:
+            process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL?.replace("http", "ws") ||
+            "",
+          connectionParams: async () => {
+            const token = await getAuthToken();
+            return {
+              headers: {
+                ...(token && { authorization: `Bearer ${token}` }),
+              },
+            };
+          },
+          retryAttempts: 5,
+          shouldRetry: (error) => {
+            console.warn(
+              "WebSocket connection error, attempting to reconnect:",
+              error
+            );
+            return true;
+          },
+          connectionAckWaitTimeout: 10000,
+          on: {
+            connected: () => console.log("WebSocket connected"),
+            error: (error) => console.error("WebSocket error:", error),
+            closed: () => console.log("WebSocket connection closed"),
+          },
+        })
+      )
+    : null;
+
+// Split link based on operation type
+const splitLink =
+  typeof window !== "undefined" && wsLink
+    ? split(
+        ({ query }) => {
+          const definition = getMainDefinition(query);
+          return (
+            definition.kind === "OperationDefinition" &&
+            definition.operation === "subscription"
+          );
+        },
+        wsLink,
+        from([errorLink, createRetryLink(), authLink, httpLink])
+      )
+    : from([errorLink, createRetryLink(), authLink, httpLink]);
+
+// ================================
 // APOLLO CLIENT
 // ================================
 
 const client = new ApolloClient({
-  link: from([errorLink, createRetryLink(), authLink, httpLink]),
+  link: splitLink,
   cache,
   connectToDevTools: process.env.NODE_ENV === "development",
   defaultOptions: {

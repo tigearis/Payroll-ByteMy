@@ -1,0 +1,54 @@
+table:
+  name: data_access_log
+  schema: audit
+
+select_permissions:
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - accessed_at
+        - user_id
+        - resource_type
+        - resource_id
+        - access_type
+        - data_classification
+        - row_count
+        - ip_address
+      filter:
+        data_classification:
+          _nin: ["CRITICAL"]
+      allow_aggregations: true
+
+  - role: manager
+    permission:
+      columns:
+        - accessed_at
+        - user_id
+        - resource_type
+        - access_type
+        - row_count
+      filter:
+        _and:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - data_classification:
+              _in: ["LOW", "MEDIUM"]
+      allow_aggregations: false
+
+insert_permissions:
+  - role: system
+    permission:
+      check: {}
+      columns:
+        - user_id
+        - resource_type
+        - resource_id
+        - access_type
+        - data_classification
+        - fields_accessed
+        - query_executed
+        - row_count
+        - ip_address
+        - session_id
+        - metadata

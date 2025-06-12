@@ -2,7 +2,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { useAuthContext, UserRole } from "@/lib/auth-context";
+import { useAuthContext, UserRole } from "../lib/auth-context";
 
 type ClientHasuraRoleGateProps = {
   children: ReactNode;

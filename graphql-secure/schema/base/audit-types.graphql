@@ -1,0 +1,321 @@
+# Audit and Compliance Types
+# Required for SOC 2 compliance tracking
+
+"""
+Audit log entry for all sensitive operations
+@securityLevel: HIGH
+@compliance: SOC2-CC7.1, SOC2-CC7.2
+@retention: 7 years
+"""
+type audit_log {
+  """
+  Audit log ID
+  @securityLevel: LOW
+  """
+  id: UUID!
+  
+  """
+  User who performed the action
+  @securityLevel: MEDIUM
+  @indexed: true
+  """
+  user_id: UUID!
+  
+  """
+  User's role at time of action
+  @securityLevel: MEDIUM
+  """
+  user_role: user_role!
+  
+  """
+  Type of action performed
+  @securityLevel: LOW
+  @indexed: true
+  """
+  action: AuditAction!
+  
+  """
+  Entity type affected
+  @securityLevel: LOW
+  @indexed: true
+  """
+  entity_type: String!
+  
+  """
+  Entity ID affected
+  @securityLevel: MEDIUM
+  @indexed: true
+  """
+  entity_id: UUID
+  
+  """
+  Data classification of affected entity
+  @securityLevel: LOW
+  """
+  data_classification: DataClassification!
+  
+  """
+  Fields that were accessed/modified
+  @securityLevel: HIGH
+  @format: JSON array of field names
+  """
+  fields_affected: jsonb
+  
+  """
+  Previous values (for updates)
+  @securityLevel: CRITICAL
+  @encrypted: true
+  @restricted: admin_only
+  """
+  previous_values: EncryptedString
+  
+  """
+  New values (for updates/creates)
+  @securityLevel: CRITICAL
+  @encrypted: true
+  @restricted: admin_only
+  """
+  new_values: EncryptedString
+  
+  """
+  IP address of request
+  @securityLevel: MEDIUM
+  @pii: true
+  """
+  ip_address: String
+  
+  """
+  User agent string
+  @securityLevel: LOW
+  """
+  user_agent: String
+  
+  """
+  Session ID for correlation
+  @securityLevel: MEDIUM
+  """
+  session_id: String
+  
+  """
+  Request ID for tracing
+  @securityLevel: LOW
+  """
+  request_id: String!
+  
+  """
+  Success status
+  @securityLevel: LOW
+  """
+  success: Boolean!
+  
+  """
+  Error message if failed
+  @securityLevel: MEDIUM
+  """
+  error_message: String
+  
+  """
+  Timestamp of action
+  @securityLevel: LOW
+  @indexed: true
+  """
+  created_at: timestamptz!
+  
+  # Relationships
+  user: users!
+}
+
+"""
+Data access log for compliance reporting
+@securityLevel: HIGH
+@compliance: SOC2-CC6.7
+"""
+type data_access_log {
+  """
+  Access log ID
+  @securityLevel: LOW
+  """
+  id: UUID!
+  
+  """
+  User who accessed data
+  @securityLevel: MEDIUM
+  """
+  user_id: UUID!
+  
+  """
+  Type of data accessed
+  @securityLevel: LOW
+  """
+  data_type: String!
+  
+  """
+  Classification of data accessed
+  @securityLevel: LOW
+  """
+  data_classification: DataClassification!
+  
+  """
+  Number of records accessed
+  @securityLevel: MEDIUM
+  """
+  record_count: Int!
+  
+  """
+  Purpose of access
+  @securityLevel: MEDIUM
+  """
+  access_purpose: String
+  
+  """
+  Export format if data was exported
+  @securityLevel: MEDIUM
+  """
+  export_format: String
+  
+  """
+  Timestamp
+  @securityLevel: LOW
+  """
+  accessed_at: timestamptz!
+  
+  # Relationships
+  user: users!
+}
+
+"""
+Security event log
+@securityLevel: HIGH
+@compliance: SOC2-CC7.3
+"""
+type security_event_log {
+  """
+  Event ID
+  @securityLevel: LOW
+  """
+  id: UUID!
+  
+  """
+  Event type (login_failure, permission_denied, etc)
+  @securityLevel: MEDIUM
+  @indexed: true
+  """
+  event_type: String!
+  
+  """
+  Severity level (info, warning, error, critical)
+  @securityLevel: LOW
+  """
+  severity: String!
+  
+  """
+  User involved (if applicable)
+  @securityLevel: MEDIUM
+  """
+  user_id: UUID
+  
+  """
+  Event details
+  @securityLevel: HIGH
+  """
+  details: jsonb!
+  
+  """
+  IP address
+  @securityLevel: MEDIUM
+  @pii: true
+  """
+  ip_address: String
+  
+  """
+  Resolution status
+  @securityLevel: LOW
+  """
+  resolved: Boolean!
+  
+  """
+  Resolution notes
+  @securityLevel: MEDIUM
+  """
+  resolution_notes: String
+  
+  """
+  Event timestamp
+  @securityLevel: LOW
+  @indexed: true
+  """
+  created_at: timestamptz!
+  
+  """
+  Resolution timestamp
+  @securityLevel: LOW
+  """
+  resolved_at: timestamptz
+  
+  # Relationships
+  user: users
+}
+
+"""
+Compliance check result
+@securityLevel: MEDIUM
+@compliance: SOC2-CC4.1
+"""
+type compliance_check {
+  """
+  Check ID
+  @securityLevel: LOW
+  """
+  id: UUID!
+  
+  """
+  Check type (access_review, permission_audit, etc)
+  @securityLevel: LOW
+  """
+  check_type: String!
+  
+  """
+  Check status (passed, failed, warning)
+  @securityLevel: LOW
+  """
+  status: String!
+  
+  """
+  Check details and findings
+  @securityLevel: MEDIUM
+  """
+  findings: jsonb!
+  
+  """
+  Remediation required
+  @securityLevel: LOW
+  """
+  remediation_required: Boolean!
+  
+  """
+  Remediation notes
+  @securityLevel: MEDIUM
+  """
+  remediation_notes: String
+  
+  """
+  Check performed by
+  @securityLevel: MEDIUM
+  """
+  performed_by: UUID!
+  
+  """
+  Check timestamp
+  @securityLevel: LOW
+  """
+  performed_at: timestamptz!
+  
+  """
+  Next check due date
+  @securityLevel: LOW
+  """
+  next_check_due: date
+  
+  # Relationships
+  performedByUser: users!
+}
