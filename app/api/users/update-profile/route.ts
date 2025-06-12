@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { ApiResponses, validateRequiredFields, handleApiError } from "@/lib/api-responses";
+import {
+  ApiResponses,
+  validateRequiredFields,
+  handleApiError,
+} from "@/lib/api-responses";
 
 interface UpdateProfileRequest {
   firstName?: string;
@@ -18,7 +22,7 @@ interface UpdateProfileRequest {
 
 export async function PATCH(req: NextRequest) {
   console.log("API: Starting profile update request");
-  
+
   try {
     const { userId } = await auth();
     console.log("API: User ID:", userId);
@@ -48,14 +52,19 @@ export async function PATCH(req: NextRequest) {
       console.log("API: Clerk client created successfully");
     } catch (clerkClientError) {
       console.error("API: Failed to create Clerk client:", clerkClientError);
-      return ApiResponses.serverError("Failed to initialize authentication service");
+      return ApiResponses.serverError(
+        "Failed to initialize authentication service"
+      );
     }
 
     // Get current user to compare changes
     let currentUser;
     try {
       currentUser = await client.users.getUser(userId);
-      console.log("API: Current user fetched:", { id: currentUser.id, username: currentUser.username });
+      console.log("API: Current user fetched:", {
+        id: currentUser.id,
+        username: currentUser.username,
+      });
     } catch (getUserError) {
       console.error("API: Failed to get current user:", getUserError);
       return ApiResponses.serverError("Failed to fetch current user data");
@@ -83,18 +92,24 @@ export async function PATCH(req: NextRequest) {
     // Handle username with validation
     if (updateData.username !== undefined) {
       const trimmedUsername = updateData.username?.trim() || null;
-      
+
       // Allow null/empty username (user can clear their username)
       if (trimmedUsername !== currentUser.username) {
         if (trimmedUsername) {
           // Only validate if username is not null/empty
           const usernameRegex = /^[a-zA-Z0-9_-]+$/;
           if (!usernameRegex.test(trimmedUsername)) {
-            return ApiResponses.invalidInput("username", "Username can only contain letters, numbers, underscores, and hyphens");
+            return ApiResponses.invalidInput(
+              "username",
+              "Username can only contain letters, numbers, underscores, and hyphens"
+            );
           }
 
           if (trimmedUsername.length < 3 || trimmedUsername.length > 30) {
-            return ApiResponses.invalidInput("username", "Username must be between 3 and 30 characters long");
+            return ApiResponses.invalidInput(
+              "username",
+              "Username must be between 3 and 30 characters long"
+            );
           }
         }
 
@@ -103,7 +118,10 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Handle unsafe metadata (bio, location, company, website, etc.)
-    if (updateData.unsafeMetadata && typeof updateData.unsafeMetadata === "object") {
+    if (
+      updateData.unsafeMetadata &&
+      typeof updateData.unsafeMetadata === "object"
+    ) {
       const currentMetadata = currentUser.unsafeMetadata || {};
       const newMetadata = { ...currentMetadata };
       let metadataChanged = false;
@@ -124,29 +142,38 @@ export async function PATCH(req: NextRequest) {
 
     // Only make API call if there are actual changes
     if (Object.keys(clerkUpdatePayload).length === 0) {
-      return ApiResponses.success({
-        id: currentUser.id,
-        firstName: currentUser.firstName,
-        lastName: currentUser.lastName,
-        username: currentUser.username,
-        unsafeMetadata: currentUser.unsafeMetadata,
-      }, "No changes detected");
+      return ApiResponses.success(
+        {
+          id: currentUser.id,
+          firstName: currentUser.firstName,
+          lastName: currentUser.lastName,
+          username: currentUser.username,
+          unsafeMetadata: currentUser.unsafeMetadata,
+        },
+        "No changes detected"
+      );
     }
 
     try {
       // Update user using Clerk Backend API
-      const updatedUser = await client.users.updateUser(userId, clerkUpdatePayload);
+      const updatedUser = await client.users.updateUser(
+        userId,
+        clerkUpdatePayload
+      );
 
-      return ApiResponses.updated({
-        id: updatedUser.id,
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        username: updatedUser.username,
-        emailAddress: updatedUser.primaryEmailAddress?.emailAddress,
-        imageUrl: updatedUser.imageUrl,
-        unsafeMetadata: updatedUser.unsafeMetadata,
-        changes: Object.keys(clerkUpdatePayload),
-      }, "Profile updated successfully");
+      return ApiResponses.updated(
+        {
+          id: updatedUser.id,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          username: updatedUser.username,
+          emailAddress: updatedUser.primaryEmailAddress?.emailAddress,
+          imageUrl: updatedUser.imageUrl,
+          unsafeMetadata: updatedUser.unsafeMetadata,
+          changes: Object.keys(clerkUpdatePayload),
+        },
+        "Profile updated successfully"
+      );
     } catch (clerkError: any) {
       console.error("Clerk API error:", clerkError);
 
@@ -158,9 +185,10 @@ export async function PATCH(req: NextRequest) {
         }));
 
         // Check for username-specific errors
-        const usernameError = errorMessages.find((err: any) => 
-          err.field === "username" || 
-          err.message.toLowerCase().includes("username")
+        const usernameError = errorMessages.find(
+          (err: any) =>
+            err.field === "username" ||
+            err.message.toLowerCase().includes("username")
         );
 
         if (usernameError) {
@@ -169,17 +197,17 @@ export async function PATCH(req: NextRequest) {
 
         // Return all validation errors
         return ApiResponses.validationError(
-          errorMessages.map(err => ({
+          errorMessages.map((err: { field: string; message: string }) => ({
             field: err.field,
             message: err.message,
-            code: "CLERK_VALIDATION_ERROR"
+            code: "CLERK_VALIDATION_ERROR",
           }))
         );
       }
 
       // Generic Clerk error
       return ApiResponses.serverError("Failed to update profile in Clerk", {
-        message: clerkError.message || "Unknown Clerk error"
+        message: clerkError.message || "Unknown Clerk error",
       });
     }
   } catch (error) {
