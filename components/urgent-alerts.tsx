@@ -150,7 +150,7 @@ export function UrgentAlerts() {
   if (payrolls.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        <CalendarDays className="h-8 w-8 mx-auto mb-2 text-green-500" />
+        <CalendarDays className="h-8 w-8 mx-auto mb-2 text-green-600" />
         <p>No upcoming payrolls assigned to you</p>
         <p className="text-sm mt-1">All caught up! 🎉</p>
       </div>

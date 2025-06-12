@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { Pool } from "pg";
 
 export async function POST(request: NextRequest) {
+  // Restrict to development environment only
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+  }
+
   try {
     const { startDate, endDate } = await request.json();
 

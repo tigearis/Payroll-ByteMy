@@ -1,0 +1,44 @@
+table:
+  name: auth_events
+  schema: audit
+
+select_permissions:
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - event_time
+        - event_type
+        - user_id
+        - user_email
+        - ip_address
+        - success
+        - created_at
+      filter: {}
+      allow_aggregations: true
+
+  - role: manager
+    permission:
+      columns:
+        - event_time
+        - event_type
+        - user_id
+        - success
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      allow_aggregations: false
+
+insert_permissions:
+  - role: system
+    permission:
+      check: {}
+      columns:
+        - event_type
+        - user_id
+        - user_email
+        - ip_address
+        - user_agent
+        - success
+        - failure_reason
+        - metadata

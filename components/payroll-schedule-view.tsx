@@ -2,22 +2,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { 
-  Table, 
-  TableHead, 
-  TableHeader, 
-  TableRow, 
-  TableCell, 
-  TableBody 
-} from "@/components/ui/table";
-import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Table,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableCell,
+  TableBody,
+} from "../components/ui/table";
+import { format, isSameDay } from "date-fns";
+import { Badge } from "../components/ui/badge";
 
 interface PayrollScheduleProps {
   payrollId: number;
@@ -43,11 +43,11 @@ export function PayrollScheduleView({ payrollId }: PayrollScheduleProps) {
         const response = await fetch(
           `/api/payrolls/schedule?payrollId=${payrollId}&startDate=${startDate}&periods=12`
         );
-        
+
         if (!response.ok) {
           throw new Error("Failed to fetch schedule");
         }
-        
+
         const data = await response.json();
         setScheduleData(data);
       } catch (err) {
@@ -56,7 +56,7 @@ export function PayrollScheduleView({ payrollId }: PayrollScheduleProps) {
         setLoading(false);
       }
     }
-    
+
     fetchSchedule();
   }, [payrollId]);
 
@@ -87,17 +87,29 @@ export function PayrollScheduleView({ payrollId }: PayrollScheduleProps) {
             {scheduleData.map((period) => (
               <TableRow key={period.periodNumber}>
                 <TableCell>{period.periodNumber}</TableCell>
-                <TableCell>{format(new Date(period.baseDate), "dd MMM yyyy")}</TableCell>
+                <TableCell>
+                  {format(new Date(period.baseDate), "dd MMM yyyy")}
+                </TableCell>
                 <TableCell>
                   {format(new Date(period.processingDate), "dd MMM yyyy")}
-                  {!isSameDay(period.baseDate, period.processingDate) && (
-                    <Badge className="ml-2" variant="outline">Adjusted</Badge>
+                  {!isSameDay(
+                    new Date(period.baseDate),
+                    new Date(period.processingDate)
+                  ) && (
+                    <Badge className="ml-2" variant="outline">
+                      Adjusted
+                    </Badge>
                   )}
                 </TableCell>
                 <TableCell>
                   {format(new Date(period.eftDate), "dd MMM yyyy")}
-                  {!isSameDay(period.baseDate, period.eftDate) && (
-                    <Badge className="ml-2" variant="outline">Adjusted</Badge>
+                  {!isSameDay(
+                    new Date(period.baseDate),
+                    new Date(period.eftDate)
+                  ) && (
+                    <Badge className="ml-2" variant="outline">
+                      Adjusted
+                    </Badge>
                   )}
                 </TableCell>
               </TableRow>
@@ -106,15 +118,5 @@ export function PayrollScheduleView({ payrollId }: PayrollScheduleProps) {
         </Table>
       </CardContent>
     </Card>
-  );
-}
-
-function isSameDay(date1: string | Date, date2: string | Date): boolean {
-  const d1 = new Date(date1);
-  const d2 = new Date(date2);
-  return (
-    d1.getDate() === d2.getDate() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getFullYear() === d2.getFullYear()
   );
 }

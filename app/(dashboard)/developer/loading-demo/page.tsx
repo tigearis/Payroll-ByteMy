@@ -12,7 +12,7 @@ import {
   SkeletonCard,
   SkeletonTable,
   ButtonLoading,
-} from "@/components/ui/modern-loading";
+} from "@/components/ui/loading-states";
 
 export default function LoadingDemoPage() {
   const [isButtonLoading, setIsButtonLoading] = useState(false);

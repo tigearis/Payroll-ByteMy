@@ -1,4 +1,4 @@
-// middleware.ts - Simple route protection only
+// middleware.ts - Enhanced route protection with MFA enforcement
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -10,7 +10,6 @@ import { NextResponse } from "next/server";
 const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
-  "/sign-up(.*)",
   "/accept-invitation(.*)",
   "/api/clerk-webhooks(.*)",
   "/api/auth(.*)",
@@ -20,7 +19,7 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 // ================================
-// SIMPLE MIDDLEWARE
+// ENHANCED MIDDLEWARE
 // ================================
 
 export default clerkMiddleware(async (auth, req) => {

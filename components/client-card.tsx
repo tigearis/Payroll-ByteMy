@@ -18,13 +18,13 @@ interface ClientCardProps {
 
 export const ClientCard: React.FC<ClientCardProps> = ({ client, onEdit, className }) => {
   return (
-    <Card className={`p-4 ${className || ""} shadow-md rounded-lg`}>
-      <CardHeader className="flex justify-between items-center">
+    <Card className={className || ""}>
+      <CardHeader className="flex justify-between items-center pb-3">
         <CardTitle className="text-lg font-bold">Client Details</CardTitle>
         {onEdit && (
           <button
             onClick={onEdit}
-            className="text-blue-500 hover:text-blue-700 text-sm font-medium"
+            className="text-primary hover:text-primary/80 text-sm font-medium"
           >
             Edit
           </button>
@@ -33,7 +33,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({ client, onEdit, classNam
       <CardContent className="space-y-2 text-sm">
         <p>
           <strong>Name:</strong>{" "}
-          <Link href={`/clients/${client.id}`} className="text-blue-600 hover:underline">
+          <Link href={`/clients/${client.id}`} className="text-primary hover:underline">
             {client.name}
           </Link>
         </p>

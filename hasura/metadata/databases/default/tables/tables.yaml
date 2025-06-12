@@ -32,3 +32,10 @@
 - "!include public_users.yaml"
 - "!include public_users_role_backup.yaml"
 - "!include public_work_schedule.yaml"
+# Audit schema tables
+- "!include audit_audit_log.yaml"
+- "!include audit_auth_events.yaml"
+- "!include audit_data_access_log.yaml"
+- "!include audit_permission_changes.yaml"
+- "!include audit_permission_usage_report.yaml"
+- "!include audit_user_access_summary.yaml"

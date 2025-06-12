@@ -46,6 +46,7 @@ import {
   RefreshCcw,
   Users,
   Pencil,
+  X,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -74,6 +75,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ErrorBoundaryWrapper } from "@/components/error-boundary";
 import { StaffLoading } from "@/components/ui/loading-states";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ChevronDown } from "lucide-react";
 
 // Define Staff Type
 interface Staff {
@@ -140,6 +147,72 @@ const roleOptions = [
   { value: "viewer", label: "Viewer" },
 ];
 
+// MultiSelect component for filters
+interface MultiSelectProps {
+  options: Array<{ value: string; label: string }>;
+  selected: string[];
+  onSelectionChange: (selected: string[]) => void;
+  placeholder: string;
+  label?: string;
+}
+
+function MultiSelect({
+  options,
+  selected,
+  onSelectionChange,
+  placeholder,
+  label,
+}: MultiSelectProps) {
+  const [open, setOpen] = React.useState(false);
+
+  const handleToggle = (value: string) => {
+    const newSelected = selected.includes(value)
+      ? selected.filter((item) => item !== value)
+      : [...selected, value];
+    onSelectionChange(newSelected);
+  };
+
+  const displayText =
+    selected.length === 0
+      ? placeholder
+      : selected.length === 1
+      ? options.find((opt) => opt.value === selected[0])?.label || placeholder
+      : `${selected.length} selected`;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between"
+        >
+          {displayText}
+          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0">
+        <div className="max-h-60 overflow-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              className="flex items-center space-x-2 p-2 hover:bg-accent cursor-pointer"
+              onClick={() => handleToggle(option.value)}
+            >
+              <Checkbox
+                checked={selected.includes(option.value)}
+                onChange={() => handleToggle(option.value)}
+              />
+              <span className="text-sm">{option.label}</span>
+            </div>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export default function StaffManagementPage() {
   // ⚠️ ALL HOOKS MUST BE CALLED AT THE TOP LEVEL - NEVER CONDITIONALLY
   const { isAdmin, isManager, isConsultant, isDeveloper } = useUserRole();
@@ -182,8 +255,10 @@ export default function StaffManagementPage() {
 
   // Filtering and search state
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [selectedRole, setSelectedRole] = React.useState("all");
-  const [selectedManager, setSelectedManager] = React.useState("all");
+  const [selectedRole, setSelectedRole] = React.useState<string[]>([]);
+  const [selectedManager, setSelectedManager] = React.useState<string[]>([]);
+  const [selectedStatus, setSelectedStatus] = React.useState<string[]>([]);
+  const [showFilters, setShowFilters] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [staffList, setStaffList] = React.useState<Staff[]>([]);
   const itemsPerPage = 10;
@@ -341,19 +416,23 @@ export default function StaffManagementPage() {
     }
 
     // Apply role filter
-    if (selectedRole !== "all") {
-      filtered = filtered.filter((staff) => staff.role === selectedRole);
+    if (selectedRole.length > 0) {
+      filtered = filtered.filter((staff) => selectedRole.includes(staff.role));
+    }
+
+    // Apply status filter
+    if (selectedStatus.length > 0) {
+      filtered = filtered.filter((staff) => {
+        const status = staff.is_staff ? "active" : "inactive";
+        return selectedStatus.includes(status);
+      });
     }
 
     // Apply manager filter
-    if (selectedManager !== "all") {
+    if (selectedManager.length > 0) {
       console.log("🔍 Manager filter selected:", selectedManager);
-      console.log("- selectedManager type:", typeof selectedManager);
       filtered = filtered.filter((staff) => {
-        console.log(
-          `Comparing staff.manager_id (${staff.manager_id}) with selectedManager (${selectedManager})`
-        );
-        return staff.manager_id === selectedManager;
+        return staff.manager_id && selectedManager.includes(staff.manager_id);
       });
     }
 
@@ -365,6 +444,7 @@ export default function StaffManagementPage() {
     searchTerm,
     selectedRole,
     selectedManager,
+    selectedStatus,
   ]);
 
   // Calculate statistics
@@ -541,7 +621,7 @@ export default function StaffManagementPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDeleteStaff(staff)}
-                  className="text-red-600 hover:text-red-800"
+                  className="text-destructive hover:text-destructive/80"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -590,7 +670,7 @@ export default function StaffManagementPage() {
         <div className="text-center space-y-4">
           <p>Loading authentication...</p>
           <div className="animate-pulse">
-            <div className="h-4 bg-gray-200 rounded w-48 mx-auto"></div>
+            <div className="h-4 bg-muted rounded w-48 mx-auto"></div>
           </div>
         </div>
       </div>
@@ -603,7 +683,7 @@ export default function StaffManagementPage() {
       <div className="container mx-auto p-6">
         <div className="text-center space-y-4">
           <h2 className="text-xl font-semibold">Authentication Required</h2>
-          <p className="text-gray-600">
+          <p className="text-gray-500">
             Please sign in to access the staff management page.
           </p>
           <Button onClick={() => (window.location.href = "/sign-in")}>
@@ -620,15 +700,36 @@ export default function StaffManagementPage() {
     setCurrentPage(1);
   };
 
-  const handleRoleFilter = (value: string) => {
-    setSelectedRole(value);
+  const handleRoleFilter = (roles: string[]) => {
+    setSelectedRole(roles);
     setCurrentPage(1);
   };
 
-  const handleManagerFilter = (value: string) => {
-    setSelectedManager(value);
+  const handleManagerFilter = (managers: string[]) => {
+    setSelectedManager(managers);
     setCurrentPage(1);
   };
+
+  const handleStatusFilter = (statuses: string[]) => {
+    setSelectedStatus(statuses);
+    setCurrentPage(1);
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedRole([]);
+    setSelectedManager([]);
+    setSelectedStatus([]);
+    setCurrentPage(1);
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters =
+    searchTerm ||
+    selectedRole.length > 0 ||
+    selectedManager.length > 0 ||
+    selectedStatus.length > 0;
 
   const handleRefresh = () => {
     console.log("🔄 Refreshing and clearing all caches...");
@@ -991,10 +1092,10 @@ export default function StaffManagementPage() {
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               {isDeveloper ? "User Management (All Users)" : "Staff Management"}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-gray-500">
               {isDeveloper
                 ? "Manage all users, roles, and permissions (Developer Access)"
                 : "Manage staff members, roles, and permissions"}
@@ -1017,11 +1118,11 @@ export default function StaffManagementPage() {
               <CardTitle className="text-sm font-medium">
                 {isDeveloper ? "Total Users" : "Total Staff"}
               </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.total}</div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-500">
                 {isDeveloper
                   ? `${stats.active} staff, ${stats.inactive} non-staff`
                   : `${stats.active} active, ${stats.inactive} inactive`}
@@ -1042,7 +1143,7 @@ export default function StaffManagementPage() {
               <div className="text-2xl font-bold">
                 {stats.admins + stats.orgAdmins}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-500">
                 {stats.admins} developers, {stats.orgAdmins} admins
               </p>
             </CardContent>
@@ -1057,7 +1158,7 @@ export default function StaffManagementPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.managers}</div>
-              <p className="text-xs text-muted-foreground">Team oversight</p>
+              <p className="text-xs text-gray-500">Team oversight</p>
             </CardContent>
           </Card>
 
@@ -1072,7 +1173,7 @@ export default function StaffManagementPage() {
               <div className="text-2xl font-bold">
                 {stats.consultants + stats.viewers}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-500">
                 {stats.consultants} consultants, {stats.viewers} viewers
               </p>
             </CardContent>
@@ -1084,73 +1185,132 @@ export default function StaffManagementPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Filter className="h-5 w-5" />
-              Filters
+              Filters & Search
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col gap-4 md:flex-row md:items-center">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search staff..."
-                    value={searchTerm}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="pl-10"
-                  />
+            <div className="flex flex-col gap-4">
+              {/* Search and Filter Toggle Row */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Search */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                    <Input
+                      placeholder="Search staff..."
+                      value={searchTerm}
+                      onChange={(e) => handleSearch(e.target.value)}
+                      className="pl-10 w-[300px]"
+                    />
+                  </div>
+
+                  {/* Advanced Filters Button */}
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={showFilters ? "bg-primary/10" : ""}
+                  >
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filters
+                    {hasActiveFilters && (
+                      <Badge variant="secondary" className="ml-2 text-xs">
+                        {
+                          [
+                            searchTerm,
+                            selectedRole.length > 0,
+                            selectedManager.length > 0,
+                            selectedStatus.length > 0,
+                          ].filter(Boolean).length
+                        }
+                      </Badge>
+                    )}
+                  </Button>
+
+                  {hasActiveFilters && (
+                    <Button variant="ghost" size="sm" onClick={clearFilters}>
+                      <X className="w-4 h-4 mr-1" />
+                      Clear
+                    </Button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleRefresh}
+                    disabled={loading}
+                  >
+                    <RefreshCcw
+                      className={`mr-2 h-4 w-4 ${
+                        loading ? "animate-spin" : ""
+                      }`}
+                    />
+                    Refresh
+                  </Button>
+
+                  {isDeveloper && (
+                    <Button
+                      variant="destructive"
+                      onClick={handleEmergencyCacheClear}
+                      size="sm"
+                    >
+                      🚨 Emergency Cache Clear
+                    </Button>
+                  )}
                 </div>
               </div>
 
-              <Select value={selectedRole} onValueChange={handleRoleFilter}>
-                <SelectTrigger className="w-full md:w-48">
-                  <SelectValue placeholder="Filter by role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value="admin">Developers</SelectItem>
-                  <SelectItem value="org_admin">Admins</SelectItem>
-                  <SelectItem value="manager">Managers</SelectItem>
-                  <SelectItem value="consultant">Consultants</SelectItem>
-                  <SelectItem value="viewer">Viewers</SelectItem>
-                </SelectContent>
-              </Select>
+              {/* Advanced Filter Dropdowns */}
+              {showFilters && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      Role
+                    </label>
+                    <MultiSelect
+                      options={[
+                        { value: "admin", label: "Developers" },
+                        { value: "org_admin", label: "Admins" },
+                        { value: "manager", label: "Managers" },
+                        { value: "consultant", label: "Consultants" },
+                        { value: "viewer", label: "Viewers" },
+                      ]}
+                      selected={selectedRole}
+                      onSelectionChange={handleRoleFilter}
+                      placeholder="All roles"
+                    />
+                  </div>
 
-              <Select
-                value={selectedManager}
-                onValueChange={handleManagerFilter}
-              >
-                <SelectTrigger className="w-full md:w-48">
-                  <SelectValue placeholder="Filter by manager" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Managers</SelectItem>
-                  {managers.map((manager) => (
-                    <SelectItem key={manager.id} value={manager.id}>
-                      {manager.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      Status
+                    </label>
+                    <MultiSelect
+                      options={[
+                        { value: "active", label: "Active" },
+                        { value: "inactive", label: "Inactive" },
+                      ]}
+                      selected={selectedStatus}
+                      onSelectionChange={handleStatusFilter}
+                      placeholder="All statuses"
+                    />
+                  </div>
 
-              <Button
-                variant="outline"
-                onClick={handleRefresh}
-                disabled={loading}
-              >
-                <RefreshCcw
-                  className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`}
-                />
-                Refresh
-              </Button>
-
-              {isDeveloper && (
-                <Button
-                  variant="destructive"
-                  onClick={handleEmergencyCacheClear}
-                  size="sm"
-                >
-                  🚨 Emergency Cache Clear
-                </Button>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      Manager
+                    </label>
+                    <MultiSelect
+                      options={managers.map((manager) => ({
+                        value: manager.id,
+                        label: manager.name,
+                      }))}
+                      selected={selectedManager}
+                      onSelectionChange={handleManagerFilter}
+                      placeholder="All managers"
+                    />
+                  </div>
+                </div>
               )}
             </div>
           </CardContent>
@@ -1207,7 +1367,7 @@ export default function StaffManagementPage() {
                         colSpan={columns.length}
                         className="h-24 text-center"
                       >
-                        <div className="text-muted-foreground">
+                        <div className="text-gray-500">
                           <User className="mx-auto h-8 w-8 mb-2" />
                           <p>
                             {isDeveloper
@@ -1230,7 +1390,7 @@ export default function StaffManagementPage() {
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between mt-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-500">
                   Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
                   {Math.min(currentPage * itemsPerPage, filteredStaff.length)}{" "}
                   of {filteredStaff.length}{" "}
@@ -1399,7 +1559,7 @@ export default function StaffManagementPage() {
                       className="w-16 h-16 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
                       <User className="w-8 h-8 text-gray-500" />
                     </div>
                   )}
@@ -1430,12 +1590,12 @@ export default function StaffManagementPage() {
                   <h4 className="font-medium">Contact Information</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center space-x-2">
-                      <Mail className="w-4 h-4 text-muted-foreground" />
+                      <Mail className="w-4 h-4 text-gray-500" />
                       <span>{viewingStaff.email}</span>
                     </div>
                     {viewingStaff.username && (
                       <div className="flex items-center space-x-2">
-                        <User className="w-4 h-4 text-muted-foreground" />
+                        <User className="w-4 h-4 text-gray-500" />
                         <span>@{viewingStaff.username}</span>
                       </div>
                     )}
@@ -1449,15 +1609,13 @@ export default function StaffManagementPage() {
                   <h4 className="font-medium">Work Information</h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-muted-foreground">Manager:</span>
+                      <span className="text-gray-500">Manager:</span>
                       <p className="font-medium">
                         {viewingStaff.manager?.name || "No manager assigned"}
                       </p>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">
-                        Staff Status:
-                      </span>
+                      <span className="text-gray-500">Staff Status:</span>
                       <p className="font-medium">
                         {viewingStaff.is_staff ? "Staff Member" : "External"}
                       </p>
@@ -1472,15 +1630,13 @@ export default function StaffManagementPage() {
                   <h4 className="font-medium">System Information</h4>
                   <div className="grid grid-cols-1 gap-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">User ID:</span>
+                      <span className="text-gray-500">User ID:</span>
                       <span className="font-mono text-xs">
                         {viewingStaff.id}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Clerk Account:
-                      </span>
+                      <span className="text-gray-500">Clerk Account:</span>
                       <Badge
                         variant={
                           viewingStaff.clerk_user_id ? "default" : "outline"
@@ -1493,7 +1649,7 @@ export default function StaffManagementPage() {
                     </div>
                     {viewingStaff.created_at && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Created:</span>
+                        <span className="text-gray-500">Created:</span>
                         <span>
                           {new Date(
                             viewingStaff.created_at
@@ -1542,7 +1698,7 @@ export default function StaffManagementPage() {
             </AlertDialogHeader>
             <div className="py-4">
               <p className="text-sm font-medium mb-3">What will happen:</p>
-              <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
+              <ul className="list-disc list-inside text-sm space-y-1 text-gray-500">
                 <li>User will be marked as inactive in the database</li>
                 <li>
                   User will be removed from Clerk (if they have an account)
@@ -1572,8 +1728,8 @@ export default function StaffManagementPage() {
             </DialogHeader>
 
             {createError && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-red-600 text-sm">{createError}</p>
+              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                <p className="text-destructive text-sm">{createError}</p>
               </div>
             )}
 
@@ -1653,7 +1809,7 @@ export default function StaffManagementPage() {
                       Mark as staff member
                     </Label>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-gray-500">
                     Staff members have access to internal systems and payroll
                   </p>
                 </div>
@@ -1661,8 +1817,8 @@ export default function StaffManagementPage() {
 
               {/* Info for non-developers */}
               {!isDeveloper && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                  <p className="text-blue-800 text-sm">
+                <div className="p-3 bg-primary/10 border border-primary/20 rounded-md">
+                  <p className="text-primary text-sm">
                     ℹ️ All users you create will automatically be marked as
                     staff members
                   </p>

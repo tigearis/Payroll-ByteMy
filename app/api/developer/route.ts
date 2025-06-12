@@ -4,6 +4,16 @@ import { auth } from "@clerk/nextjs/server";
 import { gql } from "@apollo/client";
 import { adminApolloClient } from "@/lib/server-apollo-client";
 
+// Helper function to check if in production
+function isProduction() {
+  return process.env.NODE_ENV === 'production';
+}
+
+// Production-safe response
+function productionResponse() {
+  return NextResponse.json({ error: "Not Found" }, { status: 404 });
+}
+
 // Define GraphQL operations for all tables
 const GET_ALL_CLIENTS = gql`
   query GetAllClients {
@@ -120,6 +130,10 @@ const GET_PAYROLLS_WITH_DATES = gql`
 `;
 
 export async function POST(req: NextRequest) {
+  if (isProduction()) {
+    return productionResponse();
+  }
+  
   try {
     // Check authentication
     const { userId, getToken } = await auth();
@@ -251,6 +265,10 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
+  if (isProduction()) {
+    return productionResponse();
+  }
+  
   try {
     // Check if user is authenticated and has admin/developer role
     const { userId, sessionClaims } = await auth();
@@ -296,3 +314,4 @@ export async function GET() {
     );
   }
 }
+

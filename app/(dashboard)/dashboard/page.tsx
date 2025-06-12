@@ -69,8 +69,8 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+          <p className="text-gray-600">
             Welcome back! Here&apos;s an overview of your payroll operations.
           </p>
         </div>
@@ -80,7 +80,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
             {statsLoading ? (
@@ -88,7 +88,7 @@ export default function DashboardPage() {
             ) : (
               <div className="text-2xl font-bold">{totalClients}</div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-600">
               {statsError ? "Error loading data" : "Active clients"}
             </p>
           </CardContent>
@@ -98,7 +98,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">
               Total Payrolls
             </CardTitle>
-            <Calculator className="h-4 w-4 text-muted-foreground" />
+            <Calculator className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
             {statsLoading ? (
@@ -106,7 +106,7 @@ export default function DashboardPage() {
             ) : (
               <div className="text-2xl font-bold">{totalPayrolls}</div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-600">
               {activePayrolls} currently active
             </p>
           </CardContent>
@@ -116,7 +116,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">
               Upcoming Payrolls
             </CardTitle>
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            <CalendarDays className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
             {upcomingLoading ? (
@@ -124,7 +124,7 @@ export default function DashboardPage() {
             ) : (
               <div className="text-2xl font-bold">{activePayrolls}</div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-600">
               {nextPayrollDate
                 ? `Next: ${format(new Date(nextPayrollDate), "MMM dd, yyyy")}`
                 : "No upcoming payrolls"}
@@ -136,7 +136,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">
               Processing Queue
             </CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+            <AlertTriangle className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
             {statsLoading ? (
@@ -144,7 +144,7 @@ export default function DashboardPage() {
             ) : (
               <div className="text-2xl font-bold">{urgentAlerts}</div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-600">
               {urgentAlerts > 0 ? "Requires attention" : "All up to date"}
             </p>
           </CardContent>

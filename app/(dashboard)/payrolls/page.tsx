@@ -8,18 +8,13 @@ import {
   PlusCircle,
   Search,
   Filter,
-  MoreHorizontal,
   Download,
   Upload,
   Clock,
-  Users,
   CheckCircle,
   AlertTriangle,
   Eye,
-  Edit,
-  Copy,
   UserCheck,
-  Building2,
   RefreshCw,
   FileText,
   Calculator,
@@ -27,14 +22,34 @@ import {
   ChevronUp,
   ChevronDown,
   Columns,
+  Building2,
+  Users,
+  MoreHorizontal,
+  Edit,
+  Copy,
+  Grid3X3,
+  TableIcon,
+  List,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -42,22 +57,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 import {
   GET_PAYROLLS,
@@ -65,7 +64,9 @@ import {
 } from "@/graphql/queries/payrolls/getPayrolls";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
-import { PayrollsMissingDates } from "@/components/payrolls-missing-dates";
+import { PayrollsTable } from "@/components/payrolls-table";
+
+type ViewMode = "cards" | "table" | "list";
 
 // Column definitions
 const COLUMN_DEFINITIONS = [
@@ -96,74 +97,79 @@ const COLUMN_DEFINITIONS = [
     sortable: true,
     defaultVisible: false,
   },
-  { key: "progress", label: "Progress", sortable: true, defaultVisible: true },
+  {
+    key: "nextEftDate",
+    label: "Next EFT Date",
+    sortable: true,
+    defaultVisible: true,
+  },
 ];
 
 // Payroll status configuration
 const getStatusConfig = (status: string) => {
   const configs = {
     Implementation: {
-      color: "bg-blue-100 text-blue-800 border-blue-200",
+      variant: "secondary" as const,
       icon: Clock,
       progress: 15,
     },
     Active: {
-      color: "bg-green-100 text-green-800 border-green-200",
+      variant: "default" as const,
       icon: CheckCircle,
       progress: 100,
     },
     Inactive: {
-      color: "bg-gray-100 text-gray-800 border-gray-200",
+      variant: "secondary" as const,
       icon: AlertTriangle,
       progress: 0,
     },
     draft: {
-      color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+      variant: "outline" as const,
       icon: FileText,
       progress: 10,
     },
     "data-entry": {
-      color: "bg-blue-100 text-blue-800 border-blue-200",
+      variant: "secondary" as const,
       icon: Calculator,
       progress: 30,
     },
     review: {
-      color: "bg-purple-100 text-purple-800 border-purple-200",
+      variant: "secondary" as const,
       icon: Eye,
       progress: 50,
     },
     processing: {
-      color: "bg-indigo-100 text-indigo-800 border-indigo-200",
+      variant: "secondary" as const,
       icon: RefreshCw,
       progress: 70,
     },
     "manager-review": {
-      color: "bg-orange-100 text-orange-800 border-orange-200",
+      variant: "outline" as const,
       icon: UserCheck,
       progress: 85,
     },
     approved: {
-      color: "bg-green-100 text-green-800 border-green-200",
+      variant: "default" as const,
       icon: CheckCircle,
       progress: 95,
     },
     submitted: {
-      color: "bg-teal-100 text-teal-800 border-teal-200",
+      variant: "default" as const,
       icon: Upload,
       progress: 100,
     },
     paid: {
-      color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+      variant: "default" as const,
       icon: CheckCircle,
       progress: 100,
     },
     "on-hold": {
-      color: "bg-amber-100 text-amber-800 border-amber-200",
+      variant: "destructive" as const,
       icon: AlertTriangle,
       progress: 60,
     },
     cancelled: {
-      color: "bg-red-100 text-red-800 border-red-200",
+      variant: "destructive" as const,
       icon: AlertTriangle,
       progress: 0,
     },
@@ -307,17 +313,89 @@ const getDayName = (dayNumber: number) => {
   return "Unknown";
 };
 
+// Custom MultiSelect Component
+interface MultiSelectProps {
+  options: Array<{ value: string; label: string }>;
+  selected: string[];
+  onSelectionChange: (selected: string[]) => void;
+  placeholder: string;
+  label?: string;
+}
+
+function MultiSelect({
+  options,
+  selected,
+  onSelectionChange,
+  placeholder,
+  label,
+}: MultiSelectProps) {
+  const [open, setOpen] = useState(false);
+
+  const handleToggle = (value: string) => {
+    const newSelected = selected.includes(value)
+      ? selected.filter((item) => item !== value)
+      : [...selected, value];
+    onSelectionChange(newSelected);
+  };
+
+  const selectedLabels = options
+    .filter((option) => selected.includes(option.value))
+    .map((option) => option.label);
+
+  const displayText =
+    selectedLabels.length > 0
+      ? selectedLabels.length === 1
+        ? selectedLabels[0]
+        : `${selectedLabels.length} selected`
+      : placeholder;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between"
+        >
+          {displayText}
+          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0">
+        <div className="max-h-60 overflow-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              className="flex items-center space-x-2 p-2 hover:bg-accent cursor-pointer"
+              onClick={() => handleToggle(option.value)}
+            >
+              <Checkbox
+                checked={selected.includes(option.value)}
+                onChange={() => handleToggle(option.value)}
+              />
+              <span className="text-sm">{option.label}</span>
+            </div>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export default function PayrollsPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [clientFilter, setClientFilter] = useState("all");
-  const [consultantFilter, setConsultantFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [clientFilter, setClientFilter] = useState<string[]>([]);
+  const [consultantFilter, setConsultantFilter] = useState<string[]>([]);
+  const [payCycleFilter, setPayCycleFilter] = useState<string[]>([]);
+  const [dateTypeFilter, setDateTypeFilter] = useState<string[]>([]);
   const [selectedPayrolls, setSelectedPayrolls] = useState<string[]>([]);
-  const [activeView, setActiveView] = useState("list");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [showFilters, setShowFilters] = useState(false);
 
   // Sorting state
-  const [sortField, setSortField] = useState<string>("name");
+  const [sortField, setSortField] = useState<string>("nextEftDate");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Column visibility state
@@ -375,8 +453,8 @@ export default function PayrollsPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto text-blue-600" />
-          <p className="text-gray-600">Loading payrolls...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="text-gray-500">Loading payrolls...</p>
         </div>
       </div>
     );
@@ -386,8 +464,8 @@ export default function PayrollsPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
-          <AlertTriangle className="w-8 h-8 mx-auto text-red-600" />
-          <p className="text-red-600">
+          <AlertTriangle className="w-8 h-8 mx-auto text-destructive" />
+          <p className="text-destructive">
             Error loading payrolls: {finalError.message}
           </p>
           <Button onClick={() => finalRefetch()} variant="outline">
@@ -404,6 +482,25 @@ export default function PayrollsPage() {
     // Fix employee count - use the employee_count from the payroll directly
     const employeeCount = payroll.employee_count || 0;
 
+    // Get next EFT date from payroll_dates
+    const getNextEftDate = (payrollDates: any[]) => {
+      if (!payrollDates || payrollDates.length === 0) return null;
+
+      const today = new Date();
+      const futureDates = payrollDates
+        .filter(
+          (date) =>
+            date.adjusted_eft_date && new Date(date.adjusted_eft_date) >= today
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.adjusted_eft_date).getTime() -
+            new Date(b.adjusted_eft_date).getTime()
+        );
+
+      return futureDates.length > 0 ? futureDates[0].adjusted_eft_date : null;
+    };
+
     return {
       ...payroll,
       employeeCount,
@@ -411,6 +508,7 @@ export default function PayrollsPage() {
       priority:
         employeeCount > 50 ? "high" : employeeCount > 20 ? "medium" : "low",
       progress: getStatusConfig(payroll.status || "Implementation").progress,
+      nextEftDate: getNextEftDate(payroll.payroll_dates),
       lastUpdated: new Date(payroll.updated_at || payroll.created_at),
       lastUpdatedBy: payroll.userByPrimaryConsultantUserId?.name || "System",
     };
@@ -428,16 +526,31 @@ export default function PayrollsPage() {
       payroll.payrollCycle.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
-      statusFilter === "all" || payroll.status === statusFilter;
+      statusFilter.length === 0 || statusFilter.includes(payroll.status);
 
     const matchesClient =
-      clientFilter === "all" || payroll.client?.id === clientFilter;
+      clientFilter.length === 0 || clientFilter.includes(payroll.client?.id);
 
     const matchesConsultant =
-      consultantFilter === "all" ||
-      payroll.userByPrimaryConsultantUserId?.id === consultantFilter;
+      consultantFilter.length === 0 ||
+      consultantFilter.includes(payroll.userByPrimaryConsultantUserId?.id);
 
-    return matchesSearch && matchesStatus && matchesClient && matchesConsultant;
+    const matchesPayCycle =
+      payCycleFilter.length === 0 ||
+      payCycleFilter.includes(payroll.payroll_cycle?.name);
+
+    const matchesDateType =
+      dateTypeFilter.length === 0 ||
+      dateTypeFilter.includes(payroll.payroll_date_type?.name);
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesClient &&
+      matchesConsultant &&
+      matchesPayCycle &&
+      matchesDateType
+    );
   });
 
   // Sort payrolls
@@ -458,6 +571,9 @@ export default function PayrollsPage() {
     } else if (sortField === "lastUpdated") {
       aValue = a.lastUpdated;
       bValue = b.lastUpdated;
+    } else if (sortField === "nextEftDate") {
+      aValue = a.nextEftDate ? new Date(a.nextEftDate) : null;
+      bValue = b.nextEftDate ? new Date(b.nextEftDate) : null;
     } else if (sortField === "payrollCycle") {
       aValue = a.payrollCycle;
       bValue = b.payrollCycle;
@@ -472,6 +588,18 @@ export default function PayrollsPage() {
       return sortDirection === "asc"
         ? aValue.getTime() - bValue.getTime()
         : bValue.getTime() - aValue.getTime();
+    }
+
+    // Handle null dates (put nulls at the end)
+    if (sortField === "nextEftDate") {
+      if (aValue === null && bValue === null) return 0;
+      if (aValue === null) return 1;
+      if (bValue === null) return -1;
+      if (aValue instanceof Date && bValue instanceof Date) {
+        return sortDirection === "asc"
+          ? aValue.getTime() - bValue.getTime()
+          : bValue.getTime() - aValue.getTime();
+      }
     }
 
     // String comparison
@@ -506,6 +634,12 @@ export default function PayrollsPage() {
         ])
     ).values()
   ) as any[];
+  const uniquePayCycles = Array.from(
+    new Set(payrolls.map((p: any) => p.payroll_cycle?.name).filter(Boolean))
+  ) as string[];
+  const uniqueDateTypes = Array.from(
+    new Set(payrolls.map((p: any) => p.payroll_date_type?.name).filter(Boolean))
+  ) as string[];
 
   // Handle selection
   const handleSelectAll = (checked: boolean) => {
@@ -546,28 +680,240 @@ export default function PayrollsPage() {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high":
-        return "text-red-600";
+        return "text-destructive";
       case "medium":
-        return "text-orange-600";
+        return "text-amber-600";
       case "low":
-        return "text-green-600";
+        return "text-emerald-600";
       default:
-        return "text-gray-600";
+        return "text-gray-500";
     }
   };
 
   const clearFilters = () => {
     setSearchTerm("");
-    setStatusFilter("all");
-    setClientFilter("all");
-    setConsultantFilter("all");
+    setStatusFilter([]);
+    setClientFilter([]);
+    setConsultantFilter([]);
+    setPayCycleFilter([]);
+    setDateTypeFilter([]);
   };
 
   const hasActiveFilters =
     searchTerm ||
-    statusFilter !== "all" ||
-    clientFilter !== "all" ||
-    consultantFilter !== "all";
+    statusFilter.length > 0 ||
+    clientFilter.length > 0 ||
+    consultantFilter.length > 0 ||
+    payCycleFilter.length > 0 ||
+    dateTypeFilter.length > 0;
+
+  // Calculate summary statistics
+  const activePayrolls = sortedPayrolls.filter(
+    (p: any) => p.status === "Active"
+  ).length;
+  const totalEmployees = sortedPayrolls.reduce(
+    (sum: number, p: any) => sum + (p.employeeCount || 0),
+    0
+  );
+  const totalClients = new Set(
+    sortedPayrolls.map((p: any) => p.client?.id).filter(Boolean)
+  ).size;
+  const pendingPayrolls = sortedPayrolls.filter((p: any) =>
+    ["Implementation", "draft", "data-entry", "review", "processing"].includes(
+      p.status || "Implementation"
+    )
+  ).length;
+
+  // Helper functions for views
+  const getStatusColor = (status: string) => {
+    const config = getStatusConfig(status);
+    switch (config.variant) {
+      case "default":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "secondary":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "destructive":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "outline":
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  // Render card view
+  const renderCardView = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {sortedPayrolls.map((payroll: any) => {
+        const statusConfig = getStatusConfig(
+          payroll.status || "Implementation"
+        );
+        const StatusIcon = statusConfig.icon;
+
+        return (
+          <Card
+            key={payroll.id}
+            className="hover:shadow-lg transition-shadow duration-200"
+          >
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">{payroll.name}</CardTitle>
+                <Badge
+                  className={getStatusColor(payroll.status || "Implementation")}
+                >
+                  {payroll.status || "Implementation"}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center space-x-2">
+                  <Building2 className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-600">
+                    {payroll.client?.name || "No client"}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Users className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-600">
+                    {payroll.employeeCount || 0} employees
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t">
+                <Link href={`/payrolls/${payroll.id}`}>
+                  <Button variant="outline" size="sm">
+                    <Eye className="w-4 h-4 mr-2" />
+                    View
+                  </Button>
+                </Link>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link href={`/payrolls/${payroll.id}`}>
+                        <Eye className="w-4 h-4 mr-2" />
+                        View Details
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Payroll
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Copy className="w-4 h-4 mr-2" />
+                      Duplicate
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Download className="w-4 h-4 mr-2" />
+                      Export
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+
+  // Render list view
+  const renderListView = () => (
+    <div className="space-y-3">
+      {sortedPayrolls.map((payroll: any) => {
+        const statusConfig = getStatusConfig(
+          payroll.status || "Implementation"
+        );
+        const StatusIcon = statusConfig.icon;
+
+        return (
+          <Card
+            key={payroll.id}
+            className="hover:shadow-md transition-shadow duration-200"
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <FileText className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">
+                      {payroll.name}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {payroll.client?.name || "No client assigned"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <div className="text-right text-sm">
+                    <p className="font-medium text-gray-900">
+                      {payroll.employeeCount || 0} employees
+                    </p>
+                    <p className="text-gray-500">{payroll.payrollCycle}</p>
+                  </div>
+
+                  <Badge
+                    className={getStatusColor(
+                      payroll.status || "Implementation"
+                    )}
+                  >
+                    {payroll.status || "Implementation"}
+                  </Badge>
+
+                  <Link href={`/payrolls/${payroll.id}`}>
+                    <Button variant="outline" size="sm">
+                      <Eye className="w-4 h-4 mr-2" />
+                      View
+                    </Button>
+                  </Link>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link href={`/payrolls/${payroll.id}`}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Details
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit Payroll
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Copy className="w-4 h-4 mr-2" />
+                        Duplicate
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Download className="w-4 h-4 mr-2" />
+                        Export
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
 
   const renderSortableHeader = (label: string, field: string) => {
     const column = COLUMN_DEFINITIONS.find((col) => col.key === field);
@@ -592,47 +938,113 @@ export default function PayrollsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Enhanced Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Payrolls</h2>
-          <p className="text-muted-foreground">
-            Manage payrolls for your clients ({sortedPayrolls.length} of{" "}
-            {payrolls.length})
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900">Payrolls</h1>
+          <p className="text-gray-500">Manage payrolls for your clients</p>
         </div>
-        <div className="flex gap-2">
-          {(isAdmin || isDeveloper) && <PayrollsMissingDates />}
+
+        <div className="flex items-center space-x-2">
           {(isAdmin || isManager || isDeveloper) && (
-            <Button asChild>
-              <Link href="/payrolls/new">
+            <Link href="/payrolls/new">
+              <Button>
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Add New Payroll
-              </Link>
-            </Button>
+                Add Payroll
+              </Button>
+            </Link>
           )}
         </div>
       </div>
 
-      {/* Enhanced Search and Filters */}
+      {/* Summary Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Payrolls
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {sortedPayrolls.length}
+                </p>
+              </div>
+              <FileText className="w-8 h-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Active Payrolls
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {activePayrolls}
+                </p>
+              </div>
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Employees
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {totalEmployees}
+                </p>
+              </div>
+              <Users className="w-8 h-8 text-purple-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Pending Payrolls
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {pendingPayrolls}
+                </p>
+              </div>
+              <Clock className="w-8 h-8 text-orange-600" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters and Controls */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            {/* Search Bar */}
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1">
+        <CardContent className="p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              {/* Search */}
+              <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
-                  placeholder="Search payrolls, clients, consultants, or cycles..."
+                  placeholder="Search payrolls, clients, consultants..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 w-[300px]"
                 />
               </div>
+
+              {/* Advanced Filters Button */}
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
-                className={showFilters ? "bg-blue-50" : ""}
+                className={showFilters ? "bg-primary/10" : ""}
               >
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
@@ -641,115 +1053,200 @@ export default function PayrollsPage() {
                     {
                       [
                         searchTerm,
-                        statusFilter !== "all",
-                        clientFilter !== "all",
-                        consultantFilter !== "all",
+                        statusFilter.length > 0,
+                        clientFilter.length > 0,
+                        consultantFilter.length > 0,
+                        payCycleFilter.length > 0,
+                        dateTypeFilter.length > 0,
                       ].filter(Boolean).length
                     }
                   </Badge>
                 )}
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline">
-                    <Columns className="w-4 h-4 mr-2" />
-                    Columns
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {COLUMN_DEFINITIONS.map((column) => (
-                    <DropdownMenuCheckboxItem
-                      key={column.key}
-                      checked={visibleColumns.includes(column.key)}
-                      onCheckedChange={() => toggleColumnVisibility(column.key)}
-                    >
-                      {column.label}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+
               {hasActiveFilters && (
                 <Button variant="ghost" size="sm" onClick={clearFilters}>
                   <X className="w-4 h-4 mr-1" />
                   Clear
                 </Button>
               )}
+
+              {/* Sort Dropdown */}
+              <Select
+                value={`${sortField}-${sortDirection}`}
+                onValueChange={(value) => {
+                  const [field, direction] = value.split("-");
+                  setSortField(field);
+                  setSortDirection(direction as "asc" | "desc");
+                }}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Sort by..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="nextEftDate-asc">
+                    Next EFT Date ↑
+                  </SelectItem>
+                  <SelectItem value="nextEftDate-desc">
+                    Next EFT Date ↓
+                  </SelectItem>
+                  <SelectItem value="name-asc">Name A-Z</SelectItem>
+                  <SelectItem value="name-desc">Name Z-A</SelectItem>
+                  <SelectItem value="client-asc">Client A-Z</SelectItem>
+                  <SelectItem value="client-desc">Client Z-A</SelectItem>
+                  <SelectItem value="status-asc">Status A-Z</SelectItem>
+                  <SelectItem value="status-desc">Status Z-A</SelectItem>
+                  <SelectItem value="employees-asc">Employees ↑</SelectItem>
+                  <SelectItem value="employees-desc">Employees ↓</SelectItem>
+                  <SelectItem value="lastUpdated-asc">
+                    Last Updated ↑
+                  </SelectItem>
+                  <SelectItem value="lastUpdated-desc">
+                    Last Updated ↓
+                  </SelectItem>
+                  <SelectItem value="payrollCycle-asc">
+                    Pay Cycle A-Z
+                  </SelectItem>
+                  <SelectItem value="payrollCycle-desc">
+                    Pay Cycle Z-A
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Filter Dropdowns */}
-            {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Status
-                  </label>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All statuses" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      {uniqueStatuses.map((status: string) => (
-                        <SelectItem key={status} value={status}>
-                          {status}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            {/* View Mode Toggle */}
+            <div className="flex items-center space-x-2">
+              <Button
+                variant={viewMode === "cards" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("cards")}
+              >
+                <Grid3X3 className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === "table" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("table")}
+              >
+                <TableIcon className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+              >
+                <List className="w-4 h-4" />
+              </Button>
 
-                <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Client
-                  </label>
-                  <Select value={clientFilter} onValueChange={setClientFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All clients" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Clients</SelectItem>
-                      {uniqueClients.map((client: any) => (
-                        <SelectItem key={client.id} value={client.id as string}>
-                          {client.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Consultant
-                  </label>
-                  <Select
-                    value={consultantFilter}
-                    onValueChange={setConsultantFilter}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="All consultants" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Consultants</SelectItem>
-                      {uniqueConsultants.map((consultant: any) => (
-                        <SelectItem
-                          key={consultant.id}
-                          value={consultant.id as string}
-                        >
-                          {consultant.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            )}
+              {viewMode === "table" && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Columns className="w-4 h-4 mr-2" />
+                      Columns
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {COLUMN_DEFINITIONS.map((column) => (
+                      <DropdownMenuCheckboxItem
+                        key={column.key}
+                        checked={visibleColumns.includes(column.key)}
+                        onCheckedChange={() =>
+                          toggleColumnVisibility(column.key)
+                        }
+                      >
+                        {column.label}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
           </div>
+
+          {/* Advanced Filter Dropdowns */}
+          {showFilters && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 pt-4 border-t mt-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Status</label>
+                <MultiSelect
+                  options={uniqueStatuses.map((status: string) => ({
+                    value: status,
+                    label: status,
+                  }))}
+                  selected={statusFilter}
+                  onSelectionChange={setStatusFilter}
+                  placeholder="All statuses"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Client</label>
+                <MultiSelect
+                  options={uniqueClients.map((client: any) => ({
+                    value: client.id as string,
+                    label: client.name,
+                  }))}
+                  selected={clientFilter}
+                  onSelectionChange={setClientFilter}
+                  placeholder="All clients"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  Consultant
+                </label>
+                <MultiSelect
+                  options={uniqueConsultants.map((consultant: any) => ({
+                    value: consultant.id as string,
+                    label: consultant.name,
+                  }))}
+                  selected={consultantFilter}
+                  onSelectionChange={setConsultantFilter}
+                  placeholder="All consultants"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  Pay Cycle
+                </label>
+                <MultiSelect
+                  options={uniquePayCycles.map((cycle: string) => ({
+                    value: cycle,
+                    label:
+                      cycle.charAt(0).toUpperCase() +
+                      cycle.slice(1).replace("_", " "),
+                  }))}
+                  selected={payCycleFilter}
+                  onSelectionChange={setPayCycleFilter}
+                  placeholder="All cycles"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  Date Type
+                </label>
+                <MultiSelect
+                  options={uniqueDateTypes.map((type: string) => ({
+                    value: type,
+                    label: type.toUpperCase().replace("_", " "),
+                  }))}
+                  selected={dateTypeFilter}
+                  onSelectionChange={setDateTypeFilter}
+                  placeholder="All types"
+                />
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Bulk Actions */}
-      {selectedPayrolls.length > 0 && (
-        <Card className="border-blue-200 bg-blue-50">
+      {selectedPayrolls.length > 0 && viewMode === "table" && (
+        <Card className="border-primary/20 bg-primary/5">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -772,6 +1269,7 @@ export default function PayrollsPage() {
                   size="sm"
                   onClick={() => setSelectedPayrolls([])}
                 >
+                  <X className="w-4 h-4 mr-1" />
                   Clear Selection
                 </Button>
               </div>
@@ -780,241 +1278,65 @@ export default function PayrollsPage() {
         </Card>
       )}
 
-      {/* Payrolls Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Payrolls</span>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => finalRefetch()}
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </Button>
+      {/* Content based on view mode */}
+      {finalLoading && !payrolls.length ? (
+        <Card>
+          <CardContent className="p-12">
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">
-                    <Checkbox
-                      checked={
-                        selectedPayrolls.length === sortedPayrolls.length &&
-                        sortedPayrolls.length > 0
-                      }
-                      onCheckedChange={handleSelectAll}
-                    />
-                  </TableHead>
-                  {visibleColumns.includes("name") && (
-                    <TableHead>
-                      {renderSortableHeader("Payroll", "name")}
-                    </TableHead>
-                  )}
-                  {visibleColumns.includes("client") && (
-                    <TableHead>
-                      {renderSortableHeader("Client", "client")}
-                    </TableHead>
-                  )}
-                  {visibleColumns.includes("payrollCycle") && (
-                    <TableHead>
-                      {renderSortableHeader("Payroll Schedule", "payrollCycle")}
-                    </TableHead>
-                  )}
-                  {visibleColumns.includes("status") && (
-                    <TableHead>
-                      {renderSortableHeader("Status", "status")}
-                    </TableHead>
-                  )}
-                  {visibleColumns.includes("consultant") && (
-                    <TableHead>
-                      {renderSortableHeader("Consultant", "consultant")}
-                    </TableHead>
-                  )}
-                  {visibleColumns.includes("employees") && (
-                    <TableHead>
-                      {renderSortableHeader("Employees", "employees")}
-                    </TableHead>
-                  )}
-                  {visibleColumns.includes("lastUpdated") && (
-                    <TableHead>
-                      {renderSortableHeader("Last Updated", "lastUpdated")}
-                    </TableHead>
-                  )}
-                  {visibleColumns.includes("progress") && (
-                    <TableHead>
-                      {renderSortableHeader("Progress", "progress")}
-                    </TableHead>
-                  )}
-                  <TableHead className="w-12"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedPayrolls.map((payroll: any) => {
-                  const statusConfig = getStatusConfig(
-                    payroll.status || "Implementation"
-                  );
-                  const StatusIcon = statusConfig.icon;
-
-                  return (
-                    <TableRow key={payroll.id} className="hover:bg-gray-50">
-                      <TableCell>
-                        <Checkbox
-                          checked={selectedPayrolls.includes(payroll.id)}
-                          onCheckedChange={(checked) =>
-                            handleSelectPayroll(payroll.id, checked as boolean)
-                          }
-                        />
-                      </TableCell>
-                      {visibleColumns.includes("name") && (
-                        <TableCell>
-                          <div>
-                            <Link
-                              href={`/payrolls/${payroll.id}`}
-                              className="font-medium text-blue-600 hover:underline"
-                            >
-                              {payroll.name}
-                            </Link>
-                          </div>
-                        </TableCell>
-                      )}
-                      {visibleColumns.includes("client") && (
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Building2 className="w-4 h-4 text-gray-400" />
-                            <span>{payroll.client?.name || "No client"}</span>
-                          </div>
-                        </TableCell>
-                      )}
-                      {visibleColumns.includes("payrollCycle") && (
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-gray-400" />
-                            <span className="font-medium">
-                              {payroll.payrollCycle}
-                            </span>
-                          </div>
-                        </TableCell>
-                      )}
-                      {visibleColumns.includes("status") && (
-                        <TableCell>
-                          <Badge className={statusConfig.color}>
-                            <StatusIcon className="w-3 h-3 mr-1" />
-                            {payroll.status || "Implementation"}
-                          </Badge>
-                        </TableCell>
-                      )}
-                      {visibleColumns.includes("consultant") && (
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <UserCheck className="w-4 h-4 text-gray-400" />
-                            <span>
-                              {payroll.userByPrimaryConsultantUserId?.name ||
-                                "Unassigned"}
-                            </span>
-                          </div>
-                        </TableCell>
-                      )}
-                      {visibleColumns.includes("employees") && (
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4 text-gray-400" />
-                            <span
-                              className={getPriorityColor(payroll.priority)}
-                            >
-                              {payroll.employeeCount}
-                            </span>
-                          </div>
-                        </TableCell>
-                      )}
-                      {visibleColumns.includes("lastUpdated") && (
-                        <TableCell>
-                          <div className="text-sm">
-                            <div>{formatDate(payroll.lastUpdated)}</div>
-                            <div className="text-gray-500 text-xs">
-                              by {payroll.lastUpdatedBy}
-                            </div>
-                          </div>
-                        </TableCell>
-                      )}
-                      {visibleColumns.includes("progress") && (
-                        <TableCell>
-                          <div className="w-full max-w-[100px]">
-                            <div className="flex items-center justify-between text-xs mb-1">
-                              <span>{payroll.progress}%</span>
-                            </div>
-                            <Progress
-                              value={payroll.progress}
-                              className="h-2"
-                            />
-                          </div>
-                        </TableCell>
-                      )}
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link href={`/payrolls/${payroll.id}`}>
-                                <Eye className="w-4 h-4 mr-2" />
-                                View Details
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Edit className="w-4 h-4 mr-2" />
-                              Edit Payroll
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Copy className="w-4 h-4 mr-2" />
-                              Duplicate
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                              <Download className="w-4 h-4 mr-2" />
-                              Export
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-
-            {sortedPayrolls.length === 0 && (
-              <div className="text-center py-12">
-                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No payrolls found
-                </h3>
-                <p className="text-gray-500 mb-4">
-                  {hasActiveFilters
-                    ? "Try adjusting your search or filters"
-                    : "Get started by creating your first payroll"}
-                </p>
-                {!hasActiveFilters && (isAdmin || isManager || isDeveloper) && (
-                  <Button asChild>
-                    <Link href="/payrolls/new">
+          </CardContent>
+        </Card>
+      ) : sortedPayrolls.length === 0 ? (
+        <Card>
+          <CardContent className="p-12">
+            <div className="text-center">
+              <FileText className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {searchTerm || hasActiveFilters
+                  ? "No payrolls found"
+                  : "No payrolls yet"}
+              </h3>
+              <p className="text-gray-500 mb-4">
+                {searchTerm || hasActiveFilters
+                  ? "Try adjusting your search criteria or filters"
+                  : "Get started by adding your first payroll"}
+              </p>
+              {(isAdmin || isManager || isDeveloper) &&
+                !searchTerm &&
+                !hasActiveFilters && (
+                  <Link href="/payrolls/new">
+                    <Button>
                       <PlusCircle className="w-4 h-4 mr-2" />
-                      Create Payroll
-                    </Link>
-                  </Button>
+                      Add First Payroll
+                    </Button>
+                  </Link>
                 )}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div>
+          {viewMode === "table" && (
+            <PayrollsTable
+              payrolls={sortedPayrolls}
+              loading={finalLoading}
+              onRefresh={finalRefetch}
+              selectedPayrolls={selectedPayrolls}
+              onSelectPayroll={handleSelectPayroll}
+              onSelectAll={handleSelectAll}
+              visibleColumns={visibleColumns}
+              sortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
+          )}
+
+          {viewMode === "cards" && renderCardView()}
+
+          {viewMode === "list" && renderListView()}
+        </div>
+      )}
     </div>
   );
 }

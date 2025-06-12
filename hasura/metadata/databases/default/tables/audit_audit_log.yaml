@@ -1,0 +1,72 @@
+table:
+  name: audit_log
+  schema: audit
+
+select_permissions:
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - event_time
+        - user_id
+        - user_email
+        - user_role
+        - action
+        - resource_type
+        - resource_id
+        - ip_address
+        - session_id
+        - request_id
+        - success
+        - error_message
+        - metadata
+        - created_at
+      filter:
+        _or:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - user_role:
+              _nin: ["admin"]
+      allow_aggregations: true
+
+  - role: manager
+    permission:
+      columns:
+        - id
+        - event_time
+        - user_id
+        - user_email
+        - user_role
+        - action
+        - resource_type
+        - resource_id
+        - success
+        - created_at
+      filter:
+        _and:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - resource_type:
+              _in: ["payrolls", "payroll_dates", "staff"]
+      allow_aggregations: false
+
+insert_permissions:
+  - role: system
+    permission:
+      check: {}
+      columns:
+        - user_id
+        - user_email
+        - user_role
+        - action
+        - resource_type
+        - resource_id
+        - old_values
+        - new_values
+        - ip_address
+        - user_agent
+        - session_id
+        - request_id
+        - success
+        - error_message
+        - metadata

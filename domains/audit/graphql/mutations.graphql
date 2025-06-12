@@ -1,0 +1,94 @@
+# Audit Domain Mutations
+
+# Note: Audit logs are typically created automatically by the system
+# These mutations are for administrative purposes only
+
+# Security Events
+mutation CreateSecurityEvent($object: security_event_log_insert_input!) {
+  insert_security_event_log_one(object: $object) {
+    ...SecurityEventLogCore
+  }
+}
+
+mutation ResolveSecurityEvent($id: uuid!, $resolution_notes: String!) {
+  update_security_event_log_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      resolved: true
+      resolution_notes: $resolution_notes
+      resolved_at: "now()"
+    }
+  ) {
+    ...SecurityEventLogWithUser
+  }
+}
+
+mutation UpdateSecurityEventSeverity($id: uuid!, $severity: String!) {
+  update_security_event_log_by_pk(
+    pk_columns: { id: $id }
+    _set: { severity: $severity }
+  ) {
+    ...SecurityEventLogCore
+  }
+}
+
+# Compliance Checks
+mutation CreateComplianceCheck($object: compliance_check_insert_input!) {
+  insert_compliance_check_one(object: $object) {
+    ...ComplianceCheckWithUser
+  }
+}
+
+mutation UpdateComplianceCheck($id: uuid!, $set: compliance_check_set_input!) {
+  update_compliance_check_by_pk(pk_columns: { id: $id }, _set: $set) {
+    ...ComplianceCheckWithUser
+  }
+}
+
+mutation MarkComplianceCheckRemediated($id: uuid!, $remediation_notes: String!, $next_check_due: date!) {
+  update_compliance_check_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      remediation_required: false
+      remediation_notes: $remediation_notes
+      next_check_due: $next_check_due
+    }
+  ) {
+    ...ComplianceCheckCore
+  }
+}
+
+# Data Access Logging (for manual entries)
+mutation LogDataAccess($object: data_access_log_insert_input!) {
+  insert_data_access_log_one(object: $object) {
+    ...DataAccessLogCore
+  }
+}
+
+# Bulk Operations
+mutation BulkResolveSecurityEvents($event_ids: [uuid!]!, $resolution_notes: String!) {
+  update_security_event_log(
+    where: { id: { _in: $event_ids } }
+    _set: {
+      resolved: true
+      resolution_notes: $resolution_notes
+      resolved_at: "now()"
+    }
+  ) {
+    affected_rows
+    returning {
+      ...SecurityEventLogCore
+    }
+  }
+}
+
+# Retention Management
+mutation EnforceAuditRetention {
+  enforce_audit_retention {
+    success
+    message
+    deleted_audit_logs
+    deleted_access_logs
+    archived_security_events
+  }
+}

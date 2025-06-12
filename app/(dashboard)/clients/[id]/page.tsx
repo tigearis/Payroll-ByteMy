@@ -88,7 +88,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import { PayrollsTabLoading } from "@/components/ui/modern-loading";
+import { PayrollsTabLoading } from "@/components/ui/loading-states";
 
 // Payroll status configuration (same as payrolls page)
 const getStatusConfig = (status: string) => {

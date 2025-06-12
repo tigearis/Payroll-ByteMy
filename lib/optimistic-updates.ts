@@ -1,5 +1,6 @@
 // lib/optimistic-updates.ts
-import { ApolloCache, Reference } from '@apollo/client';
+import { ApolloCache } from "@apollo/client";
+import { gql } from "@apollo/client";
 
 /**
  * Helper functions for working with optimistic updates in Apollo Client
@@ -10,7 +11,7 @@ import { ApolloCache, Reference } from '@apollo/client';
  */
 export function updatePayrollInCache(
   cache: ApolloCache<any>,
-  payrollId: string, 
+  payrollId: string,
   data: Partial<any>
 ) {
   try {
@@ -19,26 +20,26 @@ export function updatePayrollInCache(
     const existingPayroll = cache.readFragment({
       id: cacheId,
       fragment: PAYROLL_FIELDS_FRAGMENT,
-      fragmentName: 'PayrollFields'
+      fragmentName: "PayrollFields",
     });
-    
+
     if (!existingPayroll) {
       console.warn(`Payroll with ID ${payrollId} not found in cache`);
       return false;
     }
-    
+
     // Write the updated payroll back to the cache
     cache.writeFragment({
       id: cacheId,
       fragment: PAYROLL_FIELDS_FRAGMENT,
-      fragmentName: 'PayrollFields',
+      fragmentName: "PayrollFields",
       data: {
         ...existingPayroll,
         ...data,
-        __typename: 'payrolls' // Ensure typename is preserved
-      }
+        __typename: "payrolls", // Ensure typename is preserved
+      },
     });
-    
+
     return true;
   } catch (error) {
     console.error(`Error updating payroll ${payrollId} in cache:`, error);
@@ -60,28 +61,31 @@ export function updatePayrollDateInCache(
     const existingDate = cache.readFragment({
       id: cacheId,
       fragment: PAYROLL_DATE_FIELDS_FRAGMENT,
-      fragmentName: 'PayrollDateFields'
+      fragmentName: "PayrollDateFields",
     });
-    
+
     if (!existingDate) {
       console.warn(`Payroll date with ID ${payrollDateId} not found in cache`);
       return false;
     }
-    
+
     cache.writeFragment({
       id: cacheId,
       fragment: PAYROLL_DATE_FIELDS_FRAGMENT,
-      fragmentName: 'PayrollDateFields',
+      fragmentName: "PayrollDateFields",
       data: {
         ...existingDate,
         ...data,
-        __typename: 'payroll_dates'
-      }
+        __typename: "payroll_dates",
+      },
     });
-    
+
     return true;
   } catch (error) {
-    console.error(`Error updating payroll date ${payrollDateId} in cache:`, error);
+    console.error(
+      `Error updating payroll date ${payrollDateId} in cache:`,
+      error
+    );
     return false;
   }
 }
@@ -92,7 +96,7 @@ export function updatePayrollDateInCache(
 export function updatePayrollStatusInCache(
   cache: ApolloCache<any>,
   payrollId: string,
-  status: 'Active' | 'Implementation' | 'Inactive'
+  status: "Active" | "Implementation" | "Inactive"
 ) {
   return updatePayrollInCache(cache, payrollId, { status });
 }
@@ -103,31 +107,31 @@ export function updatePayrollStatusInCache(
 export function addPayrollToCache(
   cache: ApolloCache<any>,
   newPayroll: any,
-  queryName = 'GET_PAYROLLS'
+  queryName = "GET_PAYROLLS"
 ) {
   try {
     // Read the existing query from the cache
     const existingQuery = cache.readQuery({
-      query: PAYROLLS_QUERY
+      query: PAYROLLS_QUERY,
     }) as { payrolls: any[] } | null;
-    
+
     if (!existingQuery) {
-      console.warn('No payrolls query found in cache');
+      console.warn("No payrolls query found in cache");
       return false;
     }
-    
+
     // Add the new payroll to the list
     cache.writeQuery({
       query: PAYROLLS_QUERY,
       data: {
         ...(existingQuery || {}),
-        payrolls: [...existingQuery.payrolls, newPayroll]
-      }
+        payrolls: [...existingQuery.payrolls, newPayroll],
+      },
     });
-    
+
     return true;
   } catch (error) {
-    console.error('Error adding payroll to cache:', error);
+    console.error("Error adding payroll to cache:", error);
     return false;
   }
 }
@@ -142,10 +146,10 @@ export function removePayrollFromCache(
   try {
     // First evict the payroll from the cache
     cache.evict({ id: `payrolls:${payrollId}` });
-    
+
     // Then garbage collect any dangling references
     cache.gc();
-    
+
     return true;
   } catch (error) {
     console.error(`Error removing payroll ${payrollId} from cache:`, error);
@@ -179,9 +183,6 @@ const PAYROLL_DATE_FIELDS_FRAGMENT = gql`
   }
 `;
 
-// Import this at the top, forgot to include it initially
-import { gql } from '@apollo/client';
-
 // Define query for adding to list
 const PAYROLLS_QUERY = gql`
   query GetPayrolls {
@@ -201,3 +202,57 @@ const PAYROLLS_QUERY = gql`
     }
   }
 `;
+
+// Optimistic response generators for common mutations
+export const optimisticResponseGenerators = {
+  updateUser: (variables: any) => ({
+    __typename: "Mutation",
+    update_users: {
+      __typename: "users_mutation_response",
+      affected_rows: 1,
+      returning: [
+        {
+          ...variables.user,
+          __typename: "users",
+        },
+      ],
+    },
+  }),
+
+  updatePayroll: (variables: any) => ({
+    __typename: "Mutation",
+    update_payrolls_by_pk: {
+      __typename: "payrolls",
+      ...variables.input,
+      updated_at: new Date().toISOString(),
+    },
+  }),
+
+  createClient: (variables: any) => ({
+    __typename: "Mutation",
+    insert_clients_one: {
+      __typename: "clients",
+      id: crypto.randomUUID(), // Temporary ID that will be replaced
+      ...variables.input,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  }),
+
+  updateNote: (variables: any) => ({
+    __typename: "Mutation",
+    update_notes_by_pk: {
+      __typename: "notes",
+      ...variables.input,
+      updated_at: new Date().toISOString(),
+    },
+  }),
+
+  deletePayrollDate: (variables: any) => ({
+    __typename: "Mutation",
+    delete_payroll_dates_by_pk: {
+      __typename: "payroll_dates",
+      id: variables.id,
+    },
+  }),
+};

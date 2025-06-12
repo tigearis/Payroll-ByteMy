@@ -1,4 +1,4 @@
-import { useRole } from "@/hooks/use-role";
+import { useUserRole } from "@/hooks/useUserRole";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -22,14 +22,14 @@ export function RoleGuard({
   redirectTo = "/dashboard",
 }: RoleGuardProps) {
   const {
-    role,
-    isLoadingRole,
+    userRole: role,
+    isLoading: isLoadingRole,
     hasRole,
     canManageUsers,
-    canManageStaff,
     isAdmin,
     isManager,
-  } = useRole();
+    permissions,
+  } = useUserRole();
   const router = useRouter();
 
   useEffect(() => {
@@ -43,16 +43,16 @@ export function RoleGuard({
       if (requiredPermission) {
         switch (requiredPermission) {
           case "canManageUsers":
-            hasAccess = canManageUsers();
+            hasAccess = canManageUsers;
             break;
           case "canManageStaff":
-            hasAccess = canManageStaff();
+            hasAccess = permissions.canManageStaff;
             break;
           case "isAdmin":
-            hasAccess = isAdmin();
+            hasAccess = isAdmin;
             break;
           case "isManager":
-            hasAccess = isManager();
+            hasAccess = isManager;
             break;
         }
       }
@@ -73,7 +73,7 @@ export function RoleGuard({
     router,
     hasRole,
     canManageUsers,
-    canManageStaff,
+    permissions.canManageStaff,
     isAdmin,
     isManager,
   ]);
@@ -91,16 +91,16 @@ export function RoleGuard({
   if (requiredPermission) {
     switch (requiredPermission) {
       case "canManageUsers":
-        hasAccess = canManageUsers();
+        hasAccess = canManageUsers;
         break;
       case "canManageStaff":
-        hasAccess = canManageStaff();
+        hasAccess = permissions.canManageStaff;
         break;
       case "isAdmin":
-        hasAccess = isAdmin();
+        hasAccess = isAdmin;
         break;
       case "isManager":
-        hasAccess = isManager();
+        hasAccess = isManager;
         break;
     }
   }

@@ -1,219 +1,189 @@
-# 📚 Payroll Management System - Documentation Hub
+# 🏢 Payroll Management System
 
-Welcome to the comprehensive documentation for the Payroll Management System. This hub provides access to all system documentation, user guides, and technical references.
+A comprehensive payroll management solution built with Next.js, featuring role-based access control, staff management, and seamless authentication integration.
 
-## 📋 Table of Contents
+## 📚 Documentation
 
-- [User Documentation](#user-documentation)
-- [Technical Documentation](#technical-documentation)
-- [System Architecture](#system-architecture)
-- [Getting Started](#getting-started)
-- [Support](#support)
+**📖 [Complete Documentation Hub](./docs/README.md)** - Start here for all user guides, technical documentation, and system information.
 
----
+### Quick Links
 
-## 👥 User Documentation
-
-### End-User Guides
-
-| Document                                                                    | Description                                                       | Target Audience  |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------- |
-| **[Staff Management User Guide](./USER_DOCUMENTATION_STAFF_MANAGEMENT.md)** | Complete guide for managing staff members, roles, and permissions | All Users        |
-| _Payroll Processing Guide_                                                  | _(Coming Soon)_ Step-by-step payroll processing instructions      | HR, Managers     |
-| _Client Management Guide_                                                   | _(Coming Soon)_ Managing clients and assignments                  | Admins, Managers |
-| _Leave Management Guide_                                                    | _(Coming Soon)_ Managing staff leave requests and approvals       | Managers, HR     |
-
-### Quick Start Guides
-
-- **New Users**: Start with the [Staff Management User Guide](./USER_DOCUMENTATION_STAFF_MANAGEMENT.md) to understand role-based access
-- **Managers**: Focus on team management sections in staff documentation
-- **Administrators**: Review all documentation for complete system understanding
-
----
-
-## 🔧 Technical Documentation
-
-### System Documentation
-
-| Document                                                               | Description                                              | Target Audience           |
-| ---------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------- |
-| **[Complete System Architecture](../COMPLETE_SYSTEM_ARCHITECTURE.md)** | Comprehensive system architecture overview               | Developers, System Admins |
-| **[Role Sync Implementation](../ROLE_SYNC_IMPLEMENTATION.md)**         | Detailed role synchronization between Clerk and database | Developers                |
-| **[Clerk Hasura JWT Setup](../CLERK_HASURA_JWT_SETUP.md)**             | Authentication and authorization setup guide             | Developers                |
-
-### API Documentation
-
-- **Staff Management API**: Endpoints for CRUD operations on staff data
-- **Authentication API**: JWT token management and user authentication
-- **Payroll API**: _(Coming Soon)_ Payroll calculation and processing endpoints
-- **Client API**: _(Coming Soon)_ Client management endpoints
-
----
-
-## 🏗️ System Architecture
-
-### Core Components
-
-1. **Frontend**: Next.js with TypeScript and Tailwind CSS
-2. **Backend**: Next.js API routes with GraphQL integration
-3. **Database**: PostgreSQL with Hasura GraphQL engine
-4. **Authentication**: Clerk with custom JWT integration
-5. **Authorization**: Role-based access control (RBAC)
-
-### Key Integrations
-
-- **Clerk Authentication**: Seamless user management and authentication
-- **Hasura GraphQL**: Type-safe database operations
-- **Role Synchronization**: Bi-directional sync between Clerk and database
-- **Soft Deletion**: Audit-friendly data management
+- **[Staff Management User Guide](./docs/USER_DOCUMENTATION_STAFF_MANAGEMENT.md)** - Complete guide for managing staff members
+- **[System Architecture](./COMPLETE_SYSTEM_ARCHITECTURE.md)** - Technical architecture overview
+- **[Role Sync Implementation](./ROLE_SYNC_IMPLEMENTATION.md)** - Role synchronization details
 
 ---
 
 ## 🚀 Getting Started
 
-### For End Users
+### Development Setup
 
-1. **Review Prerequisites**: Ensure you have appropriate account access
-2. **Read User Guide**: Start with [Staff Management User Guide](./USER_DOCUMENTATION_STAFF_MANAGEMENT.md)
-3. **Understand Roles**: Review the role-based access control section
-4. **Practice**: Use the system with your assigned permissions
+First, run the development server:
 
-### For Developers
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-1. **System Overview**: Read [Complete System Architecture](../COMPLETE_SYSTEM_ARCHITECTURE.md)
-2. **Setup Guide**: Follow [Clerk Hasura JWT Setup](../CLERK_HASURA_JWT_SETUP.md)
-3. **Role Implementation**: Study [Role Sync Implementation](../ROLE_SYNC_IMPLEMENTATION.md)
-4. **Development**: Clone repository and set up local environment
+### Authentication Testing
 
-### For Administrators
+Test Hasura token generation:
 
-1. **Full Documentation Review**: Read all technical and user documentation
-2. **Role Management**: Understand role hierarchy and permissions
-3. **User Training**: Use documentation to train team members
-4. **System Monitoring**: Implement monitoring based on architecture guide
-
----
-
-## 🔍 Feature Overview
-
-### Staff Management System ✅
-
-The Staff Management System is **fully documented** and **production-ready**:
-
-#### Core Features
-
-- ✅ Complete CRUD operations for staff members
-- ✅ Role-based access control (5 distinct roles)
-- ✅ Real-time statistics dashboard
-- ✅ Advanced filtering and search capabilities
-- ✅ Modal-based editing interface
-- ✅ Soft deletion with audit trails
-- ✅ Clerk authentication integration
-- ✅ Bi-directional sync between systems
-
-#### User Experience
-
-- ✅ Professional, modern UI design
-- ✅ Responsive layout for all devices
-- ✅ Comprehensive error handling
-- ✅ Loading states and feedback
-- ✅ Intuitive navigation and workflows
-
-#### Documentation Status
-
-- ✅ **Complete User Guide** with step-by-step instructions
-- ✅ **Technical Architecture** documentation
-- ✅ **API Documentation** for integration
-- ✅ **Troubleshooting Guide** for common issues
-- ✅ **FAQ Section** for quick answers
-
-### Upcoming Modules
-
-| Module                | Status         | Documentation |
-| --------------------- | -------------- | ------------- |
-| Payroll Processing    | In Development | Planned       |
-| Client Management     | Planned        | Planned       |
-| Leave Management      | Planned        | Planned       |
-| Reporting & Analytics | Planned        | Planned       |
+```javascript
+Clerk.session
+  .getToken({ template: "hasura" })
+  .then((token) => console.log("Hasura Token:", token));
+```
 
 ---
 
-## 🆘 Support & Troubleshooting
+## 💼 System Features
 
-### Self-Help Resources
+### ✅ Staff Management System (Complete)
 
-1. **[Staff Management FAQ](./USER_DOCUMENTATION_STAFF_MANAGEMENT.md#frequently-asked-questions)**: Common questions and answers
-2. **[Troubleshooting Guide](./USER_DOCUMENTATION_STAFF_MANAGEMENT.md#troubleshooting)**: Step-by-step problem resolution
-3. **System Status**: Check system health and known issues
+- Complete CRUD operations for staff members
+- Role-based access control (5 distinct roles)
+- Real-time statistics dashboard
+- Advanced filtering and search capabilities
+- Modal-based editing interface
+- Soft deletion with audit trails
+- Clerk authentication integration
 
-### Getting Help
+### 🔄 Coming Soon
 
-#### For Users
-
-- Review relevant user documentation
-- Check FAQ sections for common issues
-- Contact your system administrator
-- Report bugs through designated channels
-
-#### For Developers
-
-- Review technical documentation
-- Check system architecture guides
-- Contact the development team
-- Submit issues via version control system
-
-#### For Administrators
-
-- Access all documentation resources
-- Use troubleshooting guides for system issues
-- Contact technical support for complex problems
-- Review sync status and system health
+- Payroll Processing System
+- Client Management
+- Leave Management
+- Reporting & Analytics
 
 ---
 
-## 📋 Documentation Standards
+## 🗃️ Database Operations
 
-This documentation follows [industry best practices for user documentation](https://userpilot.com/blog/user-documentation/):
+### SQL Dump Commands
 
-### User Documentation Principles
+Schema only:
 
-- ✅ **Clear and Simple Language**: Avoiding technical jargon
-- ✅ **Step-by-Step Instructions**: Detailed, actionable guidance
-- ✅ **Visual Descriptions**: Rich descriptions of UI elements
-- ✅ **Multiple Formats**: Guides, FAQs, troubleshooting sections
-- ✅ **Contextual Relevance**: Role-specific information
-- ✅ **Regular Updates**: Documentation maintained with system changes
+```bash
+PGPASSWORD="npg_WavFRZ1lEx4U" pg_dump -s -U neondb_owner -h ep-black-sunset-a7wbc0zq-pooler.ap-southeast-2.aws.neon.tech neondb > schema.sql
+```
 
-### Technical Documentation Standards
+Specific tables:
 
-- ✅ **Comprehensive Coverage**: All system components documented
-- ✅ **Code Examples**: Practical implementation examples
-- ✅ **Architecture Diagrams**: Visual system representations
-- ✅ **API Specifications**: Complete endpoint documentation
-- ✅ **Security Guidelines**: Authentication and authorization details
+```bash
+PGPASSWORD="npg_WavFRZ1lEx4U" pg_dump -U neondb_owner -d neondb -h ep-black-sunset-a7wbc0zq-pooler.ap-southeast-2.aws.neon.tech -t table1,table2 -f dump.sql
+```
 
 ---
 
-## 📈 Documentation Metrics
+## 📅 Payroll Processing Rules
 
-### Coverage Status
+### Supported Payroll Cycles
 
-- **Staff Management**: 100% Complete ✅
-- **Authentication System**: 95% Complete ✅
-- **Role Management**: 100% Complete ✅
-- **API Endpoints**: 90% Complete ✅
-- **Troubleshooting**: 100% Complete ✅
+1. **Weekly Payroll**
 
-### Update Schedule
+   - Frequency: Weekly
+   - Timing: Specific day of the week (e.g., Friday)
+   - Date Type: Day of Week (DOW)
+   - Date Value: 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday
+   - Business Day Rule: Previous Business Day
 
-- **User Documentation**: Updated with each feature release
-- **Technical Documentation**: Updated with architectural changes
-- **API Documentation**: Updated with endpoint modifications
-- **FAQ Sections**: Updated based on user feedback
+2. **Fortnightly Payroll**
+
+   - Frequency: Fortnightly
+   - Timing: Specific day of the week
+   - Week Assignment: Week A (first week of January) or Week B (second week of January)
+   - Date Type: Week A or Week B
+   - Date Value: 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday
+   - Business Day Rule: Previous Business Day
+
+3. **Bi-Monthly Payroll**
+
+   - Frequency: Twice per month
+   - Date Types:
+     - Start of Month (SOM): 1st and 15th of the month; Next Business Day rule
+     - End of Month (EOM): 30th and 15th of the month; Previous Business Day rule
+   - February Exception: For both SOM and EOM, use the 14th instead of the 15th
+
+4. **Monthly Payroll**
+
+   - Frequency: Monthly
+   - Date Types:
+     - Start of Month (SOM): Next Business Day rule
+     - End of Month (EOM) or Fixed Date: Previous Business Day rule
+   - Date Value: (Only used with Fixed Date) Day of month (1-31)
+
+5. **Quarterly Payroll**
+   - Frequency: Quarterly (March, June, September, December)
+   - Rules: Same as Monthly Payroll
+
+### Key Terms
+
+- **DOW (Day of Week)**: Specific day of the week
+- **SOM (Start of Month)**: First day of the month
+- **EOM (End of Month)**: Last day of the month
+- **Fixed Date**: Predetermined date in the month
+- **Previous Business Day**: The business day before the scheduled date
+- **Next Business Day**: The business day after the scheduled date
+
+### EFT Processing Rules
+
+1. **Processing Lead Time**
+
+   - `processing_days_before_eft` determines how many days before the EFT Date processing is done
+   - If the processing date falls on a weekend or public holiday, adjust to the Previous Business Day
+
+2. **EFT Date Adjustment**
+   - If the EFT date is changed, the payroll processing date must be recalculated to maintain the required lead time
+
+### Key Terms
+
+- **EFT (Electronic Funds Transfer)**: Electronic transfer of employee wages
+- **processing_days_before_eft**: Time between payroll processing and the EFT date
 
 ---
 
-_Last Updated: January 2025_  
-_Documentation Version: 1.0_
+## 🏖️ Holiday Sync API
 
-> **Note**: This documentation hub is actively maintained. If you find any issues or have suggestions for improvement, please contact the documentation team or submit feedback through the appropriate channels.
+Sync public holidays for payroll processing:
+
+```bash
+curl -X POST "http://localhost:3000/api/holidays/sync" \
+     -H "Authorization: Bearer sk_test_Vmcx7vTwGJWmXtwVc5hWUxKGIF7BiwA2GevfPUNCVv" \
+     -H "x-hasura-admin-secret: KIATiwETsv3yBwN7e73W2kJwA0t5hf6UK94HDkPZrIQAtpLmK8fCPYE9bIc0Sd8B" \
+     -H "X-Hasura-Role: admin" \
+     -H "Content-Type: application/json" \
+     -d '{"year": 2025, "countryCode": "AU"}'
+```
+
+---
+
+## 🔧 Technical Stack
+
+- **Frontend**: Next.js 14 with TypeScript
+- **UI**: Tailwind CSS + shadcn/ui components
+- **Database**: PostgreSQL via Neon
+- **GraphQL**: Hasura GraphQL Engine
+- **Authentication**: Clerk with JWT integration
+- **State Management**: Apollo Client
+- **Package Manager**: pnpm
+
+---
+
+## 📞 Support
+
+For help and support:
+
+1. **📖 Check Documentation**: Start with the [Documentation Hub](./docs/README.md)
+2. **🔍 Search FAQ**: Review [Staff Management FAQ](./docs/USER_DOCUMENTATION_STAFF_MANAGEMENT.md#frequently-asked-questions)
+3. **🛠️ Troubleshooting**: Use the [Troubleshooting Guide](./docs/USER_DOCUMENTATION_STAFF_MANAGEMENT.md#troubleshooting)
+4. **💬 Contact Support**: Reach out through your organization's support channels
+
+---
+
+_Last Updated: January 2025_

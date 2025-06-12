@@ -1,9 +1,14 @@
 "use client";
 
 import { useQuery, gql } from "@apollo/client";
-import { isAuthError } from "@/lib/apollo-client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { isAuthError } from "../../lib/apollo-client";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 import { RefreshCcw, User } from "lucide-react";
 import { toast } from "sonner";
 
