@@ -36,9 +36,34 @@ async function getAuthToken(): Promise<string | null> {
     return tokenCache.token;
   }
 
+  // Try client-side Clerk token first (fallback approach)
+  if (typeof window !== "undefined") {
+    try {
+      // @ts-ignore - Clerk global is available on the client
+      const clerk = window.Clerk;
+      if (clerk?.session) {
+        console.log("🔍 Trying direct Clerk token");
+        const token = await clerk.session.getToken({ template: "hasura" });
+        if (token) {
+          console.log("🔍 Got token directly from Clerk");
+          // Cache for 50 minutes (tokens typically last 1 hour)
+          tokenCache = {
+            token,
+            expiresAt: Date.now() + 50 * 60 * 1000,
+          };
+          return token;
+        }
+      }
+    } catch (clerkError) {
+      console.warn("Failed to get token from Clerk directly:", clerkError);
+    }
+  }
+
   try {
     console.log("🔍 Apollo client requesting auth token from /api/auth/token");
-    const response = await fetch("/api/auth/token");
+    const response = await fetch("/api/auth/token", {
+      credentials: "include",
+    });
     console.log("🔍 Token response status:", response.status);
     
     if (response.ok) {
@@ -76,20 +101,20 @@ const cache = new InMemoryCache({
     Query: {
       fields: {
         users: {
-          merge(existing = [], incoming) {
+          merge(_, incoming) {
             return incoming;
           },
           // Add pagination support if needed
           keyArgs: ["where", "order_by"],
         },
         clients: {
-          merge(existing = [], incoming) {
+          merge(_, incoming) {
             return incoming;
           },
           keyArgs: ["where", "order_by"],
         },
         payrolls: {
-          merge(existing = [], incoming) {
+          merge(_, incoming) {
             return incoming;
           },
           keyArgs: ["where", "order_by"],

@@ -5,6 +5,7 @@ import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { ApolloProvider } from "@apollo/client";
 import client from "@/lib/apollo-client";
 import { AuthProvider } from "@/lib/auth-context";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 // ================================
 // TYPES
@@ -39,10 +40,12 @@ function AuthenticatedApolloProvider({ children }: { children: React.ReactNode }
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <ClerkProvider>
-      <AuthenticatedApolloProvider>
-        <AuthProvider>{children}</AuthProvider>
-      </AuthenticatedApolloProvider>
-    </ClerkProvider>
+    <ErrorBoundary>
+      <ClerkProvider>
+        <AuthenticatedApolloProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </AuthenticatedApolloProvider>
+      </ClerkProvider>
+    </ErrorBoundary>
   );
 }

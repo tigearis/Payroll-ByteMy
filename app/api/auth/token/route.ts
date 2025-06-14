@@ -14,21 +14,30 @@ export async function GET(req: NextRequest) {
       "unknown";
     const userAgent = req.headers.get("user-agent") || "unknown";
 
+    console.log("🔍 Request headers:", {
+      authorization: req.headers.get("authorization"),
+      cookie: req.headers.get("cookie") ? "present" : "missing",
+      host: req.headers.get("host"),
+      userAgent,
+      ipAddress,
+      origin: req.headers.get("origin"),
+      referer: req.headers.get("referer")
+    });
+
     // Get the authenticated user's session
     const authResult = await auth();
     const userId = authResult.userId;
-    console.log("🔍 Auth result:", { hasUserId: !!userId, userId: userId?.substring(0, 8) + "..." });
+    console.log("🔍 Auth result:", { 
+      hasUserId: !!userId, 
+      userId: userId?.substring(0, 8) + "...",
+      sessionId: authResult.sessionId?.substring(0, 8) + "..." || "none"
+    });
 
     if (!userId) {
-      // Log failed token request
-      // await logFailedLogin(
-      //   "unknown",
-      //   ipAddress.toString(),
-      //   userAgent,
-      //   "No authenticated user found"
-      // );
-
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      console.log("🚨 No userId found in auth result");
+      return NextResponse.json({ 
+        error: "Missing 'Authorization' or 'Cookie' header in JWT authentication mode" 
+      }, { status: 401 });
     }
 
     // Get user details for audit logging
@@ -36,30 +45,27 @@ export async function GET(req: NextRequest) {
     const userEmail = user?.emailAddresses?.[0]?.emailAddress || "unknown";
 
     // Get template token for Hasura
-    const auth_instance = await auth();
-    const token = await auth_instance.getToken({ template: "hasura" });
-    console.log("🔍 Generated token:", { hasToken: !!token, tokenPreview: token?.substring(0, 50) + "..." });
+    const token = await authResult.getToken({ template: "hasura" });
+    console.log("🔍 Generated hasura template token:", { hasToken: !!token });
 
     if (!token) {
-      // Log failed token generation
-      // await logFailedLogin(
-      //   userEmail,
-      //   ipAddress.toString(),
-      //   userAgent,
-      //   "Failed to generate token"
-      // );
-
       return NextResponse.json(
         { error: "Failed to generate token" },
         { status: 500 }
       );
     }
 
-    // Parse token to get expiry
-    const payload = JSON.parse(
-      Buffer.from(token.split(".")[1], "base64").toString()
-    );
-    const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
+    // Parse token to get expiry - with error handling
+    let expiresIn = 3600; // Default to 1 hour
+    try {
+      const payload = JSON.parse(
+        Buffer.from(token.split(".")[1], "base64").toString()
+      );
+      expiresIn = payload.exp - Math.floor(Date.now() / 1000);
+      console.log("🔍 Token expires in:", expiresIn, "seconds");
+    } catch (parseError) {
+      console.warn("🔍 Failed to parse token expiry, using default:", parseError);
+    }
 
     // Log successful token request
     // await logSuccessfulLogin(

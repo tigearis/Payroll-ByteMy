@@ -1,6 +1,23 @@
 import { ErrorResponse } from "@apollo/client/link/error";
 import { toast } from "sonner";
 
+// Track recent error messages to prevent duplicates
+const recentErrors = new Set<string>();
+const ERROR_DUPLICATE_TIMEOUT = 5000; // 5 seconds
+
+function isDuplicateError(message: string): boolean {
+  if (recentErrors.has(message)) {
+    return true;
+  }
+  
+  recentErrors.add(message);
+  setTimeout(() => {
+    recentErrors.delete(message);
+  }, ERROR_DUPLICATE_TIMEOUT);
+  
+  return false;
+}
+
 export interface GraphQLPermissionError {
   message: string;
   field?: string;
@@ -55,6 +72,12 @@ export function handlePermissionError(
   context?: string
 ): void {
   const userMessage = getPermissionErrorMessage(error);
+  const errorKey = `permission_${error.field}_${error.table}`;
+
+  // Prevent duplicate permission error toasts
+  if (isDuplicateError(errorKey)) {
+    return;
+  }
 
   console.warn(`🔒 Permission Error${context ? ` in ${context}` : ""}:`, {
     field: error.field,
@@ -98,7 +121,8 @@ export function createApolloErrorHandler() {
             error.message
           );
 
-          if (!error.message.includes("cache")) {
+          const errorKey = `graphql_${error.message}`;
+          if (!error.message.includes("cache") && !isDuplicateError(errorKey)) {
             toast.error("Data Error", {
               description:
                 "There was an issue loading data. Please try refreshing the page.",
@@ -115,18 +139,21 @@ export function createApolloErrorHandler() {
         networkError
       );
 
-      toast.error("Connection Error", {
-        description:
-          "Unable to connect to the server. Please check your internet connection.",
-        duration: 5000,
-        action: {
-          label: "Retry",
-          onClick: () => {
-            // Retry the operation
-            return forward(operation);
+      const errorKey = `network_${networkError.message}`;
+      if (!isDuplicateError(errorKey)) {
+        toast.error("Connection Error", {
+          description:
+            "Unable to connect to the server. Please check your internet connection.",
+          duration: 5000,
+          action: {
+            label: "Retry",
+            onClick: () => {
+              // Retry the operation
+              return forward(operation);
+            },
           },
-        },
-      });
+        });
+      }
     }
   };
 }

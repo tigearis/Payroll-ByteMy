@@ -265,11 +265,12 @@ export default function AdvancedPayrollScheduler() {
   // Generate dates array
   const dates = useMemo(() => {
     const dateArray: Date[] = [];
-    const current = new Date(dateRange.start);
+    let current = dateRange.start;
 
     while (current <= dateRange.end) {
-      dateArray.push(new Date(current));
-      current.setDate(current.getDate() + 1);
+      const dateToAdd = new Date(current);
+      dateArray.push(dateToAdd);
+      current = addDays(current, 1);
     }
 
     return dateArray;
@@ -1519,14 +1520,14 @@ export default function AdvancedPayrollScheduler() {
                                         </div>
                                       )}
                                     </div>
-                                  ) : (
+                                  ) : isWeekendDay ? (
                                     <Badge
                                       variant="outline"
                                       className="text-xs bg-blue-50 text-blue-700 border-blue-200"
                                     >
                                       Weekend
                                     </Badge>
-                                  )}
+                                  ) : null}
                                 </div>
                               </CardContent>
                             </Card>
