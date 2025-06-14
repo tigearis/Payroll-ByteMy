@@ -4,6 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@apollo/client";
+import { useUser } from "@clerk/nextjs";
 import {
   PlusCircle,
   Search,
@@ -125,6 +126,7 @@ function MultiSelect({
 }
 
 export default function ClientsPage() {
+  const { user, isLoaded: userLoaded } = useUser();
   const { canManageClients, userRole, isLoading } = useUserRole();
   const canCreateClient = canManageClients;
 
@@ -139,13 +141,14 @@ export default function ClientsPage() {
   const [sortField, setSortField] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // GraphQL operations
+  // GraphQL operations - only execute when user is loaded and authenticated
   const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(
     GET_CLIENTS,
     {
       fetchPolicy: "cache-and-network",
       nextFetchPolicy: "cache-first",
       pollInterval: 60000,
+      skip: !userLoaded || !user, // Skip query if user is not loaded or not authenticated
     }
   );
 
@@ -157,6 +160,32 @@ export default function ClientsPage() {
       refetchOnVisible: true,
     }
   );
+
+  // Show loading while user authentication is loading
+  if (!userLoaded || isLoading) {
+    return (
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  // Show sign-in prompt if user is not authenticated
+  if (!user) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-gray-500 mb-4">
+          Please sign in to access clients
+        </div>
+        <Link href="/sign-in">
+          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Sign In
+          </button>
+        </Link>
+      </div>
+    );
+  }
 
   if (error) {
     return (

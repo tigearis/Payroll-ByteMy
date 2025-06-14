@@ -3,7 +3,6 @@
 
 import type React from "react"
 import { Sidebar } from "@/components/sidebar"
-import { Toaster } from "@/components/ui/sonner"
 import { ClientWrapper } from "@/components/client-wrapper"
 import { DashboardShell } from "@/components/dashboard-shell"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -28,7 +27,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <ClientWrapper>
             {children}
           </ClientWrapper>
-          <Toaster />
         </main>
       </div>
     </div>
