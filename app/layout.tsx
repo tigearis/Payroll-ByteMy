@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/sonner";
+import "@/lib/debug-auth"; // Load debug utilities
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

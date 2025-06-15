@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export type UserRole =
   | "admin"
@@ -179,71 +180,167 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     getToken,
   } = useAuth();
   const { user } = useUser();
+  const {
+    currentUser: databaseUser,
+    loading: dbUserLoading,
+    extractionAttempts,
+  } = useCurrentUser();
   const [userRole, setUserRole] = useState<UserRole>("viewer");
   const [isRoleLoading, setIsRoleLoading] = useState(true);
   const [permissions, setPermissions] = useState<string[]>([]);
+  const [hasValidDatabaseUser, setHasValidDatabaseUser] = useState(false);
+  const [lastValidationTime, setLastValidationTime] = useState<number>(0);
 
-  // Fetch user role from JWT token
+  // Monitor database user status with debouncing
   useEffect(() => {
-    async function fetchUserRole() {
-      if (!isClerkLoaded || !userId) {
-        setIsRoleLoading(false);
-        return;
+    // Debounce validation to prevent excessive logging
+    const now = Date.now();
+    if (now - lastValidationTime < 2000) {
+      // 2 second debounce
+      return;
+    }
+
+    if (isSignedIn && !dbUserLoading && isClerkLoaded) {
+      setLastValidationTime(now);
+      const newValidStatus = !!databaseUser;
+
+      // Only update state if it actually changed
+      if (hasValidDatabaseUser !== newValidStatus) {
+        setHasValidDatabaseUser(newValidStatus);
       }
 
-      try {
-        const token = await getToken({ template: "hasura" });
-        if (token) {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          const claims = payload["https://hasura.io/jwt/claims"];
-
-          // Temporary debug log
-          console.log("JWT Claims:", claims);
-
-          const role = claims?.["x-hasura-default-role"] as UserRole;
-
-          if (role && ROLE_PERMISSIONS[role]) {
-            setUserRole(role);
-          } else {
-            // Fallback to viewer if role is not recognized
-            setUserRole("viewer");
-          }
+      if (newValidStatus && databaseUser) {
+        // If we have a database user, use their role directly
+        const newRole = databaseUser.role as UserRole;
+        if (userRole !== newRole) {
+          setUserRole(newRole);
         }
-      } catch (error) {
-        console.error("Error fetching user role:", error);
+        setIsRoleLoading(false);
+      } else {
+        // Only log warning if we've tried multiple times and still no user
+        if (extractionAttempts >= 2) {
+          console.warn(
+            "🚨 AuthContext - SECURITY: Authenticated user not found in database after multiple attempts",
+            {
+              clerkUserId: userId,
+              userEmail: user?.emailAddresses?.[0]?.emailAddress,
+              extractionAttempts,
+            }
+          );
+        }
+
+        // If no database user, fall back to JWT role (but only if not already loading)
+        if (!isRoleLoading) {
+          fetchUserRole();
+        }
+      }
+    } else if (!isSignedIn && isClerkLoaded) {
+      // User signed out - reset state
+      if (hasValidDatabaseUser || userRole !== "viewer") {
+        setHasValidDatabaseUser(false);
         setUserRole("viewer");
-      } finally {
         setIsRoleLoading(false);
       }
     }
+  }, [
+    isSignedIn,
+    databaseUser,
+    dbUserLoading,
+    userId,
+    user,
+    isClerkLoaded,
+    extractionAttempts,
+    hasValidDatabaseUser,
+    userRole,
+    isRoleLoading,
+    lastValidationTime,
+  ]);
 
-    fetchUserRole();
-  }, [isClerkLoaded, userId, getToken]);
+  // Fetch user role from JWT token (only used as fallback)
+  async function fetchUserRole() {
+    if (!isClerkLoaded || !userId) {
+      setIsRoleLoading(false);
+      return;
+    }
+
+    try {
+      setIsRoleLoading(true);
+      const token = await getToken({ template: "hasura" });
+      if (token) {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const claims = payload["https://hasura.io/jwt/claims"];
+        const role = claims?.["x-hasura-default-role"] as UserRole;
+
+        if (role && ROLE_PERMISSIONS[role]) {
+          setUserRole(role);
+        } else {
+          setUserRole("viewer");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user role:", error);
+      setUserRole("viewer");
+    } finally {
+      setIsRoleLoading(false);
+    }
+  }
 
   // Update permissions when role changes
   useEffect(() => {
     if (userRole) {
-      setPermissions(ROLE_PERMISSIONS[userRole] || []);
+      const newPermissions = ROLE_PERMISSIONS[userRole] || [];
+      // Only update if permissions actually changed
+      if (JSON.stringify(permissions) !== JSON.stringify(newPermissions)) {
+        setPermissions(newPermissions);
+      }
     }
-  }, [userRole]);
+  }, [userRole, permissions]);
 
-  // Permission check functions
+  // Permission check functions - now security-aware
   const hasPermission = (permission: string): boolean => {
+    // Don't grant any permissions if user doesn't exist in database
+    if (!hasValidDatabaseUser && isSignedIn) {
+      // Only log warning occasionally to prevent spam
+      if (Math.random() < 0.1) {
+        // 10% chance to log
+        console.warn("🚨 Permission denied: User not found in database");
+      }
+      return false;
+    }
     return permissions.includes(permission);
   };
 
   const hasAnyPermission = (requiredPermissions: string[]): boolean => {
+    // Don't grant any permissions if user doesn't exist in database
+    if (!hasValidDatabaseUser && isSignedIn) {
+      // Only log warning occasionally to prevent spam
+      if (Math.random() < 0.1) {
+        // 10% chance to log
+        console.warn("🚨 Permission denied: User not found in database");
+      }
+      return false;
+    }
     return requiredPermissions.some((permission) =>
       permissions.includes(permission)
     );
   };
 
   const hasRole = (roles: UserRole[]): boolean => {
+    // Don't grant any roles if user doesn't exist in database
+    if (!hasValidDatabaseUser && isSignedIn) {
+      // Only log warning occasionally to prevent spam
+      if (Math.random() < 0.1) {
+        // 10% chance to log
+        console.warn("🚨 Role check denied: User not found in database");
+      }
+      return false;
+    }
     return roles.includes(userRole);
   };
 
   // Computed properties for common checks
-  const hasAdminAccess = userRole === "admin" || userRole === "org_admin";
+  const hasAdminAccess =
+    hasValidDatabaseUser && (userRole === "admin" || userRole === "org_admin");
   const canManageUsers = hasPermission(PERMISSIONS.MANAGE_USERS);
   const canManageClients = hasPermission(PERMISSIONS.MANAGE_CLIENTS);
   const canProcessPayrolls = hasPermission(PERMISSIONS.PROCESS_PAYROLLS);

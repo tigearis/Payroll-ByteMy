@@ -55,14 +55,24 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Parse token to get expiry - with error handling
+    // Parse token to get expiry and check Session JWT V2 format - with error handling
     let expiresIn = 3600; // Default to 1 hour
     try {
       const payload = JSON.parse(
         Buffer.from(token.split(".")[1], "base64").toString()
       );
       expiresIn = payload.exp - Math.floor(Date.now() / 1000);
-      console.log("🔍 Token expires in:", expiresIn, "seconds");
+      
+      // Log Session JWT V2 specific fields for monitoring
+      console.log("🔍 Token details:", {
+        expiresIn: expiresIn,
+        hasSessionId: !!payload.sid,
+        hasMetadata: !!payload.metadata,
+        hasOrgId: !!payload.org_id,
+        jwtVersion: payload.metadata ? "v2" : "v1",
+        roles: payload.metadata?.roles || payload["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"],
+        defaultRole: payload.metadata?.default_role || payload["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"]
+      });
     } catch (parseError) {
       console.warn("🔍 Failed to parse token expiry, using default:", parseError);
     }

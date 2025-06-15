@@ -14,20 +14,20 @@ select_permissions:
         - action
         - resource_type
         - resource_id
+        - old_values
+        - new_values
         - ip_address
+        - user_agent
         - session_id
         - request_id
         - success
         - error_message
         - metadata
         - created_at
-      filter:
-        _or:
-          - user_id:
-              _eq: X-Hasura-User-Id
-          - user_role:
-              _nin: ["admin"]
+      filter: {}
       allow_aggregations: true
+    comment: Organization admins can view all audit logs
+  
 
   - role: manager
     permission:

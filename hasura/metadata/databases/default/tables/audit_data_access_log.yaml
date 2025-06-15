@@ -13,12 +13,15 @@ select_permissions:
         - resource_id
         - access_type
         - data_classification
+        - fields_accessed
+        - query_executed
         - row_count
         - ip_address
-      filter:
-        data_classification:
-          _nin: ["CRITICAL"]
+        - session_id
+        - metadata
+      filter: {}
       allow_aggregations: true
+    comment: Organization admins can view all data access logs including CRITICAL
 
   - role: manager
     permission:
