@@ -46,10 +46,10 @@ async function getAuthToken(): Promise<string | null> {
         const token = await clerk.session.getToken({ template: "hasura" });
         if (token) {
           console.log("🔍 Got token directly from Clerk");
-          // Cache for 50 minutes (tokens typically last 1 hour)
+          // Cache for 30 minutes (tokens typically last 1 hour)
           tokenCache = {
             token,
-            expiresAt: Date.now() + 50 * 60 * 1000,
+            expiresAt: Date.now() + 30 * 60 * 1000,
           };
           return token;
         }
@@ -72,10 +72,10 @@ async function getAuthToken(): Promise<string | null> {
       
       const { token, expiresIn = 3600 } = data;
 
-      // Cache the token (expires 1 minute before actual expiry for safety)
+      // Cache the token (expires 5 minutes before actual expiry for safety)
       tokenCache = {
         token,
-        expiresAt: Date.now() + (expiresIn - 60) * 1000,
+        expiresAt: Date.now() + (expiresIn - 300) * 1000,
       };
 
       return token;
@@ -198,8 +198,10 @@ const errorLink = onError(
         if (
           err.extensions?.code === "invalid-jwt" ||
           err.extensions?.code === "access-denied" ||
-          err.message.includes("JWTExpired")
+          err.message.includes("JWTExpired") ||
+          err.message.includes("Could not verify JWT")
         ) {
+          console.log("🔄 Detected JWT expiry, clearing cache and retrying");
           // Clear token cache
           tokenCache = { token: null, expiresAt: 0 };
 

@@ -927,11 +927,14 @@ export default function StaffManagementPage() {
     }
 
     try {
+      const token = await getToken({ template: "hasura" });
+
       // Use the new API endpoint instead of direct GraphQL mutation
       const response = await fetch("/api/staff/delete", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           staffId: staffToDelete.id,
