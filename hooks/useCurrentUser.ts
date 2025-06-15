@@ -24,15 +24,18 @@ const GET_CURRENT_USER = gql`
 export function useCurrentUser() {
   const { userId: clerkUserId, getToken } = useAuth();
   const [databaseUserId, setDatabaseUserId] = useState<string | null>(null);
+  const [isExtractingUserId, setIsExtractingUserId] = useState(false);
 
   // Extract the database UUID from JWT token
   useEffect(() => {
     async function extractUserIdFromJWT() {
       if (!clerkUserId) {
         setDatabaseUserId(null);
+        setIsExtractingUserId(false);
         return;
       }
 
+      setIsExtractingUserId(true);
       try {
         const token = await getToken({ template: "hasura" });
         if (token) {
@@ -48,13 +51,15 @@ export function useCurrentUser() {
         }
       } catch (error) {
         console.error("Failed to extract user ID from JWT:", error);
+      } finally {
+        setIsExtractingUserId(false);
       }
     }
 
     extractUserIdFromJWT();
   }, [clerkUserId, getToken]);
 
-  const { data, loading, error, refetch } = useQuery(GET_CURRENT_USER, {
+  const { data, loading: queryLoading, error, refetch } = useQuery(GET_CURRENT_USER, {
     variables: { currentUserId: databaseUserId },
     skip: !databaseUserId, // Only run when we have the database UUID
     fetchPolicy: "cache-and-network",
@@ -90,6 +95,9 @@ export function useCurrentUser() {
 
   const currentUser = data?.users_by_pk || null;
 
+  // Combine loading states - we're loading if either extracting user ID or running query
+  const loading = isExtractingUserId || queryLoading;
+
   // Ensure currentUserId is always a valid UUID or null
   const currentUserId = currentUser?.id || null;
 
@@ -103,13 +111,29 @@ export function useCurrentUser() {
     console.error("⚠️ Invalid UUID format for currentUserId:", currentUserId);
   }
 
-  // Log if user not found (this is now expected to be handled by webhooks)
-  if (clerkUserId && !loading && !currentUser && !error) {
-    console.warn("⚠️ User not found in database for Clerk ID:", clerkUserId);
-    console.warn("📝 This should be automatically synced via Clerk webhooks");
-    console.warn("🔧 Check that webhook processing is working correctly");
-    console.warn("🔄 You can manually sync by calling /api/sync-current-user");
-  }
+  // Enhanced logging for debugging
+  useEffect(() => {
+    console.log("🔍 useCurrentUser state:", {
+      clerkUserId,
+      databaseUserId,
+      hasCurrentUser: !!currentUser,
+      loading,
+      hasError: !!error,
+      querySkipped: !databaseUserId,
+      isExtractingUserId,
+      queryLoading,
+      timestamp: new Date().toISOString()
+    });
+
+    // Log if user not found (this is now expected to be handled by webhooks)
+    if (clerkUserId && !loading && !currentUser && !error && databaseUserId) {
+      console.warn("⚠️ User not found in database for Clerk ID:", clerkUserId);
+      console.warn("🔍 Database UUID from JWT:", databaseUserId);
+      console.warn("📝 This should be automatically synced via Clerk webhooks");
+      console.warn("🔧 Check that webhook processing is working correctly");
+      console.warn("🔄 You can manually sync by calling /api/sync-current-user");
+    }
+  }, [clerkUserId, databaseUserId, currentUser, loading, error, isExtractingUserId, queryLoading]);
 
   return {
     currentUser,
