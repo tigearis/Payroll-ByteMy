@@ -150,7 +150,7 @@ export class SecureHasuraService {
     query: any,
     variables?: any,
     options?: { skipAuth?: boolean }
-  ): Promise<{ data?: T; errors?: any[] }> {
+  ): Promise<{ data?: T; errors?: readonly any[] }> {
     // Skip auth check only for system operations (webhooks, cron jobs)
     if (!options?.skipAuth) {
       const { isValid, userId, role } = await this.validateAdminAccess();
@@ -181,7 +181,7 @@ export class SecureHasuraService {
     mutation: any,
     variables?: any,
     options?: { skipAuth?: boolean }
-  ): Promise<{ data?: T; errors?: any[] }> {
+  ): Promise<{ data?: T; errors?: readonly any[] }> {
     // Skip auth check only for system operations
     if (!options?.skipAuth) {
       const { isValid, userId, role } = await this.validateAdminAccess();
@@ -428,11 +428,32 @@ export class SecureHasuraService {
 // Lazy initialization to prevent build-time errors
 let _secureHasuraService: SecureHasuraService | null = null;
 
-export const secureHasuraService = {
-  get instance() {
+export const secureHasuraService: Pick<
+  SecureHasuraService,
+  "executeAdminQuery" | "executeAdminMutation"
+> = {
+  executeAdminQuery: async <T = any>(
+    query: any,
+    variables?: any,
+    options?: { skipAuth?: boolean }
+  ): Promise<{ data?: T; errors?: readonly any[] }> => {
     if (!_secureHasuraService) {
       _secureHasuraService = SecureHasuraService.getInstance();
     }
-    return _secureHasuraService;
-  }
+    return _secureHasuraService.executeAdminQuery(query, variables, options);
+  },
+  executeAdminMutation: async <T = any>(
+    mutation: any,
+    variables?: any,
+    options?: { skipAuth?: boolean }
+  ): Promise<{ data?: T; errors?: readonly any[] }> => {
+    if (!_secureHasuraService) {
+      _secureHasuraService = SecureHasuraService.getInstance();
+    }
+    return _secureHasuraService.executeAdminMutation(
+      mutation,
+      variables,
+      options
+    );
+  },
 };

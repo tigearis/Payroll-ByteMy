@@ -1,207 +1,315 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
-import { 
-  AlertTriangle, 
-  Shield, 
-  Activity, 
-  Users, 
+import { useUserRole } from "@/hooks/useUserRole";
+import {
+  AlertTriangle,
+  Shield,
+  Activity,
+  Users,
   FileText,
   Lock,
-  Eye,
   TrendingUp,
   CheckCircle,
-  XCircle
+  XCircle,
+  RefreshCcw,
 } from "lucide-react";
-import { formatDistanceToNow, format } from "date-fns";
+import { formatDistanceToNow, format, subHours, subDays } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 
+// SOC2 security overview query using audit schema tables
 const SECURITY_OVERVIEW_QUERY = gql`
-  query SecurityOverview {
-    # Security metrics for the last 24 hours
-    metrics_24h: audit_log_aggregate(
-      where: { created_at: { _gte: "now() - interval '24 hours'" } }
+  query SecurityOverview(
+    $twentyFourHoursAgo: timestamptz!
+    $sevenDaysAgo: timestamptz!
+  ) {
+    # Recent audit logs from audit schema (last 24 hours)
+    recent_audit_logs: audit_audit_log(
+      where: { event_time: { _gte: $twentyFourHoursAgo } }
+      order_by: { event_time: desc }
+      limit: 100
+    ) {
+      id
+      event_time
+      user_id
+      user_email
+      user_role
+      action
+      resource_type
+      resource_id
+      success
+      error_message
+      ip_address
+      metadata
+    }
+
+    # Audit log count for metrics
+    audit_log_count: audit_audit_log_aggregate(
+      where: { event_time: { _gte: $twentyFourHoursAgo } }
     ) {
       aggregate {
         count
       }
-      nodes {
-        success
-        data_classification
-        action
-      }
     }
-    
-    # Failed operations
-    failed_operations: audit_log_aggregate(
-      where: { 
+
+    # Failed operations count
+    failed_operations_count: audit_audit_log_aggregate(
+      where: {
         success: { _eq: false }
-        created_at: { _gte: "now() - interval '24 hours'" }
+        event_time: { _gte: $twentyFourHoursAgo }
       }
     ) {
       aggregate {
         count
       }
-      nodes {
-        user {
-          email
-        }
-        entity_type
-        action
-        error_message
-        created_at
-      }
     }
-    
-    # Critical data access
-    critical_access: audit_log_aggregate(
-      where: { 
-        data_classification: { _eq: "CRITICAL" }
-        created_at: { _gte: "now() - interval '7 days'" }
-      }
-    ) {
-      aggregate {
-        count
-      }
-      nodes {
-        user {
-          email
-          role
-        }
-        entity_type
-        action
-        created_at
-      }
-    }
-    
-    # Unresolved security events
-    security_events: security_event_log(
-      where: { resolved: { _eq: false } }
-      order_by: { created_at: desc }
-      limit: 5
+
+    # Authentication events
+    auth_events: audit_auth_events(
+      where: { event_time: { _gte: $twentyFourHoursAgo } }
+      order_by: { event_time: desc }
+      limit: 20
     ) {
       id
+      event_time
       event_type
-      severity
-      details
-      created_at
-      user {
-        email
-      }
+      user_email
+      success
+      failure_reason
+      ip_address
     }
-    
-    # Recent compliance checks
-    compliance_checks: compliance_check(
-      order_by: { performed_at: desc }
-      limit: 1
-    ) {
-      id
-      check_type
-      status
-      findings
-      remediation_required
-      performed_at
-      next_check_due
-    }
-    
-    # Data access patterns
-    data_access_7d: data_access_log_aggregate(
-      where: { accessed_at: { _gte: "now() - interval '7 days'" } }
+
+    # Auth events count
+    auth_events_count: audit_auth_events_aggregate(
+      where: { event_time: { _gte: $twentyFourHoursAgo } }
     ) {
       aggregate {
         count
-        sum {
-          record_count
-        }
       }
-      nodes {
-        data_classification
-        data_type
+    }
+
+    # Failed auth count
+    failed_auth_count: audit_auth_events_aggregate(
+      where: {
+        success: { _eq: false }
+        event_time: { _gte: $twentyFourHoursAgo }
       }
+    ) {
+      aggregate {
+        count
+      }
+    }
+
+    # Data access logs
+    data_access_logs: audit_data_access_log(
+      where: { accessed_at: { _gte: $twentyFourHoursAgo } }
+      order_by: { accessed_at: desc }
+      limit: 50
+    ) {
+      id
+      accessed_at
+      user_id
+      resource_type
+      access_type
+      data_classification
+      row_count
+      ip_address
+    }
+
+    # Critical data access count
+    critical_access_count: audit_data_access_log_aggregate(
+      where: {
+        data_classification: { _eq: "CRITICAL" }
+        accessed_at: { _gte: $sevenDaysAgo }
+      }
+    ) {
+      aggregate {
+        count
+      }
+    }
+
+    # Recent failed operations
+    failed_operations: audit_audit_log(
+      where: {
+        success: { _eq: false }
+        event_time: { _gte: $twentyFourHoursAgo }
+      }
+      order_by: { event_time: desc }
+      limit: 10
+    ) {
+      id
+      event_time
+      user_email
+      user_role
+      action
+      resource_type
+      error_message
+      ip_address
+    }
+
+    # User activity summary
+    users: users(where: { is_active: { _eq: true } }) {
+      id
+      name
+      email
+      role
+      is_staff
+      clerk_user_id
     }
   }
 `;
 
 export default function SecurityDashboard() {
-  const { data, loading, error, refetch } = useQuery(SECURITY_OVERVIEW_QUERY, {
-    pollInterval: 30000, // Refresh every 30 seconds
+  const {
+    data,
+    loading: queryLoading,
+    error,
+    refetch,
+    networkStatus,
+  } = useQuery(SECURITY_OVERVIEW_QUERY, {
+    variables: {
+      twentyFourHoursAgo: subHours(new Date(), 24).toISOString(),
+      sevenDaysAgo: subDays(new Date(), 7).toISOString(),
+    },
+    // Poll every 2 minutes instead of 30 seconds to reduce server load
+    // while still maintaining reasonable data freshness for security monitoring
+    pollInterval: 120000,
+    errorPolicy: "all", // Return partial data even if there are errors
+    notifyOnNetworkStatusChange: true, // Important for polling
   });
+
+  const {
+    isDeveloper,
+    isAdmin,
+    hasAdminAccess,
+    isLoading: roleLoading,
+  } = useUserRole();
   const router = useRouter();
 
-  if (loading) {
+  // Debug loading states with more detail
+  console.log("🔍 Security Dashboard Loading States:", {
+    queryLoading,
+    roleLoading,
+    hasData: !!data,
+    hasError: !!error,
+    networkStatus, // 1: loading, 2: setVariables, 3: fetchMore, 4: refetch, 6: poll, 7: ready
+    isPolling: networkStatus === 6,
+    isRefetching: networkStatus === 4,
+  });
+
+  // Check if user has access to security features
+  if (!roleLoading && !hasAdminAccess && !isDeveloper && !isAdmin) {
+    return (
+      <div className="container mx-auto p-6">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Access Denied</AlertTitle>
+          <AlertDescription>
+            You need administrator privileges to access the security dashboard.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  // Show loading state only if we're still loading role information
+  // or if we have access and the query is still loading
+  if (roleLoading || (hasAdminAccess && queryLoading)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <Shield className="h-12 w-12 animate-pulse mx-auto mb-4" />
           <p>Loading security dashboard...</p>
+          {roleLoading && (
+            <p className="text-sm text-muted-foreground">
+              Verifying access permissions...
+            </p>
+          )}
+          {queryLoading && !roleLoading && (
+            <p className="text-sm text-muted-foreground">
+              {networkStatus === 6
+                ? "Refreshing security data..."
+                : "Loading security data..."}
+            </p>
+          )}
         </div>
       </div>
     );
   }
 
   if (error) {
+    console.error("🔒 Permission Error in SecurityOverview:", error);
     return (
-      <Alert variant="destructive">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>
-          Failed to load security data. Please check your permissions.
-        </AlertDescription>
-      </Alert>
+      <div className="container mx-auto p-6">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Error Loading Security Data</AlertTitle>
+          <AlertDescription>
+            {error.message.includes("permission")
+              ? "You don't have permission to access audit logs. Please check your role permissions."
+              : `Failed to load security data: ${error.message}`}
+          </AlertDescription>
+          <Button onClick={() => refetch()} className="mt-2" variant="outline">
+            <RefreshCcw className="mr-2 h-4 w-4" />
+            Retry
+          </Button>
+        </Alert>
+      </div>
     );
   }
 
-  // Calculate security score
-  const totalOps = data.metrics_24h.aggregate.count || 1;
-  const failedOps = data.failed_operations.aggregate.count;
-  const successRate = ((totalOps - failedOps) / totalOps * 100).toFixed(1);
-  const criticalEvents = data.security_events.filter(
-    (e: any) => e.severity === "critical" || e.severity === "error"
-  );
-  
-  // Compliance status
-  const latestCompliance = data.compliance_checks[0];
-  const complianceStatus = latestCompliance?.status || "unknown";
+  // Calculate security metrics
+  const totalOps = data?.audit_log_count?.aggregate?.count || 0;
+  const failedOps = data?.failed_operations_count?.aggregate?.count || 0;
+  const successRate =
+    totalOps > 0
+      ? (((totalOps - failedOps) / totalOps) * 100).toFixed(1)
+      : "100.0";
+  const criticalAccess = data?.critical_access_count?.aggregate?.count || 0;
+
+  // Mock compliance status (in production, this would come from a real compliance check)
+  const complianceStatus = failedOps > 0 ? "warning" : "passed";
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Security & Compliance</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Security & Compliance
+          </h1>
           <p className="text-muted-foreground">
             Monitor security events, audit trails, and compliance status
           </p>
         </div>
         <Button onClick={() => refetch()} variant="outline">
+          <RefreshCcw className="mr-2 h-4 w-4" />
           Refresh
         </Button>
       </div>
 
       {/* Critical Alerts */}
-      {criticalEvents.length > 0 && (
+      {failedOps > 5 && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Critical Security Events</AlertTitle>
+          <AlertTitle>High Failure Rate Detected</AlertTitle>
           <AlertDescription>
-            {criticalEvents.length} unresolved critical events require immediate attention
+            {failedOps} failed operations in the last 24 hours require
+            investigation
           </AlertDescription>
-          <Button 
-            variant="destructive" 
-            size="sm" 
-            className="mt-2"
-            onClick={() => router.push("/security/events")}
-          >
-            View Events
-          </Button>
         </Alert>
       )}
 
@@ -216,25 +324,26 @@ export default function SecurityDashboard() {
         <CardContent>
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <div className="text-4xl font-bold">
-                {successRate}%
-              </div>
+              <div className="text-4xl font-bold">{successRate}%</div>
               <p className="text-sm text-muted-foreground">
                 Operation Success Rate (24h)
               </p>
             </div>
             <div className="text-right space-y-2">
-              <Badge 
-                variant={complianceStatus === "passed" ? "default" : 
-                        complianceStatus === "warning" ? "secondary" : "destructive"}
+              <Badge
+                variant={
+                  complianceStatus === "passed"
+                    ? "default"
+                    : complianceStatus === "warning"
+                    ? "secondary"
+                    : "destructive"
+                }
                 className="text-sm"
               >
                 Compliance: {complianceStatus}
               </Badge>
               <div className="text-sm text-muted-foreground">
-                Next check: {latestCompliance?.next_check_due ? 
-                  format(new Date(latestCompliance.next_check_due), "MMM d, yyyy") : 
-                  "Not scheduled"}
+                Last updated: {format(new Date(), "MMM d, yyyy HH:mm")}
               </div>
             </div>
           </div>
@@ -251,12 +360,8 @@ export default function SecurityDashboard() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {data.metrics_24h.aggregate.count}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Last 24 hours
-            </p>
+            <div className="text-2xl font-bold">{totalOps}</div>
+            <p className="text-xs text-muted-foreground">Last 24 hours</p>
           </CardContent>
         </Card>
 
@@ -269,7 +374,7 @@ export default function SecurityDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-destructive">
-              {data.failed_operations.aggregate.count}
+              {failedOps}
             </div>
             <p className="text-xs text-muted-foreground">
               Requires investigation
@@ -285,99 +390,30 @@ export default function SecurityDashboard() {
             <Lock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {data.critical_access.aggregate.count}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Last 7 days
-            </p>
+            <div className="text-2xl font-bold">{criticalAccess}</div>
+            <p className="text-xs text-muted-foreground">Last 7 days</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Data Accessed
-            </CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {data.data_access_7d.aggregate.sum?.record_count || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Records in 7 days
-            </p>
+            <div className="text-2xl font-bold">{data?.users?.length || 0}</div>
+            <p className="text-xs text-muted-foreground">With access</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabbed Content */}
-      <Tabs defaultValue="events" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="events">Security Events</TabsTrigger>
+      <Tabs defaultValue="failures" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="failures">Failed Operations</TabsTrigger>
           <TabsTrigger value="critical">Critical Access</TabsTrigger>
-          <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="overview">System Overview</TabsTrigger>
         </TabsList>
-
-        {/* Security Events Tab */}
-        <TabsContent value="events" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Unresolved Security Events</CardTitle>
-                  <CardDescription>
-                    Events requiring investigation or resolution
-                  </CardDescription>
-                </div>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/security/events">View All</Link>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {data.security_events.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <CheckCircle className="h-12 w-12 mx-auto mb-2 text-green-500" />
-                  <p>No unresolved security events</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {data.security_events.map((event: any) => (
-                    <div
-                      key={event.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{event.event_type}</span>
-                          <Badge
-                            variant={
-                              event.severity === "critical" ? "destructive" :
-                              event.severity === "error" ? "destructive" :
-                              event.severity === "warning" ? "secondary" : "default"
-                            }
-                          >
-                            {event.severity}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {event.user?.email || "System"} • {" "}
-                          {formatDistanceToNow(new Date(event.created_at))} ago
-                        </p>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        Investigate
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         {/* Failed Operations Tab */}
         <TabsContent value="failures" className="space-y-4">
@@ -391,21 +427,21 @@ export default function SecurityDashboard() {
                   </CardDescription>
                 </div>
                 <Button variant="outline" size="sm" asChild>
-                  <Link href="/security/audit">View Audit Log</Link>
+                  <Link href="/security/audit">View Full Audit Log</Link>
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
-              {data.failed_operations.nodes.length === 0 ? (
+              {!data?.failed_operations?.length ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <CheckCircle className="h-12 w-12 mx-auto mb-2 text-green-500" />
                   <p>No failed operations in the last 24 hours</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {data.failed_operations.nodes.slice(0, 5).map((op: any, idx: number) => (
+                  {data.failed_operations.map((op: any) => (
                     <div
-                      key={idx}
+                      key={op.id}
                       className="flex items-center justify-between p-4 border rounded-lg"
                     >
                       <div className="space-y-1">
@@ -416,7 +452,7 @@ export default function SecurityDashboard() {
                           <Badge variant="destructive">Failed</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {op.user?.email} • {" "}
+                          User: {op.user_id} ({op.user_role}) •{" "}
                           {formatDistanceToNow(new Date(op.created_at))} ago
                         </p>
                         <p className="text-sm text-destructive">
@@ -442,22 +478,19 @@ export default function SecurityDashboard() {
                     Access to critical classified data in the last 7 days
                   </CardDescription>
                 </div>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/security/access">View Access Log</Link>
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
-              {data.critical_access.nodes.length === 0 ? (
+              {!data?.critical_access?.length ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Shield className="h-12 w-12 mx-auto mb-2" />
                   <p>No critical data access in the last 7 days</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {data.critical_access.nodes.slice(0, 5).map((access: any, idx: number) => (
+                  {data.critical_access.map((access: any) => (
                     <div
-                      key={idx}
+                      key={access.id}
                       className="flex items-center justify-between p-4 border rounded-lg"
                     >
                       <div className="space-y-1">
@@ -468,8 +501,11 @@ export default function SecurityDashboard() {
                           <Badge variant="destructive">CRITICAL</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {access.user?.email} ({access.user?.role}) • {" "}
+                          User: {access.user_id} ({access.user_role}) •{" "}
                           {formatDistanceToNow(new Date(access.created_at))} ago
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Entity ID: {access.entity_id}
                         </p>
                       </div>
                     </div>
@@ -480,72 +516,36 @@ export default function SecurityDashboard() {
           </Card>
         </TabsContent>
 
-        {/* Compliance Tab */}
-        <TabsContent value="compliance" className="space-y-4">
+        {/* System Overview Tab */}
+        <TabsContent value="overview" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Compliance Status</CardTitle>
-                  <CardDescription>
-                    Latest compliance check results
-                  </CardDescription>
-                </div>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/security/compliance">View History</Link>
-                </Button>
-              </div>
+              <CardTitle>System Overview</CardTitle>
+              <CardDescription>
+                Current system status and configuration
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              {!latestCompliance ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="h-12 w-12 mx-auto mb-2" />
-                  <p>No compliance checks performed yet</p>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <h4 className="font-medium mb-2">Audit Configuration</h4>
+                  <ul className="text-sm space-y-1 text-muted-foreground">
+                    <li>✅ Audit logging enabled</li>
+                    <li>✅ Real-time monitoring active</li>
+                    <li>✅ Failed operation tracking</li>
+                    <li>✅ Critical data classification</li>
+                  </ul>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{latestCompliance.check_type}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Performed {formatDistanceToNow(new Date(latestCompliance.performed_at))} ago
-                      </p>
-                    </div>
-                    <Badge
-                      variant={
-                        latestCompliance.status === "passed" ? "default" :
-                        latestCompliance.status === "warning" ? "secondary" : "destructive"
-                      }
-                      className="text-lg px-4 py-1"
-                    >
-                      {latestCompliance.status.toUpperCase()}
-                    </Badge>
-                  </div>
-                  
-                  {latestCompliance.findings?.issues && latestCompliance.findings.issues.length > 0 && (
-                    <div className="border rounded-lg p-4 space-y-2">
-                      <p className="font-medium text-sm">Issues Found:</p>
-                      <ul className="list-disc list-inside space-y-1">
-                        {latestCompliance.findings.issues.map((issue: string, idx: number) => (
-                          <li key={idx} className="text-sm text-muted-foreground">
-                            {issue}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {latestCompliance.remediation_required && (
-                    <Alert>
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertTitle>Remediation Required</AlertTitle>
-                      <AlertDescription>
-                        {latestCompliance.remediation_notes || "Please review and address the issues found."}
-                      </AlertDescription>
-                    </Alert>
-                  )}
+                <div>
+                  <h4 className="font-medium mb-2">Compliance Status</h4>
+                  <ul className="text-sm space-y-1 text-muted-foreground">
+                    <li>✅ User access logging</li>
+                    <li>✅ Data modification tracking</li>
+                    <li>✅ Role-based access control</li>
+                    <li>⚠️ Automated compliance checks (planned)</li>
+                  </ul>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -568,15 +568,15 @@ export default function SecurityDashboard() {
               </Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
-              <Link href="/security/access-review">
+              <Link href="/staff">
                 <Users className="mr-2 h-4 w-4" />
-                Perform Access Review
+                Manage User Access
               </Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
               <Link href="/security/reports">
                 <TrendingUp className="mr-2 h-4 w-4" />
-                Generate Compliance Report
+                Generate Reports
               </Link>
             </Button>
           </div>

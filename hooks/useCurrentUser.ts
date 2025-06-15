@@ -1,7 +1,7 @@
 import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 // Get current user by their database UUID from JWT token
 // Using session variable syntax for Hasura
@@ -22,56 +22,118 @@ const GET_CURRENT_USER = gql`
 `;
 
 export function useCurrentUser() {
-  const { userId: clerkUserId, getToken } = useAuth();
+  const { userId: clerkUserId, getToken, isLoaded } = useAuth();
   const [databaseUserId, setDatabaseUserId] = useState<string | null>(null);
   const [isExtractingUserId, setIsExtractingUserId] = useState(false);
+  const [extractionAttempts, setExtractionAttempts] = useState(0);
+  const [lastExtractionTime, setLastExtractionTime] = useState<number>(0);
 
-  // Extract the database UUID from JWT token
-  useEffect(() => {
-    async function extractUserIdFromJWT() {
-      if (!clerkUserId) {
-        setDatabaseUserId(null);
-        setIsExtractingUserId(false);
-        return;
-      }
-
-      setIsExtractingUserId(true);
-      try {
-        const token = await getToken({ template: "hasura" });
-        if (token) {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          const hasuraClaims = payload["https://hasura.io/jwt/claims"];
-          const databaseId = hasuraClaims?.["x-hasura-user-id"];
-          
-          if (databaseId) {
-            setDatabaseUserId(databaseId);
-          } else {
-            console.error("No x-hasura-user-id found in JWT claims");
-          }
-        }
-      } catch (error) {
-        console.error("Failed to extract user ID from JWT:", error);
-      } finally {
-        setIsExtractingUserId(false);
-      }
+  // Extract the database UUID from JWT token with debouncing and retry logic
+  const extractUserIdFromJWT = useCallback(async () => {
+    if (!clerkUserId || !isLoaded) {
+      setDatabaseUserId(null);
+      setIsExtractingUserId(false);
+      return;
     }
 
-    extractUserIdFromJWT();
-  }, [clerkUserId, getToken]);
+    // Prevent too frequent attempts (debounce)
+    const now = Date.now();
+    if (now - lastExtractionTime < 1000) {
+      // 1 second debounce
+      return;
+    }
 
-  const { data, loading: queryLoading, error, refetch } = useQuery(GET_CURRENT_USER, {
+    // Limit retry attempts to prevent infinite loops
+    if (extractionAttempts >= 5) {
+      console.warn("⚠️ Max extraction attempts reached, stopping retries");
+      setIsExtractingUserId(false);
+      return;
+    }
+
+    setIsExtractingUserId(true);
+    setLastExtractionTime(now);
+
+    try {
+      const token = await getToken({ template: "hasura" });
+      if (token) {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const hasuraClaims = payload["https://hasura.io/jwt/claims"];
+        const databaseId = hasuraClaims?.["x-hasura-user-id"];
+
+        if (databaseId) {
+          setDatabaseUserId(databaseId);
+          setExtractionAttempts(0); // Reset attempts on success
+          console.log(
+            "✅ Successfully extracted database user ID:",
+            databaseId
+          );
+        } else {
+          console.warn(
+            "⚠️ No x-hasura-user-id found in JWT claims, attempt:",
+            extractionAttempts + 1
+          );
+          setExtractionAttempts((prev) => prev + 1);
+
+          // If no database ID found, try to sync user
+          if (extractionAttempts === 0) {
+            console.log("🔄 Attempting to sync user with database...");
+            try {
+              const syncResponse = await fetch("/api/sync-current-user", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+
+              if (syncResponse.ok) {
+                console.log(
+                  "✅ User sync successful, retrying token extraction..."
+                );
+                // Retry extraction after a short delay
+                setTimeout(() => {
+                  setExtractionAttempts(0);
+                  extractUserIdFromJWT();
+                }, 2000);
+              }
+            } catch (syncError) {
+              console.error("❌ User sync failed:", syncError);
+            }
+          }
+        }
+      } else {
+        console.warn("⚠️ No token received from Clerk");
+        setExtractionAttempts((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error("❌ Failed to extract user ID from JWT:", error);
+      setExtractionAttempts((prev) => prev + 1);
+    } finally {
+      setIsExtractingUserId(false);
+    }
+  }, [clerkUserId, getToken, isLoaded, extractionAttempts, lastExtractionTime]);
+
+  // Extract user ID when Clerk user changes
+  useEffect(() => {
+    if (isLoaded) {
+      extractUserIdFromJWT();
+    }
+  }, [clerkUserId, isLoaded, extractUserIdFromJWT]);
+
+  const {
+    data,
+    loading: queryLoading,
+    error,
+    refetch,
+  } = useQuery(GET_CURRENT_USER, {
     variables: { currentUserId: databaseUserId },
     skip: !databaseUserId, // Only run when we have the database UUID
     fetchPolicy: "cache-and-network",
     errorPolicy: "all",
+    notifyOnNetworkStatusChange: true,
     onError: (err) => {
-      console.error("useCurrentUser GraphQL error:", err);
-      console.error("Error message:", err.message);
-      console.error("GraphQL errors:", err.graphQLErrors);
-      console.error("Network error:", err.networkError);
-      console.error("Clerk User ID:", clerkUserId);
-      console.error("Database User ID:", databaseUserId);
-      
+      console.error("❌ useCurrentUser GraphQL error:", err);
+
       // Log specific error details
       if (err.graphQLErrors?.length > 0) {
         err.graphQLErrors.forEach((gqlError, index) => {
@@ -83,10 +145,10 @@ export function useCurrentUser() {
           });
         });
       }
-      
+
       if (err.networkError) {
         console.error("Network Error Details:", {
-          statusCode: err.networkError.statusCode,
+          statusCode: (err.networkError as any).statusCode,
           message: err.networkError.message,
         });
       }
@@ -111,36 +173,48 @@ export function useCurrentUser() {
     console.error("⚠️ Invalid UUID format for currentUserId:", currentUserId);
   }
 
-  // Enhanced logging for debugging
+  // Enhanced logging for debugging (throttled to prevent spam)
   useEffect(() => {
-    console.log("🔍 useCurrentUser state:", {
-      clerkUserId,
-      databaseUserId,
-      hasCurrentUser: !!currentUser,
-      loading,
-      hasError: !!error,
-      querySkipped: !databaseUserId,
-      isExtractingUserId,
-      queryLoading,
-      timestamp: new Date().toISOString()
-    });
+    const logState = () => {
+      console.log("🔍 useCurrentUser state:", {
+        clerkUserId,
+        databaseUserId,
+        hasCurrentUser: !!currentUser,
+        loading,
+        hasError: !!error,
+        querySkipped: !databaseUserId,
+        isExtractingUserId,
+        queryLoading,
+        extractionAttempts,
+        isLoaded,
+        timestamp: new Date().toISOString(),
+      });
+    };
 
-    // Log if user not found (this is now expected to be handled by webhooks)
-    if (clerkUserId && !loading && !currentUser && !error && databaseUserId) {
-      console.warn("⚠️ User not found in database for Clerk ID:", clerkUserId);
-      console.warn("🔍 Database UUID from JWT:", databaseUserId);
-      console.warn("📝 This should be automatically synced via Clerk webhooks");
-      console.warn("🔧 Check that webhook processing is working correctly");
-      console.warn("🔄 You can manually sync by calling /api/sync-current-user");
-    }
-  }, [clerkUserId, databaseUserId, currentUser, loading, error, isExtractingUserId, queryLoading]);
+    // Throttle logging to every 2 seconds max
+    const timeoutId = setTimeout(logState, 100);
+    return () => clearTimeout(timeoutId);
+  }, [
+    clerkUserId,
+    databaseUserId,
+    currentUser,
+    loading,
+    error,
+    isExtractingUserId,
+    queryLoading,
+    extractionAttempts,
+    isLoaded,
+  ]);
 
   return {
     currentUser,
     currentUserId: validCurrentUserId, // Always return a valid UUID or null
     clerkUserId,
+    databaseUserId, // Expose this for debugging
     loading,
     error,
     refetch,
+    extractionAttempts, // Expose for debugging
+    isExtractingUserId, // Expose for debugging
   };
 }

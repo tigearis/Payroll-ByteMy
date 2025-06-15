@@ -12,7 +12,10 @@ select_permissions:
         - user_id
         - user_email
         - ip_address
+        - user_agent
         - success
+        - failure_reason
+        - metadata
         - created_at
       filter: {}
       allow_aggregations: true

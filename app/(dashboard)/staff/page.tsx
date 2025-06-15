@@ -901,7 +901,7 @@ export default function StaffManagementPage() {
   };
 
   // Confirm staff deletion using the new API endpoint
-  const confirmDeleteStaff = async () => {
+  const confirmDeleteStaff = async (forceHardDelete = false) => {
     if (!staffToDelete || (!isAdmin && !isDeveloper)) {
       return;
     }
@@ -911,6 +911,7 @@ export default function StaffManagementPage() {
       id: staffToDelete.id,
       name: staffToDelete.name,
       clerk_user_id: staffToDelete.clerk_user_id,
+      forceHardDelete,
     });
 
     const isValidUUID =
@@ -929,30 +930,86 @@ export default function StaffManagementPage() {
     try {
       const token = await getToken({ template: "hasura" });
 
-      // Use the new API endpoint instead of direct GraphQL mutation
+      // Use the new API endpoint with role-based deletion logic
       const response = await fetch("/api/staff/delete", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: JSON.stringify({
           staffId: staffToDelete.id,
+          forceHardDelete,
         }),
       });
 
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        console.error("❌ Failed to parse JSON response:", jsonError);
+        throw new Error(`Server returned invalid response (status: ${response.status})`);
+      }
 
       if (!response.ok) {
+        // Handle dependency conflicts specifically
+        if (response.status === 409 && result.dependencies) {
+          const dependencyList = result.dependencies.join(", ");
+          const suggestions = result.suggestions?.join("\n• ") || "";
+          
+          toast.error(
+            `Cannot deactivate user: ${dependencyList}. 
+            
+Suggestions:
+• ${suggestions}`,
+            { duration: 10000 }
+          );
+          
+          // If user is developer, offer force delete option
+          if (isDeveloper) {
+            const confirmForce = window.confirm(
+              `${staffToDelete.name} has active dependencies: ${dependencyList}
+              
+As a developer, you can force deletion which will:
+• Permanently delete the user and all data
+• Break references to this user in the system
+• This action is IRREVERSIBLE
+
+Do you want to proceed with HARD DELETE?`
+            );
+            
+            if (confirmForce) {
+              await confirmDeleteStaff(true); // Retry with force delete
+              return;
+            }
+          }
+          
+          setStaffToDelete(null);
+          return;
+        }
+        
         throw new Error(result.error || "Failed to deactivate user");
       }
 
-      // Show success message with deactivation details
-      const auditMessage = result.clerkDeleted
-        ? `${staffToDelete.name} deactivated and removed from Clerk. Database records retained for audit.`
-        : `${staffToDelete.name} deactivated in database. Database records retained for audit.`;
-
-      toast.success(auditMessage);
+      // Show success message based on action taken
+      let successMessage;
+      if (result.action === "hard_delete") {
+        successMessage = `${staffToDelete.name} permanently deleted from all systems. This action cannot be undone.`;
+        toast.success(successMessage, { duration: 8000 });
+        
+        if (result.warnings?.length > 0) {
+          toast.warning(`Warnings: ${result.warnings.join(", ")}`, { duration: 6000 });
+        }
+      } else {
+        successMessage = result.clerkDeleted
+          ? `${staffToDelete.name} deactivated and removed from Clerk. Database records retained for audit.`
+          : `${staffToDelete.name} deactivated in database. Database records retained for audit.`;
+        toast.success(successMessage);
+        
+        if (result.dependenciesFound) {
+          toast.info(`Note: Dependencies found but deletion proceeded: ${result.dependenciesFound.join(", ")}`, { duration: 6000 });
+        }
+      }
 
       // Refresh the staff list
       refetch();
@@ -962,7 +1019,7 @@ export default function StaffManagementPage() {
     } catch (error) {
       console.error("Error in confirmDeleteStaff:", error);
       toast.error(
-        `Failed to deactivate user: ${
+        `Failed to ${forceHardDelete ? "permanently delete" : "deactivate"} user: ${
           error instanceof Error ? error.message : "Unknown error"
         }`
       );
@@ -1694,27 +1751,47 @@ export default function StaffManagementPage() {
         >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Confirm User Deactivation</AlertDialogTitle>
+              <AlertDialogTitle>
+                {isDeveloper ? "Confirm User Deletion/Deactivation" : "Confirm User Deactivation"}
+              </AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to deactivate {staffToDelete?.name}?
+                Are you sure you want to {isDeveloper ? "delete or deactivate" : "deactivate"} {staffToDelete?.name}?
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="py-4">
-              <p className="text-sm font-medium mb-3">What will happen:</p>
+              <p className="text-sm font-medium mb-3">What will happen (Deactivation):</p>
               <ul className="list-disc list-inside text-sm space-y-1 text-gray-500">
                 <li>User will be marked as inactive in the database</li>
-                <li>
-                  User will be removed from Clerk (if they have an account)
-                </li>
+                <li>User will be removed from Clerk (if they have an account)</li>
                 <li>User will lose access immediately</li>
-                <li>All historical data and logs will be preserved</li>
-                <li>This action cannot be undone</li>
+                <li>All historical data and logs will be preserved for audit</li>
+                <li>Payroll assignments will need to be reassigned if active</li>
+                <li>Staff reporting to this user will need a new manager</li>
               </ul>
+              
+              {isDeveloper && (
+                <>
+                  <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                    <p className="text-sm font-medium text-destructive mb-2">Developer Options:</p>
+                    <p className="text-xs text-destructive/80">
+                      As a developer, you can force hard deletion if the user has blocking dependencies.
+                      This will permanently remove all user data and cannot be undone.
+                    </p>
+                  </div>
+                </>
+              )}
+              
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-sm text-blue-800">
+                  <strong>Note:</strong> If this user has active payroll assignments or direct reports, 
+                  you'll be prompted to reassign them before proceeding.
+                </p>
+              </div>
             </div>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDeleteStaff}>
-                {isDeleting ? "Deactivating..." : "Deactivate User"}
+              <AlertDialogAction onClick={() => confirmDeleteStaff(false)}>
+                {isDeleting ? "Processing..." : "Deactivate User"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

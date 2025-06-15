@@ -65,11 +65,14 @@ async function getAuthToken(): Promise<string | null> {
       credentials: "include",
     });
     console.log("🔍 Token response status:", response.status);
-    
+
     if (response.ok) {
       const data = await response.json();
-      console.log("🔍 Token response data:", { hasToken: !!data.token, expiresIn: data.expiresIn });
-      
+      console.log("🔍 Token response data:", {
+        hasToken: !!data.token,
+        expiresIn: data.expiresIn,
+      });
+
       const { token, expiresIn = 3600 } = data;
 
       // Cache the token (expires 5 minutes before actual expiry for safety)
@@ -81,13 +84,48 @@ async function getAuthToken(): Promise<string | null> {
       return token;
     } else {
       const errorText = await response.text();
-      console.warn("Failed to get auth token, status:", response.status, "response:", errorText);
+      console.warn(
+        "Failed to get auth token, status:",
+        response.status,
+        "response:",
+        errorText
+      );
       tokenCache = { token: null, expiresAt: 0 };
       return null;
     }
   } catch (error) {
     console.warn("Failed to get auth token:", error);
     tokenCache = { token: null, expiresAt: 0 };
+    return null;
+  }
+}
+
+// Helper to get database user ID from Hasura claims
+async function getDatabaseUserId(): Promise<string | null> {
+  if (typeof window === "undefined") {
+    return null; // Server-side, skip this
+  }
+
+  try {
+    console.log("🔍 Getting database user ID from hasura claims");
+    const response = await fetch("/api/auth/hasura-claims", {
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const databaseUserId = data.claims?.["x-hasura-user-id"];
+      console.log(
+        "🔍 Database user ID:",
+        databaseUserId ? databaseUserId.substring(0, 8) + "..." : "none"
+      );
+      return databaseUserId || null;
+    } else {
+      console.warn("Failed to get database user ID:", response.status);
+      return null;
+    }
+  } catch (error) {
+    console.warn("Error getting database user ID:", error);
     return null;
   }
 }
@@ -152,10 +190,9 @@ const authLink = setContext(async (_, { headers }) => {
   // Only add auth header on client-side
   if (typeof window !== "undefined") {
     const token = await getAuthToken();
-    
-    console.log("🔍 Apollo authLink - Token status:", { hasToken: !!token });
-    
-    if (!token) {
+
+    // Only log if token status changes or in development
+    if (process.env.NODE_ENV === "development" && !token) {
       console.warn("🚨 Apollo authLink - No token available, request may fail");
     }
 
@@ -182,7 +219,7 @@ function fromPromise<T>(promise: Promise<Observable<T>>): Observable<T> {
 }
 
 // ================================
-// ENHANCED ERROR LINK - Use our graceful error handler
+// ERROR LINK - Enhanced error handling
 // ================================
 
 const errorLink = onError(
@@ -205,27 +242,59 @@ const errorLink = onError(
           // Clear token cache
           tokenCache = { token: null, expiresAt: 0 };
 
-          // Retry the request with a fresh token
-          return fromPromise(
-            getAuthToken().then((token) => {
-              const oldHeaders = operation.getContext().headers;
-              operation.setContext({
-                headers: {
-                  ...oldHeaders,
-                  authorization: token ? `Bearer ${token}` : "",
-                },
+          // Create a new observable for the retry
+          return new Observable((observer) => {
+            // Get a fresh token
+            getAuthToken()
+              .then((token) => {
+                if (!token) {
+                  console.error("Failed to refresh token - no token returned");
+                  observer.error(new Error("Failed to refresh token"));
+                  return;
+                }
+
+                // Update the operation context with the new token
+                const oldHeaders = operation.getContext().headers;
+                operation.setContext({
+                  headers: {
+                    ...oldHeaders,
+                    authorization: `Bearer ${token}`,
+                  },
+                });
+
+                // Forward the operation with the new token
+                forward(operation).subscribe({
+                  next: observer.next.bind(observer),
+                  error: (error) => {
+                    console.error("Error after token refresh:", error);
+                    observer.error(error);
+                  },
+                  complete: observer.complete.bind(observer),
+                });
+              })
+              .catch((error) => {
+                console.error("Failed to refresh token:", error);
+                observer.error(error);
               });
-              return forward(operation);
-            })
-          );
+          });
         }
       }
     }
 
-    if (networkError && "statusCode" in networkError) {
-      if (networkError.statusCode === 401) {
-        // Clear token cache on 401
-        tokenCache = { token: null, expiresAt: 0 };
+    if (networkError) {
+      // Handle network errors
+      if ("statusCode" in networkError) {
+        if (networkError.statusCode === 401) {
+          // Clear token cache on 401
+          tokenCache = { token: null, expiresAt: 0 };
+          console.log("🔄 Cleared token cache due to 401 error");
+        }
+        console.error(
+          `Network error (${networkError.statusCode}):`,
+          networkError
+        );
+      } else {
+        console.error("Network error:", networkError);
       }
     }
   }
@@ -338,11 +407,15 @@ const client = new ApolloClient({
   cache,
   connectToDevTools: process.env.NODE_ENV === "development",
   defaultOptions: {
-    watchQuery: {
-      errorPolicy: "all",
-    },
     query: {
+      fetchPolicy: "network-only", // Always fetch fresh data for security
       errorPolicy: "all",
+      notifyOnNetworkStatusChange: true, // Important for polling
+    },
+    watchQuery: {
+      fetchPolicy: "network-only",
+      errorPolicy: "all",
+      notifyOnNetworkStatusChange: true, // Important for polling
     },
     mutate: {
       errorPolicy: "all",

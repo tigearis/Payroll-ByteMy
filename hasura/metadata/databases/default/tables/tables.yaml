@@ -32,7 +32,7 @@
 - "!include public_users.yaml"
 - "!include public_users_role_backup.yaml"
 - "!include public_work_schedule.yaml"
-# Audit schema tables
+# Audit schema tables - SOC2 Compliance
 - "!include audit_audit_log.yaml"
 - "!include audit_auth_events.yaml"
 - "!include audit_data_access_log.yaml"
