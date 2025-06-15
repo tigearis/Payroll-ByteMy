@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
 export async function GET(req: NextRequest) {
+  // SECURITY: Disable in production
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+  }
+  
   console.log("🔍 Debug token endpoint called");
 
   try {

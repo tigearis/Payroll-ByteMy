@@ -18,9 +18,22 @@ interface StrictDatabaseGuardProps {
  */
 export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
   const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
-  const { currentUser, loading: dbUserLoading, error: dbUserError } = useCurrentUser();
+  const { currentUser, loading: dbUserLoading, error: dbUserError, isReady } = useCurrentUser();
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockReason, setBlockReason] = useState<string>("");
+  const [gracePeriodEnded, setGracePeriodEnded] = useState(false);
+
+  // Grace period to allow authentication to settle
+  useEffect(() => {
+    if (clerkLoaded && clerkUser && !gracePeriodEnded) {
+      // Give authentication flow 3 seconds to settle
+      const timer = setTimeout(() => {
+        setGracePeriodEnded(true);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [clerkLoaded, clerkUser, gracePeriodEnded]);
 
   // Monitor access status
   useEffect(() => {
@@ -36,8 +49,8 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
       return;
     }
 
-    // Still loading database check OR initial user ID extraction
-    if (dbUserLoading) {
+    // Still loading database check OR initial user ID extraction, or within grace period
+    if (dbUserLoading || !isReady || !gracePeriodEnded) {
       return;
     }
 
@@ -62,14 +75,17 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
     }
 
     // 🚨 CRITICAL: User in Clerk but NOT in database
-    // Only block if we're definitely done loading and still no user
-    if (clerkUser && !currentUser && !dbUserLoading) {
+    // Only block if we're definitely done loading, ready, grace period ended, and still no user
+    if (clerkUser && !currentUser && !dbUserLoading && isReady && gracePeriodEnded) {
       setIsBlocked(true);
       setBlockReason("User not found in database");
       console.error("🚨 BLOCKING ACCESS: User authenticated with Clerk but not found in database", {
         clerkUserId: clerkUser.id,
         userEmail: clerkUser.emailAddresses?.[0]?.emailAddress,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        isReady,
+        gracePeriodEnded,
+        dbUserLoading
       });
       
       // Additional security logging
@@ -79,10 +95,10 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
       return;
     }
 
-  }, [clerkLoaded, clerkUser, currentUser, dbUserLoading, dbUserError]);
+  }, [clerkLoaded, clerkUser, currentUser, dbUserLoading, dbUserError, isReady, gracePeriodEnded]);
 
   // Show loading while verifying
-  if (!clerkLoaded || (clerkUser && dbUserLoading)) {
+  if (!clerkLoaded || (clerkUser && (dbUserLoading || !isReady || !gracePeriodEnded))) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="text-center max-w-md mx-auto p-8">
@@ -99,6 +115,9 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
           
           <p className="text-gray-600 mb-4">
             Checking your security credentials and permissions...
+            {clerkUser && !gracePeriodEnded && (
+              <><br /><span className="text-sm text-gray-500">Initializing secure connection...</span></>
+            )}
           </p>
           
           <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
@@ -137,18 +156,23 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
             <button
               onClick={async () => {
                 try {
+                  setBlockReason("Attempting account sync...");
                   const response = await fetch("/api/sync-current-user", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                   });
                   
                   if (response.ok) {
-                    window.location.reload();
+                    setBlockReason("Sync successful, refreshing...");
+                    setTimeout(() => window.location.reload(), 1000);
                   } else {
-                    console.error("Sync failed:", await response.text());
+                    const errorText = await response.text();
+                    console.error("Sync failed:", errorText);
+                    setBlockReason("Sync failed: " + errorText);
                   }
                 } catch (error) {
                   console.error("Sync error:", error);
+                  setBlockReason("Sync error: " + (error as Error).message);
                 }
               }}
               className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"

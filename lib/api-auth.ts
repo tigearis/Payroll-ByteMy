@@ -39,7 +39,22 @@ export async function requireAuth(
       throw new Error("Unauthorized: No active session");
     }
 
-    const userRole = sessionClaims?.metadata?.role as string;
+    // Extract role from multiple possible locations in JWT
+    const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"];
+    const userRole = (
+      sessionClaims?.metadata?.role ||
+      hasuraClaims?.["x-hasura-default-role"] ||
+      sessionClaims?.role
+    ) as string;
+    
+    // Debug logging for role extraction
+    console.log("🔍 Auth Debug:", {
+      userId: userId?.substring(0, 8) + "...",
+      metadataRole: sessionClaims?.metadata?.role,
+      hasuraRole: hasuraClaims?.["x-hasura-default-role"],
+      directRole: sessionClaims?.role,
+      finalUserRole: userRole,
+    });
     const userEmail = sessionClaims?.email as string;
 
     if (!userRole) {
@@ -111,10 +126,13 @@ export function withAuth(
   }
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
+    console.log("🔐 withAuth called for:", request.method, request.url);
     try {
       const session = await requireAuth(request, options);
+      console.log("✅ Auth successful, calling handler");
       return await handler(request, session);
     } catch (error: any) {
+      console.log("❌ Auth failed:", error.message);
       if (error.message.includes("Unauthorized")) {
         return unauthorizedResponse(error.message);
       }

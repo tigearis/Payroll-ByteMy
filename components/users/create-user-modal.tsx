@@ -127,7 +127,7 @@ export function CreateUserModal({
     { value: "viewer", label: "Viewer", description: "Read-only access" },
     {
       value: "consultant",
-      label: "Consultant",
+      label: "Consultant", 
       description: "Can manage clients and payrolls",
     },
     {
@@ -137,13 +137,13 @@ export function CreateUserModal({
     },
     {
       value: "org_admin",
-      label: "Organization Admin",
+      label: "Admin",
       description: "Full organizational access",
     },
     {
       value: "admin",
-      label: "Administrator",
-      description: "Full system access",
+      label: "Developer",
+      description: "Full system access and development",
     },
   ].filter((role) => canAssignRole(role.value));
 

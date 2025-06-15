@@ -84,9 +84,20 @@ const INSERT_COMPLIANCE_CHECK = gql`
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify this is coming from Hasura
-    const hasuraSecret = request.headers.get("x-hasura-admin-secret");
-    if (hasuraSecret !== process.env.HASURA_GRAPHQL_ADMIN_SECRET) {
+    // SECURITY: Verify request is from authorized source
+    const authHeader = request.headers.get("authorization");
+    const cronSecret = request.headers.get("x-cron-secret");
+    
+    // Check for cron secret (for Vercel cron jobs)
+    if (cronSecret !== process.env.CRON_SECRET) {
+      console.error("🚨 Unauthorized cron request - invalid secret");
+      await auditLogger.logSecurityEvent(
+        "unauthorized_cron_access",
+        "error",
+        { source: "compliance-check", ip: request.headers.get("x-forwarded-for") },
+        undefined,
+        request.headers.get("x-forwarded-for") || undefined
+      );
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
         { status: 401 }

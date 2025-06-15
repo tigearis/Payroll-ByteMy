@@ -1,8 +1,39 @@
 table:
   name: data_access_log
   schema: audit
-
+insert_permissions:
+  - role: system
+    permission:
+      check: {}
+      columns:
+        - user_id
+        - resource_type
+        - resource_id
+        - access_type
+        - data_classification
+        - fields_accessed
+        - query_executed
+        - row_count
+        - ip_address
+        - session_id
+        - metadata
 select_permissions:
+  - role: manager
+    permission:
+      columns:
+        - accessed_at
+        - user_id
+        - resource_type
+        - access_type
+        - row_count
+      filter:
+        _and:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - data_classification:
+              _in:
+                - LOW
+                - MEDIUM
   - role: org_admin
     permission:
       columns:
@@ -22,36 +53,3 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: Organization admins can view all data access logs including CRITICAL
-
-  - role: manager
-    permission:
-      columns:
-        - accessed_at
-        - user_id
-        - resource_type
-        - access_type
-        - row_count
-      filter:
-        _and:
-          - user_id:
-              _eq: X-Hasura-User-Id
-          - data_classification:
-              _in: ["LOW", "MEDIUM"]
-      allow_aggregations: false
-
-insert_permissions:
-  - role: system
-    permission:
-      check: {}
-      columns:
-        - user_id
-        - resource_type
-        - resource_id
-        - access_type
-        - data_classification
-        - fields_accessed
-        - query_executed
-        - row_count
-        - ip_address
-        - session_id
-        - metadata

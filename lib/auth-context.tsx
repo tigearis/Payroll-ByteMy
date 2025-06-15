@@ -1,8 +1,22 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { authMutex } from "@/lib/auth/auth-mutex";
+import { tokenManager } from "@/lib/auth/token-manager";
+
+// Add type declaration for global Clerk object
+declare global {
+  interface Window {
+    Clerk?: {
+      session: {
+        reload: () => Promise<void>;
+        getToken: (options: { template: string }) => Promise<string | null>;
+      };
+    };
+  }
+}
 
 export type UserRole =
   | "admin"
@@ -189,158 +203,269 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isRoleLoading, setIsRoleLoading] = useState(true);
   const [permissions, setPermissions] = useState<string[]>([]);
   const [hasValidDatabaseUser, setHasValidDatabaseUser] = useState(false);
-  const [lastValidationTime, setLastValidationTime] = useState<number>(0);
+  const [validationState, setValidationState] = useState({
+    lastValidationTime: 0,
+    validationInProgress: false,
+    consecutiveFailures: 0,
+  });
 
-  // Monitor database user status with debouncing
-  useEffect(() => {
-    // Debounce validation to prevent excessive logging
-    const now = Date.now();
-    if (now - lastValidationTime < 2000) {
-      // 2 second debounce
+  // Database user validation with mutex protection
+  const validateDatabaseUser = useCallback(async () => {
+    if (!isSignedIn || !isClerkLoaded || dbUserLoading) {
       return;
     }
 
-    if (isSignedIn && !dbUserLoading && isClerkLoaded) {
-      setLastValidationTime(now);
-      const newValidStatus = !!databaseUser;
+    const now = Date.now();
+    
+    // Skip if validation is in progress or too recent
+    if (validationState.validationInProgress || 
+        (now - validationState.lastValidationTime < 3000)) {
+      return;
+    }
 
-      // Only update state if it actually changed
-      if (hasValidDatabaseUser !== newValidStatus) {
-        setHasValidDatabaseUser(newValidStatus);
-      }
+    // Skip if too many consecutive failures
+    if (validationState.consecutiveFailures >= 3) {
+      console.warn('🚫 Skipping validation due to consecutive failures');
+      return;
+    }
 
-      if (newValidStatus && databaseUser) {
-        // If we have a database user, use their role directly
-        const newRole = databaseUser.role as UserRole;
-        if (userRole !== newRole) {
-          setUserRole(newRole);
-        }
-        setIsRoleLoading(false);
-      } else {
-        // Only log warning if we've tried multiple times and still no user
-        if (extractionAttempts >= 2) {
-          console.warn(
-            "🚨 AuthContext - SECURITY: Authenticated user not found in database after multiple attempts",
-            {
-              clerkUserId: userId,
-              userEmail: user?.emailAddresses?.[0]?.emailAddress,
-              extractionAttempts,
+    try {
+      await authMutex.acquire(
+        `user-validation-${userId}-${now}`,
+        'session_validation',
+        async () => {
+          setValidationState(prev => ({
+            ...prev,
+            validationInProgress: true,
+            lastValidationTime: now,
+          }));
+
+          const newValidStatus = !!databaseUser;
+
+          // Only update state if it actually changed
+          if (hasValidDatabaseUser !== newValidStatus) {
+            setHasValidDatabaseUser(newValidStatus);
+          }
+
+          if (newValidStatus && databaseUser) {
+            // If we have a database user, use their role directly
+            const newRole = databaseUser.role as UserRole;
+            if (userRole !== newRole) {
+              setUserRole(newRole);
             }
-          );
-        }
+            setIsRoleLoading(false);
+            
+            // Reset failure count on success
+            setValidationState(prev => ({
+              ...prev,
+              consecutiveFailures: 0,
+            }));
+          } else {
+            // Only log warning if we've tried multiple times and still no user
+            if (extractionAttempts >= 2) {
+              console.warn(
+                "🚨 AuthContext - SECURITY: Authenticated user not found in database after multiple attempts",
+                {
+                  clerkUserId: userId,
+                  userEmail: user?.emailAddresses?.[0]?.emailAddress,
+                  extractionAttempts,
+                }
+              );
+            }
 
-        // If no database user, fall back to JWT role (but only if not already loading)
-        if (!isRoleLoading) {
-          fetchUserRole();
+            // If no database user, fall back to JWT role
+            if (!isRoleLoading && !authMutex.hasOperationType('token_refresh')) {
+              await fetchUserRole();
+            }
+            
+            // Increment failure count
+            setValidationState(prev => ({
+              ...prev,
+              consecutiveFailures: prev.consecutiveFailures + 1,
+            }));
+          }
+
+          return true;
         }
-      }
-    } else if (!isSignedIn && isClerkLoaded) {
+      );
+    } catch (error) {
+      console.error('❌ User validation failed:', error);
+      setValidationState(prev => ({
+        ...prev,
+        consecutiveFailures: prev.consecutiveFailures + 1,
+      }));
+    } finally {
+      setValidationState(prev => ({
+        ...prev,
+        validationInProgress: false,
+      }));
+    }
+  }, [
+    isSignedIn,
+    isClerkLoaded,
+    dbUserLoading,
+    databaseUser,
+    userId,
+    user,
+    extractionAttempts,
+    hasValidDatabaseUser,
+    userRole,
+    isRoleLoading,
+    validationState.validationInProgress,
+    validationState.lastValidationTime,
+    validationState.consecutiveFailures,
+  ]);
+
+  // Handle user sign out state
+  const handleSignOutState = useCallback(() => {
+    if (!isSignedIn && isClerkLoaded) {
       // User signed out - reset state
       if (hasValidDatabaseUser || userRole !== "viewer") {
         setHasValidDatabaseUser(false);
         setUserRole("viewer");
         setIsRoleLoading(false);
+        setValidationState({
+          lastValidationTime: 0,
+          validationInProgress: false,
+          consecutiveFailures: 0,
+        });
       }
     }
-  }, [
-    isSignedIn,
-    databaseUser,
-    dbUserLoading,
-    userId,
-    user,
-    isClerkLoaded,
-    extractionAttempts,
-    hasValidDatabaseUser,
-    userRole,
-    isRoleLoading,
-    lastValidationTime,
-  ]);
+  }, [isSignedIn, isClerkLoaded, hasValidDatabaseUser, userRole]);
 
-  // Fetch user role from JWT token (only used as fallback)
-  async function fetchUserRole() {
+  // Monitor database user status
+  useEffect(() => {
+    if (isSignedIn) {
+      validateDatabaseUser();
+    } else {
+      handleSignOutState();
+    }
+  }, [isSignedIn, databaseUser, validateDatabaseUser, handleSignOutState]);
+
+  // Fetch user role from JWT token (only used as fallback) with mutex protection
+  const fetchUserRole = useCallback(async () => {
     if (!isClerkLoaded || !userId) {
       setIsRoleLoading(false);
       return;
     }
 
     try {
-      setIsRoleLoading(true);
-      const token = await getToken({ template: "hasura" });
-      if (token) {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const claims = payload["https://hasura.io/jwt/claims"];
-        const role = claims?.["x-hasura-default-role"] as UserRole;
+      await authMutex.acquire(
+        `role-fetch-${userId}-${Date.now()}`,
+        'token_refresh',
+        async () => {
+          setIsRoleLoading(true);
+          const token = await getToken({ template: "hasura" });
+          if (token) {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            const claims = payload["https://hasura.io/jwt/claims"];
+            const role = claims?.["x-hasura-default-role"] as UserRole;
 
-        if (role && ROLE_PERMISSIONS[role]) {
-          setUserRole(role);
-        } else {
-          setUserRole("viewer");
+            if (role && ROLE_PERMISSIONS[role]) {
+              setUserRole(role);
+            } else {
+              setUserRole("viewer");
+            }
+          } else {
+            setUserRole("viewer");
+          }
+          return true;
         }
-      }
+      );
     } catch (error) {
       console.error("Error fetching user role:", error);
       setUserRole("viewer");
     } finally {
       setIsRoleLoading(false);
     }
-  }
+  }, [isClerkLoaded, userId, getToken]);
 
-  // Update permissions when role changes
+  // Memoize permissions to prevent unnecessary recalculations
+  const memoizedPermissions = useMemo(() => {
+    return ROLE_PERMISSIONS[userRole] || [];
+  }, [userRole]);
+
+  // Update permissions when memoized permissions change
   useEffect(() => {
-    if (userRole) {
-      const newPermissions = ROLE_PERMISSIONS[userRole] || [];
-      // Only update if permissions actually changed
-      if (JSON.stringify(permissions) !== JSON.stringify(newPermissions)) {
-        setPermissions(newPermissions);
-      }
+    if (JSON.stringify(permissions) !== JSON.stringify(memoizedPermissions)) {
+      setPermissions(memoizedPermissions);
     }
-  }, [userRole, permissions]);
+  }, [memoizedPermissions, permissions]);
 
-  // Permission check functions - now security-aware
+  // Permission check functions - STRICT security-aware
   const hasPermission = (permission: string): boolean => {
-    // Don't grant any permissions if user doesn't exist in database
-    if (!hasValidDatabaseUser && isSignedIn) {
-      // Only log warning occasionally to prevent spam
+    // SECURITY: ALWAYS deny if not authenticated
+    if (!isSignedIn || !isClerkLoaded) {
+      return false;
+    }
+
+    // SECURITY: ALWAYS deny if user doesn't exist in database
+    if (!hasValidDatabaseUser) {
+      // Log warning for debugging but don't spam
       if (Math.random() < 0.1) {
-        // 10% chance to log
-        console.warn("🚨 Permission denied: User not found in database");
+        console.warn(
+          "🚨 SECURITY: Permission denied - User not found in database",
+          {
+            isSignedIn,
+            hasValidDatabaseUser,
+            userId: userId?.substring(0, 8) + "..." || "none",
+          }
+        );
       }
       return false;
     }
+
+    // SECURITY: Only grant permissions if we have a valid role and permissions
+    if (!userRole || userRole === "viewer") {
+      return permission === "view_dashboard"; // Only allow basic dashboard view
+    }
+
     return permissions.includes(permission);
   };
 
   const hasAnyPermission = (requiredPermissions: string[]): boolean => {
-    // Don't grant any permissions if user doesn't exist in database
-    if (!hasValidDatabaseUser && isSignedIn) {
-      // Only log warning occasionally to prevent spam
-      if (Math.random() < 0.1) {
-        // 10% chance to log
-        console.warn("🚨 Permission denied: User not found in database");
-      }
-      return false;
-    }
-    return requiredPermissions.some((permission) =>
-      permissions.includes(permission)
-    );
+    // SECURITY: Use the strict hasPermission check for each permission
+    return requiredPermissions.some((permission) => hasPermission(permission));
   };
 
   const hasRole = (roles: UserRole[]): boolean => {
-    // Don't grant any roles if user doesn't exist in database
-    if (!hasValidDatabaseUser && isSignedIn) {
-      // Only log warning occasionally to prevent spam
+    // SECURITY: ALWAYS deny if not authenticated
+    if (!isSignedIn || !isClerkLoaded) {
+      return false;
+    }
+
+    // SECURITY: ALWAYS deny if user doesn't exist in database
+    if (!hasValidDatabaseUser) {
       if (Math.random() < 0.1) {
-        // 10% chance to log
-        console.warn("🚨 Role check denied: User not found in database");
+        console.warn(
+          "🚨 SECURITY: Role check denied - User not found in database",
+          {
+            requestedRoles: roles,
+            currentRole: userRole,
+            hasValidDatabaseUser,
+          }
+        );
       }
       return false;
     }
+
+    // SECURITY: Only grant roles if we have a valid user role
+    if (!userRole) {
+      return false;
+    }
+
     return roles.includes(userRole);
   };
 
-  // Computed properties for common checks
-  const hasAdminAccess =
-    hasValidDatabaseUser && (userRole === "admin" || userRole === "org_admin");
+  // Computed properties for common checks - STRICT security
+  const hasAdminAccess: boolean = !!(
+    isSignedIn &&
+    isClerkLoaded &&
+    hasValidDatabaseUser &&
+    userRole &&
+    (userRole === "admin" || userRole === "org_admin")
+  );
+
   const canManageUsers = hasPermission(PERMISSIONS.MANAGE_USERS);
   const canManageClients = hasPermission(PERMISSIONS.MANAGE_CLIENTS);
   const canProcessPayrolls = hasPermission(PERMISSIONS.PROCESS_PAYROLLS);
@@ -355,28 +480,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Refresh user data
-  const refreshUserData = async () => {
+  // Refresh user data with mutex protection
+  const refreshUserData = useCallback(async () => {
     if (!userId) return;
 
-    setIsRoleLoading(true);
     try {
-      const token = await getToken({ template: "hasura" });
-      if (token) {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const claims = payload["https://hasura.io/jwt/claims"];
-        const role = claims?.["x-hasura-default-role"] as UserRole;
+      await authMutex.acquire(
+        `user-refresh-${userId}-${Date.now()}`,
+        'session_validation',
+        async () => {
+          setIsRoleLoading(true);
+          
+          // Force token refresh using the token manager
+          const token = await tokenManager.forceRefresh();
+          
+          if (token) {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            const claims = payload["https://hasura.io/jwt/claims"];
+            const role = claims?.["x-hasura-default-role"] as UserRole;
 
-        if (role && ROLE_PERMISSIONS[role]) {
-          setUserRole(role);
+            if (role && ROLE_PERMISSIONS[role]) {
+              setUserRole(role);
+            }
+          }
+          
+          // Reset validation state on successful refresh
+          setValidationState(prev => ({
+            ...prev,
+            consecutiveFailures: 0,
+            lastValidationTime: Date.now(),
+          }));
+          
+          return true;
         }
-      }
+      );
     } catch (error) {
       console.error("Error refreshing user data:", error);
+      throw error; // Re-throw for the session handler to catch
     } finally {
       setIsRoleLoading(false);
     }
-  };
+  }, [userId]);
 
   const value: AuthContextType = {
     // Authentication state

@@ -1,42 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { withAuth } from "@/lib/api-auth";
+import { secureHasuraService } from "@/lib/secure-hasura-service";
+import {
+  auditLogger,
+  AuditAction,
+  DataClassification,
+} from "@/lib/audit/audit-logger";
+import { clerkClient } from "@clerk/nextjs/server";
 import { gql } from "@apollo/client";
 
-// GraphQL mutation to create user in database
-const CREATE_STAFF_USER = gql`
-  mutation CreateStaffUser(
+// GraphQL mutation to create a staff member in the database
+const CREATE_STAFF_MUTATION = gql`
+  mutation CreateStaff(
     $name: String!
     $email: String!
     $role: user_role!
-    $isStaff: Boolean!
     $managerId: uuid
-    $clerkUserId: String
   ) {
     insert_users_one(
       object: {
         name: $name
         email: $email
         role: $role
-        is_staff: $isStaff
         manager_id: $managerId
-        clerk_user_id: $clerkUserId
-        is_active: true
+        is_staff: true
       }
     ) {
       id
       name
       email
       role
-      clerk_user_id
-      is_staff
-      is_active
-      created_at
-      manager {
-        id
-        name
-        email
-      }
     }
   }
 `;
@@ -61,196 +54,333 @@ interface ClerkError {
   }>;
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    console.log("🔧 API called: /api/staff/create");
+export const POST = withAuth(
+  async (request: NextRequest, session) => {
+    console.log("🚀 Staff create API called - method:", request.method);
+    console.log("🚀 Session:", { userId: session.userId, role: session.role });
+    console.log("🚀 Clerk secret key present:", !!process.env.CLERK_SECRET_KEY);
+    console.log("🚀 Clerk secret key starts with sk_:", process.env.CLERK_SECRET_KEY?.startsWith('sk_'));
+    
+    const requestId = crypto.randomUUID();
 
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
-
-    const body = await req.json();
-    const {
-      name,
-      email,
-      role,
-      managerId,
-      is_staff = true,
-      inviteToClerk = true,
-    } = body;
-
-    if (!name || !email || !role) {
-      return NextResponse.json(
-        { error: "Name, email, and role are required" },
-        { status: 400 }
-      );
-    }
-
-    console.log(
-      `👤 Creating user: ${name} (${email}) with role: ${role}, is_staff: ${is_staff}`
-    );
-
-    // Check if email already exists
-    const { data: existingData } = await adminApolloClient.query({
-      query: CHECK_EMAIL_EXISTS,
-      variables: { email },
-      fetchPolicy: "no-cache",
-    });
-
-    if (existingData?.users?.length > 0) {
-      const existingUser = existingData.users[0];
-      return NextResponse.json(
-        {
-          error: "Email already exists",
-          details: `User with email ${email} already exists${
-            !existingUser.is_active ? " (inactive)" : ""
-          }`,
-          existingUser: {
-            id: existingUser.id,
-            email: existingUser.email,
-            isActive: existingUser.is_active,
-          },
-        },
-        { status: 409 }
-      );
-    }
-
-    const clerkUserId = null;
-
-    // Send Clerk invitation if requested
-    if (inviteToClerk) {
-      try {
-        console.log("📧 Sending Clerk invitation...");
-        const client = await clerkClient();
-
-        // Use invitations instead of direct user creation
-        // This handles the case where the email might already exist
-        const invitation = await client.invitations.createInvitation({
-          emailAddress: email,
-          // Redirect to our custom invitation acceptance page with prefilled name
-          redirectUrl: `http://localhost:3000/accept-invitation?firstName=${encodeURIComponent(
-            name.split(" ")[0] || name
-          )}&lastName=${encodeURIComponent(
-            name.split(" ").slice(1).join(" ") || ""
-          )}`,
-          publicMetadata: {
-            // Onboarding tracking
-            onboardingComplete: false,
-            invitationSent: true,
-            invitationSentAt: new Date().toISOString(),
-
-            // User role and permissions
-            role: role,
-            isStaff: is_staff,
-
-            // User information for prefilling
-            firstName: name.split(" ")[0] || name,
-            lastName: name.split(" ").slice(1).join(" ") || "",
-            fullName: name,
-
-            // Audit trail
-            createdBy: userId,
-            createdAt: new Date().toISOString(),
-            source: "staff_creation_modal",
-
-            // Track invitation status
-            invitationStatus: "pending",
-            needsResend: false,
-          },
-        });
-
-        console.log(`✅ Clerk invitation sent: ${invitation.id}`);
-        console.log("📧 User will receive invitation email to join");
-      } catch (clerkError) {
-        console.error("❌ Failed to send Clerk invitation:", clerkError);
-
-        // Log detailed error information
-        if (
-          clerkError instanceof Error &&
-          "errors" in clerkError &&
-          Array.isArray((clerkError as ClerkError).errors)
-        ) {
-          const errors = (clerkError as ClerkError).errors || [];
-          console.error("📋 Clerk error details:", errors);
-
-          errors.forEach((error, index: number) => {
-            console.error(`   Error ${index + 1}:`, {
-              code: error.code,
-              message: error.message,
-              longMessage: error.longMessage,
-            });
-          });
-        }
-
-        console.log("⚠️ Continuing with database creation only");
-
-        // Check if it's because user already exists
-        if (
-          clerkError instanceof Error &&
-          "errors" in clerkError &&
-          Array.isArray((clerkError as ClerkError).errors)
-        ) {
-          const firstError = (clerkError as ClerkError).errors?.[0];
-          if (firstError?.code === "form_identifier_exists") {
-            console.log("ℹ️ User already exists in Clerk");
-          } else if (firstError?.code === "form_invitation_duplicate") {
-            console.log("ℹ️ Invitation already exists for this email");
-          }
-        }
-      }
-    }
-
-    // Create user in database
-    console.log("📝 Creating user in database...");
-    const { data: createData } = await adminApolloClient.mutate({
-      mutation: CREATE_STAFF_USER,
-      variables: {
+    try {
+      const body = await request.json();
+      const {
         name,
         email,
         role,
-        isStaff: is_staff,
-        managerId: managerId || null,
-        clerkUserId,
-      },
-    });
+        managerId,
+        inviteToClerk = true, // Default to sending invitation
+      } = body;
 
-    const createdUser = createData?.insert_users_one;
-    if (!createdUser) {
-      // If database creation failed but Clerk user was created, we should clean up
-      if (clerkUserId) {
+      // Validate input
+      if (!name || !email || !role) {
+        return NextResponse.json(
+          { error: "Missing required fields" },
+          { status: 400 }
+        );
+      }
+
+      // Check if email already exists
+      const { data: existingData, errors: queryErrors } =
+        await secureHasuraService.executeAdminQuery(CHECK_EMAIL_EXISTS, {
+          email,
+        });
+
+      if (queryErrors) {
+        await auditLogger.log(
+          {
+            userId: session.userId,
+            userRole: session.role,
+            action: AuditAction.READ,
+            entityType: "users",
+            dataClassification: DataClassification.HIGH,
+            requestId,
+            success: false,
+            errorMessage: queryErrors[0].message,
+          },
+          request
+        );
+
+        return NextResponse.json(
+          { error: "Failed to check if email exists", details: queryErrors },
+          { status: 500 }
+        );
+      }
+
+      if (existingData?.users?.length > 0) {
+        const existingUser = existingData.users[0];
+
+        await auditLogger.log(
+          {
+            userId: session.userId,
+            userRole: session.role,
+            action: AuditAction.CREATE,
+            entityType: "users",
+            dataClassification: DataClassification.HIGH,
+            requestId,
+            success: false,
+            errorMessage: `Email ${email} already exists`,
+          },
+          request
+        );
+
+        return NextResponse.json(
+          {
+            error: "Email already exists",
+            details: `User with email ${email} already exists${
+              !existingUser.is_active ? " (inactive)" : ""
+            }`,
+            existingUser: {
+              id: existingUser.id,
+              email: existingUser.email,
+              isActive: existingUser.is_active,
+            },
+          },
+          { status: 409 }
+        );
+      }
+
+      // Send Clerk invitation if requested
+      let invitationId = null;
+      let invitationSent = false;
+
+      if (inviteToClerk) {
         try {
+          // Log the attempt to send invitation
+          await auditLogger.log(
+            {
+              userId: session.userId,
+              userRole: session.role,
+              action: AuditAction.CREATE,
+              entityType: "clerk_invitation",
+              dataClassification: DataClassification.HIGH,
+              fieldsAffected: ["email", "role"],
+              newValues: { email, role },
+              requestId,
+              success: true,
+              errorMessage: "Sending Clerk invitation",
+            },
+            request
+          );
+
           const client = await clerkClient();
-          await client.users.deleteUser(clerkUserId);
-          console.log("🧹 Cleaned up Clerk user after database failure");
-        } catch (cleanupError) {
-          console.error("❌ Failed to cleanup Clerk user:", cleanupError);
+
+          // Get the current domain for redirect URL
+          const domain =
+            process.env.NEXT_PUBLIC_APP_URL ||
+            "https://payroll.app.bytemy.com.au";
+
+          // Use invitations instead of direct user creation
+          const invitation = await client.invitations.createInvitation({
+            emailAddress: email,
+            // Redirect to our custom invitation acceptance page with prefilled name
+            redirectUrl: `${domain}/accept-invitation?firstName=${encodeURIComponent(
+              name.split(" ")[0] || name
+            )}&lastName=${encodeURIComponent(
+              name.split(" ").slice(1).join(" ") || ""
+            )}`,
+            publicMetadata: {
+              // Onboarding tracking
+              onboardingComplete: false,
+              invitationSent: true,
+              invitationSentAt: new Date().toISOString(),
+
+              // User role and permissions
+              role: role,
+              isStaff: true,
+
+              // User information for prefilling
+              firstName: name.split(" ")[0] || name,
+              lastName: name.split(" ").slice(1).join(" ") || "",
+              fullName: name,
+
+              // Audit trail
+              createdBy: session.userId,
+              createdAt: new Date().toISOString(),
+              source: "staff_creation_api",
+
+              // Track invitation status
+              invitationStatus: "pending",
+              needsResend: false,
+            },
+          });
+
+          invitationId = invitation.id;
+          invitationSent = true;
+
+          // Log successful invitation
+          await auditLogger.log(
+            {
+              userId: session.userId,
+              userRole: session.role,
+              action: AuditAction.CREATE,
+              entityType: "clerk_invitation",
+              entityId: invitation.id,
+              dataClassification: DataClassification.HIGH,
+              fieldsAffected: ["email", "role"],
+              newValues: { email, role, invitationId: invitation.id },
+              requestId,
+              success: true,
+            },
+            request
+          );
+        } catch (clerkError) {
+          // Log failed invitation attempt
+          await auditLogger.log(
+            {
+              userId: session.userId,
+              userRole: session.role,
+              action: AuditAction.CREATE,
+              entityType: "clerk_invitation",
+              dataClassification: DataClassification.HIGH,
+              fieldsAffected: ["email", "role"],
+              newValues: { email, role },
+              requestId,
+              success: false,
+              errorMessage:
+                clerkError instanceof Error
+                  ? clerkError.message
+                  : "Unknown error",
+            },
+            request
+          );
+
+          // Log detailed error information
+          await auditLogger.logSecurityEvent(
+            "clerk_invitation_error",
+            "error",
+            {
+              error:
+                clerkError instanceof Error
+                  ? clerkError.message
+                  : "Unknown error",
+              stack: clerkError instanceof Error ? clerkError.stack : undefined,
+              email,
+              role,
+            },
+            session.userId,
+            request.headers.get("x-forwarded-for") || undefined
+          );
+
+          // Continue with database creation even if invitation fails
         }
       }
 
+      // Create staff member in database
+      const { data, errors } = await secureHasuraService.executeAdminMutation(
+        CREATE_STAFF_MUTATION,
+        {
+          name,
+          email,
+          role,
+          managerId,
+        }
+      );
+
+      if (errors) {
+        // Log failed attempt
+        await auditLogger.log(
+          {
+            userId: session.userId,
+            userRole: session.role,
+            action: AuditAction.CREATE,
+            entityType: "users",
+            dataClassification: DataClassification.HIGH, // Contains PII
+            fieldsAffected: ["name", "email", "role"],
+            newValues: { name, email, role },
+            requestId,
+            success: false,
+            errorMessage: errors[0].message,
+          },
+          request
+        );
+
+        return NextResponse.json(
+          { error: "Failed to create staff member", details: errors },
+          { status: 500 }
+        );
+      }
+
+      // Log successful creation
+      await auditLogger.log(
+        {
+          userId: session.userId,
+          userRole: session.role,
+          action: AuditAction.CREATE,
+          entityType: "users",
+          entityId: data.insert_users_one.id,
+          dataClassification: DataClassification.HIGH,
+          fieldsAffected: ["name", "email", "role", "is_staff"],
+          newValues: {
+            name,
+            email,
+            role,
+            is_staff: true,
+            invitationSent,
+            invitationId,
+          },
+          requestId,
+          success: true,
+        },
+        request
+      );
+
+      // Also log data access for compliance
+      await auditLogger.logDataAccess(
+        session.userId,
+        "users",
+        DataClassification.HIGH,
+        1,
+        "Create new staff member"
+      );
+
+      return NextResponse.json({
+        success: true,
+        data: data.insert_users_one,
+        invitationSent,
+        invitationId,
+      });
+    } catch (error: any) {
+      // Log system error
+      await auditLogger.logSecurityEvent(
+        "staff_creation_error",
+        "error",
+        {
+          error: error.message,
+          stack: error.stack,
+        },
+        session.userId,
+        request.headers.get("x-forwarded-for") || undefined
+      );
+
       return NextResponse.json(
-        { error: "Failed to create user in database" },
+        { error: "Internal server error" },
         { status: 500 }
       );
     }
+  },
+  { requiredRole: "manager" } // Only managers and above can create staff
+);
 
-    console.log("✅ User created successfully");
+// Handle OPTIONS for CORS
+export async function OPTIONS() {
+  console.log("🔧 OPTIONS request received for staff/create");
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
 
-    return NextResponse.json({
-      success: true,
-      message: "User created successfully",
-      user: createdUser,
-      clerkSynced: false,
-      invitationSent: inviteToClerk,
-    });
-  } catch (error) {
-    console.error("❌ Error creating user:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to create user",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
-  }
+// Debug route to test if the route is accessible
+export async function GET() {
+  console.log("🔧 GET request received for staff/create (debug)");
+  return NextResponse.json({ 
+    message: "Staff create route is accessible",
+    timestamp: new Date().toISOString()
+  });
 }

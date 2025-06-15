@@ -14,90 +14,14 @@ import { createApolloErrorHandler } from "./apollo-error-handler";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { tokenManager } from "./auth/token-manager";
 
-// ================================
-// TOKEN CACHE
-// ================================
+// Custom event for session expiry
+export const SESSION_EXPIRED_EVENT = "jwt_session_expired";
 
-interface TokenCache {
-  token: string | null;
-  expiresAt: number;
-}
-
-let tokenCache: TokenCache = {
-  token: null,
-  expiresAt: 0,
-};
-
-// Helper to get JWT token with caching
+// Helper to get JWT token using the token manager
 async function getAuthToken(): Promise<string | null> {
-  // Check if we have a valid cached token
-  if (tokenCache.token && tokenCache.expiresAt > Date.now()) {
-    return tokenCache.token;
-  }
-
-  // Try client-side Clerk token first (fallback approach)
-  if (typeof window !== "undefined") {
-    try {
-      // @ts-ignore - Clerk global is available on the client
-      const clerk = window.Clerk;
-      if (clerk?.session) {
-        console.log("🔍 Trying direct Clerk token");
-        const token = await clerk.session.getToken({ template: "hasura" });
-        if (token) {
-          console.log("🔍 Got token directly from Clerk");
-          // Cache for 30 minutes (tokens typically last 1 hour)
-          tokenCache = {
-            token,
-            expiresAt: Date.now() + 30 * 60 * 1000,
-          };
-          return token;
-        }
-      }
-    } catch (clerkError) {
-      console.warn("Failed to get token from Clerk directly:", clerkError);
-    }
-  }
-
-  try {
-    console.log("🔍 Apollo client requesting auth token from /api/auth/token");
-    const response = await fetch("/api/auth/token", {
-      credentials: "include",
-    });
-    console.log("🔍 Token response status:", response.status);
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log("🔍 Token response data:", {
-        hasToken: !!data.token,
-        expiresIn: data.expiresIn,
-      });
-
-      const { token, expiresIn = 3600 } = data;
-
-      // Cache the token (expires 5 minutes before actual expiry for safety)
-      tokenCache = {
-        token,
-        expiresAt: Date.now() + (expiresIn - 300) * 1000,
-      };
-
-      return token;
-    } else {
-      const errorText = await response.text();
-      console.warn(
-        "Failed to get auth token, status:",
-        response.status,
-        "response:",
-        errorText
-      );
-      tokenCache = { token: null, expiresAt: 0 };
-      return null;
-    }
-  } catch (error) {
-    console.warn("Failed to get auth token:", error);
-    tokenCache = { token: null, expiresAt: 0 };
-    return null;
-  }
+  return tokenManager.getToken();
 }
 
 // Helper to get database user ID from Hasura claims
@@ -107,7 +31,6 @@ async function getDatabaseUserId(): Promise<string | null> {
   }
 
   try {
-    console.log("🔍 Getting database user ID from hasura claims");
     const response = await fetch("/api/auth/hasura-claims", {
       credentials: "include",
     });
@@ -115,17 +38,11 @@ async function getDatabaseUserId(): Promise<string | null> {
     if (response.ok) {
       const data = await response.json();
       const databaseUserId = data.claims?.["x-hasura-user-id"];
-      console.log(
-        "🔍 Database user ID:",
-        databaseUserId ? databaseUserId.substring(0, 8) + "..." : "none"
-      );
       return databaseUserId || null;
     } else {
-      console.warn("Failed to get database user ID:", response.status);
       return null;
     }
   } catch (error) {
-    console.warn("Error getting database user ID:", error);
     return null;
   }
 }
@@ -228,31 +145,47 @@ const errorLink = onError(
     const handler = createApolloErrorHandler();
     handler({ graphQLErrors, networkError, operation, forward });
 
-    // Handle specific auth errors for token refresh
+    // Handle specific auth errors for token refresh (be more selective)
     if (graphQLErrors) {
       for (const err of graphQLErrors) {
-        // Check for auth errors that need token refresh
-        if (
+        // Only handle specific JWT expiry errors, not all access-denied errors
+        const isJWTExpired = 
           err.extensions?.code === "invalid-jwt" ||
-          err.extensions?.code === "access-denied" ||
           err.message.includes("JWTExpired") ||
-          err.message.includes("Could not verify JWT")
-        ) {
-          console.log("🔄 Detected JWT expiry, clearing cache and retrying");
+          err.message.includes("Could not verify JWT") ||
+          err.message.includes("JWT token is expired") ||
+          (err.extensions?.code === "access-denied" && 
+           err.message.includes("JWT"));
+        
+        if (isJWTExpired) {
+          console.log("🔄 Detected JWT expiry, clearing cache and retrying", {
+            operation: operation.operationName,
+            error: err.message,
+            code: err.extensions?.code,
+          });
+
+          // Dispatch custom event for session expiry handler
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(
+              new CustomEvent(SESSION_EXPIRED_EVENT, {
+                detail: { error: err, operation: operation.operationName },
+              })
+            );
+          }
+
           // Clear token cache
-          tokenCache = { token: null, expiresAt: 0 };
+          console.log("🧹 Clearing token cache in error handler");
+          tokenManager.clearToken();
 
-          // Create a new observable for the retry
+          // Force token refresh using token manager
           return new Observable((observer) => {
-            // Get a fresh token
-            getAuthToken()
-              .then((token) => {
-                if (!token) {
-                  console.error("Failed to refresh token - no token returned");
-                  observer.error(new Error("Failed to refresh token"));
-                  return;
-                }
-
+            tokenManager.forceRefresh().then(async (token) => {
+              if (!token) {
+                observer.error(new Error("Failed to refresh token"));
+                return;
+              }
+              
+              try {
                 // Update the operation context with the new token
                 const oldHeaders = operation.getContext().headers;
                 operation.setContext({
@@ -262,20 +195,34 @@ const errorLink = onError(
                   },
                 });
 
+                console.log(
+                  "🔄 Retrying operation with fresh token:",
+                  operation.operationName
+                );
+
                 // Forward the operation with the new token
                 forward(operation).subscribe({
                   next: observer.next.bind(observer),
                   error: (error) => {
-                    console.error("Error after token refresh:", error);
+                    console.error("❌ Error after token refresh:", error);
                     observer.error(error);
                   },
-                  complete: observer.complete.bind(observer),
+                  complete: () => {
+                    console.log(
+                      "✅ Operation completed successfully after refresh:",
+                      operation.operationName
+                    );
+                    observer.complete();
+                  },
                 });
-              })
-              .catch((error) => {
-                console.error("Failed to refresh token:", error);
+              } catch (error) {
+                console.error("❌ Failed to retry operation:", error);
                 observer.error(error);
-              });
+              }
+            }).catch((error) => {
+              console.error("❌ Token refresh failed:", error);
+              observer.error(error);
+            });
           });
         }
       }
@@ -286,8 +233,20 @@ const errorLink = onError(
       if ("statusCode" in networkError) {
         if (networkError.statusCode === 401) {
           // Clear token cache on 401
-          tokenCache = { token: null, expiresAt: 0 };
+          tokenManager.clearToken();
           console.log("🔄 Cleared token cache due to 401 error");
+
+          // Dispatch custom event for session expiry handler
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(
+              new CustomEvent(SESSION_EXPIRED_EVENT, {
+                detail: {
+                  error: networkError,
+                  statusCode: networkError.statusCode,
+                },
+              })
+            );
+          }
         }
         console.error(
           `Network error (${networkError.statusCode}):`,
@@ -336,12 +295,27 @@ const createRetryLink = () => {
 };
 
 const shouldRetry = (error: any): boolean => {
-  return !!(
-    (
-      error &&
-      (!error.statusCode || error.statusCode >= 500 || error.statusCode === 429)
-    ) // Rate limited
-  );
+  // Don't retry auth errors - they need token refresh instead
+  if (isAuthError(error)) {
+    return false;
+  }
+
+  // Retry on network errors
+  if (error.networkError) {
+    return true;
+  }
+
+  // Don't retry on client-side errors
+  if (
+    error.graphQLErrors?.some(
+      (err: any) => err.extensions?.code === "BAD_USER_INPUT"
+    )
+  ) {
+    return false;
+  }
+
+  // Retry on server errors
+  return true;
 };
 
 // ================================
@@ -440,11 +414,10 @@ export async function getServerSideApolloClient(token?: string) {
   });
 }
 
-// Utility to clear auth state
+// Exported function to clear the Apollo token cache
 export function clearAuthCache() {
-  tokenCache = { token: null, expiresAt: 0 };
-  // Optionally clear Apollo cache
-  client.clearStore();
+  console.log("🧹 Clearing Apollo token cache. Previous state:", tokenManager.getDebugInfo());
+  tokenManager.clearToken();
 }
 
 // Helper to handle GraphQL errors
@@ -454,7 +427,8 @@ export function isAuthError(error: any): boolean {
       (err: any) =>
         err.extensions?.code === "invalid-jwt" ||
         err.extensions?.code === "access-denied" ||
-        err.message.includes("JWTExpired")
+        err.message.includes("JWTExpired") ||
+        err.message.includes("Could not verify JWT")
     );
   }
   return false;

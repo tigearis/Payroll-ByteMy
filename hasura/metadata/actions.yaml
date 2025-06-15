@@ -1,4 +1,16 @@
 actions:
+  - name: checkSuspiciousActivity
+    definition:
+      kind: synchronous
+      handler: '{{HASURA_ACTION_BASE_URL}}/api/audit/check-suspicious'
+      forward_client_headers: true
+      headers:
+        - name: Content-Type
+          value: application/json
+    permissions:
+      - role: system
+      - role: admin
+    comment: Check for suspicious activity patterns
   - name: commitPayrollAssignments
     definition:
       kind: synchronous
@@ -9,38 +21,10 @@ actions:
           value: application/json
     permissions:
       - role: user
-      
-  - name: logAuditEvent
-    definition:
-      kind: synchronous
-      handler: "{{HASURA_ACTION_BASE_URL}}/api/audit/log"
-      forward_client_headers: true
-      headers:
-        - name: Content-Type
-          value: application/json
-    permissions:
-      - role: system
-      - role: admin
-      - role: org_admin
-    comment: "Log audit events for SOC2 compliance"
-
-  - name: checkSuspiciousActivity
-    definition:
-      kind: synchronous
-      handler: "{{HASURA_ACTION_BASE_URL}}/api/audit/check-suspicious"
-      forward_client_headers: true
-      headers:
-        - name: Content-Type
-          value: application/json
-    permissions:
-      - role: system
-      - role: admin
-    comment: "Check for suspicious activity patterns"
-
   - name: generateComplianceReport
     definition:
       kind: synchronous
-      handler: "{{HASURA_ACTION_BASE_URL}}/api/audit/compliance-report"
+      handler: '{{HASURA_ACTION_BASE_URL}}/api/audit/compliance-report'
       forward_client_headers: true
       headers:
         - name: Content-Type
@@ -48,57 +32,31 @@ actions:
     permissions:
       - role: admin
       - role: org_admin
-    comment: "Generate SOC2 compliance reports"
-
+    comment: Generate SOC2 compliance reports
+  - name: logAuditEvent
+    definition:
+      kind: synchronous
+      handler: '{{HASURA_ACTION_BASE_URL}}/api/audit/log'
+      forward_client_headers: true
+      headers:
+        - name: Content-Type
+          value: application/json
+    permissions:
+      - role: system
+      - role: admin
+      - role: org_admin
+    comment: Log audit events for SOC2 compliance
 custom_types:
   enums: []
   input_objects:
     - name: PayrollAssignmentInput
     - name: AuditEventInput
-      fields:
-        - name: userId
-          type: String!
-        - name: action
-          type: String!
-        - name: resourceType
-          type: String!
-        - name: resourceId
-          type: String
-        - name: metadata
-          type: json
-        - name: ipAddress
-          type: String
-        - name: userAgent
-          type: String
     - name: ComplianceReportInput
-      fields:
-        - name: reportType
-          type: String!
-        - name: startDate
-          type: String!
-        - name: endDate
-          type: String!
-        - name: includeDetails
-          type: Boolean
   objects:
     - name: AffectedAssignment
     - name: CommitPayrollAssignmentsOutput
     - name: AuditEventResponse
-      fields:
-        - name: success
-          type: Boolean!
-        - name: eventId
-          type: String
-        - name: message
-          type: String
     - name: ComplianceReportResponse
-      fields:
-        - name: success
-          type: Boolean!
-        - name: reportUrl
-          type: String
-        - name: summary
-          type: json
-        - name: generatedAt
-          type: String!
+    - name: SuspiciousActivityResponse
+    - name: SuspiciousEvent
   scalars: []

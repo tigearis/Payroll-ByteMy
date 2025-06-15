@@ -115,14 +115,24 @@ export function createApolloErrorHandler() {
             operation.operationName || operation.query.definitions[0]?.kind;
           handlePermissionError(permissionError, context);
         } else {
-          // Handle other GraphQL errors
+          // Handle other GraphQL errors - but be more selective about showing toasts
           console.error(
             `🚨 GraphQL error in ${operation.operationName}:`,
-            error.message
+            error.message,
+            error.extensions
           );
 
+          // Don't show toasts for certain error types that are expected or handled elsewhere
+          const shouldShowToast = 
+            !error.message.includes("cache") &&
+            !error.message.includes("JWTExpired") &&
+            !error.message.includes("Could not verify JWT") &&
+            !error.message.includes("invalid-jwt") &&
+            !error.extensions?.code?.includes("jwt") &&
+            !error.extensions?.code?.includes("auth");
+
           const errorKey = `graphql_${error.message}`;
-          if (!error.message.includes("cache") && !isDuplicateError(errorKey)) {
+          if (shouldShowToast && !isDuplicateError(errorKey)) {
             toast.error("Data Error", {
               description:
                 "There was an issue loading data. Please try refreshing the page.",

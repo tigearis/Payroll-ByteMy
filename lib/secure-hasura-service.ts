@@ -9,6 +9,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
+import { SecureErrorHandler } from "@/lib/security/error-responses";
 
 // Define allowed roles for admin operations
 const ADMIN_ROLES = ["admin", "org_admin"];
@@ -156,9 +157,8 @@ export class SecureHasuraService {
       const { isValid, userId, role } = await this.validateAdminAccess();
 
       if (!isValid) {
-        throw new Error(
-          `Unauthorized: User ${userId} with role ${role} cannot perform admin operations`
-        );
+        const error = SecureErrorHandler.authorizationError("admin access");
+        throw new Error(error.error);
       }
     }
 
@@ -187,9 +187,8 @@ export class SecureHasuraService {
       const { isValid, userId, role } = await this.validateAdminAccess();
 
       if (!isValid) {
-        throw new Error(
-          `Unauthorized: User ${userId} with role ${role} cannot perform admin operations`
-        );
+        const error = SecureErrorHandler.authorizationError("admin access");
+        throw new Error(error.error);
       }
     }
 
