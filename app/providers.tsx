@@ -7,6 +7,7 @@ import client from "@/lib/apollo-client";
 import { AuthProvider } from "@/lib/auth-context";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { StrictDatabaseGuard } from "@/components/auth/StrictDatabaseGuard";
+import { SessionExpiryHandler } from "@/lib/session-expiry-handler";
 
 // ================================
 // TYPES
@@ -45,15 +46,27 @@ export function Providers({ children }: ProvidersProps) {
       <ClerkProvider
         signInUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}
         signUpUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL}
-        signInFallbackRedirectUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL}
-        signUpFallbackRedirectUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL}
-        signInForceRedirectUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL}
-        signUpForceRedirectUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL}
+        signInFallbackRedirectUrl={
+          process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL
+        }
+        signUpFallbackRedirectUrl={
+          process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL
+        }
+        signInForceRedirectUrl={
+          process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL
+        }
+        signUpForceRedirectUrl={
+          process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL
+        }
         afterSignOutUrl={process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL}
       >
         <AuthenticatedApolloProvider>
           <AuthProvider>
-            <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
+            <StrictDatabaseGuard>
+              {/* Global session expiry handler */}
+              <SessionExpiryHandler />
+              {children}
+            </StrictDatabaseGuard>
           </AuthProvider>
         </AuthenticatedApolloProvider>
       </ClerkProvider>

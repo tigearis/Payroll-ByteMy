@@ -111,7 +111,11 @@ export function useUserManagement(): UseUserManagementReturn {
   const makeRequest = useCallback(
     async (url: string, options: RequestInit = {}) => {
       try {
-        const token = await getToken();
+        const token = await getToken({ template: "hasura" });
+        console.log("🔑 Making API request to:", url);
+        console.log("🔑 Token present:", !!token);
+        console.log("🔑 Token length:", token?.length || 0);
+        
         const response = await fetch(url, {
           ...options,
           headers: {
@@ -121,16 +125,31 @@ export function useUserManagement(): UseUserManagementReturn {
           },
         });
 
+        console.log("📡 Response status:", response.status);
+        console.log("📡 Response redirected:", response.redirected);
+        console.log("📡 Response URL:", response.url);
+
+        // Check if the response is a redirect (auth issue)
+        if (response.redirected) {
+          throw new Error("Authentication required. Please sign in again.");
+        }
+
+        // Check if the response is JSON
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const text = await response.text();
+          throw new Error(`Unexpected response: ${text}`);
+        }
+
+        const data = await response.json();
+
         if (!response.ok) {
-          const errorData = await response
-            .json()
-            .catch(() => ({ error: "Unknown error" }));
           throw new Error(
-            errorData.error || `HTTP ${response.status}: ${response.statusText}`
+            data.error || `HTTP ${response.status}: ${response.statusText}`
           );
         }
 
-        return await response.json();
+        return data;
       } catch (err) {
         console.error("API request failed:", err);
         throw err;
@@ -218,9 +237,19 @@ export function useUserManagement(): UseUserManagementReturn {
       setError(null);
 
       try {
-        const data = await makeRequest("/api/users", {
+        // Prepare data for staff creation endpoint
+        const requestData = {
+          name: `${userData.firstName} ${userData.lastName}`.trim(),
+          email: userData.email,
+          role: userData.role || "viewer", // Default to viewer
+          managerId: userData.managerId,
+          is_staff: true,
+          inviteToClerk: true,
+        };
+
+        const data = await makeRequest("/api/staff/create", {
           method: "POST",
-          body: JSON.stringify(userData),
+          body: JSON.stringify(requestData),
         });
 
         if (data.success) {
@@ -339,7 +368,8 @@ export function useUserManagement(): UseUserManagementReturn {
 
       // Role hierarchy levels
       const roleHierarchy: Record<string, number> = {
-        org_admin: 4,
+        admin: 5, // Developers
+        org_admin: 4, // Standard Admins
         manager: 3,
         consultant: 2,
         viewer: 1,
@@ -348,8 +378,9 @@ export function useUserManagement(): UseUserManagementReturn {
       const currentLevel = roleHierarchy[currentUserRole] || 0;
       const targetLevel = roleHierarchy[targetRole] || 0;
 
-      // Admins can assign any role
-      if (currentUserRole === "org_admin") return true;
+      // Developers (admin) and Standard Admins (org_admin) can assign any role
+      if (currentUserRole === "admin" || currentUserRole === "org_admin")
+        return true;
 
       // Managers can assign consultant and viewer roles
       if (

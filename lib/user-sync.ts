@@ -6,7 +6,8 @@ import { adminApolloClient } from "@/lib/server-apollo-client";
 // Define user role hierarchy for permission checking
 // These must match the Hasura database enum values exactly
 export const USER_ROLES = {
-  org_admin: 4, // Maps to Admin and Developer in the roles enum
+  admin: 5, // Developers - highest level
+  org_admin: 4, // Standard Admins
   manager: 3,
   consultant: 2,
   viewer: 1,
@@ -507,15 +508,14 @@ export function canAssignRole(
   currentUserRole: UserRole | "admin",
   targetRole: UserRole
 ): boolean {
-  // Handle legacy "admin" role as "org_admin"
-  const normalizedCurrentRole =
-    currentUserRole === "admin" ? "org_admin" : currentUserRole;
+  // Use roles as-is - no normalization needed
+  const normalizedCurrentRole = currentUserRole as UserRole;
 
   const currentLevel = USER_ROLES[normalizedCurrentRole];
   const targetLevel = USER_ROLES[targetRole];
 
-  // org_admin can assign any role (including other org_admin roles)
-  if (normalizedCurrentRole === "org_admin") return true;
+  // Developers (admin) and Standard Admins (org_admin) can assign any role
+  if (normalizedCurrentRole === "admin" || normalizedCurrentRole === "org_admin") return true;
 
   // Managers can assign consultant and viewer roles
   if (
@@ -540,11 +540,20 @@ export function getUserPermissions(role: UserRole | "admin") {
     canManageSystem: false,
   };
 
-  // Handle legacy "admin" role as "org_admin"
-  const normalizedRole = role === "admin" ? "org_admin" : role;
+  // No normalization needed - use roles as-is
+  const normalizedRole = role;
 
   switch (normalizedRole) {
-    case "org_admin":
+    case "admin": // Developers - highest level
+      return {
+        canCreate: true,
+        canManageUsers: true,
+        canManagePayrolls: true,
+        canViewReports: true,
+        canManageClients: true,
+        canManageSystem: true,
+      };
+    case "org_admin": // Standard Admins
       return {
         canCreate: true,
         canManageUsers: true,

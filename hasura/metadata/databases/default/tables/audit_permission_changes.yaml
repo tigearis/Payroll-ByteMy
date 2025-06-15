@@ -1,7 +1,21 @@
 table:
   name: permission_changes
   schema: audit
-
+insert_permissions:
+  - role: org_admin
+    permission:
+      check: {}
+      set:
+        changed_by_user_id: X-Hasura-User-Id
+      columns:
+        - target_user_id
+        - target_role_id
+        - change_type
+        - permission_type
+        - old_permissions
+        - new_permissions
+        - reason
+        - metadata
 select_permissions:
   - role: org_admin
     permission:
@@ -19,19 +33,3 @@ select_permissions:
         changed_by_user_id:
           _eq: X-Hasura-User-Id
       allow_aggregations: true
-
-insert_permissions:
-  - role: org_admin
-    permission:
-      check: {}
-      columns:
-        - target_user_id
-        - target_role_id
-        - change_type
-        - permission_type
-        - old_permissions
-        - new_permissions
-        - reason
-        - metadata
-      set:
-        changed_by_user_id: X-Hasura-User-Id

@@ -1,9 +1,29 @@
 // app/api/cron/sync-holidays/route.ts
 import { NextResponse } from "next/server";
 import { syncAustralianHolidays } from "@/lib/holiday-sync-service";
+import { auditLogger } from "@/lib/audit/audit-logger";
 
 export async function GET(request: Request) {
   try {
+    // SECURITY: Verify request is from authorized source
+    const cronSecret = request.headers.get("x-cron-secret");
+    
+    // Check for cron secret (for Vercel cron jobs)
+    if (cronSecret !== process.env.CRON_SECRET) {
+      console.error("🚨 Unauthorized cron request - invalid secret for sync-holidays");
+      await auditLogger.logSecurityEvent(
+        "unauthorized_cron_access",
+        "error",
+        { source: "sync-holidays", ip: request.headers.get("x-forwarded-for") },
+        undefined,
+        request.headers.get("x-forwarded-for") || undefined
+      );
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     // Check if force sync is requested via query parameter
     const url = new URL(request.url);
     const forceSync = url.searchParams.get("force") === "true";

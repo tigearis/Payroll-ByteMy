@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     // Create a new invitation
     const invitation = await client.invitations.createInvitation({
       emailAddress: email,
-      redirectUrl: `http://localhost:3000/accept-invitation?firstName=${encodeURIComponent(
+      redirectUrl: `https://payroll.app.bytemy.com.au/accept-invitation?firstName=${encodeURIComponent(
         name.split(" ")[0] || name
       )}&lastName=${encodeURIComponent(
         name.split(" ").slice(1).join(" ") || ""

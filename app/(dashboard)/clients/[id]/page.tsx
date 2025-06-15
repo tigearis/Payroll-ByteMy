@@ -305,11 +305,13 @@ export default function ClientDetailPage() {
   // Transform payroll data (same as payrolls page)
   const transformPayrollData = (payrolls: any[]) => {
     return payrolls.map((payroll: any) => {
-      const totalEmployees =
-        payroll.payroll_dates?.reduce(
-          (sum: number, date: any) => sum + (date.employee_count || 0),
-          0
-        ) || 0;
+      // Calculate total employees from payroll_dates if available, otherwise use direct employee_count
+      const payrollDatesTotal = payroll.payroll_dates?.reduce(
+        (sum: number, date: any) => sum + (date.employee_count || 0),
+        0
+      ) || 0;
+      
+      const totalEmployees = payrollDatesTotal > 0 ? payrollDatesTotal : (payroll.employee_count || 0);
 
       return {
         ...payroll,
@@ -410,18 +412,20 @@ export default function ClientDetailPage() {
 
   // Calculate client statistics
   const activePayrolls =
-    client.payrolls?.filter((p: any) => p.active)?.length || 0;
+    client.payrolls?.filter((p: any) => !p.superseded_date)?.length || 0;
   const totalPayrolls = client.payrolls?.length || 0;
   const totalEmployees =
-    client.payrolls?.reduce(
-      (sum: number, p: any) => sum + (p.employee_count || 0),
-      0
-    ) || 0;
-  const estimatedMonthlyValue =
-    client.payrolls?.reduce(
-      (sum: number, p: any) => sum + (p.estimated_monthly_value || 0),
-      0
-    ) || 0;
+    client.payrolls?.reduce((sum: number, p: any) => {
+      // Use same logic as transformPayrollData for consistent employee counts
+      const payrollDatesTotal = p.payroll_dates?.reduce(
+        (dateSum: number, date: any) => dateSum + (date.employee_count || 0),
+        0
+      ) || 0;
+      const employeeCount = payrollDatesTotal > 0 ? payrollDatesTotal : (p.employee_count || 0);
+      return sum + employeeCount;
+    }, 0) || 0;
+  // Note: estimated_monthly_value field doesn't exist in database, setting to 0
+  const estimatedMonthlyValue = 0;
 
   return (
     <div className="space-y-6">

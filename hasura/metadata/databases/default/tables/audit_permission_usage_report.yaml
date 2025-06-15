@@ -1,7 +1,6 @@
 table:
   name: permission_usage_report
   schema: audit
-
 select_permissions:
   - role: org_admin
     permission:
@@ -15,5 +14,6 @@ select_permissions:
         - last_used
       filter:
         role_name:
-          _nin: ["admin"]
+          _nin:
+            - admin
       allow_aggregations: true

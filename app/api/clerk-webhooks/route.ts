@@ -123,10 +123,13 @@ export async function POST(req: NextRequest) {
       case "user.created":
         console.log("👤 New user created:", id);
 
-        // For OAuth users, assign Developer role automatically
+        // For OAuth users, assign Admin role automatically  
         const hasOAuthProvider =
           external_accounts && external_accounts.length > 0;
-        const defaultRole = hasOAuthProvider ? "org_admin" : "viewer"; // OAuth users get org_admin (Developer)
+        
+        // Check if role is in invitation metadata first, then default
+        const invitationRole = evt.data.public_metadata?.role;
+        const defaultRole = invitationRole || (hasOAuthProvider ? "org_admin" : "viewer");
 
         await syncUserWithDatabase(
           id,

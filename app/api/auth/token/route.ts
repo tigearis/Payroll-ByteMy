@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { currentUser } from "@clerk/nextjs/server";
+import { SecureErrorHandler } from "@/lib/security/error-responses";
 // import { logSuccessfulLogin, logFailedLogin } from "@/lib/security/audit";
 
 export async function GET(req: NextRequest) {
@@ -35,9 +36,8 @@ export async function GET(req: NextRequest) {
 
     if (!userId) {
       console.log("🚨 No userId found in auth result");
-      return NextResponse.json({ 
-        error: "Missing 'Authorization' or 'Cookie' header in JWT authentication mode" 
-      }, { status: 401 });
+      const error = SecureErrorHandler.authenticationError();
+      return NextResponse.json(error, { status: 401 });
     }
 
     // Get user details for audit logging
@@ -49,10 +49,8 @@ export async function GET(req: NextRequest) {
     console.log("🔍 Generated hasura template token:", { hasToken: !!token });
 
     if (!token) {
-      return NextResponse.json(
-        { error: "Failed to generate token" },
-        { status: 500 }
-      );
+      const error = SecureErrorHandler.sanitizeError(new Error("Token generation failed"), "auth_token");
+      return NextResponse.json(error, { status: 500 });
     }
 
     // Parse token to get expiry and check Session JWT V2 format - with error handling
@@ -100,9 +98,7 @@ export async function GET(req: NextRequest) {
     //   error instanceof Error ? error.message : "Unknown error"
     // );
 
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    const sanitizedError = SecureErrorHandler.sanitizeError(error, "auth_token_endpoint");
+    return NextResponse.json(sanitizedError, { status: 500 });
   }
 }

@@ -1,7 +1,8 @@
 import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { authMutex } from "@/lib/auth/auth-mutex";
 
 // Get current user by their database UUID from JWT token
 // Using session variable syntax for Hasura
@@ -27,98 +28,213 @@ export function useCurrentUser() {
   const [isExtractingUserId, setIsExtractingUserId] = useState(false);
   const [extractionAttempts, setExtractionAttempts] = useState(0);
   const [lastExtractionTime, setLastExtractionTime] = useState<number>(0);
+  const [isReady, setIsReady] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasLoggedSuccessRef = useRef<boolean>(false);
+  const extractionPromiseRef = useRef<Promise<void> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Extract the database UUID from JWT token with debouncing and retry logic
+  // Extract the database UUID from JWT token with request deduplication
   const extractUserIdFromJWT = useCallback(async () => {
     if (!clerkUserId || !isLoaded) {
       setDatabaseUserId(null);
       setIsExtractingUserId(false);
+      setIsReady(true); // Ready even without user (unauthenticated state)
       return;
+    }
+
+    // Don't re-extract if we already have a valid database user ID
+    if (databaseUserId && isReady) {
+      return;
+    }
+
+    // If already extracting, wait for the current promise
+    if (extractionPromiseRef.current) {
+      console.log('⏳ User ID extraction already in progress, waiting...');
+      try {
+        await extractionPromiseRef.current;
+        return;
+      } catch (error) {
+        console.warn('❌ Previous extraction failed:', error);
+        // Continue with new extraction attempt
+      }
+    }
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
     }
 
     // Prevent too frequent attempts (debounce)
     const now = Date.now();
-    if (now - lastExtractionTime < 1000) {
-      // 1 second debounce
+    if (now - lastExtractionTime < 2000) {
+      // Increased to 2 seconds for better stability
+      timeoutRef.current = setTimeout(() => extractUserIdFromJWT(), 2000);
       return;
     }
 
     // Limit retry attempts to prevent infinite loops
-    if (extractionAttempts >= 5) {
+    if (extractionAttempts >= 3) {
       console.warn("⚠️ Max extraction attempts reached, stopping retries");
       setIsExtractingUserId(false);
+      setIsReady(true); // Set ready even on failure to prevent infinite loading
       return;
     }
 
+    // Create abort controller for this extraction
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
+    // Create the extraction promise
+    extractionPromiseRef.current = performExtraction(signal, now);
+    
+    try {
+      await extractionPromiseRef.current;
+    } catch (error) {
+      if (!signal.aborted) {
+        console.error("❌ User ID extraction failed:", error);
+      }
+    } finally {
+      extractionPromiseRef.current = null;
+      if (abortControllerRef.current?.signal === signal) {
+        abortControllerRef.current = null;
+      }
+    }
+  }, [clerkUserId, getToken, isLoaded, extractionAttempts, databaseUserId, isReady]);
+
+  // Separate function to perform the actual extraction
+  const performExtraction = useCallback(async (signal: AbortSignal, startTime: number) => {
     setIsExtractingUserId(true);
-    setLastExtractionTime(now);
+    setLastExtractionTime(startTime);
 
     try {
+      // Check if aborted before starting
+      if (signal.aborted) {
+        throw new Error('Extraction aborted');
+      }
+
       const token = await getToken({ template: "hasura" });
+      
+      // Check if aborted after getting token
+      if (signal.aborted) {
+        throw new Error('Extraction aborted');
+      }
+
       if (token) {
         const payload = JSON.parse(atob(token.split(".")[1]));
         const hasuraClaims = payload["https://hasura.io/jwt/claims"];
         const databaseId = hasuraClaims?.["x-hasura-user-id"];
 
         if (databaseId) {
-          setDatabaseUserId(databaseId);
-          setExtractionAttempts(0); // Reset attempts on success
-          console.log(
-            "✅ Successfully extracted database user ID:",
-            databaseId
-          );
+          if (!signal.aborted) {
+            setDatabaseUserId(databaseId);
+            setExtractionAttempts(0); // Reset attempts on success
+            setIsReady(true); // Mark as ready when we have user ID
+            // Only log once per session
+            if (!hasLoggedSuccessRef.current) {
+              console.log(
+                "✅ Successfully extracted database user ID:",
+                databaseId
+              );
+              hasLoggedSuccessRef.current = true;
+            }
+          }
         } else {
           console.warn(
             "⚠️ No x-hasura-user-id found in JWT claims, attempt:",
             extractionAttempts + 1
           );
-          setExtractionAttempts((prev) => prev + 1);
+          
+          if (!signal.aborted) {
+            setExtractionAttempts((prev) => prev + 1);
 
-          // If no database ID found, try to sync user
-          if (extractionAttempts === 0) {
-            console.log("🔄 Attempting to sync user with database...");
-            try {
-              const syncResponse = await fetch("/api/sync-current-user", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-              });
+            // If no database ID found, try to sync user (but don't retry infinitely)
+            if (extractionAttempts === 0) {
+              console.log("🔄 Attempting to sync user with database...");
+              try {
+                // Use mutex to prevent concurrent sync operations
+                await authMutex.acquire(
+                  `user-sync-${clerkUserId}-${Date.now()}`,
+                  'user_extraction',
+                  async () => {
+                    const syncResponse = await fetch("/api/sync-current-user", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                      },
+                      signal, // Add abort signal to fetch
+                    });
 
-              if (syncResponse.ok) {
-                console.log(
-                  "✅ User sync successful, retrying token extraction..."
+                    if (syncResponse.ok && !signal.aborted) {
+                      console.log(
+                        "✅ User sync successful, retrying token extraction..."
+                      );
+                      // Retry extraction after a delay
+                      timeoutRef.current = setTimeout(() => {
+                        if (!signal.aborted) {
+                          setExtractionAttempts(0);
+                          extractUserIdFromJWT();
+                        }
+                      }, 2000);
+                    } else if (!signal.aborted) {
+                      setIsReady(true); // Mark ready even if sync fails to prevent infinite loading
+                    }
+                    return true;
+                  }
                 );
-                // Retry extraction after a short delay
-                setTimeout(() => {
-                  setExtractionAttempts(0);
-                  extractUserIdFromJWT();
-                }, 2000);
+              } catch (syncError: any) {
+                if (syncError.name !== 'AbortError' && !signal.aborted) {
+                  console.error("❌ User sync failed:", syncError);
+                  setIsReady(true); // Mark ready even if sync fails
+                }
               }
-            } catch (syncError) {
-              console.error("❌ User sync failed:", syncError);
+            } else {
+              setIsReady(true); // Mark ready after max attempts
             }
           }
         }
       } else {
         console.warn("⚠️ No token received from Clerk");
-        setExtractionAttempts((prev) => prev + 1);
+        if (!signal.aborted) {
+          setExtractionAttempts((prev) => prev + 1);
+          setIsReady(true);
+        }
       }
-    } catch (error) {
-      console.error("❌ Failed to extract user ID from JWT:", error);
-      setExtractionAttempts((prev) => prev + 1);
+    } catch (error: any) {
+      if (error.name !== 'AbortError' && !signal.aborted) {
+        console.error("❌ Failed to extract user ID from JWT:", error);
+        setExtractionAttempts((prev) => prev + 1);
+        setIsReady(true);
+      }
     } finally {
-      setIsExtractingUserId(false);
+      if (!signal.aborted) {
+        setIsExtractingUserId(false);
+      }
     }
-  }, [clerkUserId, getToken, isLoaded, extractionAttempts, lastExtractionTime]);
+  }, [clerkUserId, getToken, isLoaded, extractionAttempts, databaseUserId, isReady]);
 
-  // Extract user ID when Clerk user changes
+  // Cleanup timeout and abort ongoing requests on unmount
   useEffect(() => {
-    if (isLoaded) {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  // Extract user ID when Clerk user changes (but only if we don't already have it)
+  useEffect(() => {
+    if (isLoaded && clerkUserId && !databaseUserId && !isExtractingUserId) {
       extractUserIdFromJWT();
     }
-  }, [clerkUserId, isLoaded, extractUserIdFromJWT]);
+  }, [clerkUserId, isLoaded, databaseUserId, isExtractingUserId, extractUserIdFromJWT]);
 
   const {
     data,
@@ -127,7 +243,7 @@ export function useCurrentUser() {
     refetch,
   } = useQuery(GET_CURRENT_USER, {
     variables: { currentUserId: databaseUserId },
-    skip: !databaseUserId, // Only run when we have the database UUID
+    skip: !databaseUserId || !isReady, // Only run when we have database UUID AND extraction is ready
     fetchPolicy: "cache-and-network",
     errorPolicy: "all",
     notifyOnNetworkStatusChange: true,
@@ -157,8 +273,8 @@ export function useCurrentUser() {
 
   const currentUser = data?.users_by_pk || null;
 
-  // Combine loading states - we're loading if either extracting user ID or running query
-  const loading = isExtractingUserId || queryLoading;
+  // Combine loading states - we're loading if either extracting user ID, running query, or not ready
+  const loading = !isReady || isExtractingUserId || (databaseUserId && queryLoading);
 
   // Ensure currentUserId is always a valid UUID or null
   const currentUserId = currentUser?.id || null;
@@ -173,32 +289,35 @@ export function useCurrentUser() {
     console.error("⚠️ Invalid UUID format for currentUserId:", currentUserId);
   }
 
-  // Enhanced logging for debugging (throttled to prevent spam)
+  // Enhanced logging for debugging (only on significant state changes)
+  const lastLoggedStateRef = useRef<string>("");
   useEffect(() => {
-    const logState = () => {
-      console.log("🔍 useCurrentUser state:", {
-        clerkUserId,
-        databaseUserId,
-        hasCurrentUser: !!currentUser,
-        loading,
-        hasError: !!error,
-        querySkipped: !databaseUserId,
-        isExtractingUserId,
-        queryLoading,
-        extractionAttempts,
-        isLoaded,
-        timestamp: new Date().toISOString(),
-      });
+    const currentState = {
+      clerkUserId: !!clerkUserId,
+      databaseUserId: !!databaseUserId,
+      hasCurrentUser: !!currentUser,
+      loading,
+      isReady,
+      hasError: !!error,
+      isExtractingUserId,
+      queryLoading,
+      extractionAttempts,
+      isLoaded,
     };
 
-    // Throttle logging to every 2 seconds max
-    const timeoutId = setTimeout(logState, 100);
-    return () => clearTimeout(timeoutId);
+    const stateString = JSON.stringify(currentState);
+    
+    // Only log if state actually changed
+    if (stateString !== lastLoggedStateRef.current) {
+      console.log("🔍 useCurrentUser state changed:", currentState);
+      lastLoggedStateRef.current = stateString;
+    }
   }, [
     clerkUserId,
     databaseUserId,
     currentUser,
     loading,
+    isReady,
     error,
     isExtractingUserId,
     queryLoading,
@@ -216,5 +335,6 @@ export function useCurrentUser() {
     refetch,
     extractionAttempts, // Expose for debugging
     isExtractingUserId, // Expose for debugging
+    isReady, // Expose for debugging
   };
 }

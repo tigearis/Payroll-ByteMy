@@ -212,6 +212,13 @@ export default function SecurityDashboard() {
 
   // Check if user has access to security features
   if (!roleLoading && !hasAdminAccess && !isDeveloper && !isAdmin) {
+    console.log("🚨 Security page access denied:", {
+      roleLoading,
+      hasAdminAccess,
+      isDeveloper,
+      isAdmin,
+      userRole: useUserRole().userRole
+    });
     return (
       <div className="container mx-auto p-6">
         <Alert variant="destructive">

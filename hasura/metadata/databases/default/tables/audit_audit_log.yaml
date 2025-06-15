@@ -1,8 +1,49 @@
 table:
   name: audit_log
   schema: audit
-
+insert_permissions:
+  - role: system
+    permission:
+      check: {}
+      columns:
+        - user_id
+        - user_email
+        - user_role
+        - action
+        - resource_type
+        - resource_id
+        - old_values
+        - new_values
+        - ip_address
+        - user_agent
+        - session_id
+        - request_id
+        - success
+        - error_message
+        - metadata
 select_permissions:
+  - role: manager
+    permission:
+      columns:
+        - id
+        - event_time
+        - user_id
+        - user_email
+        - user_role
+        - action
+        - resource_type
+        - resource_id
+        - success
+        - created_at
+      filter:
+        _and:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - resource_type:
+              _in:
+                - payrolls
+                - payroll_dates
+                - staff
   - role: org_admin
     permission:
       columns:
@@ -27,46 +68,3 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: Organization admins can view all audit logs
-  
-
-  - role: manager
-    permission:
-      columns:
-        - id
-        - event_time
-        - user_id
-        - user_email
-        - user_role
-        - action
-        - resource_type
-        - resource_id
-        - success
-        - created_at
-      filter:
-        _and:
-          - user_id:
-              _eq: X-Hasura-User-Id
-          - resource_type:
-              _in: ["payrolls", "payroll_dates", "staff"]
-      allow_aggregations: false
-
-insert_permissions:
-  - role: system
-    permission:
-      check: {}
-      columns:
-        - user_id
-        - user_email
-        - user_role
-        - action
-        - resource_type
-        - resource_id
-        - old_values
-        - new_values
-        - ip_address
-        - user_agent
-        - session_id
-        - request_id
-        - success
-        - error_message
-        - metadata

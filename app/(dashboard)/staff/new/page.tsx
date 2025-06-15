@@ -58,12 +58,22 @@ export default function CreateUserPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          name: `${form.firstName} ${form.lastName}`.trim(),
           email: form.email,
-          firstName: form.firstName,
-          lastName: form.lastName,
           role: form.role,
         }),
       });
+
+      // Check if the response is a redirect (auth issue)
+      if (response.redirected) {
+        throw new Error("Authentication required. Please sign in again.");
+      }
+
+      // Check if the response is JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error(`Unexpected response: ${await response.text()}`);
+      }
 
       const data = await response.json();
 

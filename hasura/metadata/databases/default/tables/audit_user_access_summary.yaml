@@ -1,8 +1,19 @@
 table:
   name: user_access_summary
   schema: audit
-
 select_permissions:
+  - role: manager
+    permission:
+      columns:
+        - user_name
+        - role
+        - is_active
+        - last_activity
+      filter:
+        role:
+          _in:
+            - consultant
+            - viewer
   - role: org_admin
     permission:
       columns:
@@ -20,17 +31,6 @@ select_permissions:
         - last_login
       filter:
         role:
-          _nin: ["admin"]
+          _nin:
+            - admin
       allow_aggregations: true
-
-  - role: manager
-    permission:
-      columns:
-        - user_name
-        - role
-        - is_active
-        - last_activity
-      filter:
-        role:
-          _in: ["consultant", "viewer"]
-      allow_aggregations: false
