@@ -28,8 +28,17 @@ const GET_CURRENT_USER_MINIMAL = gql`
     users_by_pk(id: $currentUserId) {
       id
       name
-      role
       is_staff
+    }
+  }
+`;
+
+// Ultra minimal query with just basic fields that should always be accessible
+const GET_CURRENT_USER_BASIC = gql`
+  query GetCurrentUserBasic($currentUserId: uuid!) {
+    users_by_pk(id: $currentUserId) {
+      id
+      name
     }
   }
 `;
@@ -41,7 +50,7 @@ export function useCurrentUser() {
   const [extractionAttempts, setExtractionAttempts] = useState(0);
   const [lastExtractionTime, setLastExtractionTime] = useState<number>(0);
   const [isReady, setIsReady] = useState(false);
-  const [useMinimalQuery, setUseMinimalQuery] = useState(false);
+  const [queryLevel, setQueryLevel] = useState<'full' | 'minimal' | 'basic'>('full');
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasLoggedSuccessRef = useRef<boolean>(false);
   const extractionPromiseRef = useRef<Promise<void> | null>(null);
@@ -249,12 +258,21 @@ export function useCurrentUser() {
     }
   }, [clerkUserId, isLoaded, databaseUserId, isExtractingUserId, extractUserIdFromJWT]);
 
+  // Select query based on current level
+  const getCurrentQuery = () => {
+    switch (queryLevel) {
+      case 'basic': return GET_CURRENT_USER_BASIC;
+      case 'minimal': return GET_CURRENT_USER_MINIMAL;
+      default: return GET_CURRENT_USER;
+    }
+  };
+
   const {
     data,
     loading: queryLoading,
     error,
     refetch,
-  } = useQuery(useMinimalQuery ? GET_CURRENT_USER_MINIMAL : GET_CURRENT_USER, {
+  } = useQuery(getCurrentQuery(), {
     variables: { currentUserId: databaseUserId },
     skip: !databaseUserId || !isReady, // Only run when we have database UUID AND extraction is ready
     fetchPolicy: "cache-and-network",
@@ -263,19 +281,25 @@ export function useCurrentUser() {
     onError: (err) => {
       console.error("❌ useCurrentUser GraphQL error:", err);
 
-      // Check if this is a field permission error and try minimal query
+      // Check if this is a field permission error and try next level down
       const hasFieldError = err.graphQLErrors?.some(gqlError => 
         gqlError.message.includes("field") && 
         gqlError.message.includes("not found")
       );
 
-      if (hasFieldError && !useMinimalQuery) {
-        console.log("🔄 Switching to minimal query due to field permission error");
-        setUseMinimalQuery(true);
-        return; // Don't log the error, just retry with minimal query
+      if (hasFieldError) {
+        if (queryLevel === 'full') {
+          console.log("🔄 Switching to minimal query due to field permission error");
+          setQueryLevel('minimal');
+          return;
+        } else if (queryLevel === 'minimal') {
+          console.log("🔄 Switching to basic query due to field permission error");
+          setQueryLevel('basic');
+          return;
+        }
       }
 
-      // Log specific error details
+      // Log specific error details only if we can't fallback further
       if (err.graphQLErrors?.length > 0) {
         err.graphQLErrors.forEach((gqlError, index) => {
           console.error(`GraphQL Error ${index + 1}:`, {
