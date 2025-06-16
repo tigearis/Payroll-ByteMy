@@ -6,18 +6,30 @@ import { authMutex } from "@/lib/auth/auth-mutex";
 
 // Get current user by their database UUID from JWT token
 // Using session variable syntax for Hasura
+// Note: Using minimal fields to avoid permission issues during JWT refresh
 const GET_CURRENT_USER = gql`
   query GetCurrentUser($currentUserId: uuid!) {
     users_by_pk(id: $currentUserId) {
       id
       name
-      email
       role
       is_staff
       manager_id
       clerk_user_id
       created_at
       updated_at
+    }
+  }
+`;
+
+// Fallback query with even fewer fields if the main query fails
+const GET_CURRENT_USER_MINIMAL = gql`
+  query GetCurrentUserMinimal($currentUserId: uuid!) {
+    users_by_pk(id: $currentUserId) {
+      id
+      name
+      role
+      is_staff
     }
   }
 `;
@@ -29,6 +41,7 @@ export function useCurrentUser() {
   const [extractionAttempts, setExtractionAttempts] = useState(0);
   const [lastExtractionTime, setLastExtractionTime] = useState<number>(0);
   const [isReady, setIsReady] = useState(false);
+  const [useMinimalQuery, setUseMinimalQuery] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasLoggedSuccessRef = useRef<boolean>(false);
   const extractionPromiseRef = useRef<Promise<void> | null>(null);
@@ -241,7 +254,7 @@ export function useCurrentUser() {
     loading: queryLoading,
     error,
     refetch,
-  } = useQuery(GET_CURRENT_USER, {
+  } = useQuery(useMinimalQuery ? GET_CURRENT_USER_MINIMAL : GET_CURRENT_USER, {
     variables: { currentUserId: databaseUserId },
     skip: !databaseUserId || !isReady, // Only run when we have database UUID AND extraction is ready
     fetchPolicy: "cache-and-network",
@@ -249,6 +262,18 @@ export function useCurrentUser() {
     notifyOnNetworkStatusChange: true,
     onError: (err) => {
       console.error("❌ useCurrentUser GraphQL error:", err);
+
+      // Check if this is a field permission error and try minimal query
+      const hasFieldError = err.graphQLErrors?.some(gqlError => 
+        gqlError.message.includes("field") && 
+        gqlError.message.includes("not found")
+      );
+
+      if (hasFieldError && !useMinimalQuery) {
+        console.log("🔄 Switching to minimal query due to field permission error");
+        setUseMinimalQuery(true);
+        return; // Don't log the error, just retry with minimal query
+      }
 
       // Log specific error details
       if (err.graphQLErrors?.length > 0) {
