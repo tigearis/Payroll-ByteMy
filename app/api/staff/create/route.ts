@@ -25,6 +25,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
   console.log("Request method:", request.method);
   console.log("Request URL:", request.url);
   console.log("User:", session.userId, "Role:", session.role);
+  console.log("Session claims:", JSON.stringify(session.sessionClaims?.["https://hasura.io/jwt/claims"], null, 2));
   console.log("Environment check:", {
     hasuraUrl: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
     hasAdminSecret: !!process.env.HASURA_ADMIN_SECRET,
@@ -146,14 +147,31 @@ export const POST = withAuth(async (request: NextRequest, session) => {
       const authInstance = await auth();
       const token = await authInstance.getToken({ template: "hasura" });
       
-      console.log('💾 Using user token instead of admin secret:', {
+      console.log('💾 Authentication details:', {
         hasToken: !!token,
         tokenLength: token?.length,
-        hasuraUrl: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL
+        hasuraUrl: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
+        hasAdminSecret: !!process.env.HASURA_ADMIN_SECRET
       });
       
       // Get Apollo Client (same as working payroll routes)
-      const apolloClient = await getServerApolloClient();
+      // If token is missing or invalid, fall back to admin client for user creation
+      let apolloClient;
+      let useAdminFallback = false;
+      
+      if (!token) {
+        console.log('⚠️ No JWT token available, checking if admin fallback is possible...');
+        if (process.env.HASURA_ADMIN_SECRET) {
+          console.log('💾 Using admin client as fallback for user creation');
+          const { adminApolloClient } = await import('@/lib/server-apollo-client');
+          apolloClient = adminApolloClient;
+          useAdminFallback = true;
+        } else {
+          throw new Error('No authentication token and no admin secret available');
+        }
+      } else {
+        apolloClient = await getServerApolloClient();
+      }
       
       const CREATE_USER_DB = gql`
         mutation CreateUserDb(
@@ -162,6 +180,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
           $role: user_role!
           $isStaff: Boolean!
           $managerId: uuid
+          $clerkUserId: String
         ) {
           insert_users_one(
             object: {
@@ -170,6 +189,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
               role: $role
               is_staff: $isStaff
               manager_id: $managerId
+              clerk_user_id: $clerkUserId
             }
             on_conflict: {
               constraint: users_email_key
@@ -203,9 +223,10 @@ export const POST = withAuth(async (request: NextRequest, session) => {
           email: staffInput.email,
           role: staffInput.role,
           isStaff: staffInput.is_staff,
-          managerId: staffInput.managerId || null
+          managerId: staffInput.managerId || null,
+          clerkUserId: null // Will be set when user accepts invitation
         },
-        context: { headers: { authorization: `Bearer ${token}` } }
+        ...(useAdminFallback ? {} : { context: { headers: { authorization: `Bearer ${token}` } } })
       });
       
       console.log('💾 GraphQL mutation result:', {
