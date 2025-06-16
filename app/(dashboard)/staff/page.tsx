@@ -1081,6 +1081,8 @@ Do you want to proceed with HARD DELETE?`
 
     try {
       const token = await getToken({ template: "hasura" });
+      console.log("🔑 Staff page - Token present:", !!token);
+      console.log("🔑 Staff page - Token length:", token?.length || 0);
 
       // For non-developers, always create as staff member
       const staffStatus = isDeveloper ? createForm.is_staff : true;
@@ -1089,6 +1091,7 @@ Do you want to proceed with HARD DELETE?`
       const fullName =
         `${createForm.firstName.trim()} ${createForm.lastName.trim()}`.trim();
 
+      console.log("📡 Staff page - Making API request to /api/staff/create");
       const response = await fetch("/api/staff/create", {
         method: "POST",
         headers: {
@@ -1102,6 +1105,10 @@ Do you want to proceed with HARD DELETE?`
           is_staff: staffStatus,
         }),
       });
+
+      console.log("📡 Staff page - Response status:", response.status);
+      console.log("📡 Staff page - Response redirected:", response.redirected);
+      console.log("📡 Staff page - Response URL:", response.url);
 
       // Check if the response is a redirect (auth issue)
       if (response.redirected) {
