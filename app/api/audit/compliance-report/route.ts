@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminApolloClient } from "@/lib/server-apollo-client";
 import { gql } from "@apollo/client";
 import { z } from "zod";
+import { withAuth } from "@/lib/api-auth";
+import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
 
 // Input validation schema
 const reportInputSchema = z.object({
@@ -94,22 +96,23 @@ const SECURITY_EVENTS_REPORT = gql`
   }
 `;
 
-export async function POST(request: NextRequest) {
+// Secure compliance report generation with admin authentication
+export const POST = withAuth(async (request: NextRequest, session) => {
   try {
-    // Verify this is coming from Hasura
-    const hasuraSecret = request.headers.get("x-hasura-admin-secret");
-    if (hasuraSecret !== process.env.HASURA_GRAPHQL_ADMIN_SECRET) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // Log compliance report access
+    await soc2Logger.log({
+      level: LogLevel.AUDIT,
+      category: LogCategory.DATA_ACCESS,
+      eventType: SOC2EventType.COMPLIANCE_CHECK,
+      message: "Compliance report generation requested",
+      userId: session.userId,
+      userRole: session.role,
+      entityType: "compliance_report"
+    }, request);
 
     // Parse and validate input
     const body = await request.json();
-    const { input } = body;
-    
-    const validatedInput = reportInputSchema.parse(input.input);
+    const validatedInput = reportInputSchema.parse(body);
     
     // Convert dates
     const startDate = new Date(validatedInput.startDate).toISOString();
@@ -226,6 +229,19 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("[Compliance Report API] Error generating report:", error);
     
+    await soc2Logger.log({
+      level: LogLevel.ERROR,
+      category: LogCategory.ERROR,
+      eventType: SOC2EventType.COMPLIANCE_CHECK,
+      message: "Compliance report generation failed",
+      userId: session.userId,
+      userRole: session.role,
+      errorDetails: {
+        message: error.message,
+        stack: error.stack
+      }
+    }, request);
+    
     return NextResponse.json(
       {
         success: false,
@@ -234,7 +250,9 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, {
+  allowedRoles: ["admin", "org_admin"]
+});
 
 // Helper functions
 function calculateComplianceScore(data: any): number {

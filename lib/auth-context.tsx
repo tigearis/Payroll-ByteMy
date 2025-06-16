@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { authMutex } from "@/lib/auth/auth-mutex";
-import { tokenManager } from "@/lib/auth/token-manager";
+import { centralizedTokenManager } from "@/lib/auth/centralized-token-manager";
 
 // Add type declaration for global Clerk object
 declare global {
@@ -217,14 +217,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const now = Date.now();
     
-    // Skip if validation is in progress or too recent
+    // Skip if validation is in progress or too recent (increased to 30 seconds)
     if (validationState.validationInProgress || 
-        (now - validationState.lastValidationTime < 3000)) {
+        (now - validationState.lastValidationTime < 30000)) {
       return;
     }
 
-    // Skip if too many consecutive failures
-    if (validationState.consecutiveFailures >= 3) {
+    // Skip if too many consecutive failures (increased threshold)
+    if (validationState.consecutiveFailures >= 5) {
       console.warn('🚫 Skipping validation due to consecutive failures');
       return;
     }
@@ -491,8 +491,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         async () => {
           setIsRoleLoading(true);
           
-          // Force token refresh using the token manager
-          const token = await tokenManager.forceRefresh();
+          // Force token refresh using the centralized token manager
+          const token = await centralizedTokenManager.forceRefresh(
+            () => getToken({ template: "hasura" }),
+            userId
+          );
           
           if (token) {
             const payload = JSON.parse(atob(token.split(".")[1]));

@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "@/lib/api-auth";
+import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
+import { validateCronRequest } from "@/lib/api-auth";
 
 interface PayrollAssignmentInput {
   payrollId: string;
@@ -11,9 +14,21 @@ interface CommitPayrollAssignmentsInput {
   changes: PayrollAssignmentInput[];
 }
 
-export async function POST(request: NextRequest) {
+// Secure payroll assignment commit endpoint - admin only
+export const POST = withAuth(async (request: NextRequest, session) => {
   try {
     console.log("🔧 Commit payroll assignments webhook called");
+
+    // Log critical payroll operation
+    await soc2Logger.log({
+      level: LogLevel.AUDIT,
+      category: LogCategory.DATA_MODIFICATION,
+      eventType: SOC2EventType.BULK_OPERATION,
+      message: "Payroll assignment commit operation initiated",
+      userId: session.userId,
+      userRole: session.role,
+      entityType: "payroll_assignments"
+    }, request);
 
     // Extract the request body
     const body = await request.json();
@@ -69,6 +84,20 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("❌ Action handler error:", error);
+    
+    await soc2Logger.log({
+      level: LogLevel.ERROR,
+      category: LogCategory.ERROR,
+      eventType: SOC2EventType.BULK_OPERATION,
+      message: "Payroll assignment commit operation failed",
+      userId: session.userId,
+      userRole: session.role,
+      errorDetails: {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    }, request);
+    
     return NextResponse.json(
       {
         success: false,
@@ -78,4 +107,6 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, {
+  allowedRoles: ["admin", "org_admin", "manager"] // Payroll operations require management access
+});
