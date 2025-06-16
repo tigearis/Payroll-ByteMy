@@ -41,7 +41,7 @@ export async function requireAuth(
     }
 
     // Extract role from JWT (handle both V1 and V2 formats)
-    const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"];
+    const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
     const userRole = (
       // JWT V2 format
       (sessionClaims?.metadata as any)?.default_role ||
