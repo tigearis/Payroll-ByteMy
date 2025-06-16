@@ -137,15 +137,23 @@ export const POST = withAuth(async (request: NextRequest, session) => {
       console.log(`💾 Creating database user for: ${staffInput.email}`);
       
       // Create database user (invitation will be linked when user signs up)
-      console.log('💾 Attempting to import adminApolloClient...');
-      const { adminApolloClient } = await import('@/lib/server-apollo-client');
+      console.log('💾 Using server Apollo client like working payroll routes...');
+      const { getServerApolloClient } = await import('@/lib/server-apollo-client');
       const { gql } = await import('@apollo/client');
+      const { auth } = await import('@clerk/nextjs/server');
       
-      console.log('💾 Testing Apollo client connection...', {
-        hasuraUrl: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
-        hasAdminSecret: !!process.env.HASURA_ADMIN_SECRET,
-        adminSecretLength: process.env.HASURA_ADMIN_SECRET?.length
+      // Get Clerk authentication token (same as working payroll routes)
+      const authInstance = await auth();
+      const token = await authInstance.getToken({ template: "hasura" });
+      
+      console.log('💾 Using user token instead of admin secret:', {
+        hasToken: !!token,
+        tokenLength: token?.length,
+        hasuraUrl: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL
       });
+      
+      // Get Apollo Client (same as working payroll routes)
+      const apolloClient = await getServerApolloClient();
       
       const CREATE_USER_DB = gql`
         mutation CreateUserDb(
@@ -188,7 +196,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
         managerId: staffInput.managerId || null
       });
       
-      const { data, errors } = await adminApolloClient.mutate({
+      const { data, errors } = await apolloClient.mutate({
         mutation: CREATE_USER_DB,
         variables: {
           name: staffInput.name,
@@ -196,7 +204,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
           role: staffInput.role,
           isStaff: staffInput.is_staff,
           managerId: staffInput.managerId || null
-        }
+        },
+        context: { headers: { authorization: `Bearer ${token}` } }
       });
       
       console.log('💾 GraphQL mutation result:', {
@@ -232,7 +241,9 @@ export const POST = withAuth(async (request: NextRequest, session) => {
         userRole: session.role,
         errorDetails: {
           message: dbError.message,
-          stack: dbError.stack,
+          stack: dbError.stack
+        },
+        metadata: {
           graphQLErrors: dbError.graphQLErrors,
           networkError: dbError.networkError
         }
@@ -319,9 +330,11 @@ export const POST = withAuth(async (request: NextRequest, session) => {
         errorDetails: {
           message: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined,
+          code: error.code
+        },
+        metadata: {
           graphQLErrors: error.graphQLErrors,
           networkError: error.networkError,
-          errorCode: error.code,
           status: error.status
         }
       }, request);
