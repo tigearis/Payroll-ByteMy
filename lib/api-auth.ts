@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { monitorRequest } from "./security/enhanced-route-monitor";
 
 export interface AuthSession {
   userId: string;
@@ -32,8 +33,17 @@ export async function requireAuth(
     allowedRoles?: string[];
   }
 ): Promise<AuthSession> {
+  console.log("🔐 requireAuth starting...");
+  console.log("🔐 Options:", options);
+  
   try {
+    console.log("🔐 Calling auth()...");
     const { userId, sessionClaims } = await auth();
+    console.log("🔐 Auth result:", {
+      hasUserId: !!userId,
+      hasSessionClaims: !!sessionClaims,
+      userId: userId?.substring(0, 8) + "..."
+    });
 
     if (!userId) {
       throw new Error("Unauthorized: No active session");
@@ -43,13 +53,13 @@ export async function requireAuth(
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"];
     const userRole = (
       // JWT V2 format
-      sessionClaims?.metadata?.default_role ||
-      sessionClaims?.metadata?.role ||
+      (sessionClaims?.metadata as any)?.default_role ||
+      (sessionClaims?.metadata as any)?.role ||
       // JWT V1 format
       hasuraClaims?.["x-hasura-default-role"] ||
       hasuraClaims?.["x-hasura-role"] ||
       // Fallback
-      sessionClaims?.role
+      (sessionClaims as any)?.role
     ) as string;
     
     // Debug logging for role extraction
@@ -58,7 +68,7 @@ export async function requireAuth(
       jwtVersion: hasuraClaims ? "v1" : (sessionClaims?.metadata ? "v2" : "unknown"),
       hasMetadata: !!sessionClaims?.metadata,
       hasHasuraClaims: !!hasuraClaims,
-      v2DefaultRole: sessionClaims?.metadata?.default_role,
+      v2DefaultRole: (sessionClaims?.metadata as any)?.default_role,
       v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
       v1Role: hasuraClaims?.["x-hasura-role"],
       finalUserRole: userRole,
@@ -135,13 +145,38 @@ export function withAuth(
   }
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
+    const startTime = Date.now();
     console.log("🔐 withAuth called for:", request.method, request.url);
+    console.log("🔐 Auth options:", options);
+    
     try {
+      console.log("🔐 Attempting to get auth session...");
       const session = await requireAuth(request, options);
       console.log("✅ Auth successful, calling handler");
-      return await handler(request, session);
+      console.log("✅ Session details:", {
+        userId: session.userId,
+        role: session.role,
+        email: session.email
+      });
+      
+      const response = await handler(request, session);
+      
+      // Monitor successful request
+      await monitorRequest(request, session.userId, startTime, true);
+      
+      return response;
     } catch (error: any) {
-      console.log("❌ Auth failed:", error.message);
+      console.log("❌ withAuth error - DETAILED:", {
+        error: error,
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        cause: error.cause
+      });
+      
+      // Monitor failed request
+      await monitorRequest(request, undefined, startTime, false);
+      
       if (error.message.includes("Unauthorized")) {
         return unauthorizedResponse(error.message);
       }
@@ -153,6 +188,11 @@ export function withAuth(
         {
           error: "Internal server error",
           message: error.message,
+          stack: error.stack,
+          debugInfo: {
+            errorName: error.name,
+            cause: error.cause
+          }
         },
         { status: 500 }
       );
@@ -228,9 +268,13 @@ export function checkRateLimit(
 // Clean up old rate limit entries periodically
 setInterval(() => {
   const now = Date.now();
-  for (const [key, value] of rateLimitMap.entries()) {
+  const keysToDelete: string[] = [];
+  
+  rateLimitMap.forEach((value, key) => {
     if (value.resetTime < now) {
-      rateLimitMap.delete(key);
+      keysToDelete.push(key);
     }
-  }
+  });
+  
+  keysToDelete.forEach(key => rateLimitMap.delete(key));
 }, 60000); // Clean up every minute

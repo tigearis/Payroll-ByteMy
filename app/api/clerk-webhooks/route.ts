@@ -194,8 +194,22 @@ export async function POST(req: NextRequest) {
       default:
         console.log(`Unhandled webhook type: ${eventType}`);
     }
-  } catch (error) {
-    console.error("❌ Error handling webhook:", error);
+  } catch (error: any) {
+    console.error("❌ Error handling webhook - DETAILED:", {
+      error: error,
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      cause: error.cause,
+      graphQLErrors: error.graphQLErrors,
+      networkError: error.networkError,
+      extraInfo: error.extraInfo,
+      errorCode: error.code,
+      status: error.status,
+      statusText: error.statusText,
+      webhookEventType: eventType,
+      clerkUserId: id
+    });
     return new Response("Error processing webhook", { status: 500 });
   }
 
