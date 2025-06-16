@@ -1,0 +1,3 @@
+table:
+  name: payroll_triggers_status
+  schema: public

@@ -5,6 +5,21 @@ object_relationships:
   - name: payroll
     using:
       foreign_key_constraint_on: payroll_id
+  - name: payroll_assignment
+    using:
+      foreign_key_constraint_on:
+        column: payroll_date_id
+        table:
+          name: payroll_assignments
+          schema: public
+array_relationships:
+  - name: payroll_assignment_audits
+    using:
+      foreign_key_constraint_on:
+        column: payroll_date_id
+        table:
+          name: payroll_assignment_audit
+          schema: public
 insert_permissions:
   - role: manager
     permission:

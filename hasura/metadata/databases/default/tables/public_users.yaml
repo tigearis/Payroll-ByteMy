@@ -35,6 +35,48 @@ array_relationships:
         remote_table:
           name: notes
           schema: public
+  - name: payrollAssignmentAuditsByFromConsultantId
+    using:
+      foreign_key_constraint_on:
+        column: from_consultant_id
+        table:
+          name: payroll_assignment_audit
+          schema: public
+  - name: payrollAssignmentAuditsByToConsultantId
+    using:
+      foreign_key_constraint_on:
+        column: to_consultant_id
+        table:
+          name: payroll_assignment_audit
+          schema: public
+  - name: payrollAssignmentsByConsultantId
+    using:
+      foreign_key_constraint_on:
+        column: consultant_id
+        table:
+          name: payroll_assignments
+          schema: public
+  - name: payrollAssignmentsByOriginalConsultantId
+    using:
+      foreign_key_constraint_on:
+        column: original_consultant_id
+        table:
+          name: payroll_assignments
+          schema: public
+  - name: payroll_assignment_audits
+    using:
+      foreign_key_constraint_on:
+        column: changed_by
+        table:
+          name: payroll_assignment_audit
+          schema: public
+  - name: payroll_assignments
+    using:
+      foreign_key_constraint_on:
+        column: assigned_by
+        table:
+          name: payroll_assignments
+          schema: public
   - name: payrollsByBackupConsultantUserId
     using:
       foreign_key_constraint_on:

@@ -1,0 +1,19 @@
+table:
+  name: payroll_assignment_audit
+  schema: public
+object_relationships:
+  - name: payroll_assignment
+    using:
+      foreign_key_constraint_on: assignment_id
+  - name: payroll_date
+    using:
+      foreign_key_constraint_on: payroll_date_id
+  - name: user
+    using:
+      foreign_key_constraint_on: changed_by
+  - name: userByFromConsultantId
+    using:
+      foreign_key_constraint_on: from_consultant_id
+  - name: userByToConsultantId
+    using:
+      foreign_key_constraint_on: to_consultant_id

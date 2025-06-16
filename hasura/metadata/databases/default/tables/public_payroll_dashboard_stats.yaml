@@ -1,0 +1,3 @@
+table:
+  name: payroll_dashboard_stats
+  schema: public
