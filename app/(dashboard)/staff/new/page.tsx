@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
+import { useMutation } from "@apollo/client";
+import { CREATE_STAFF_DIRECT } from "@/graphql/mutations/staff/createStaffDirect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,8 +32,23 @@ export default function CreateUserPage() {
     role: "viewer",
   });
 
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Use GraphQL mutation directly (like payrolls do)
+  const [createStaff, { loading }] = useMutation(CREATE_STAFF_DIRECT, {
+    onCompleted: (data) => {
+      toast.success(
+        `Staff member ${form.firstName} ${form.lastName} created successfully!`
+      );
+      router.push("/staff");
+    },
+    onError: (error) => {
+      console.error('Staff creation error:', error);
+      const errorMessage = error.message || "Failed to create staff member";
+      setError(errorMessage);
+      toast.error(`Failed to create staff member: ${errorMessage}`);
+    }
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -45,52 +62,21 @@ export default function CreateUserPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
 
     try {
-      const token = await getToken({ template: "hasura" });
-
-      const response = await fetch("/api/staff/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      // Use GraphQL mutation directly (same pattern as payrolls)
+      await createStaff({
+        variables: {
           name: `${form.firstName} ${form.lastName}`.trim(),
           email: form.email,
           role: form.role,
-        }),
+          isStaff: true
+        }
       });
-
-      // Check if the response is a redirect (auth issue)
-      if (response.redirected) {
-        throw new Error("Authentication required. Please sign in again.");
-      }
-
-      // Check if the response is JSON
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error(`Unexpected response: ${await response.text()}`);
-      }
-
-      const data = await response.json();
-
-      if (!response.ok)
-        throw new Error(data.error || "Failed to create staff member");
-
-      toast.success(
-        `Staff member ${form.firstName} ${form.lastName} created successfully!`
-      );
-      router.push("/staff"); // Redirect to staff list
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-        toast.error(`Failed to create staff member: ${err.message}`);
-      }
-    } finally {
-      setLoading(false);
+      // Error handling is done in the onError callback
+      console.error('Form submission error:', err);
     }
   };
 
