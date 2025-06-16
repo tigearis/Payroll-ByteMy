@@ -33,17 +33,8 @@ export async function requireAuth(
     allowedRoles?: string[];
   }
 ): Promise<AuthSession> {
-  console.log("🔐 requireAuth starting...");
-  console.log("🔐 Options:", options);
-  
   try {
-    console.log("🔐 Calling auth()...");
     const { userId, sessionClaims } = await auth();
-    console.log("🔐 Auth result:", {
-      hasUserId: !!userId,
-      hasSessionClaims: !!sessionClaims,
-      userId: userId?.substring(0, 8) + "..."
-    });
 
     if (!userId) {
       throw new Error("Unauthorized: No active session");
@@ -147,17 +138,10 @@ export function withAuth(
   return async (request: NextRequest): Promise<NextResponse> => {
     const startTime = Date.now();
     console.log("🔐 withAuth called for:", request.method, request.url);
-    console.log("🔐 Auth options:", options);
     
     try {
-      console.log("🔐 Attempting to get auth session...");
       const session = await requireAuth(request, options);
       console.log("✅ Auth successful, calling handler");
-      console.log("✅ Session details:", {
-        userId: session.userId,
-        role: session.role,
-        email: session.email
-      });
       
       const response = await handler(request, session);
       
@@ -166,13 +150,7 @@ export function withAuth(
       
       return response;
     } catch (error: any) {
-      console.log("❌ withAuth error - DETAILED:", {
-        error: error,
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-        cause: error.cause
-      });
+      console.log("❌ Auth failed:", error.message);
       
       // Monitor failed request
       await monitorRequest(request, undefined, startTime, false);
@@ -188,11 +166,6 @@ export function withAuth(
         {
           error: "Internal server error",
           message: error.message,
-          stack: error.stack,
-          debugInfo: {
-            errorName: error.name,
-            cause: error.cause
-          }
         },
         { status: 500 }
       );
