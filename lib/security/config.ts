@@ -11,7 +11,8 @@ export const securityConfig = {
     refreshTokenExpiry: 7 * 24 * 60 * 60 * 1000, // 7 days
     maxLoginAttempts: 5,
     lockoutDuration: 15 * 60 * 1000, // 15 minutes
-    mfaRequired: false, // MFA enforcement disabled
+    mfaRequired: false, // MFA enforcement disabled (feature flag)
+    mfaEnabled: process.env.FEATURE_MFA_ENABLED === "true", // Feature flag for MFA
     passwordPolicy: {
       minLength: 12,
       requireUppercase: true,

@@ -4,6 +4,7 @@ import { adminApolloClient } from "@/lib/server-apollo-client";
 import { gql } from "@apollo/client";
 import { protectAdminRoute } from "@/lib/security/auth-middleware";
 import { SecureErrorHandler } from "@/lib/security/error-responses";
+import { withAuth } from "@/lib/api-auth";
 
 // GraphQL mutation to deactivate user (soft delete)
 const DEACTIVATE_USER = gql`
@@ -146,14 +147,12 @@ async function checkUserPermissions(clerkUserId: string) {
   };
 }
 
-export async function POST(req: NextRequest) {
+// Export POST with admin role protection
+export const POST = withAuth(async (req: NextRequest, session) => {
   try {
     console.log("🔧 API called: /api/staff/delete (POST)");
 
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
+    const { userId } = session; // Already authenticated and role-verified
 
     const body = await req.json();
     const { staffId, forceHardDelete = false } = body;
@@ -338,7 +337,9 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, { 
+  allowedRoles: ["admin", "org_admin"]
+});
 
 // GET endpoint to check deletion status and dependencies
 export async function GET(req: NextRequest) {

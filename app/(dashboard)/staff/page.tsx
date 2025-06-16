@@ -1126,9 +1126,12 @@ Do you want to proceed with HARD DELETE?`
       if (!response.ok)
         throw new Error(data.error || "Failed to create staff member");
 
-      toast.success(
-        `Staff member ${createForm.firstName} ${createForm.lastName} created successfully!`
-      );
+      // Show detailed success message based on what was created
+      const successMessage = data.staffData?.invitationSent 
+        ? `${createForm.firstName} ${createForm.lastName} created successfully! Invitation email sent.`
+        : `${createForm.firstName} ${createForm.lastName} created successfully (database only).`;
+      
+      toast.success(successMessage);
 
       // Refresh the staff list and close modal
       refetch();

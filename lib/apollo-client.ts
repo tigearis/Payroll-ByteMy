@@ -14,14 +14,61 @@ import { createApolloErrorHandler } from "./apollo-error-handler";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { tokenManager } from "./auth/token-manager";
-
 // Custom event for session expiry
 export const SESSION_EXPIRED_EVENT = "jwt_session_expired";
 
-// Helper to get JWT token using the token manager
+// Token cache and management state
+let tokenCache: string | null = null;
+let tokenPromise: Promise<string | null> | null = null;
+
+// Helper to get JWT token 
 async function getAuthToken(): Promise<string | null> {
-  return tokenManager.getToken();
+  // For client-side, we'll use a simpler token management approach
+  // since the centralized token manager now requires auth context
+  if (typeof window === "undefined") {
+    return null; // Server-side, tokens should be handled via API routes
+  }
+
+  // Check if we already have a token fetch in progress
+  if (tokenPromise) {
+    return tokenPromise;
+  }
+
+  // Start token fetch
+  tokenPromise = fetchToken();
+  
+  try {
+    const token = await tokenPromise;
+    tokenCache = token;
+    return token;
+  } finally {
+    tokenPromise = null;
+  }
+}
+
+// Actual token fetching logic
+async function fetchToken(): Promise<string | null> {
+  try {
+    // Use the global Clerk instance if available
+    if (typeof window !== "undefined" && window.Clerk?.session) {
+      return await window.Clerk.session.getToken({ template: "hasura" });
+    }
+    
+    // Fallback: fetch from API endpoint
+    const response = await fetch("/api/auth/token", {
+      credentials: "include",
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      return data.token || null;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("❌ Failed to fetch auth token:", error);
+    return null;
+  }
 }
 
 // Helper to get database user ID from Hasura claims
@@ -175,11 +222,11 @@ const errorLink = onError(
 
           // Clear token cache
           console.log("🧹 Clearing token cache in error handler");
-          tokenManager.clearToken();
+          centralizedTokenManager.clearCurrentUserToken();
 
-          // Force token refresh using token manager
+          // Force token refresh using centralized token manager
           return new Observable((observer) => {
-            tokenManager.forceRefresh().then(async (token) => {
+            centralizedTokenManager.forceRefresh().then(async (token) => {
               if (!token) {
                 observer.error(new Error("Failed to refresh token"));
                 return;
@@ -233,7 +280,7 @@ const errorLink = onError(
       if ("statusCode" in networkError) {
         if (networkError.statusCode === 401) {
           // Clear token cache on 401
-          tokenManager.clearToken();
+          centralizedTokenManager.clearCurrentUserToken();
           console.log("🔄 Cleared token cache due to 401 error");
 
           // Dispatch custom event for session expiry handler
@@ -416,8 +463,9 @@ export async function getServerSideApolloClient(token?: string) {
 
 // Exported function to clear the Apollo token cache
 export function clearAuthCache() {
-  console.log("🧹 Clearing Apollo token cache. Previous state:", tokenManager.getDebugInfo());
-  tokenManager.clearToken();
+  console.log("🧹 Clearing Apollo token cache");
+  tokenCache = null;
+  tokenPromise = null;
 }
 
 // Helper to handle GraphQL errors

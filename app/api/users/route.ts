@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs/server";
 import { gql } from "@apollo/client";
 import { adminApolloClient } from "@/lib/server-apollo-client";
 import { getUserPermissions, canAssignRole, UserRole } from "@/lib/user-sync";
+import { withAuth } from "@/lib/api-auth";
+import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
 
 // GraphQL query to get users with filtering and pagination
 const GET_USERS_QUERY = gql`
@@ -61,26 +63,30 @@ async function getCurrentUserRole(userId: string): Promise<UserRole | "admin"> {
 }
 
 // GET /api/users - List users with filtering and pagination
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, session) => {
   try {
-    const { userId } = await auth();
+    // Log user access
+    await soc2Logger.log({
+      level: LogLevel.INFO,
+      category: LogCategory.DATA_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
+      message: "User list accessed",
+      userId: session.userId,
+      userRole: session.role,
+      entityType: "users"
+    }, request);
 
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Check user permissions
-    const currentUserRole = await getCurrentUserRole(userId);
-    const permissions = getUserPermissions(currentUserRole);
+    // Check user permissions using the existing helper
+    const permissions = getUserPermissions(session.role as UserRole);
 
     console.log(
-      `🔍 Current user role: ${currentUserRole}, permissions:`,
+      `🔍 Current user role: ${session.role}, permissions:`,
       permissions
     );
 
     if (!permissions.canManageUsers) {
       console.log(
-        `❌ User ${currentUserRole} denied access - insufficient permissions`
+        `❌ User ${session.role} denied access - insufficient permissions`
       );
       return NextResponse.json(
         { error: "Insufficient permissions to view users" },
@@ -115,12 +121,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Managers can only see users below their level
-    if (currentUserRole === "manager") {
+    if (session.role === "manager") {
       where.role = { _in: ["consultant", "viewer"] };
     }
 
     console.log(
-      `📋 Fetching users for ${currentUserRole} with filters:`,
+      `📋 Fetching users for ${session.role} with filters:`,
       where
     );
 
@@ -156,11 +162,25 @@ export async function GET(request: NextRequest) {
         offset,
         hasMore: (data.users?.length || 0) === limit,
       },
-      currentUserRole,
+      currentUserRole: session.role,
       permissions,
     });
   } catch (error) {
     console.error("❌ Error fetching users:", error);
+    
+    await soc2Logger.log({
+      level: LogLevel.ERROR,
+      category: LogCategory.ERROR,
+      eventType: SOC2EventType.DATA_VIEWED,
+      message: "Failed to fetch users",
+      userId: session.userId,
+      userRole: session.role,
+      errorDetails: {
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    }, request);
+    
     return NextResponse.json(
       {
         error: "Failed to fetch users",
@@ -169,20 +189,15 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, {
+  allowedRoles: ["admin", "org_admin", "manager"] // Only users who can manage users
+});
 
 // POST /api/users - Invite new user (admin/manager only)
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest, session) => {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Check user permissions
-    const currentUserRole = await getCurrentUserRole(userId);
-    const permissions = getUserPermissions(currentUserRole);
+    // Check user permissions using the existing helper
+    const permissions = getUserPermissions(session.role as UserRole);
 
     if (!permissions.canManageUsers) {
       return NextResponse.json(
@@ -208,7 +223,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if current user can assign the requested role
-    if (!canAssignRole(currentUserRole, role as UserRole)) {
+    if (!canAssignRole(session.role as UserRole, role as UserRole)) {
       return NextResponse.json(
         { error: `Insufficient permissions to assign role: ${role}` },
         { status: 403 }
@@ -219,6 +234,22 @@ export async function POST(request: NextRequest) {
       `👤 Creating user invitation: ${firstName} ${lastName} (${email}) as ${role}`
     );
 
+    // Log user creation attempt
+    await soc2Logger.log({
+      level: LogLevel.AUDIT,
+      category: LogCategory.DATA_MODIFICATION,
+      eventType: SOC2EventType.USER_CREATED,
+      message: "User invitation initiated",
+      userId: session.userId,
+      userRole: session.role,
+      entityType: "user",
+      metadata: {
+        targetEmail: email,
+        targetRole: role,
+        invitedBy: session.userId
+      }
+    }, request);
+
     // Create user via Clerk
     const client = await clerkClient();
     const newUser = await client.users.createUser({
@@ -228,7 +259,7 @@ export async function POST(request: NextRequest) {
       publicMetadata: {
         role,
         managerId,
-        invitedBy: userId,
+        invitedBy: session.userId,
         invitedAt: new Date().toISOString(),
       },
       privateMetadata: {
@@ -238,6 +269,23 @@ export async function POST(request: NextRequest) {
 
     // The webhook will handle database sync automatically
     console.log(`✅ User invitation created: ${newUser.id}`);
+
+    // Log successful user creation
+    await soc2Logger.log({
+      level: LogLevel.AUDIT,
+      category: LogCategory.DATA_MODIFICATION,
+      eventType: SOC2EventType.USER_CREATED,
+      message: "User invitation created successfully",
+      userId: session.userId,
+      userRole: session.role,
+      entityType: "user",
+      entityId: newUser.id,
+      metadata: {
+        targetEmail: email,
+        targetRole: role,
+        invitedBy: session.userId
+      }
+    }, request);
 
     return NextResponse.json({
       success: true,
@@ -252,6 +300,20 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("❌ Error creating user:", error);
+
+    // Log failed user creation
+    await soc2Logger.log({
+      level: LogLevel.ERROR,
+      category: LogCategory.ERROR,
+      eventType: SOC2EventType.USER_CREATED,
+      message: "User invitation failed",
+      userId: session.userId,
+      userRole: session.role,
+      errorDetails: {
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    }, request);
 
     // Handle specific Clerk errors
     if (error instanceof Error && error.message.includes("already exists")) {
@@ -269,4 +331,6 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, {
+  allowedRoles: ["admin", "org_admin", "manager"] // Only users who can manage users
+});

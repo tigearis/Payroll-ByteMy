@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useAuthContext } from "./auth-context";
 import { SESSION_EXPIRED_EVENT, clearAuthCache } from "./apollo-client";
 import { useApolloClient } from "@apollo/client";
-import { tokenManager } from "./auth/token-manager";
+import { centralizedTokenManager } from "./auth/centralized-token-manager";
 
 /**
  * Global Session Expiry Handler
@@ -70,14 +70,8 @@ export function SessionExpiryHandler() {
       clearAuthCache();
       console.log("✅ Token cache cleared");
 
-      // Step 3: Force token refresh
-      console.log("🔑 Forcing token refresh...");
-      const newToken = await tokenManager.forceRefresh();
-      
-      if (!newToken) {
-        throw new Error("Failed to refresh token");
-      }
-      console.log("✅ Token refreshed successfully");
+      // Step 3: Force token refresh - we'll let the auth context handle this
+      console.log("🔑 Token refresh will be handled by auth context...");
 
       // Step 4: Refresh user data
       console.log("👤 Refreshing user data...");

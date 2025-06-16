@@ -12,7 +12,17 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/accept-invitation(.*)",
   "/api/clerk-webhooks(.*)",
-  "/api/commit-payroll-assignments(.*)",
+  // Test routes (development only)
+  ...(process.env.NODE_ENV === "development" ? [
+    "/api/simple-test",
+    "/api/debug-post", 
+    "/api/minimal-post-test",
+    "/api/working-post-test",
+    "/api/test-get-public",
+    "/api/test-minimal",
+    "/api/test-create",
+    "/api/test-direct-auth"
+  ] : []),
   "/_next(.*)",
   "/favicon.ico",
 ]);
@@ -22,35 +32,14 @@ const isPublicRoute = createRouteMatcher([
 // ================================
 
 export default clerkMiddleware(async (auth, req) => {
-  console.log("🔧 Middleware called for:", req.method, req.nextUrl.pathname);
-  
   // Skip authentication for public routes
   if (isPublicRoute(req)) {
-    console.log("✅ Public route, skipping auth");
     return NextResponse.next();
   }
 
-  try {
-    console.log("🔐 Protecting route:", req.nextUrl.pathname);
-    // Protect all non-public routes
-    await auth.protect();
-
-    console.log("✅ Auth successful, proceeding");
-    // Just pass through if authenticated
-    return NextResponse.next();
-  } catch (error) {
-    console.error("❌ Middleware error:", error);
-    console.error("❌ Error details:", {
-      name: error?.name,
-      message: error?.message,
-      stack: error?.stack?.split('\n')[0],
-    });
-
-    // On error, redirect to sign-in
-    const signInUrl = new URL("/sign-in", req.url);
-    signInUrl.searchParams.set("redirect_url", req.nextUrl.pathname);
-    return NextResponse.redirect(signInUrl);
-  }
+  // Protect all non-public routes
+  await auth.protect();
+  return NextResponse.next();
 });
 
 // ================================
