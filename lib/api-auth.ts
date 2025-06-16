@@ -39,21 +39,30 @@ export async function requireAuth(
       throw new Error("Unauthorized: No active session");
     }
 
-    // Extract role from multiple possible locations in JWT
+    // Extract role from JWT (handle both V1 and V2 formats)
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"];
     const userRole = (
+      // JWT V2 format
+      sessionClaims?.metadata?.default_role ||
       sessionClaims?.metadata?.role ||
+      // JWT V1 format
       hasuraClaims?.["x-hasura-default-role"] ||
+      hasuraClaims?.["x-hasura-role"] ||
+      // Fallback
       sessionClaims?.role
     ) as string;
     
     // Debug logging for role extraction
-    console.log("🔍 Auth Debug:", {
+    console.log("🔍 Auth Debug (V1/V2 compatible):", {
       userId: userId?.substring(0, 8) + "...",
-      metadataRole: sessionClaims?.metadata?.role,
-      hasuraRole: hasuraClaims?.["x-hasura-default-role"],
-      directRole: sessionClaims?.role,
+      jwtVersion: hasuraClaims ? "v1" : (sessionClaims?.metadata ? "v2" : "unknown"),
+      hasMetadata: !!sessionClaims?.metadata,
+      hasHasuraClaims: !!hasuraClaims,
+      v2DefaultRole: sessionClaims?.metadata?.default_role,
+      v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
+      v1Role: hasuraClaims?.["x-hasura-role"],
       finalUserRole: userRole,
+      sessionId: sessionClaims?.sid,
     });
     const userEmail = sessionClaims?.email as string;
 
