@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { syncUserWithDatabase } from "@/lib/user-sync";
 
-export async function POST(req: NextRequest) {
+async function handleSync(req: NextRequest) {
   try {
     // Get the authenticated user
     const authResult = await auth();
@@ -58,12 +58,18 @@ export async function POST(req: NextRequest) {
     }
   } catch (error) {
     console.error("❌ Error in manual user sync:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
     return NextResponse.json(
       { 
         error: "Internal server error",
-        details: error instanceof Error ? error.message : "Unknown error"
+        details: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined
       },
       { status: 500 }
     );
   }
 }
+
+// Export both GET and POST handlers
+export const GET = handleSync;
+export const POST = handleSync;

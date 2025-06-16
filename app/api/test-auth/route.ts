@@ -1,38 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth } from "@/lib/api-auth";
+import { auth } from "@clerk/nextjs/server";
 
-// Simple test route to verify auth is working
-export const POST = withAuth(async (request: NextRequest, session) => {
-  console.log("🧪 Test auth route called successfully");
-  console.log("🧪 Session:", session);
-  
+export async function GET(req: NextRequest) {
   try {
-    const body = await request.json();
-    console.log("🧪 Request body:", body);
+    console.log('🔍 Testing authentication...');
+    
+    const { userId, sessionClaims } = await auth();
+    
+    console.log('Auth result:', {
+      userId: userId?.substring(0, 8) + '...',
+      hasSessionClaims: !!sessionClaims
+    });
+    
+    if (!userId) {
+      return NextResponse.json({
+        error: 'No authenticated user',
+        authenticated: false
+      }, { status: 401 });
+    }
+    
+    // Extract JWT claims
+    const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
+    
+    console.log('JWT Claims:', hasuraClaims);
     
     return NextResponse.json({
-      success: true,
-      message: "Auth test successful",
-      session: {
-        userId: session.userId,
-        role: session.role,
-        email: session.email
-      },
-      timestamp: new Date().toISOString()
+      authenticated: true,
+      userId,
+      claims: hasuraClaims,
+      hasValidClaims: !!(hasuraClaims?.["x-hasura-user-id"] && hasuraClaims?.["x-hasura-role"]),
+      debug: {
+        role: hasuraClaims?.["x-hasura-role"],
+        defaultRole: hasuraClaims?.["x-hasura-default-role"],
+        databaseUserId: hasuraClaims?.["x-hasura-user-id"],
+        allowedRoles: hasuraClaims?.["x-hasura-allowed-roles"]
+      }
     });
+    
   } catch (error: any) {
-    console.error("🧪 Test auth error:", error);
+    console.error('❌ Auth test error:', error);
     return NextResponse.json({
-      error: "Test failed",
-      details: error.message
+      error: 'Auth test failed',
+      details: error.message,
+      stack: error.stack
     }, { status: 500 });
   }
-}, {
-  allowedRoles: ["admin", "org_admin"]
-});
-
-export async function GET() {
-  return NextResponse.json({
-    message: "Test auth route - use POST"
-  });
 }
