@@ -1,0 +1,16 @@
+{
+  "https://hasura.io/jwt/claims": {
+    "x-hasura-role": "{{user.public_metadata.role}}",
+    "x-hasura-user-id": "{{user.public_metadata.databaseId}}",
+    "x-hasura-session-id": "{{session.id}}",
+    "x-hasura-default-role": "viewer",
+    "x-hasura-allowed-roles": [
+      "admin",
+      "org_admin", 
+      "manager",
+      "consultant",
+      "viewer"
+    ],
+    "x-hasura-clerk-user-id": "{{user.id}}"
+  }
+}
