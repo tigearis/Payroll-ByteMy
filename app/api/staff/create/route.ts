@@ -162,7 +162,6 @@ export const POST = withAuth(async (request: NextRequest, session) => {
               role: $role
               is_staff: $isStaff
               manager_id: $managerId
-              clerk_user_id: null
             }
             on_conflict: {
               constraint: users_email_key
