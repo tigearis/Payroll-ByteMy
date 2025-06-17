@@ -29,7 +29,7 @@ export function MFASetup() {
   const [isEnabling, setIsEnabling] = useState(false);
 
   const mfaFeatureEnabled = securityConfig.auth.mfaEnabled;
-  const requiresMFA = mfaFeatureEnabled && ["admin", "org_admin"].includes(userRole);
+  const requiresMFA = mfaFeatureEnabled && ["developer", "org_admin"].includes(userRole);
 
   useEffect(() => {
     checkMFAStatus();

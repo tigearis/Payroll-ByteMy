@@ -245,7 +245,7 @@ export default function DeveloperPage() {
                 <strong>Current Role:</strong>{" "}
                 <Badge
                   variant={
-                    oauthStatus.currentRole === "admin"
+                    oauthStatus.currentRole === "developer"
                       ? "default"
                       : "destructive"
                   }
@@ -257,7 +257,7 @@ export default function DeveloperPage() {
                 <strong>Hasura Role:</strong>{" "}
                 <Badge
                   variant={
-                    oauthStatus.hasuraRole === "admin"
+                    oauthStatus.hasuraRole === "developer"
                       ? "default"
                       : "destructive"
                   }
@@ -373,7 +373,7 @@ export default function DeveloperPage() {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                       staffId: "test-id",
-                      newRole: "admin",
+                      newRole: "developer",
                     }),
                   })
                     .then((res) => res.json())

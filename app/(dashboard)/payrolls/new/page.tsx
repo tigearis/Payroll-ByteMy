@@ -543,7 +543,7 @@ export default function NewPayrollPage() {
 
   // Managers must have manager role or above
   const availableManagers = users.filter((user: any) =>
-    ["manager", "admin", "org_admin"].includes(user.role)
+    ["manager", "developer", "org_admin"].includes(user.role)
   );
 
   // Get available date types based on selected cycle

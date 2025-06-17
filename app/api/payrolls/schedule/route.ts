@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
     const userRole = claims?.["x-hasura-default-role"];
 
-    if (!["admin", "org_admin", "manager", "consultant"].includes(userRole)) {
+    if (!["developer", "org_admin", "manager", "consultant"].includes(userRole)) {
       return NextResponse.json(
         { error: "Insufficient permissions" },
         { status: 403 }

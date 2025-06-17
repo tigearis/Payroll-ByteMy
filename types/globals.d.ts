@@ -4,7 +4,7 @@ export {};
 declare global {
   interface ClerkAuthorization {
     // Define roles that match your Hasura roles
-    role: "admin" | "org_admin" | "manager" | "consultant" | "viewer";
+    role: "developer" | "org_admin" | "manager" | "consultant" | "viewer";
 
     // Define permissions if needed
     permission:
@@ -142,5 +142,5 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "org_admin" | "manager" | "consultant" | "viewer";
+  role: "developer" | "org_admin" | "manager" | "consultant" | "viewer";
 }

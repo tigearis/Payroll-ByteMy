@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { authMutex } from "@/lib/auth/auth-mutex";
@@ -19,7 +26,6 @@ declare global {
 }
 
 export type UserRole =
-  | "admin"
   | "org_admin"
   | "manager"
   | "consultant"
@@ -100,7 +106,7 @@ const PERMISSIONS = {
 
 // Role-permission mapping
 const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
-  admin: [
+  developer: [
     PERMISSIONS.VIEW_DASHBOARD,
     PERMISSIONS.MANAGE_STAFF,
     PERMISSIONS.VIEW_STAFF,
@@ -217,25 +223,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const now = Date.now();
-    
+
     // Skip if validation is in progress or too recent (increased to 30 seconds)
-    if (validationState.validationInProgress || 
-        (now - validationState.lastValidationTime < 30000)) {
+    if (
+      validationState.validationInProgress ||
+      now - validationState.lastValidationTime < 30000
+    ) {
       return;
     }
 
     // Skip if too many consecutive failures (increased threshold)
     if (validationState.consecutiveFailures >= 5) {
-      console.warn('🚫 Skipping validation due to consecutive failures');
+      console.warn("🚫 Skipping validation due to consecutive failures");
       return;
     }
 
     try {
       await authMutex.acquire(
         `user-validation-${userId}-${now}`,
-        'session_validation',
+        "session_validation",
         async () => {
-          setValidationState(prev => ({
+          setValidationState((prev) => ({
             ...prev,
             validationInProgress: true,
             lastValidationTime: now,
@@ -255,9 +263,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setUserRole(newRole);
             }
             setIsRoleLoading(false);
-            
+
             // Reset failure count on success
-            setValidationState(prev => ({
+            setValidationState((prev) => ({
               ...prev,
               consecutiveFailures: 0,
             }));
@@ -275,12 +283,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
 
             // If no database user, fall back to JWT role
-            if (!isRoleLoading && !authMutex.hasOperationType('token_refresh')) {
+            if (
+              !isRoleLoading &&
+              !authMutex.hasOperationType("token_refresh")
+            ) {
               await fetchUserRole();
             }
-            
+
             // Increment failure count
-            setValidationState(prev => ({
+            setValidationState((prev) => ({
               ...prev,
               consecutiveFailures: prev.consecutiveFailures + 1,
             }));
@@ -290,13 +301,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       );
     } catch (error) {
-      console.error('❌ User validation failed:', error);
-      setValidationState(prev => ({
+      console.error("❌ User validation failed:", error);
+      setValidationState((prev) => ({
         ...prev,
         consecutiveFailures: prev.consecutiveFailures + 1,
       }));
     } finally {
-      setValidationState(prev => ({
+      setValidationState((prev) => ({
         ...prev,
         validationInProgress: false,
       }));
@@ -353,7 +364,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await authMutex.acquire(
         `role-fetch-${userId}-${Date.now()}`,
-        'token_refresh',
+        "token_refresh",
         async () => {
           setIsRoleLoading(true);
           const token = await getToken({ template: "hasura" });
@@ -464,7 +475,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isClerkLoaded &&
     hasValidDatabaseUser &&
     userRole &&
-    (userRole === "admin" || userRole === "org_admin")
+    (userRole === "developer" || userRole === "org_admin")
   );
 
   const canManageUsers = hasPermission(PERMISSIONS.MANAGE_USERS);
@@ -488,16 +499,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await authMutex.acquire(
         `user-refresh-${userId}-${Date.now()}`,
-        'session_validation',
+        "session_validation",
         async () => {
           setIsRoleLoading(true);
-          
+
           // Force token refresh using the centralized token manager
           const token = await centralizedTokenManager.forceRefresh(
             () => getToken({ template: "hasura" }),
             userId
           );
-          
+
           if (token) {
             const payload = JSON.parse(atob(token.split(".")[1]));
             const claims = payload["https://hasura.io/jwt/claims"];
@@ -507,14 +518,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setUserRole(role);
             }
           }
-          
+
           // Reset validation state on successful refresh
-          setValidationState(prev => ({
+          setValidationState((prev) => ({
             ...prev,
             consecutiveFailures: 0,
             lastValidationTime: Date.now(),
           }));
-          
+
           return true;
         }
       );

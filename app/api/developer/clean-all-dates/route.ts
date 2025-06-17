@@ -53,5 +53,5 @@ export const POST = withAuth(
       );
     }
   },
-  { requiredRole: "admin" } // Only admins can perform this operation
+  { requiredRole: "developer" } // Only admins can perform this operation
 );

@@ -135,7 +135,7 @@ export const GET_PAYROLL_DATA_SIMPLE = gql`
 // Get consultants (users) with their leave data
 export const GET_CONSULTANTS = gql`
   query GetConsultants {
-    users(where: { role: { _in: ["consultant", "admin"] } }) {
+    users(where: { role: { _in: ["consultant", "developer"] } }) {
       id
       name
       email

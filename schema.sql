@@ -194,6 +194,20 @@ CREATE TYPE public.user_role AS ENUM (
     'org_admin',
     'manager',
     'consultant',
+    'viewer',
+    'developer'
+);
+
+
+--
+-- Name: user_role_new; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.user_role_new AS ENUM (
+    'developer',
+    'org_admin',
+    'manager',
+    'consultant',
     'viewer'
 );
 
@@ -1914,7 +1928,7 @@ CREATE TABLE public.users (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
-    role public.user_role DEFAULT 'viewer'::public.user_role NOT NULL,
+    role public.user_role NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     username character varying(255),
@@ -4522,7 +4536,7 @@ ALTER TABLE public.payrolls ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY payrolls_select_policy ON public.payrolls FOR SELECT USING ((EXISTS ( SELECT 1
    FROM public.users u
-  WHERE ((u.id = (current_setting('hasura.user_id'::text))::uuid) AND ((u.role = ANY (ARRAY['admin'::public.user_role, 'org_admin'::public.user_role])) OR ((u.role = 'manager'::public.user_role) AND (payrolls.manager_user_id = u.id)) OR ((u.role = 'consultant'::public.user_role) AND ((payrolls.primary_consultant_user_id = u.id) OR (payrolls.backup_consultant_user_id = u.id))))))));
+  WHERE ((u.id = (current_setting('hasura.user_id'::text))::uuid) AND ((u.role = ANY (ARRAY['developer'::public.user_role, 'org_admin'::public.user_role])) OR ((u.role = 'manager'::public.user_role) AND (payrolls.manager_user_id = u.id)) OR ((u.role = 'consultant'::public.user_role) AND ((payrolls.primary_consultant_user_id = u.id) OR (payrolls.backup_consultant_user_id = u.id))))))));
 
 
 --
@@ -4537,7 +4551,7 @@ ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY users_select_policy ON public.users FOR SELECT USING (((id = (current_setting('hasura.user_id'::text))::uuid) OR (EXISTS ( SELECT 1
    FROM public.users u
-  WHERE ((u.id = (current_setting('hasura.user_id'::text))::uuid) AND (u.is_staff = true) AND ((u.role = 'admin'::public.user_role) OR ((u.role = 'org_admin'::public.user_role) AND (users.role <> 'admin'::public.user_role)) OR ((u.role = 'manager'::public.user_role) AND (users.role <> ALL (ARRAY['admin'::public.user_role, 'org_admin'::public.user_role]))) OR ((u.role = 'consultant'::public.user_role) AND (users.role = 'viewer'::public.user_role))))))));
+  WHERE ((u.id = (current_setting('hasura.user_id'::text))::uuid) AND (u.is_staff = true) AND ((u.role = 'developer'::public.user_role) OR ((u.role = 'org_admin'::public.user_role) AND (users.role <> 'developer'::public.user_role)) OR ((u.role = 'manager'::public.user_role) AND (users.role <> ALL (ARRAY['developer'::public.user_role, 'org_admin'::public.user_role]))) OR ((u.role = 'consultant'::public.user_role) AND (users.role = 'viewer'::public.user_role))))))));
 
 
 --

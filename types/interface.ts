@@ -169,7 +169,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "org_admin" | "manager" | "consultant" | "viewer";
+  role: "developer" | "org_admin" | "manager" | "consultant" | "viewer";
 
   // Relationships
   managedPayrolls?: Payroll[];

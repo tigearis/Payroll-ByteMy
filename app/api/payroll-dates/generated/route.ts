@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Only allow certain roles to generate dates
-    if (!["admin", "org_admin", "manager"].includes(userRole)) {
+    if (!["developer", "org_admin", "manager"].includes(userRole)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

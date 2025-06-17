@@ -548,7 +548,7 @@ export default function AccountSettings() {
                 <Label>Role</Label>
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline">
-                    {dbUser?.role === "admin"
+                    {dbUser?.role === "developer"
                       ? "Developer"
                       : dbUser?.role === "org_admin"
                       ? "Admin"
