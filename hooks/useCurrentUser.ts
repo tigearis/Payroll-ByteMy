@@ -12,7 +12,6 @@ const GET_CURRENT_USER = gql`
     users_by_pk(id: $currentUserId) {
       id
       name
-      role
       is_staff
       manager_id
       clerk_user_id

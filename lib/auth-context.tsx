@@ -282,13 +282,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               );
             }
 
-            // If no database user, fall back to JWT role
-            if (
-              !isRoleLoading &&
-              !authMutex.hasOperationType("token_refresh")
-            ) {
-              await fetchUserRole();
-            }
+            // SECURITY: Do not fall back to JWT role without database user
+            // This prevents permission bypass attacks
+            console.warn(
+              "🚨 SECURITY: User authenticated but not found in database - access will be restricted"
+            );
+            // Force role to viewer only for security
+            setUserRole("viewer");
+            setIsRoleLoading(false);
 
             // Increment failure count
             setValidationState((prev) => ({
