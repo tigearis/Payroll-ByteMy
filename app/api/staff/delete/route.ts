@@ -133,7 +133,7 @@ async function checkUserPermissions(clerkUserId: string) {
     throw new Error("Current user not found");
   }
 
-  const isDeveloper = currentUser.role === "admin";
+  const isDeveloper = currentUser.role === "developer";
   const isAdmin = currentUser.role === "org_admin";
   const canDeactivate = isDeveloper || isAdmin;
   const canHardDelete = isDeveloper; // Only developers can hard delete
@@ -338,7 +338,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     );
   }
 }, { 
-  allowedRoles: ["admin", "org_admin"]
+  allowedRoles: ["developer", "org_admin"]
 });
 
 // GET endpoint to check deletion status and dependencies

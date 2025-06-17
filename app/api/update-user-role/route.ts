@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
     // Validate role
     const validRoles = [
-      "admin",
+      "developer",
       "org_admin",
       "manager",
       "consultant",
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const currentUser = await client.users.getUser(userId);
     const currentUserRole = currentUser.publicMetadata?.role || "viewer";
 
-    if (currentUserRole !== "admin") {
+    if (currentUserRole !== "developer") {
       return NextResponse.json(
         { error: "Insufficient permissions" },
         { status: 403 }
@@ -80,7 +80,7 @@ export async function GET(request: Request) {
     const currentUserRole = claims?.["x-hasura-default-role"] || "viewer";
 
     // Check if user can view role information
-    const canViewRoles = ["admin", "org_admin", "manager"].includes(
+    const canViewRoles = ["developer", "org_admin", "manager"].includes(
       currentUserRole
     );
     const isSelf = currentUserId === targetUserId;
@@ -107,9 +107,9 @@ export async function GET(request: Request) {
       firstName: targetUser.firstName,
       lastName: targetUser.lastName,
       canModify:
-        ["admin", "org_admin"].includes(currentUserRole) &&
-        (currentUserRole === "admin" ||
-          !["admin", "org_admin"].includes(targetUserRole)),
+        ["developer", "org_admin"].includes(currentUserRole) &&
+        (currentUserRole === "developer" ||
+          !["developer", "org_admin"].includes(targetUserRole)),
     });
   } catch (error) {
     console.error("Error fetching user role:", error);

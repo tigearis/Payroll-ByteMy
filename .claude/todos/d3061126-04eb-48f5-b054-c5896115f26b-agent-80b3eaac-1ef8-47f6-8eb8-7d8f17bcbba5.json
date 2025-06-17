@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Examine the critical table metadata files to understand current structure",
+    "status": "completed",
+    "priority": "high",
+    "id": "examine-tables"
+  },
+  {
+    "content": "Add developer role permissions to public_clients.yaml",
+    "status": "completed",
+    "priority": "high",
+    "id": "add-clients-permissions"
+  },
+  {
+    "content": "Add developer role permissions to public_payrolls.yaml",
+    "status": "completed",
+    "priority": "high",
+    "id": "add-payrolls-permissions"
+  },
+  {
+    "content": "Add developer role permissions to public_payroll_assignments.yaml",
+    "status": "completed",
+    "priority": "high",
+    "id": "add-payroll-assignments-permissions"
+  },
+  {
+    "content": "Add developer role permissions to public_notes.yaml",
+    "status": "completed",
+    "priority": "high",
+    "id": "add-notes-permissions"
+  },
+  {
+    "content": "Find and update all tables that currently have org_admin permissions",
+    "status": "completed",
+    "priority": "high",
+    "id": "find-org-admin-tables"
+  }
+]

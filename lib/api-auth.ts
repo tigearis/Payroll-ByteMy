@@ -11,7 +11,7 @@ export interface AuthSession {
 
 // Role hierarchy for permission checking
 const ROLE_HIERARCHY: Record<string, number> = {
-  admin: 5,
+  developer: 5,
   org_admin: 4,
   manager: 3,
   consultant: 2,

@@ -41,7 +41,7 @@ const GET_USERS_QUERY = gql`
 // Get all managers for assignment dropdown
 const GET_MANAGERS_QUERY = gql`
   query GetManagers {
-    users(where: { role: { _in: [admin, manager] } }, order_by: { name: asc }) {
+    users(where: { role: { _in: [developer, manager] } }, order_by: { name: asc }) {
       id
       name
       email
@@ -51,11 +51,11 @@ const GET_MANAGERS_QUERY = gql`
 `;
 
 // Helper function to get current user's role from Clerk
-async function getCurrentUserRole(userId: string): Promise<UserRole | "admin"> {
+async function getCurrentUserRole(userId: string): Promise<UserRole | "developer"> {
   try {
     const client = await clerkClient();
     const user = await client.users.getUser(userId);
-    return (user.publicMetadata?.role as UserRole | "admin") || "viewer";
+    return (user.publicMetadata?.role as UserRole | "developer") || "viewer";
   } catch (error) {
     console.error("Error getting user role:", error);
     return "viewer";
@@ -190,7 +190,7 @@ export const GET = withAuth(async (request: NextRequest, session) => {
     );
   }
 }, {
-  allowedRoles: ["admin", "org_admin", "manager"] // Only users who can manage users
+  allowedRoles: ["developer", "org_admin", "manager"] // Only users who can manage users
 });
 
 // POST /api/users - Invite new user (admin/manager only)
@@ -332,5 +332,5 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     );
   }
 }, {
-  allowedRoles: ["admin", "org_admin", "manager"] // Only users who can manage users
+  allowedRoles: ["developer", "org_admin", "manager"] // Only users who can manage users
 });

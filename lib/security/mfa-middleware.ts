@@ -9,7 +9,7 @@ import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc
 const MFA_FEATURE_ENABLED = securityConfig.auth.mfaEnabled;
 
 // Roles that require MFA
-const MFA_REQUIRED_ROLES = ["admin", "org_admin"];
+const MFA_REQUIRED_ROLES = ["developer", "org_admin"];
 
 // Routes that require MFA regardless of role
 const MFA_REQUIRED_ROUTES = [

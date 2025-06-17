@@ -108,5 +108,5 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     );
   }
 }, {
-  allowedRoles: ["admin", "org_admin", "manager"] // Payroll operations require management access
+  allowedRoles: ["developer", "org_admin", "manager"] // Payroll operations require management access
 });

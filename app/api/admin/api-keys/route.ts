@@ -37,7 +37,7 @@ export const GET = withAuth(async (request: NextRequest, session) => {
     );
   }
 }, {
-  allowedRoles: ["admin"]
+  allowedRoles: ["developer"]
 });
 
 // Create new API key (admin only)
@@ -83,7 +83,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     );
   }
 }, {
-  allowedRoles: ["admin"]
+  allowedRoles: ["developer"]
 });
 
 // Revoke API key (admin only)
@@ -129,5 +129,5 @@ export const DELETE = withAuth(async (request: NextRequest, session) => {
     );
   }
 }, {
-  allowedRoles: ["admin"]
+  allowedRoles: ["developer"]
 });

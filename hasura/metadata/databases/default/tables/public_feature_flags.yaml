@@ -1,7 +1,19 @@
 table:
   name: feature_flags
   schema: public
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
 select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -38,6 +50,12 @@ select_permissions:
       filter: {}
     comment: All users can view enabled features
 update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
   - role: org_admin
     permission:
       columns:
@@ -46,3 +64,8 @@ update_permissions:
       filter: {}
       check: {}
     comment: Only org admins can toggle feature flags
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

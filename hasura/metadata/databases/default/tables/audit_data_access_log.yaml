@@ -18,6 +18,12 @@ insert_permissions:
         - session_id
         - metadata
 select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:
@@ -53,3 +59,15 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: Organization admins can view all data access logs including CRITICAL
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

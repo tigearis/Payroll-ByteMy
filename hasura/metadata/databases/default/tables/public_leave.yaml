@@ -9,6 +9,11 @@ object_relationships:
     using:
       foreign_key_constraint_on: user_id
 insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
   - role: consultant
     permission:
       check:
@@ -56,6 +61,12 @@ insert_permissions:
         - user_id
     comment: Users can create their own leave requests
 select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -116,6 +127,12 @@ select_permissions:
           _eq: X-Hasura-User-Id
     comment: Users can view their own leave records
 update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
   - role: consultant
     permission:
       columns:
@@ -163,6 +180,10 @@ update_permissions:
       check: {}
     comment: Org Admins can update any leave record
 delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
   - role: org_admin
     permission:
       filter: {}

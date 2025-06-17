@@ -6,7 +6,7 @@ import { adminApolloClient } from "@/lib/server-apollo-client";
 // Define user role hierarchy for permission checking
 // These must match the Hasura database enum values exactly
 export const USER_ROLES = {
-  admin: 5, // Developers - highest level
+  developer: 5, // Developers - highest level
   org_admin: 4, // Standard Admins
   manager: 3,
   consultant: 2,
@@ -505,7 +505,7 @@ export async function deleteUserFromDatabase(clerkId: string) {
 
 // Function to check if user has permission for role assignment
 export function canAssignRole(
-  currentUserRole: UserRole | "admin",
+  currentUserRole: UserRole | "developer",
   targetRole: UserRole
 ): boolean {
   // Use roles as-is - no normalization needed
@@ -514,8 +514,8 @@ export function canAssignRole(
   const currentLevel = USER_ROLES[normalizedCurrentRole];
   const targetLevel = USER_ROLES[targetRole];
 
-  // Developers (admin) and Standard Admins (org_admin) can assign any role
-  if (normalizedCurrentRole === "admin" || normalizedCurrentRole === "org_admin") return true;
+  // Developers (developer) and Standard Admins (org_admin) can assign any role
+  if (normalizedCurrentRole === "developer" || normalizedCurrentRole === "org_admin") return true;
 
   // Managers can assign consultant and viewer roles
   if (
@@ -530,7 +530,7 @@ export function canAssignRole(
 }
 
 // Function to get user permissions
-export function getUserPermissions(role: UserRole | "admin") {
+export function getUserPermissions(role: UserRole | "developer") {
   const permissions = {
     canCreate: false,
     canManageUsers: false,
@@ -544,7 +544,7 @@ export function getUserPermissions(role: UserRole | "admin") {
   const normalizedRole = role;
 
   switch (normalizedRole) {
-    case "admin": // Developers - highest level
+    case "developer": // Developers - highest level
       return {
         canCreate: true,
         canManageUsers: true,

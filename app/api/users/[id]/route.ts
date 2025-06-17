@@ -67,11 +67,11 @@ const GET_USER_BY_CLERK_ID = gql`
 `;
 
 // Helper function to get current user's role
-async function getCurrentUserRole(userId: string): Promise<UserRole | "admin"> {
+async function getCurrentUserRole(userId: string): Promise<UserRole | "developer"> {
   try {
     const client = await clerkClient();
     const user = await client.users.getUser(userId);
-    return (user.publicMetadata?.role as UserRole | "admin") || "viewer";
+    return (user.publicMetadata?.role as UserRole | "developer") || "viewer";
   } catch (error) {
     console.error("Error getting user role:", error);
     return "viewer";
@@ -173,7 +173,7 @@ export async function GET(
         canEdit: permissions.canManageUsers || isSelf,
         canChangeRole: permissions.canManageUsers && !isSelf,
         canDelete:
-          permissions.canManageUsers && !isSelf && userData.role !== "admin",
+          permissions.canManageUsers && !isSelf && userData.role !== "developer",
         currentUserRole,
       },
     });
@@ -274,7 +274,7 @@ export async function PUT(
         ...targetUser.publicMetadata,
         role,
         managerId,
-        isStaff: role === "admin" || role === "manager",
+        isStaff: role === "developer" || role === "manager",
         lastUpdatedBy: userId,
         lastUpdatedAt: new Date().toISOString(),
       };
@@ -338,7 +338,7 @@ export async function DELETE(
     const permissions = getUserPermissions(currentUserRole);
 
     // Only org_admin can delete users
-    if (currentUserRole !== "org_admin" && currentUserRole !== "admin") {
+    if (currentUserRole !== "org_admin" && currentUserRole !== "developer") {
       return NextResponse.json(
         { error: "Only administrators can delete users" },
         { status: 403 }
