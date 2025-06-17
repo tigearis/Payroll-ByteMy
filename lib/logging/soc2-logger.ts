@@ -114,7 +114,7 @@ export interface SOC2LogEntry {
   };
 }
 
-// Mutations for logging
+// Mutations for logging (Fixed to match actual table names)
 const INSERT_AUDIT_LOG = gql`
   mutation InsertAuditLog($object: audit_audit_log_insert_input!) {
     insert_audit_audit_log_one(object: $object) {

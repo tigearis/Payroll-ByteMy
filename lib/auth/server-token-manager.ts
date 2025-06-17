@@ -2,9 +2,11 @@
 import { auth } from "@clerk/nextjs/server";
 
 interface TokenData {
-  token: string;
+  encryptedToken: string | null; // Simple base64 encoding for server-side
+  plaintextToken?: string; // Fallback
   expiresAt: number;
   userId: string;
+  encrypted: boolean;
 }
 
 interface RefreshMetrics {
@@ -57,7 +59,7 @@ class ServerTokenManager {
       // Check cache first
       const cachedToken = this.getCachedToken(userId);
       if (cachedToken && this.isTokenValid(cachedToken)) {
-        return cachedToken.token;
+        return this.getDecodedToken(cachedToken);
       }
 
       // Check if refresh is already in progress for this user
@@ -146,16 +148,75 @@ class ServerTokenManager {
     this.refreshMutex.delete(userId);
   }
 
+  /**
+   * Generate safe log ID for user without exposing sensitive data
+   */
+  private generateLogId(userId: string): string {
+    // Create a consistent but non-reversible identifier for logging
+    return `USER_${userId.substring(0, 4)}****${userId.substring(userId.length - 4)}`;
+  }
+
+  /**
+   * Cache a token with simple base64 encoding (server-side)
+   */
+  private cacheEncodedToken(userId: string, token: string, expiresAt: number): void {
+    try {
+      // Simple base64 encoding for server-side storage
+      const encodedToken = Buffer.from(token).toString('base64');
+      
+      this.tokenCache.set(userId, {
+        encryptedToken: encodedToken,
+        plaintextToken: undefined,
+        expiresAt,
+        userId,
+        encrypted: true
+      });
+      console.log(`🔐 Token cached with encoding for user [${this.generateLogId(userId)}]`);
+    } catch (error) {
+      console.error('❌ Token encoding failed:', error);
+      // Fallback: store without encoding
+      this.tokenCache.set(userId, {
+        encryptedToken: null,
+        plaintextToken: token,
+        expiresAt,
+        userId,
+        encrypted: false
+      });
+    }
+  }
+
+  /**
+   * Get decoded token from cache (server-side)
+   */
+  private getDecodedToken(tokenData: TokenData): string | null {
+    try {
+      if (tokenData.encrypted && tokenData.encryptedToken) {
+        // Decode the token
+        return Buffer.from(tokenData.encryptedToken, 'base64').toString('utf8');
+      } else if (!tokenData.encrypted && tokenData.plaintextToken) {
+        // Return plaintext token (fallback case)
+        console.warn('⚠️ SECURITY WARNING: Using unencrypted server token');
+        return tokenData.plaintextToken;
+      } else {
+        console.error('❌ Invalid server token data structure');
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ Token decoding error:', error);
+      return null;
+    }
+  }
+
   private async refreshToken(
     userId: string, 
     getTokenFn: (options: { template: string }) => Promise<string | null>,
     force = false
   ): Promise<string | null> {
-    const userKey = userId.substring(0, 8);
+    const logId = this.generateLogId(userId);
     
     // Prevent too many concurrent refreshes
     if (this.refreshPromises.size >= this.MAX_CONCURRENT_REFRESHES && !force) {
-      console.warn(`⚠️ Too many concurrent refreshes, queuing for user ${userKey}...`);
+      console.warn(`⚠️ Too many concurrent refreshes, queuing for user [${logId}]`);
       // Wait a bit and try again
       await new Promise(resolve => setTimeout(resolve, 1000));
       return this.getToken();
@@ -163,7 +224,7 @@ class ServerTokenManager {
 
     // Set mutex to prevent multiple refreshes for same user
     if (this.refreshMutex.get(userId)) {
-      console.log(`🔒 Refresh already in progress for user ${userKey}`);
+      console.log(`🔒 Refresh already in progress for user [${logId}]`);
       return this.refreshPromises.get(userId) || null;
     }
 
@@ -178,12 +239,12 @@ class ServerTokenManager {
       const duration = Date.now() - startTime;
       
       this.updateMetrics(true, duration);
-      console.log(`✅ Token refreshed for user ${userKey} in ${duration}ms`);
+      console.log(`✅ Token refreshed for user [${logId}] in ${duration}ms`);
       
       return token;
     } catch (error) {
       this.updateMetrics(false, Date.now() - startTime);
-      console.error(`❌ Token refresh failed for user ${userKey}:`, error);
+      console.error(`❌ Token refresh failed for user [${logId}]:`, error);
       return null;
     } finally {
       this.refreshMutex.delete(userId);
@@ -212,12 +273,8 @@ class ServerTokenManager {
         console.warn('⚠️ Could not parse token expiry, using default');
       }
 
-      // Cache the token
-      this.tokenCache.set(userId, {
-        token,
-        expiresAt,
-        userId
-      });
+      // Cache the token with encoding
+      this.cacheEncodedToken(userId, token, expiresAt);
 
       return token;
     } catch (error) {

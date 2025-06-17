@@ -14,6 +14,7 @@ import { createApolloErrorHandler } from "./apollo-error-handler";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { centralizedTokenManager } from "./auth/centralized-token-manager";
 // Custom event for session expiry
 export const SESSION_EXPIRED_EVENT = "jwt_session_expired";
 
@@ -222,11 +223,20 @@ const errorLink = onError(
 
           // Clear token cache
           console.log("🧹 Clearing token cache in error handler");
-          centralizedTokenManager.clearCurrentUserToken();
+          const currentUserId = (window as any).Clerk?.user?.id;
+          if (currentUserId) {
+            centralizedTokenManager.clearUserToken(currentUserId);
+          }
 
           // Force token refresh using centralized token manager
           return new Observable((observer) => {
-            centralizedTokenManager.forceRefresh().then(async (token) => {
+            const getTokenFn = () => window.Clerk?.session?.getToken({ template: "hasura" }) || Promise.resolve(null);
+            const userId = (window as any).Clerk?.user?.id;
+            if (!userId) {
+              observer.error(new Error("No user ID available for token refresh"));
+              return;
+            }
+            centralizedTokenManager.forceRefresh(getTokenFn, userId).then(async (token: string | null) => {
               if (!token) {
                 observer.error(new Error("Failed to refresh token"));
                 return;
@@ -262,11 +272,11 @@ const errorLink = onError(
                     observer.complete();
                   },
                 });
-              } catch (error) {
+              } catch (error: any) {
                 console.error("❌ Failed to retry operation:", error);
                 observer.error(error);
               }
-            }).catch((error) => {
+            }).catch((error: any) => {
               console.error("❌ Token refresh failed:", error);
               observer.error(error);
             });
@@ -280,7 +290,10 @@ const errorLink = onError(
       if ("statusCode" in networkError) {
         if (networkError.statusCode === 401) {
           // Clear token cache on 401
-          centralizedTokenManager.clearCurrentUserToken();
+          const currentUserId = (window as any).Clerk?.user?.id;
+          if (currentUserId) {
+            centralizedTokenManager.clearUserToken(currentUserId);
+          }
           console.log("🔄 Cleared token cache due to 401 error");
 
           // Dispatch custom event for session expiry handler
