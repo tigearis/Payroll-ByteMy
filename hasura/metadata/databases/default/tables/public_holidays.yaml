@@ -22,12 +22,6 @@ insert_permissions:
         - types
     comment: Only org admins can add holidays
 select_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -39,6 +33,12 @@ select_permissions:
         - region
       filter: {}
     comment: Consultants can see holidays relevant to payroll processing
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:

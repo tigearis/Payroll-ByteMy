@@ -23,12 +23,6 @@ insert_permissions:
       columns: '*'
     comment: Developer role has full insert access
 select_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -37,6 +31,12 @@ select_permissions:
         - description
       filter: {}
     comment: All users need to see payroll cycles
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:

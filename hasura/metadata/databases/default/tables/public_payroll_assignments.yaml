@@ -28,13 +28,82 @@ insert_permissions:
       check: {}
       columns: '*'
     comment: Developer role has full insert access
+  - role: manager
+    permission:
+      check: {}
+      columns:
+        - payroll_date_id
+        - consultant_id
+        - assigned_by
+        - is_backup
+        - original_consultant_id
+    comment: Managers can create payroll assignments
+  - role: org_admin
+    permission:
+      check: {}
+      columns:
+        - payroll_date_id
+        - consultant_id
+        - assigned_by
+        - is_backup
+        - original_consultant_id
+    comment: Org admins can create payroll assignments
 select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - payroll_date_id
+        - consultant_id
+        - assigned_by
+        - is_backup
+        - original_consultant_id
+        - assigned_date
+        - created_at
+        - updated_at
+      filter:
+        _or:
+          - consultant_id:
+              _eq: X-Hasura-User-Id
+          - original_consultant_id:
+              _eq: X-Hasura-User-Id
+    comment: Consultants can view assignments where they are the consultant or original consultant
   - role: developer
     permission:
       columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - id
+        - payroll_date_id
+        - consultant_id
+        - assigned_by
+        - is_backup
+        - original_consultant_id
+        - assigned_date
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all payroll assignments
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - payroll_date_id
+        - consultant_id
+        - assigned_by
+        - is_backup
+        - original_consultant_id
+        - assigned_date
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all payroll assignments
 update_permissions:
   - role: developer
     permission:
@@ -42,8 +111,34 @@ update_permissions:
       filter: {}
       check: {}
     comment: Developer role has full update access
+  - role: manager
+    permission:
+      columns:
+        - consultant_id
+        - is_backup
+        - original_consultant_id
+      filter: {}
+      check: {}
+    comment: Managers can update assignment details
+  - role: org_admin
+    permission:
+      columns:
+        - consultant_id
+        - is_backup
+        - original_consultant_id
+      filter: {}
+      check: {}
+    comment: Org admins can update assignment details
 delete_permissions:
   - role: developer
     permission:
       filter: {}
     comment: Developer role has full delete access
+  - role: manager
+    permission:
+      filter: {}
+    comment: Managers can delete payroll assignments
+  - role: org_admin
+    permission:
+      filter: {}
+    comment: Org admins can delete payroll assignments

@@ -45,7 +45,7 @@ import {
 const editUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
-  role: z.enum(["admin", "org_admin", "manager", "consultant", "viewer"], {
+  role: z.enum(["developer", "org_admin", "manager", "consultant", "viewer"], {
     required_error: "Please select a role",
   }),
   managerId: z.string().optional(),
@@ -159,9 +159,9 @@ export function EditUserModal({
       description: "Full organizational access",
     },
     {
-      value: "admin",
-      label: "Administrator",
-      description: "Full system access",
+      value: "developer",
+      label: "Developer",
+      description: "Full system access and development",
     },
   ].filter((role) => canAssignRole(role.value));
 

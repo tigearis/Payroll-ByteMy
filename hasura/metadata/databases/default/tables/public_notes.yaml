@@ -25,11 +25,6 @@ array_relationships:
           name: payrolls
           schema: public
 insert_permissions:
-  - role: developer
-    permission:
-      check: {}
-      columns: '*'
-    comment: Developer role has full insert access
   - role: consultant
     permission:
       check:
@@ -42,6 +37,11 @@ insert_permissions:
         - is_important
         - user_id
     comment: Consultants can create notes
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
   - role: manager
     permission:
       check:
@@ -76,12 +76,6 @@ insert_permissions:
         - user_id
     comment: Viewers can create basic notes
 select_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -96,6 +90,12 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: Consultants can view all notes on entities they have access to
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:
@@ -134,15 +134,10 @@ select_permissions:
         - content
         - is_important
         - created_at
+        - updated_at
       filter: {}
     comment: Viewers can view all notes
 update_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      check: {}
-    comment: Developer role has full update access
   - role: consultant
     permission:
       columns:
@@ -155,6 +150,12 @@ update_permissions:
         user_id:
           _eq: X-Hasura-User-Id
     comment: Consultants can update their own notes
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
   - role: manager
     permission:
       columns:
@@ -187,16 +188,16 @@ update_permissions:
           _eq: X-Hasura-User-Id
     comment: Viewers can update their own note content
 delete_permissions:
-  - role: developer
-    permission:
-      filter: {}
-    comment: Developer role has full delete access
   - role: consultant
     permission:
       filter:
         user_id:
           _eq: X-Hasura-User-Id
     comment: Consultants can delete their own notes
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
   - role: manager
     permission:
       filter:

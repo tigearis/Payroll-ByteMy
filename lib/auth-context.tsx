@@ -23,7 +23,8 @@ export type UserRole =
   | "org_admin"
   | "manager"
   | "consultant"
-  | "viewer";
+  | "viewer"
+  | "developer";
 
 export interface Permission {
   id: string;

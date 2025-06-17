@@ -90,12 +90,6 @@ insert_permissions:
         - employee_count
     comment: Org Admins can create any payrolls
 select_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -114,6 +108,11 @@ select_permissions:
         - processing_time
         - employee_count
         - go_live_date
+        - superseded_date
+        - version_number
+        - parent_payroll_id
+        - version_reason
+        - created_by_user_id
         - created_at
         - updated_at
       filter:
@@ -123,6 +122,12 @@ select_permissions:
           - backup_consultant_user_id:
               _eq: X-Hasura-User-Id
     comment: Consultants can view payrolls they're assigned to
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:
@@ -140,6 +145,12 @@ select_permissions:
         - payroll_system
         - processing_time
         - employee_count
+        - go_live_date
+        - superseded_date
+        - version_number
+        - parent_payroll_id
+        - version_reason
+        - created_by_user_id
         - created_at
         - updated_at
       filter:
@@ -169,6 +180,12 @@ select_permissions:
         - payroll_system
         - processing_time
         - employee_count
+        - go_live_date
+        - superseded_date
+        - version_number
+        - parent_payroll_id
+        - version_reason
+        - created_by_user_id
         - created_at
         - updated_at
       filter: {}
@@ -186,12 +203,6 @@ select_permissions:
       filter: {}
     comment: Viewers can view basic payroll information
 update_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      check: {}
-    comment: Developer role has full update access
   - role: consultant
     permission:
       columns:
@@ -204,6 +215,12 @@ update_permissions:
               _eq: X-Hasura-User-Id
       check: {}
     comment: Consultants can update status of payrolls they're assigned to
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
   - role: manager
     permission:
       columns:
