@@ -298,7 +298,7 @@ export function createSecureApolloClient(request?: NextRequest) {
           email: {
             read(existing, { readField, variables }) {
               const role = variables?.role;
-              if (role !== "admin" && role !== "org_admin") {
+              if (role !== "developer" && role !== "org_admin") {
                 // Mask email for non-admin users
                 return existing?.replace(/^(.{2}).*(@.*)$/, "$1***$2");
               }
@@ -309,7 +309,7 @@ export function createSecureApolloClient(request?: NextRequest) {
             read(existing, { variables }) {
               const role = variables?.role;
               // Only admins can see clerk_user_id
-              if (role !== "admin") {
+              if (role !== "developer") {
                 return null;
               }
               return existing;

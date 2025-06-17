@@ -69,7 +69,7 @@ export function UserTable({
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
-      case "admin":
+      case "developer":
         return "destructive";
       case "manager":
         return "default";
@@ -84,7 +84,7 @@ export function UserTable({
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case "admin":
+      case "developer":
         return "#ef4444";
       case "manager":
         return "#f59e0b";

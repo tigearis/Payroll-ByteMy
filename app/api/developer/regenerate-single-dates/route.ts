@@ -77,5 +77,5 @@ export const POST = withAuth(
       );
     }
   },
-  { allowedRoles: ["admin", "manager"] } // Admins and managers can regenerate dates
+  { allowedRoles: ["developer", "manager"] } // Admins and managers can regenerate dates
 );

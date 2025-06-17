@@ -44,21 +44,11 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <ErrorBoundary>
       <ClerkProvider
-        signInUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}
-        signUpUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL}
-        signInFallbackRedirectUrl={
-          process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL
-        }
-        signUpFallbackRedirectUrl={
-          process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL
-        }
-        signInForceRedirectUrl={
-          process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL
-        }
-        signUpForceRedirectUrl={
-          process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL
-        }
-        afterSignOutUrl={process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL}
+        signInUrl="/sign-in"
+        signUpUrl="/sign-up"
+        signInFallbackRedirectUrl="/dashboard"
+        signUpFallbackRedirectUrl="/dashboard"
+        signOutUrl="/"
       >
         <AuthenticatedApolloProvider>
           <AuthProvider>

@@ -82,7 +82,7 @@ export function PayrollsMissingDates() {
 
   console.log("Missing payroll IDs:", missingDatesPayrollIds);
 
-  if (!userRole || !["org_admin", "admin"].includes(userRole) || missingDatesPayrollIds.length === 0) {
+  if (!userRole || !["org_admin", "developer"].includes(userRole) || missingDatesPayrollIds.length === 0) {
     console.log("User does not have permission or no payrolls are missing dates.");
     return null;
   }

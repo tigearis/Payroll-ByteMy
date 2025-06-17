@@ -30,7 +30,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { UserRoleManagement } from "@/components/user-role-management";
 
-const roles = ["admin", "org_admin", "manager", "consultant", "viewer"];
+const roles = ["developer", "org_admin", "manager", "consultant", "viewer"];
 const features = [
   { id: "create", name: "Create" },
   { id: "modify", name: "Modify" },

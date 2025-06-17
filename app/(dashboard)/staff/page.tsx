@@ -140,7 +140,7 @@ const roleMapping: Record<string, string> = {
 
 // Role options for select
 const roleOptions = [
-  { value: "admin", label: "Developer" },
+  { value: "developer", label: "Developer" },
   { value: "org_admin", label: "Admin" },
   { value: "manager", label: "Manager" },
   { value: "consultant", label: "Consultant" },
@@ -452,7 +452,7 @@ export default function StaffManagementPage() {
     const allStaff = staffList || [];
     return {
       total: allStaff.length,
-      admins: allStaff.filter((s) => s.role === "admin").length,
+      admins: allStaff.filter((s) => s.role === "developer").length,
       orgAdmins: allStaff.filter((s) => s.role === "org_admin").length,
       managers: allStaff.filter((s) => s.role === "manager").length,
       consultants: allStaff.filter((s) => s.role === "consultant").length,
@@ -471,7 +471,7 @@ export default function StaffManagementPage() {
       .filter(
         (staff) =>
           staff.role === "manager" ||
-          staff.role === "admin" ||
+          staff.role === "developer" ||
           staff.role === "org_admin"
       )
       .map((manager) => ({
@@ -540,7 +540,7 @@ export default function StaffManagementPage() {
             role: string
           ): "destructive" | "default" | "secondary" | "outline" => {
             switch (role) {
-              case "admin":
+              case "developer":
               case "org_admin":
                 return "destructive";
               case "manager":
@@ -1359,7 +1359,7 @@ Do you want to proceed with HARD DELETE?`
                     </label>
                     <MultiSelect
                       options={[
-                        { value: "admin", label: "Developers" },
+                        { value: "developer", label: "Developers" },
                         { value: "org_admin", label: "Admins" },
                         { value: "manager", label: "Managers" },
                         { value: "consultant", label: "Consultants" },
@@ -1590,7 +1590,7 @@ Do you want to proceed with HARD DELETE?`
                         (staff) =>
                           staff.id !== editingStaff?.id &&
                           (staff.role === "manager" ||
-                            staff.role === "admin" ||
+                            staff.role === "developer" ||
                             staff.role === "org_admin")
                       )
                       .map((manager) => (
@@ -1659,7 +1659,7 @@ Do you want to proceed with HARD DELETE?`
                     </h3>
                     <Badge
                       variant={
-                        viewingStaff.role === "admin"
+                        viewingStaff.role === "developer"
                           ? "destructive"
                           : viewingStaff.role === "manager"
                           ? "default"
@@ -1910,7 +1910,7 @@ Do you want to proceed with HARD DELETE?`
                     <SelectValue placeholder="Select a role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Developer</SelectItem>
+                    <SelectItem value="developer">Developer</SelectItem>
                     <SelectItem value="org_admin">Admin</SelectItem>
                     <SelectItem value="manager">Manager</SelectItem>
                     <SelectItem value="consultant">Consultant</SelectItem>
