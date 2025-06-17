@@ -44,7 +44,7 @@ const createUserSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Please enter a valid email address"),
-  role: z.enum(["admin", "org_admin", "manager", "consultant", "viewer"], {
+  role: z.enum(["developer", "org_admin", "manager", "consultant", "viewer"], {
     required_error: "Please select a role",
   }),
   managerId: z.string().optional(),
@@ -141,7 +141,7 @@ export function CreateUserModal({
       description: "Full organizational access",
     },
     {
-      value: "admin",
+      value: "developer",
       label: "Developer",
       description: "Full system access and development",
     },

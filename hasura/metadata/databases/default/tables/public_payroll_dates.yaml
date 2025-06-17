@@ -51,12 +51,6 @@ insert_permissions:
         - notes
     comment: Org Admins can insert any payroll dates
 select_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -76,6 +70,12 @@ select_permissions:
             - backup_consultant_user_id:
                 _eq: X-Hasura-User-Id
     comment: Consultants can view dates for payrolls they're assigned to
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:
@@ -117,12 +117,6 @@ select_permissions:
       filter: {}
     comment: Viewers can view basic payroll date information
 update_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      check: {}
-    comment: Developer role has full update access
   - role: consultant
     permission:
       columns:
@@ -136,6 +130,12 @@ update_permissions:
                 _eq: X-Hasura-User-Id
       check: {}
     comment: Consultants can update notes on payroll dates they manage
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
   - role: manager
     permission:
       columns:

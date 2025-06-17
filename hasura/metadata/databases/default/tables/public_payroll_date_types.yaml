@@ -30,12 +30,6 @@ insert_permissions:
         - description
     comment: Org Admins can insert payroll date types
 select_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -44,6 +38,12 @@ select_permissions:
         - description
       filter: {}
     comment: Consultants can view payroll date types
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:

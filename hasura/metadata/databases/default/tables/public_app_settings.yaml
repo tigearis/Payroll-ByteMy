@@ -1,13 +1,13 @@
 table:
   name: app_settings
   schema: public
-select_permissions:
+insert_permissions:
   - role: developer
     permission:
+      check: {}
       columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
+    comment: Developer role has full insert access
+select_permissions:
   - role: consultant
     permission:
       columns:
@@ -15,6 +15,12 @@ select_permissions:
         - permissions
       filter: {}
     comment: All roles can view app settings
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:
@@ -36,12 +42,6 @@ select_permissions:
         - permissions
       filter: {}
     comment: All roles can view app settings
-insert_permissions:
-  - role: developer
-    permission:
-      check: {}
-      columns: '*'
-    comment: Developer role has full insert access
 update_permissions:
   - role: developer
     permission:

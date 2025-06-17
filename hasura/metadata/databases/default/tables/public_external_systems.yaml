@@ -25,12 +25,6 @@ insert_permissions:
         - icon
     comment: Only org admins can add external systems
 select_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -41,6 +35,12 @@ select_permissions:
         - icon
       filter: {}
     comment: Consultants can view external systems
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:

@@ -31,12 +31,6 @@ insert_permissions:
         - system_client_id
     comment: Org admins can link clients to external systems
 select_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -46,6 +40,12 @@ select_permissions:
         - system_client_id
       filter: {}
     comment: Consultants can see which systems clients are linked to
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:

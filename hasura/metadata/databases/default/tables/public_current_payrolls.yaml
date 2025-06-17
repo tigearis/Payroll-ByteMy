@@ -1,28 +1,87 @@
 table:
   name: current_payrolls
   schema: public
-insert_permissions:
-  - role: developer
-    permission:
-      check: {}
-      columns: '*'
-    comment: Developer role has full insert access
 select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - version_number
+        - parent_payroll_id
+        - go_live_date
+        - superseded_date
+        - created_at
+        - updated_at
+      filter:
+        _or:
+          - primary_consultant_user_id:
+              _eq: X-Hasura-User-Id
+          - backup_consultant_user_id:
+              _eq: X-Hasura-User-Id
+    comment: Consultants can view current payrolls where they are assigned
   - role: developer
     permission:
       columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
-update_permissions:
-  - role: developer
+  - role: manager
     permission:
-      columns: '*'
+      columns:
+        - id
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - version_number
+        - parent_payroll_id
+        - go_live_date
+        - superseded_date
+        - created_at
+        - updated_at
       filter: {}
-      check: {}
-    comment: Developer role has full update access
-delete_permissions:
-  - role: developer
+      allow_aggregations: true
+    comment: Managers can view all current payrolls
+  - role: org_admin
     permission:
+      columns:
+        - id
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - version_number
+        - parent_payroll_id
+        - go_live_date
+        - superseded_date
+        - created_at
+        - updated_at
       filter: {}
-    comment: Developer role has full delete access
+      allow_aggregations: true
+    comment: Org admins can view all current payrolls
+  - role: viewer
+    permission:
+      columns:
+        - id
+        - name
+        - client_id
+        - version_number
+        - go_live_date
+      filter: {}
+    comment: Viewers can see basic current payroll information

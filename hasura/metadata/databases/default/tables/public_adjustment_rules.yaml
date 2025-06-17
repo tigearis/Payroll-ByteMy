@@ -24,12 +24,6 @@ insert_permissions:
         - rule_code
     comment: Org admins can insert adjustment rules
 select_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -40,6 +34,12 @@ select_permissions:
         - rule_description
       filter: {}
     comment: All users can view adjustment rules as they're system-wide settings
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:
