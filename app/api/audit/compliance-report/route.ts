@@ -102,8 +102,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     // Log compliance report access
     await soc2Logger.log({
       level: LogLevel.AUDIT,
-      category: LogCategory.DATA_ACCESS,
-      eventType: SOC2EventType.COMPLIANCE_CHECK,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "Compliance report generation requested",
       userId: session.userId,
       userRole: session.role,
@@ -231,8 +231,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     
     await soc2Logger.log({
       level: LogLevel.ERROR,
-      category: LogCategory.ERROR,
-      eventType: SOC2EventType.COMPLIANCE_CHECK,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "Compliance report generation failed",
       userId: session.userId,
       userRole: session.role,

@@ -923,7 +923,7 @@ const DELETE_PAYROLL_DATES = gql`
 // Helper function to get user-friendly role display name
 const getRoleDisplayName = (role: string) => {
   switch (role) {
-    case user_role.Admin:
+    case user_role.Developer:
     case user_role.OrgAdmin:
       return "Admin";
     case user_role.Manager:
@@ -1184,7 +1184,7 @@ export default function PayrollPage() {
     (user: any) => user.id !== editedPayroll.primary_consultant_user_id
   );
   const availableManagers = staffUsers.filter((user: any) =>
-    [user_role.Manager, user_role.Admin, user_role.OrgAdmin].includes(user.role)
+    [user_role.Manager, user_role.Developer, user_role.OrgAdmin].includes(user.role)
   );
 
   // Enhanced renderDateValueInput with same logic as creation page

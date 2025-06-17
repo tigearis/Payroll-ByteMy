@@ -453,7 +453,8 @@ class EnhancedRouteMonitor {
   }
 }
 
-// Export singleton instance
+// Export class and singleton instance
+export { EnhancedRouteMonitor };
 export const routeMonitor = EnhancedRouteMonitor.getInstance();
 
 // Helper functions for easy integration

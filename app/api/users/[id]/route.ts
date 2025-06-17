@@ -9,6 +9,7 @@ import {
   updateUserRole,
 } from "@/lib/user-sync";
 import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
+import { withAuthParams } from "@/lib/api-auth";
 
 // Get user by ID (either database ID or Clerk ID)
 const GET_USER_BY_ID = gql`
@@ -114,8 +115,8 @@ export async function GET(
     // Log SOC2 audit event
     await soc2Logger.log({
       level: LogLevel.AUDIT,
-      category: LogCategory.DATA_ACCESS,
-      eventType: SOC2EventType.USER_PROFILE_VIEWED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: `User profile accessed for: ${targetId}`,
       userId: userId,
       entityType: "user",
@@ -207,10 +208,11 @@ export async function GET(
 }
 
 // PUT /api/users/[id] - Update user details
-export const PUT = withAuth(
+export const PUT = withAuthParams(
   async (
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
+    session
   ) => {
     try {
       const { userId } = await auth();
@@ -340,17 +342,15 @@ export const PUT = withAuth(
   },
   {
     requiredRole: "viewer",
-    eventType: "USER_PROFILE_UPDATED",
-    category: "DATA_MODIFICATION",
-    dataClassification: "HIGH",
   }
 );
 
 // DELETE /api/users/[id] - Delete user (admin only)
-export const DELETE = withAuth(
+export const DELETE = withAuthParams(
   async (
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
+    session
   ) => {
     try {
       const { userId } = await auth();
@@ -431,8 +431,5 @@ export const DELETE = withAuth(
   },
   {
     requiredRole: "org_admin",
-    eventType: "USER_DELETED",
-    category: "DATA_MODIFICATION",
-    dataClassification: "CRITICAL",
   }
 );

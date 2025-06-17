@@ -85,9 +85,6 @@ export const GET = withAuth(
   }
   },
   {
-    requiredRole: "viewer",
-    eventType: "PAYROLL_DATA_ACCESSED",
-    category: "DATA_ACCESS",
-    dataClassification: "HIGH",
+    requiredRole: "viewer"
   }
 );

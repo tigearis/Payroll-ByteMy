@@ -93,8 +93,8 @@ const handlePayrollOperations = withSignatureValidation(
       // Log the sensitive operation
       await soc2Logger.log({
         level: LogLevel.AUDIT,
-        category: LogCategory.DATA_MODIFICATION,
-        eventType: SOC2EventType.BULK_OPERATION,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
         message: `Signed payroll operation: ${operation}`,
         entityType: "payroll",
         metadata: {
@@ -171,8 +171,8 @@ const handlePayrollOperations = withSignatureValidation(
           // Log data access for compliance
           await soc2Logger.log({
             level: LogLevel.INFO,
-            category: LogCategory.DATA_ACCESS,
-            eventType: SOC2EventType.DATA_EXPORTED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
             message: "Payroll report generated via signed API",
             entityType: "payroll_report",
             metadata: {
@@ -180,7 +180,6 @@ const handlePayrollOperations = withSignatureValidation(
               endDate,
               recordCount: result.data?.payrolls?.length || 0,
               exportFormat: "json",
-              dataClassification: "HIGH"
             }
           }, request);
 
@@ -209,8 +208,8 @@ const handlePayrollOperations = withSignatureValidation(
       
       await soc2Logger.log({
         level: LogLevel.ERROR,
-        category: LogCategory.ERROR,
-        eventType: SOC2EventType.INVALID_INPUT,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
         message: "Signed payroll operation failed",
         errorDetails: {
           message: error instanceof Error ? error.message : "Unknown error",

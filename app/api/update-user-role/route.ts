@@ -62,9 +62,6 @@ export const POST = withAuth(
   },
   {
     requiredRole: "developer",
-    eventType: "ROLE_ASSIGNED",
-    category: "AUTHENTICATION",
-    dataClassification: "CRITICAL",
   }
 );
 
@@ -128,8 +125,5 @@ export const GET = withAuth(
   },
   {
     requiredRole: "viewer",
-    eventType: "USER_ROLE_VIEWED",
-    category: "DATA_ACCESS",
-    dataClassification: "MEDIUM",
   }
 );

@@ -38,8 +38,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     // Log staff creation attempt
     await soc2Logger.log({
       level: LogLevel.AUDIT,
-      category: LogCategory.DATA_MODIFICATION,
-      eventType: SOC2EventType.USER_CREATED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "Staff creation operation initiated",
       userId: session.userId,
       userRole: session.role,
@@ -56,8 +56,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
       
       await soc2Logger.log({
         level: LogLevel.WARNING,
-        category: LogCategory.DATA_MODIFICATION,
-        eventType: SOC2EventType.INVALID_INPUT,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
         message: "Staff creation failed - validation error",
         userId: session.userId,
         userRole: session.role,
@@ -255,8 +255,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
       
       await soc2Logger.log({
         level: LogLevel.ERROR,
-        category: LogCategory.ERROR,
-        eventType: SOC2EventType.USER_CREATED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
         message: "Staff creation failed - database error",
         userId: session.userId,
         userRole: session.role,
@@ -295,8 +295,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     // Log successful staff creation
     await soc2Logger.log({
       level: LogLevel.AUDIT,
-      category: LogCategory.DATA_MODIFICATION,
-      eventType: SOC2EventType.USER_CREATED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "Staff member created successfully",
       userId: session.userId,
       userRole: session.role,
@@ -343,8 +343,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     try {
       await soc2Logger.log({
         level: LogLevel.ERROR,
-        category: LogCategory.ERROR,
-        eventType: SOC2EventType.USER_CREATED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
         message: "Staff creation failed - unexpected error",
         userId: session.userId,
         userRole: session.role,
