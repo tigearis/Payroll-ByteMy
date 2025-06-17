@@ -68,21 +68,21 @@ const operationSecurityMap: Record<string, OperationSecurityMetadata> = {
   // Critical operations
   GetAllUsersAdmin: {
     securityLevel: SecurityLevel.CRITICAL,
-    requiredRole: "admin",
+    requiredRole: "developer",
     audit: true,
     mfa: true,
     rateLimit: "5/minute",
   },
   ExportUserData: {
     securityLevel: SecurityLevel.CRITICAL,
-    requiredRole: "admin",
+    requiredRole: "developer",
     audit: true,
     mfa: true,
     rateLimit: "1/hour",
   },
   DeleteUserComplete: {
     securityLevel: SecurityLevel.CRITICAL,
-    requiredRole: "admin",
+    requiredRole: "developer",
     audit: true,
     mfa: true,
     rateLimit: "1/day",
@@ -212,7 +212,7 @@ const createDataMaskingLink = () => {
         const userRole = context.headers?.["x-hasura-role"];
 
         // Don't mask for admins
-        if (userRole !== "admin" && userRole !== "org_admin") {
+        if (userRole !== "developer" && userRole !== "org_admin") {
           // Apply field-level masking based on schema annotations
           // This would be implemented based on your specific masking requirements
           return response;

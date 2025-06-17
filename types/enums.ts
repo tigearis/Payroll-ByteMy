@@ -77,7 +77,7 @@ export enum payroll_status_new {
 
 // UserRole enum
 export enum user_role {
-  Admin = "admin",
+  Developer = "developer",
   OrgAdmin = "org_admin",
   Manager = "manager",
   Consultant = "consultant",

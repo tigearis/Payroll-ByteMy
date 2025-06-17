@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
         const payload = JSON.parse(atob(token.split('.')[1]));
         const hasuraClaims = payload["https://hasura.io/jwt/claims"];
         
-        const isValidAdmin = hasuraClaims?.["x-hasura-role"] === "admin" && 
+        const isValidAdmin = hasuraClaims?.["x-hasura-role"] === "developer" && 
                             hasuraClaims?.["x-hasura-user-id"];
         
         return NextResponse.json({

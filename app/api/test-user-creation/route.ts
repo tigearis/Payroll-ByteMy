@@ -98,7 +98,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     }, { status: 500 });
   }
 }, {
-  allowedRoles: ["admin", "org_admin"]
+  allowedRoles: ["developer", "org_admin"]
 });
 
 export async function GET() {

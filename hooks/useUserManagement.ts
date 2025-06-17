@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useAuth } from "@clerk/nextjs";
 
 export type UserRole =
-  | "admin"
+  | "developer"
   | "org_admin"
   | "manager"
   | "consultant"
@@ -368,7 +368,7 @@ export function useUserManagement(): UseUserManagementReturn {
 
       // Role hierarchy levels
       const roleHierarchy: Record<string, number> = {
-        admin: 5, // Developers
+        developer: 5, // Developers
         org_admin: 4, // Standard Admins
         manager: 3,
         consultant: 2,
@@ -378,8 +378,8 @@ export function useUserManagement(): UseUserManagementReturn {
       const currentLevel = roleHierarchy[currentUserRole] || 0;
       const targetLevel = roleHierarchy[targetRole] || 0;
 
-      // Developers (admin) and Standard Admins (org_admin) can assign any role
-      if (currentUserRole === "admin" || currentUserRole === "org_admin")
+      // Developers (developer) and Standard Admins (org_admin) can assign any role
+      if (currentUserRole === "developer" || currentUserRole === "org_admin")
         return true;
 
       // Managers can assign consultant and viewer roles

@@ -10,6 +10,11 @@ array_relationships:
           name: client_external_systems
           schema: public
 insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
   - role: org_admin
     permission:
       check: {}
@@ -20,6 +25,12 @@ insert_permissions:
         - icon
     comment: Only org admins can add external systems
 select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -55,6 +66,12 @@ select_permissions:
       filter: {}
     comment: Org admins can view external systems
 update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
   - role: org_admin
     permission:
       columns:
@@ -66,6 +83,10 @@ update_permissions:
       check: {}
     comment: Only org admins can update external systems
 delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
   - role: org_admin
     permission:
       filter: {}

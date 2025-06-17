@@ -9,6 +9,11 @@ object_relationships:
     using:
       foreign_key_constraint_on: system_id
 insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
   - role: manager
     permission:
       check: {}
@@ -26,6 +31,12 @@ insert_permissions:
         - system_client_id
     comment: Org admins can link clients to external systems
 select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -58,6 +69,12 @@ select_permissions:
       filter: {}
     comment: Org admins have full access to external client systems
 update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
   - role: manager
     permission:
       columns:
@@ -73,6 +90,10 @@ update_permissions:
       check: {}
     comment: Org admins can update system client IDs
 delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
   - role: org_admin
     permission:
       filter: {}

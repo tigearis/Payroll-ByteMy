@@ -8,7 +8,19 @@ object_relationships:
   - name: target_user
     using:
       foreign_key_constraint_on: target_user_id
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
 select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: org_admin
     permission:
       columns:
@@ -25,3 +37,15 @@ select_permissions:
         - created_at
       filter: {}
     comment: Only org admins can view audit logs
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

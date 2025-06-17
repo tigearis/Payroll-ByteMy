@@ -9,7 +9,7 @@ actions:
           value: application/json
     permissions:
       - role: system
-      - role: admin
+      - role: developer
     comment: Check for suspicious activity patterns
   - name: commitPayrollAssignments
     definition:
@@ -30,7 +30,7 @@ actions:
         - name: Content-Type
           value: application/json
     permissions:
-      - role: admin
+      - role: developer
       - role: org_admin
     comment: Generate SOC2 compliance reports
   - name: logAuditEvent
@@ -43,7 +43,7 @@ actions:
           value: application/json
     permissions:
       - role: system
-      - role: admin
+      - role: developer
       - role: org_admin
     comment: Log audit events for SOC2 compliance
 custom_types:

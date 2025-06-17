@@ -2,6 +2,11 @@ table:
   name: permission_changes
   schema: audit
 insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
   - role: org_admin
     permission:
       check: {}
@@ -17,6 +22,12 @@ insert_permissions:
         - reason
         - metadata
 select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: org_admin
     permission:
       columns:
@@ -33,3 +44,15 @@ select_permissions:
         changed_by_user_id:
           _eq: X-Hasura-User-Id
       allow_aggregations: true
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

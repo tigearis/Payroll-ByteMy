@@ -12,7 +12,7 @@ import { RetryLink } from "@apollo/client/link/retry";
 import { SecureErrorHandler } from "@/lib/security/error-responses";
 
 // Define allowed roles for admin operations
-const ADMIN_ROLES = ["admin", "org_admin"];
+const ADMIN_ROLES = ["developer", "org_admin"];
 
 // Cache configuration
 const createCache = () => {

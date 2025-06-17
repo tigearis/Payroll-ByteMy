@@ -251,7 +251,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     );
   }
 }, {
-  allowedRoles: ["admin", "org_admin"]
+  allowedRoles: ["developer", "org_admin"]
 });
 
 // Helper functions

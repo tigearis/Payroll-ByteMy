@@ -25,6 +25,11 @@ array_relationships:
           name: payrolls
           schema: public
 insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
   - role: consultant
     permission:
       check:
@@ -71,6 +76,12 @@ insert_permissions:
         - user_id
     comment: Viewers can create basic notes
 select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -126,6 +137,12 @@ select_permissions:
       filter: {}
     comment: Viewers can view all notes
 update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
   - role: consultant
     permission:
       columns:
@@ -170,6 +187,10 @@ update_permissions:
           _eq: X-Hasura-User-Id
     comment: Viewers can update their own note content
 delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
   - role: consultant
     permission:
       filter:

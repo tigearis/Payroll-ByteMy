@@ -4,7 +4,7 @@
     "x-hasura-user-id": "{{user.public_metadata.databaseId}}",
     "x-hasura-default-role": "viewer",
     "x-hasura-allowed-roles": [
-      "admin",
+      "developer",
       "org_admin",
       "manager",
       "consultant",

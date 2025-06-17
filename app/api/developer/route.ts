@@ -21,7 +21,7 @@ export async function GET() {
     }
 
     const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    if (claims?.["x-hasura-default-role"] !== "admin") {
+    if (claims?.["x-hasura-default-role"] !== "developer") {
       return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
     }
 
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     if (token) {
       const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
       const role = payload["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"];
-      if (role !== "admin") {
+      if (role !== "developer") {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
     } else {

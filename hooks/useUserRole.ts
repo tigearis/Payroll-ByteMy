@@ -16,7 +16,7 @@ export function useUserRole() {
   } = useAuthContext();
 
   // Legacy compatibility - map to old naming conventions
-  const isDeveloper = userRole === "admin"; // Developer = admin in Hasura (has DEVELOPER_TOOLS permission)
+  const isDeveloper = userRole === "developer"; // Developer = developer in Hasura (has DEVELOPER_TOOLS permission)
   const isAdmin = userRole === "org_admin"; // Admin = org_admin in Hasura
   const isManager = userRole === "manager";
   const isConsultant = userRole === "consultant";

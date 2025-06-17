@@ -17,6 +17,11 @@ array_relationships:
           name: payrolls
           schema: public
 insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
   - role: org_admin
     permission:
       check: {}
@@ -25,6 +30,12 @@ insert_permissions:
         - description
     comment: Org Admins can insert payroll date types
 select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -64,6 +75,12 @@ select_permissions:
       filter: {}
     comment: All users need to see payroll date types
 update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
   - role: org_admin
     permission:
       columns:
@@ -73,6 +90,10 @@ update_permissions:
       check: {}
     comment: Org Admins can update payroll date types
 delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
   - role: org_admin
     permission:
       filter: {}

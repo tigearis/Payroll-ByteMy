@@ -9,7 +9,7 @@ import { z } from "zod";
 const CreateStaffSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name too long"),
   email: z.string().email("Invalid email address"),
-  role: z.enum(["admin", "org_admin", "manager", "consultant", "viewer"]).default("viewer"),
+  role: z.enum(["developer", "org_admin", "manager", "consultant", "viewer"]).default("viewer"),
   is_staff: z.boolean().default(true),
   managerId: z.string().uuid().optional().nullable(),
   inviteToClerk: z.boolean().default(true)
@@ -376,7 +376,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     }, { status: 500 });
   }
 }, {
-  allowedRoles: ["admin", "org_admin"] // Only admins can create staff
+  allowedRoles: ["developer", "org_admin"] // Only admins can create staff
 });
 
 export async function GET() {

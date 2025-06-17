@@ -70,7 +70,7 @@ export async function withAuth(
       hasPermission: (permission: string) => {
         // This would need to be enhanced with actual permission checking
         // For now, basic role-based permissions
-        if (userRole === "admin") return true;
+        if (userRole === "developer") return true;
         if (userRole === "org_admin" && !permission.includes("system_admin")) return true;
         if (userRole === "manager" && ["view_dashboard", "manage_staff", "view_clients", "process_payrolls"].includes(permission)) return true;
         if (userRole === "consultant" && ["view_dashboard", "view_clients", "process_payrolls"].includes(permission)) return true;
@@ -126,7 +126,7 @@ export function protectAdminRoute(
   handler: (req: NextRequest, context: AuthContext) => Promise<NextResponse>
 ) {
   return protectRoute(handler, {
-    requiredRole: ["admin", "org_admin"]
+    requiredRole: ["developer", "org_admin"]
   });
 }
 
@@ -135,6 +135,6 @@ export function protectManagerRoute(
   handler: (req: NextRequest, context: AuthContext) => Promise<NextResponse>
 ) {
   return protectRoute(handler, {
-    requiredRole: ["admin", "org_admin", "manager"]
+    requiredRole: ["developer", "org_admin", "manager"]
   });
 }

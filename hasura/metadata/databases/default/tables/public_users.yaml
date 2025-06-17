@@ -156,6 +156,11 @@ insert_permissions:
         - is_staff
         - clerk_user_id
     comment: Org admins can create any users
+  - role: developer
+    permission:
+      columns: '*'
+      check: {}
+    comment: Developer role has full insert access
 select_permissions:
   - role: consultant
     permission:
@@ -206,6 +211,12 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: Org Admins can view all user data
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full system access
   - role: viewer
     permission:
       columns:
@@ -270,10 +281,20 @@ update_permissions:
       filter: {}
       check: {}
     comment: Org admins can update any user
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
 delete_permissions:
   - role: org_admin
     permission:
       filter: {}
     comment: Only Org Admins can delete users
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
 apollo_federation_config:
   enable: v1

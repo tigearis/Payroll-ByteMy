@@ -2,6 +2,12 @@ table:
   name: app_settings
   schema: public
 select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
   - role: consultant
     permission:
       columns:
@@ -30,7 +36,19 @@ select_permissions:
         - permissions
       filter: {}
     comment: All roles can view app settings
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
 update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
   - role: org_admin
     permission:
       columns:
@@ -38,3 +56,8 @@ update_permissions:
       filter: {}
       check: {}
     comment: Only org admins can update app settings
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

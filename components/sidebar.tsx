@@ -31,7 +31,7 @@ function cn(...inputs: ClassValue[]) {
 
 // Role display mapping
 const roleDisplayNames: Record<string, string> = {
-  admin: "Developer",
+  developer: "Developer",
   manager: "Manager",
   consultant: "Consultant",
   org_admin: "Admin",
@@ -42,57 +42,57 @@ const allRoutes = [
     href: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    roles: ["admin", "manager", "consultant", "org_admin"],
+    roles: ["developer", "manager", "consultant", "org_admin"],
   },
   {
     href: "/clients",
     label: "Clients",
     icon: Users,
-    roles: ["admin", "manager", "consultant", "org_admin"],
+    roles: ["developer", "manager", "consultant", "org_admin"],
   },
   {
     href: "/payrolls",
     label: "Payrolls",
     icon: Calculator,
-    roles: ["admin", "manager", "consultant", "org_admin"],
+    roles: ["developer", "manager", "consultant", "org_admin"],
   },
   {
     href: "/payroll-schedule",
     label: "Schedule",
     icon: CalendarDays,
-    roles: ["admin", "manager", "org_admin", "consultant"],
+    roles: ["developer", "manager", "org_admin", "consultant"],
   },
   {
     href: "/staff",
     label: "Staff",
     icon: UserCog,
-    roles: ["admin", "org_admin", "manager"], // Admin only
+    roles: ["developer", "org_admin", "manager"], // Admin only
   },
   {
     href: "/tax-calculator",
     label: "Tax Calculator",
     icon: DollarSign,
-    roles: ["admin"],
+    roles: ["developer"],
     devOnly: true, // Only show in development
   },
   {
     href: "/settings",
     label: "Settings",
     icon: Settings,
-    roles: ["admin"],
+    roles: ["developer"],
   },
   {
     href: "/developer",
     label: "Developer",
     icon: Code,
-    roles: ["admin"], // Admin only
+    roles: ["developer"], // Admin only
     devOnly: true, // Only show in development
   },
   {
     href: "/security",
     label: "Security",
     icon: Shield,
-    roles: ["admin", "org_admin"], // Admin and org_admin only
+    roles: ["developer", "org_admin"], // Admin and org_admin only
   },
 ];
 
@@ -144,7 +144,7 @@ export function Sidebar() {
   }
 
   // If user has no role or invalid role, show minimal sidebar
-  if (!userRole || !["admin", "manager"].includes(userRole)) {
+  if (!userRole || !["developer", "manager"].includes(userRole)) {
     return (
       <div
         className={cn(
