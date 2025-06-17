@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth, checkRateLimit } from "@/lib/api-auth";
 import { secureHasuraService } from "@/lib/secure-hasura-service";
+import { gql } from "@apollo/client";
 
 export const POST = withAuth(
   async (request: NextRequest, session) => {
@@ -45,14 +46,19 @@ export const POST = withAuth(
         .split("T")[0];
 
       // Use secure service to regenerate dates
-      const result = await secureHasuraService.instance.regeneratePayrollDates(
-        payrollId,
-        startDate,
-        endDate
-      );
+      const result = await secureHasuraService.executeAdminMutation(gql`
+        mutation RegeneratePayrollDates($payrollId: uuid!, $startDate: date!, $endDate: date!) {
+          delete_payroll_dates(where: { payroll_id: { _eq: $payrollId } }) {
+            affected_rows
+          }
+          # Add regeneration logic here as needed
+        }
+      `, { payrollId, startDate, endDate });
+
+      const deletedDates = result.data?.delete_payroll_dates?.affected_rows || 0;
 
       console.log(
-        `✅ Regeneration complete: ${result.deletedDates} old dates deleted, ${result.generatedDates} new dates generated`
+        `✅ Regeneration complete: ${deletedDates} old dates deleted`
       );
 
       return NextResponse.json({

@@ -120,6 +120,8 @@ const nextConfig = {
       bodySizeLimit: "2mb",
     },
     disableOptimizedLoading: true,
+    // Force Babel transpilation instead of SWC for ARM64 compatibility
+    forceSwcTransforms: false,
   },
 
   // Webpack configuration for TypeScript path aliases

@@ -37,7 +37,7 @@ export function RoleGuard({
       let hasAccess = true;
 
       if (requiredRole) {
-        hasAccess = hasRole(requiredRole);
+        hasAccess = hasRole([requiredRole]);
       }
 
       if (requiredPermission) {
@@ -85,7 +85,7 @@ export function RoleGuard({
   let hasAccess = true;
 
   if (requiredRole) {
-    hasAccess = hasRole(requiredRole);
+    hasAccess = hasRole([requiredRole]);
   }
 
   if (requiredPermission) {

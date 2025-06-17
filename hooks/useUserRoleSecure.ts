@@ -32,7 +32,7 @@ export function useUserRole() {
     refetch,
   } = useQuery(GET_USER_ROLE, {
     variables: { currentUserId },
-    skip: !currentUserId || userLoading,
+    skip: !currentUserId || !!userLoading,
     fetchPolicy: "cache-first",
     errorPolicy: "all",
     onError: (err) => {
