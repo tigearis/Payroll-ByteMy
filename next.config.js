@@ -39,7 +39,7 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au",
+              "script-src 'self' 'strict-dynamic' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
@@ -103,14 +103,14 @@ const nextConfig = {
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   },
 
-  // Disable TypeScript type checking during build
+  // Enable TypeScript type checking during build
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
-  // Disable ESLint during builds
+  // Enable ESLint during builds
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
 
   // Experimental features

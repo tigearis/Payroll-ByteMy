@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Pool } from "pg";
+import { withAuth } from "@/lib/api-auth";
 
-export async function POST(request: NextRequest) {
-  // Restrict to development environment only
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ error: "Not Found" }, { status: 404 });
-  }
+export const POST = withAuth(
+  async (request: NextRequest) => {
+    // Restrict to development environment only
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ error: "Not Found" }, { status: 404 });
+    }
 
   try {
     const { startDate, endDate } = await request.json();
@@ -128,4 +130,8 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+  },
+  {
+    requiredRole: "developer",
+  }
+);

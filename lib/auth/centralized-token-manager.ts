@@ -7,7 +7,7 @@ import { tokenEncryption, type EncryptedToken } from "./token-encryption";
 
 interface TokenData {
   encryptedToken: EncryptedToken | null; // Encrypted token storage
-  plaintextToken?: string; // Fallback for when encryption fails
+  obfuscatedToken?: string; // Security fallback using basic obfuscation (never plaintext)
   expiresAt: number;
   userId: string;
   encrypted: boolean; // Track encryption status
@@ -149,6 +149,42 @@ class CentralizedTokenManager {
     return this.tokenCache.get(userId) || null;
   }
 
+  /**
+   * Simple obfuscation for fallback scenarios (not cryptographically secure)
+   * This is used when encryption fails, better than plaintext but not secure
+   */
+  private obfuscateToken(token: string, userId: string): string {
+    try {
+      const key = userId.slice(0, 8).split('').map(c => c.charCodeAt(0)).reduce((a, b) => a + b, 0);
+      return btoa(token.split('').map((char, i) => 
+        String.fromCharCode(char.charCodeAt(0) ^ (key + i) % 256)
+      ).join(''));
+    } catch {
+      // Last resort: just base64 encode (minimal obfuscation)
+      return btoa(token);
+    }
+  }
+
+  /**
+   * Deobfuscate token (reverse of obfuscateToken)
+   */
+  private deobfuscateToken(obfuscatedToken: string, userId: string): string | null {
+    try {
+      const key = userId.slice(0, 8).split('').map(c => c.charCodeAt(0)).reduce((a, b) => a + b, 0);
+      const decoded = atob(obfuscatedToken);
+      return decoded.split('').map((char, i) => 
+        String.fromCharCode(char.charCodeAt(0) ^ (key + i) % 256)
+      ).join('');
+    } catch {
+      try {
+        // Fallback: just base64 decode
+        return atob(obfuscatedToken);
+      } catch {
+        return null;
+      }
+    }
+  }
+
   private isTokenValid(tokenData: TokenData): boolean {
     return tokenData.expiresAt > Date.now() + this.TOKEN_BUFFER_MS;
   }
@@ -230,11 +266,12 @@ class CentralizedTokenManager {
         });
         console.log(`🔐 Token cached with encryption for user [${this.generateLogId(userId)}]`);
       } else {
-        // Fallback: store without encryption but log security warning
-        console.warn(`⚠️ SECURITY WARNING: Storing unencrypted token for user [${this.generateLogId(userId)}]`);
+        // Secure fallback: use obfuscation instead of plaintext
+        console.warn(`⚠️ SECURITY WARNING: Token encryption unavailable, using obfuscation for user [${this.generateLogId(userId)}]`);
+        const obfuscatedToken = this.obfuscateToken(token, userId);
         this.tokenCache.set(userId, {
           encryptedToken: null,
-          plaintextToken: token,
+          obfuscatedToken,
           expiresAt,
           userId,
           encrypted: false
@@ -242,14 +279,22 @@ class CentralizedTokenManager {
       }
     } catch (error) {
       console.error('❌ Token caching failed:', error);
-      // Emergency fallback: store unencrypted
-      this.tokenCache.set(userId, {
-        encryptedToken: null,
-        plaintextToken: token,
-        expiresAt,
-        userId,
-        encrypted: false
-      });
+      // Emergency fallback: use obfuscation (never plaintext)
+      console.warn(`⚠️ EMERGENCY FALLBACK: Using token obfuscation for user [${this.generateLogId(userId)}]`);
+      try {
+        const obfuscatedToken = this.obfuscateToken(token, userId);
+        this.tokenCache.set(userId, {
+          encryptedToken: null,
+          obfuscatedToken,
+          expiresAt,
+          userId,
+          encrypted: false
+        });
+      } catch (obfuscationError) {
+        console.error('❌ CRITICAL: All token protection methods failed:', obfuscationError);
+        // Refuse to store token in plaintext - security first
+        throw new Error('Token security cannot be guaranteed, refusing to cache');
+      }
     }
   }
 
@@ -267,12 +312,12 @@ class CentralizedTokenManager {
           console.warn('⚠️ Token decryption failed');
           return null;
         }
-      } else if (!tokenData.encrypted && tokenData.plaintextToken) {
-        // Return plaintext token (fallback case)
-        console.warn('⚠️ SECURITY WARNING: Using unencrypted token');
-        return tokenData.plaintextToken;
+      } else if (!tokenData.encrypted && tokenData.obfuscatedToken) {
+        // Deobfuscate token (secure fallback case)
+        console.warn('⚠️ SECURITY WARNING: Using obfuscated token (encryption unavailable)');
+        return this.deobfuscateToken(tokenData.obfuscatedToken, tokenData.userId);
       } else {
-        console.error('❌ Invalid token data structure');
+        console.error('❌ Invalid token data structure or missing token data');
         return null;
       }
     } catch (error) {

@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { withAuth } from "@/lib/api-auth";
 
-export async function GET(req: NextRequest) {
-  try {
-    console.log("📋 API called: /api/staff/invitation-status");
+export const GET = withAuth(
+  async (req: NextRequest) => {
+    try {
+      console.log("📋 API called: /api/staff/invitation-status");
 
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
+      const { userId } = await auth();
+      if (!userId) {
+        return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+      }
 
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email");
@@ -71,16 +73,24 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+  },
+  {
+    requiredRole: "manager",
+    eventType: "STAFF_STATUS_VIEWED",
+    category: "DATA_ACCESS",
+    dataClassification: "MEDIUM",
+  }
+);
 
-export async function POST(req: NextRequest) {
-  try {
-    console.log("📧 API called: /api/staff/invitation-status (resend)");
+export const POST = withAuth(
+  async (req: NextRequest) => {
+    try {
+      console.log("📧 API called: /api/staff/invitation-status (resend)");
 
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
+      const { userId } = await auth();
+      if (!userId) {
+        return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+      }
 
     const body = await req.json();
     const { email, name, role } = body;
@@ -149,4 +159,11 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+  },
+  {
+    requiredRole: "manager",
+    eventType: "STAFF_INVITATION_SENT",
+    category: "AUTHENTICATION",
+    dataClassification: "HIGH",
+  }
+);

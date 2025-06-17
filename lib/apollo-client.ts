@@ -15,6 +15,7 @@ import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { centralizedTokenManager } from "./auth/centralized-token-manager";
+import { productionGraphQLConfig, productionQueryValidation, initializeProductionSecurity } from "./apollo/production-config";
 // Custom event for session expiry
 export const SESSION_EXPIRED_EVENT = "jwt_session_expired";
 
@@ -165,11 +166,19 @@ const authLink = setContext(async (_, { headers }) => {
       headers: {
         ...headers,
         ...(token && { authorization: `Bearer ${token}` }),
+        // Add production security headers
+        ...productionGraphQLConfig.securityHeaders,
       },
     };
   }
 
-  return { headers };
+  return { 
+    headers: {
+      ...headers,
+      // Add production security headers for server-side requests too
+      ...productionGraphQLConfig.securityHeaders,
+    }
+  };
 });
 
 // TypeScript helper to convert from Observable
@@ -436,10 +445,17 @@ const splitLink =
 // APOLLO CLIENT
 // ================================
 
+// Initialize production security
+if (typeof window !== "undefined") {
+  initializeProductionSecurity();
+}
+
 const client = new ApolloClient({
   link: splitLink,
   cache,
   connectToDevTools: process.env.NODE_ENV === "development",
+  // Disable introspection in production
+  introspection: productionGraphQLConfig.introspection,
   defaultOptions: {
     query: {
       fetchPolicy: "network-only", // Always fetch fresh data for security

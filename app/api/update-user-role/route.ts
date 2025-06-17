@@ -1,15 +1,17 @@
 // app/api/update-user-role/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { withAuth } from "@/lib/api-auth";
 
-export async function POST(req: NextRequest) {
-  try {
-    // Check authentication
-    const { userId } = await auth();
+export const POST = withAuth(
+  async (req: NextRequest) => {
+    try {
+      // Check authentication
+      const { userId } = await auth();
 
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+      if (!userId) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
 
     // Parse request body
     const { targetUserId, role } = await req.json();
@@ -57,16 +59,24 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+  },
+  {
+    requiredRole: "developer",
+    eventType: "ROLE_ASSIGNED",
+    category: "AUTHENTICATION",
+    dataClassification: "CRITICAL",
+  }
+);
 
 // GET endpoint to fetch user role information
-export async function GET(request: Request) {
-  try {
-    const { userId: currentUserId, sessionClaims } = await auth();
+export const GET = withAuth(
+  async (request: Request) => {
+    try {
+      const { userId: currentUserId, sessionClaims } = await auth();
 
-    if (!currentUserId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+      if (!currentUserId) {
+        return new NextResponse("Unauthorized", { status: 401 });
+      }
 
     const url = new URL(request.url);
     const targetUserId = url.searchParams.get("userId");
@@ -115,4 +125,11 @@ export async function GET(request: Request) {
     console.error("Error fetching user role:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
-}
+  },
+  {
+    requiredRole: "viewer",
+    eventType: "USER_ROLE_VIEWED",
+    category: "DATA_ACCESS",
+    dataClassification: "MEDIUM",
+  }
+);

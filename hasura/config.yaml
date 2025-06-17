@@ -4,4 +4,5 @@ metadata_directory: metadata
 actions:
   kind: synchronous
   handler_webhook_baseurl: http://localhost:3000
-admin_secret: KIATiwETsv3yBwN7e73W2kJwA0t5hf6UK94HDkPZrIQAtpLmK8fCPYE9bIc0Sd8B
+admin_secret:
+  from_env: HASURA_GRAPHQL_ADMIN_SECRET

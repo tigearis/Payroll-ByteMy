@@ -1,1 +1,48 @@
-disabled: true
+disabled: false
+depth_limit:
+  global: 15
+  per_role:
+    consultant: 10
+    viewer: 8
+    manager: 12
+    org_admin: 15
+    developer: 20
+node_limit:
+  global: 1000
+  per_role:
+    consultant: 500
+    viewer: 200
+    manager: 800
+    org_admin: 1000
+    developer: 2000
+time_limit:
+  global: 30
+  per_role:
+    consultant: 20
+    viewer: 15
+    manager: 25
+    org_admin: 30
+    developer: 60
+batch_limit:
+  global: 10
+  per_role:
+    consultant: 5
+    viewer: 3
+    manager: 8
+    org_admin: 10
+    developer: 15
+rate_limit:
+  global:
+    unique_params: ip
+    max_reqs_per_min: 1000
+  per_role:
+    consultant:
+      max_reqs_per_min: 300
+    viewer:
+      max_reqs_per_min: 200
+    manager:
+      max_reqs_per_min: 500
+    org_admin:
+      max_reqs_per_min: 800
+    developer:
+      max_reqs_per_min: 1200

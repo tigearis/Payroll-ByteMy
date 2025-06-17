@@ -259,13 +259,15 @@ export function withSignatureValidation(
 }
 
 /**
- * API key management utilities
+ * Legacy API key management utilities (deprecated - use PersistentAPIKeyManager)
+ * @deprecated Use PersistentAPIKeyManager for new implementations
  */
 export class APIKeyManager {
   private static keyStore = new Map<string, { secret: string; permissions: string[] }>();
 
   /**
    * Generate new API key pair
+   * @deprecated Use PersistentAPIKeyManager.generateKeyPair()
    */
   static generateKeyPair(): { apiKey: string; apiSecret: string } {
     const apiKey = `ak_${randomBytes(16).toString("hex")}`;
@@ -276,6 +278,7 @@ export class APIKeyManager {
 
   /**
    * Store API key (in production, use secure database)
+   * @deprecated Use PersistentAPIKeyManager.createAPIKey()
    */
   static storeKey(apiKey: string, apiSecret: string, permissions: string[] = []): void {
     this.keyStore.set(apiKey, { secret: apiSecret, permissions });
@@ -283,6 +286,7 @@ export class APIKeyManager {
 
   /**
    * Get API secret for key
+   * @deprecated Use PersistentAPIKeyManager.validateAPIKey()
    */
   static async getSecret(apiKey: string): Promise<string | null> {
     const keyData = this.keyStore.get(apiKey);
@@ -291,6 +295,7 @@ export class APIKeyManager {
 
   /**
    * Check if API key has permission
+   * @deprecated Use PersistentAPIKeyManager.hasPermission()
    */
   static async hasPermission(apiKey: string, permission: string): Promise<boolean> {
     const keyData = this.keyStore.get(apiKey);

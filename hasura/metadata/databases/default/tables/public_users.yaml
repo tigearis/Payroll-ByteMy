@@ -166,7 +166,6 @@ select_permissions:
     permission:
       columns:
         - id
-        - email
         - image
         - name
         - username
@@ -175,9 +174,19 @@ select_permissions:
         - manager_id
         - created_at
         - updated_at
-        - clerk_user_id
-      filter: {}
-    comment: Consultants can view user details
+      filter:
+        _or:
+          - id:
+              _eq: X-Hasura-User-Id
+          - manager_id:
+              _eq: X-Hasura-User-Id
+          - payrollAssignmentsByConsultantId:
+              consultant_id:
+                _eq: X-Hasura-User-Id
+          - payrollAssignmentsByOriginalConsultantId:
+              original_consultant_id:
+                _eq: X-Hasura-User-Id
+    comment: Consultants can view their own profile, their team members, and users from assigned payrolls - no email access for security
   - role: developer
     permission:
       columns: '*'
