@@ -48,7 +48,6 @@ export function Providers({ children }: ProvidersProps) {
         signUpUrl="/sign-up"
         signInFallbackRedirectUrl="/dashboard"
         signUpFallbackRedirectUrl="/dashboard"
-        signOutUrl="/"
       >
         <AuthenticatedApolloProvider>
           <AuthProvider>
