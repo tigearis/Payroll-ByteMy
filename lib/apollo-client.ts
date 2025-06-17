@@ -454,8 +454,6 @@ const client = new ApolloClient({
   link: splitLink,
   cache,
   connectToDevTools: process.env.NODE_ENV === "development",
-  // Disable introspection in production
-  introspection: productionGraphQLConfig.introspection,
   defaultOptions: {
     query: {
       fetchPolicy: "network-only", // Always fetch fresh data for security
