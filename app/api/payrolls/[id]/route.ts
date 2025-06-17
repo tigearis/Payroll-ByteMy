@@ -3,11 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerApolloClient } from "@/lib/server-apollo-client";
 import { GET_PAYROLL_BY_ID } from "@/graphql/queries/payrolls/getPayrollById";
 import { auth } from "@clerk/nextjs/server";
+import { withAuth } from "@/lib/api-auth";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withAuth(
+  async (
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
   try {
     const { id } = await params;
 
@@ -37,4 +39,11 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+  },
+  {
+    requiredRole: "viewer",
+    eventType: "PAYROLL_DATA_ACCESSED",
+    category: "DATA_ACCESS",
+    dataClassification: "HIGH",
+  }
+);

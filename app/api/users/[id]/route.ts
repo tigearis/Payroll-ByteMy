@@ -8,6 +8,7 @@ import {
   UserRole,
   updateUserRole,
 } from "@/lib/user-sync";
+import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
 
 // Get user by ID (either database ID or Clerk ID)
 const GET_USER_BY_ID = gql`
@@ -110,6 +111,22 @@ export async function GET(
       );
     }
 
+    // Log SOC2 audit event
+    await soc2Logger.log({
+      level: LogLevel.AUDIT,
+      category: LogCategory.DATA_ACCESS,
+      eventType: SOC2EventType.USER_PROFILE_VIEWED,
+      message: `User profile accessed for: ${targetId}`,
+      userId: userId,
+      entityType: "user",
+      entityId: targetId,
+      metadata: { 
+        isSelf,
+        viewerRole: currentUserRole,
+        accessType: isSelf ? "self_view" : "admin_view"
+      },
+    }, request);
+
     console.log(`👤 Fetching user details for: ${targetId}`);
 
     let userData;
@@ -190,16 +207,17 @@ export async function GET(
 }
 
 // PUT /api/users/[id] - Update user details
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { userId } = await auth();
+export const PUT = withAuth(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
+    try {
+      const { userId } = await auth();
 
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+      if (!userId) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
 
     const { id: targetId } = await params;
     const currentUserRole = await getCurrentUserRole(userId);
@@ -319,19 +337,27 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+  },
+  {
+    requiredRole: "viewer",
+    eventType: "USER_PROFILE_UPDATED",
+    category: "DATA_MODIFICATION",
+    dataClassification: "HIGH",
+  }
+);
 
 // DELETE /api/users/[id] - Delete user (admin only)
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { userId } = await auth();
+export const DELETE = withAuth(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
+    try {
+      const { userId } = await auth();
 
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+      if (!userId) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
 
     const { id: targetId } = await params;
     const currentUserRole = await getCurrentUserRole(userId);
@@ -402,4 +428,11 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+  },
+  {
+    requiredRole: "org_admin",
+    eventType: "USER_DELETED",
+    category: "DATA_MODIFICATION",
+    dataClassification: "CRITICAL",
+  }
+);

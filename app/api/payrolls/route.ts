@@ -3,16 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerApolloClient } from "@/lib/server-apollo-client";
 import { GET_PAYROLLS } from "@/graphql/queries/payrolls/getPayrolls";
 import { auth } from "@clerk/nextjs/server";
+import { withAuth } from "@/lib/api-auth";
 
-export async function GET(_req: NextRequest) {
-  try {
-    // Get Clerk authentication
-    const { userId, getToken, sessionClaims } = await auth();
+export const GET = withAuth(
+  async (_req: NextRequest) => {
+    try {
+      // Get Clerk authentication
+      const { userId, getToken, sessionClaims } = await auth();
 
-    // Check if user is authenticated
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+      // Check if user is authenticated
+      if (!userId) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
 
     // TEMPORARY: Extract role for debugging
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
@@ -81,4 +83,11 @@ export async function GET(_req: NextRequest) {
       { status: 500 }
     );
   }
-}
+  },
+  {
+    requiredRole: "viewer",
+    eventType: "PAYROLL_DATA_ACCESSED",
+    category: "DATA_ACCESS",
+    dataClassification: "HIGH",
+  }
+);

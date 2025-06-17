@@ -1,6 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { monitorRequest } from "./security/enhanced-route-monitor";
+import { rateLimiter } from "./middleware/rate-limiter";
+import { logUnauthorizedAccess, extractClientInfo } from "./security/auth-audit";
 
 export interface AuthSession {
   userId: string;
@@ -133,6 +135,7 @@ export function withAuth(
   options?: {
     requiredRole?: string;
     allowedRoles?: string[];
+    skipRateLimit?: boolean;
   }
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
@@ -140,10 +143,36 @@ export function withAuth(
     console.log("🔐 withAuth called for:", request.method, request.url);
     
     try {
+      // Apply rate limiting first (before auth to prevent auth bypass attempts)
+      if (!options?.skipRateLimit) {
+        const rateLimitResponse = await rateLimiter.applyRateLimit(request);
+        if (rateLimitResponse) {
+          console.log("⚡ Rate limit exceeded for:", request.url);
+          await monitorRequest(request, undefined, startTime, false);
+          return rateLimitResponse;
+        }
+      }
+      
       const session = await requireAuth(request, options);
       console.log("✅ Auth successful, calling handler");
       
+      // Apply user-specific rate limiting after auth
+      if (!options?.skipRateLimit) {
+        const userRateLimitResponse = await rateLimiter.applyRateLimit(request, session.userId);
+        if (userRateLimitResponse) {
+          console.log("⚡ User rate limit exceeded for:", session.userId, request.url);
+          await monitorRequest(request, session.userId, startTime, false);
+          return userRateLimitResponse;
+        }
+      }
+      
       const response = await handler(request, session);
+      
+      // Add rate limit headers to successful responses
+      if (!options?.skipRateLimit) {
+        const rateLimitResult = await rateLimiter.checkRateLimit(request, session.userId);
+        rateLimiter.addRateLimitHeaders(response, rateLimitResult);
+      }
       
       // Monitor successful request
       await monitorRequest(request, session.userId, startTime, true);
@@ -152,13 +181,49 @@ export function withAuth(
     } catch (error: any) {
       console.log("❌ Auth failed:", error.message);
       
+      // Extract client info for audit logging
+      const { ipAddress, userAgent } = extractClientInfo(request);
+      
       // Monitor failed request
       await monitorRequest(request, undefined, startTime, false);
       
       if (error.message.includes("Unauthorized")) {
+        // Log unauthorized access attempt
+        await logUnauthorizedAccess(
+          request.nextUrl.pathname,
+          undefined,
+          undefined,
+          ipAddress,
+          userAgent,
+          request,
+          {
+            requiredRole: options?.requiredRole,
+            allowedRoles: options?.allowedRoles,
+            errorMessage: error.message,
+            endpoint: request.nextUrl.pathname,
+            method: request.method
+          }
+        );
         return unauthorizedResponse(error.message);
       }
       if (error.message.includes("Forbidden")) {
+        // Log forbidden access attempt
+        await logUnauthorizedAccess(
+          request.nextUrl.pathname,
+          undefined,
+          undefined,
+          ipAddress,
+          userAgent,
+          request,
+          {
+            requiredRole: options?.requiredRole,
+            allowedRoles: options?.allowedRoles,
+            errorMessage: error.message,
+            endpoint: request.nextUrl.pathname,
+            method: request.method,
+            accessType: "insufficient_permissions"
+          }
+        );
         return forbiddenResponse(error.message);
       }
       // Generic error

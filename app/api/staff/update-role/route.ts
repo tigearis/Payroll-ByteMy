@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { adminApolloClient } from "@/lib/server-apollo-client";
 import { gql } from "@apollo/client";
+import { withAuth } from "@/lib/api-auth";
 
 // GraphQL mutation to update user role in database
 const UPDATE_STAFF_ROLE = gql`
@@ -33,14 +34,15 @@ const GET_USER_CLERK_ID = gql`
   }
 `;
 
-export async function POST(req: NextRequest) {
-  try {
-    console.log("🔧 API called: /api/staff/update-role");
+export const POST = withAuth(
+  async (req: NextRequest) => {
+    try {
+      console.log("🔧 API called: /api/staff/update-role");
 
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
+      const { userId } = await auth();
+      if (!userId) {
+        return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+      }
 
     const body = await req.json();
     const { staffId, newRole } = body;
@@ -139,4 +141,11 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+  },
+  {
+    requiredRole: "manager",
+    eventType: "ROLE_ASSIGNED",
+    category: "AUTHENTICATION",
+    dataClassification: "HIGH",
+  }
+);

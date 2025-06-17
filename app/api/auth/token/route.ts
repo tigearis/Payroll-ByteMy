@@ -3,17 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { SecureErrorHandler } from "@/lib/security/error-responses";
-// import { logSuccessfulLogin, logFailedLogin } from "@/lib/security/audit";
+import { logSuccessfulLogin, logFailedLogin, logTokenRefresh, extractClientInfo } from "@/lib/security/auth-audit";
 
 export async function GET(req: NextRequest) {
   console.log("🔍 Token endpoint called");
   try {
     // Get client IP and user agent for audit logging
-    const ipAddress =
-      req.headers.get("x-forwarded-for") ||
-      req.headers.get("x-real-ip") ||
-      "unknown";
-    const userAgent = req.headers.get("user-agent") || "unknown";
+    const { ipAddress, userAgent } = extractClientInfo(req);
 
     console.log("🔍 Request headers:", {
       authorization: req.headers.get("authorization"),
@@ -36,6 +32,22 @@ export async function GET(req: NextRequest) {
 
     if (!userId) {
       console.log("🚨 No userId found in auth result");
+      
+      // Log failed authentication attempt
+      await logFailedLogin(
+        "unknown",
+        ipAddress,
+        userAgent,
+        "No active session found",
+        req,
+        {
+          endpoint: "/api/auth/token",
+          method: "GET",
+          hasAuthHeader: !!req.headers.get("authorization"),
+          hasCookie: !!req.headers.get("cookie")
+        }
+      );
+      
       const error = SecureErrorHandler.authenticationError();
       return NextResponse.json(error, { status: 401 });
     }
@@ -49,6 +61,21 @@ export async function GET(req: NextRequest) {
     console.log("🔍 Generated hasura template token:", { hasToken: !!token });
 
     if (!token) {
+      // Log failed token generation
+      await logFailedLogin(
+        userEmail,
+        ipAddress,
+        userAgent,
+        "Token generation failed",
+        req,
+        {
+          userId,
+          endpoint: "/api/auth/token",
+          method: "GET",
+          failureStage: "token_generation"
+        }
+      );
+      
       const error = SecureErrorHandler.sanitizeError(new Error("Token generation failed"), "auth_token");
       return NextResponse.json(error, { status: 500 });
     }
@@ -76,12 +103,26 @@ export async function GET(req: NextRequest) {
     }
 
     // Log successful token request
-    // await logSuccessfulLogin(
-    //   userId,
-    //   userEmail,
-    //   ipAddress.toString(),
-    //   userAgent
-    // );
+    await logTokenRefresh(
+      userId,
+      userEmail,
+      ipAddress,
+      userAgent,
+      req,
+      {
+        endpoint: "/api/auth/token",
+        method: "GET",
+        tokenExpiresIn: expiresIn,
+        jwtVersion: (() => {
+          try {
+            const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
+            return payload.metadata ? "v2" : "v1";
+          } catch {
+            return "unknown";
+          }
+        })()
+      }
+    );
 
     return NextResponse.json({
       token,
@@ -91,12 +132,20 @@ export async function GET(req: NextRequest) {
     console.error("Error getting token:", error);
 
     // Log error
-    // await logFailedLogin(
-    //   "unknown",
-    //   req.headers.get("x-forwarded-for")?.toString() || "unknown",
-    //   req.headers.get("user-agent") || "unknown",
-    //   error instanceof Error ? error.message : "Unknown error"
-    // );
+    const { ipAddress: errorIp, userAgent: errorUA } = extractClientInfo(req);
+    await logFailedLogin(
+      "unknown",
+      errorIp,
+      errorUA,
+      error instanceof Error ? error.message : "Unknown error",
+      req,
+      {
+        endpoint: "/api/auth/token",
+        method: "GET",
+        errorType: error instanceof Error ? error.constructor.name : "UnknownError",
+        failureStage: "general_error"
+      }
+    );
 
     const sanitizedError = SecureErrorHandler.sanitizeError(error, "auth_token_endpoint");
     return NextResponse.json(sanitizedError, { status: 500 });
