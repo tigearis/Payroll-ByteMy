@@ -54,8 +54,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
 
     await soc2Logger.log({
       level: LogLevel.AUDIT,
-      category: LogCategory.CONFIGURATION_CHANGE,
-      eventType: SOC2EventType.CONFIG_CHANGED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "New API key created",
       userId: session.userId,
       userRole: session.role,
@@ -104,8 +104,8 @@ export const DELETE = withAuth(async (request: NextRequest, session) => {
 
     await soc2Logger.log({
       level: LogLevel.AUDIT,
-      category: LogCategory.CONFIGURATION_CHANGE,
-      eventType: SOC2EventType.CONFIG_CHANGED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "API key revoked",
       userId: session.userId,
       userRole: session.role,

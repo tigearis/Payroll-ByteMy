@@ -22,8 +22,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     // Log critical payroll operation
     await soc2Logger.log({
       level: LogLevel.AUDIT,
-      category: LogCategory.DATA_MODIFICATION,
-      eventType: SOC2EventType.BULK_OPERATION,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "Payroll assignment commit operation initiated",
       userId: session.userId,
       userRole: session.role,
@@ -87,8 +87,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     
     await soc2Logger.log({
       level: LogLevel.ERROR,
-      category: LogCategory.ERROR,
-      eventType: SOC2EventType.BULK_OPERATION,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "Payroll assignment commit operation failed",
       userId: session.userId,
       userRole: session.role,

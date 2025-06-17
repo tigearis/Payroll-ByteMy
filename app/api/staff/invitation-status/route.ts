@@ -75,10 +75,7 @@ export const GET = withAuth(
   }
   },
   {
-    requiredRole: "manager",
-    eventType: "STAFF_STATUS_VIEWED",
-    category: "DATA_ACCESS",
-    dataClassification: "MEDIUM",
+    requiredRole: "manager"
   }
 );
 
@@ -161,9 +158,6 @@ export const POST = withAuth(
   }
   },
   {
-    requiredRole: "manager",
-    eventType: "STAFF_INVITATION_SENT",
-    category: "AUTHENTICATION",
-    dataClassification: "HIGH",
+    requiredRole: "manager"
   }
 );

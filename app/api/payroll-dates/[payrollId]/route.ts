@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { adminApolloClient } from "@/lib/server-apollo-client";
 import { gql } from "@apollo/client";
-import { withAuth } from "@/lib/api-auth";
+import { withAuthParams } from "@/lib/api-auth";
 
 // GraphQL query to get payroll dates
 const GET_PAYROLL_DATES = gql`
@@ -22,10 +22,11 @@ const GET_PAYROLL_DATES = gql`
   }
 `;
 
-export const GET = withAuth(
+export const GET = withAuthParams(
   async (
     req: NextRequest,
-    { params }: { params: Promise<{ payrollId: string }> }
+    { params }: { params: Promise<{ payrollId: string }> },
+    session
   ) => {
     try {
       // Check authentication
@@ -70,8 +71,5 @@ export const GET = withAuth(
   },
   {
     requiredRole: "viewer",
-    eventType: "PAYROLL_DATA_ACCESSED",
-    category: "DATA_ACCESS",
-    dataClassification: "HIGH",
   }
 );

@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     // Log the audit event
     await soc2Logger.log({
       level: LogLevel.INFO,
-      category: LogCategory.DATA_ACCESS,
+      category: LogCategory.SYSTEM_ACCESS,
       eventType,
       message: `${validatedInput.action} operation on ${validatedInput.resourceType}`,
       userId: validatedInput.userId,

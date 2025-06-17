@@ -36,14 +36,14 @@ export const POST = withAuth(async (req: NextRequest, session): Promise<NextResp
       messages,
     })
 
-    return result.toDataStreamResponse() as Promise<NextResponse>
+    return result.toDataStreamResponse() as any
   } catch (error: any) {
     console.error("AI Chat error:", error);
     
     await soc2Logger.log({
       level: LogLevel.ERROR,
-      category: LogCategory.ERROR,
-      eventType: SOC2EventType.INVALID_INPUT,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "AI chat request failed",
       userId: session.userId,
       userRole: session.role,

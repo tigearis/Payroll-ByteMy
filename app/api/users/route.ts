@@ -68,7 +68,7 @@ export const GET = withAuth(async (request: NextRequest, session) => {
     // Log user access
     await soc2Logger.log({
       level: LogLevel.INFO,
-      category: LogCategory.DATA_ACCESS,
+      category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
       message: "User list accessed",
       userId: session.userId,
@@ -170,7 +170,7 @@ export const GET = withAuth(async (request: NextRequest, session) => {
     
     await soc2Logger.log({
       level: LogLevel.ERROR,
-      category: LogCategory.ERROR,
+      category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
       message: "Failed to fetch users",
       userId: session.userId,
@@ -237,8 +237,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     // Log user creation attempt
     await soc2Logger.log({
       level: LogLevel.AUDIT,
-      category: LogCategory.DATA_MODIFICATION,
-      eventType: SOC2EventType.USER_CREATED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "User invitation initiated",
       userId: session.userId,
       userRole: session.role,
@@ -273,8 +273,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     // Log successful user creation
     await soc2Logger.log({
       level: LogLevel.AUDIT,
-      category: LogCategory.DATA_MODIFICATION,
-      eventType: SOC2EventType.USER_CREATED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "User invitation created successfully",
       userId: session.userId,
       userRole: session.role,
@@ -304,8 +304,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     // Log failed user creation
     await soc2Logger.log({
       level: LogLevel.ERROR,
-      category: LogCategory.ERROR,
-      eventType: SOC2EventType.USER_CREATED,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "User invitation failed",
       userId: session.userId,
       userRole: session.role,

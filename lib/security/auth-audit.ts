@@ -344,7 +344,6 @@ export function extractClientInfo(request: NextRequest): {
     request.headers.get('x-forwarded-for')?.split(',')[0] ||
     request.headers.get('x-real-ip') ||
     request.headers.get('cf-connecting-ip') ||
-    request.ip ||
     'unknown';
     
   const userAgent = request.headers.get('user-agent') || 'unknown';

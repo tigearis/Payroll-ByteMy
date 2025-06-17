@@ -8,8 +8,8 @@ export async function POST(request: NextRequest) {
     // Test authentication log
     await soc2Logger.log({
       level: LogLevel.INFO,
-      category: LogCategory.AUTHENTICATION,
-      eventType: SOC2EventType.LOGIN_SUCCESS,
+      category: LogCategory.SYSTEM_ACCESS,
+      eventType: SOC2EventType.DATA_VIEWED,
       message: "API test - authentication log",
       userId: "test-user-api-123",
       userEmail: "api-test@example.com",
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     // Test data access log
     await soc2Logger.log({
       level: LogLevel.INFO,
-      category: LogCategory.DATA_ACCESS,
+      category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
       message: "API test - data access log",
       userId: "test-user-api-123",

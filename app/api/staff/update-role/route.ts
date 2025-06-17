@@ -144,8 +144,5 @@ export const POST = withAuth(
   },
   {
     requiredRole: "manager",
-    eventType: "ROLE_ASSIGNED",
-    category: "AUTHENTICATION",
-    dataClassification: "HIGH",
   }
 );
