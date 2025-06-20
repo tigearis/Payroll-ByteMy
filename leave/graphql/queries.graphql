@@ -1,0 +1,118 @@
+# Leave Domain Queries
+
+query GetLeaveRequests($where: leave_bool_exp, $order_by: [leave_order_by!], $limit: Int, $offset: Int) {
+  leave(where: $where, order_by: $order_by, limit: $limit, offset: $offset) {
+    ...LeaveWithManager
+  }
+  leave_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetLeaveRequestById($id: uuid!) {
+  leave_by_pk(id: $id) {
+    ...LeaveWithManager
+  }
+}
+
+query GetLeaveRequestsByUser($user_id: uuid!, $start_date: date, $end_date: date) {
+  leave(
+    where: {
+      user_id: { _eq: $user_id }
+      _and: [
+        { start_date: { _lte: $end_date } }
+        { end_date: { _gte: $start_date } }
+      ]
+    }
+    order_by: { start_date: desc }
+  ) {
+    ...LeaveCore
+  }
+}
+
+query GetPendingLeaveRequests($manager_id: uuid) {
+  leave(
+    where: {
+      status: { _eq: "Pending" }
+      user: { manager_id: { _eq: $manager_id } }
+    }
+    order_by: { start_date: asc }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+query GetLeaveOverlaps($start_date: date!, $end_date: date!, $exclude_id: uuid) {
+  leave(
+    where: {
+      _and: [
+        { start_date: { _lte: $end_date } }
+        { end_date: { _gte: $start_date } }
+        { status: { _neq: "Rejected" } }
+        { id: { _neq: $exclude_id } }
+      ]
+    }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+query GetLeaveCalendar($start_date: date!, $end_date: date!, $user_ids: [uuid!]) {
+  leave(
+    where: {
+      _and: [
+        { start_date: { _lte: $end_date } }
+        { end_date: { _gte: $start_date } }
+        { status: { _eq: "Approved" } }
+        { user_id: { _in: $user_ids } }
+      ]
+    }
+    order_by: { start_date: asc }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+query GetLeaveAnalytics($start_date: date!, $end_date: date!) {
+  leave_by_type: leave_aggregate(
+    where: {
+      start_date: { _gte: $start_date, _lte: $end_date }
+      status: { _eq: "Approved" }
+    }
+  ) {
+    nodes {
+      leave_type
+    }
+    aggregate {
+      count
+    }
+  }
+  
+  leave_by_status: leave_aggregate(
+    where: {
+      start_date: { _gte: $start_date, _lte: $end_date }
+    }
+  ) {
+    nodes {
+      status
+    }
+    aggregate {
+      count
+    }
+  }
+  
+  leave_by_user: leave(
+    where: {
+      start_date: { _gte: $start_date, _lte: $end_date }
+      status: { _eq: "Approved" }
+    }
+  ) {
+    user {
+      id
+      name
+    }
+    leave_type
+  }
+}

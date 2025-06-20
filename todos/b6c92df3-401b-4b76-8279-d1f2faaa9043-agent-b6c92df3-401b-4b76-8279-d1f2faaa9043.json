@@ -1,0 +1,20 @@
+[
+  {
+    "content": "Fix remaining React error #310 - still occurring in layout components",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Fix Clerk deprecated prop warning",
+    "status": "completed",
+    "priority": "medium",
+    "id": "2"
+  },
+  {
+    "content": "Test the fixes by running TypeScript compilation",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  }
+]

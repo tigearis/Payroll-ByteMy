@@ -1,0 +1,130 @@
+# Payroll Queries
+# @securityLevel: HIGH
+# @financial: true
+# @audit: true
+
+# Get payroll by ID
+query GetPayrollById($id: uuid!) {
+  payrolls_by_pk(id: $id) {
+    ...PayrollDetailed
+  }
+}
+
+# List payrolls with pagination
+query ListPayrolls(
+  $limit: Int = 10
+  $offset: Int = 0
+  $where: payrolls_bool_exp = {}
+  $order_by: [payrolls_order_by!] = [{ created_at: desc }]
+) {
+  payrolls(
+    limit: $limit
+    offset: $offset
+    where: $where
+    order_by: $order_by
+  ) {
+    ...PayrollListItem
+  }
+  payrolls_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Get payrolls by client
+query GetPayrollsByClient(
+  $client_id: uuid!
+  $status: payroll_status = null
+) {
+  payrolls(
+    where: {
+      client_id: { _eq: $client_id }
+      status: { _eq: $status }
+    }
+    order_by: { name: asc }
+  ) {
+    ...PayrollBasic
+  }
+}
+
+# Get payrolls by consultant
+query GetPayrollsByConsultant(
+  $consultant_id: uuid!
+  $status: payroll_status = Active
+) {
+  payrolls(
+    where: {
+      consultant_id: { _eq: $consultant_id }
+      status: { _eq: $status }
+    }
+    order_by: { name: asc }
+  ) {
+    ...PayrollListItem
+  }
+}
+
+# Get payroll with dates
+query GetPayrollWithDates($id: uuid!) {
+  payrolls_by_pk(id: $id) {
+    ...PayrollWithDates
+  }
+}
+
+# Get payroll schedule
+query GetPayrollSchedule($id: uuid!) {
+  payrolls_by_pk(id: $id) {
+    ...PayrollSchedule
+  }
+}
+
+# Search payrolls
+query SearchPayrolls(
+  $search: String!
+  $limit: Int = 10
+) {
+  payrolls(
+    limit: $limit
+    where: {
+      _or: [
+        { name: { _ilike: $search } }
+        { client: { name: { _ilike: $search } } }
+      ]
+      status: { _eq: Active }
+    }
+    order_by: { name: asc }
+  ) {
+    ...PayrollBasic
+    client {
+      id
+      name
+    }
+  }
+}
+
+# Get payrolls missing dates
+query GetPayrollsMissingDates {
+  payrolls(
+    where: {
+      status: { _eq: Active }
+      _not: {
+        payroll_dates: {
+          original_eft_date: { _gte: "now()" }
+        }
+      }
+    }
+  ) {
+    ...PayrollBasic
+    client {
+      id
+      name
+    }
+    payroll_dates_aggregate(
+      where: { original_eft_date: { _gte: "now()" } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+# Auth Domain Fragments
+# Shared fragments for authentication and authorization
+
+fragment UserRoleInfo on user_roles {
+  id
+  created_at
+  updated_at
+  role {
+    id
+    name
+    display_name
+    description
+    priority
+    is_system_role
+  }
+}
+
+fragment RolePermissionInfo on role_permissions {
+  id
+  role_id
+  permission_id
+  conditions
+  created_at
+  updated_at
+  permission {
+    id
+    action
+    description
+    resource {
+      id
+      name
+      display_name
+      description
+    }
+  }
+  role {
+    id
+    name
+    display_name
+    description
+    priority
+  }
+}
+
+fragment BasicPermissionInfo on permissions {
+  id
+  action
+  description
+  created_at
+  updated_at
+  resource {
+    id
+    name
+    display_name
+    description
+  }
+}
+
+fragment BasicRoleInfo on roles {
+  id
+  name
+  display_name
+  description
+  priority
+  is_system_role
+  created_at
+  updated_at
+}
+
+fragment BasicUserInfo on users {
+  id
+  email
+  is_active
+  is_staff
+  created_at
+  updated_at
+}

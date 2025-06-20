@@ -1,0 +1,345 @@
+# ================================
+# RBAC SYSTEM GRAPHQL MUTATIONS
+# Following project GraphQL standards
+# ================================
+
+# Assign role to user
+mutation AssignRoleToUser($userId: uuid!, $roleId: uuid!) {
+  insert_user_roles_one(object: {
+    user_id: $userId,
+    role_id: $roleId
+  }) {
+    id
+    user_id
+    role_id
+    created_at
+    role {
+      name
+      display_name
+      priority
+    }
+  }
+}
+
+# Remove role from user
+mutation RemoveRoleFromUser($userRoleId: uuid!) {
+  delete_user_roles_by_pk(id: $userRoleId) {
+    id
+    user_id
+    role_id
+  }
+}
+
+# Bulk assign roles to user (replace all existing roles)
+mutation SetUserRoles($userId: uuid!, $roleIds: [user_roles_insert_input!]!) {
+  # First remove existing roles
+  delete_user_roles(where: { user_id: { _eq: $userId } }) {
+    affected_rows
+  }
+  
+  # Then insert new roles
+  insert_user_roles(objects: $roleIds) {
+    affected_rows
+    returning {
+      id
+      role {
+        name
+        display_name
+        priority
+      }
+    }
+  }
+}
+
+# Create custom permission for a user (via custom role)
+# Note: Since permission_overrides table doesn't exist, we create a custom role
+mutation CreateUserCustomPermission(
+  $userId: uuid!,
+  $roleName: String!,
+  $roleDescription: String!,
+  $permissionId: uuid!,
+  $conditions: jsonb = null
+) {
+  # First create a custom role for this user
+  insert_roles_one(object: {
+    name: $roleName,
+    display_name: $roleName,
+    description: $roleDescription,
+    priority: 1,
+    is_system_role: false
+  }) {
+    id
+    name
+    display_name
+    created_at
+  }
+}
+
+# Add permission to existing role
+# This replaces the role-based permission override functionality
+mutation AddPermissionToRole(
+  $roleId: uuid!,
+  $permissionId: uuid!,
+  $conditions: jsonb = null
+) {
+  insert_role_permissions_one(object: {
+    role_id: $roleId,
+    permission_id: $permissionId,
+    conditions: $conditions
+  }) {
+    id
+    role_id
+    permission_id
+    conditions
+    created_at
+    permission {
+      id
+      action
+      description
+      resource {
+        name
+        display_name
+      }
+    }
+    role {
+      name
+      display_name
+    }
+  }
+}
+
+# Update role permission conditions
+# This replaces permission override updates
+mutation UpdateRolePermission(
+  $rolePermissionId: uuid!,
+  $conditions: jsonb = null
+) {
+  update_role_permissions_by_pk(
+    pk_columns: { id: $rolePermissionId },
+    _set: {
+      conditions: $conditions,
+      updated_at: "now()"
+    }
+  ) {
+    id
+    role_id
+    permission_id
+    conditions
+    updated_at
+    permission {
+      action
+      resource {
+        name
+        display_name
+      }
+    }
+    role {
+      name
+      display_name
+    }
+  }
+}
+
+# Remove permission from role
+# This replaces permission override deletion
+mutation RemoveRolePermission($rolePermissionId: uuid!) {
+  delete_role_permissions_by_pk(id: $rolePermissionId) {
+    id
+    role_id
+    permission_id
+    role {
+      name
+      display_name
+    }
+    permission {
+      action
+      resource {
+        name
+        display_name
+      }
+    }
+  }
+}
+
+# Create custom role
+mutation CreateCustomRole(
+  $name: String!,
+  $displayName: String!,
+  $description: String!,
+  $priority: Int!
+) {
+  insert_roles_one(object: {
+    name: $name,
+    display_name: $displayName,
+    description: $description,
+    priority: $priority,
+    is_system_role: false
+  }) {
+    id
+    name
+    display_name
+    description
+    priority
+    is_system_role
+    created_at
+  }
+}
+
+# Update role
+mutation UpdateRole(
+  $id: uuid!,
+  $displayName: String = null,
+  $description: String = null,
+  $priority: Int = null
+) {
+  update_roles_by_pk(
+    pk_columns: { id: $id },
+    _set: {
+      display_name: $displayName,
+      description: $description,
+      priority: $priority,
+      updated_at: "now()"
+    }
+  ) {
+    id
+    name
+    display_name
+    description
+    priority
+    updated_at
+  }
+}
+
+# Delete custom role (only non-system roles)
+mutation DeleteCustomRole($id: uuid!) {
+  delete_roles_by_pk(id: $id) {
+    id
+    name
+    display_name
+  }
+}
+
+# Assign permission to role
+mutation AssignPermissionToRole(
+  $roleId: uuid!,
+  $permissionId: uuid!,
+  $conditions: jsonb = null
+) {
+  insert_role_permissions_one(object: {
+    role_id: $roleId,
+    permission_id: $permissionId,
+    conditions: $conditions
+  }) {
+    id
+    role_id
+    permission_id
+    conditions
+    permission {
+      action
+      resource {
+        name
+        display_name
+      }
+    }
+    role {
+      name
+      display_name
+    }
+  }
+}
+
+# Remove permission from role
+mutation RemovePermissionFromRole($rolePermissionId: uuid!) {
+  delete_role_permissions_by_pk(id: $rolePermissionId) {
+    id
+    role_id
+    permission_id
+  }
+}
+
+# Update role permission conditions
+mutation UpdateRolePermissionConditions(
+  $rolePermissionId: uuid!,
+  $conditions: jsonb = null
+) {
+  update_role_permissions_by_pk(
+    pk_columns: { id: $rolePermissionId },
+    _set: {
+      conditions: $conditions,
+      updated_at: "now()"
+    }
+  ) {
+    id
+    conditions
+    updated_at
+    permission {
+      action
+      resource {
+        name
+        display_name
+      }
+    }
+  }
+}
+
+# Bulk update user roles with audit logging
+mutation BulkUpdateUserRoles(
+  $userId: uuid!,
+  $newRoleIds: [uuid!]!,
+  $reason: String = null
+) {
+  # This would typically be a custom function that handles:
+  # 1. Audit logging of the change
+  # 2. Atomic role replacement
+  # 3. Notification of the change
+  
+  # For now, we'll do the basic operation
+  delete_user_roles(where: { user_id: { _eq: $userId } }) {
+    affected_rows
+  }
+  
+  insert_user_roles(objects: [
+    # This would be dynamically generated based on newRoleIds
+  ]) {
+    affected_rows
+    returning {
+      id
+      role {
+        name
+        display_name
+        priority
+      }
+    }
+  }
+}
+
+# Emergency: Revoke all permissions for a user (security lockdown)
+mutation EmergencyRevokeUserAccess($userId: uuid!, $reason: String!) {
+  # Remove all role assignments
+  delete_user_roles(where: { user_id: { _eq: $userId } }) {
+    affected_rows
+  }
+  
+  # Note: In the absence of permission_overrides table,
+  # emergency access revocation is handled by removing all role assignments
+  # Additional security measures would need to be implemented at the application level
+}
+
+# Restore user access (assign default viewer role)
+mutation RestoreUserAccess($userId: uuid!, $viewerRoleId: uuid!) {
+  # Assign default viewer role to restore basic access
+  insert_user_roles_one(object: {
+    user_id: $userId,
+    role_id: $viewerRoleId
+  }) {
+    id
+    user_id
+    role_id
+    created_at
+    role {
+      name
+      display_name
+      priority
+    }
+  }
+} 

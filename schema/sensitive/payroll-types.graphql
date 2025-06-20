@@ -1,0 +1,286 @@
+# Payroll Types with Security Classifications
+# Contains sensitive financial and employee data
+
+"""
+Payroll type with field-level security
+@securityLevel: HIGH
+@compliance: SOC2-CC6.1, SOC2-PI1.1
+"""
+type payrolls {
+  """
+  Payroll ID
+  @securityLevel: MEDIUM
+  """
+  id: UUID!
+  
+  """
+  Payroll name/identifier
+  @securityLevel: MEDIUM
+  """
+  name: String!
+  
+  """
+  Processing status
+  @securityLevel: MEDIUM
+  @audit: true
+  """
+  status: payroll_status!
+  
+  """
+  Number of employees
+  @securityLevel: HIGH
+  @restricted: manager_up
+  @compliance: SOC2-C1.1
+  """
+  employee_count: Int
+  
+  """
+  Processing time in hours
+  @securityLevel: MEDIUM
+  """
+  processing_time: Int!
+  
+  """
+  Days before EFT to process
+  @securityLevel: MEDIUM
+  """
+  processing_days_before_eft: Int!
+  
+  """
+  Payroll system used
+  @securityLevel: MEDIUM
+  """
+  payroll_system: String
+  
+  """
+  Date configuration value
+  @securityLevel: MEDIUM
+  """
+  date_value: Int
+  
+  """
+  Version number for audit trail
+  @securityLevel: LOW
+  @audit: true
+  """
+  version_number: Int
+  
+  """
+  Parent payroll ID for versioning
+  @securityLevel: MEDIUM
+  @audit: true
+  """
+  parent_payroll_id: UUID
+  
+  """
+  Go-live date
+  @securityLevel: MEDIUM
+  """
+  go_live_date: date
+  
+  """
+  Superseded date for versioning
+  @securityLevel: MEDIUM
+  @audit: true
+  """
+  superseded_date: timestamptz
+  
+  """
+  Reason for version change
+  @securityLevel: MEDIUM
+  @audit: true
+  """
+  version_reason: String
+  
+  """
+  User who created this version
+  @securityLevel: MEDIUM
+  @audit: true
+  """
+  created_by_user_id: UUID
+  
+  """
+  Creation timestamp
+  @securityLevel: LOW
+  @audit: true
+  """
+  created_at: timestamptz!
+  
+  """
+  Last update timestamp
+  @securityLevel: LOW
+  @audit: true
+  """
+  updated_at: timestamptz!
+  
+  # Foreign keys
+  client_id: UUID!
+  cycle_id: UUID!
+  date_type_id: UUID!
+  primary_consultant_user_id: UUID
+  backup_consultant_user_id: UUID
+  manager_user_id: UUID
+  
+  # Relationships
+  client: clients!
+  payroll_cycle: payroll_cycles!
+  payroll_date_type: payroll_date_types!
+  userByPrimaryConsultantUserId: users
+  userByBackupConsultantUserId: users
+  userByManagerUserId: users
+  payroll_dates: [payroll_dates!]!
+  payroll: payrolls
+  payrolls: [payrolls!]!
+}
+
+"""
+Payroll dates with financial transaction information
+@securityLevel: HIGH
+@compliance: SOC2-CC6.1, SOC2-PI1.1
+"""
+type payroll_dates {
+  """
+  Date record ID
+  @securityLevel: LOW
+  """
+  id: UUID!
+  
+  """
+  Associated payroll
+  @securityLevel: MEDIUM
+  """
+  payroll_id: UUID!
+  
+  """
+  Original EFT date before adjustments
+  @securityLevel: HIGH
+  @financial: true
+  @audit: true
+  """
+  original_eft_date: date!
+  
+  """
+  Adjusted EFT date for business days
+  @securityLevel: HIGH
+  @financial: true
+  @audit: true
+  """
+  adjusted_eft_date: date!
+  
+  """
+  Processing date
+  @securityLevel: HIGH
+  @financial: true
+  @audit: true
+  """
+  processing_date: date!
+  
+  """
+  Processing notes
+  @securityLevel: MEDIUM
+  @audit: true
+  """
+  notes: String
+  
+  """
+  Creation timestamp
+  @securityLevel: LOW
+  @audit: true
+  """
+  created_at: timestamptz!
+  
+  """
+  Last update timestamp
+  @securityLevel: LOW
+  @audit: true
+  """
+  updated_at: timestamptz!
+  
+  # Relationships
+  payroll: payrolls!
+}
+
+"""
+Secure payroll input for mutations
+@securityLevel: HIGH
+@compliance: SOC2-CC6.1
+"""
+input payrolls_insert_input {
+  """
+  @securityLevel: MEDIUM
+  @validation: required, min_length:3
+  """
+  name: String!
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: required, valid_client_id
+  """
+  client_id: UUID!
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: required, valid_cycle_id
+  """
+  cycle_id: UUID!
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: required, valid_date_type_id
+  """
+  date_type_id: UUID!
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: range:1-31
+  """
+  date_value: Int
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: valid_user_id, is_staff
+  """
+  primary_consultant_user_id: UUID
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: valid_user_id, is_staff
+  """
+  backup_consultant_user_id: UUID
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: valid_user_id, is_staff
+  """
+  manager_user_id: UUID
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: range:1-10
+  """
+  processing_days_before_eft: Int
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: enum
+  """
+  status: payroll_status
+  
+  """
+  @securityLevel: MEDIUM
+  """
+  payroll_system: String
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: range:1-24
+  """
+  processing_time: Int
+  
+  """
+  @securityLevel: HIGH
+  @validation: range:1-10000
+  @restricted: manager_up
+  """
+  employee_count: Int
+}

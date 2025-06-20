@@ -1,0 +1,38 @@
+[
+  {
+    "content": "Add authentication to critical developer routes (clean-single-payroll, regenerate-all-dates, reset-to-original, audit/log)",
+    "status": "completed",
+    "priority": "high",
+    "id": "8"
+  },
+  {
+    "content": "Convert sensitive data routes from auth() to withAuth wrapper for proper logging",
+    "status": "completed",
+    "priority": "high",
+    "id": "9"
+  },
+  {
+    "content": "Add SOC2 logging to user management routes (users/[id], update-profile, update-user-role)",
+    "status": "completed",
+    "priority": "high",
+    "id": "10"
+  },
+  {
+    "content": "Add SOC2 logging to payroll data routes (payrolls/[id], payroll-dates/[payrollId])",
+    "status": "completed",
+    "priority": "high",
+    "id": "11"
+  },
+  {
+    "content": "Add SOC2 logging to staff management routes (staff/update-role, staff/invitation-status)",
+    "status": "completed",
+    "priority": "medium",
+    "id": "12"
+  },
+  {
+    "content": "Verify all security fixes and test authentication flows",
+    "status": "completed",
+    "priority": "medium",
+    "id": "13"
+  }
+]

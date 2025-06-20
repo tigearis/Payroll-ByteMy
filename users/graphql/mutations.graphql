@@ -1,0 +1,39 @@
+# User domain mutations - simplified version
+
+mutation CreateUser($input: users_insert_input!) {
+  insert_users_one(object: $input) {
+    ...UserFragment
+  }
+}
+
+mutation UpdateUser($id: uuid!, $changes: users_set_input!) {
+  update_users_by_pk(pk_columns: { id: $id }, _set: $changes) {
+    ...UserFragment
+  }
+}
+
+mutation UpdateMyProfile(
+  $id: uuid!
+  $name: String
+  $email: String
+  $username: String
+) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      name: $name
+      email: $email
+      username: $username
+    }
+  ) {
+    ...UserFragment
+  }
+}
+
+mutation DeleteUser($id: uuid!) {
+  delete_users_by_pk(id: $id) {
+    id
+    name
+    email
+  }
+}

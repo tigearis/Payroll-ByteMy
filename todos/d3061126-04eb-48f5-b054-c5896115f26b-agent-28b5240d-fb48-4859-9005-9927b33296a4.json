@@ -1,0 +1,170 @@
+[
+  {
+    "content": "Examine existing table metadata files to understand current structure",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Add developer permissions to audit_permission_changes.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "2"
+  },
+  {
+    "content": "Add developer permissions to audit_permission_usage_report.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Add developer permissions to audit_slow_queries.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Add developer permissions to audit_user_access_summary.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Add developer permissions to public_billing_event_log.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  },
+  {
+    "content": "Add developer permissions to public_billing_invoice.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "7"
+  },
+  {
+    "content": "Add developer permissions to public_billing_invoice_item.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "8"
+  },
+  {
+    "content": "Add developer permissions to public_billing_invoices.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "9"
+  },
+  {
+    "content": "Add developer permissions to public_billing_items.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "10"
+  },
+  {
+    "content": "Add developer permissions to public_billing_plan.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "11"
+  },
+  {
+    "content": "Add developer permissions to public_client_billing_assignment.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "12"
+  },
+  {
+    "content": "Add developer permissions to public_current_payrolls.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "13"
+  },
+  {
+    "content": "Add developer permissions to public_latest_payroll_version_results.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "14"
+  },
+  {
+    "content": "Add developer permissions to public_payroll_activation_results.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "15"
+  },
+  {
+    "content": "Add developer permissions to public_payroll_assignment_audit.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "16"
+  },
+  {
+    "content": "Add developer permissions to public_payroll_dashboard_stats.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "17"
+  },
+  {
+    "content": "Add developer permissions to public_payroll_triggers_status.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "18"
+  },
+  {
+    "content": "Add developer permissions to public_payroll_version_history_results.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "19"
+  },
+  {
+    "content": "Add developer permissions to public_payroll_version_results.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "20"
+  },
+  {
+    "content": "Add developer permissions to public_permissions.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "21"
+  },
+  {
+    "content": "Add developer permissions to public_resources.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "22"
+  },
+  {
+    "content": "Add developer permissions to public_role_permissions.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "23"
+  },
+  {
+    "content": "Add developer permissions to public_roles.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "24"
+  },
+  {
+    "content": "Add developer permissions to public_user_roles.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "25"
+  },
+  {
+    "content": "Add developer permissions to public_users_role_backup.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "26"
+  },
+  {
+    "content": "Add developer permissions to neon_auth_users_sync.yaml",
+    "status": "completed",
+    "priority": "medium",
+    "id": "27"
+  },
+  {
+    "content": "Verify all permissions have been added correctly",
+    "status": "completed",
+    "priority": "high",
+    "id": "28"
+  }
+]

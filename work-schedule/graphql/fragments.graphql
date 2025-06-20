@@ -1,0 +1,20 @@
+# Work Schedule Domain Fragments
+
+fragment WorkScheduleCore on work_schedule {
+  id
+  user_id
+  work_day
+  work_hours
+  created_at
+  updated_at
+}
+
+fragment WorkScheduleWithUser on work_schedule {
+  ...WorkScheduleCore
+  user {
+    id
+    name
+    email
+    is_staff
+  }
+}

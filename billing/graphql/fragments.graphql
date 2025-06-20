@@ -1,0 +1,93 @@
+# Billing Domain Fragments
+
+fragment BillingPlanCore on billing_plan {
+  id
+  name
+  description
+  rate_per_payroll
+  currency
+  created_at
+  updated_at
+}
+
+fragment BillingInvoiceCore on billing_invoice {
+  id
+  client_id
+  billing_period_start
+  billing_period_end
+  issued_date
+  due_date
+  status
+  notes
+  total_amount
+  currency
+  created_at
+  updated_at
+}
+
+fragment BillingInvoiceWithItems on billing_invoice {
+  ...BillingInvoiceCore
+  billing_invoice_items {
+    ...BillingInvoiceItemCore
+  }
+  client {
+    id
+    name
+    contact_email
+  }
+}
+
+fragment BillingInvoiceItemCore on billing_invoice_item {
+  id
+  invoice_id
+  description
+  quantity
+  unit_price
+  amount
+  created_at
+  updated_at
+}
+
+fragment ClientBillingAssignmentCore on client_billing_assignment {
+  id
+  client_id
+  billing_plan_id
+  start_date
+  end_date
+  is_active
+  created_at
+  updated_at
+}
+
+fragment ClientBillingAssignmentWithRelations on client_billing_assignment {
+  ...ClientBillingAssignmentCore
+  billing_plan {
+    ...BillingPlanCore
+  }
+  client {
+    id
+    name
+  }
+}
+
+fragment BillingEventLogCore on billing_event_log {
+  id
+  invoice_id
+  event_type
+  message
+  created_by
+  created_at
+}
+
+fragment BillingEventLogWithRelations on billing_event_log {
+  ...BillingEventLogCore
+  billing_invoice {
+    id
+    status
+  }
+  user {
+    id
+    name
+    email
+  }
+}

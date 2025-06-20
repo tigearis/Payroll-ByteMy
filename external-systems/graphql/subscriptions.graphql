@@ -1,0 +1,16 @@
+# External Systems Domain Subscriptions
+
+subscription SubscribeToExternalSystems {
+  external_systems(order_by: { name: asc }) {
+    ...ExternalSystemCore
+  }
+}
+
+subscription SubscribeToClientExternalSystems($client_id: uuid!) {
+  client_external_systems(
+    where: { client_id: { _eq: $client_id } }
+    order_by: { created_at: desc }
+  ) {
+    ...ClientExternalSystemWithRelations
+  }
+}

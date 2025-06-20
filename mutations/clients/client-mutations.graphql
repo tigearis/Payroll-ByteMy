@@ -1,0 +1,65 @@
+# Client Mutations
+# @securityLevel: MEDIUM
+
+# Create a new client
+mutation CreateClient(
+  $name: String!
+  $contact_person: String
+  $contact_email: String
+  $contact_phone: String
+) {
+  insert_clients_one(
+    object: {
+      name: $name
+      contact_person: $contact_person
+      contact_email: $contact_email
+      contact_phone: $contact_phone
+      active: true
+    }
+  ) {
+    ...ClientDetailed
+  }
+}
+
+# Update client information
+mutation UpdateClient(
+  $id: uuid!
+  $name: String
+  $contact_person: String
+  $contact_email: String
+  $contact_phone: String
+  $active: Boolean
+) {
+  update_clients_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      name: $name
+      contact_person: $contact_person
+      contact_email: $contact_email
+      contact_phone: $contact_phone
+      active: $active
+    }
+  ) {
+    ...ClientDetailed
+  }
+}
+
+# Deactivate client (soft delete)
+mutation DeactivateClient($id: uuid!) {
+  update_clients_by_pk(
+    pk_columns: { id: $id }
+    _set: { active: false }
+  ) {
+    id
+    name
+    active
+  }
+}
+
+# Delete client (hard delete)
+mutation DeleteClient($id: uuid!) {
+  delete_clients_by_pk(id: $id) {
+    id
+    name
+  }
+}

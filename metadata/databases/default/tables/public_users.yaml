@@ -1,0 +1,309 @@
+table:
+  name: users
+  schema: public
+object_relationships:
+  - name: manager
+    using:
+      manual_configuration:
+        column_mapping:
+          manager_id: id
+        insertion_order: null
+        remote_table:
+          name: users
+          schema: public
+array_relationships:
+  - name: billing_event_logs
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: billing_event_log
+          schema: public
+  - name: leaves
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: leave
+          schema: public
+  - name: notes_written
+    using:
+      manual_configuration:
+        column_mapping:
+          id: user_id
+        insertion_order: null
+        remote_table:
+          name: notes
+          schema: public
+  - name: payrollAssignmentAuditsByFromConsultantId
+    using:
+      foreign_key_constraint_on:
+        column: from_consultant_id
+        table:
+          name: payroll_assignment_audit
+          schema: public
+  - name: payrollAssignmentAuditsByToConsultantId
+    using:
+      foreign_key_constraint_on:
+        column: to_consultant_id
+        table:
+          name: payroll_assignment_audit
+          schema: public
+  - name: payrollAssignmentsByConsultantId
+    using:
+      foreign_key_constraint_on:
+        column: consultant_id
+        table:
+          name: payroll_assignments
+          schema: public
+  - name: payrollAssignmentsByOriginalConsultantId
+    using:
+      foreign_key_constraint_on:
+        column: original_consultant_id
+        table:
+          name: payroll_assignments
+          schema: public
+  - name: payroll_assignment_audits
+    using:
+      foreign_key_constraint_on:
+        column: changed_by
+        table:
+          name: payroll_assignment_audit
+          schema: public
+  - name: payroll_assignments
+    using:
+      foreign_key_constraint_on:
+        column: assigned_by
+        table:
+          name: payroll_assignments
+          schema: public
+  - name: payrollsByBackupConsultantUserId
+    using:
+      foreign_key_constraint_on:
+        column: backup_consultant_user_id
+        table:
+          name: payrolls
+          schema: public
+  - name: payrollsByManagerUserId
+    using:
+      foreign_key_constraint_on:
+        column: manager_user_id
+        table:
+          name: payrolls
+          schema: public
+  - name: payrollsByPrimaryConsultantUserId
+    using:
+      foreign_key_constraint_on:
+        column: primary_consultant_user_id
+        table:
+          name: payrolls
+          schema: public
+  - name: staffByManager
+    using:
+      manual_configuration:
+        column_mapping:
+          id: manager_id
+        insertion_order: null
+        remote_table:
+          name: users
+          schema: public
+  - name: user_roles
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: user_roles
+          schema: public
+  - name: usersManager
+    using:
+      foreign_key_constraint_on:
+        column: manager_id
+        table:
+          name: users
+          schema: public
+  - name: work_schedules
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: work_schedule
+          schema: public
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+  - role: manager
+    permission:
+      check:
+        role:
+          _in:
+            - viewer
+            - consultant
+      columns:
+        - name
+        - email
+        - username
+        - role
+        - manager_id
+        - is_staff
+    comment: Managers can create users with viewer or consultant roles
+  - role: org_admin
+    permission:
+      check: {}
+      columns:
+        - name
+        - email
+        - username
+        - role
+        - manager_id
+        - is_staff
+        - clerk_user_id
+    comment: Org admins can create any users
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - image
+        - name
+        - username
+        - is_staff
+        - role
+        - manager_id
+        - created_at
+        - updated_at
+      filter:
+        _or:
+          - id:
+              _eq: X-Hasura-User-Id
+          - manager_id:
+              _eq: X-Hasura-User-Id
+          - payrollAssignmentsByConsultantId:
+              consultant_id:
+                _eq: X-Hasura-User-Id
+          - payrollAssignmentsByOriginalConsultantId:
+              original_consultant_id:
+                _eq: X-Hasura-User-Id
+    comment: Consultants can view their own profile, their team members, and users from assigned payrolls - no email access for security
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full system access
+  - role: manager
+    permission:
+      columns:
+        - created_at
+        - email
+        - id
+        - image
+        - name
+        - role
+        - updated_at
+        - username
+        - is_staff
+        - manager_id
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all user details
+  - role: org_admin
+    permission:
+      columns:
+        - created_at
+        - email
+        - id
+        - image
+        - name
+        - role
+        - updated_at
+        - username
+        - is_staff
+        - manager_id
+        - clerk_user_id
+      filter: {}
+      allow_aggregations: true
+    comment: Org Admins can view all user data
+  - role: viewer
+    permission:
+      columns:
+        - id
+        - image
+        - name
+        - is_staff
+      filter: {}
+    comment: Viewers can see basic user information
+update_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - email
+        - image
+        - name
+        - username
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+      check:
+        id:
+          _eq: X-Hasura-User-Id
+    comment: Users can update their own profile
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+  - role: manager
+    permission:
+      columns:
+        - email
+        - image
+        - name
+        - username
+        - manager_id
+        - role
+      filter:
+        _or:
+          - id:
+              _eq: X-Hasura-User-Id
+          - manager_id:
+              _eq: X-Hasura-User-Id
+      check:
+        _or:
+          - id:
+              _eq: X-Hasura-User-Id
+          - _and:
+              - manager_id:
+                  _eq: X-Hasura-User-Id
+              - role:
+                  _in:
+                    - viewer
+                    - consultant
+    comment: Managers can update their profile and their team members
+  - role: org_admin
+    permission:
+      columns:
+        - email
+        - image
+        - name
+        - username
+        - role
+        - manager_id
+        - is_staff
+      filter: {}
+      check: {}
+    comment: Org admins can update any user
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
+  - role: org_admin
+    permission:
+      filter: {}
+    comment: Only Org Admins can delete users
+apollo_federation_config:
+  enable: v1
