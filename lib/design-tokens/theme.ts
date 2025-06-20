@@ -107,19 +107,19 @@ export const darkTheme = {
   // Semantic colours
   semantic: {
     success: tokens.colours.success[400],
-    successBackground: tokens.colours.success[900],
+    successBackground: tokens.colours.success[950],
     successForeground: tokens.colours.success[300],
     
     warning: tokens.colours.warning[400],
-    warningBackground: tokens.colours.warning[900],
+    warningBackground: tokens.colours.warning[950],
     warningForeground: tokens.colours.warning[300],
     
     error: tokens.colours.error[400],
-    errorBackground: tokens.colours.error[900],
+    errorBackground: tokens.colours.error[950],
     errorForeground: tokens.colours.error[300],
     
     info: tokens.colours.info[400],
-    infoBackground: tokens.colours.info[900],
+    infoBackground: tokens.colours.info[950],
     infoForeground: tokens.colours.info[300],
   },
   

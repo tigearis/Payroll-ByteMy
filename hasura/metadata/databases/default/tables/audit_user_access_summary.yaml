@@ -17,12 +17,10 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - id
-        - name
+        - user_name
         - role
         - is_active
-        - created_at
-        - updated_at
+        - last_activity
       filter:
         role:
           _in:
@@ -31,14 +29,18 @@ select_permissions:
   - role: org_admin
     permission:
       columns:
-        - id
-        - name
+        - user_id
+        - user_name
         - email
         - role
         - is_active
-        - is_staff
-        - created_at
-        - updated_at
+        - total_actions
+        - read_actions
+        - write_actions
+        - successful_logins
+        - failed_logins
+        - last_activity
+        - last_login
       filter:
         role:
           _nin:

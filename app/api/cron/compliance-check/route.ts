@@ -1,10 +1,8 @@
-import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
 import { secureHasuraService } from "@/lib/secure-hasura-service";
-import { logger } from "@/lib/logging";
+import { auditLogger } from "@/lib/audit/audit-logger";
 import { gql } from "@apollo/client";
 import { subDays } from "date-fns";
-import { LogCategory } from "@/lib/logging";
 
 const COMPLIANCE_CHECKS = gql`
   query RunComplianceChecks(
@@ -89,16 +87,17 @@ export async function POST(request: NextRequest) {
     // SECURITY: Verify request is from authorized source
     const authHeader = request.headers.get("authorization");
     const cronSecret = request.headers.get("x-cron-secret");
-
+    
     // Check for cron secret (for Vercel cron jobs)
     if (cronSecret !== process.env.CRON_SECRET) {
-      await logger.security("Unauthorized cron request - invalid secret", {
-        category: LogCategory.SECURITY_EVENT,
-        metadata: {
-          source: "compliance-check",
-          ip: request.headers.get("x-forwarded-for"),
-        },
-      });
+      console.error("🚨 Unauthorized cron request - invalid secret");
+      await auditLogger.logSecurityEvent(
+        "unauthorized_cron_access",
+        "error",
+        { source: "compliance-check", ip: request.headers.get("x-forwarded-for") },
+        undefined,
+        request.headers.get("x-forwarded-for") || undefined
+      );
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
         { status: 401 }
@@ -124,10 +123,13 @@ export async function POST(request: NextRequest) {
 
     if (errors) {
       console.error("Compliance check query failed:", errors);
-      await logger.security("Compliance check query failed", {
-        category: LogCategory.SECURITY_EVENT,
-        metadata: { errors },
-      });
+      await auditLogger.logSecurityEvent(
+        "compliance_check_failed",
+        "error",
+        { errors },
+        undefined,
+        request.headers.get("x-forwarded-for") || undefined
+      );
       return NextResponse.json(
         { success: false, message: "Failed to run compliance checks" },
         { status: 500 }
@@ -201,10 +203,13 @@ export async function POST(request: NextRequest) {
 
     if (checkErrors) {
       console.error("Failed to record compliance check:", checkErrors);
-      await logger.security("Failed to record compliance check", {
-        category: LogCategory.SECURITY_EVENT,
-        metadata: { errors: checkErrors },
-      });
+      await auditLogger.logSecurityEvent(
+        "compliance_check_record_failed",
+        "error",
+        { errors: checkErrors },
+        undefined,
+        request.headers.get("x-forwarded-for") || undefined
+      );
       return NextResponse.json(
         { success: false, message: "Failed to record compliance check" },
         { status: 500 }
@@ -212,14 +217,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Log compliance check
-    await logger.security("Compliance check completed", {
-      category: LogCategory.SYSTEM_ACCESS,
-      metadata: {
-        status,
-        remediationRequired,
+    await auditLogger.logSecurityEvent(
+      "compliance_check_completed",
+      status === "failed" ? "error" : status === "warning" ? "warning" : "info",
+      {
         findings,
+        issues,
+        status,
       },
-    });
+      undefined,
+      request.headers.get("x-forwarded-for") || undefined
+    );
 
     return NextResponse.json({
       success: true,
@@ -232,7 +240,18 @@ export async function POST(request: NextRequest) {
         checkId: checkData?.insert_compliance_checks_one?.id,
       },
     });
-  } catch (error) {
-    return handleApiError(error, "cron");
+  } catch (error: any) {
+    console.error("Compliance check failed:", error);
+    await auditLogger.logSecurityEvent(
+      "compliance_check_error",
+      "error",
+      { error: error instanceof Error ? error.message : String(error) },
+      undefined,
+      request.headers.get("x-forwarded-for") || undefined
+    );
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

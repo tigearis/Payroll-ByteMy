@@ -1,8 +1,7 @@
-import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/cron/generate-batch/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { adminApolloClient } from "@/lib/apollo/server-client"; // Updated import to use the consolidated file
+import { adminApolloClient } from "@/lib/server-apollo-client"; // Updated import to use the consolidated file
 import { gql } from "@apollo/client";
 import { format, addMonths } from "date-fns";
 
@@ -125,13 +124,17 @@ export async function POST(req: NextRequest) {
       } catch (error) {
         console.error(`Error processing payroll ${payrollId}:`, error);
         results.failed++;
-        results.errors.push(`Payroll ${payrollId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        results.errors.push({
+          payrollId,
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
 
+    // Prepare and return response
     return NextResponse.json({
-      success: true,
-      message: `Successfully processed ${results.processed} of ${results.total} payrolls`,
+      success: results.processed > 0,
+      message: `Processed ${results.processed} of ${results.total} payrolls`,
       total: results.total,
       processed: results.processed,
       failed: results.failed,

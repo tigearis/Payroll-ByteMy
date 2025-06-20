@@ -14,10 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { Copy, Eye, EyeOff, RefreshCw, User, Shield } from "lucide-react";
-import { useEnhancedPermissions } from "@/hooks/useEnhancedPermissions";
-import { EnhancedPermissionGuard } from "@/components/auth/EnhancedPermissionGuard";
-import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Copy, Eye, EyeOff, RefreshCw, User, Shield, AlertTriangle } from "lucide-react";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const features = [
   {
@@ -63,9 +62,10 @@ interface OAuthStatus {
   needsFix: boolean;
 }
 
-function DeveloperPageContent() {
-  const { canAccessDeveloperTools } = useEnhancedPermissions();
-
+export default function DeveloperPage() {
+  // SECURITY: Verify user has developer permissions
+  const { isDeveloper, isLoading: roleLoading } = useUserRole();
+  
   const [enabledFeatures, setEnabledFeatures] = useState<string[]>([]);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const [oauthStatus, setOAuthStatus] = useState<OAuthStatus | null>(null);
@@ -77,7 +77,47 @@ function DeveloperPageContent() {
     "user_2uCU9pKf7RP2FiORHJVM5IH0Pd1"
   );
 
-  // Define functions that will be used in useEffect
+  // SECURITY: Block access for non-developers
+  if (!roleLoading && !isDeveloper) {
+    return (
+      <div className="container mx-auto p-6">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Access Denied</AlertTitle>
+          <AlertDescription>
+            You need developer privileges to access this page. Only users with the 'admin' role can access developer tools.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  // Show loading state while checking permissions
+  if (roleLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Shield className="h-12 w-12 animate-pulse mx-auto mb-4" />
+          <p>Verifying developer access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const toggleFeature = (feature: string) => {
+    setEnabledFeatures((prev) =>
+      prev.includes(feature)
+        ? prev.filter((f) => f !== feature)
+        : [...prev, feature]
+    );
+  };
+
+  const handleSave = () => {
+    // Here you would typically save the enabled features to your backend
+    console.log("Enabled features:", enabledFeatures);
+    alert("Feature toggles saved!");
+  };
+
   const fetchToken = async () => {
     setLoadingToken(true);
     try {
@@ -104,28 +144,6 @@ function DeveloperPageContent() {
     } finally {
       setLoadingOAuth(false);
     }
-  };
-
-  useEffect(() => {
-    // This effect only runs when the component is rendered, which is handled by the guard.
-    if (canAccessDeveloperTools) {
-      fetchToken();
-      checkOAuthStatus();
-    }
-  }, [canAccessDeveloperTools]);
-
-  const toggleFeature = (feature: string) => {
-    setEnabledFeatures((prev) =>
-      prev.includes(feature)
-        ? prev.filter((f) => f !== feature)
-        : [...prev, feature]
-    );
-  };
-
-  const handleSave = () => {
-    // Here you would typically save the enabled features to your backend
-    console.log("Enabled features:", enabledFeatures);
-    alert("Feature toggles saved!");
   };
 
   const fixOAuthUser = async () => {
@@ -160,6 +178,11 @@ function DeveloperPageContent() {
     navigator.clipboard.writeText(text);
     alert("Copied to clipboard!");
   };
+
+  useEffect(() => {
+    fetchToken();
+    checkOAuthStatus();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -982,7 +1005,7 @@ function DeveloperPageContent() {
       </Card> */}
 
       {/* Feature Toggles */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Feature Toggles</CardTitle>
           <CardDescription>
@@ -1034,15 +1057,7 @@ function DeveloperPageContent() {
             <Button onClick={handleSave}>Save Changes</Button>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
-  );
-}
-
-export default function DeveloperPage() {
-  return (
-    <EnhancedPermissionGuard.DeveloperGuard>
-      <DeveloperPageContent />
-    </EnhancedPermissionGuard.DeveloperGuard>
   );
 }

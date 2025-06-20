@@ -1,19 +1,109 @@
-import { useRoleHierarchy, type UserRole } from "@/lib/auth/soc2-auth";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface RoleGuardProps {
   children: React.ReactNode;
-  minimumRole?: UserRole;
+  requiredRole?: string;
+  requiredPermission?:
+    | "canManageUsers"
+    | "canManageStaff"
+    | "isAdmin"
+    | "isManager";
   fallback?: React.ReactNode;
+  redirectTo?: string;
 }
 
 export function RoleGuard({
   children,
-  minimumRole = "viewer",
+  requiredRole,
+  requiredPermission,
   fallback,
+  redirectTo = "/dashboard",
 }: RoleGuardProps) {
-  const { userRole, hasMinimumRole } = useRoleHierarchy();
+  const {
+    userRole: role,
+    isLoading: isLoadingRole,
+    hasRole,
+    canManageUsers,
+    isAdmin,
+    isManager,
+    permissions,
+  } = useUserRole();
+  const router = useRouter();
 
-  const hasAccess = hasMinimumRole(minimumRole);
+  useEffect(() => {
+    if (!isLoadingRole) {
+      let hasAccess = true;
+
+      if (requiredRole) {
+        hasAccess = hasRole([requiredRole]);
+      }
+
+      if (requiredPermission) {
+        switch (requiredPermission) {
+          case "canManageUsers":
+            hasAccess = canManageUsers;
+            break;
+          case "canManageStaff":
+            hasAccess = permissions.canManageStaff;
+            break;
+          case "isAdmin":
+            hasAccess = isAdmin;
+            break;
+          case "isManager":
+            hasAccess = isManager;
+            break;
+        }
+      }
+
+      if (!hasAccess && redirectTo) {
+        console.log(
+          `🔒 Access denied for role ${role}. Redirecting to ${redirectTo}`
+        );
+        router.push(redirectTo);
+      }
+    }
+  }, [
+    isLoadingRole,
+    role,
+    requiredRole,
+    requiredPermission,
+    redirectTo,
+    router,
+    hasRole,
+    canManageUsers,
+    permissions.canManageStaff,
+    isAdmin,
+    isManager,
+  ]);
+
+  if (isLoadingRole) {
+    return <div>Loading...</div>;
+  }
+
+  let hasAccess = true;
+
+  if (requiredRole) {
+    hasAccess = hasRole([requiredRole]);
+  }
+
+  if (requiredPermission) {
+    switch (requiredPermission) {
+      case "canManageUsers":
+        hasAccess = canManageUsers;
+        break;
+      case "canManageStaff":
+        hasAccess = permissions.canManageStaff;
+        break;
+      case "isAdmin":
+        hasAccess = isAdmin;
+        break;
+      case "isManager":
+        hasAccess = isManager;
+        break;
+    }
+  }
 
   if (!hasAccess) {
     if (fallback) {
@@ -24,9 +114,9 @@ export function RoleGuard({
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
           <p className="text-gray-600">
-            You need {minimumRole} access or higher.
+            You don't have permission to access this page.
           </p>
-          <p className="text-sm text-gray-500 mt-2">Current role: {userRole}</p>
+          <p className="text-sm text-gray-500 mt-2">Current role: {role}</p>
         </div>
       </div>
     );

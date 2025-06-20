@@ -136,7 +136,7 @@ export class RateLimiter {
     
     if (entry.count > config.requests) {
       // Rate limit exceeded
-      await this.handleRateLimitExceeded(request, route, config, identifier);
+      await this.handleRateLimitExceeded(request, route, identifier, config);
       
       return {
         success: false,
@@ -233,8 +233,8 @@ export class RateLimiter {
   private async handleRateLimitExceeded(
     request: NextRequest,
     route: string,
-    config: RateLimitConfig,
-    identifier?: string
+    identifier?: string,
+    config: RateLimitConfig
   ): Promise<void> {
     const ip = this.getClientIP(request);
     
