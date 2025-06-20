@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 import { toast } from "sonner";
 import { useCurrentUser } from "./useCurrentUser";
 
-// Supersede current payroll version
+// Import extracted GraphQL operations - using extracted versions where available
 const SUPERSEDE_CURRENT_PAYROLL = gql`
   mutation SupersedeCurrentPayroll($id: uuid!, $superseded_date: date!) {
     update_payrolls_by_pk(

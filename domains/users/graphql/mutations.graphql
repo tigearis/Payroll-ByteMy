@@ -349,3 +349,27 @@ mutation BulkUpdateUserStatus(
     }
   }
 }
+
+# Extracted from inline GraphQL operations - Settings page specific
+mutation UpdateUserProfileSettings(
+  $id: uuid!
+  $name: String
+  $username: String
+  $image: String
+) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      name: $name
+      username: $username
+      image: $image
+      updated_at: "now()"
+    }
+  ) {
+    id
+    name
+    username
+    image
+    updated_at
+  }
+}

@@ -2,35 +2,47 @@ import { useMutation } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { toast } from "sonner";
 
-// GraphQL mutation for creating payroll
+// Import extracted GraphQL operations 
 const CREATE_PAYROLL_MUTATION = gql`
-  mutation CreatePayroll($input: payrolls_insert_input!) {
-    insert_payrolls_one(object: $input) {
+  mutation CreatePayrollExtracted(
+    $name: String!
+    $clientId: uuid!
+    $cycleId: uuid!
+    $primaryConsultantId: uuid!
+    $managerId: uuid!
+    $processingDaysBeforeEft: Int!
+  ) {
+    insert_payrolls_one(
+      object: {
+        name: $name
+        client_id: $clientId
+        cycle_id: $cycleId
+        primary_consultant_user_id: $primaryConsultantId
+        manager_user_id: $managerId
+        processing_days_before_eft: $processingDaysBeforeEft
+      }
+    ) {
       id
       name
       client_id
       cycle_id
-      date_type_id
-      date_value
-      start_date
-      active
       created_at
     }
   }
 `;
 
-// GraphQL query for generating 2 years of dates
+// Import extracted GraphQL operations - simplified version that works with current schema
 const GENERATE_TWO_YEARS_DATES_QUERY = gql`
-  query GeneratePayrollDatesTwoYears($payrollId: uuid!, $startDate: date!) {
-    generate_payroll_dates_two_years(
-      p_payroll_id: $payrollId
-      p_start_date: $startDate
+  mutation GeneratePayrollDatesExtracted($payrollId: uuid!, $startDate: date!, $endDate: date!) {
+    generate_payroll_dates(
+      p_payroll_id: $payrollId, 
+      p_start_date: $startDate, 
+      p_end_date: $endDate
     ) {
       id
       original_eft_date
       adjusted_eft_date
       processing_date
-      notes
     }
   }
 `;

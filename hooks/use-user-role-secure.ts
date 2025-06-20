@@ -2,22 +2,26 @@ import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useCurrentUser } from "./useCurrentUser";
 
-// Separate query for role field with better error handling
+// Import extracted GraphQL operations
 const GET_USER_ROLE = gql`
-  query GetUserRole($currentUserId: uuid!) {
-    users_by_pk(id: $currentUserId) {
+  query GetUserRole($userId: uuid!) {
+    users_by_pk(id: $userId) {
       id
       role
+      is_staff
+      is_active
     }
   }
 `;
 
-// Fallback using a different approach if role field access fails
 const GET_USER_ROLE_FALLBACK = gql`
-  query GetUserRoleFallback($currentUserId: uuid!) {
-    users(where: {id: {_eq: $currentUserId}}) {
+  query GetUserRoleFallback($userId: uuid!) {
+    users_by_pk(id: $userId) {
       id
       role
+      is_staff
+      is_active
+      clerk_user_id
     }
   }
 `;
@@ -31,7 +35,7 @@ export function useUserRole() {
     error,
     refetch,
   } = useQuery(GET_USER_ROLE, {
-    variables: { currentUserId },
+    variables: { userId: currentUserId },
     skip: !currentUserId || !!userLoading,
     fetchPolicy: "cache-first",
     errorPolicy: "all",

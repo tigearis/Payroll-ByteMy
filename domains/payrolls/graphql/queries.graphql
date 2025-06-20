@@ -86,6 +86,19 @@ query GetPayrollsMissingDates {
   }
 }
 
+query GetPayrollsSimple {
+  payrolls {
+    id
+    name
+    status
+    updated_at
+    client {
+      id
+      name
+    }
+  }
+}
+
 query CheckPayrollVersion($id: uuid!) {
   payrolls_by_pk(id: $id) {
     id
@@ -100,5 +113,72 @@ query CheckPayrollVersion($id: uuid!) {
     limit: 1
   ) {
     id
+  }
+}
+
+# Extracted from inline GraphQL operations
+query GetPayrollDatesById($id: uuid!) {
+  payroll_dates(
+    where: { payroll_id: { _eq: $id } },
+    order_by: { adjusted_eft_date: asc }
+  ) {
+    id
+    original_eft_date
+    adjusted_eft_date
+    processing_date
+    notes
+  }
+}
+
+query GetPayrollVersionHistory($payrollId: uuid!) {
+  payrolls(
+    where: {
+      _or: [
+        { id: { _eq: $payrollId } },
+        { parent_payroll_id: { _eq: $payrollId } }
+      ]
+    }
+    order_by: { version_number: desc }
+  ) {
+    id
+    name
+    version_number
+    status
+    created_at
+    superseded_date
+    go_live_date
+    notes
+  }
+}
+
+query GetLatestPayrollVersion($payrollId: uuid!) {
+  payrolls(
+    where: {
+      _or: [
+        { id: { _eq: $payrollId } },
+        { parent_payroll_id: { _eq: $payrollId } }
+      ],
+      superseded_date: { _is_null: true }
+    }
+    limit: 1
+  ) {
+    id
+    name
+    version_number
+    status
+    parent_payroll_id
+  }
+}
+
+query GeneratePayrollDatesTwoYears($startDate: date!, $endDate: date!) {
+  generate_payroll_dates_two_years(
+    args: { 
+      start_date: $startDate,
+      end_date: $endDate 
+    }
+  ) {
+    original_eft_date
+    adjusted_eft_date
+    processing_date
   }
 }

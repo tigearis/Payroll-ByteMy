@@ -13,8 +13,9 @@ import {
 } from "../../components/ui/card";
 import { isAuthError } from "../../lib/utils/auth-error-utils";
 
+// Import extracted GraphQL operations
 const GET_USERS = gql`
-  query GetUsers($limit: Int = 10) {
+  query GetUsersWithLimit($limit: Int = 10) {
     users(limit: $limit) {
       id
       name

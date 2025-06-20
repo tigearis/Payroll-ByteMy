@@ -88,6 +88,7 @@ import {
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUserRole } from "@/hooks/use-user-role";
 import { isAuthError } from "@/lib/utils/auth-error-utils";
+import { StaffUpdatesListener } from "@/components/staff-updates-listener";
 
 // Define Staff Type
 interface Staff {
@@ -1196,799 +1197,806 @@ Do you want to proceed with HARD DELETE?`
   }
 
   return (
-    <ErrorBoundaryWrapper>
-      <div className="container mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              {isDeveloper ? "User Management (All Users)" : "Staff Management"}
-            </h1>
-            <p className="text-gray-500">
-              {isDeveloper
-                ? "Manage all users, roles, and permissions (Developer Access)"
-                : "Manage staff members, roles, and permissions"}
-            </p>
+    <>
+      <StaffUpdatesListener showToasts={true} />
+      <ErrorBoundaryWrapper>
+        <div className="container mx-auto p-6 space-y-6">
+          {/* Header */}
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                {isDeveloper
+                  ? "User Management (All Users)"
+                  : "Staff Management"}
+              </h1>
+              <p className="text-gray-500">
+                {isDeveloper
+                  ? "Manage all users, roles, and permissions (Developer Access)"
+                  : "Manage staff members, roles, and permissions"}
+              </p>
+            </div>
+
+            {isAdministrator ||
+              (isDeveloper && (
+                <Button onClick={openCreateModal}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Add Staff Member
+                </Button>
+              ))}
           </div>
 
-          {isAdministrator ||
-            (isDeveloper && (
-              <Button onClick={openCreateModal}>
-                <UserPlus className="mr-2 h-4 w-4" />
-                Add Staff Member
-              </Button>
-            ))}
-        </div>
+          {/* Stats Cards */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {isDeveloper ? "Total Users" : "Total Staff"}
+                </CardTitle>
+                <Users className="h-4 w-4 text-gray-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.total}</div>
+                <p className="text-xs text-gray-500">
+                  {isDeveloper
+                    ? `${stats.active} staff, ${stats.inactive} non-staff`
+                    : `${stats.active} active, ${stats.inactive} inactive`}
+                </p>
+              </CardContent>
+            </Card>
 
-        {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {isDeveloper ? "Total Users" : "Total Staff"}
-              </CardTitle>
-              <Users className="h-4 w-4 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.total}</div>
-              <p className="text-xs text-gray-500">
-                {isDeveloper
-                  ? `${stats.active} staff, ${stats.inactive} non-staff`
-                  : `${stats.active} active, ${stats.inactive} inactive`}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Administrators
-              </CardTitle>
-              <Badge variant="destructive" className="h-6 px-2">
-                {stats.orgAdmins}
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {stats.admins + stats.orgAdmins}
-              </div>
-              <p className="text-xs text-gray-500">
-                {stats.admins} developers, {stats.orgAdmins} admins
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Managers</CardTitle>
-              <Badge variant="default" className="h-6 px-2">
-                {stats.managers}
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.managers}</div>
-              <p className="text-xs text-gray-500">Team oversight</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Staff</CardTitle>
-              <Badge variant="secondary" className="h-6 px-2">
-                {stats.consultants + stats.viewers}
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {stats.consultants + stats.viewers}
-              </div>
-              <p className="text-xs text-gray-500">
-                {stats.consultants} consultants, {stats.viewers} viewers
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Filters */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filters & Search
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-4">
-              {/* Search and Filter Toggle Row */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {/* Search */}
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                    <Input
-                      placeholder="Search staff..."
-                      value={searchTerm}
-                      onChange={(e) => handleSearch(e.target.value)}
-                      className="pl-10 w-[300px]"
-                    />
-                  </div>
-
-                  {/* Advanced Filters Button */}
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowFilters(!showFilters)}
-                    className={showFilters ? "bg-primary/10" : ""}
-                  >
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filters
-                    {hasActiveFilters && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        {
-                          [
-                            searchTerm,
-                            selectedRole.length > 0,
-                            selectedManager.length > 0,
-                            selectedStatus.length > 0,
-                          ].filter(Boolean).length
-                        }
-                      </Badge>
-                    )}
-                  </Button>
-
-                  {hasActiveFilters && (
-                    <Button variant="ghost" size="sm" onClick={clearFilters}>
-                      <X className="w-4 h-4 mr-1" />
-                      Clear
-                    </Button>
-                  )}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Administrators
+                </CardTitle>
+                <Badge variant="destructive" className="h-6 px-2">
+                  {stats.orgAdmins}
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {stats.admins + stats.orgAdmins}
                 </div>
+                <p className="text-xs text-gray-500">
+                  {stats.admins} developers, {stats.orgAdmins} admins
+                </p>
+              </CardContent>
+            </Card>
 
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={handleRefresh}
-                    disabled={loading}
-                  >
-                    <RefreshCcw
-                      className={`mr-2 h-4 w-4 ${
-                        loading ? "animate-spin" : ""
-                      }`}
-                    />
-                    Refresh
-                  </Button>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Managers</CardTitle>
+                <Badge variant="default" className="h-6 px-2">
+                  {stats.managers}
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.managers}</div>
+                <p className="text-xs text-gray-500">Team oversight</p>
+              </CardContent>
+            </Card>
 
-                  {isDeveloper && (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Staff</CardTitle>
+                <Badge variant="secondary" className="h-6 px-2">
+                  {stats.consultants + stats.viewers}
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {stats.consultants + stats.viewers}
+                </div>
+                <p className="text-xs text-gray-500">
+                  {stats.consultants} consultants, {stats.viewers} viewers
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Filters */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Filter className="h-5 w-5" />
+                Filters & Search
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-4">
+                {/* Search and Filter Toggle Row */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Search */}
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                      <Input
+                        placeholder="Search staff..."
+                        value={searchTerm}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        className="pl-10 w-[300px]"
+                      />
+                    </div>
+
+                    {/* Advanced Filters Button */}
                     <Button
-                      variant="destructive"
-                      onClick={handleEmergencyCacheClear}
-                      size="sm"
+                      variant="outline"
+                      onClick={() => setShowFilters(!showFilters)}
+                      className={showFilters ? "bg-primary/10" : ""}
                     >
-                      🚨 Emergency Cache Clear
+                      <Filter className="w-4 h-4 mr-2" />
+                      Filters
+                      {hasActiveFilters && (
+                        <Badge variant="secondary" className="ml-2 text-xs">
+                          {
+                            [
+                              searchTerm,
+                              selectedRole.length > 0,
+                              selectedManager.length > 0,
+                              selectedStatus.length > 0,
+                            ].filter(Boolean).length
+                          }
+                        </Badge>
+                      )}
                     </Button>
-                  )}
-                </div>
-              </div>
 
-              {/* Advanced Filter Dropdowns */}
-              {showFilters && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Role
-                    </label>
-                    <MultiSelect
-                      options={[
-                        { value: "developer", label: "Developers" },
-                        { value: "org_admin", label: "Admins" },
-                        { value: "manager", label: "Managers" },
-                        { value: "consultant", label: "Consultants" },
-                        { value: "viewer", label: "Viewers" },
-                      ]}
-                      selected={selectedRole}
-                      onSelectionChange={handleRoleFilter}
-                      placeholder="All roles"
-                    />
+                    {hasActiveFilters && (
+                      <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <X className="w-4 h-4 mr-1" />
+                        Clear
+                      </Button>
+                    )}
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Status
-                    </label>
-                    <MultiSelect
-                      options={[
-                        { value: "active", label: "Active" },
-                        { value: "inactive", label: "Inactive" },
-                      ]}
-                      selected={selectedStatus}
-                      onSelectionChange={handleStatusFilter}
-                      placeholder="All statuses"
-                    />
-                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={handleRefresh}
+                      disabled={loading}
+                    >
+                      <RefreshCcw
+                        className={`mr-2 h-4 w-4 ${
+                          loading ? "animate-spin" : ""
+                        }`}
+                      />
+                      Refresh
+                    </Button>
 
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Manager
-                    </label>
-                    <MultiSelect
-                      options={managers.map((manager) => ({
-                        value: manager.id,
-                        label: manager.name,
-                      }))}
-                      selected={selectedManager}
-                      onSelectionChange={handleManagerFilter}
-                      placeholder="All managers"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Staff Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {isDeveloper
-                ? `All Users (${filteredStaff.length})`
-                : `Staff Members (${filteredStaff.length})`}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
+                    {isDeveloper && (
+                      <Button
+                        variant="destructive"
+                        onClick={handleEmergencyCacheClear}
+                        size="sm"
                       >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
+                        🚨 Emergency Cache Clear
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Advanced Filter Dropdowns */}
+                {showFilters && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        Role
+                      </label>
+                      <MultiSelect
+                        options={[
+                          { value: "developer", label: "Developers" },
+                          { value: "org_admin", label: "Admins" },
+                          { value: "manager", label: "Managers" },
+                          { value: "consultant", label: "Consultants" },
+                          { value: "viewer", label: "Viewers" },
+                        ]}
+                        selected={selectedRole}
+                        onSelectionChange={handleRoleFilter}
+                        placeholder="All roles"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        Status
+                      </label>
+                      <MultiSelect
+                        options={[
+                          { value: "active", label: "Active" },
+                          { value: "inactive", label: "Inactive" },
+                        ]}
+                        selected={selectedStatus}
+                        onSelectionChange={handleStatusFilter}
+                        placeholder="All statuses"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        Manager
+                      </label>
+                      <MultiSelect
+                        options={managers.map((manager) => ({
+                          value: manager.id,
+                          label: manager.name,
+                        }))}
+                        selected={selectedManager}
+                        onSelectionChange={handleManagerFilter}
+                        placeholder="All managers"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Staff Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {isDeveloper
+                  ? `All Users (${filteredStaff.length})`
+                  : `Staff Members (${filteredStaff.length})`}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <TableHead key={header.id}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </TableHead>
                         ))}
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                      >
-                        <div className="text-gray-500">
-                          <User className="mx-auto h-8 w-8 mb-2" />
-                          <p>
-                            {isDeveloper
-                              ? "No users found."
-                              : "No staff found."}
-                          </p>
-                          <p className="text-sm">
-                            {isAdministrator ||
-                              (isDeveloper &&
-                                "Start by creating your first staff member.")}
-                          </p>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-4">
-                <p className="text-sm text-gray-500">
-                  Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-                  {Math.min(currentPage * itemsPerPage, filteredStaff.length)}{" "}
-                  of {filteredStaff.length}{" "}
-                  {isDeveloper ? "users" : "staff members"}
-                </p>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </Button>
-                  <span className="text-sm">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Edit Staff Modal */}
-        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Edit Staff Member</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="edit-name">Full Name</Label>
-                <Input
-                  id="edit-name"
-                  value={editForm.name}
-                  onChange={(e) => handleFormChange("name", e.target.value)}
-                  placeholder="Enter full name"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="edit-email">Email Address</Label>
-                <Input
-                  id="edit-email"
-                  type="email"
-                  value={editForm.email}
-                  onChange={(e) => handleFormChange("email", e.target.value)}
-                  placeholder="Enter email address"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="edit-username">Username</Label>
-                <Input
-                  id="edit-username"
-                  value={editForm.username}
-                  onChange={(e) => handleFormChange("username", e.target.value)}
-                  placeholder="Enter username (optional)"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="edit-role">Role</Label>
-                <Select
-                  value={editForm.role}
-                  onValueChange={(value) => handleFormChange("role", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roleOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </TableHeader>
+                  <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && "selected"}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center"
+                        >
+                          <div className="text-gray-500">
+                            <User className="mx-auto h-8 w-8 mb-2" />
+                            <p>
+                              {isDeveloper
+                                ? "No users found."
+                                : "No staff found."}
+                            </p>
+                            <p className="text-sm">
+                              {isAdministrator ||
+                                (isDeveloper &&
+                                  "Start by creating your first staff member.")}
+                            </p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="edit-manager">Manager</Label>
-                <Select
-                  value={editForm.manager_id}
-                  onValueChange={(value) =>
-                    handleFormChange(
-                      "manager_id",
-                      value === "no-manager" ? "" : value
-                    )
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select manager (optional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="no-manager">No Manager</SelectItem>
-                    {staffList
-                      .filter(
-                        (staff) =>
-                          staff.id !== editingStaff?.id &&
-                          (staff.role === "manager" ||
-                            staff.role === "developer" ||
-                            staff.role === "org_admin")
-                      )
-                      .map((manager) => (
-                        <SelectItem key={manager.id} value={manager.id}>
-                          {manager.name} ({roleMapping[manager.role]})
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-sm text-gray-500">
+                    Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+                    {Math.min(currentPage * itemsPerPage, filteredStaff.length)}{" "}
+                    of {filteredStaff.length}{" "}
+                    {isDeveloper ? "users" : "staff members"}
+                  </p>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-sm">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Edit Staff Modal */}
+          <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Edit Staff Member</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-name">Full Name</Label>
+                  <Input
+                    id="edit-name"
+                    value={editForm.name}
+                    onChange={(e) => handleFormChange("name", e.target.value)}
+                    placeholder="Enter full name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-email">Email Address</Label>
+                  <Input
+                    id="edit-email"
+                    type="email"
+                    value={editForm.email}
+                    onChange={(e) => handleFormChange("email", e.target.value)}
+                    placeholder="Enter email address"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-username">Username</Label>
+                  <Input
+                    id="edit-username"
+                    value={editForm.username}
+                    onChange={(e) =>
+                      handleFormChange("username", e.target.value)
+                    }
+                    placeholder="Enter username (optional)"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-role">Role</Label>
+                  <Select
+                    value={editForm.role}
+                    onValueChange={(value) => handleFormChange("role", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roleOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
                         </SelectItem>
                       ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="edit-is-staff">Staff Status</Label>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="edit-is-staff"
-                    checked={editForm.is_staff}
-                    onCheckedChange={(checked) =>
-                      handleFormChange("is_staff", !!checked)
+                <div className="space-y-2">
+                  <Label htmlFor="edit-manager">Manager</Label>
+                  <Select
+                    value={editForm.manager_id}
+                    onValueChange={(value) =>
+                      handleFormChange(
+                        "manager_id",
+                        value === "no-manager" ? "" : value
+                      )
                     }
-                  />
-                  <Label
-                    htmlFor="edit-is-staff"
-                    className="text-sm font-normal"
                   >
-                    Is Staff Member
-                  </Label>
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={closeEditModal}>
-                Cancel
-              </Button>
-              <Button onClick={saveStaffChanges} disabled={isSavingEdit}>
-                {isSavingEdit ? "Saving..." : "Save Changes"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* View Staff Modal */}
-        <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Staff Member Details</DialogTitle>
-            </DialogHeader>
-            {viewingStaff && (
-              <div className="space-y-6 py-4">
-                {/* Header with avatar */}
-                <div className="flex items-center space-x-4">
-                  {viewingStaff.image ? (
-                    <Image
-                      src={viewingStaff.image}
-                      alt={viewingStaff.name}
-                      className="w-16 h-16 rounded-full object-cover"
-                      width={64}
-                      height={64}
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                      <User className="w-8 h-8 text-gray-500" />
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      {viewingStaff.name}
-                    </h3>
-                    <Badge
-                      variant={
-                        viewingStaff.role === "developer"
-                          ? "destructive"
-                          : viewingStaff.role === "manager"
-                          ? "default"
-                          : viewingStaff.role === "consultant"
-                          ? "secondary"
-                          : "outline"
-                      }
-                    >
-                      {roleMapping[viewingStaff.role] || viewingStaff.role}
-                    </Badge>
-                  </div>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select manager (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="no-manager">No Manager</SelectItem>
+                      {staffList
+                        .filter(
+                          (staff) =>
+                            staff.id !== editingStaff?.id &&
+                            (staff.role === "manager" ||
+                              staff.role === "developer" ||
+                              staff.role === "org_admin")
+                        )
+                        .map((manager) => (
+                          <SelectItem key={manager.id} value={manager.id}>
+                            {manager.name} ({roleMapping[manager.role]})
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <Separator />
-
-                {/* Contact Information */}
-                <div className="space-y-3">
-                  <h4 className="font-medium">Contact Information</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center space-x-2">
-                      <Mail className="w-4 h-4 text-gray-500" />
-                      <span>{viewingStaff.email}</span>
-                    </div>
-                    {viewingStaff.username && (
-                      <div className="flex items-center space-x-2">
-                        <User className="w-4 h-4 text-gray-500" />
-                        <span>@{viewingStaff.username}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Work Information */}
-                <div className="space-y-3">
-                  <h4 className="font-medium">Work Information</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-500">Manager:</span>
-                      <p className="font-medium">
-                        {viewingStaff.manager?.name || "No manager assigned"}
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Staff Status:</span>
-                      <p className="font-medium">
-                        {viewingStaff.is_staff ? "Staff Member" : "External"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* System Information */}
-                <div className="space-y-3">
-                  <h4 className="font-medium">System Information</h4>
-                  <div className="grid grid-cols-1 gap-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">User ID:</span>
-                      <span className="font-mono text-xs">
-                        {viewingStaff.id}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Clerk Account:</span>
-                      <Badge
-                        variant={
-                          viewingStaff.clerk_user_id ? "default" : "outline"
-                        }
-                      >
-                        {viewingStaff.clerk_user_id
-                          ? "Connected"
-                          : "Not Connected"}
-                      </Badge>
-                    </div>
-                    {viewingStaff.created_at && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Created:</span>
-                        <span>
-                          {new Date(
-                            viewingStaff.created_at
-                          ).toLocaleDateString()}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsViewModalOpen(false)}
-              >
-                Close
-              </Button>
-              {isAdministrator ||
-                (isDeveloper && viewingStaff && (
-                  <Button
-                    onClick={() => {
-                      setIsViewModalOpen(false);
-                      openEditModal(viewingStaff);
-                    }}
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit User
-                  </Button>
-                ))}
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog
-          open={!!staffToDelete}
-          onOpenChange={(open) => !open && setStaffToDelete(null)}
-        >
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {isDeveloper
-                  ? "Confirm User Deletion/Deactivation"
-                  : "Confirm User Deactivation"}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to{" "}
-                {isDeveloper ? "delete or deactivate" : "deactivate"}{" "}
-                {staffToDelete?.name}?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="py-4">
-              <p className="text-sm font-medium mb-3">
-                What will happen (Deactivation):
-              </p>
-              <ul className="list-disc list-inside text-sm space-y-1 text-gray-500">
-                <li>User will be marked as inactive in the database</li>
-                <li>
-                  User will be removed from Clerk (if they have an account)
-                </li>
-                <li>User will lose access immediately</li>
-                <li>
-                  All historical data and logs will be preserved for audit
-                </li>
-                <li>
-                  Payroll assignments will need to be reassigned if active
-                </li>
-                <li>Staff reporting to this user will need a new manager</li>
-              </ul>
-
-              {isDeveloper && (
-                <>
-                  <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-                    <p className="text-sm font-medium text-destructive mb-2">
-                      Developer Options:
-                    </p>
-                    <p className="text-xs text-destructive/80">
-                      As a developer, you can force hard deletion if the user
-                      has blocking dependencies. This will permanently remove
-                      all user data and cannot be undone.
-                    </p>
-                  </div>
-                </>
-              )}
-
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                <p className="text-sm text-blue-800">
-                  <strong>Note:</strong> If this user has active payroll
-                  assignments or direct reports, you&apos;ll be prompted to
-                  reassign them before proceeding.
-                </p>
-              </div>
-            </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => confirmDeleteStaff(false)}>
-                {isDeleting ? "Processing..." : "Deactivate User"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
-        {/* Create Staff Modal */}
-        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <UserPlus className="h-5 w-5" />
-                Create New Staff Member
-              </DialogTitle>
-            </DialogHeader>
-
-            {createError && (
-              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-                <p className="text-destructive text-sm">{createError}</p>
-              </div>
-            )}
-
-            <form onSubmit={handleCreateStaff} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    type="text"
-                    name="firstName"
-                    value={createForm.firstName}
-                    onChange={handleCreateFormChange}
-                    required
-                    placeholder="Enter first name"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    type="text"
-                    name="lastName"
-                    value={createForm.lastName}
-                    onChange={handleCreateFormChange}
-                    required
-                    placeholder="Enter last name"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  name="email"
-                  value={createForm.email}
-                  onChange={handleCreateFormChange}
-                  required
-                  placeholder="Enter email address"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select
-                  onValueChange={handleCreateRoleChange}
-                  defaultValue={createForm.role}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="developer">Developer</SelectItem>
-                    <SelectItem value="org_admin">Admin</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="consultant">Consultant</SelectItem>
-                    <SelectItem value="viewer">Viewer</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Only show is_staff toggle to developers */}
-              {isDeveloper && (
-                <div className="space-y-2">
-                  <Label htmlFor="is_staff">Staff Status</Label>
+                  <Label htmlFor="edit-is-staff">Staff Status</Label>
                   <div className="flex items-center space-x-2">
                     <Checkbox
-                      id="is_staff"
-                      checked={createForm.is_staff}
+                      id="edit-is-staff"
+                      checked={editForm.is_staff}
                       onCheckedChange={(checked) =>
-                        setCreateForm({ ...createForm, is_staff: !!checked })
+                        handleFormChange("is_staff", !!checked)
                       }
                     />
-                    <Label htmlFor="is_staff" className="text-sm font-normal">
-                      Mark as staff member
+                    <Label
+                      htmlFor="edit-is-staff"
+                      className="text-sm font-normal"
+                    >
+                      Is Staff Member
                     </Label>
                   </div>
-                  <p className="text-xs text-gray-500">
-                    Staff members have access to internal systems and payroll
-                  </p>
                 </div>
-              )}
-
-              {/* Info for non-developers */}
-              {!isDeveloper && (
-                <div className="p-3 bg-primary/10 border border-primary/20 rounded-md">
-                  <p className="text-primary text-sm">
-                    ℹ️ All users you create will automatically be marked as
-                    staff members
-                  </p>
-                </div>
-              )}
-
-              <DialogFooter className="gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={closeCreateModal}
-                  disabled={isCreatingStaff}
-                >
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={closeEditModal}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isCreatingStaff}>
-                  {isCreatingStaff ? "Creating..." : "Create Staff Member"}
+                <Button onClick={saveStaffChanges} disabled={isSavingEdit}>
+                  {isSavingEdit ? "Saving..." : "Save Changes"}
                 </Button>
               </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </ErrorBoundaryWrapper>
+            </DialogContent>
+          </Dialog>
+
+          {/* View Staff Modal */}
+          <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Staff Member Details</DialogTitle>
+              </DialogHeader>
+              {viewingStaff && (
+                <div className="space-y-6 py-4">
+                  {/* Header with avatar */}
+                  <div className="flex items-center space-x-4">
+                    {viewingStaff.image ? (
+                      <Image
+                        src={viewingStaff.image}
+                        alt={viewingStaff.name}
+                        className="w-16 h-16 rounded-full object-cover"
+                        width={64}
+                        height={64}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                        <User className="w-8 h-8 text-gray-500" />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        {viewingStaff.name}
+                      </h3>
+                      <Badge
+                        variant={
+                          viewingStaff.role === "developer"
+                            ? "destructive"
+                            : viewingStaff.role === "manager"
+                            ? "default"
+                            : viewingStaff.role === "consultant"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {roleMapping[viewingStaff.role] || viewingStaff.role}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Contact Information */}
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Contact Information</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center space-x-2">
+                        <Mail className="w-4 h-4 text-gray-500" />
+                        <span>{viewingStaff.email}</span>
+                      </div>
+                      {viewingStaff.username && (
+                        <div className="flex items-center space-x-2">
+                          <User className="w-4 h-4 text-gray-500" />
+                          <span>@{viewingStaff.username}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Work Information */}
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Work Information</h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-500">Manager:</span>
+                        <p className="font-medium">
+                          {viewingStaff.manager?.name || "No manager assigned"}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Staff Status:</span>
+                        <p className="font-medium">
+                          {viewingStaff.is_staff ? "Staff Member" : "External"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* System Information */}
+                  <div className="space-y-3">
+                    <h4 className="font-medium">System Information</h4>
+                    <div className="grid grid-cols-1 gap-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">User ID:</span>
+                        <span className="font-mono text-xs">
+                          {viewingStaff.id}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Clerk Account:</span>
+                        <Badge
+                          variant={
+                            viewingStaff.clerk_user_id ? "default" : "outline"
+                          }
+                        >
+                          {viewingStaff.clerk_user_id
+                            ? "Connected"
+                            : "Not Connected"}
+                        </Badge>
+                      </div>
+                      {viewingStaff.created_at && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Created:</span>
+                          <span>
+                            {new Date(
+                              viewingStaff.created_at
+                            ).toLocaleDateString()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsViewModalOpen(false)}
+                >
+                  Close
+                </Button>
+                {isAdministrator ||
+                  (isDeveloper && viewingStaff && (
+                    <Button
+                      onClick={() => {
+                        setIsViewModalOpen(false);
+                        openEditModal(viewingStaff);
+                      }}
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit User
+                    </Button>
+                  ))}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Delete Confirmation Dialog */}
+          <AlertDialog
+            open={!!staffToDelete}
+            onOpenChange={(open) => !open && setStaffToDelete(null)}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {isDeveloper
+                    ? "Confirm User Deletion/Deactivation"
+                    : "Confirm User Deactivation"}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to{" "}
+                  {isDeveloper ? "delete or deactivate" : "deactivate"}{" "}
+                  {staffToDelete?.name}?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="py-4">
+                <p className="text-sm font-medium mb-3">
+                  What will happen (Deactivation):
+                </p>
+                <ul className="list-disc list-inside text-sm space-y-1 text-gray-500">
+                  <li>User will be marked as inactive in the database</li>
+                  <li>
+                    User will be removed from Clerk (if they have an account)
+                  </li>
+                  <li>User will lose access immediately</li>
+                  <li>
+                    All historical data and logs will be preserved for audit
+                  </li>
+                  <li>
+                    Payroll assignments will need to be reassigned if active
+                  </li>
+                  <li>Staff reporting to this user will need a new manager</li>
+                </ul>
+
+                {isDeveloper && (
+                  <>
+                    <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                      <p className="text-sm font-medium text-destructive mb-2">
+                        Developer Options:
+                      </p>
+                      <p className="text-xs text-destructive/80">
+                        As a developer, you can force hard deletion if the user
+                        has blocking dependencies. This will permanently remove
+                        all user data and cannot be undone.
+                      </p>
+                    </div>
+                  </>
+                )}
+
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-sm text-blue-800">
+                    <strong>Note:</strong> If this user has active payroll
+                    assignments or direct reports, you&apos;ll be prompted to
+                    reassign them before proceeding.
+                  </p>
+                </div>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => confirmDeleteStaff(false)}>
+                  {isDeleting ? "Processing..." : "Deactivate User"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          {/* Create Staff Modal */}
+          <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <UserPlus className="h-5 w-5" />
+                  Create New Staff Member
+                </DialogTitle>
+              </DialogHeader>
+
+              {createError && (
+                <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                  <p className="text-destructive text-sm">{createError}</p>
+                </div>
+              )}
+
+              <form onSubmit={handleCreateStaff} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                      id="firstName"
+                      type="text"
+                      name="firstName"
+                      value={createForm.firstName}
+                      onChange={handleCreateFormChange}
+                      required
+                      placeholder="Enter first name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      type="text"
+                      name="lastName"
+                      value={createForm.lastName}
+                      onChange={handleCreateFormChange}
+                      required
+                      placeholder="Enter last name"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={createForm.email}
+                    onChange={handleCreateFormChange}
+                    required
+                    placeholder="Enter email address"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="role">Role</Label>
+                  <Select
+                    onValueChange={handleCreateRoleChange}
+                    defaultValue={createForm.role}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="developer">Developer</SelectItem>
+                      <SelectItem value="org_admin">Admin</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                      <SelectItem value="consultant">Consultant</SelectItem>
+                      <SelectItem value="viewer">Viewer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Only show is_staff toggle to developers */}
+                {isDeveloper && (
+                  <div className="space-y-2">
+                    <Label htmlFor="is_staff">Staff Status</Label>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="is_staff"
+                        checked={createForm.is_staff}
+                        onCheckedChange={(checked) =>
+                          setCreateForm({ ...createForm, is_staff: !!checked })
+                        }
+                      />
+                      <Label htmlFor="is_staff" className="text-sm font-normal">
+                        Mark as staff member
+                      </Label>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Staff members have access to internal systems and payroll
+                    </p>
+                  </div>
+                )}
+
+                {/* Info for non-developers */}
+                {!isDeveloper && (
+                  <div className="p-3 bg-primary/10 border border-primary/20 rounded-md">
+                    <p className="text-primary text-sm">
+                      ℹ️ All users you create will automatically be marked as
+                      staff members
+                    </p>
+                  </div>
+                )}
+
+                <DialogFooter className="gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeCreateModal}
+                    disabled={isCreatingStaff}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isCreatingStaff}>
+                    {isCreatingStaff ? "Creating..." : "Create Staff Member"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </ErrorBoundaryWrapper>
+    </>
   );
 }

@@ -45,15 +45,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUserRole } from "@/hooks/use-user-role";
 
-// GraphQL queries and mutations
+// Import extracted GraphQL operations
 const GET_USER_PROFILE = gql`
-  query GetUserProfile($id: uuid!) {
+  query GetUserProfileSettings($id: uuid!) {
     users_by_pk(id: $id) {
       id
       name
       email
-      username
-      image
+      avatar_url
       role
       is_staff
       is_active
@@ -70,25 +69,22 @@ const GET_USER_PROFILE = gql`
 `;
 
 const UPDATE_USER_PROFILE = gql`
-  mutation UpdateUserProfile(
+  mutation UpdateUserProfileSettings(
     $id: uuid!
     $name: String
-    $username: String
     $image: String
   ) {
     update_users_by_pk(
       pk_columns: { id: $id }
       _set: {
         name: $name
-        username: $username
-        image: $image
+        avatar_url: $image
         updated_at: "now()"
       }
     ) {
       id
       name
-      username
-      image
+      avatar_url
       updated_at
     }
   }
@@ -173,7 +169,7 @@ export default function AccountSettings() {
       setProfileForm({
         firstName: clerkUser.firstName || "",
         lastName: clerkUser.lastName || "",
-        username: dbUser.username || "",
+        username: "", // username not available in current schema
         image: getAvatarImage(),
         bio: (clerkUser.unsafeMetadata?.bio as string) || "",
         phone: clerkUser.phoneNumbers?.[0]?.phoneNumber || "",
@@ -218,7 +214,6 @@ export default function AccountSettings() {
             variables: {
               id: currentUserId,
               name: `${profileForm.firstName} ${profileForm.lastName}`,
-              username: profileForm.username,
               image: updatedUser.imageUrl,
             },
           });
@@ -243,7 +238,6 @@ export default function AccountSettings() {
         variables: {
           id: currentUserId,
           name: fullName,
-          username: profileData.username,
           image: profileData.image,
         },
       });

@@ -3,7 +3,7 @@ import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useMemo } from "react";
 
-// Current user query using native Clerk metadata
+// Import extracted GraphQL operations
 const GET_CURRENT_USER = gql`
   query GetCurrentUser($currentUserId: uuid!) {
     users_by_pk(id: $currentUserId) {

@@ -23,3 +23,21 @@ subscription PayrollDateUpdates($payrollId: uuid!) {
     ...PayrollDate
   }
 }
+
+# Extracted from inline GraphQL operations
+subscription payrollSubscription {
+  payrolls {
+    id
+    name
+    status
+    updated_at
+  }
+}
+
+subscription TestSubscription {
+  payrolls(limit: 1) {
+    id
+    name
+    updated_at
+  }
+}
