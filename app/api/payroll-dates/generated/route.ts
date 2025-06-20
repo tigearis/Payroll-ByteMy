@@ -1,7 +1,8 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/payroll-dates/generated/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { adminApolloClient } from "@/lib/apollo/server-client";
 import { gql } from "@apollo/client";
 import { addMonths, format } from "date-fns";
 
@@ -93,12 +94,8 @@ export async function POST(req: NextRequest) {
       message: `Generated payroll dates from ${formattedStart} to ${formattedEnd}`,
     });
   } catch (error) {
-    console.error("Error generating payroll dates:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to generate payroll dates",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
+    return handleApiError(error, "payroll-dates");
+  },
       { status: 500 }
     );
   }

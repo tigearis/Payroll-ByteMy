@@ -1,10 +1,13 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/clerk-webhooks/route.ts
 import { NextRequest } from "next/server";
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { syncUserWithDatabase } from "@/lib/user-sync";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { adminApolloClient } from "@/lib/apollo/server-client";
 import { gql } from "@apollo/client";
+import { MetadataManager } from "@/lib/auth/metadata-manager.server";
+import { isValidUserRole, Role } from "@/types/permissions";
 
 // Verify webhook signature for security
 async function verifyWebhook(
@@ -123,24 +126,59 @@ export async function POST(req: NextRequest) {
       case "user.created":
         console.log("👤 New user created:", id);
 
-        // For OAuth users, assign Admin role automatically  
+        // For OAuth users, assign Admin role automatically
         const hasOAuthProvider =
           external_accounts && external_accounts.length > 0;
-        
+
         // Check if role is in invitation metadata first, then default
         const invitationRole = evt.data.public_metadata?.role;
-        const defaultRole = invitationRole || (hasOAuthProvider ? "org_admin" : "viewer");
+        const potentialRole =
+          typeof invitationRole === "string"
+            ? invitationRole
+            : hasOAuthProvider
+            ? "org_admin"
+            : "viewer";
 
-        await syncUserWithDatabase(
+        // Validate role before assignment
+        const validatedRole = (
+          isValidUserRole(potentialRole) ? potentialRole : "viewer"
+        ) as Role;
+
+        const dbUser = await syncUserWithDatabase(
           id,
           `${first_name || ""} ${last_name || ""}`.trim() || "New User",
           email_addresses[0]?.email_address || "",
-          defaultRole,
+          validatedRole,
           undefined,
           image_url
         );
 
-        console.log(`✅ User synced with role: ${defaultRole}`);
+        if (!dbUser?.id) {
+          console.error(
+            "❌ Failed to get database ID for user, cannot update Clerk metadata"
+          );
+        } else {
+          // Update Clerk user with database ID
+          try {
+            await MetadataManager.updateUserRole(
+              id,
+              validatedRole,
+              "system-auto-assignment",
+              undefined,
+              dbUser.id
+            );
+            console.log(
+              `✅ User synced with enhanced permissions and databaseId: ${validatedRole}`
+            );
+          } catch (permissionError) {
+            console.error(
+              "❌ Failed to assign enhanced permissions or databaseId:",
+              permissionError
+            );
+          }
+        }
+
+        console.log(`✅ User synced with role: ${validatedRole}`);
         break;
 
       case "user.updated":
@@ -152,26 +190,55 @@ export async function POST(req: NextRequest) {
         if (updatedRole) {
           console.log(`🔄 Role change detected in Clerk: ${updatedRole}`);
 
-          try {
-            // Update the database to match Clerk's role
-            const { data: updateResult } = await adminApolloClient.mutate({
-              mutation: UPDATE_USER_ROLE_FROM_CLERK,
-              variables: {
-                clerkId: id,
-                role: updatedRole,
-              },
-            });
+          if (typeof updatedRole === "string" && isValidUserRole(updatedRole)) {
+            // now updatedRole is of type Role
+            try {
+              // Update the database to match Clerk's role
+              const { data: updateResult } = await adminApolloClient.mutate({
+                mutation: UPDATE_USER_ROLE_FROM_CLERK,
+                variables: {
+                  clerkId: id,
+                  role: updatedRole,
+                },
+              });
 
-            if (updateResult?.update_users?.affected_rows > 0) {
-              console.log(`✅ Database role synced from Clerk: ${updatedRole}`);
-            } else {
-              console.log(`ℹ️ No database user found for Clerk ID: ${id}`);
+              if (updateResult?.update_users?.affected_rows > 0) {
+                console.log(
+                  `✅ Database role synced from Clerk: ${updatedRole}`
+                );
+              } else {
+                console.log(`ℹ️ No database user found for Clerk ID: ${id}`);
+              }
+
+              // Sync enhanced permissions when role is updated externally
+              try {
+                await MetadataManager.updateUserRole(
+                  id,
+                  updatedRole,
+                  "external-update"
+                );
+                console.log(
+                  `✅ Enhanced permissions synced for role change: ${updatedRole}`
+                );
+              } catch (permissionError) {
+                console.error(
+                  "❌ Failed to sync enhanced permissions:",
+                  permissionError
+                );
+              }
+            } catch (dbError) {
+              console.error(
+                "❌ Failed to sync role from Clerk to database:",
+                dbError
+              );
             }
-          } catch (dbError) {
+          } else {
+            const roleType = typeof updatedRole;
+            const roleValue = String(updatedRole);
             console.error(
-              "❌ Failed to sync role from Clerk to database:",
-              dbError
+              `❌ Invalid role detected in Clerk metadata. Type: ${roleType}, Value: ${roleValue}`
             );
+            return new Response("Invalid role in metadata", { status: 400 });
           }
         } else {
           // Regular user update without role change
@@ -183,12 +250,29 @@ export async function POST(req: NextRequest) {
             undefined,
             image_url
           );
+
+          // Validate and sync permissions if they're out of sync
+          try {
+            const synced = await MetadataManager.validateAndSyncPermissions(id);
+            if (synced) {
+              console.log(`🔄 Validated and synced permissions for user ${id}`);
+            }
+          } catch (validationError) {
+            console.warn(
+              "⚠️ Failed to validate permissions during user update:",
+              validationError
+            );
+          }
         }
         break;
 
       case "user.deleted":
         console.log("👤 User deleted:", id);
-        // Optionally handle user deletion
+        console.log(
+          `🗑️ User ${id} deleted, enhanced permissions automatically cleaned up by Clerk`
+        );
+        // Enhanced permissions are stored in Clerk's publicMetadata, so they're automatically cleaned up
+        // No additional cleanup needed for the custom permissions system
         break;
 
       default:
@@ -208,7 +292,7 @@ export async function POST(req: NextRequest) {
       status: error.status,
       statusText: error.statusText,
       webhookEventType: eventType,
-      clerkUserId: id
+      clerkUserId: id,
     });
     return new Response("Error processing webhook", { status: 500 });
   }

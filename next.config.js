@@ -1,3 +1,5 @@
+import path from 'path';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Security headers
@@ -39,11 +41,11 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'strict-dynamic' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
-              "connect-src 'self' https://api.clerk.com https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au wss://accounts.bytemy.com.au wss://clerk.bytemy.com.au https://*.neon.tech wss://*.neon.tech https://bytemy.hasura.app https://payroll.app.bytemy.com.au",
+              "connect-src 'self' https://api.clerk.com https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au wss://accounts.bytemy.com.au wss://clerk.bytemy.com.au https://*.neon.tech wss://*.neon.tech https://bytemy.hasura.app wss://bytemy.hasura.app https://payroll.app.bytemy.com.au https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com",
               "worker-src 'self' blob:",
               "frame-src 'self' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au",
               "object-src 'none'",
@@ -108,9 +110,10 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
 
-  // Enable ESLint during builds
+  // Enable ESLint during builds but be more lenient
   eslint: {
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: false, // Keep enabled to catch issues
+    // Note: To temporarily ignore errors during development, change to true
   },
 
   // Experimental features
@@ -120,16 +123,22 @@ const nextConfig = {
       bodySizeLimit: "2mb",
     },
     disableOptimizedLoading: true,
-    // Force Babel transpilation instead of SWC for ARM64 compatibility
-    forceSwcTransforms: false,
+    // App directory support is enabled by default in Next.js 15, no need to specify
   },
 
-  // Webpack configuration for TypeScript path aliases
+  // Webpack configuration
   webpack: (config, { isServer, dev }) => {
-    // Add TypeScript path aliases to webpack
+    // Preserve existing aliases and add our path alias
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@": ".",
+      "@": path.resolve("."),
+    };
+
+    // Handle ES modules properly
+    config.resolve.extensionAlias = {
+      ".js": [".ts", ".tsx", ".js", ".jsx"],
+      ".mjs": [".mts", ".mjs"],
+      ".cjs": [".cts", ".cjs"],
     };
 
     return config;
@@ -137,33 +146,36 @@ const nextConfig = {
 
   // Custom page exclusions for production builds
   async rewrites() {
-    const isProduction = process.env.NODE_ENV === 'production';
-    
+    const isProduction = process.env.NODE_ENV === "production";
+
     if (isProduction) {
       // In production, redirect WIP pages to 404
       return {
         beforeFiles: [
           {
-            source: '/ai-assistant',
-            destination: '/404',
+            source: "/ai-assistant",
+            destination: "/404",
           },
           {
-            source: '/calendar', 
-            destination: '/404',
+            source: "/calendar",
+            destination: "/404",
           },
           {
-            source: '/tax-calculator',
-            destination: '/404',
+            source: "/payroll-schedule",
+            destination: "/404",
+          },
+          {
+            source: "/tax-calculator",
+            destination: "/404",
           },
         ],
       };
     }
-    
+
     return {
       beforeFiles: [],
     };
   },
-
 };
 
 export default nextConfig;

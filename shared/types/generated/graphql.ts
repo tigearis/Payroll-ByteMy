@@ -13,10 +13,15 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   _Any: { input: any; output: any; }
+  bigint: { input: any; output: any; }
   bpchar: { input: string; output: string; }
   date: { input: string; output: string; }
+  inet: { input: any; output: any; }
+  interval: { input: any; output: any; }
+  json: { input: any; output: any; }
   jsonb: { input: any; output: any; }
   leave_status_enum: { input: any; output: any; }
+  name: { input: any; output: any; }
   numeric: { input: number; output: number; }
   payroll_cycle_type: { input: any; output: any; }
   payroll_date_type: { input: any; output: any; }
@@ -35,6 +40,23 @@ export type AffectedAssignment = {
   new_consultant_id: Scalars['String']['output'];
   original_consultant_id: Scalars['String']['output'];
   payroll_date_id: Scalars['String']['output'];
+};
+
+export type AuditEventInput = {
+  action: Scalars['String']['input'];
+  ipAddress?: InputMaybe<Scalars['String']['input']>;
+  metadata?: InputMaybe<Scalars['json']['input']>;
+  resourceId?: InputMaybe<Scalars['String']['input']>;
+  resourceType: Scalars['String']['input'];
+  userAgent?: InputMaybe<Scalars['String']['input']>;
+  userId: Scalars['String']['input'];
+};
+
+export type AuditEventResponse = {
+  __typename: 'AuditEventResponse';
+  eventId: Maybe<Scalars['String']['output']>;
+  message: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
 };
 
 /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
@@ -56,6 +78,21 @@ export type CommitPayrollAssignmentsOutput = {
   errors: Maybe<Array<Scalars['String']['output']>>;
   message: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
+};
+
+export type ComplianceReportInput = {
+  endDate: Scalars['String']['input'];
+  includeDetails?: InputMaybe<Scalars['Boolean']['input']>;
+  reportType: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
+};
+
+export type ComplianceReportResponse = {
+  __typename: 'ComplianceReportResponse';
+  generatedAt: Scalars['String']['output'];
+  reportUrl: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+  summary: Maybe<Scalars['json']['output']>;
 };
 
 /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
@@ -126,6 +163,22 @@ export type String_Comparison_Exp = {
   _regex?: InputMaybe<Scalars['String']['input']>;
   /** does the column match the given SQL regular expression */
   _similar?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SuspiciousActivityResponse = {
+  __typename: 'SuspiciousActivityResponse';
+  events: Maybe<Array<SuspiciousEvent>>;
+  message: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+  suspicious: Scalars['Boolean']['output'];
+};
+
+export type SuspiciousEvent = {
+  __typename: 'SuspiciousEvent';
+  count: Scalars['Int']['output'];
+  eventType: Scalars['String']['output'];
+  severity: Scalars['String']['output'];
+  timeframe: Scalars['String']['output'];
 };
 
 /** A union of all types that use the @key directive */
@@ -628,6 +681,1893 @@ export type App_Settings_Updates = {
   _set?: InputMaybe<App_Settings_Set_Input>;
   /** filter the rows which have to be updated */
   where: App_Settings_Bool_Exp;
+};
+
+/** columns and relationships of "audit.audit_log" */
+export type Audit_Audit_Log = {
+  __typename: 'audit_audit_log';
+  action: Scalars['String']['output'];
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  error_message: Maybe<Scalars['String']['output']>;
+  event_time: Scalars['timestamptz']['output'];
+  id: Scalars['uuid']['output'];
+  ip_address: Maybe<Scalars['inet']['output']>;
+  metadata: Maybe<Scalars['jsonb']['output']>;
+  new_values: Maybe<Scalars['jsonb']['output']>;
+  old_values: Maybe<Scalars['jsonb']['output']>;
+  request_id: Maybe<Scalars['String']['output']>;
+  resource_id: Maybe<Scalars['String']['output']>;
+  resource_type: Scalars['String']['output'];
+  session_id: Maybe<Scalars['String']['output']>;
+  success: Maybe<Scalars['Boolean']['output']>;
+  user_agent: Maybe<Scalars['String']['output']>;
+  user_email: Maybe<Scalars['String']['output']>;
+  user_id: Maybe<Scalars['uuid']['output']>;
+  user_role: Maybe<Scalars['String']['output']>;
+};
+
+
+/** columns and relationships of "audit.audit_log" */
+export type Audit_Audit_LogMetadataArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** columns and relationships of "audit.audit_log" */
+export type Audit_Audit_LogNew_ValuesArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** columns and relationships of "audit.audit_log" */
+export type Audit_Audit_LogOld_ValuesArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "audit.audit_log" */
+export type Audit_Audit_Log_Aggregate = {
+  __typename: 'audit_audit_log_aggregate';
+  aggregate: Maybe<Audit_Audit_Log_Aggregate_Fields>;
+  nodes: Array<Audit_Audit_Log>;
+};
+
+/** aggregate fields of "audit.audit_log" */
+export type Audit_Audit_Log_Aggregate_Fields = {
+  __typename: 'audit_audit_log_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max: Maybe<Audit_Audit_Log_Max_Fields>;
+  min: Maybe<Audit_Audit_Log_Min_Fields>;
+};
+
+
+/** aggregate fields of "audit.audit_log" */
+export type Audit_Audit_Log_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Audit_Audit_Log_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Audit_Audit_Log_Append_Input = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  new_values?: InputMaybe<Scalars['jsonb']['input']>;
+  old_values?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "audit.audit_log". All fields are combined with a logical 'AND'. */
+export type Audit_Audit_Log_Bool_Exp = {
+  _and?: InputMaybe<Array<Audit_Audit_Log_Bool_Exp>>;
+  _not?: InputMaybe<Audit_Audit_Log_Bool_Exp>;
+  _or?: InputMaybe<Array<Audit_Audit_Log_Bool_Exp>>;
+  action?: InputMaybe<String_Comparison_Exp>;
+  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  error_message?: InputMaybe<String_Comparison_Exp>;
+  event_time?: InputMaybe<Timestamptz_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  ip_address?: InputMaybe<Inet_Comparison_Exp>;
+  metadata?: InputMaybe<Jsonb_Comparison_Exp>;
+  new_values?: InputMaybe<Jsonb_Comparison_Exp>;
+  old_values?: InputMaybe<Jsonb_Comparison_Exp>;
+  request_id?: InputMaybe<String_Comparison_Exp>;
+  resource_id?: InputMaybe<String_Comparison_Exp>;
+  resource_type?: InputMaybe<String_Comparison_Exp>;
+  session_id?: InputMaybe<String_Comparison_Exp>;
+  success?: InputMaybe<Boolean_Comparison_Exp>;
+  user_agent?: InputMaybe<String_Comparison_Exp>;
+  user_email?: InputMaybe<String_Comparison_Exp>;
+  user_id?: InputMaybe<Uuid_Comparison_Exp>;
+  user_role?: InputMaybe<String_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "audit.audit_log" */
+export type Audit_Audit_Log_Constraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'audit_log_pkey';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Audit_Audit_Log_Delete_At_Path_Input = {
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+  new_values?: InputMaybe<Array<Scalars['String']['input']>>;
+  old_values?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Audit_Audit_Log_Delete_Elem_Input = {
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+  new_values?: InputMaybe<Scalars['Int']['input']>;
+  old_values?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Audit_Audit_Log_Delete_Key_Input = {
+  metadata?: InputMaybe<Scalars['String']['input']>;
+  new_values?: InputMaybe<Scalars['String']['input']>;
+  old_values?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "audit.audit_log" */
+export type Audit_Audit_Log_Insert_Input = {
+  action?: InputMaybe<Scalars['String']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  error_message?: InputMaybe<Scalars['String']['input']>;
+  event_time?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ip_address?: InputMaybe<Scalars['inet']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  new_values?: InputMaybe<Scalars['jsonb']['input']>;
+  old_values?: InputMaybe<Scalars['jsonb']['input']>;
+  request_id?: InputMaybe<Scalars['String']['input']>;
+  resource_id?: InputMaybe<Scalars['String']['input']>;
+  resource_type?: InputMaybe<Scalars['String']['input']>;
+  session_id?: InputMaybe<Scalars['String']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
+  user_agent?: InputMaybe<Scalars['String']['input']>;
+  user_email?: InputMaybe<Scalars['String']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+  user_role?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregate max on columns */
+export type Audit_Audit_Log_Max_Fields = {
+  __typename: 'audit_audit_log_max_fields';
+  action: Maybe<Scalars['String']['output']>;
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  error_message: Maybe<Scalars['String']['output']>;
+  event_time: Maybe<Scalars['timestamptz']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  request_id: Maybe<Scalars['String']['output']>;
+  resource_id: Maybe<Scalars['String']['output']>;
+  resource_type: Maybe<Scalars['String']['output']>;
+  session_id: Maybe<Scalars['String']['output']>;
+  user_agent: Maybe<Scalars['String']['output']>;
+  user_email: Maybe<Scalars['String']['output']>;
+  user_id: Maybe<Scalars['uuid']['output']>;
+  user_role: Maybe<Scalars['String']['output']>;
+};
+
+/** aggregate min on columns */
+export type Audit_Audit_Log_Min_Fields = {
+  __typename: 'audit_audit_log_min_fields';
+  action: Maybe<Scalars['String']['output']>;
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  error_message: Maybe<Scalars['String']['output']>;
+  event_time: Maybe<Scalars['timestamptz']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  request_id: Maybe<Scalars['String']['output']>;
+  resource_id: Maybe<Scalars['String']['output']>;
+  resource_type: Maybe<Scalars['String']['output']>;
+  session_id: Maybe<Scalars['String']['output']>;
+  user_agent: Maybe<Scalars['String']['output']>;
+  user_email: Maybe<Scalars['String']['output']>;
+  user_id: Maybe<Scalars['uuid']['output']>;
+  user_role: Maybe<Scalars['String']['output']>;
+};
+
+/** response of any mutation on the table "audit.audit_log" */
+export type Audit_Audit_Log_Mutation_Response = {
+  __typename: 'audit_audit_log_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Audit_Audit_Log>;
+};
+
+/** on_conflict condition type for table "audit.audit_log" */
+export type Audit_Audit_Log_On_Conflict = {
+  constraint: Audit_Audit_Log_Constraint;
+  update_columns?: Array<Audit_Audit_Log_Update_Column>;
+  where?: InputMaybe<Audit_Audit_Log_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "audit.audit_log". */
+export type Audit_Audit_Log_Order_By = {
+  action?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  error_message?: InputMaybe<Order_By>;
+  event_time?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  ip_address?: InputMaybe<Order_By>;
+  metadata?: InputMaybe<Order_By>;
+  new_values?: InputMaybe<Order_By>;
+  old_values?: InputMaybe<Order_By>;
+  request_id?: InputMaybe<Order_By>;
+  resource_id?: InputMaybe<Order_By>;
+  resource_type?: InputMaybe<Order_By>;
+  session_id?: InputMaybe<Order_By>;
+  success?: InputMaybe<Order_By>;
+  user_agent?: InputMaybe<Order_By>;
+  user_email?: InputMaybe<Order_By>;
+  user_id?: InputMaybe<Order_By>;
+  user_role?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: audit.audit_log */
+export type Audit_Audit_Log_Pk_Columns_Input = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Audit_Audit_Log_Prepend_Input = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  new_values?: InputMaybe<Scalars['jsonb']['input']>;
+  old_values?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "audit.audit_log" */
+export type Audit_Audit_Log_Select_Column =
+  /** column name */
+  | 'action'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'error_message'
+  /** column name */
+  | 'event_time'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'ip_address'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'new_values'
+  /** column name */
+  | 'old_values'
+  /** column name */
+  | 'request_id'
+  /** column name */
+  | 'resource_id'
+  /** column name */
+  | 'resource_type'
+  /** column name */
+  | 'session_id'
+  /** column name */
+  | 'success'
+  /** column name */
+  | 'user_agent'
+  /** column name */
+  | 'user_email'
+  /** column name */
+  | 'user_id'
+  /** column name */
+  | 'user_role';
+
+/** input type for updating data in table "audit.audit_log" */
+export type Audit_Audit_Log_Set_Input = {
+  action?: InputMaybe<Scalars['String']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  error_message?: InputMaybe<Scalars['String']['input']>;
+  event_time?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ip_address?: InputMaybe<Scalars['inet']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  new_values?: InputMaybe<Scalars['jsonb']['input']>;
+  old_values?: InputMaybe<Scalars['jsonb']['input']>;
+  request_id?: InputMaybe<Scalars['String']['input']>;
+  resource_id?: InputMaybe<Scalars['String']['input']>;
+  resource_type?: InputMaybe<Scalars['String']['input']>;
+  session_id?: InputMaybe<Scalars['String']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
+  user_agent?: InputMaybe<Scalars['String']['input']>;
+  user_email?: InputMaybe<Scalars['String']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+  user_role?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Streaming cursor of the table "audit_audit_log" */
+export type Audit_Audit_Log_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Audit_Audit_Log_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Audit_Audit_Log_Stream_Cursor_Value_Input = {
+  action?: InputMaybe<Scalars['String']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  error_message?: InputMaybe<Scalars['String']['input']>;
+  event_time?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ip_address?: InputMaybe<Scalars['inet']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  new_values?: InputMaybe<Scalars['jsonb']['input']>;
+  old_values?: InputMaybe<Scalars['jsonb']['input']>;
+  request_id?: InputMaybe<Scalars['String']['input']>;
+  resource_id?: InputMaybe<Scalars['String']['input']>;
+  resource_type?: InputMaybe<Scalars['String']['input']>;
+  session_id?: InputMaybe<Scalars['String']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
+  user_agent?: InputMaybe<Scalars['String']['input']>;
+  user_email?: InputMaybe<Scalars['String']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+  user_role?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** update columns of table "audit.audit_log" */
+export type Audit_Audit_Log_Update_Column =
+  /** column name */
+  | 'action'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'error_message'
+  /** column name */
+  | 'event_time'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'ip_address'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'new_values'
+  /** column name */
+  | 'old_values'
+  /** column name */
+  | 'request_id'
+  /** column name */
+  | 'resource_id'
+  /** column name */
+  | 'resource_type'
+  /** column name */
+  | 'session_id'
+  /** column name */
+  | 'success'
+  /** column name */
+  | 'user_agent'
+  /** column name */
+  | 'user_email'
+  /** column name */
+  | 'user_id'
+  /** column name */
+  | 'user_role';
+
+export type Audit_Audit_Log_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Audit_Audit_Log_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Audit_Audit_Log_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Audit_Audit_Log_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Audit_Audit_Log_Delete_Key_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Audit_Audit_Log_Prepend_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Audit_Audit_Log_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Audit_Audit_Log_Bool_Exp;
+};
+
+/** columns and relationships of "audit.auth_events" */
+export type Audit_Auth_Events = {
+  __typename: 'audit_auth_events';
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  event_time: Scalars['timestamptz']['output'];
+  event_type: Scalars['String']['output'];
+  failure_reason: Maybe<Scalars['String']['output']>;
+  id: Scalars['uuid']['output'];
+  ip_address: Maybe<Scalars['inet']['output']>;
+  metadata: Maybe<Scalars['jsonb']['output']>;
+  success: Maybe<Scalars['Boolean']['output']>;
+  user_agent: Maybe<Scalars['String']['output']>;
+  user_email: Maybe<Scalars['String']['output']>;
+  user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+
+/** columns and relationships of "audit.auth_events" */
+export type Audit_Auth_EventsMetadataArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "audit.auth_events" */
+export type Audit_Auth_Events_Aggregate = {
+  __typename: 'audit_auth_events_aggregate';
+  aggregate: Maybe<Audit_Auth_Events_Aggregate_Fields>;
+  nodes: Array<Audit_Auth_Events>;
+};
+
+/** aggregate fields of "audit.auth_events" */
+export type Audit_Auth_Events_Aggregate_Fields = {
+  __typename: 'audit_auth_events_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max: Maybe<Audit_Auth_Events_Max_Fields>;
+  min: Maybe<Audit_Auth_Events_Min_Fields>;
+};
+
+
+/** aggregate fields of "audit.auth_events" */
+export type Audit_Auth_Events_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Audit_Auth_Events_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Audit_Auth_Events_Append_Input = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "audit.auth_events". All fields are combined with a logical 'AND'. */
+export type Audit_Auth_Events_Bool_Exp = {
+  _and?: InputMaybe<Array<Audit_Auth_Events_Bool_Exp>>;
+  _not?: InputMaybe<Audit_Auth_Events_Bool_Exp>;
+  _or?: InputMaybe<Array<Audit_Auth_Events_Bool_Exp>>;
+  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  event_time?: InputMaybe<Timestamptz_Comparison_Exp>;
+  event_type?: InputMaybe<String_Comparison_Exp>;
+  failure_reason?: InputMaybe<String_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  ip_address?: InputMaybe<Inet_Comparison_Exp>;
+  metadata?: InputMaybe<Jsonb_Comparison_Exp>;
+  success?: InputMaybe<Boolean_Comparison_Exp>;
+  user_agent?: InputMaybe<String_Comparison_Exp>;
+  user_email?: InputMaybe<String_Comparison_Exp>;
+  user_id?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "audit.auth_events" */
+export type Audit_Auth_Events_Constraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'auth_events_pkey';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Audit_Auth_Events_Delete_At_Path_Input = {
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Audit_Auth_Events_Delete_Elem_Input = {
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Audit_Auth_Events_Delete_Key_Input = {
+  metadata?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "audit.auth_events" */
+export type Audit_Auth_Events_Insert_Input = {
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  event_time?: InputMaybe<Scalars['timestamptz']['input']>;
+  event_type?: InputMaybe<Scalars['String']['input']>;
+  failure_reason?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ip_address?: InputMaybe<Scalars['inet']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
+  user_agent?: InputMaybe<Scalars['String']['input']>;
+  user_email?: InputMaybe<Scalars['String']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type Audit_Auth_Events_Max_Fields = {
+  __typename: 'audit_auth_events_max_fields';
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  event_time: Maybe<Scalars['timestamptz']['output']>;
+  event_type: Maybe<Scalars['String']['output']>;
+  failure_reason: Maybe<Scalars['String']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  user_agent: Maybe<Scalars['String']['output']>;
+  user_email: Maybe<Scalars['String']['output']>;
+  user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type Audit_Auth_Events_Min_Fields = {
+  __typename: 'audit_auth_events_min_fields';
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  event_time: Maybe<Scalars['timestamptz']['output']>;
+  event_type: Maybe<Scalars['String']['output']>;
+  failure_reason: Maybe<Scalars['String']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  user_agent: Maybe<Scalars['String']['output']>;
+  user_email: Maybe<Scalars['String']['output']>;
+  user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** response of any mutation on the table "audit.auth_events" */
+export type Audit_Auth_Events_Mutation_Response = {
+  __typename: 'audit_auth_events_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Audit_Auth_Events>;
+};
+
+/** on_conflict condition type for table "audit.auth_events" */
+export type Audit_Auth_Events_On_Conflict = {
+  constraint: Audit_Auth_Events_Constraint;
+  update_columns?: Array<Audit_Auth_Events_Update_Column>;
+  where?: InputMaybe<Audit_Auth_Events_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "audit.auth_events". */
+export type Audit_Auth_Events_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  event_time?: InputMaybe<Order_By>;
+  event_type?: InputMaybe<Order_By>;
+  failure_reason?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  ip_address?: InputMaybe<Order_By>;
+  metadata?: InputMaybe<Order_By>;
+  success?: InputMaybe<Order_By>;
+  user_agent?: InputMaybe<Order_By>;
+  user_email?: InputMaybe<Order_By>;
+  user_id?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: audit.auth_events */
+export type Audit_Auth_Events_Pk_Columns_Input = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Audit_Auth_Events_Prepend_Input = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "audit.auth_events" */
+export type Audit_Auth_Events_Select_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'event_time'
+  /** column name */
+  | 'event_type'
+  /** column name */
+  | 'failure_reason'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'ip_address'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'success'
+  /** column name */
+  | 'user_agent'
+  /** column name */
+  | 'user_email'
+  /** column name */
+  | 'user_id';
+
+/** input type for updating data in table "audit.auth_events" */
+export type Audit_Auth_Events_Set_Input = {
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  event_time?: InputMaybe<Scalars['timestamptz']['input']>;
+  event_type?: InputMaybe<Scalars['String']['input']>;
+  failure_reason?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ip_address?: InputMaybe<Scalars['inet']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
+  user_agent?: InputMaybe<Scalars['String']['input']>;
+  user_email?: InputMaybe<Scalars['String']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "audit_auth_events" */
+export type Audit_Auth_Events_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Audit_Auth_Events_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Audit_Auth_Events_Stream_Cursor_Value_Input = {
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  event_time?: InputMaybe<Scalars['timestamptz']['input']>;
+  event_type?: InputMaybe<Scalars['String']['input']>;
+  failure_reason?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ip_address?: InputMaybe<Scalars['inet']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
+  user_agent?: InputMaybe<Scalars['String']['input']>;
+  user_email?: InputMaybe<Scalars['String']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "audit.auth_events" */
+export type Audit_Auth_Events_Update_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'event_time'
+  /** column name */
+  | 'event_type'
+  /** column name */
+  | 'failure_reason'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'ip_address'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'success'
+  /** column name */
+  | 'user_agent'
+  /** column name */
+  | 'user_email'
+  /** column name */
+  | 'user_id';
+
+export type Audit_Auth_Events_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Audit_Auth_Events_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Audit_Auth_Events_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Audit_Auth_Events_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Audit_Auth_Events_Delete_Key_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Audit_Auth_Events_Prepend_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Audit_Auth_Events_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Audit_Auth_Events_Bool_Exp;
+};
+
+/** columns and relationships of "audit.data_access_log" */
+export type Audit_Data_Access_Log = {
+  __typename: 'audit_data_access_log';
+  access_type: Scalars['String']['output'];
+  accessed_at: Scalars['timestamptz']['output'];
+  data_classification: Maybe<Scalars['String']['output']>;
+  fields_accessed: Maybe<Array<Scalars['String']['output']>>;
+  id: Scalars['uuid']['output'];
+  ip_address: Maybe<Scalars['inet']['output']>;
+  metadata: Maybe<Scalars['jsonb']['output']>;
+  query_executed: Maybe<Scalars['String']['output']>;
+  resource_id: Maybe<Scalars['String']['output']>;
+  resource_type: Scalars['String']['output'];
+  row_count: Maybe<Scalars['Int']['output']>;
+  session_id: Maybe<Scalars['String']['output']>;
+  user_id: Scalars['uuid']['output'];
+};
+
+
+/** columns and relationships of "audit.data_access_log" */
+export type Audit_Data_Access_LogMetadataArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "audit.data_access_log" */
+export type Audit_Data_Access_Log_Aggregate = {
+  __typename: 'audit_data_access_log_aggregate';
+  aggregate: Maybe<Audit_Data_Access_Log_Aggregate_Fields>;
+  nodes: Array<Audit_Data_Access_Log>;
+};
+
+/** aggregate fields of "audit.data_access_log" */
+export type Audit_Data_Access_Log_Aggregate_Fields = {
+  __typename: 'audit_data_access_log_aggregate_fields';
+  avg: Maybe<Audit_Data_Access_Log_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max: Maybe<Audit_Data_Access_Log_Max_Fields>;
+  min: Maybe<Audit_Data_Access_Log_Min_Fields>;
+  stddev: Maybe<Audit_Data_Access_Log_Stddev_Fields>;
+  stddev_pop: Maybe<Audit_Data_Access_Log_Stddev_Pop_Fields>;
+  stddev_samp: Maybe<Audit_Data_Access_Log_Stddev_Samp_Fields>;
+  sum: Maybe<Audit_Data_Access_Log_Sum_Fields>;
+  var_pop: Maybe<Audit_Data_Access_Log_Var_Pop_Fields>;
+  var_samp: Maybe<Audit_Data_Access_Log_Var_Samp_Fields>;
+  variance: Maybe<Audit_Data_Access_Log_Variance_Fields>;
+};
+
+
+/** aggregate fields of "audit.data_access_log" */
+export type Audit_Data_Access_Log_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Audit_Data_Access_Log_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Audit_Data_Access_Log_Append_Input = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Audit_Data_Access_Log_Avg_Fields = {
+  __typename: 'audit_data_access_log_avg_fields';
+  row_count: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "audit.data_access_log". All fields are combined with a logical 'AND'. */
+export type Audit_Data_Access_Log_Bool_Exp = {
+  _and?: InputMaybe<Array<Audit_Data_Access_Log_Bool_Exp>>;
+  _not?: InputMaybe<Audit_Data_Access_Log_Bool_Exp>;
+  _or?: InputMaybe<Array<Audit_Data_Access_Log_Bool_Exp>>;
+  access_type?: InputMaybe<String_Comparison_Exp>;
+  accessed_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  data_classification?: InputMaybe<String_Comparison_Exp>;
+  fields_accessed?: InputMaybe<String_Array_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  ip_address?: InputMaybe<Inet_Comparison_Exp>;
+  metadata?: InputMaybe<Jsonb_Comparison_Exp>;
+  query_executed?: InputMaybe<String_Comparison_Exp>;
+  resource_id?: InputMaybe<String_Comparison_Exp>;
+  resource_type?: InputMaybe<String_Comparison_Exp>;
+  row_count?: InputMaybe<Int_Comparison_Exp>;
+  session_id?: InputMaybe<String_Comparison_Exp>;
+  user_id?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "audit.data_access_log" */
+export type Audit_Data_Access_Log_Constraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'data_access_log_pkey';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Audit_Data_Access_Log_Delete_At_Path_Input = {
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Audit_Data_Access_Log_Delete_Elem_Input = {
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Audit_Data_Access_Log_Delete_Key_Input = {
+  metadata?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "audit.data_access_log" */
+export type Audit_Data_Access_Log_Inc_Input = {
+  row_count?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** input type for inserting data into table "audit.data_access_log" */
+export type Audit_Data_Access_Log_Insert_Input = {
+  access_type?: InputMaybe<Scalars['String']['input']>;
+  accessed_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  data_classification?: InputMaybe<Scalars['String']['input']>;
+  fields_accessed?: InputMaybe<Array<Scalars['String']['input']>>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ip_address?: InputMaybe<Scalars['inet']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  query_executed?: InputMaybe<Scalars['String']['input']>;
+  resource_id?: InputMaybe<Scalars['String']['input']>;
+  resource_type?: InputMaybe<Scalars['String']['input']>;
+  row_count?: InputMaybe<Scalars['Int']['input']>;
+  session_id?: InputMaybe<Scalars['String']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type Audit_Data_Access_Log_Max_Fields = {
+  __typename: 'audit_data_access_log_max_fields';
+  access_type: Maybe<Scalars['String']['output']>;
+  accessed_at: Maybe<Scalars['timestamptz']['output']>;
+  data_classification: Maybe<Scalars['String']['output']>;
+  fields_accessed: Maybe<Array<Scalars['String']['output']>>;
+  id: Maybe<Scalars['uuid']['output']>;
+  query_executed: Maybe<Scalars['String']['output']>;
+  resource_id: Maybe<Scalars['String']['output']>;
+  resource_type: Maybe<Scalars['String']['output']>;
+  row_count: Maybe<Scalars['Int']['output']>;
+  session_id: Maybe<Scalars['String']['output']>;
+  user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type Audit_Data_Access_Log_Min_Fields = {
+  __typename: 'audit_data_access_log_min_fields';
+  access_type: Maybe<Scalars['String']['output']>;
+  accessed_at: Maybe<Scalars['timestamptz']['output']>;
+  data_classification: Maybe<Scalars['String']['output']>;
+  fields_accessed: Maybe<Array<Scalars['String']['output']>>;
+  id: Maybe<Scalars['uuid']['output']>;
+  query_executed: Maybe<Scalars['String']['output']>;
+  resource_id: Maybe<Scalars['String']['output']>;
+  resource_type: Maybe<Scalars['String']['output']>;
+  row_count: Maybe<Scalars['Int']['output']>;
+  session_id: Maybe<Scalars['String']['output']>;
+  user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** response of any mutation on the table "audit.data_access_log" */
+export type Audit_Data_Access_Log_Mutation_Response = {
+  __typename: 'audit_data_access_log_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Audit_Data_Access_Log>;
+};
+
+/** on_conflict condition type for table "audit.data_access_log" */
+export type Audit_Data_Access_Log_On_Conflict = {
+  constraint: Audit_Data_Access_Log_Constraint;
+  update_columns?: Array<Audit_Data_Access_Log_Update_Column>;
+  where?: InputMaybe<Audit_Data_Access_Log_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "audit.data_access_log". */
+export type Audit_Data_Access_Log_Order_By = {
+  access_type?: InputMaybe<Order_By>;
+  accessed_at?: InputMaybe<Order_By>;
+  data_classification?: InputMaybe<Order_By>;
+  fields_accessed?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  ip_address?: InputMaybe<Order_By>;
+  metadata?: InputMaybe<Order_By>;
+  query_executed?: InputMaybe<Order_By>;
+  resource_id?: InputMaybe<Order_By>;
+  resource_type?: InputMaybe<Order_By>;
+  row_count?: InputMaybe<Order_By>;
+  session_id?: InputMaybe<Order_By>;
+  user_id?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: audit.data_access_log */
+export type Audit_Data_Access_Log_Pk_Columns_Input = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Audit_Data_Access_Log_Prepend_Input = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "audit.data_access_log" */
+export type Audit_Data_Access_Log_Select_Column =
+  /** column name */
+  | 'access_type'
+  /** column name */
+  | 'accessed_at'
+  /** column name */
+  | 'data_classification'
+  /** column name */
+  | 'fields_accessed'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'ip_address'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'query_executed'
+  /** column name */
+  | 'resource_id'
+  /** column name */
+  | 'resource_type'
+  /** column name */
+  | 'row_count'
+  /** column name */
+  | 'session_id'
+  /** column name */
+  | 'user_id';
+
+/** input type for updating data in table "audit.data_access_log" */
+export type Audit_Data_Access_Log_Set_Input = {
+  access_type?: InputMaybe<Scalars['String']['input']>;
+  accessed_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  data_classification?: InputMaybe<Scalars['String']['input']>;
+  fields_accessed?: InputMaybe<Array<Scalars['String']['input']>>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ip_address?: InputMaybe<Scalars['inet']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  query_executed?: InputMaybe<Scalars['String']['input']>;
+  resource_id?: InputMaybe<Scalars['String']['input']>;
+  resource_type?: InputMaybe<Scalars['String']['input']>;
+  row_count?: InputMaybe<Scalars['Int']['input']>;
+  session_id?: InputMaybe<Scalars['String']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type Audit_Data_Access_Log_Stddev_Fields = {
+  __typename: 'audit_data_access_log_stddev_fields';
+  row_count: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Audit_Data_Access_Log_Stddev_Pop_Fields = {
+  __typename: 'audit_data_access_log_stddev_pop_fields';
+  row_count: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Audit_Data_Access_Log_Stddev_Samp_Fields = {
+  __typename: 'audit_data_access_log_stddev_samp_fields';
+  row_count: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "audit_data_access_log" */
+export type Audit_Data_Access_Log_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Audit_Data_Access_Log_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Audit_Data_Access_Log_Stream_Cursor_Value_Input = {
+  access_type?: InputMaybe<Scalars['String']['input']>;
+  accessed_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  data_classification?: InputMaybe<Scalars['String']['input']>;
+  fields_accessed?: InputMaybe<Array<Scalars['String']['input']>>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ip_address?: InputMaybe<Scalars['inet']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  query_executed?: InputMaybe<Scalars['String']['input']>;
+  resource_id?: InputMaybe<Scalars['String']['input']>;
+  resource_type?: InputMaybe<Scalars['String']['input']>;
+  row_count?: InputMaybe<Scalars['Int']['input']>;
+  session_id?: InputMaybe<Scalars['String']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Audit_Data_Access_Log_Sum_Fields = {
+  __typename: 'audit_data_access_log_sum_fields';
+  row_count: Maybe<Scalars['Int']['output']>;
+};
+
+/** update columns of table "audit.data_access_log" */
+export type Audit_Data_Access_Log_Update_Column =
+  /** column name */
+  | 'access_type'
+  /** column name */
+  | 'accessed_at'
+  /** column name */
+  | 'data_classification'
+  /** column name */
+  | 'fields_accessed'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'ip_address'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'query_executed'
+  /** column name */
+  | 'resource_id'
+  /** column name */
+  | 'resource_type'
+  /** column name */
+  | 'row_count'
+  /** column name */
+  | 'session_id'
+  /** column name */
+  | 'user_id';
+
+export type Audit_Data_Access_Log_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Audit_Data_Access_Log_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Audit_Data_Access_Log_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Audit_Data_Access_Log_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Audit_Data_Access_Log_Delete_Key_Input>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<Audit_Data_Access_Log_Inc_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Audit_Data_Access_Log_Prepend_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Audit_Data_Access_Log_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Audit_Data_Access_Log_Bool_Exp;
+};
+
+/** aggregate var_pop on columns */
+export type Audit_Data_Access_Log_Var_Pop_Fields = {
+  __typename: 'audit_data_access_log_var_pop_fields';
+  row_count: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Audit_Data_Access_Log_Var_Samp_Fields = {
+  __typename: 'audit_data_access_log_var_samp_fields';
+  row_count: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Audit_Data_Access_Log_Variance_Fields = {
+  __typename: 'audit_data_access_log_variance_fields';
+  row_count: Maybe<Scalars['Float']['output']>;
+};
+
+/** columns and relationships of "audit.permission_changes" */
+export type Audit_Permission_Changes = {
+  __typename: 'audit_permission_changes';
+  approved_by_user_id: Maybe<Scalars['uuid']['output']>;
+  change_type: Scalars['String']['output'];
+  changed_at: Scalars['timestamptz']['output'];
+  changed_by_user_id: Scalars['uuid']['output'];
+  id: Scalars['uuid']['output'];
+  metadata: Maybe<Scalars['jsonb']['output']>;
+  new_permissions: Maybe<Scalars['jsonb']['output']>;
+  old_permissions: Maybe<Scalars['jsonb']['output']>;
+  permission_type: Maybe<Scalars['String']['output']>;
+  reason: Maybe<Scalars['String']['output']>;
+  target_role_id: Maybe<Scalars['uuid']['output']>;
+  target_user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+
+/** columns and relationships of "audit.permission_changes" */
+export type Audit_Permission_ChangesMetadataArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** columns and relationships of "audit.permission_changes" */
+export type Audit_Permission_ChangesNew_PermissionsArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** columns and relationships of "audit.permission_changes" */
+export type Audit_Permission_ChangesOld_PermissionsArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "audit.permission_changes" */
+export type Audit_Permission_Changes_Aggregate = {
+  __typename: 'audit_permission_changes_aggregate';
+  aggregate: Maybe<Audit_Permission_Changes_Aggregate_Fields>;
+  nodes: Array<Audit_Permission_Changes>;
+};
+
+/** aggregate fields of "audit.permission_changes" */
+export type Audit_Permission_Changes_Aggregate_Fields = {
+  __typename: 'audit_permission_changes_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max: Maybe<Audit_Permission_Changes_Max_Fields>;
+  min: Maybe<Audit_Permission_Changes_Min_Fields>;
+};
+
+
+/** aggregate fields of "audit.permission_changes" */
+export type Audit_Permission_Changes_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Audit_Permission_Changes_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Audit_Permission_Changes_Append_Input = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  new_permissions?: InputMaybe<Scalars['jsonb']['input']>;
+  old_permissions?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "audit.permission_changes". All fields are combined with a logical 'AND'. */
+export type Audit_Permission_Changes_Bool_Exp = {
+  _and?: InputMaybe<Array<Audit_Permission_Changes_Bool_Exp>>;
+  _not?: InputMaybe<Audit_Permission_Changes_Bool_Exp>;
+  _or?: InputMaybe<Array<Audit_Permission_Changes_Bool_Exp>>;
+  approved_by_user_id?: InputMaybe<Uuid_Comparison_Exp>;
+  change_type?: InputMaybe<String_Comparison_Exp>;
+  changed_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  changed_by_user_id?: InputMaybe<Uuid_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  metadata?: InputMaybe<Jsonb_Comparison_Exp>;
+  new_permissions?: InputMaybe<Jsonb_Comparison_Exp>;
+  old_permissions?: InputMaybe<Jsonb_Comparison_Exp>;
+  permission_type?: InputMaybe<String_Comparison_Exp>;
+  reason?: InputMaybe<String_Comparison_Exp>;
+  target_role_id?: InputMaybe<Uuid_Comparison_Exp>;
+  target_user_id?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "audit.permission_changes" */
+export type Audit_Permission_Changes_Constraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'permission_changes_pkey';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Audit_Permission_Changes_Delete_At_Path_Input = {
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+  new_permissions?: InputMaybe<Array<Scalars['String']['input']>>;
+  old_permissions?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Audit_Permission_Changes_Delete_Elem_Input = {
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+  new_permissions?: InputMaybe<Scalars['Int']['input']>;
+  old_permissions?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Audit_Permission_Changes_Delete_Key_Input = {
+  metadata?: InputMaybe<Scalars['String']['input']>;
+  new_permissions?: InputMaybe<Scalars['String']['input']>;
+  old_permissions?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "audit.permission_changes" */
+export type Audit_Permission_Changes_Insert_Input = {
+  approved_by_user_id?: InputMaybe<Scalars['uuid']['input']>;
+  change_type?: InputMaybe<Scalars['String']['input']>;
+  changed_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  changed_by_user_id?: InputMaybe<Scalars['uuid']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  new_permissions?: InputMaybe<Scalars['jsonb']['input']>;
+  old_permissions?: InputMaybe<Scalars['jsonb']['input']>;
+  permission_type?: InputMaybe<Scalars['String']['input']>;
+  reason?: InputMaybe<Scalars['String']['input']>;
+  target_role_id?: InputMaybe<Scalars['uuid']['input']>;
+  target_user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type Audit_Permission_Changes_Max_Fields = {
+  __typename: 'audit_permission_changes_max_fields';
+  approved_by_user_id: Maybe<Scalars['uuid']['output']>;
+  change_type: Maybe<Scalars['String']['output']>;
+  changed_at: Maybe<Scalars['timestamptz']['output']>;
+  changed_by_user_id: Maybe<Scalars['uuid']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  permission_type: Maybe<Scalars['String']['output']>;
+  reason: Maybe<Scalars['String']['output']>;
+  target_role_id: Maybe<Scalars['uuid']['output']>;
+  target_user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type Audit_Permission_Changes_Min_Fields = {
+  __typename: 'audit_permission_changes_min_fields';
+  approved_by_user_id: Maybe<Scalars['uuid']['output']>;
+  change_type: Maybe<Scalars['String']['output']>;
+  changed_at: Maybe<Scalars['timestamptz']['output']>;
+  changed_by_user_id: Maybe<Scalars['uuid']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  permission_type: Maybe<Scalars['String']['output']>;
+  reason: Maybe<Scalars['String']['output']>;
+  target_role_id: Maybe<Scalars['uuid']['output']>;
+  target_user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** response of any mutation on the table "audit.permission_changes" */
+export type Audit_Permission_Changes_Mutation_Response = {
+  __typename: 'audit_permission_changes_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Audit_Permission_Changes>;
+};
+
+/** on_conflict condition type for table "audit.permission_changes" */
+export type Audit_Permission_Changes_On_Conflict = {
+  constraint: Audit_Permission_Changes_Constraint;
+  update_columns?: Array<Audit_Permission_Changes_Update_Column>;
+  where?: InputMaybe<Audit_Permission_Changes_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "audit.permission_changes". */
+export type Audit_Permission_Changes_Order_By = {
+  approved_by_user_id?: InputMaybe<Order_By>;
+  change_type?: InputMaybe<Order_By>;
+  changed_at?: InputMaybe<Order_By>;
+  changed_by_user_id?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  metadata?: InputMaybe<Order_By>;
+  new_permissions?: InputMaybe<Order_By>;
+  old_permissions?: InputMaybe<Order_By>;
+  permission_type?: InputMaybe<Order_By>;
+  reason?: InputMaybe<Order_By>;
+  target_role_id?: InputMaybe<Order_By>;
+  target_user_id?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: audit.permission_changes */
+export type Audit_Permission_Changes_Pk_Columns_Input = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Audit_Permission_Changes_Prepend_Input = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  new_permissions?: InputMaybe<Scalars['jsonb']['input']>;
+  old_permissions?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "audit.permission_changes" */
+export type Audit_Permission_Changes_Select_Column =
+  /** column name */
+  | 'approved_by_user_id'
+  /** column name */
+  | 'change_type'
+  /** column name */
+  | 'changed_at'
+  /** column name */
+  | 'changed_by_user_id'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'new_permissions'
+  /** column name */
+  | 'old_permissions'
+  /** column name */
+  | 'permission_type'
+  /** column name */
+  | 'reason'
+  /** column name */
+  | 'target_role_id'
+  /** column name */
+  | 'target_user_id';
+
+/** input type for updating data in table "audit.permission_changes" */
+export type Audit_Permission_Changes_Set_Input = {
+  approved_by_user_id?: InputMaybe<Scalars['uuid']['input']>;
+  change_type?: InputMaybe<Scalars['String']['input']>;
+  changed_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  changed_by_user_id?: InputMaybe<Scalars['uuid']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  new_permissions?: InputMaybe<Scalars['jsonb']['input']>;
+  old_permissions?: InputMaybe<Scalars['jsonb']['input']>;
+  permission_type?: InputMaybe<Scalars['String']['input']>;
+  reason?: InputMaybe<Scalars['String']['input']>;
+  target_role_id?: InputMaybe<Scalars['uuid']['input']>;
+  target_user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "audit_permission_changes" */
+export type Audit_Permission_Changes_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Audit_Permission_Changes_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Audit_Permission_Changes_Stream_Cursor_Value_Input = {
+  approved_by_user_id?: InputMaybe<Scalars['uuid']['input']>;
+  change_type?: InputMaybe<Scalars['String']['input']>;
+  changed_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  changed_by_user_id?: InputMaybe<Scalars['uuid']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  new_permissions?: InputMaybe<Scalars['jsonb']['input']>;
+  old_permissions?: InputMaybe<Scalars['jsonb']['input']>;
+  permission_type?: InputMaybe<Scalars['String']['input']>;
+  reason?: InputMaybe<Scalars['String']['input']>;
+  target_role_id?: InputMaybe<Scalars['uuid']['input']>;
+  target_user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "audit.permission_changes" */
+export type Audit_Permission_Changes_Update_Column =
+  /** column name */
+  | 'approved_by_user_id'
+  /** column name */
+  | 'change_type'
+  /** column name */
+  | 'changed_at'
+  /** column name */
+  | 'changed_by_user_id'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'new_permissions'
+  /** column name */
+  | 'old_permissions'
+  /** column name */
+  | 'permission_type'
+  /** column name */
+  | 'reason'
+  /** column name */
+  | 'target_role_id'
+  /** column name */
+  | 'target_user_id';
+
+export type Audit_Permission_Changes_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Audit_Permission_Changes_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Audit_Permission_Changes_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Audit_Permission_Changes_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Audit_Permission_Changes_Delete_Key_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Audit_Permission_Changes_Prepend_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Audit_Permission_Changes_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Audit_Permission_Changes_Bool_Exp;
+};
+
+/** columns and relationships of "audit.permission_usage_report" */
+export type Audit_Permission_Usage_Report = {
+  __typename: 'audit_permission_usage_report';
+  action: Maybe<Scalars['permission_action']['output']>;
+  last_used: Maybe<Scalars['timestamptz']['output']>;
+  resource_name: Maybe<Scalars['String']['output']>;
+  role_name: Maybe<Scalars['String']['output']>;
+  total_usage_count: Maybe<Scalars['bigint']['output']>;
+  users_who_used_permission: Maybe<Scalars['bigint']['output']>;
+  users_with_permission: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregated selection of "audit.permission_usage_report" */
+export type Audit_Permission_Usage_Report_Aggregate = {
+  __typename: 'audit_permission_usage_report_aggregate';
+  aggregate: Maybe<Audit_Permission_Usage_Report_Aggregate_Fields>;
+  nodes: Array<Audit_Permission_Usage_Report>;
+};
+
+/** aggregate fields of "audit.permission_usage_report" */
+export type Audit_Permission_Usage_Report_Aggregate_Fields = {
+  __typename: 'audit_permission_usage_report_aggregate_fields';
+  avg: Maybe<Audit_Permission_Usage_Report_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max: Maybe<Audit_Permission_Usage_Report_Max_Fields>;
+  min: Maybe<Audit_Permission_Usage_Report_Min_Fields>;
+  stddev: Maybe<Audit_Permission_Usage_Report_Stddev_Fields>;
+  stddev_pop: Maybe<Audit_Permission_Usage_Report_Stddev_Pop_Fields>;
+  stddev_samp: Maybe<Audit_Permission_Usage_Report_Stddev_Samp_Fields>;
+  sum: Maybe<Audit_Permission_Usage_Report_Sum_Fields>;
+  var_pop: Maybe<Audit_Permission_Usage_Report_Var_Pop_Fields>;
+  var_samp: Maybe<Audit_Permission_Usage_Report_Var_Samp_Fields>;
+  variance: Maybe<Audit_Permission_Usage_Report_Variance_Fields>;
+};
+
+
+/** aggregate fields of "audit.permission_usage_report" */
+export type Audit_Permission_Usage_Report_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Audit_Permission_Usage_Report_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Audit_Permission_Usage_Report_Avg_Fields = {
+  __typename: 'audit_permission_usage_report_avg_fields';
+  total_usage_count: Maybe<Scalars['Float']['output']>;
+  users_who_used_permission: Maybe<Scalars['Float']['output']>;
+  users_with_permission: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "audit.permission_usage_report". All fields are combined with a logical 'AND'. */
+export type Audit_Permission_Usage_Report_Bool_Exp = {
+  _and?: InputMaybe<Array<Audit_Permission_Usage_Report_Bool_Exp>>;
+  _not?: InputMaybe<Audit_Permission_Usage_Report_Bool_Exp>;
+  _or?: InputMaybe<Array<Audit_Permission_Usage_Report_Bool_Exp>>;
+  action?: InputMaybe<Permission_Action_Comparison_Exp>;
+  last_used?: InputMaybe<Timestamptz_Comparison_Exp>;
+  resource_name?: InputMaybe<String_Comparison_Exp>;
+  role_name?: InputMaybe<String_Comparison_Exp>;
+  total_usage_count?: InputMaybe<Bigint_Comparison_Exp>;
+  users_who_used_permission?: InputMaybe<Bigint_Comparison_Exp>;
+  users_with_permission?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Audit_Permission_Usage_Report_Max_Fields = {
+  __typename: 'audit_permission_usage_report_max_fields';
+  action: Maybe<Scalars['permission_action']['output']>;
+  last_used: Maybe<Scalars['timestamptz']['output']>;
+  resource_name: Maybe<Scalars['String']['output']>;
+  role_name: Maybe<Scalars['String']['output']>;
+  total_usage_count: Maybe<Scalars['bigint']['output']>;
+  users_who_used_permission: Maybe<Scalars['bigint']['output']>;
+  users_with_permission: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate min on columns */
+export type Audit_Permission_Usage_Report_Min_Fields = {
+  __typename: 'audit_permission_usage_report_min_fields';
+  action: Maybe<Scalars['permission_action']['output']>;
+  last_used: Maybe<Scalars['timestamptz']['output']>;
+  resource_name: Maybe<Scalars['String']['output']>;
+  role_name: Maybe<Scalars['String']['output']>;
+  total_usage_count: Maybe<Scalars['bigint']['output']>;
+  users_who_used_permission: Maybe<Scalars['bigint']['output']>;
+  users_with_permission: Maybe<Scalars['bigint']['output']>;
+};
+
+/** Ordering options when selecting data from "audit.permission_usage_report". */
+export type Audit_Permission_Usage_Report_Order_By = {
+  action?: InputMaybe<Order_By>;
+  last_used?: InputMaybe<Order_By>;
+  resource_name?: InputMaybe<Order_By>;
+  role_name?: InputMaybe<Order_By>;
+  total_usage_count?: InputMaybe<Order_By>;
+  users_who_used_permission?: InputMaybe<Order_By>;
+  users_with_permission?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "audit.permission_usage_report" */
+export type Audit_Permission_Usage_Report_Select_Column =
+  /** column name */
+  | 'action'
+  /** column name */
+  | 'last_used'
+  /** column name */
+  | 'resource_name'
+  /** column name */
+  | 'role_name'
+  /** column name */
+  | 'total_usage_count'
+  /** column name */
+  | 'users_who_used_permission'
+  /** column name */
+  | 'users_with_permission';
+
+/** aggregate stddev on columns */
+export type Audit_Permission_Usage_Report_Stddev_Fields = {
+  __typename: 'audit_permission_usage_report_stddev_fields';
+  total_usage_count: Maybe<Scalars['Float']['output']>;
+  users_who_used_permission: Maybe<Scalars['Float']['output']>;
+  users_with_permission: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Audit_Permission_Usage_Report_Stddev_Pop_Fields = {
+  __typename: 'audit_permission_usage_report_stddev_pop_fields';
+  total_usage_count: Maybe<Scalars['Float']['output']>;
+  users_who_used_permission: Maybe<Scalars['Float']['output']>;
+  users_with_permission: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Audit_Permission_Usage_Report_Stddev_Samp_Fields = {
+  __typename: 'audit_permission_usage_report_stddev_samp_fields';
+  total_usage_count: Maybe<Scalars['Float']['output']>;
+  users_who_used_permission: Maybe<Scalars['Float']['output']>;
+  users_with_permission: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "audit_permission_usage_report" */
+export type Audit_Permission_Usage_Report_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Audit_Permission_Usage_Report_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Audit_Permission_Usage_Report_Stream_Cursor_Value_Input = {
+  action?: InputMaybe<Scalars['permission_action']['input']>;
+  last_used?: InputMaybe<Scalars['timestamptz']['input']>;
+  resource_name?: InputMaybe<Scalars['String']['input']>;
+  role_name?: InputMaybe<Scalars['String']['input']>;
+  total_usage_count?: InputMaybe<Scalars['bigint']['input']>;
+  users_who_used_permission?: InputMaybe<Scalars['bigint']['input']>;
+  users_with_permission?: InputMaybe<Scalars['bigint']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Audit_Permission_Usage_Report_Sum_Fields = {
+  __typename: 'audit_permission_usage_report_sum_fields';
+  total_usage_count: Maybe<Scalars['bigint']['output']>;
+  users_who_used_permission: Maybe<Scalars['bigint']['output']>;
+  users_with_permission: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Audit_Permission_Usage_Report_Var_Pop_Fields = {
+  __typename: 'audit_permission_usage_report_var_pop_fields';
+  total_usage_count: Maybe<Scalars['Float']['output']>;
+  users_who_used_permission: Maybe<Scalars['Float']['output']>;
+  users_with_permission: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Audit_Permission_Usage_Report_Var_Samp_Fields = {
+  __typename: 'audit_permission_usage_report_var_samp_fields';
+  total_usage_count: Maybe<Scalars['Float']['output']>;
+  users_who_used_permission: Maybe<Scalars['Float']['output']>;
+  users_with_permission: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Audit_Permission_Usage_Report_Variance_Fields = {
+  __typename: 'audit_permission_usage_report_variance_fields';
+  total_usage_count: Maybe<Scalars['Float']['output']>;
+  users_who_used_permission: Maybe<Scalars['Float']['output']>;
+  users_with_permission: Maybe<Scalars['Float']['output']>;
+};
+
+/** columns and relationships of "audit.slow_queries" */
+export type Audit_Slow_Queries = {
+  __typename: 'audit_slow_queries';
+  application_name: Maybe<Scalars['String']['output']>;
+  client_addr: Maybe<Scalars['inet']['output']>;
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  id: Scalars['uuid']['output'];
+  query: Scalars['String']['output'];
+  query_duration: Scalars['interval']['output'];
+  query_start: Scalars['timestamptz']['output'];
+  user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregated selection of "audit.slow_queries" */
+export type Audit_Slow_Queries_Aggregate = {
+  __typename: 'audit_slow_queries_aggregate';
+  aggregate: Maybe<Audit_Slow_Queries_Aggregate_Fields>;
+  nodes: Array<Audit_Slow_Queries>;
+};
+
+/** aggregate fields of "audit.slow_queries" */
+export type Audit_Slow_Queries_Aggregate_Fields = {
+  __typename: 'audit_slow_queries_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max: Maybe<Audit_Slow_Queries_Max_Fields>;
+  min: Maybe<Audit_Slow_Queries_Min_Fields>;
+};
+
+
+/** aggregate fields of "audit.slow_queries" */
+export type Audit_Slow_Queries_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Audit_Slow_Queries_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "audit.slow_queries". All fields are combined with a logical 'AND'. */
+export type Audit_Slow_Queries_Bool_Exp = {
+  _and?: InputMaybe<Array<Audit_Slow_Queries_Bool_Exp>>;
+  _not?: InputMaybe<Audit_Slow_Queries_Bool_Exp>;
+  _or?: InputMaybe<Array<Audit_Slow_Queries_Bool_Exp>>;
+  application_name?: InputMaybe<String_Comparison_Exp>;
+  client_addr?: InputMaybe<Inet_Comparison_Exp>;
+  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  query?: InputMaybe<String_Comparison_Exp>;
+  query_duration?: InputMaybe<Interval_Comparison_Exp>;
+  query_start?: InputMaybe<Timestamptz_Comparison_Exp>;
+  user_id?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "audit.slow_queries" */
+export type Audit_Slow_Queries_Constraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'slow_queries_pkey';
+
+/** input type for inserting data into table "audit.slow_queries" */
+export type Audit_Slow_Queries_Insert_Input = {
+  application_name?: InputMaybe<Scalars['String']['input']>;
+  client_addr?: InputMaybe<Scalars['inet']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  query_duration?: InputMaybe<Scalars['interval']['input']>;
+  query_start?: InputMaybe<Scalars['timestamptz']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type Audit_Slow_Queries_Max_Fields = {
+  __typename: 'audit_slow_queries_max_fields';
+  application_name: Maybe<Scalars['String']['output']>;
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  query: Maybe<Scalars['String']['output']>;
+  query_start: Maybe<Scalars['timestamptz']['output']>;
+  user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type Audit_Slow_Queries_Min_Fields = {
+  __typename: 'audit_slow_queries_min_fields';
+  application_name: Maybe<Scalars['String']['output']>;
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  query: Maybe<Scalars['String']['output']>;
+  query_start: Maybe<Scalars['timestamptz']['output']>;
+  user_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** response of any mutation on the table "audit.slow_queries" */
+export type Audit_Slow_Queries_Mutation_Response = {
+  __typename: 'audit_slow_queries_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Audit_Slow_Queries>;
+};
+
+/** on_conflict condition type for table "audit.slow_queries" */
+export type Audit_Slow_Queries_On_Conflict = {
+  constraint: Audit_Slow_Queries_Constraint;
+  update_columns?: Array<Audit_Slow_Queries_Update_Column>;
+  where?: InputMaybe<Audit_Slow_Queries_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "audit.slow_queries". */
+export type Audit_Slow_Queries_Order_By = {
+  application_name?: InputMaybe<Order_By>;
+  client_addr?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  query?: InputMaybe<Order_By>;
+  query_duration?: InputMaybe<Order_By>;
+  query_start?: InputMaybe<Order_By>;
+  user_id?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: audit.slow_queries */
+export type Audit_Slow_Queries_Pk_Columns_Input = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "audit.slow_queries" */
+export type Audit_Slow_Queries_Select_Column =
+  /** column name */
+  | 'application_name'
+  /** column name */
+  | 'client_addr'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'query'
+  /** column name */
+  | 'query_duration'
+  /** column name */
+  | 'query_start'
+  /** column name */
+  | 'user_id';
+
+/** input type for updating data in table "audit.slow_queries" */
+export type Audit_Slow_Queries_Set_Input = {
+  application_name?: InputMaybe<Scalars['String']['input']>;
+  client_addr?: InputMaybe<Scalars['inet']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  query_duration?: InputMaybe<Scalars['interval']['input']>;
+  query_start?: InputMaybe<Scalars['timestamptz']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "audit_slow_queries" */
+export type Audit_Slow_Queries_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Audit_Slow_Queries_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Audit_Slow_Queries_Stream_Cursor_Value_Input = {
+  application_name?: InputMaybe<Scalars['String']['input']>;
+  client_addr?: InputMaybe<Scalars['inet']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  query_duration?: InputMaybe<Scalars['interval']['input']>;
+  query_start?: InputMaybe<Scalars['timestamptz']['input']>;
+  user_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "audit.slow_queries" */
+export type Audit_Slow_Queries_Update_Column =
+  /** column name */
+  | 'application_name'
+  /** column name */
+  | 'client_addr'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'query'
+  /** column name */
+  | 'query_duration'
+  /** column name */
+  | 'query_start'
+  /** column name */
+  | 'user_id';
+
+export type Audit_Slow_Queries_Updates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Audit_Slow_Queries_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Audit_Slow_Queries_Bool_Exp;
+};
+
+/** columns and relationships of "audit.user_access_summary" */
+export type Audit_User_Access_Summary = {
+  __typename: 'audit_user_access_summary';
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  email: Maybe<Scalars['String']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  is_active: Maybe<Scalars['Boolean']['output']>;
+  is_staff: Maybe<Scalars['Boolean']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  role: Maybe<Scalars['user_role']['output']>;
+  updated_at: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** aggregated selection of "audit.user_access_summary" */
+export type Audit_User_Access_Summary_Aggregate = {
+  __typename: 'audit_user_access_summary_aggregate';
+  aggregate: Maybe<Audit_User_Access_Summary_Aggregate_Fields>;
+  nodes: Array<Audit_User_Access_Summary>;
+};
+
+/** aggregate fields of "audit.user_access_summary" */
+export type Audit_User_Access_Summary_Aggregate_Fields = {
+  __typename: 'audit_user_access_summary_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max: Maybe<Audit_User_Access_Summary_Max_Fields>;
+  min: Maybe<Audit_User_Access_Summary_Min_Fields>;
+};
+
+
+/** aggregate fields of "audit.user_access_summary" */
+export type Audit_User_Access_Summary_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Audit_User_Access_Summary_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "audit.user_access_summary". All fields are combined with a logical 'AND'. */
+export type Audit_User_Access_Summary_Bool_Exp = {
+  _and?: InputMaybe<Array<Audit_User_Access_Summary_Bool_Exp>>;
+  _not?: InputMaybe<Audit_User_Access_Summary_Bool_Exp>;
+  _or?: InputMaybe<Array<Audit_User_Access_Summary_Bool_Exp>>;
+  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  email?: InputMaybe<String_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  is_active?: InputMaybe<Boolean_Comparison_Exp>;
+  is_staff?: InputMaybe<Boolean_Comparison_Exp>;
+  name?: InputMaybe<String_Comparison_Exp>;
+  role?: InputMaybe<User_Role_Comparison_Exp>;
+  updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+};
+
+/** input type for inserting data into table "audit.user_access_summary" */
+export type Audit_User_Access_Summary_Insert_Input = {
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  is_active?: InputMaybe<Scalars['Boolean']['input']>;
+  is_staff?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
+  updated_at?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate max on columns */
+export type Audit_User_Access_Summary_Max_Fields = {
+  __typename: 'audit_user_access_summary_max_fields';
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  email: Maybe<Scalars['String']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  role: Maybe<Scalars['user_role']['output']>;
+  updated_at: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** aggregate min on columns */
+export type Audit_User_Access_Summary_Min_Fields = {
+  __typename: 'audit_user_access_summary_min_fields';
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  email: Maybe<Scalars['String']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  role: Maybe<Scalars['user_role']['output']>;
+  updated_at: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** response of any mutation on the table "audit.user_access_summary" */
+export type Audit_User_Access_Summary_Mutation_Response = {
+  __typename: 'audit_user_access_summary_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Audit_User_Access_Summary>;
+};
+
+/** Ordering options when selecting data from "audit.user_access_summary". */
+export type Audit_User_Access_Summary_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  email?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  is_active?: InputMaybe<Order_By>;
+  is_staff?: InputMaybe<Order_By>;
+  name?: InputMaybe<Order_By>;
+  role?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "audit.user_access_summary" */
+export type Audit_User_Access_Summary_Select_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'is_active'
+  /** column name */
+  | 'is_staff'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'role'
+  /** column name */
+  | 'updated_at';
+
+/** input type for updating data in table "audit.user_access_summary" */
+export type Audit_User_Access_Summary_Set_Input = {
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  is_active?: InputMaybe<Scalars['Boolean']['input']>;
+  is_staff?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
+  updated_at?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** Streaming cursor of the table "audit_user_access_summary" */
+export type Audit_User_Access_Summary_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Audit_User_Access_Summary_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Audit_User_Access_Summary_Stream_Cursor_Value_Input = {
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  is_active?: InputMaybe<Scalars['Boolean']['input']>;
+  is_staff?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
+  updated_at?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+export type Audit_User_Access_Summary_Updates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Audit_User_Access_Summary_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Audit_User_Access_Summary_Bool_Exp;
+};
+
+/** Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'. */
+export type Bigint_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars['bigint']['input']>;
+  _gt?: InputMaybe<Scalars['bigint']['input']>;
+  _gte?: InputMaybe<Scalars['bigint']['input']>;
+  _in?: InputMaybe<Array<Scalars['bigint']['input']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['bigint']['input']>;
+  _lte?: InputMaybe<Scalars['bigint']['input']>;
+  _neq?: InputMaybe<Scalars['bigint']['input']>;
+  _nin?: InputMaybe<Array<Scalars['bigint']['input']>>;
 };
 
 /** columns and relationships of "billing_event_log" */
@@ -4770,6 +6710,14 @@ export type Generate_Payroll_Dates_Args = {
   p_start_date?: InputMaybe<Scalars['date']['input']>;
 };
 
+export type Get_Latest_Payroll_Version_Args = {
+  p_payroll_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+export type Get_Payroll_Version_History_Args = {
+  p_payroll_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
 /** columns and relationships of "holidays" */
 export type Holidays = {
   __typename: 'holidays';
@@ -5158,6 +7106,32 @@ export type Holidays_Variance_Fields = {
   launch_year: Maybe<Scalars['Float']['output']>;
 };
 
+/** Boolean expression to compare columns of type "inet". All fields are combined with logical 'AND'. */
+export type Inet_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars['inet']['input']>;
+  _gt?: InputMaybe<Scalars['inet']['input']>;
+  _gte?: InputMaybe<Scalars['inet']['input']>;
+  _in?: InputMaybe<Array<Scalars['inet']['input']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['inet']['input']>;
+  _lte?: InputMaybe<Scalars['inet']['input']>;
+  _neq?: InputMaybe<Scalars['inet']['input']>;
+  _nin?: InputMaybe<Array<Scalars['inet']['input']>>;
+};
+
+/** Boolean expression to compare columns of type "interval". All fields are combined with logical 'AND'. */
+export type Interval_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars['interval']['input']>;
+  _gt?: InputMaybe<Scalars['interval']['input']>;
+  _gte?: InputMaybe<Scalars['interval']['input']>;
+  _in?: InputMaybe<Array<Scalars['interval']['input']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['interval']['input']>;
+  _lte?: InputMaybe<Scalars['interval']['input']>;
+  _neq?: InputMaybe<Scalars['interval']['input']>;
+  _nin?: InputMaybe<Array<Scalars['interval']['input']>>;
+};
+
 export type Jsonb_Cast_Exp = {
   String?: InputMaybe<String_Comparison_Exp>;
 };
@@ -5198,7 +7172,6 @@ export type Latest_Payroll_Version_Results = {
   version_number: Scalars['Int']['output'];
 };
 
-/** aggregated selection of "latest_payroll_version_results" */
 export type Latest_Payroll_Version_Results_Aggregate = {
   __typename: 'latest_payroll_version_results_aggregate';
   aggregate: Maybe<Latest_Payroll_Version_Results_Aggregate_Fields>;
@@ -5759,6 +7732,8 @@ export type Leave_Updates = {
 /** mutation root */
 export type Mutation_Root = {
   __typename: 'mutation_root';
+  /** Check for suspicious activity patterns */
+  checkSuspiciousActivity: Maybe<SuspiciousActivityResponse>;
   commitPayrollAssignments: Maybe<CommitPayrollAssignmentsOutput>;
   /** delete data from the table: "adjustment_rules" */
   delete_adjustment_rules: Maybe<Adjustment_Rules_Mutation_Response>;
@@ -5768,6 +7743,28 @@ export type Mutation_Root = {
   delete_app_settings: Maybe<App_Settings_Mutation_Response>;
   /** delete single row from the table: "app_settings" */
   delete_app_settings_by_pk: Maybe<App_Settings>;
+  /** delete data from the table: "audit.audit_log" */
+  delete_audit_audit_log: Maybe<Audit_Audit_Log_Mutation_Response>;
+  /** delete single row from the table: "audit.audit_log" */
+  delete_audit_audit_log_by_pk: Maybe<Audit_Audit_Log>;
+  /** delete data from the table: "audit.auth_events" */
+  delete_audit_auth_events: Maybe<Audit_Auth_Events_Mutation_Response>;
+  /** delete single row from the table: "audit.auth_events" */
+  delete_audit_auth_events_by_pk: Maybe<Audit_Auth_Events>;
+  /** delete data from the table: "audit.data_access_log" */
+  delete_audit_data_access_log: Maybe<Audit_Data_Access_Log_Mutation_Response>;
+  /** delete single row from the table: "audit.data_access_log" */
+  delete_audit_data_access_log_by_pk: Maybe<Audit_Data_Access_Log>;
+  /** delete data from the table: "audit.permission_changes" */
+  delete_audit_permission_changes: Maybe<Audit_Permission_Changes_Mutation_Response>;
+  /** delete single row from the table: "audit.permission_changes" */
+  delete_audit_permission_changes_by_pk: Maybe<Audit_Permission_Changes>;
+  /** delete data from the table: "audit.slow_queries" */
+  delete_audit_slow_queries: Maybe<Audit_Slow_Queries_Mutation_Response>;
+  /** delete single row from the table: "audit.slow_queries" */
+  delete_audit_slow_queries_by_pk: Maybe<Audit_Slow_Queries>;
+  /** delete data from the table: "audit.user_access_summary" */
+  delete_audit_user_access_summary: Maybe<Audit_User_Access_Summary_Mutation_Response>;
   /** delete data from the table: "billing_event_log" */
   delete_billing_event_log: Maybe<Billing_Event_Log_Mutation_Response>;
   /** delete single row from the table: "billing_event_log" */
@@ -5836,6 +7833,14 @@ export type Mutation_Root = {
   delete_payroll_activation_results: Maybe<Payroll_Activation_Results_Mutation_Response>;
   /** delete single row from the table: "payroll_activation_results" */
   delete_payroll_activation_results_by_pk: Maybe<Payroll_Activation_Results>;
+  /** delete data from the table: "payroll_assignment_audit" */
+  delete_payroll_assignment_audit: Maybe<Payroll_Assignment_Audit_Mutation_Response>;
+  /** delete single row from the table: "payroll_assignment_audit" */
+  delete_payroll_assignment_audit_by_pk: Maybe<Payroll_Assignment_Audit>;
+  /** delete data from the table: "payroll_assignments" */
+  delete_payroll_assignments: Maybe<Payroll_Assignments_Mutation_Response>;
+  /** delete single row from the table: "payroll_assignments" */
+  delete_payroll_assignments_by_pk: Maybe<Payroll_Assignments>;
   /** delete data from the table: "payroll_cycles" */
   delete_payroll_cycles: Maybe<Payroll_Cycles_Mutation_Response>;
   /** delete single row from the table: "payroll_cycles" */
@@ -5890,6 +7895,8 @@ export type Mutation_Root = {
   delete_work_schedule: Maybe<Work_Schedule_Mutation_Response>;
   /** delete single row from the table: "work_schedule" */
   delete_work_schedule_by_pk: Maybe<Work_Schedule>;
+  /** Generate SOC2 compliance reports */
+  generateComplianceReport: Maybe<ComplianceReportResponse>;
   /** insert data into the table: "adjustment_rules" */
   insert_adjustment_rules: Maybe<Adjustment_Rules_Mutation_Response>;
   /** insert a single row into the table: "adjustment_rules" */
@@ -5898,6 +7905,30 @@ export type Mutation_Root = {
   insert_app_settings: Maybe<App_Settings_Mutation_Response>;
   /** insert a single row into the table: "app_settings" */
   insert_app_settings_one: Maybe<App_Settings>;
+  /** insert data into the table: "audit.audit_log" */
+  insert_audit_audit_log: Maybe<Audit_Audit_Log_Mutation_Response>;
+  /** insert a single row into the table: "audit.audit_log" */
+  insert_audit_audit_log_one: Maybe<Audit_Audit_Log>;
+  /** insert data into the table: "audit.auth_events" */
+  insert_audit_auth_events: Maybe<Audit_Auth_Events_Mutation_Response>;
+  /** insert a single row into the table: "audit.auth_events" */
+  insert_audit_auth_events_one: Maybe<Audit_Auth_Events>;
+  /** insert data into the table: "audit.data_access_log" */
+  insert_audit_data_access_log: Maybe<Audit_Data_Access_Log_Mutation_Response>;
+  /** insert a single row into the table: "audit.data_access_log" */
+  insert_audit_data_access_log_one: Maybe<Audit_Data_Access_Log>;
+  /** insert data into the table: "audit.permission_changes" */
+  insert_audit_permission_changes: Maybe<Audit_Permission_Changes_Mutation_Response>;
+  /** insert a single row into the table: "audit.permission_changes" */
+  insert_audit_permission_changes_one: Maybe<Audit_Permission_Changes>;
+  /** insert data into the table: "audit.slow_queries" */
+  insert_audit_slow_queries: Maybe<Audit_Slow_Queries_Mutation_Response>;
+  /** insert a single row into the table: "audit.slow_queries" */
+  insert_audit_slow_queries_one: Maybe<Audit_Slow_Queries>;
+  /** insert data into the table: "audit.user_access_summary" */
+  insert_audit_user_access_summary: Maybe<Audit_User_Access_Summary_Mutation_Response>;
+  /** insert a single row into the table: "audit.user_access_summary" */
+  insert_audit_user_access_summary_one: Maybe<Audit_User_Access_Summary>;
   /** insert data into the table: "billing_event_log" */
   insert_billing_event_log: Maybe<Billing_Event_Log_Mutation_Response>;
   /** insert a single row into the table: "billing_event_log" */
@@ -5966,6 +7997,14 @@ export type Mutation_Root = {
   insert_payroll_activation_results: Maybe<Payroll_Activation_Results_Mutation_Response>;
   /** insert a single row into the table: "payroll_activation_results" */
   insert_payroll_activation_results_one: Maybe<Payroll_Activation_Results>;
+  /** insert data into the table: "payroll_assignment_audit" */
+  insert_payroll_assignment_audit: Maybe<Payroll_Assignment_Audit_Mutation_Response>;
+  /** insert a single row into the table: "payroll_assignment_audit" */
+  insert_payroll_assignment_audit_one: Maybe<Payroll_Assignment_Audit>;
+  /** insert data into the table: "payroll_assignments" */
+  insert_payroll_assignments: Maybe<Payroll_Assignments_Mutation_Response>;
+  /** insert a single row into the table: "payroll_assignments" */
+  insert_payroll_assignments_one: Maybe<Payroll_Assignments>;
   /** insert data into the table: "payroll_cycles" */
   insert_payroll_cycles: Maybe<Payroll_Cycles_Mutation_Response>;
   /** insert a single row into the table: "payroll_cycles" */
@@ -6022,6 +8061,8 @@ export type Mutation_Root = {
   insert_work_schedule: Maybe<Work_Schedule_Mutation_Response>;
   /** insert a single row into the table: "work_schedule" */
   insert_work_schedule_one: Maybe<Work_Schedule>;
+  /** Log audit events for SOC2 compliance */
+  logAuditEvent: Maybe<AuditEventResponse>;
   /** update data of the table: "adjustment_rules" */
   update_adjustment_rules: Maybe<Adjustment_Rules_Mutation_Response>;
   /** update single row of the table: "adjustment_rules" */
@@ -6034,6 +8075,40 @@ export type Mutation_Root = {
   update_app_settings_by_pk: Maybe<App_Settings>;
   /** update multiples rows of table: "app_settings" */
   update_app_settings_many: Maybe<Array<Maybe<App_Settings_Mutation_Response>>>;
+  /** update data of the table: "audit.audit_log" */
+  update_audit_audit_log: Maybe<Audit_Audit_Log_Mutation_Response>;
+  /** update single row of the table: "audit.audit_log" */
+  update_audit_audit_log_by_pk: Maybe<Audit_Audit_Log>;
+  /** update multiples rows of table: "audit.audit_log" */
+  update_audit_audit_log_many: Maybe<Array<Maybe<Audit_Audit_Log_Mutation_Response>>>;
+  /** update data of the table: "audit.auth_events" */
+  update_audit_auth_events: Maybe<Audit_Auth_Events_Mutation_Response>;
+  /** update single row of the table: "audit.auth_events" */
+  update_audit_auth_events_by_pk: Maybe<Audit_Auth_Events>;
+  /** update multiples rows of table: "audit.auth_events" */
+  update_audit_auth_events_many: Maybe<Array<Maybe<Audit_Auth_Events_Mutation_Response>>>;
+  /** update data of the table: "audit.data_access_log" */
+  update_audit_data_access_log: Maybe<Audit_Data_Access_Log_Mutation_Response>;
+  /** update single row of the table: "audit.data_access_log" */
+  update_audit_data_access_log_by_pk: Maybe<Audit_Data_Access_Log>;
+  /** update multiples rows of table: "audit.data_access_log" */
+  update_audit_data_access_log_many: Maybe<Array<Maybe<Audit_Data_Access_Log_Mutation_Response>>>;
+  /** update data of the table: "audit.permission_changes" */
+  update_audit_permission_changes: Maybe<Audit_Permission_Changes_Mutation_Response>;
+  /** update single row of the table: "audit.permission_changes" */
+  update_audit_permission_changes_by_pk: Maybe<Audit_Permission_Changes>;
+  /** update multiples rows of table: "audit.permission_changes" */
+  update_audit_permission_changes_many: Maybe<Array<Maybe<Audit_Permission_Changes_Mutation_Response>>>;
+  /** update data of the table: "audit.slow_queries" */
+  update_audit_slow_queries: Maybe<Audit_Slow_Queries_Mutation_Response>;
+  /** update single row of the table: "audit.slow_queries" */
+  update_audit_slow_queries_by_pk: Maybe<Audit_Slow_Queries>;
+  /** update multiples rows of table: "audit.slow_queries" */
+  update_audit_slow_queries_many: Maybe<Array<Maybe<Audit_Slow_Queries_Mutation_Response>>>;
+  /** update data of the table: "audit.user_access_summary" */
+  update_audit_user_access_summary: Maybe<Audit_User_Access_Summary_Mutation_Response>;
+  /** update multiples rows of table: "audit.user_access_summary" */
+  update_audit_user_access_summary_many: Maybe<Array<Maybe<Audit_User_Access_Summary_Mutation_Response>>>;
   /** update data of the table: "billing_event_log" */
   update_billing_event_log: Maybe<Billing_Event_Log_Mutation_Response>;
   /** update single row of the table: "billing_event_log" */
@@ -6136,6 +8211,18 @@ export type Mutation_Root = {
   update_payroll_activation_results_by_pk: Maybe<Payroll_Activation_Results>;
   /** update multiples rows of table: "payroll_activation_results" */
   update_payroll_activation_results_many: Maybe<Array<Maybe<Payroll_Activation_Results_Mutation_Response>>>;
+  /** update data of the table: "payroll_assignment_audit" */
+  update_payroll_assignment_audit: Maybe<Payroll_Assignment_Audit_Mutation_Response>;
+  /** update single row of the table: "payroll_assignment_audit" */
+  update_payroll_assignment_audit_by_pk: Maybe<Payroll_Assignment_Audit>;
+  /** update multiples rows of table: "payroll_assignment_audit" */
+  update_payroll_assignment_audit_many: Maybe<Array<Maybe<Payroll_Assignment_Audit_Mutation_Response>>>;
+  /** update data of the table: "payroll_assignments" */
+  update_payroll_assignments: Maybe<Payroll_Assignments_Mutation_Response>;
+  /** update single row of the table: "payroll_assignments" */
+  update_payroll_assignments_by_pk: Maybe<Payroll_Assignments>;
+  /** update multiples rows of table: "payroll_assignments" */
+  update_payroll_assignments_many: Maybe<Array<Maybe<Payroll_Assignments_Mutation_Response>>>;
   /** update data of the table: "payroll_cycles" */
   update_payroll_cycles: Maybe<Payroll_Cycles_Mutation_Response>;
   /** update single row of the table: "payroll_cycles" */
@@ -6222,6 +8309,13 @@ export type Mutation_Root = {
 
 
 /** mutation root */
+export type Mutation_RootCheckSuspiciousActivityArgs = {
+  timeWindow?: InputMaybe<Scalars['Int']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** mutation root */
 export type Mutation_RootCommitPayrollAssignmentsArgs = {
   changes: Array<PayrollAssignmentInput>;
 };
@@ -6248,6 +8342,72 @@ export type Mutation_RootDelete_App_SettingsArgs = {
 /** mutation root */
 export type Mutation_RootDelete_App_Settings_By_PkArgs = {
   id: Scalars['String']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_Audit_LogArgs = {
+  where: Audit_Audit_Log_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_Audit_Log_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_Auth_EventsArgs = {
+  where: Audit_Auth_Events_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_Auth_Events_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_Data_Access_LogArgs = {
+  where: Audit_Data_Access_Log_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_Data_Access_Log_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_Permission_ChangesArgs = {
+  where: Audit_Permission_Changes_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_Permission_Changes_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_Slow_QueriesArgs = {
+  where: Audit_Slow_Queries_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_Slow_Queries_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Audit_User_Access_SummaryArgs = {
+  where: Audit_User_Access_Summary_Bool_Exp;
 };
 
 
@@ -6456,6 +8616,30 @@ export type Mutation_RootDelete_Payroll_Activation_Results_By_PkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootDelete_Payroll_Assignment_AuditArgs = {
+  where: Payroll_Assignment_Audit_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Payroll_Assignment_Audit_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Payroll_AssignmentsArgs = {
+  where: Payroll_Assignments_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Payroll_Assignments_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
 export type Mutation_RootDelete_Payroll_CyclesArgs = {
   where: Payroll_Cycles_Bool_Exp;
 };
@@ -6618,6 +8802,12 @@ export type Mutation_RootDelete_Work_Schedule_By_PkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootGenerateComplianceReportArgs = {
+  input: ComplianceReportInput;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsert_Adjustment_RulesArgs = {
   objects: Array<Adjustment_Rules_Insert_Input>;
   on_conflict?: InputMaybe<Adjustment_Rules_On_Conflict>;
@@ -6642,6 +8832,88 @@ export type Mutation_RootInsert_App_SettingsArgs = {
 export type Mutation_RootInsert_App_Settings_OneArgs = {
   object: App_Settings_Insert_Input;
   on_conflict?: InputMaybe<App_Settings_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_Audit_LogArgs = {
+  objects: Array<Audit_Audit_Log_Insert_Input>;
+  on_conflict?: InputMaybe<Audit_Audit_Log_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_Audit_Log_OneArgs = {
+  object: Audit_Audit_Log_Insert_Input;
+  on_conflict?: InputMaybe<Audit_Audit_Log_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_Auth_EventsArgs = {
+  objects: Array<Audit_Auth_Events_Insert_Input>;
+  on_conflict?: InputMaybe<Audit_Auth_Events_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_Auth_Events_OneArgs = {
+  object: Audit_Auth_Events_Insert_Input;
+  on_conflict?: InputMaybe<Audit_Auth_Events_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_Data_Access_LogArgs = {
+  objects: Array<Audit_Data_Access_Log_Insert_Input>;
+  on_conflict?: InputMaybe<Audit_Data_Access_Log_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_Data_Access_Log_OneArgs = {
+  object: Audit_Data_Access_Log_Insert_Input;
+  on_conflict?: InputMaybe<Audit_Data_Access_Log_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_Permission_ChangesArgs = {
+  objects: Array<Audit_Permission_Changes_Insert_Input>;
+  on_conflict?: InputMaybe<Audit_Permission_Changes_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_Permission_Changes_OneArgs = {
+  object: Audit_Permission_Changes_Insert_Input;
+  on_conflict?: InputMaybe<Audit_Permission_Changes_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_Slow_QueriesArgs = {
+  objects: Array<Audit_Slow_Queries_Insert_Input>;
+  on_conflict?: InputMaybe<Audit_Slow_Queries_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_Slow_Queries_OneArgs = {
+  object: Audit_Slow_Queries_Insert_Input;
+  on_conflict?: InputMaybe<Audit_Slow_Queries_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_User_Access_SummaryArgs = {
+  objects: Array<Audit_User_Access_Summary_Insert_Input>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Audit_User_Access_Summary_OneArgs = {
+  object: Audit_User_Access_Summary_Insert_Input;
 };
 
 
@@ -6884,6 +9156,34 @@ export type Mutation_RootInsert_Payroll_Activation_Results_OneArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsert_Payroll_Assignment_AuditArgs = {
+  objects: Array<Payroll_Assignment_Audit_Insert_Input>;
+  on_conflict?: InputMaybe<Payroll_Assignment_Audit_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Payroll_Assignment_Audit_OneArgs = {
+  object: Payroll_Assignment_Audit_Insert_Input;
+  on_conflict?: InputMaybe<Payroll_Assignment_Audit_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Payroll_AssignmentsArgs = {
+  objects: Array<Payroll_Assignments_Insert_Input>;
+  on_conflict?: InputMaybe<Payroll_Assignments_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Payroll_Assignments_OneArgs = {
+  object: Payroll_Assignments_Insert_Input;
+  on_conflict?: InputMaybe<Payroll_Assignments_On_Conflict>;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsert_Payroll_CyclesArgs = {
   objects: Array<Payroll_Cycles_Insert_Input>;
   on_conflict?: InputMaybe<Payroll_Cycles_On_Conflict>;
@@ -7078,6 +9378,12 @@ export type Mutation_RootInsert_Work_Schedule_OneArgs = {
 
 
 /** mutation root */
+export type Mutation_RootLogAuditEventArgs = {
+  event: AuditEventInput;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdate_Adjustment_RulesArgs = {
   _set?: InputMaybe<Adjustment_Rules_Set_Input>;
   where: Adjustment_Rules_Bool_Exp;
@@ -7124,6 +9430,161 @@ export type Mutation_RootUpdate_App_Settings_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_App_Settings_ManyArgs = {
   updates: Array<App_Settings_Updates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Audit_LogArgs = {
+  _append?: InputMaybe<Audit_Audit_Log_Append_Input>;
+  _delete_at_path?: InputMaybe<Audit_Audit_Log_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Audit_Audit_Log_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Audit_Audit_Log_Delete_Key_Input>;
+  _prepend?: InputMaybe<Audit_Audit_Log_Prepend_Input>;
+  _set?: InputMaybe<Audit_Audit_Log_Set_Input>;
+  where: Audit_Audit_Log_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Audit_Log_By_PkArgs = {
+  _append?: InputMaybe<Audit_Audit_Log_Append_Input>;
+  _delete_at_path?: InputMaybe<Audit_Audit_Log_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Audit_Audit_Log_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Audit_Audit_Log_Delete_Key_Input>;
+  _prepend?: InputMaybe<Audit_Audit_Log_Prepend_Input>;
+  _set?: InputMaybe<Audit_Audit_Log_Set_Input>;
+  pk_columns: Audit_Audit_Log_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Audit_Log_ManyArgs = {
+  updates: Array<Audit_Audit_Log_Updates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Auth_EventsArgs = {
+  _append?: InputMaybe<Audit_Auth_Events_Append_Input>;
+  _delete_at_path?: InputMaybe<Audit_Auth_Events_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Audit_Auth_Events_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Audit_Auth_Events_Delete_Key_Input>;
+  _prepend?: InputMaybe<Audit_Auth_Events_Prepend_Input>;
+  _set?: InputMaybe<Audit_Auth_Events_Set_Input>;
+  where: Audit_Auth_Events_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Auth_Events_By_PkArgs = {
+  _append?: InputMaybe<Audit_Auth_Events_Append_Input>;
+  _delete_at_path?: InputMaybe<Audit_Auth_Events_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Audit_Auth_Events_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Audit_Auth_Events_Delete_Key_Input>;
+  _prepend?: InputMaybe<Audit_Auth_Events_Prepend_Input>;
+  _set?: InputMaybe<Audit_Auth_Events_Set_Input>;
+  pk_columns: Audit_Auth_Events_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Auth_Events_ManyArgs = {
+  updates: Array<Audit_Auth_Events_Updates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Data_Access_LogArgs = {
+  _append?: InputMaybe<Audit_Data_Access_Log_Append_Input>;
+  _delete_at_path?: InputMaybe<Audit_Data_Access_Log_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Audit_Data_Access_Log_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Audit_Data_Access_Log_Delete_Key_Input>;
+  _inc?: InputMaybe<Audit_Data_Access_Log_Inc_Input>;
+  _prepend?: InputMaybe<Audit_Data_Access_Log_Prepend_Input>;
+  _set?: InputMaybe<Audit_Data_Access_Log_Set_Input>;
+  where: Audit_Data_Access_Log_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Data_Access_Log_By_PkArgs = {
+  _append?: InputMaybe<Audit_Data_Access_Log_Append_Input>;
+  _delete_at_path?: InputMaybe<Audit_Data_Access_Log_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Audit_Data_Access_Log_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Audit_Data_Access_Log_Delete_Key_Input>;
+  _inc?: InputMaybe<Audit_Data_Access_Log_Inc_Input>;
+  _prepend?: InputMaybe<Audit_Data_Access_Log_Prepend_Input>;
+  _set?: InputMaybe<Audit_Data_Access_Log_Set_Input>;
+  pk_columns: Audit_Data_Access_Log_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Data_Access_Log_ManyArgs = {
+  updates: Array<Audit_Data_Access_Log_Updates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Permission_ChangesArgs = {
+  _append?: InputMaybe<Audit_Permission_Changes_Append_Input>;
+  _delete_at_path?: InputMaybe<Audit_Permission_Changes_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Audit_Permission_Changes_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Audit_Permission_Changes_Delete_Key_Input>;
+  _prepend?: InputMaybe<Audit_Permission_Changes_Prepend_Input>;
+  _set?: InputMaybe<Audit_Permission_Changes_Set_Input>;
+  where: Audit_Permission_Changes_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Permission_Changes_By_PkArgs = {
+  _append?: InputMaybe<Audit_Permission_Changes_Append_Input>;
+  _delete_at_path?: InputMaybe<Audit_Permission_Changes_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Audit_Permission_Changes_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Audit_Permission_Changes_Delete_Key_Input>;
+  _prepend?: InputMaybe<Audit_Permission_Changes_Prepend_Input>;
+  _set?: InputMaybe<Audit_Permission_Changes_Set_Input>;
+  pk_columns: Audit_Permission_Changes_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Permission_Changes_ManyArgs = {
+  updates: Array<Audit_Permission_Changes_Updates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Slow_QueriesArgs = {
+  _set?: InputMaybe<Audit_Slow_Queries_Set_Input>;
+  where: Audit_Slow_Queries_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Slow_Queries_By_PkArgs = {
+  _set?: InputMaybe<Audit_Slow_Queries_Set_Input>;
+  pk_columns: Audit_Slow_Queries_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_Slow_Queries_ManyArgs = {
+  updates: Array<Audit_Slow_Queries_Updates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_User_Access_SummaryArgs = {
+  _set?: InputMaybe<Audit_User_Access_Summary_Set_Input>;
+  where: Audit_User_Access_Summary_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Audit_User_Access_Summary_ManyArgs = {
+  updates: Array<Audit_User_Access_Summary_Updates>;
 };
 
 
@@ -7504,6 +9965,46 @@ export type Mutation_RootUpdate_Payroll_Activation_Results_ManyArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdate_Payroll_Assignment_AuditArgs = {
+  _set?: InputMaybe<Payroll_Assignment_Audit_Set_Input>;
+  where: Payroll_Assignment_Audit_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Payroll_Assignment_Audit_By_PkArgs = {
+  _set?: InputMaybe<Payroll_Assignment_Audit_Set_Input>;
+  pk_columns: Payroll_Assignment_Audit_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Payroll_Assignment_Audit_ManyArgs = {
+  updates: Array<Payroll_Assignment_Audit_Updates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Payroll_AssignmentsArgs = {
+  _set?: InputMaybe<Payroll_Assignments_Set_Input>;
+  where: Payroll_Assignments_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Payroll_Assignments_By_PkArgs = {
+  _set?: InputMaybe<Payroll_Assignments_Set_Input>;
+  pk_columns: Payroll_Assignments_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Payroll_Assignments_ManyArgs = {
+  updates: Array<Payroll_Assignments_Updates>;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdate_Payroll_CyclesArgs = {
   _set?: InputMaybe<Payroll_Cycles_Set_Input>;
   where: Payroll_Cycles_Bool_Exp;
@@ -7793,6 +10294,19 @@ export type Mutation_RootUpdate_Work_Schedule_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Work_Schedule_ManyArgs = {
   updates: Array<Work_Schedule_Updates>;
+};
+
+/** Boolean expression to compare columns of type "name". All fields are combined with logical 'AND'. */
+export type Name_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars['name']['input']>;
+  _gt?: InputMaybe<Scalars['name']['input']>;
+  _gte?: InputMaybe<Scalars['name']['input']>;
+  _in?: InputMaybe<Array<Scalars['name']['input']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['name']['input']>;
+  _lte?: InputMaybe<Scalars['name']['input']>;
+  _neq?: InputMaybe<Scalars['name']['input']>;
+  _nin?: InputMaybe<Array<Scalars['name']['input']>>;
 };
 
 /** columns and relationships of "neon_auth.users_sync" */
@@ -8481,7 +10995,6 @@ export type Payroll_Activation_Results = {
   version_number: Scalars['Int']['output'];
 };
 
-/** aggregated selection of "payroll_activation_results" */
 export type Payroll_Activation_Results_Aggregate = {
   __typename: 'payroll_activation_results_aggregate';
   aggregate: Maybe<Payroll_Activation_Results_Aggregate_Fields>;
@@ -8699,6 +11212,628 @@ export type Payroll_Activation_Results_Var_Samp_Fields = {
 export type Payroll_Activation_Results_Variance_Fields = {
   __typename: 'payroll_activation_results_variance_fields';
   version_number: Maybe<Scalars['Float']['output']>;
+};
+
+/** columns and relationships of "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit = {
+  __typename: 'payroll_assignment_audit';
+  assignment_id: Maybe<Scalars['uuid']['output']>;
+  change_reason: Maybe<Scalars['String']['output']>;
+  changed_by: Maybe<Scalars['uuid']['output']>;
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  from_consultant_id: Maybe<Scalars['uuid']['output']>;
+  id: Scalars['uuid']['output'];
+  /** An object relationship */
+  payroll_assignment: Maybe<Payroll_Assignments>;
+  /** An object relationship */
+  payroll_date: Payroll_Dates;
+  payroll_date_id: Scalars['uuid']['output'];
+  to_consultant_id: Scalars['uuid']['output'];
+  /** An object relationship */
+  user: Maybe<Users>;
+  /** An object relationship */
+  userByFromConsultantId: Maybe<Users>;
+  /** An object relationship */
+  userByToConsultantId: Users;
+};
+
+/** aggregated selection of "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Aggregate = {
+  __typename: 'payroll_assignment_audit_aggregate';
+  aggregate: Maybe<Payroll_Assignment_Audit_Aggregate_Fields>;
+  nodes: Array<Payroll_Assignment_Audit>;
+};
+
+export type Payroll_Assignment_Audit_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Bool_Exp_Count>;
+};
+
+export type Payroll_Assignment_Audit_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Aggregate_Fields = {
+  __typename: 'payroll_assignment_audit_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max: Maybe<Payroll_Assignment_Audit_Max_Fields>;
+  min: Maybe<Payroll_Assignment_Audit_Min_Fields>;
+};
+
+
+/** aggregate fields of "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Aggregate_Order_By = {
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Payroll_Assignment_Audit_Max_Order_By>;
+  min?: InputMaybe<Payroll_Assignment_Audit_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Arr_Rel_Insert_Input = {
+  data: Array<Payroll_Assignment_Audit_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Payroll_Assignment_Audit_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_assignment_audit". All fields are combined with a logical 'AND'. */
+export type Payroll_Assignment_Audit_Bool_Exp = {
+  _and?: InputMaybe<Array<Payroll_Assignment_Audit_Bool_Exp>>;
+  _not?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+  _or?: InputMaybe<Array<Payroll_Assignment_Audit_Bool_Exp>>;
+  assignment_id?: InputMaybe<Uuid_Comparison_Exp>;
+  change_reason?: InputMaybe<String_Comparison_Exp>;
+  changed_by?: InputMaybe<Uuid_Comparison_Exp>;
+  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  from_consultant_id?: InputMaybe<Uuid_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  payroll_assignment?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+  payroll_date?: InputMaybe<Payroll_Dates_Bool_Exp>;
+  payroll_date_id?: InputMaybe<Uuid_Comparison_Exp>;
+  to_consultant_id?: InputMaybe<Uuid_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
+  userByFromConsultantId?: InputMaybe<Users_Bool_Exp>;
+  userByToConsultantId?: InputMaybe<Users_Bool_Exp>;
+};
+
+/** unique or primary key constraints on table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Constraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'payroll_assignment_audit_pkey';
+
+/** input type for inserting data into table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Insert_Input = {
+  assignment_id?: InputMaybe<Scalars['uuid']['input']>;
+  change_reason?: InputMaybe<Scalars['String']['input']>;
+  changed_by?: InputMaybe<Scalars['uuid']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  from_consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payroll_assignment?: InputMaybe<Payroll_Assignments_Obj_Rel_Insert_Input>;
+  payroll_date?: InputMaybe<Payroll_Dates_Obj_Rel_Insert_Input>;
+  payroll_date_id?: InputMaybe<Scalars['uuid']['input']>;
+  to_consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
+  userByFromConsultantId?: InputMaybe<Users_Obj_Rel_Insert_Input>;
+  userByToConsultantId?: InputMaybe<Users_Obj_Rel_Insert_Input>;
+};
+
+/** aggregate max on columns */
+export type Payroll_Assignment_Audit_Max_Fields = {
+  __typename: 'payroll_assignment_audit_max_fields';
+  assignment_id: Maybe<Scalars['uuid']['output']>;
+  change_reason: Maybe<Scalars['String']['output']>;
+  changed_by: Maybe<Scalars['uuid']['output']>;
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  from_consultant_id: Maybe<Scalars['uuid']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  payroll_date_id: Maybe<Scalars['uuid']['output']>;
+  to_consultant_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by max() on columns of table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Max_Order_By = {
+  assignment_id?: InputMaybe<Order_By>;
+  change_reason?: InputMaybe<Order_By>;
+  changed_by?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  from_consultant_id?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  payroll_date_id?: InputMaybe<Order_By>;
+  to_consultant_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Payroll_Assignment_Audit_Min_Fields = {
+  __typename: 'payroll_assignment_audit_min_fields';
+  assignment_id: Maybe<Scalars['uuid']['output']>;
+  change_reason: Maybe<Scalars['String']['output']>;
+  changed_by: Maybe<Scalars['uuid']['output']>;
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  from_consultant_id: Maybe<Scalars['uuid']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  payroll_date_id: Maybe<Scalars['uuid']['output']>;
+  to_consultant_id: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by min() on columns of table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Min_Order_By = {
+  assignment_id?: InputMaybe<Order_By>;
+  change_reason?: InputMaybe<Order_By>;
+  changed_by?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  from_consultant_id?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  payroll_date_id?: InputMaybe<Order_By>;
+  to_consultant_id?: InputMaybe<Order_By>;
+};
+
+/** response of any mutation on the table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Mutation_Response = {
+  __typename: 'payroll_assignment_audit_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Payroll_Assignment_Audit>;
+};
+
+/** on_conflict condition type for table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_On_Conflict = {
+  constraint: Payroll_Assignment_Audit_Constraint;
+  update_columns?: Array<Payroll_Assignment_Audit_Update_Column>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "payroll_assignment_audit". */
+export type Payroll_Assignment_Audit_Order_By = {
+  assignment_id?: InputMaybe<Order_By>;
+  change_reason?: InputMaybe<Order_By>;
+  changed_by?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  from_consultant_id?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  payroll_assignment?: InputMaybe<Payroll_Assignments_Order_By>;
+  payroll_date?: InputMaybe<Payroll_Dates_Order_By>;
+  payroll_date_id?: InputMaybe<Order_By>;
+  to_consultant_id?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
+  userByFromConsultantId?: InputMaybe<Users_Order_By>;
+  userByToConsultantId?: InputMaybe<Users_Order_By>;
+};
+
+/** primary key columns input for table: payroll_assignment_audit */
+export type Payroll_Assignment_Audit_Pk_Columns_Input = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Select_Column =
+  /** column name */
+  | 'assignment_id'
+  /** column name */
+  | 'change_reason'
+  /** column name */
+  | 'changed_by'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'from_consultant_id'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'payroll_date_id'
+  /** column name */
+  | 'to_consultant_id';
+
+/** input type for updating data in table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Set_Input = {
+  assignment_id?: InputMaybe<Scalars['uuid']['input']>;
+  change_reason?: InputMaybe<Scalars['String']['input']>;
+  changed_by?: InputMaybe<Scalars['uuid']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  from_consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payroll_date_id?: InputMaybe<Scalars['uuid']['input']>;
+  to_consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Payroll_Assignment_Audit_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Payroll_Assignment_Audit_Stream_Cursor_Value_Input = {
+  assignment_id?: InputMaybe<Scalars['uuid']['input']>;
+  change_reason?: InputMaybe<Scalars['String']['input']>;
+  changed_by?: InputMaybe<Scalars['uuid']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  from_consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payroll_date_id?: InputMaybe<Scalars['uuid']['input']>;
+  to_consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "payroll_assignment_audit" */
+export type Payroll_Assignment_Audit_Update_Column =
+  /** column name */
+  | 'assignment_id'
+  /** column name */
+  | 'change_reason'
+  /** column name */
+  | 'changed_by'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'from_consultant_id'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'payroll_date_id'
+  /** column name */
+  | 'to_consultant_id';
+
+export type Payroll_Assignment_Audit_Updates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Payroll_Assignment_Audit_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Payroll_Assignment_Audit_Bool_Exp;
+};
+
+/** columns and relationships of "payroll_assignments" */
+export type Payroll_Assignments = {
+  __typename: 'payroll_assignments';
+  assigned_by: Maybe<Scalars['uuid']['output']>;
+  assigned_date: Maybe<Scalars['timestamptz']['output']>;
+  consultant_id: Scalars['uuid']['output'];
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  id: Scalars['uuid']['output'];
+  is_backup: Maybe<Scalars['Boolean']['output']>;
+  original_consultant_id: Maybe<Scalars['uuid']['output']>;
+  /** An array relationship */
+  payroll_assignment_audits: Array<Payroll_Assignment_Audit>;
+  /** An aggregate relationship */
+  payroll_assignment_audits_aggregate: Payroll_Assignment_Audit_Aggregate;
+  /** An object relationship */
+  payroll_date: Payroll_Dates;
+  payroll_date_id: Scalars['uuid']['output'];
+  updated_at: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  user: Maybe<Users>;
+  /** An object relationship */
+  userByConsultantId: Users;
+  /** An object relationship */
+  userByOriginalConsultantId: Maybe<Users>;
+};
+
+
+/** columns and relationships of "payroll_assignments" */
+export type Payroll_AssignmentsPayroll_Assignment_AuditsArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+/** columns and relationships of "payroll_assignments" */
+export type Payroll_AssignmentsPayroll_Assignment_Audits_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+/** aggregated selection of "payroll_assignments" */
+export type Payroll_Assignments_Aggregate = {
+  __typename: 'payroll_assignments_aggregate';
+  aggregate: Maybe<Payroll_Assignments_Aggregate_Fields>;
+  nodes: Array<Payroll_Assignments>;
+};
+
+export type Payroll_Assignments_Aggregate_Bool_Exp = {
+  bool_and?: InputMaybe<Payroll_Assignments_Aggregate_Bool_Exp_Bool_And>;
+  bool_or?: InputMaybe<Payroll_Assignments_Aggregate_Bool_Exp_Bool_Or>;
+  count?: InputMaybe<Payroll_Assignments_Aggregate_Bool_Exp_Count>;
+};
+
+export type Payroll_Assignments_Aggregate_Bool_Exp_Bool_And = {
+  arguments: Payroll_Assignments_Select_Column_Payroll_Assignments_Aggregate_Bool_Exp_Bool_And_Arguments_Columns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+  predicate: Boolean_Comparison_Exp;
+};
+
+export type Payroll_Assignments_Aggregate_Bool_Exp_Bool_Or = {
+  arguments: Payroll_Assignments_Select_Column_Payroll_Assignments_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+  predicate: Boolean_Comparison_Exp;
+};
+
+export type Payroll_Assignments_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "payroll_assignments" */
+export type Payroll_Assignments_Aggregate_Fields = {
+  __typename: 'payroll_assignments_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max: Maybe<Payroll_Assignments_Max_Fields>;
+  min: Maybe<Payroll_Assignments_Min_Fields>;
+};
+
+
+/** aggregate fields of "payroll_assignments" */
+export type Payroll_Assignments_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "payroll_assignments" */
+export type Payroll_Assignments_Aggregate_Order_By = {
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Payroll_Assignments_Max_Order_By>;
+  min?: InputMaybe<Payroll_Assignments_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "payroll_assignments" */
+export type Payroll_Assignments_Arr_Rel_Insert_Input = {
+  data: Array<Payroll_Assignments_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Payroll_Assignments_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_assignments". All fields are combined with a logical 'AND'. */
+export type Payroll_Assignments_Bool_Exp = {
+  _and?: InputMaybe<Array<Payroll_Assignments_Bool_Exp>>;
+  _not?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+  _or?: InputMaybe<Array<Payroll_Assignments_Bool_Exp>>;
+  assigned_by?: InputMaybe<Uuid_Comparison_Exp>;
+  assigned_date?: InputMaybe<Timestamptz_Comparison_Exp>;
+  consultant_id?: InputMaybe<Uuid_Comparison_Exp>;
+  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  is_backup?: InputMaybe<Boolean_Comparison_Exp>;
+  original_consultant_id?: InputMaybe<Uuid_Comparison_Exp>;
+  payroll_assignment_audits?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+  payroll_assignment_audits_aggregate?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Bool_Exp>;
+  payroll_date?: InputMaybe<Payroll_Dates_Bool_Exp>;
+  payroll_date_id?: InputMaybe<Uuid_Comparison_Exp>;
+  updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
+  userByConsultantId?: InputMaybe<Users_Bool_Exp>;
+  userByOriginalConsultantId?: InputMaybe<Users_Bool_Exp>;
+};
+
+/** unique or primary key constraints on table "payroll_assignments" */
+export type Payroll_Assignments_Constraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'payroll_assignments_pkey'
+  /** unique or primary key constraint on columns "payroll_date_id" */
+  | 'uq_payroll_assignment_payroll_date';
+
+/** input type for inserting data into table "payroll_assignments" */
+export type Payroll_Assignments_Insert_Input = {
+  assigned_by?: InputMaybe<Scalars['uuid']['input']>;
+  assigned_date?: InputMaybe<Scalars['timestamptz']['input']>;
+  consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  is_backup?: InputMaybe<Scalars['Boolean']['input']>;
+  original_consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+  payroll_assignment_audits?: InputMaybe<Payroll_Assignment_Audit_Arr_Rel_Insert_Input>;
+  payroll_date?: InputMaybe<Payroll_Dates_Obj_Rel_Insert_Input>;
+  payroll_date_id?: InputMaybe<Scalars['uuid']['input']>;
+  updated_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
+  userByConsultantId?: InputMaybe<Users_Obj_Rel_Insert_Input>;
+  userByOriginalConsultantId?: InputMaybe<Users_Obj_Rel_Insert_Input>;
+};
+
+/** aggregate max on columns */
+export type Payroll_Assignments_Max_Fields = {
+  __typename: 'payroll_assignments_max_fields';
+  assigned_by: Maybe<Scalars['uuid']['output']>;
+  assigned_date: Maybe<Scalars['timestamptz']['output']>;
+  consultant_id: Maybe<Scalars['uuid']['output']>;
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  original_consultant_id: Maybe<Scalars['uuid']['output']>;
+  payroll_date_id: Maybe<Scalars['uuid']['output']>;
+  updated_at: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by max() on columns of table "payroll_assignments" */
+export type Payroll_Assignments_Max_Order_By = {
+  assigned_by?: InputMaybe<Order_By>;
+  assigned_date?: InputMaybe<Order_By>;
+  consultant_id?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  original_consultant_id?: InputMaybe<Order_By>;
+  payroll_date_id?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Payroll_Assignments_Min_Fields = {
+  __typename: 'payroll_assignments_min_fields';
+  assigned_by: Maybe<Scalars['uuid']['output']>;
+  assigned_date: Maybe<Scalars['timestamptz']['output']>;
+  consultant_id: Maybe<Scalars['uuid']['output']>;
+  created_at: Maybe<Scalars['timestamptz']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  original_consultant_id: Maybe<Scalars['uuid']['output']>;
+  payroll_date_id: Maybe<Scalars['uuid']['output']>;
+  updated_at: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by min() on columns of table "payroll_assignments" */
+export type Payroll_Assignments_Min_Order_By = {
+  assigned_by?: InputMaybe<Order_By>;
+  assigned_date?: InputMaybe<Order_By>;
+  consultant_id?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  original_consultant_id?: InputMaybe<Order_By>;
+  payroll_date_id?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** response of any mutation on the table "payroll_assignments" */
+export type Payroll_Assignments_Mutation_Response = {
+  __typename: 'payroll_assignments_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Payroll_Assignments>;
+};
+
+/** input type for inserting object relation for remote table "payroll_assignments" */
+export type Payroll_Assignments_Obj_Rel_Insert_Input = {
+  data: Payroll_Assignments_Insert_Input;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Payroll_Assignments_On_Conflict>;
+};
+
+/** on_conflict condition type for table "payroll_assignments" */
+export type Payroll_Assignments_On_Conflict = {
+  constraint: Payroll_Assignments_Constraint;
+  update_columns?: Array<Payroll_Assignments_Update_Column>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "payroll_assignments". */
+export type Payroll_Assignments_Order_By = {
+  assigned_by?: InputMaybe<Order_By>;
+  assigned_date?: InputMaybe<Order_By>;
+  consultant_id?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  is_backup?: InputMaybe<Order_By>;
+  original_consultant_id?: InputMaybe<Order_By>;
+  payroll_assignment_audits_aggregate?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Order_By>;
+  payroll_date?: InputMaybe<Payroll_Dates_Order_By>;
+  payroll_date_id?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
+  userByConsultantId?: InputMaybe<Users_Order_By>;
+  userByOriginalConsultantId?: InputMaybe<Users_Order_By>;
+};
+
+/** primary key columns input for table: payroll_assignments */
+export type Payroll_Assignments_Pk_Columns_Input = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "payroll_assignments" */
+export type Payroll_Assignments_Select_Column =
+  /** column name */
+  | 'assigned_by'
+  /** column name */
+  | 'assigned_date'
+  /** column name */
+  | 'consultant_id'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'is_backup'
+  /** column name */
+  | 'original_consultant_id'
+  /** column name */
+  | 'payroll_date_id'
+  /** column name */
+  | 'updated_at';
+
+/** select "payroll_assignments_aggregate_bool_exp_bool_and_arguments_columns" columns of table "payroll_assignments" */
+export type Payroll_Assignments_Select_Column_Payroll_Assignments_Aggregate_Bool_Exp_Bool_And_Arguments_Columns =
+  /** column name */
+  | 'is_backup';
+
+/** select "payroll_assignments_aggregate_bool_exp_bool_or_arguments_columns" columns of table "payroll_assignments" */
+export type Payroll_Assignments_Select_Column_Payroll_Assignments_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns =
+  /** column name */
+  | 'is_backup';
+
+/** input type for updating data in table "payroll_assignments" */
+export type Payroll_Assignments_Set_Input = {
+  assigned_by?: InputMaybe<Scalars['uuid']['input']>;
+  assigned_date?: InputMaybe<Scalars['timestamptz']['input']>;
+  consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  is_backup?: InputMaybe<Scalars['Boolean']['input']>;
+  original_consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+  payroll_date_id?: InputMaybe<Scalars['uuid']['input']>;
+  updated_at?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** Streaming cursor of the table "payroll_assignments" */
+export type Payroll_Assignments_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Payroll_Assignments_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Payroll_Assignments_Stream_Cursor_Value_Input = {
+  assigned_by?: InputMaybe<Scalars['uuid']['input']>;
+  assigned_date?: InputMaybe<Scalars['timestamptz']['input']>;
+  consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  is_backup?: InputMaybe<Scalars['Boolean']['input']>;
+  original_consultant_id?: InputMaybe<Scalars['uuid']['input']>;
+  payroll_date_id?: InputMaybe<Scalars['uuid']['input']>;
+  updated_at?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** update columns of table "payroll_assignments" */
+export type Payroll_Assignments_Update_Column =
+  /** column name */
+  | 'assigned_by'
+  /** column name */
+  | 'assigned_date'
+  /** column name */
+  | 'consultant_id'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'is_backup'
+  /** column name */
+  | 'original_consultant_id'
+  /** column name */
+  | 'payroll_date_id'
+  /** column name */
+  | 'updated_at';
+
+export type Payroll_Assignments_Updates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Payroll_Assignments_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Payroll_Assignments_Bool_Exp;
 };
 
 /** Boolean expression to compare columns of type "payroll_cycle_type". All fields are combined with logical 'AND'. */
@@ -8975,6 +12110,237 @@ export type Payroll_Cycles_Updates = {
   _set?: InputMaybe<Payroll_Cycles_Set_Input>;
   /** filter the rows which have to be updated */
   where: Payroll_Cycles_Bool_Exp;
+};
+
+/** columns and relationships of "payroll_dashboard_stats" */
+export type Payroll_Dashboard_Stats = {
+  __typename: 'payroll_dashboard_stats';
+  backup_consultant_user_id: Maybe<Scalars['uuid']['output']>;
+  client_name: Maybe<Scalars['String']['output']>;
+  cycle_name: Maybe<Scalars['payroll_cycle_type']['output']>;
+  future_dates: Maybe<Scalars['bigint']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  manager_user_id: Maybe<Scalars['uuid']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  next_eft_date: Maybe<Scalars['date']['output']>;
+  past_dates: Maybe<Scalars['bigint']['output']>;
+  primary_consultant_user_id: Maybe<Scalars['uuid']['output']>;
+  status: Maybe<Scalars['payroll_status']['output']>;
+  total_dates: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregated selection of "payroll_dashboard_stats" */
+export type Payroll_Dashboard_Stats_Aggregate = {
+  __typename: 'payroll_dashboard_stats_aggregate';
+  aggregate: Maybe<Payroll_Dashboard_Stats_Aggregate_Fields>;
+  nodes: Array<Payroll_Dashboard_Stats>;
+};
+
+/** aggregate fields of "payroll_dashboard_stats" */
+export type Payroll_Dashboard_Stats_Aggregate_Fields = {
+  __typename: 'payroll_dashboard_stats_aggregate_fields';
+  avg: Maybe<Payroll_Dashboard_Stats_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max: Maybe<Payroll_Dashboard_Stats_Max_Fields>;
+  min: Maybe<Payroll_Dashboard_Stats_Min_Fields>;
+  stddev: Maybe<Payroll_Dashboard_Stats_Stddev_Fields>;
+  stddev_pop: Maybe<Payroll_Dashboard_Stats_Stddev_Pop_Fields>;
+  stddev_samp: Maybe<Payroll_Dashboard_Stats_Stddev_Samp_Fields>;
+  sum: Maybe<Payroll_Dashboard_Stats_Sum_Fields>;
+  var_pop: Maybe<Payroll_Dashboard_Stats_Var_Pop_Fields>;
+  var_samp: Maybe<Payroll_Dashboard_Stats_Var_Samp_Fields>;
+  variance: Maybe<Payroll_Dashboard_Stats_Variance_Fields>;
+};
+
+
+/** aggregate fields of "payroll_dashboard_stats" */
+export type Payroll_Dashboard_Stats_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Payroll_Dashboard_Stats_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Payroll_Dashboard_Stats_Avg_Fields = {
+  __typename: 'payroll_dashboard_stats_avg_fields';
+  future_dates: Maybe<Scalars['Float']['output']>;
+  past_dates: Maybe<Scalars['Float']['output']>;
+  total_dates: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_dashboard_stats". All fields are combined with a logical 'AND'. */
+export type Payroll_Dashboard_Stats_Bool_Exp = {
+  _and?: InputMaybe<Array<Payroll_Dashboard_Stats_Bool_Exp>>;
+  _not?: InputMaybe<Payroll_Dashboard_Stats_Bool_Exp>;
+  _or?: InputMaybe<Array<Payroll_Dashboard_Stats_Bool_Exp>>;
+  backup_consultant_user_id?: InputMaybe<Uuid_Comparison_Exp>;
+  client_name?: InputMaybe<String_Comparison_Exp>;
+  cycle_name?: InputMaybe<Payroll_Cycle_Type_Comparison_Exp>;
+  future_dates?: InputMaybe<Bigint_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  manager_user_id?: InputMaybe<Uuid_Comparison_Exp>;
+  name?: InputMaybe<String_Comparison_Exp>;
+  next_eft_date?: InputMaybe<Date_Comparison_Exp>;
+  past_dates?: InputMaybe<Bigint_Comparison_Exp>;
+  primary_consultant_user_id?: InputMaybe<Uuid_Comparison_Exp>;
+  status?: InputMaybe<Payroll_Status_Comparison_Exp>;
+  total_dates?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Payroll_Dashboard_Stats_Max_Fields = {
+  __typename: 'payroll_dashboard_stats_max_fields';
+  backup_consultant_user_id: Maybe<Scalars['uuid']['output']>;
+  client_name: Maybe<Scalars['String']['output']>;
+  cycle_name: Maybe<Scalars['payroll_cycle_type']['output']>;
+  future_dates: Maybe<Scalars['bigint']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  manager_user_id: Maybe<Scalars['uuid']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  next_eft_date: Maybe<Scalars['date']['output']>;
+  past_dates: Maybe<Scalars['bigint']['output']>;
+  primary_consultant_user_id: Maybe<Scalars['uuid']['output']>;
+  status: Maybe<Scalars['payroll_status']['output']>;
+  total_dates: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate min on columns */
+export type Payroll_Dashboard_Stats_Min_Fields = {
+  __typename: 'payroll_dashboard_stats_min_fields';
+  backup_consultant_user_id: Maybe<Scalars['uuid']['output']>;
+  client_name: Maybe<Scalars['String']['output']>;
+  cycle_name: Maybe<Scalars['payroll_cycle_type']['output']>;
+  future_dates: Maybe<Scalars['bigint']['output']>;
+  id: Maybe<Scalars['uuid']['output']>;
+  manager_user_id: Maybe<Scalars['uuid']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  next_eft_date: Maybe<Scalars['date']['output']>;
+  past_dates: Maybe<Scalars['bigint']['output']>;
+  primary_consultant_user_id: Maybe<Scalars['uuid']['output']>;
+  status: Maybe<Scalars['payroll_status']['output']>;
+  total_dates: Maybe<Scalars['bigint']['output']>;
+};
+
+/** Ordering options when selecting data from "payroll_dashboard_stats". */
+export type Payroll_Dashboard_Stats_Order_By = {
+  backup_consultant_user_id?: InputMaybe<Order_By>;
+  client_name?: InputMaybe<Order_By>;
+  cycle_name?: InputMaybe<Order_By>;
+  future_dates?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  manager_user_id?: InputMaybe<Order_By>;
+  name?: InputMaybe<Order_By>;
+  next_eft_date?: InputMaybe<Order_By>;
+  past_dates?: InputMaybe<Order_By>;
+  primary_consultant_user_id?: InputMaybe<Order_By>;
+  status?: InputMaybe<Order_By>;
+  total_dates?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "payroll_dashboard_stats" */
+export type Payroll_Dashboard_Stats_Select_Column =
+  /** column name */
+  | 'backup_consultant_user_id'
+  /** column name */
+  | 'client_name'
+  /** column name */
+  | 'cycle_name'
+  /** column name */
+  | 'future_dates'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'manager_user_id'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'next_eft_date'
+  /** column name */
+  | 'past_dates'
+  /** column name */
+  | 'primary_consultant_user_id'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'total_dates';
+
+/** aggregate stddev on columns */
+export type Payroll_Dashboard_Stats_Stddev_Fields = {
+  __typename: 'payroll_dashboard_stats_stddev_fields';
+  future_dates: Maybe<Scalars['Float']['output']>;
+  past_dates: Maybe<Scalars['Float']['output']>;
+  total_dates: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Payroll_Dashboard_Stats_Stddev_Pop_Fields = {
+  __typename: 'payroll_dashboard_stats_stddev_pop_fields';
+  future_dates: Maybe<Scalars['Float']['output']>;
+  past_dates: Maybe<Scalars['Float']['output']>;
+  total_dates: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Payroll_Dashboard_Stats_Stddev_Samp_Fields = {
+  __typename: 'payroll_dashboard_stats_stddev_samp_fields';
+  future_dates: Maybe<Scalars['Float']['output']>;
+  past_dates: Maybe<Scalars['Float']['output']>;
+  total_dates: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "payroll_dashboard_stats" */
+export type Payroll_Dashboard_Stats_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Payroll_Dashboard_Stats_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Payroll_Dashboard_Stats_Stream_Cursor_Value_Input = {
+  backup_consultant_user_id?: InputMaybe<Scalars['uuid']['input']>;
+  client_name?: InputMaybe<Scalars['String']['input']>;
+  cycle_name?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
+  future_dates?: InputMaybe<Scalars['bigint']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  manager_user_id?: InputMaybe<Scalars['uuid']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  next_eft_date?: InputMaybe<Scalars['date']['input']>;
+  past_dates?: InputMaybe<Scalars['bigint']['input']>;
+  primary_consultant_user_id?: InputMaybe<Scalars['uuid']['input']>;
+  status?: InputMaybe<Scalars['payroll_status']['input']>;
+  total_dates?: InputMaybe<Scalars['bigint']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Payroll_Dashboard_Stats_Sum_Fields = {
+  __typename: 'payroll_dashboard_stats_sum_fields';
+  future_dates: Maybe<Scalars['bigint']['output']>;
+  past_dates: Maybe<Scalars['bigint']['output']>;
+  total_dates: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Payroll_Dashboard_Stats_Var_Pop_Fields = {
+  __typename: 'payroll_dashboard_stats_var_pop_fields';
+  future_dates: Maybe<Scalars['Float']['output']>;
+  past_dates: Maybe<Scalars['Float']['output']>;
+  total_dates: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Payroll_Dashboard_Stats_Var_Samp_Fields = {
+  __typename: 'payroll_dashboard_stats_var_samp_fields';
+  future_dates: Maybe<Scalars['Float']['output']>;
+  past_dates: Maybe<Scalars['Float']['output']>;
+  total_dates: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Payroll_Dashboard_Stats_Variance_Fields = {
+  __typename: 'payroll_dashboard_stats_variance_fields';
+  future_dates: Maybe<Scalars['Float']['output']>;
+  past_dates: Maybe<Scalars['Float']['output']>;
+  total_dates: Maybe<Scalars['Float']['output']>;
 };
 
 /** Boolean expression to compare columns of type "payroll_date_type". All fields are combined with logical 'AND'. */
@@ -9268,12 +12634,38 @@ export type Payroll_Dates = {
   original_eft_date: Scalars['date']['output'];
   /** An object relationship */
   payroll: Payrolls;
+  /** An object relationship */
+  payroll_assignment: Maybe<Payroll_Assignments>;
+  /** An array relationship */
+  payroll_assignment_audits: Array<Payroll_Assignment_Audit>;
+  /** An aggregate relationship */
+  payroll_assignment_audits_aggregate: Payroll_Assignment_Audit_Aggregate;
   /** Reference to the payroll this date belongs to */
   payroll_id: Scalars['uuid']['output'];
   /** Date when payroll processing must be completed */
   processing_date: Scalars['date']['output'];
   /** Timestamp when the date record was last updated */
   updated_at: Maybe<Scalars['timestamptz']['output']>;
+};
+
+
+/** columns and relationships of "payroll_dates" */
+export type Payroll_DatesPayroll_Assignment_AuditsArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+/** columns and relationships of "payroll_dates" */
+export type Payroll_DatesPayroll_Assignment_Audits_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
 };
 
 /** aggregated selection of "payroll_dates" */
@@ -9334,6 +12726,9 @@ export type Payroll_Dates_Bool_Exp = {
   notes?: InputMaybe<String_Comparison_Exp>;
   original_eft_date?: InputMaybe<Date_Comparison_Exp>;
   payroll?: InputMaybe<Payrolls_Bool_Exp>;
+  payroll_assignment?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+  payroll_assignment_audits?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+  payroll_assignment_audits_aggregate?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Bool_Exp>;
   payroll_id?: InputMaybe<Uuid_Comparison_Exp>;
   processing_date?: InputMaybe<Date_Comparison_Exp>;
   updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
@@ -9359,6 +12754,8 @@ export type Payroll_Dates_Insert_Input = {
   /** Originally calculated EFT date before adjustments */
   original_eft_date?: InputMaybe<Scalars['date']['input']>;
   payroll?: InputMaybe<Payrolls_Obj_Rel_Insert_Input>;
+  payroll_assignment?: InputMaybe<Payroll_Assignments_Obj_Rel_Insert_Input>;
+  payroll_assignment_audits?: InputMaybe<Payroll_Assignment_Audit_Arr_Rel_Insert_Input>;
   /** Reference to the payroll this date belongs to */
   payroll_id?: InputMaybe<Scalars['uuid']['input']>;
   /** Date when payroll processing must be completed */
@@ -9458,6 +12855,13 @@ export type Payroll_Dates_Mutation_Response = {
   returning: Array<Payroll_Dates>;
 };
 
+/** input type for inserting object relation for remote table "payroll_dates" */
+export type Payroll_Dates_Obj_Rel_Insert_Input = {
+  data: Payroll_Dates_Insert_Input;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Payroll_Dates_On_Conflict>;
+};
+
 /** on_conflict condition type for table "payroll_dates" */
 export type Payroll_Dates_On_Conflict = {
   constraint: Payroll_Dates_Constraint;
@@ -9473,6 +12877,8 @@ export type Payroll_Dates_Order_By = {
   notes?: InputMaybe<Order_By>;
   original_eft_date?: InputMaybe<Order_By>;
   payroll?: InputMaybe<Payrolls_Order_By>;
+  payroll_assignment?: InputMaybe<Payroll_Assignments_Order_By>;
+  payroll_assignment_audits_aggregate?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Order_By>;
   payroll_id?: InputMaybe<Order_By>;
   processing_date?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
@@ -9590,6 +12996,105 @@ export type Payroll_Status_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['payroll_status']['input']>>;
 };
 
+/** columns and relationships of "payroll_triggers_status" */
+export type Payroll_Triggers_Status = {
+  __typename: 'payroll_triggers_status';
+  action_statement: Maybe<Scalars['String']['output']>;
+  action_timing: Maybe<Scalars['String']['output']>;
+  event_manipulation: Maybe<Scalars['String']['output']>;
+  event_object_table: Maybe<Scalars['name']['output']>;
+  trigger_name: Maybe<Scalars['name']['output']>;
+};
+
+/** aggregated selection of "payroll_triggers_status" */
+export type Payroll_Triggers_Status_Aggregate = {
+  __typename: 'payroll_triggers_status_aggregate';
+  aggregate: Maybe<Payroll_Triggers_Status_Aggregate_Fields>;
+  nodes: Array<Payroll_Triggers_Status>;
+};
+
+/** aggregate fields of "payroll_triggers_status" */
+export type Payroll_Triggers_Status_Aggregate_Fields = {
+  __typename: 'payroll_triggers_status_aggregate_fields';
+  count: Scalars['Int']['output'];
+  max: Maybe<Payroll_Triggers_Status_Max_Fields>;
+  min: Maybe<Payroll_Triggers_Status_Min_Fields>;
+};
+
+
+/** aggregate fields of "payroll_triggers_status" */
+export type Payroll_Triggers_Status_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Payroll_Triggers_Status_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_triggers_status". All fields are combined with a logical 'AND'. */
+export type Payroll_Triggers_Status_Bool_Exp = {
+  _and?: InputMaybe<Array<Payroll_Triggers_Status_Bool_Exp>>;
+  _not?: InputMaybe<Payroll_Triggers_Status_Bool_Exp>;
+  _or?: InputMaybe<Array<Payroll_Triggers_Status_Bool_Exp>>;
+  action_statement?: InputMaybe<String_Comparison_Exp>;
+  action_timing?: InputMaybe<String_Comparison_Exp>;
+  event_manipulation?: InputMaybe<String_Comparison_Exp>;
+  event_object_table?: InputMaybe<Name_Comparison_Exp>;
+  trigger_name?: InputMaybe<Name_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Payroll_Triggers_Status_Max_Fields = {
+  __typename: 'payroll_triggers_status_max_fields';
+  action_statement: Maybe<Scalars['String']['output']>;
+  action_timing: Maybe<Scalars['String']['output']>;
+  event_manipulation: Maybe<Scalars['String']['output']>;
+};
+
+/** aggregate min on columns */
+export type Payroll_Triggers_Status_Min_Fields = {
+  __typename: 'payroll_triggers_status_min_fields';
+  action_statement: Maybe<Scalars['String']['output']>;
+  action_timing: Maybe<Scalars['String']['output']>;
+  event_manipulation: Maybe<Scalars['String']['output']>;
+};
+
+/** Ordering options when selecting data from "payroll_triggers_status". */
+export type Payroll_Triggers_Status_Order_By = {
+  action_statement?: InputMaybe<Order_By>;
+  action_timing?: InputMaybe<Order_By>;
+  event_manipulation?: InputMaybe<Order_By>;
+  event_object_table?: InputMaybe<Order_By>;
+  trigger_name?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "payroll_triggers_status" */
+export type Payroll_Triggers_Status_Select_Column =
+  /** column name */
+  | 'action_statement'
+  /** column name */
+  | 'action_timing'
+  /** column name */
+  | 'event_manipulation'
+  /** column name */
+  | 'event_object_table'
+  /** column name */
+  | 'trigger_name';
+
+/** Streaming cursor of the table "payroll_triggers_status" */
+export type Payroll_Triggers_Status_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Payroll_Triggers_Status_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Payroll_Triggers_Status_Stream_Cursor_Value_Input = {
+  action_statement?: InputMaybe<Scalars['String']['input']>;
+  action_timing?: InputMaybe<Scalars['String']['input']>;
+  event_manipulation?: InputMaybe<Scalars['String']['input']>;
+  event_object_table?: InputMaybe<Scalars['name']['input']>;
+  trigger_name?: InputMaybe<Scalars['name']['input']>;
+};
+
 /** columns and relationships of "payroll_version_history_results" */
 export type Payroll_Version_History_Results = {
   __typename: 'payroll_version_history_results';
@@ -9605,7 +13110,6 @@ export type Payroll_Version_History_Results = {
   version_reason: Maybe<Scalars['String']['output']>;
 };
 
-/** aggregated selection of "payroll_version_history_results" */
 export type Payroll_Version_History_Results_Aggregate = {
   __typename: 'payroll_version_history_results_aggregate';
   aggregate: Maybe<Payroll_Version_History_Results_Aggregate_Fields>;
@@ -11408,6 +14912,10 @@ export type Query_Root = {
   /** query _Entity union */
   _entities: Maybe<_Entity>;
   _service: _Service;
+  /** execute function "activate_payroll_versions" which returns "payroll_activation_results" */
+  activate_payroll_versions: Array<Payroll_Activation_Results>;
+  /** execute function "activate_payroll_versions" and query aggregates on result of table type "payroll_activation_results" */
+  activate_payroll_versions_aggregate: Payroll_Activation_Results_Aggregate;
   /** An array relationship */
   adjustment_rules: Array<Adjustment_Rules>;
   /** An aggregate relationship */
@@ -11420,6 +14928,44 @@ export type Query_Root = {
   app_settings_aggregate: App_Settings_Aggregate;
   /** fetch data from the table: "app_settings" using primary key columns */
   app_settings_by_pk: Maybe<App_Settings>;
+  /** fetch data from the table: "audit.audit_log" */
+  audit_audit_log: Array<Audit_Audit_Log>;
+  /** fetch aggregated fields from the table: "audit.audit_log" */
+  audit_audit_log_aggregate: Audit_Audit_Log_Aggregate;
+  /** fetch data from the table: "audit.audit_log" using primary key columns */
+  audit_audit_log_by_pk: Maybe<Audit_Audit_Log>;
+  /** fetch data from the table: "audit.auth_events" */
+  audit_auth_events: Array<Audit_Auth_Events>;
+  /** fetch aggregated fields from the table: "audit.auth_events" */
+  audit_auth_events_aggregate: Audit_Auth_Events_Aggregate;
+  /** fetch data from the table: "audit.auth_events" using primary key columns */
+  audit_auth_events_by_pk: Maybe<Audit_Auth_Events>;
+  /** fetch data from the table: "audit.data_access_log" */
+  audit_data_access_log: Array<Audit_Data_Access_Log>;
+  /** fetch aggregated fields from the table: "audit.data_access_log" */
+  audit_data_access_log_aggregate: Audit_Data_Access_Log_Aggregate;
+  /** fetch data from the table: "audit.data_access_log" using primary key columns */
+  audit_data_access_log_by_pk: Maybe<Audit_Data_Access_Log>;
+  /** fetch data from the table: "audit.permission_changes" */
+  audit_permission_changes: Array<Audit_Permission_Changes>;
+  /** fetch aggregated fields from the table: "audit.permission_changes" */
+  audit_permission_changes_aggregate: Audit_Permission_Changes_Aggregate;
+  /** fetch data from the table: "audit.permission_changes" using primary key columns */
+  audit_permission_changes_by_pk: Maybe<Audit_Permission_Changes>;
+  /** fetch data from the table: "audit.permission_usage_report" */
+  audit_permission_usage_report: Array<Audit_Permission_Usage_Report>;
+  /** fetch aggregated fields from the table: "audit.permission_usage_report" */
+  audit_permission_usage_report_aggregate: Audit_Permission_Usage_Report_Aggregate;
+  /** fetch data from the table: "audit.slow_queries" */
+  audit_slow_queries: Array<Audit_Slow_Queries>;
+  /** fetch aggregated fields from the table: "audit.slow_queries" */
+  audit_slow_queries_aggregate: Audit_Slow_Queries_Aggregate;
+  /** fetch data from the table: "audit.slow_queries" using primary key columns */
+  audit_slow_queries_by_pk: Maybe<Audit_Slow_Queries>;
+  /** fetch data from the table: "audit.user_access_summary" */
+  audit_user_access_summary: Array<Audit_User_Access_Summary>;
+  /** fetch aggregated fields from the table: "audit.user_access_summary" */
+  audit_user_access_summary_aggregate: Audit_User_Access_Summary_Aggregate;
   /** fetch data from the table: "billing_event_log" */
   billing_event_log: Array<Billing_Event_Log>;
   /** fetch aggregated fields from the table: "billing_event_log" */
@@ -11498,6 +15044,14 @@ export type Query_Root = {
   generate_payroll_dates: Array<Payroll_Dates>;
   /** execute function "generate_payroll_dates" and query aggregates on result of table type "payroll_dates" */
   generate_payroll_dates_aggregate: Payroll_Dates_Aggregate;
+  /** execute function "get_latest_payroll_version" which returns "latest_payroll_version_results" */
+  get_latest_payroll_version: Array<Latest_Payroll_Version_Results>;
+  /** execute function "get_latest_payroll_version" and query aggregates on result of table type "latest_payroll_version_results" */
+  get_latest_payroll_version_aggregate: Latest_Payroll_Version_Results_Aggregate;
+  /** execute function "get_payroll_version_history" which returns "payroll_version_history_results" */
+  get_payroll_version_history: Array<Payroll_Version_History_Results>;
+  /** execute function "get_payroll_version_history" and query aggregates on result of table type "payroll_version_history_results" */
+  get_payroll_version_history_aggregate: Payroll_Version_History_Results_Aggregate;
   /** fetch data from the table: "holidays" */
   holidays: Array<Holidays>;
   /** fetch aggregated fields from the table: "holidays" */
@@ -11534,12 +15088,28 @@ export type Query_Root = {
   payroll_activation_results_aggregate: Payroll_Activation_Results_Aggregate;
   /** fetch data from the table: "payroll_activation_results" using primary key columns */
   payroll_activation_results_by_pk: Maybe<Payroll_Activation_Results>;
+  /** fetch data from the table: "payroll_assignment_audit" */
+  payroll_assignment_audit: Array<Payroll_Assignment_Audit>;
+  /** fetch aggregated fields from the table: "payroll_assignment_audit" */
+  payroll_assignment_audit_aggregate: Payroll_Assignment_Audit_Aggregate;
+  /** fetch data from the table: "payroll_assignment_audit" using primary key columns */
+  payroll_assignment_audit_by_pk: Maybe<Payroll_Assignment_Audit>;
+  /** An array relationship */
+  payroll_assignments: Array<Payroll_Assignments>;
+  /** An aggregate relationship */
+  payroll_assignments_aggregate: Payroll_Assignments_Aggregate;
+  /** fetch data from the table: "payroll_assignments" using primary key columns */
+  payroll_assignments_by_pk: Maybe<Payroll_Assignments>;
   /** fetch data from the table: "payroll_cycles" */
   payroll_cycles: Array<Payroll_Cycles>;
   /** fetch aggregated fields from the table: "payroll_cycles" */
   payroll_cycles_aggregate: Payroll_Cycles_Aggregate;
   /** fetch data from the table: "payroll_cycles" using primary key columns */
   payroll_cycles_by_pk: Maybe<Payroll_Cycles>;
+  /** fetch data from the table: "payroll_dashboard_stats" */
+  payroll_dashboard_stats: Array<Payroll_Dashboard_Stats>;
+  /** fetch aggregated fields from the table: "payroll_dashboard_stats" */
+  payroll_dashboard_stats_aggregate: Payroll_Dashboard_Stats_Aggregate;
   /** fetch data from the table: "payroll_date_types" */
   payroll_date_types: Array<Payroll_Date_Types>;
   /** fetch aggregated fields from the table: "payroll_date_types" */
@@ -11552,6 +15122,10 @@ export type Query_Root = {
   payroll_dates_aggregate: Payroll_Dates_Aggregate;
   /** fetch data from the table: "payroll_dates" using primary key columns */
   payroll_dates_by_pk: Maybe<Payroll_Dates>;
+  /** fetch data from the table: "payroll_triggers_status" */
+  payroll_triggers_status: Array<Payroll_Triggers_Status>;
+  /** fetch aggregated fields from the table: "payroll_triggers_status" */
+  payroll_triggers_status_aggregate: Payroll_Triggers_Status_Aggregate;
   /** fetch data from the table: "payroll_version_history_results" */
   payroll_version_history_results: Array<Payroll_Version_History_Results>;
   /** fetch aggregated fields from the table: "payroll_version_history_results" */
@@ -11624,6 +15198,24 @@ export type Query_Root_EntitiesArgs = {
 };
 
 
+export type Query_RootActivate_Payroll_VersionsArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Activation_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Activation_Results_Order_By>>;
+  where?: InputMaybe<Payroll_Activation_Results_Bool_Exp>;
+};
+
+
+export type Query_RootActivate_Payroll_Versions_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Activation_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Activation_Results_Order_By>>;
+  where?: InputMaybe<Payroll_Activation_Results_Bool_Exp>;
+};
+
+
 export type Query_RootAdjustment_RulesArgs = {
   distinct_on?: InputMaybe<Array<Adjustment_Rules_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -11667,6 +15259,157 @@ export type Query_RootApp_Settings_AggregateArgs = {
 
 export type Query_RootApp_Settings_By_PkArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type Query_RootAudit_Audit_LogArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Audit_Log_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Audit_Log_Order_By>>;
+  where?: InputMaybe<Audit_Audit_Log_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Audit_Log_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Audit_Log_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Audit_Log_Order_By>>;
+  where?: InputMaybe<Audit_Audit_Log_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Audit_Log_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootAudit_Auth_EventsArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Auth_Events_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Auth_Events_Order_By>>;
+  where?: InputMaybe<Audit_Auth_Events_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Auth_Events_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Auth_Events_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Auth_Events_Order_By>>;
+  where?: InputMaybe<Audit_Auth_Events_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Auth_Events_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootAudit_Data_Access_LogArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Data_Access_Log_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Data_Access_Log_Order_By>>;
+  where?: InputMaybe<Audit_Data_Access_Log_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Data_Access_Log_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Data_Access_Log_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Data_Access_Log_Order_By>>;
+  where?: InputMaybe<Audit_Data_Access_Log_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Data_Access_Log_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootAudit_Permission_ChangesArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Permission_Changes_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Permission_Changes_Order_By>>;
+  where?: InputMaybe<Audit_Permission_Changes_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Permission_Changes_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Permission_Changes_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Permission_Changes_Order_By>>;
+  where?: InputMaybe<Audit_Permission_Changes_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Permission_Changes_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootAudit_Permission_Usage_ReportArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Permission_Usage_Report_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Permission_Usage_Report_Order_By>>;
+  where?: InputMaybe<Audit_Permission_Usage_Report_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Permission_Usage_Report_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Permission_Usage_Report_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Permission_Usage_Report_Order_By>>;
+  where?: InputMaybe<Audit_Permission_Usage_Report_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Slow_QueriesArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Slow_Queries_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Slow_Queries_Order_By>>;
+  where?: InputMaybe<Audit_Slow_Queries_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Slow_Queries_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Slow_Queries_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Slow_Queries_Order_By>>;
+  where?: InputMaybe<Audit_Slow_Queries_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_Slow_Queries_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootAudit_User_Access_SummaryArgs = {
+  distinct_on?: InputMaybe<Array<Audit_User_Access_Summary_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_User_Access_Summary_Order_By>>;
+  where?: InputMaybe<Audit_User_Access_Summary_Bool_Exp>;
+};
+
+
+export type Query_RootAudit_User_Access_Summary_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_User_Access_Summary_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_User_Access_Summary_Order_By>>;
+  where?: InputMaybe<Audit_User_Access_Summary_Bool_Exp>;
 };
 
 
@@ -11981,6 +15724,46 @@ export type Query_RootGenerate_Payroll_Dates_AggregateArgs = {
 };
 
 
+export type Query_RootGet_Latest_Payroll_VersionArgs = {
+  args: Get_Latest_Payroll_Version_Args;
+  distinct_on?: InputMaybe<Array<Latest_Payroll_Version_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Latest_Payroll_Version_Results_Order_By>>;
+  where?: InputMaybe<Latest_Payroll_Version_Results_Bool_Exp>;
+};
+
+
+export type Query_RootGet_Latest_Payroll_Version_AggregateArgs = {
+  args: Get_Latest_Payroll_Version_Args;
+  distinct_on?: InputMaybe<Array<Latest_Payroll_Version_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Latest_Payroll_Version_Results_Order_By>>;
+  where?: InputMaybe<Latest_Payroll_Version_Results_Bool_Exp>;
+};
+
+
+export type Query_RootGet_Payroll_Version_HistoryArgs = {
+  args: Get_Payroll_Version_History_Args;
+  distinct_on?: InputMaybe<Array<Payroll_Version_History_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Version_History_Results_Order_By>>;
+  where?: InputMaybe<Payroll_Version_History_Results_Bool_Exp>;
+};
+
+
+export type Query_RootGet_Payroll_Version_History_AggregateArgs = {
+  args: Get_Payroll_Version_History_Args;
+  distinct_on?: InputMaybe<Array<Payroll_Version_History_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Version_History_Results_Order_By>>;
+  where?: InputMaybe<Payroll_Version_History_Results_Bool_Exp>;
+};
+
+
 export type Query_RootHolidaysArgs = {
   distinct_on?: InputMaybe<Array<Holidays_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -12119,6 +15902,52 @@ export type Query_RootPayroll_Activation_Results_By_PkArgs = {
 };
 
 
+export type Query_RootPayroll_Assignment_AuditArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+export type Query_RootPayroll_Assignment_Audit_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+export type Query_RootPayroll_Assignment_Audit_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootPayroll_AssignmentsArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignments_Order_By>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+
+export type Query_RootPayroll_Assignments_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignments_Order_By>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+
+export type Query_RootPayroll_Assignments_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
 export type Query_RootPayroll_CyclesArgs = {
   distinct_on?: InputMaybe<Array<Payroll_Cycles_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -12139,6 +15968,24 @@ export type Query_RootPayroll_Cycles_AggregateArgs = {
 
 export type Query_RootPayroll_Cycles_By_PkArgs = {
   id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootPayroll_Dashboard_StatsArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Dashboard_Stats_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Dashboard_Stats_Order_By>>;
+  where?: InputMaybe<Payroll_Dashboard_Stats_Bool_Exp>;
+};
+
+
+export type Query_RootPayroll_Dashboard_Stats_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Dashboard_Stats_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Dashboard_Stats_Order_By>>;
+  where?: InputMaybe<Payroll_Dashboard_Stats_Bool_Exp>;
 };
 
 
@@ -12185,6 +16032,24 @@ export type Query_RootPayroll_Dates_AggregateArgs = {
 
 export type Query_RootPayroll_Dates_By_PkArgs = {
   id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootPayroll_Triggers_StatusArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Triggers_Status_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Triggers_Status_Order_By>>;
+  where?: InputMaybe<Payroll_Triggers_Status_Bool_Exp>;
+};
+
+
+export type Query_RootPayroll_Triggers_Status_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Triggers_Status_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Triggers_Status_Order_By>>;
+  where?: InputMaybe<Payroll_Triggers_Status_Bool_Exp>;
 };
 
 
@@ -13255,6 +17120,10 @@ export type Roles_Variance_Fields = {
 
 export type Subscription_Root = {
   __typename: 'subscription_root';
+  /** execute function "activate_payroll_versions" which returns "payroll_activation_results" */
+  activate_payroll_versions: Array<Payroll_Activation_Results>;
+  /** execute function "activate_payroll_versions" and query aggregates on result of table type "payroll_activation_results" */
+  activate_payroll_versions_aggregate: Payroll_Activation_Results_Aggregate;
   /** An array relationship */
   adjustment_rules: Array<Adjustment_Rules>;
   /** An aggregate relationship */
@@ -13271,6 +17140,58 @@ export type Subscription_Root = {
   app_settings_by_pk: Maybe<App_Settings>;
   /** fetch data from the table in a streaming manner: "app_settings" */
   app_settings_stream: Array<App_Settings>;
+  /** fetch data from the table: "audit.audit_log" */
+  audit_audit_log: Array<Audit_Audit_Log>;
+  /** fetch aggregated fields from the table: "audit.audit_log" */
+  audit_audit_log_aggregate: Audit_Audit_Log_Aggregate;
+  /** fetch data from the table: "audit.audit_log" using primary key columns */
+  audit_audit_log_by_pk: Maybe<Audit_Audit_Log>;
+  /** fetch data from the table in a streaming manner: "audit.audit_log" */
+  audit_audit_log_stream: Array<Audit_Audit_Log>;
+  /** fetch data from the table: "audit.auth_events" */
+  audit_auth_events: Array<Audit_Auth_Events>;
+  /** fetch aggregated fields from the table: "audit.auth_events" */
+  audit_auth_events_aggregate: Audit_Auth_Events_Aggregate;
+  /** fetch data from the table: "audit.auth_events" using primary key columns */
+  audit_auth_events_by_pk: Maybe<Audit_Auth_Events>;
+  /** fetch data from the table in a streaming manner: "audit.auth_events" */
+  audit_auth_events_stream: Array<Audit_Auth_Events>;
+  /** fetch data from the table: "audit.data_access_log" */
+  audit_data_access_log: Array<Audit_Data_Access_Log>;
+  /** fetch aggregated fields from the table: "audit.data_access_log" */
+  audit_data_access_log_aggregate: Audit_Data_Access_Log_Aggregate;
+  /** fetch data from the table: "audit.data_access_log" using primary key columns */
+  audit_data_access_log_by_pk: Maybe<Audit_Data_Access_Log>;
+  /** fetch data from the table in a streaming manner: "audit.data_access_log" */
+  audit_data_access_log_stream: Array<Audit_Data_Access_Log>;
+  /** fetch data from the table: "audit.permission_changes" */
+  audit_permission_changes: Array<Audit_Permission_Changes>;
+  /** fetch aggregated fields from the table: "audit.permission_changes" */
+  audit_permission_changes_aggregate: Audit_Permission_Changes_Aggregate;
+  /** fetch data from the table: "audit.permission_changes" using primary key columns */
+  audit_permission_changes_by_pk: Maybe<Audit_Permission_Changes>;
+  /** fetch data from the table in a streaming manner: "audit.permission_changes" */
+  audit_permission_changes_stream: Array<Audit_Permission_Changes>;
+  /** fetch data from the table: "audit.permission_usage_report" */
+  audit_permission_usage_report: Array<Audit_Permission_Usage_Report>;
+  /** fetch aggregated fields from the table: "audit.permission_usage_report" */
+  audit_permission_usage_report_aggregate: Audit_Permission_Usage_Report_Aggregate;
+  /** fetch data from the table in a streaming manner: "audit.permission_usage_report" */
+  audit_permission_usage_report_stream: Array<Audit_Permission_Usage_Report>;
+  /** fetch data from the table: "audit.slow_queries" */
+  audit_slow_queries: Array<Audit_Slow_Queries>;
+  /** fetch aggregated fields from the table: "audit.slow_queries" */
+  audit_slow_queries_aggregate: Audit_Slow_Queries_Aggregate;
+  /** fetch data from the table: "audit.slow_queries" using primary key columns */
+  audit_slow_queries_by_pk: Maybe<Audit_Slow_Queries>;
+  /** fetch data from the table in a streaming manner: "audit.slow_queries" */
+  audit_slow_queries_stream: Array<Audit_Slow_Queries>;
+  /** fetch data from the table: "audit.user_access_summary" */
+  audit_user_access_summary: Array<Audit_User_Access_Summary>;
+  /** fetch aggregated fields from the table: "audit.user_access_summary" */
+  audit_user_access_summary_aggregate: Audit_User_Access_Summary_Aggregate;
+  /** fetch data from the table in a streaming manner: "audit.user_access_summary" */
+  audit_user_access_summary_stream: Array<Audit_User_Access_Summary>;
   /** fetch data from the table: "billing_event_log" */
   billing_event_log: Array<Billing_Event_Log>;
   /** fetch aggregated fields from the table: "billing_event_log" */
@@ -13373,6 +17294,14 @@ export type Subscription_Root = {
   generate_payroll_dates: Array<Payroll_Dates>;
   /** execute function "generate_payroll_dates" and query aggregates on result of table type "payroll_dates" */
   generate_payroll_dates_aggregate: Payroll_Dates_Aggregate;
+  /** execute function "get_latest_payroll_version" which returns "latest_payroll_version_results" */
+  get_latest_payroll_version: Array<Latest_Payroll_Version_Results>;
+  /** execute function "get_latest_payroll_version" and query aggregates on result of table type "latest_payroll_version_results" */
+  get_latest_payroll_version_aggregate: Latest_Payroll_Version_Results_Aggregate;
+  /** execute function "get_payroll_version_history" which returns "payroll_version_history_results" */
+  get_payroll_version_history: Array<Payroll_Version_History_Results>;
+  /** execute function "get_payroll_version_history" and query aggregates on result of table type "payroll_version_history_results" */
+  get_payroll_version_history_aggregate: Payroll_Version_History_Results_Aggregate;
   /** fetch data from the table: "holidays" */
   holidays: Array<Holidays>;
   /** fetch aggregated fields from the table: "holidays" */
@@ -13421,6 +17350,22 @@ export type Subscription_Root = {
   payroll_activation_results_by_pk: Maybe<Payroll_Activation_Results>;
   /** fetch data from the table in a streaming manner: "payroll_activation_results" */
   payroll_activation_results_stream: Array<Payroll_Activation_Results>;
+  /** fetch data from the table: "payroll_assignment_audit" */
+  payroll_assignment_audit: Array<Payroll_Assignment_Audit>;
+  /** fetch aggregated fields from the table: "payroll_assignment_audit" */
+  payroll_assignment_audit_aggregate: Payroll_Assignment_Audit_Aggregate;
+  /** fetch data from the table: "payroll_assignment_audit" using primary key columns */
+  payroll_assignment_audit_by_pk: Maybe<Payroll_Assignment_Audit>;
+  /** fetch data from the table in a streaming manner: "payroll_assignment_audit" */
+  payroll_assignment_audit_stream: Array<Payroll_Assignment_Audit>;
+  /** An array relationship */
+  payroll_assignments: Array<Payroll_Assignments>;
+  /** An aggregate relationship */
+  payroll_assignments_aggregate: Payroll_Assignments_Aggregate;
+  /** fetch data from the table: "payroll_assignments" using primary key columns */
+  payroll_assignments_by_pk: Maybe<Payroll_Assignments>;
+  /** fetch data from the table in a streaming manner: "payroll_assignments" */
+  payroll_assignments_stream: Array<Payroll_Assignments>;
   /** fetch data from the table: "payroll_cycles" */
   payroll_cycles: Array<Payroll_Cycles>;
   /** fetch aggregated fields from the table: "payroll_cycles" */
@@ -13429,6 +17374,12 @@ export type Subscription_Root = {
   payroll_cycles_by_pk: Maybe<Payroll_Cycles>;
   /** fetch data from the table in a streaming manner: "payroll_cycles" */
   payroll_cycles_stream: Array<Payroll_Cycles>;
+  /** fetch data from the table: "payroll_dashboard_stats" */
+  payroll_dashboard_stats: Array<Payroll_Dashboard_Stats>;
+  /** fetch aggregated fields from the table: "payroll_dashboard_stats" */
+  payroll_dashboard_stats_aggregate: Payroll_Dashboard_Stats_Aggregate;
+  /** fetch data from the table in a streaming manner: "payroll_dashboard_stats" */
+  payroll_dashboard_stats_stream: Array<Payroll_Dashboard_Stats>;
   /** fetch data from the table: "payroll_date_types" */
   payroll_date_types: Array<Payroll_Date_Types>;
   /** fetch aggregated fields from the table: "payroll_date_types" */
@@ -13445,6 +17396,12 @@ export type Subscription_Root = {
   payroll_dates_by_pk: Maybe<Payroll_Dates>;
   /** fetch data from the table in a streaming manner: "payroll_dates" */
   payroll_dates_stream: Array<Payroll_Dates>;
+  /** fetch data from the table: "payroll_triggers_status" */
+  payroll_triggers_status: Array<Payroll_Triggers_Status>;
+  /** fetch aggregated fields from the table: "payroll_triggers_status" */
+  payroll_triggers_status_aggregate: Payroll_Triggers_Status_Aggregate;
+  /** fetch data from the table in a streaming manner: "payroll_triggers_status" */
+  payroll_triggers_status_stream: Array<Payroll_Triggers_Status>;
   /** fetch data from the table: "payroll_version_history_results" */
   payroll_version_history_results: Array<Payroll_Version_History_Results>;
   /** fetch aggregated fields from the table: "payroll_version_history_results" */
@@ -13534,6 +17491,24 @@ export type Subscription_Root = {
 };
 
 
+export type Subscription_RootActivate_Payroll_VersionsArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Activation_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Activation_Results_Order_By>>;
+  where?: InputMaybe<Payroll_Activation_Results_Bool_Exp>;
+};
+
+
+export type Subscription_RootActivate_Payroll_Versions_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Activation_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Activation_Results_Order_By>>;
+  where?: InputMaybe<Payroll_Activation_Results_Bool_Exp>;
+};
+
+
 export type Subscription_RootAdjustment_RulesArgs = {
   distinct_on?: InputMaybe<Array<Adjustment_Rules_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -13591,6 +17566,206 @@ export type Subscription_RootApp_Settings_StreamArgs = {
   batch_size: Scalars['Int']['input'];
   cursor: Array<InputMaybe<App_Settings_Stream_Cursor_Input>>;
   where?: InputMaybe<App_Settings_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Audit_LogArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Audit_Log_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Audit_Log_Order_By>>;
+  where?: InputMaybe<Audit_Audit_Log_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Audit_Log_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Audit_Log_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Audit_Log_Order_By>>;
+  where?: InputMaybe<Audit_Audit_Log_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Audit_Log_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootAudit_Audit_Log_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Audit_Audit_Log_Stream_Cursor_Input>>;
+  where?: InputMaybe<Audit_Audit_Log_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Auth_EventsArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Auth_Events_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Auth_Events_Order_By>>;
+  where?: InputMaybe<Audit_Auth_Events_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Auth_Events_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Auth_Events_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Auth_Events_Order_By>>;
+  where?: InputMaybe<Audit_Auth_Events_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Auth_Events_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootAudit_Auth_Events_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Audit_Auth_Events_Stream_Cursor_Input>>;
+  where?: InputMaybe<Audit_Auth_Events_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Data_Access_LogArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Data_Access_Log_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Data_Access_Log_Order_By>>;
+  where?: InputMaybe<Audit_Data_Access_Log_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Data_Access_Log_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Data_Access_Log_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Data_Access_Log_Order_By>>;
+  where?: InputMaybe<Audit_Data_Access_Log_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Data_Access_Log_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootAudit_Data_Access_Log_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Audit_Data_Access_Log_Stream_Cursor_Input>>;
+  where?: InputMaybe<Audit_Data_Access_Log_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Permission_ChangesArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Permission_Changes_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Permission_Changes_Order_By>>;
+  where?: InputMaybe<Audit_Permission_Changes_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Permission_Changes_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Permission_Changes_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Permission_Changes_Order_By>>;
+  where?: InputMaybe<Audit_Permission_Changes_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Permission_Changes_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootAudit_Permission_Changes_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Audit_Permission_Changes_Stream_Cursor_Input>>;
+  where?: InputMaybe<Audit_Permission_Changes_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Permission_Usage_ReportArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Permission_Usage_Report_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Permission_Usage_Report_Order_By>>;
+  where?: InputMaybe<Audit_Permission_Usage_Report_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Permission_Usage_Report_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Permission_Usage_Report_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Permission_Usage_Report_Order_By>>;
+  where?: InputMaybe<Audit_Permission_Usage_Report_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Permission_Usage_Report_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Audit_Permission_Usage_Report_Stream_Cursor_Input>>;
+  where?: InputMaybe<Audit_Permission_Usage_Report_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Slow_QueriesArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Slow_Queries_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Slow_Queries_Order_By>>;
+  where?: InputMaybe<Audit_Slow_Queries_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Slow_Queries_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_Slow_Queries_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_Slow_Queries_Order_By>>;
+  where?: InputMaybe<Audit_Slow_Queries_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_Slow_Queries_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootAudit_Slow_Queries_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Audit_Slow_Queries_Stream_Cursor_Input>>;
+  where?: InputMaybe<Audit_Slow_Queries_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_User_Access_SummaryArgs = {
+  distinct_on?: InputMaybe<Array<Audit_User_Access_Summary_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_User_Access_Summary_Order_By>>;
+  where?: InputMaybe<Audit_User_Access_Summary_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_User_Access_Summary_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Audit_User_Access_Summary_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Audit_User_Access_Summary_Order_By>>;
+  where?: InputMaybe<Audit_User_Access_Summary_Bool_Exp>;
+};
+
+
+export type Subscription_RootAudit_User_Access_Summary_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Audit_User_Access_Summary_Stream_Cursor_Input>>;
+  where?: InputMaybe<Audit_User_Access_Summary_Bool_Exp>;
 };
 
 
@@ -13989,6 +18164,46 @@ export type Subscription_RootGenerate_Payroll_Dates_AggregateArgs = {
 };
 
 
+export type Subscription_RootGet_Latest_Payroll_VersionArgs = {
+  args: Get_Latest_Payroll_Version_Args;
+  distinct_on?: InputMaybe<Array<Latest_Payroll_Version_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Latest_Payroll_Version_Results_Order_By>>;
+  where?: InputMaybe<Latest_Payroll_Version_Results_Bool_Exp>;
+};
+
+
+export type Subscription_RootGet_Latest_Payroll_Version_AggregateArgs = {
+  args: Get_Latest_Payroll_Version_Args;
+  distinct_on?: InputMaybe<Array<Latest_Payroll_Version_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Latest_Payroll_Version_Results_Order_By>>;
+  where?: InputMaybe<Latest_Payroll_Version_Results_Bool_Exp>;
+};
+
+
+export type Subscription_RootGet_Payroll_Version_HistoryArgs = {
+  args: Get_Payroll_Version_History_Args;
+  distinct_on?: InputMaybe<Array<Payroll_Version_History_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Version_History_Results_Order_By>>;
+  where?: InputMaybe<Payroll_Version_History_Results_Bool_Exp>;
+};
+
+
+export type Subscription_RootGet_Payroll_Version_History_AggregateArgs = {
+  args: Get_Payroll_Version_History_Args;
+  distinct_on?: InputMaybe<Array<Payroll_Version_History_Results_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Version_History_Results_Order_By>>;
+  where?: InputMaybe<Payroll_Version_History_Results_Bool_Exp>;
+};
+
+
 export type Subscription_RootHolidaysArgs = {
   distinct_on?: InputMaybe<Array<Holidays_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -14169,6 +18384,66 @@ export type Subscription_RootPayroll_Activation_Results_StreamArgs = {
 };
 
 
+export type Subscription_RootPayroll_Assignment_AuditArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_Assignment_Audit_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_Assignment_Audit_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootPayroll_Assignment_Audit_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Payroll_Assignment_Audit_Stream_Cursor_Input>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_AssignmentsArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignments_Order_By>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_Assignments_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignments_Order_By>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_Assignments_By_PkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootPayroll_Assignments_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Payroll_Assignments_Stream_Cursor_Input>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+
 export type Subscription_RootPayroll_CyclesArgs = {
   distinct_on?: InputMaybe<Array<Payroll_Cycles_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -14196,6 +18471,31 @@ export type Subscription_RootPayroll_Cycles_StreamArgs = {
   batch_size: Scalars['Int']['input'];
   cursor: Array<InputMaybe<Payroll_Cycles_Stream_Cursor_Input>>;
   where?: InputMaybe<Payroll_Cycles_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_Dashboard_StatsArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Dashboard_Stats_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Dashboard_Stats_Order_By>>;
+  where?: InputMaybe<Payroll_Dashboard_Stats_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_Dashboard_Stats_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Dashboard_Stats_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Dashboard_Stats_Order_By>>;
+  where?: InputMaybe<Payroll_Dashboard_Stats_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_Dashboard_Stats_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Payroll_Dashboard_Stats_Stream_Cursor_Input>>;
+  where?: InputMaybe<Payroll_Dashboard_Stats_Bool_Exp>;
 };
 
 
@@ -14256,6 +18556,31 @@ export type Subscription_RootPayroll_Dates_StreamArgs = {
   batch_size: Scalars['Int']['input'];
   cursor: Array<InputMaybe<Payroll_Dates_Stream_Cursor_Input>>;
   where?: InputMaybe<Payroll_Dates_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_Triggers_StatusArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Triggers_Status_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Triggers_Status_Order_By>>;
+  where?: InputMaybe<Payroll_Triggers_Status_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_Triggers_Status_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Triggers_Status_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Triggers_Status_Order_By>>;
+  where?: InputMaybe<Payroll_Triggers_Status_Bool_Exp>;
+};
+
+
+export type Subscription_RootPayroll_Triggers_Status_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Payroll_Triggers_Status_Stream_Cursor_Input>>;
+  where?: InputMaybe<Payroll_Triggers_Status_Bool_Exp>;
 };
 
 
@@ -14881,6 +19206,30 @@ export type Users = {
   /** An aggregate relationship */
   notes_written_aggregate: Notes_Aggregate;
   /** An array relationship */
+  payrollAssignmentAuditsByFromConsultantId: Array<Payroll_Assignment_Audit>;
+  /** An aggregate relationship */
+  payrollAssignmentAuditsByFromConsultantId_aggregate: Payroll_Assignment_Audit_Aggregate;
+  /** An array relationship */
+  payrollAssignmentAuditsByToConsultantId: Array<Payroll_Assignment_Audit>;
+  /** An aggregate relationship */
+  payrollAssignmentAuditsByToConsultantId_aggregate: Payroll_Assignment_Audit_Aggregate;
+  /** An array relationship */
+  payrollAssignmentsByConsultantId: Array<Payroll_Assignments>;
+  /** An aggregate relationship */
+  payrollAssignmentsByConsultantId_aggregate: Payroll_Assignments_Aggregate;
+  /** An array relationship */
+  payrollAssignmentsByOriginalConsultantId: Array<Payroll_Assignments>;
+  /** An aggregate relationship */
+  payrollAssignmentsByOriginalConsultantId_aggregate: Payroll_Assignments_Aggregate;
+  /** An array relationship */
+  payroll_assignment_audits: Array<Payroll_Assignment_Audit>;
+  /** An aggregate relationship */
+  payroll_assignment_audits_aggregate: Payroll_Assignment_Audit_Aggregate;
+  /** An array relationship */
+  payroll_assignments: Array<Payroll_Assignments>;
+  /** An aggregate relationship */
+  payroll_assignments_aggregate: Payroll_Assignments_Aggregate;
+  /** An array relationship */
   payrollsByBackupConsultantUserId: Array<Payrolls>;
   /** An aggregate relationship */
   payrollsByBackupConsultantUserId_aggregate: Payrolls_Aggregate;
@@ -14974,6 +19323,126 @@ export type UsersNotes_Written_AggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<Notes_Order_By>>;
   where?: InputMaybe<Notes_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayrollAssignmentAuditsByFromConsultantIdArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayrollAssignmentAuditsByFromConsultantId_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayrollAssignmentAuditsByToConsultantIdArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayrollAssignmentAuditsByToConsultantId_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayrollAssignmentsByConsultantIdArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignments_Order_By>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayrollAssignmentsByConsultantId_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignments_Order_By>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayrollAssignmentsByOriginalConsultantIdArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignments_Order_By>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayrollAssignmentsByOriginalConsultantId_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignments_Order_By>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayroll_Assignment_AuditsArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayroll_Assignment_Audits_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignment_Audit_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignment_Audit_Order_By>>;
+  where?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayroll_AssignmentsArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignments_Order_By>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayroll_Assignments_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Payroll_Assignments_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Payroll_Assignments_Order_By>>;
+  where?: InputMaybe<Payroll_Assignments_Bool_Exp>;
 };
 
 
@@ -15202,6 +19671,18 @@ export type Users_Bool_Exp = {
   name?: InputMaybe<String_Comparison_Exp>;
   notes_written?: InputMaybe<Notes_Bool_Exp>;
   notes_written_aggregate?: InputMaybe<Notes_Aggregate_Bool_Exp>;
+  payrollAssignmentAuditsByFromConsultantId?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+  payrollAssignmentAuditsByFromConsultantId_aggregate?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Bool_Exp>;
+  payrollAssignmentAuditsByToConsultantId?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+  payrollAssignmentAuditsByToConsultantId_aggregate?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Bool_Exp>;
+  payrollAssignmentsByConsultantId?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+  payrollAssignmentsByConsultantId_aggregate?: InputMaybe<Payroll_Assignments_Aggregate_Bool_Exp>;
+  payrollAssignmentsByOriginalConsultantId?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+  payrollAssignmentsByOriginalConsultantId_aggregate?: InputMaybe<Payroll_Assignments_Aggregate_Bool_Exp>;
+  payroll_assignment_audits?: InputMaybe<Payroll_Assignment_Audit_Bool_Exp>;
+  payroll_assignment_audits_aggregate?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Bool_Exp>;
+  payroll_assignments?: InputMaybe<Payroll_Assignments_Bool_Exp>;
+  payroll_assignments_aggregate?: InputMaybe<Payroll_Assignments_Aggregate_Bool_Exp>;
   payrollsByBackupConsultantUserId?: InputMaybe<Payrolls_Bool_Exp>;
   payrollsByBackupConsultantUserId_aggregate?: InputMaybe<Payrolls_Aggregate_Bool_Exp>;
   payrollsByManagerUserId?: InputMaybe<Payrolls_Bool_Exp>;
@@ -15257,6 +19738,12 @@ export type Users_Insert_Input = {
   /** User's full name */
   name?: InputMaybe<Scalars['String']['input']>;
   notes_written?: InputMaybe<Notes_Arr_Rel_Insert_Input>;
+  payrollAssignmentAuditsByFromConsultantId?: InputMaybe<Payroll_Assignment_Audit_Arr_Rel_Insert_Input>;
+  payrollAssignmentAuditsByToConsultantId?: InputMaybe<Payroll_Assignment_Audit_Arr_Rel_Insert_Input>;
+  payrollAssignmentsByConsultantId?: InputMaybe<Payroll_Assignments_Arr_Rel_Insert_Input>;
+  payrollAssignmentsByOriginalConsultantId?: InputMaybe<Payroll_Assignments_Arr_Rel_Insert_Input>;
+  payroll_assignment_audits?: InputMaybe<Payroll_Assignment_Audit_Arr_Rel_Insert_Input>;
+  payroll_assignments?: InputMaybe<Payroll_Assignments_Arr_Rel_Insert_Input>;
   payrollsByBackupConsultantUserId?: InputMaybe<Payrolls_Arr_Rel_Insert_Input>;
   payrollsByManagerUserId?: InputMaybe<Payrolls_Arr_Rel_Insert_Input>;
   payrollsByPrimaryConsultantUserId?: InputMaybe<Payrolls_Arr_Rel_Insert_Input>;
@@ -15418,6 +19905,12 @@ export type Users_Order_By = {
   manager_id?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
   notes_written_aggregate?: InputMaybe<Notes_Aggregate_Order_By>;
+  payrollAssignmentAuditsByFromConsultantId_aggregate?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Order_By>;
+  payrollAssignmentAuditsByToConsultantId_aggregate?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Order_By>;
+  payrollAssignmentsByConsultantId_aggregate?: InputMaybe<Payroll_Assignments_Aggregate_Order_By>;
+  payrollAssignmentsByOriginalConsultantId_aggregate?: InputMaybe<Payroll_Assignments_Aggregate_Order_By>;
+  payroll_assignment_audits_aggregate?: InputMaybe<Payroll_Assignment_Audit_Aggregate_Order_By>;
+  payroll_assignments_aggregate?: InputMaybe<Payroll_Assignments_Aggregate_Order_By>;
   payrollsByBackupConsultantUserId_aggregate?: InputMaybe<Payrolls_Aggregate_Order_By>;
   payrollsByManagerUserId_aggregate?: InputMaybe<Payrolls_Aggregate_Order_By>;
   payrollsByPrimaryConsultantUserId_aggregate?: InputMaybe<Payrolls_Aggregate_Order_By>;

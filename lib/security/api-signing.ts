@@ -1,8 +1,8 @@
 // lib/security/api-signing.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
-import { SecureErrorHandler } from "./error-responses";
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc2-logger";
+import { SecureErrorHandler } from "@/lib/api/responses";
+import { logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging";
 
 // Configuration for API signing
 const SIGNING_CONFIG = {
@@ -68,7 +68,14 @@ export function createSignedHeaders(
 ): Record<string, string> {
   const timestamp = getSigningTimestamp();
   const nonce = generateNonce();
-  const signature = generateSignature(method, path, body, timestamp, nonce, apiSecret);
+  const signature = generateSignature(
+    method,
+    path,
+    body,
+    timestamp,
+    nonce,
+    apiSecret
+  );
 
   return {
     "X-API-Key": apiKey,
@@ -104,103 +111,129 @@ export async function validateSignature(
     if (!apiKey || !timestamp || !nonce || !signature) {
       return {
         isValid: false,
-        error: SecureErrorHandler.validationError("Missing required signature headers")
+        error: SecureErrorHandler.validationError(
+          "Missing required signature headers"
+        ),
       };
     }
 
     // Validate timestamp
     const timestampMs = parseInt(timestamp) * 1000;
     const now = Date.now();
-    
+
     if (Math.abs(now - timestampMs) > SIGNING_CONFIG.timestampTolerance) {
-      await soc2Logger.log({
-        level: LogLevel.WARNING,
-        category: LogCategory.SECURITY_EVENT,
-        eventType: SOC2EventType.INVALID_INPUT,
-        message: "API request with invalid timestamp",
-        metadata: {
-          apiKey,
-          timestamp,
-          timeDiff: now - timestampMs,
-          tolerance: SIGNING_CONFIG.timestampTolerance
-        }
-      }, request);
+      await logger.log(
+        {
+          level: LogLevel.WARNING,
+          category: LogCategory.SECURITY_EVENT,
+          eventType: SOC2EventType.INVALID_INPUT,
+          message: "API request with invalid timestamp",
+          metadata: {
+            apiKey,
+            timestamp,
+            timeDiff: now - timestampMs,
+            tolerance: SIGNING_CONFIG.timestampTolerance,
+          },
+        },
+        request
+      );
 
       return {
         isValid: false,
-        error: SecureErrorHandler.validationError("Request timestamp out of tolerance")
+        error: SecureErrorHandler.validationError(
+          "Request timestamp out of tolerance"
+        ),
       };
     }
 
     // Check nonce for replay attacks
     if (nonceStore.has(nonce)) {
-      await soc2Logger.log({
-        level: LogLevel.SECURITY,
-        category: LogCategory.SECURITY_EVENT,
-        eventType: SOC2EventType.SUSPICIOUS_ACTIVITY,
-        message: "API request replay attack detected",
-        metadata: {
-          apiKey,
-          nonce,
-          originalTimestamp: nonceStore.get(nonce)
-        }
-      }, request);
+      await logger.log(
+        {
+          level: LogLevel.SECURITY,
+          category: LogCategory.SECURITY_EVENT,
+          eventType: SOC2EventType.SUSPICIOUS_ACTIVITY,
+          message: "API request replay attack detected",
+          metadata: {
+            apiKey,
+            nonce,
+            originalTimestamp: nonceStore.get(nonce),
+          },
+        },
+        request
+      );
 
       return {
         isValid: false,
-        error: SecureErrorHandler.validationError("Nonce already used (replay attack)")
+        error: SecureErrorHandler.validationError(
+          "Nonce already used (replay attack)"
+        ),
       };
     }
 
     // Get API secret for the key
     const apiSecret = await getApiSecret(apiKey);
     if (!apiSecret) {
-      await soc2Logger.log({
-        level: LogLevel.WARNING,
-        category: LogCategory.SECURITY_EVENT,
-        eventType: SOC2EventType.UNAUTHORIZED_ACCESS,
-        message: "API request with invalid API key",
-        metadata: { apiKey }
-      }, request);
+      await logger.log(
+        {
+          level: LogLevel.WARNING,
+          category: LogCategory.SECURITY_EVENT,
+          eventType: SOC2EventType.UNAUTHORIZED_ACCESS,
+          message: "API request with invalid API key",
+          metadata: { apiKey },
+        },
+        request
+      );
 
       return {
         isValid: false,
-        error: SecureErrorHandler.authenticationError()
+        error: SecureErrorHandler.authenticationError(),
       };
     }
 
     // Read request body
     const body = await request.text();
-    
+
     // Generate expected signature
     const method = request.method;
     const path = request.nextUrl.pathname + request.nextUrl.search;
-    const expectedSignature = generateSignature(method, path, body, timestamp, nonce, apiSecret);
+    const expectedSignature = generateSignature(
+      method,
+      path,
+      body,
+      timestamp,
+      nonce,
+      apiSecret
+    );
 
     // Compare signatures using timing-safe comparison
     const signatureBuffer = Buffer.from(signature, "hex");
     const expectedBuffer = Buffer.from(expectedSignature, "hex");
 
-    if (signatureBuffer.length !== expectedBuffer.length || 
-        !timingSafeEqual(signatureBuffer, expectedBuffer)) {
-      
-      await soc2Logger.log({
-        level: LogLevel.WARNING,
-        category: LogCategory.SECURITY_EVENT,
-        eventType: SOC2EventType.UNAUTHORIZED_ACCESS,
-        message: "API request with invalid signature",
-        metadata: {
-          apiKey,
-          method,
-          path,
-          expectedLength: expectedBuffer.length,
-          actualLength: signatureBuffer.length
-        }
-      }, request);
+    if (
+      signatureBuffer.length !== expectedBuffer.length ||
+      !timingSafeEqual(signatureBuffer, expectedBuffer)
+    ) {
+      await logger.log(
+        {
+          level: LogLevel.WARNING,
+          category: LogCategory.SECURITY_EVENT,
+          eventType: SOC2EventType.UNAUTHORIZED_ACCESS,
+          message: "API request with invalid signature",
+          metadata: {
+            apiKey,
+            method,
+            path,
+            expectedLength: expectedBuffer.length,
+            actualLength: signatureBuffer.length,
+          },
+        },
+        request
+      );
 
       return {
         isValid: false,
-        error: SecureErrorHandler.authenticationError()
+        error: SecureErrorHandler.authenticationError(),
       };
     }
 
@@ -208,30 +241,32 @@ export async function validateSignature(
     nonceStore.set(nonce, now);
 
     // Log successful validation
-    await soc2Logger.log({
-      level: LogLevel.INFO,
-      category: LogCategory.AUTHENTICATION,
-      eventType: SOC2EventType.LOGIN_SUCCESS,
-      message: "API signature validation successful",
-      metadata: {
-        apiKey,
-        method,
-        path
-      }
-    }, request);
+    await logger.log(
+      {
+        level: LogLevel.INFO,
+        category: LogCategory.AUTHENTICATION,
+        eventType: SOC2EventType.LOGIN_SUCCESS,
+        message: "API signature validation successful",
+        metadata: {
+          apiKey,
+          method,
+          path,
+        },
+      },
+      request
+    );
 
     return {
       isValid: true,
       apiKey,
       timestamp: timestampMs,
-      nonce
+      nonce,
     };
-
   } catch (error) {
     console.error("Signature validation error:", error);
     return {
       isValid: false,
-      error: SecureErrorHandler.sanitizeError(error, "signature_validation")
+      error: SecureErrorHandler.sanitizeError(error, "signature_validation"),
     };
   }
 }
@@ -240,20 +275,24 @@ export async function validateSignature(
  * Middleware wrapper for API signature validation
  */
 export function withSignatureValidation(
-  handler: (req: NextRequest, context: { apiKey: string; timestamp: number }) => Promise<NextResponse>,
+  handler: (
+    req: NextRequest,
+    context: { apiKey: string; timestamp: number }
+  ) => Promise<NextResponse>,
   getApiSecret: (apiKey: string) => Promise<string | null>
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
     const validation = await validateSignature(request, getApiSecret);
-    
+
     if (!validation.isValid) {
-      const status = validation.error?.code === "AUTHENTICATION_REQUIRED" ? 401 : 400;
+      const status =
+        validation.error?.code === "AUTHENTICATION_REQUIRED" ? 401 : 400;
       return NextResponse.json(validation.error, { status });
     }
 
     return handler(request, {
       apiKey: validation.apiKey!,
-      timestamp: validation.timestamp!
+      timestamp: validation.timestamp!,
     });
   };
 }
@@ -263,7 +302,10 @@ export function withSignatureValidation(
  * @deprecated Use PersistentAPIKeyManager for new implementations
  */
 export class APIKeyManager {
-  private static keyStore = new Map<string, { secret: string; permissions: string[] }>();
+  private static keyStore = new Map<
+    string,
+    { secret: string; permissions: string[] }
+  >();
 
   /**
    * Generate new API key pair
@@ -272,7 +314,7 @@ export class APIKeyManager {
   static generateKeyPair(): { apiKey: string; apiSecret: string } {
     const apiKey = `ak_${randomBytes(16).toString("hex")}`;
     const apiSecret = randomBytes(32).toString("hex");
-    
+
     return { apiKey, apiSecret };
   }
 
@@ -280,7 +322,11 @@ export class APIKeyManager {
    * Store API key (in production, use secure database)
    * @deprecated Use PersistentAPIKeyManager.createAPIKey()
    */
-  static storeKey(apiKey: string, apiSecret: string, permissions: string[] = []): void {
+  static storeKey(
+    apiKey: string,
+    apiSecret: string,
+    permissions: string[] = []
+  ): void {
     this.keyStore.set(apiKey, { secret: apiSecret, permissions });
   }
 
@@ -297,7 +343,10 @@ export class APIKeyManager {
    * Check if API key has permission
    * @deprecated Use PersistentAPIKeyManager.hasPermission()
    */
-  static async hasPermission(apiKey: string, permission: string): Promise<boolean> {
+  static async hasPermission(
+    apiKey: string,
+    permission: string
+  ): Promise<boolean> {
     const keyData = this.keyStore.get(apiKey);
     return keyData?.permissions.includes(permission) || false;
   }
@@ -315,7 +364,7 @@ export class APIKeyManager {
   static listKeys(): Array<{ apiKey: string; permissions: string[] }> {
     return Array.from(this.keyStore.entries()).map(([apiKey, data]) => ({
       apiKey,
-      permissions: data.permissions
+      permissions: data.permissions,
     }));
   }
 }
@@ -330,13 +379,15 @@ export class SignedAPIClient {
     private baseUrl: string = ""
   ) {}
 
-  async request(
-    method: string,
-    path: string,
-    body?: any
-  ): Promise<Response> {
+  async request(method: string, path: string, body?: any): Promise<Response> {
     const bodyString = body ? JSON.stringify(body) : "";
-    const headers = createSignedHeaders(method, path, bodyString, this.apiKey, this.apiSecret);
+    const headers = createSignedHeaders(
+      method,
+      path,
+      bodyString,
+      this.apiKey,
+      this.apiSecret
+    );
 
     const response = await fetch(`${this.baseUrl}${path}`, {
       method,
@@ -345,7 +396,9 @@ export class SignedAPIClient {
     });
 
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`
+      );
     }
 
     return response;

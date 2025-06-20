@@ -1,6 +1,6 @@
 // lib/holiday-sync-service.ts
 import { gql } from "@apollo/client";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { adminApolloClient } from "@/lib/apollo/server-client";
 
 // Type definition for holiday API response
 export interface PublicHoliday {

@@ -8,7 +8,6 @@ query GetUsers($limit: Int = 50, $offset: Int = 0, $where: users_bool_exp) {
   ) {
     id
     name
-    email
     role
     created_at
     updated_at
@@ -18,7 +17,6 @@ query GetUsers($limit: Int = 50, $offset: Int = 0, $where: users_bool_exp) {
     manager {
       id
       name
-      email
     }
   }
   users_aggregate(where: $where) {
@@ -33,7 +31,6 @@ query GetUserById($id: uuid!) {
   users_by_pk(id: $id) {
     id
     name
-    email
     role
     created_at
     updated_at
@@ -43,13 +40,6 @@ query GetUserById($id: uuid!) {
     manager {
       id
       name
-      email
-      role
-    }
-    subordinates {
-      id
-      name
-      email
       role
     }
   }
@@ -60,7 +50,6 @@ query GetUserByClerkId($clerkId: String!) {
   users(where: { clerk_user_id: { _eq: $clerkId } }) {
     id
     name
-    email
     role
     created_at
     updated_at
@@ -70,7 +59,6 @@ query GetUserByClerkId($clerkId: String!) {
     manager {
       id
       name
-      email
       role
     }
   }
@@ -81,7 +69,6 @@ query GetUsersByRole($role: user_role!) {
   users(where: { role: { _eq: $role } }, order_by: { name: asc }) {
     id
     name
-    email
     role
     created_at
     is_staff
@@ -92,10 +79,9 @@ query GetUsersByRole($role: user_role!) {
 
 # Get managers for assignment
 query GetManagers {
-  users(where: { role: { _in: [admin, manager] } }, order_by: { name: asc }) {
+  users(where: { role: { _in: ["developer", "org_admin", "manager"] } }, order_by: { name: asc }) {
     id
     name
-    email
     role
   }
 }

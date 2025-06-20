@@ -1,10 +1,12 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth, checkRateLimit } from "@/lib/api-auth";
+import { withEnhancedAuth } from "@/lib/auth/enhanced-api-auth";
+import { rateLimiter } from "@/lib/middleware/rate-limiter";
 import { secureHasuraService } from "@/lib/secure-hasura-service";
 import { gql } from "@apollo/client";
 
-export const POST = withAuth(
-  async (request: NextRequest, session) => {
+export const POST = withEnhancedAuth(
+  async (request: NextRequest, context) => {
     // Restrict to development environment only
     if (process.env.NODE_ENV === 'production') {
       return NextResponse.json({ error: "Not Found" }, { status: 404 });
@@ -12,13 +14,14 @@ export const POST = withAuth(
 
     try {
       // Rate limiting - 20 requests per hour
-      if (!checkRateLimit(`regenerate-dates-${session.userId}`, 20, 3600000)) {
-        return NextResponse.json(
-          {
-            error: "Rate limit exceeded. Maximum 20 regenerations per hour.",
-          },
-          { status: 429 }
-        );
+      const rateLimitResponse = await rateLimiter.applyRateLimit(
+        request,
+        context.userId,
+        { requests: 20, window: 3600000, message: "Maximum 20 regenerations per hour." }
+      );
+      
+      if (rateLimitResponse) {
+        return rateLimitResponse;
       }
 
       const { payrollId } = await request.json();
@@ -34,7 +37,7 @@ export const POST = withAuth(
       }
 
       console.log(
-        `🔄 Admin ${session.userId} regenerating dates for payroll ${payrollId}...`
+        `🔄 Admin ${context.userId} regenerating dates for payroll ${payrollId}...`
       );
 
       // Calculate date range (2 years)
@@ -67,21 +70,17 @@ export const POST = withAuth(
         ...result,
         dateRange: { startDate, endDate },
         performedBy: {
-          userId: session.userId,
-          role: session.role,
+          userId: context.userId,
+          role: context.userRole,
           timestamp: new Date().toISOString(),
         },
       });
-    } catch (error: any) {
-      console.error("❌ Error regenerating dates:", error);
-      return NextResponse.json(
-        {
-          success: false,
-          error: error.message,
-        },
+    } catch (error) {
+    return handleApiError(error, "developer");
+  },
         { status: 500 }
       );
     }
   },
-  { allowedRoles: ["developer", "manager"] } // Admins and managers can regenerate dates
+  { minimumRole: "developer" } // Developers can regenerate dates
 );
