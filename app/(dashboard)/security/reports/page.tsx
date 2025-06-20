@@ -1,19 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
 import { format, subDays, startOfMonth } from "date-fns";
 import {
   Download,
@@ -24,6 +11,7 @@ import {
   XCircle,
   Lock,
 } from "lucide-react";
+import { useState } from "react";
 import {
   LineChart,
   Line,
@@ -37,92 +25,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const COMPLIANCE_REPORT_QUERY = gql`
-  query ComplianceReport($startDate: timestamptz!, $endDate: timestamptz!) {
-    # Overall metrics
-    audit_metrics: audit_log_aggregate(
-      where: { created_at: { _gte: $startDate, _lte: $endDate } }
-    ) {
-      aggregate {
-        count
-      }
-      nodes {
-        success
-        data_classification
-        action
-        created_at
-      }
-    }
-
-    # Failed operations by type
-    failed_by_type: audit_log(
-      where: {
-        success: { _eq: false }
-        created_at: { _gte: $startDate, _lte: $endDate }
-      }
-    ) {
-      action
-      entity_type
-      error_message
-    }
-
-    # Data access by classification
-    data_access_stats: data_access_log_aggregate(
-      where: { accessed_at: { _gte: $startDate, _lte: $endDate } }
-    ) {
-      aggregate {
-        count
-        sum {
-          record_count
-        }
-      }
-      nodes {
-        data_classification
-        data_type
-        purpose
-      }
-    }
-
-    # Security events
-    security_events_stats: security_event_log_aggregate(
-      where: { created_at: { _gte: $startDate, _lte: $endDate } }
-    ) {
-      aggregate {
-        count
-      }
-      nodes {
-        severity
-        event_type
-        resolved
-      }
-    }
-
-    # User activity
-    user_activity: audit_log(
-      where: { created_at: { _gte: $startDate, _lte: $endDate } }
-      distinct_on: user_id
-    ) {
-      user_id
-      user_role
-      user {
-        email
-        name
-      }
-    }
-
-    # Compliance checks
-    compliance_history: compliance_check(
-      where: { performed_at: { _gte: $startDate, _lte: $endDate } }
-      order_by: { performed_at: desc }
-    ) {
-      id
-      check_type
-      status
-      findings
-      performed_at
-    }
-  }
-`;
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const COLORS = {
   CRITICAL: "#ef4444",
@@ -158,7 +71,7 @@ export default function ComplianceReportsPage() {
 
   const { startDate, endDate } = getDateRange();
 
-  const { data, loading, error } = useQuery(COMPLIANCE_REPORT_QUERY, {
+  const { data, loading, error } = useQuery(COMPLIANCE_REPORT, {
     variables: {
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),

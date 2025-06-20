@@ -1,10 +1,11 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, User, Mail, Shield, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import * as z from "zod";
-import { Loader2, User, Mail, Shield, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,14 +34,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
-
 import {
   useUserManagement,
   User as UserType,
   Manager,
   UserPermissions,
-} from "@/hooks/useUserManagement";
+} from "@/hooks/use-user-management";
 
 const editUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -101,7 +100,7 @@ export function EditUserModal({
   const selectedRole = form.watch("role");
 
   const handleSubmit = async (data: EditUserFormData) => {
-    if (!user) return;
+    if (!user) {return;}
 
     if (!permissions?.canManageUsers) {
       toast.error("You don't have permission to edit users");
@@ -137,7 +136,7 @@ export function EditUserModal({
   };
 
   const handleClose = () => {
-    if (isSubmitting) return;
+    if (isSubmitting) {return;}
     onClose();
   };
 
@@ -165,7 +164,7 @@ export function EditUserModal({
     },
   ].filter((role) => canAssignRole(role.value));
 
-  if (!user) return null;
+  if (!user) {return null;}
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { soc2Logger, SOC2EventType, LogLevel, LogCategory } from "@/lib/logging/soc2-logger";
 import { z } from "zod";
+
+import { soc2Logger, SOC2EventType, LogLevel, LogCategory } from "@/lib/logging/soc2-logger";
 
 // Input validation schema
 const auditEventSchema = z.object({

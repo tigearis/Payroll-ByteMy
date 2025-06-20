@@ -1,5 +1,6 @@
 // lib/security/enhanced-route-monitor.ts - Advanced route monitoring and analytics
 import { NextRequest } from "next/server";
+
 import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc2-logger";
 
 interface RouteMetrics {

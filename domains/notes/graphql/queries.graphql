@@ -1,0 +1,59 @@
+# Notes Domain Queries
+# Security Classification: MEDIUM - Internal data with role-based access
+# SOC2 Compliance: Row-level security enforced by Hasura permissions
+
+query GetNotes($entityId: uuid!, $entityType: String!) {
+  notes(
+    where: { entity_id: { _eq: $entityId }, entity_type: { _eq: $entityType } }
+    order_by: { created_at: desc }
+  ) {
+    ...NoteWithUser
+  }
+}
+
+query GetNotesBasic($entityId: uuid!, $entityType: String!) {
+  notes(
+    where: { entity_id: { _eq: $entityId }, entity_type: { _eq: $entityType } }
+    order_by: { created_at: desc }
+  ) {
+    ...NoteBasicInfo
+  }
+}
+
+query GetImportantNotes($entityId: uuid!, $entityType: String!) {
+  notes(
+    where: {
+      entity_id: { _eq: $entityId }
+      entity_type: { _eq: $entityType }
+      is_important: { _eq: true }
+    }
+    order_by: { created_at: desc }
+  ) {
+    ...NoteWithUser
+  }
+}
+
+query GetNoteById($id: uuid!) {
+  notes_by_pk(id: $id) {
+    ...NoteWithUser
+  }
+}
+
+# Audit query - limited fields for compliance logging
+query GetNotesForAudit($entityId: uuid!, $entityType: String!) {
+  notes(
+    where: { entity_id: { _eq: $entityId }, entity_type: { _eq: $entityType } }
+    order_by: { created_at: desc }
+  ) {
+    ...NoteForAudit
+  }
+}
+
+query GetNotesSimple {
+  notes {
+    id
+    content
+    created_at
+    updated_at
+  }
+}

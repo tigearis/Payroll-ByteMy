@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { SecureHasuraService } from "@/lib/secure-hasura-service";
 import { gql } from "@apollo/client";
+import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+
+import { SecureHasuraService } from "@/lib/secure-hasura-service";
+
 
 // GraphQL query to get Hasura claims
 const GET_HASURA_CLAIMS = gql`
@@ -18,7 +20,7 @@ export async function GET(req: NextRequest) {
     const authResult = await auth();
     const clerkUserId = authResult.userId;
 
-    console.log("🔍 Clerk user ID:", clerkUserId?.substring(0, 8) + "...");
+    console.log("🔍 Clerk user ID:", `${clerkUserId?.substring(0, 8)  }...`);
 
     if (!clerkUserId) {
       console.log("🚨 No Clerk user ID found");

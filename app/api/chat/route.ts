@@ -2,6 +2,7 @@
 import { openai } from "@ai-sdk/openai"
 import { streamText } from "ai"
 import { NextRequest, NextResponse } from "next/server"
+
 import { withAuth } from "@/lib/api-auth"
 import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger"
 

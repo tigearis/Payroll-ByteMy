@@ -1,11 +1,10 @@
 // app/(dashboard)/settings/page.tsx
 "use client";
 
-import type React from "react";
 
-import { useState } from "react";
 import { Loader2, Save } from "lucide-react";
-import { useAuthContext } from "@/lib/auth-context";
+import { useState } from "react";
+import type React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,8 +17,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -28,7 +25,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserRoleManagement } from "@/components/user-role-management";
+import { useAuthContext } from "@/lib/auth-context";
 
 const roles = ["developer", "org_admin", "manager", "consultant", "viewer"];
 const features = [

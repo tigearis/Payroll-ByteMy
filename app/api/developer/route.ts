@@ -1,8 +1,9 @@
 // app/api/developer/route.ts
 // SECURITY: Developer routes are disabled in production
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { gql } from "@apollo/client";
+import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+
 import { adminApolloClient } from "@/lib/server-apollo-client";
 
 // SECURITY: Check if in production and return 404

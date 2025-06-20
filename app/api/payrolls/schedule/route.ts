@@ -1,6 +1,6 @@
 // app/api/payrolls/schedule/route.ts
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 // import { generatePayrollSchedule } from "@/lib/payroll-service"; // Commented out due to missing Drizzle schema
 
 export async function GET(req: NextRequest) {

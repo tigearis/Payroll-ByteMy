@@ -1,8 +1,11 @@
 // app/api/cron/update-payroll-dates/route.ts
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { getServerApolloClient } from "@/lib/server-apollo-client";
 import { format, addMonths } from "date-fns";
+import { NextRequest, NextResponse } from "next/server";
+
+import { getServerApolloClient } from "@/lib/server-apollo-client";
+
+
 import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
 import { UPDATE_PAYROLL_STATUS } from "@/graphql/mutations/payrolls/updatePayrollStatus";
 
@@ -69,7 +72,7 @@ export async function POST(req: NextRequest) {
         const { data: dateData, errors: dateErrors } = await client.mutate({
           mutation: GENERATE_PAYROLL_DATES,
           variables: {
-            payrollId: payrollId,
+            payrollId,
             startDate: formattedStart,
             endDate: formattedEnd,
           },
@@ -100,7 +103,7 @@ export async function POST(req: NextRequest) {
               await client.mutate({
                 mutation: UPDATE_PAYROLL_STATUS,
                 variables: {
-                  payrollId: payrollId,
+                  payrollId,
                   status: newStatus,
                 },
                 context: {

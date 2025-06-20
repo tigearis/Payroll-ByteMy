@@ -1,6 +1,7 @@
 // app/api/holidays/sync/route.ts
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+
 import { syncAustralianHolidays } from "@/lib/holiday-sync-service";
 
 export async function POST(req: NextRequest) {

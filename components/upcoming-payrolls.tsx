@@ -2,6 +2,10 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
+import { format } from "date-fns";
+
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -10,11 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useCurrentUser } from "@/hooks/use-current-user";
+
 import { GET_USER_UPCOMING_PAYROLLS } from "@/graphql/queries/dashboard/getAlerts";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { format } from "date-fns";
 
 interface PayrollDate {
   id: string;

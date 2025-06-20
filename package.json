@@ -14,10 +14,15 @@
     "fix:errors": "node scripts/fix-codebase.js --fix=errors --backup",
     "fix:all": "node scripts/fix-codebase.js --fix=auth,errors --backup",
     "fix:duplication": "node scripts/fix-codebase.js --fix=duplication",
-    "generate": "graphql-codegen",
+    "generate": "graphql-codegen --config config/codegen.ts",
     "codegen": "graphql-codegen --config config/codegen.ts",
     "codegen:watch": "graphql-codegen --config config/codegen.ts --watch",
-    "get-schema": "graphql-codegen --config config/codegen.ts --require dotenv/config --schema $NEXT_PUBLIC_HASURA_GRAPHQL_URL --header 'x-hasura-admin-secret:$NEXT_PUBLIC_HASURA_ADMIN_SECRET' --output graphql/schema/schema.graphql --plugin schema-ast"
+    "codegen:debug": "graphql-codegen --config config/codegen.ts --verbose",
+    "codegen:dry-run": "graphql-codegen --config config/codegen.ts --check",
+    "get-schema": "graphql-codegen --config config/codegen.ts --require dotenv/config --schema $NEXT_PUBLIC_HASURA_GRAPHQL_URL --header 'x-hasura-admin-secret:$HASURA_ADMIN_SECRET' --output shared/schema/schema.graphql --plugin schema-ast",
+    "validate:naming": "tsx scripts/validate-case-conventions.ts",
+    "validate:naming:fix": "tsx scripts/validate-case-conventions.ts --fix",
+    "validate:naming:dry-run": "tsx scripts/validate-case-conventions.ts --fix --no-dry-run"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",
@@ -75,6 +80,7 @@
     "react-day-picker": "^9.5.2",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.57.0",
+    "react-hooks": "^1.0.1",
     "react-intersection-observer": "^9.16.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.9",
@@ -84,7 +90,7 @@
     "svix": "^1.66.0",
     "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "vercel": "^42.3.0"
+    "vercel": "^43.3.0"
   },
   "devDependencies": {
     "@anthropic-ai/claude-code": "^1.0.24",
@@ -110,6 +116,7 @@
     "hasura-cli": "^2.38.0",
     "postcss": "^8.5.4",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "zod": "^3.25.47"
   },

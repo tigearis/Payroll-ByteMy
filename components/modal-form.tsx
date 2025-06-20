@@ -14,7 +14,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, title,
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {return;}
 
     const fetchData = async () => {
       setLoading(true);
@@ -42,7 +42,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, title,
     onClose();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   return (
     <div className="modal-overlay">

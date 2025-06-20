@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
 import { AlertTriangle, RefreshCw, Home, Bug } from "lucide-react";
+import React from "react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { toast } from "sonner";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -143,7 +144,7 @@ export class ErrorBoundary extends React.Component<
                   We encountered an unexpected error
                 </p>
                 <p className="text-gray-600 text-sm mb-4">
-                  Our team has been notified and we're working to fix this
+                  Our team has been notified and we&apos;re working to fix this
                   issue.
                 </p>
                 {this.state.error?.message && (

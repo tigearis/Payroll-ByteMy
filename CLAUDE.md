@@ -22,6 +22,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm fix:all` - Fix both auth and errors with backup
 - `pnpm fix:duplication` - Remove code duplication
 
+### Case Convention Validation
+
+- `pnpm validate:naming` - Check all files for naming convention violations
+- `pnpm validate:naming:fix` - Show what would be fixed (dry run)
+- `pnpm validate:naming:dry-run` - Actually fix naming violations
+
 ### GraphQL Operations
 
 - `pnpm generate` - Alias for codegen
@@ -53,30 +59,58 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Authentication System
 
-This is a multi-layered authentication system with Clerk as the primary provider:
+This is a streamlined authentication system leveraging Clerk's native enterprise capabilities:
 
-- **Centralized Token Management**: Singleton pattern managers handle JWT tokens with automatic refresh, caching, and mutex protection
-- **RBAC Implementation**: Hierarchical roles (`developer` > `org_admin` > `manager` > `consultant` > `viewer`) with permission-based access control
-- **Security Features**: Session expiry handling, MFA support (feature-flagged), database user validation for SOC2 compliance
-- **Clerk Integration**: JWT forwarding to Hasura, webhook authentication, session management
+- **Pure Clerk Native Integration**: No custom token management - uses `getToken({ template: "hasura" })` and `sessionClaims` directly
+- **RBAC Implementation**: Hierarchical roles (`developer` > `org_admin` > `manager` > `consultant` > `viewer`) with 18 granular permissions across 5 categories
+- **JWT Template Configuration**: Custom Hasura JWT template with proper claims mapping for database UUID integration
+- **Security Features**: Automatic token refresh, session management, MFA support (feature-flagged), SOC2 compliance
+- **Optimized Architecture**: Eliminated 1,200+ lines of custom token management code by leveraging Clerk's built-in features
 - **Key Files**:
-  - `middleware.ts` - Auth middleware and route protection
-  - `lib/auth/centralized-token-manager.ts` - Token management
-  - `lib/auth/server-token-manager.ts` - Server-side token handling
-  - `lib/api-auth.ts` - API authentication utilities
-  - `app/api/webhooks/clerk/` - Clerk webhook handlers
+  - `middleware.ts` - Auth middleware and route protection using `clerkMiddleware`
+  - `lib/auth/permissions.ts` - Role hierarchy and permission definitions (single source of truth)
+  - `apollo/unified-client.ts` - Apollo client with native Clerk token integration
+  - `lib/utils/auth-error-utils.ts` - Authentication error utilities
+  - `app/api/webhooks/clerk/` - Clerk webhook handlers for user synchronization
+
+#### JWT Template Configuration
+
+The authentication system uses a specific JWT template configured in Clerk Dashboard for Hasura integration:
+
+```json
+{
+  "https://hasura.io/jwt/claims": {
+    "metadata": "{{user.public_metadata}}",
+    "x-hasura-role": "{{user.public_metadata.role}}",
+    "x-hasura-user-id": "{{user.public_metadata.databaseId}}",
+    "x-hasura-default-role": "viewer",
+    "x-hasura-allowed-roles": [
+      "developer",
+      "org_admin",
+      "manager", 
+      "consultant",
+      "viewer"
+    ],
+    "x-hasura-clerk-user-id": "{{user.id}}"
+  }
+}
+```
+
+This template ensures proper database UUID mapping and role-based access control for Hasura operations.
 
 ### GraphQL Architecture
 
-Domain-driven GraphQL setup with sophisticated code generation:
+Domain-driven GraphQL setup with unified Apollo client architecture:
 
 - **Domain Organization**: Each business domain (`payrolls`, `clients`, `staff`, `users`, etc.) has its own GraphQL folder structure: `domains/{domain}/graphql/{fragments,queries,mutations,subscriptions}.graphql`
-- **Dual Apollo Clients**:
-  - Standard client (`lib/apollo-client.ts`) for general use with auth token forwarding
-  - Secure client (`lib/apollo/secure-client.ts`) for SOC2-compliant operations with security levels and audit logging
+- **Unified Apollo Client**: Single `apollo/unified-client.ts` with native Clerk integration replacing multiple client implementations
+  - Client-side client (`clientApolloClient`) with WebSocket support and automatic token forwarding
+  - Server-side client (`serverApolloClient`) for API routes and server components
+  - Admin client (`adminApolloClient`) with service account access for system operations
+- **Pure Clerk Integration**: Automatic token injection using `window.Clerk.session.getToken({ template: "hasura" })` - no custom token management
 - **Code Generation**: Per-domain TypeScript generation with shared scalars and configurations
-- **Real-time Features**: WebSocket subscriptions, optimistic updates with security considerations
-- **Hasura Integration**: JWT-based authentication, row-level security, role-based permissions
+- **Real-time Features**: WebSocket subscriptions with automatic Clerk authentication, optimistic updates
+- **Hasura Integration**: JWT-based authentication with native Clerk token templates, row-level security, role-based permissions
 
 ### Security Layer
 
@@ -132,6 +166,27 @@ GraphQL-first approach using Hasura over PostgreSQL:
 - **Column-Level Permissions**: Sensitive data masked based on user role
 - **Business Logic**: Custom permission rules for complex scenarios
 
+## Case Convention System
+
+The project enforces strict case conventions across all code:
+
+- **Files/Directories**: kebab-case (`user-profile-card.tsx`, `auth-utils.ts`)
+- **React Components**: PascalCase (`UserProfileCard`, `PayrollScheduleView`)
+- **Functions/Variables**: camelCase (`getCurrentUser`, `handleSubmit`)
+- **Constants**: SCREAMING_SNAKE_CASE (`DEFAULT_ROLE`, `MAX_RETRIES`)
+- **Types/Interfaces**: PascalCase (`UserMetadata`, `PayrollStatus`)
+- **Custom Hooks**: camelCase with 'use' prefix (`useAuth`, `useUserRole`)
+- **GraphQL Operations**: PascalCase (`GetUserByRole`, `UpdateUserRole`)
+- **Database Fields**: snake_case (`user_id`, `created_at`)
+
+**Key Files**:
+- `config/case-conventions.config.ts` - Central configuration for all naming patterns
+- `scripts/validate-case-conventions.ts` - Automated validation and fixing
+- `docs/CASE_CONVENTION_SYSTEM.md` - Comprehensive documentation
+- `Type-Case-Conventions.md` - Reference guide
+
+**Validation**: Run `pnpm validate:naming` to check compliance and `pnpm validate:naming:fix` for automatic fixes.
+
 ## Important Patterns
 
 ### Path Aliases
@@ -145,7 +200,7 @@ The project uses TypeScript path aliases configured in `tsconfig.json`:
 - `@/hooks/*` - React hooks
 - `@/types/*` - Type definitions
 - `@/app/*` - Next.js app directory
-- `@/graphql/*` - GraphQL operations
+- `@/apollo/*` - Apollo client configurations
 - `@/domains/*` - Domain-specific code
 - `@/config/*` - Configuration files
 
@@ -227,3 +282,5 @@ When performing security audits, focus on these integration points:
 - **Production Builds**: TypeScript and ESLint checks disabled (configured in `next.config.js`)
 - **WIP Pages**: ai-assistant, calendar, tax-calculator are redirected to 404 in production
 - **Security**: All authenticated routes protected by middleware, comprehensive audit logging enabled
+- **Authentication**: Optimized to use pure Clerk native functions, eliminated 1,200+ lines of custom token management
+- **GraphQL**: Domain-based organization with unified Apollo client, see `GRAPHQL_CLEANUP_PLAN.md` for ongoing improvements

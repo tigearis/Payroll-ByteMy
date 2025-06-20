@@ -1,11 +1,12 @@
 // components/add-note.tsx
 'use client';
 
-import { useState } from 'react';
 import { useMutation, gql } from '@apollo/client';
+import { PlusCircle } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { 
   Dialog, 
   DialogContent, 
@@ -14,7 +15,7 @@ import {
   DialogTitle, 
   DialogTrigger 
 } from '@/components/ui/dialog';
-import { PlusCircle } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 
 // Mutation to add a note
 const ADD_NOTE = gql`
@@ -76,7 +77,7 @@ export function AddNote({ entityType, entityId, onSuccess }: AddNoteProps) {
       setNoteContent('');
       setIsOpen(false);
       toast.success('Note added successfully');
-      if (onSuccess) onSuccess();
+      if (onSuccess) {onSuccess();}
     },
     onError: (error) => {
       toast.error(`Failed to add note: ${error.message}`);
@@ -97,7 +98,7 @@ export function AddNote({ entityType, entityId, onSuccess }: AddNoteProps) {
     // Update the cache immediately with the optimistic response
     update: (cache, { data }) => {
       // Skip if we don't have data yet (should never happen with optimistic response)
-      if (!data?.insert_notes_one) return;
+      if (!data?.insert_notes_one) {return;}
       
       try {
         // Try to read existing notes from the cache

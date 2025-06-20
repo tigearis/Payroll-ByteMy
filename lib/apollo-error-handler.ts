@@ -26,7 +26,7 @@ export interface GraphQLPermissionError {
 }
 
 export function isPermissionError(error: any): boolean {
-  if (!error?.message) return false;
+  if (!error?.message) {return false;}
 
   const message = error.message.toLowerCase();
   return (

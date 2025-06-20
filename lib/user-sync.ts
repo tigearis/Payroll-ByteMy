@@ -1,6 +1,7 @@
 // lib/user-sync.ts
-import { clerkClient } from "@clerk/nextjs/server";
 import { gql } from "@apollo/client";
+import { clerkClient } from "@clerk/nextjs/server";
+
 import { adminApolloClient } from "@/lib/server-apollo-client";
 
 // Define user role hierarchy for permission checking
@@ -243,7 +244,7 @@ export async function syncUserWithDatabase(
             mutation: UPDATE_USER_CLERK_ID,
             variables: {
               id: existingUserByEmail.id,
-              clerkId: clerkId,
+              clerkId,
             },
             errorPolicy: "all",
           });
@@ -515,7 +516,7 @@ export function canAssignRole(
   const targetLevel = USER_ROLES[targetRole];
 
   // Developers (developer) and Standard Admins (org_admin) can assign any role
-  if (normalizedCurrentRole === "developer" || normalizedCurrentRole === "org_admin") return true;
+  if (normalizedCurrentRole === "developer" || normalizedCurrentRole === "org_admin") {return true;}
 
   // Managers can assign consultant and viewer roles
   if (

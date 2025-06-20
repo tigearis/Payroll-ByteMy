@@ -1,8 +1,6 @@
 // app/(dashboard)/payrolls/page.tsx - UPDATED VERSION
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import {
   PlusCircle,
@@ -31,11 +29,15 @@ import {
   TableIcon,
   List,
 } from "lucide-react";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PayrollsTable } from "@/components/payrolls-table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,12 +46,12 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -57,14 +59,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import {
-  GET_PAYROLLS,
-  GET_PAYROLLS_FALLBACK,
-} from "@/graphql/queries/payrolls/getPayrolls";
-import { toast } from "sonner";
-import { useUserRole } from "@/hooks/useUserRole";
-import { PayrollsTable } from "@/components/payrolls-table";
+import { GET_PAYROLLS } from "@/domains/payrolls/graphql/queries.graphql";
+import { useUserRole } from "@/hooks/use-user-role";
 
 type ViewMode = "cards" | "table" | "list";
 
@@ -189,7 +185,7 @@ const formatCurrency = (amount: number) => {
 };
 
 const formatDate = (date: string | Date) => {
-  if (!date) return "Not set";
+  if (!date) {return "Not set";}
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     day: "numeric",
@@ -199,7 +195,7 @@ const formatDate = (date: string | Date) => {
 };
 
 const formatDateTime = (date: string | Date) => {
-  if (!date) return "Not set";
+  if (!date) {return "Not set";}
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     day: "numeric",
@@ -215,7 +211,7 @@ const formatPayrollCycle = (payroll: any) => {
   const dateTypeName = payroll.payroll_date_type?.name;
   const dateValue = payroll.date_value;
 
-  if (!cycleName) return "Not configured";
+  if (!cycleName) {return "Not configured";}
 
   // Create readable cycle name
   let readableCycle = "";
@@ -286,9 +282,9 @@ const formatPayrollCycle = (payroll: any) => {
 const getOrdinalSuffix = (num: number) => {
   const j = num % 10;
   const k = num % 100;
-  if (j === 1 && k !== 11) return "st";
-  if (j === 2 && k !== 12) return "nd";
-  if (j === 3 && k !== 13) return "rd";
+  if (j === 1 && k !== 11) {return "st";}
+  if (j === 2 && k !== 12) {return "nd";}
+  if (j === 3 && k !== 13) {return "rd";}
   return "th";
 };
 
@@ -447,7 +443,7 @@ export default function PayrollsPage() {
     }
   }, [roleLoading]);
 
-  if (roleLoading) return null;
+  if (roleLoading) {return null;}
 
   if (finalLoading && !payrolls.length) {
     return (
@@ -484,7 +480,7 @@ export default function PayrollsPage() {
 
     // Get next EFT date from payroll_dates
     const getNextEftDate = (payrollDates: any[]) => {
-      if (!payrollDates || payrollDates.length === 0) return null;
+      if (!payrollDates || payrollDates.length === 0) {return null;}
 
       const today = new Date();
       const futureDates = payrollDates
@@ -592,9 +588,9 @@ export default function PayrollsPage() {
 
     // Handle null dates (put nulls at the end)
     if (sortField === "nextEftDate") {
-      if (aValue === null && bValue === null) return 0;
-      if (aValue === null) return 1;
-      if (bValue === null) return -1;
+      if (aValue === null && bValue === null) {return 0;}
+      if (aValue === null) {return 1;}
+      if (bValue === null) {return -1;}
       if (aValue instanceof Date && bValue instanceof Date) {
         return sortDirection === "asc"
           ? aValue.getTime() - bValue.getTime()
@@ -917,7 +913,7 @@ export default function PayrollsPage() {
 
   const renderSortableHeader = (label: string, field: string) => {
     const column = COLUMN_DEFINITIONS.find((col) => col.key === field);
-    if (!column?.sortable) return label;
+    if (!column?.sortable) {return label;}
 
     return (
       <Button

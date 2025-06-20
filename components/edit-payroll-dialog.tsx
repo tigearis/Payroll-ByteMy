@@ -1,10 +1,12 @@
 // components/edit-payroll-dialog.tsx
 'use client';
 
-import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { gql } from '@apollo/client';
+import { useState } from 'react';
 import { toast } from 'sonner';
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +15,6 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -86,7 +87,7 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({ payroll, o
     onCompleted: (data) => {
       toast.success('Payroll updated successfully');
       setIsOpen(false);
-      if (onSuccess) onSuccess();
+      if (onSuccess) {onSuccess();}
     },
     onError: (error) => {
       toast.error(`Failed to update payroll: ${error.message}`);
@@ -96,14 +97,14 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({ payroll, o
       update_payrolls_by_pk: {
         __typename: "payrolls",
         id: payroll.id,
-        name: name,
+        name,
         notes: notes.trim() || null,
         updated_at: new Date().toISOString()
       }
     },
     update: (cache, { data }) => {
       // We could also use the updatePayrollInCache utility here, but this way works too
-      if (!data?.update_payrolls_by_pk) return;
+      if (!data?.update_payrolls_by_pk) {return;}
       
       // Manually update any related lists that might not be refetched immediately
       try {
@@ -112,7 +113,7 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({ payroll, o
         
         if (existingPayrollsQuery?.payrolls) {
           const updatedPayrolls = existingPayrollsQuery.payrolls.map((p: any) => 
-            p.id === payroll.id ? { ...p, name: name } : p
+            p.id === payroll.id ? { ...p, name } : p
           );
           
           // Write the updated list back to the cache

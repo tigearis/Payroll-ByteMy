@@ -1,16 +1,17 @@
 "use client";
 
 import { useQuery, gql } from "@apollo/client";
-import { isAuthError } from "../../lib/apollo-client";
+import { RefreshCcw, User } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "../../components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { RefreshCcw, User } from "lucide-react";
-import { toast } from "sonner";
+import { isAuthError } from "../../lib/utils/auth-error-utils";
 
 const GET_USERS = gql`
   query GetUsers($limit: Int = 10) {

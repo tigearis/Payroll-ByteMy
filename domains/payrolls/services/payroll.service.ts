@@ -152,6 +152,11 @@ const DeletePayrollDocument = graphql(`
   }
 `);
 
+// Export individual operations for backward compatibility
+export const CREATE_PAYROLL = CreatePayrollDocument;
+export const GET_PAYROLLS = GetPayrollsDocument;
+export const GET_PAYROLL_BY_ID = GetPayrollByIdDocument;
+
 export class PayrollService {
   constructor(private apolloClient: ApolloClient<NormalizedCacheObject>) {}
 

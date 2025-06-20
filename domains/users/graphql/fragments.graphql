@@ -1,0 +1,104 @@
+# Users Domain Fragments
+# Security Classification: CRITICAL - Contains PII and authentication data
+# SOC2 Compliance: Employee data with strict access controls
+
+fragment UserBasicInfo on users {
+  id
+  name
+  email
+  role
+  status
+  created_at
+  updated_at
+}
+
+fragment UserWithProfile on users {
+  ...UserBasicInfo
+  avatar_url
+  phone
+  department
+  job_title
+  hire_date
+  timezone
+  is_active
+}
+
+fragment UserForStaff on users {
+  ...UserWithProfile
+  employee_id
+  emergency_contact_name
+  emergency_contact_phone
+  address
+  city
+  state
+  postal_code
+  country
+  date_of_birth
+  tax_file_number
+  super_fund_name
+  super_fund_account
+  bank_account_name
+  bank_account_number
+  bank_bsb
+}
+
+fragment UserForAuth on users {
+  id
+  name
+  email
+  role
+  status
+  is_active
+  permissions_last_updated
+  clerk_user_id
+}
+
+fragment UserForAudit on users {
+  id
+  name
+  email
+  role
+  status
+  is_active
+  created_at
+  updated_at
+  last_login_at
+  # Sensitive fields excluded from audit logs
+}
+
+fragment UserRoleInfo on users {
+  id
+  name
+  email
+  role
+  status
+  is_active
+  user_roles {
+    role_name: role {
+      name
+      description
+      level
+    }
+    granted_at
+    granted_by
+    is_active
+  }
+}
+
+fragment UserPermissionsInfo on users {
+  id
+  name
+  role
+  user_roles {
+    role_name: role {
+      name
+      permissions: role_permissions {
+        permission_name: permission {
+          resource
+          action
+          description
+        }
+      }
+    }
+  }
+}

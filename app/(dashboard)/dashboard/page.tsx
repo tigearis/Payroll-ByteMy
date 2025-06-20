@@ -2,6 +2,7 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
+import { format } from "date-fns";
 import { CalendarDays, Users, Calculator } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,8 +11,7 @@ import { UrgentAlerts } from "@/components/urgent-alerts";
 import {
   GET_DASHBOARD_STATS,
   GET_UPCOMING_PAYROLLS,
-} from "@/graphql/queries/dashboard/getDashboardStats";
-import { format } from "date-fns";
+} from "@/shared";
 
 interface DashboardStatsData {
   clients_aggregate: { aggregate: { count: number } };

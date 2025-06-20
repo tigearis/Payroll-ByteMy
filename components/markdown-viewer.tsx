@@ -1,7 +1,7 @@
+import { clsx, type ClassValue } from "clsx";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 // Local utility function

@@ -40,8 +40,8 @@ const pool = new Pool({
 
 // Helper function for error message extraction
 function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  if (typeof error === "string") return error;
+  if (error instanceof Error) {return error.message;}
+  if (typeof error === "string") {return error;}
   return String(error);
 }
 

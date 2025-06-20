@@ -1,10 +1,12 @@
 // components/export-pdf.tsx
 import { useQuery } from "@apollo/client";
-import { GET_PAYROLL_DATES } from "@/graphql/queries/payrolls/getPayrollDates";
+import { format, parseISO } from "date-fns";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
-import { format, parseISO } from "date-fns";
+
 import { Button } from "@/components/ui/button";
+
+import { GetPayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 interface PayrollDate {
   id: string;
@@ -19,7 +21,7 @@ interface ExportPdfProps {
 }
 
 export function ExportPdf({ payrollId }: ExportPdfProps) {
-  const { data } = useQuery(GET_PAYROLL_DATES, {
+  const { data } = useQuery(GetPayrollDatesDocument, {
     variables: { id: payrollId },
     skip: !payrollId,
   });
@@ -27,7 +29,7 @@ export function ExportPdf({ payrollId }: ExportPdfProps) {
   const dates: PayrollDate[] = data?.payroll_dates || [];
 
   const downloadPdf = () => {
-    if (dates.length === 0) return;
+    if (dates.length === 0) {return;}
 
     const doc = new jsPDF();
     const tableData = dates.map((date: PayrollDate, index: number) => [

@@ -2,9 +2,10 @@
 "use client"
 
 import type React from "react"
-import { Sidebar } from "@/components/sidebar"
+
 import { ClientWrapper } from "@/components/client-wrapper"
 import { DashboardShell } from "@/components/dashboard-shell"
+import { Sidebar } from "@/components/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { UserNav } from "@/components/user-nav"
 

@@ -1,10 +1,7 @@
 // app/(dashboard)/clients/[id]/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useParams } from "next/navigation";
 import { useQuery, useMutation } from "@apollo/client";
-import Link from "next/link";
 import {
   ArrowLeft,
   Edit,
@@ -32,24 +29,11 @@ import {
   Download,
   Copy,
 } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { NotesListWithAdd } from "@/components/notes-list-with-add";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,6 +44,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -68,17 +62,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  GET_CLIENTS_BY_ID,
+  UPDATE_CLIENT,
+  DELETE_CLIENT,
+} from "@/domains/clients/services/client.service";
+import { useSmartPolling } from "@/hooks/use-polling";
 
-import { NotesListWithAdd } from "@/components/notes-list-with-add";
-import { useSmartPolling } from "@/hooks/usePolling";
-import { GET_CLIENTS_BY_ID } from "@/graphql/queries/clients/getClientById";
-import { UPDATE_CLIENT } from "@/graphql/mutations/clients/updateClient";
-import { DELETE_CLIENT } from "@/graphql/mutations/clients/deleteClient";
 import { safeFormatDate } from "@/utils/date-utils";
+
 import {
   Table,
   TableBody,
@@ -87,7 +91,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Progress } from "@/components/ui/progress";
 import { PayrollsTabLoading } from "@/components/ui/loading-states";
 
 // Payroll status configuration (same as payrolls page)
@@ -246,7 +249,8 @@ export default function ClientDetailPage() {
           Client Not Found
         </h3>
         <p className="text-gray-500 mb-4">
-          The client you're looking for doesn't exist or has been removed.
+          The client you&apos;re looking for doesn&apos;t exist or has been
+          removed.
         </p>
         <Link href="/clients">
           <Button variant="outline">
@@ -267,7 +271,9 @@ export default function ClientDetailPage() {
   };
 
   const formatDate = (date: string | Date) => {
-    if (!date) return "Not set";
+    if (!date) {
+      return "Not set";
+    }
     const d = typeof date === "string" ? new Date(date) : date;
     return d.toLocaleDateString("en-AU", {
       day: "numeric",
@@ -306,12 +312,14 @@ export default function ClientDetailPage() {
   const transformPayrollData = (payrolls: any[]) => {
     return payrolls.map((payroll: any) => {
       // Calculate total employees from payroll_dates if available, otherwise use direct employee_count
-      const payrollDatesTotal = payroll.payroll_dates?.reduce(
-        (sum: number, date: any) => sum + (date.employee_count || 0),
-        0
-      ) || 0;
-      
-      const totalEmployees = payrollDatesTotal > 0 ? payrollDatesTotal : (payroll.employee_count || 0);
+      const payrollDatesTotal =
+        payroll.payroll_dates?.reduce(
+          (sum: number, date: any) => sum + (date.employee_count || 0),
+          0
+        ) || 0;
+
+      const totalEmployees =
+        payrollDatesTotal > 0 ? payrollDatesTotal : payroll.employee_count || 0;
 
       return {
         ...payroll,
@@ -386,7 +394,9 @@ export default function ClientDetailPage() {
 
   // Handle updating client
   const handleUpdateClient = async () => {
-    if (!editFormData.name.trim()) return;
+    if (!editFormData.name.trim()) {
+      return;
+    }
 
     setIsUpdating(true);
     try {
@@ -417,11 +427,13 @@ export default function ClientDetailPage() {
   const totalEmployees =
     client.payrolls?.reduce((sum: number, p: any) => {
       // Use same logic as transformPayrollData for consistent employee counts
-      const payrollDatesTotal = p.payroll_dates?.reduce(
-        (dateSum: number, date: any) => dateSum + (date.employee_count || 0),
-        0
-      ) || 0;
-      const employeeCount = payrollDatesTotal > 0 ? payrollDatesTotal : (p.employee_count || 0);
+      const payrollDatesTotal =
+        p.payroll_dates?.reduce(
+          (dateSum: number, date: any) => dateSum + (date.employee_count || 0),
+          0
+        ) || 0;
+      const employeeCount =
+        payrollDatesTotal > 0 ? payrollDatesTotal : p.employee_count || 0;
       return sum + employeeCount;
     }, 0) || 0;
   // Note: estimated_monthly_value field doesn't exist in database, setting to 0
@@ -886,8 +898,8 @@ export default function ClientDetailPage() {
                             No payrolls found
                           </h3>
                           <p className="text-gray-500 mb-4">
-                            This client doesn't have any payrolls yet. Create
-                            the first one to get started.
+                            This client doesn&apos;t have any payrolls yet.
+                            Create the first one to get started.
                           </p>
                           <Link href={`/payrolls/new?client=${id}`}>
                             <Button>
@@ -935,8 +947,8 @@ export default function ClientDetailPage() {
           <DialogHeader>
             <DialogTitle>Edit Client</DialogTitle>
             <DialogDescription>
-              Make changes to the client information. Click save when you're
-              done.
+              Make changes to the client information. Click save when
+              you&apos;re done.
             </DialogDescription>
           </DialogHeader>
 
@@ -1046,9 +1058,9 @@ export default function ClientDetailPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Client</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{client.name}"? This action
-              cannot be undone and will also remove all associated payrolls and
-              data.
+              Are you sure you want to delete &quot;{client.name}&quot;? This
+              action cannot be undone and will also remove all associated
+              payrolls and data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

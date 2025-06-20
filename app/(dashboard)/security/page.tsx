@@ -1,19 +1,7 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
-import { useUserRole } from "@/hooks/useUserRole";
+import { formatDistanceToNow, format, subHours, subDays } from "date-fns";
 import {
   AlertTriangle,
   Shield,
@@ -26,151 +14,22 @@ import {
   XCircle,
   RefreshCcw,
 } from "lucide-react";
-import { formatDistanceToNow, format, subHours, subDays } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-// SOC2 security overview query using audit schema tables
-const SECURITY_OVERVIEW_QUERY = gql`
-  query SecurityOverview(
-    $twentyFourHoursAgo: timestamptz!
-    $sevenDaysAgo: timestamptz!
-  ) {
-    # Recent audit logs from audit schema (last 24 hours)
-    recent_audit_logs: audit_audit_log(
-      where: { event_time: { _gte: $twentyFourHoursAgo } }
-      order_by: { event_time: desc }
-      limit: 100
-    ) {
-      id
-      event_time
-      user_id
-      user_email
-      user_role
-      action
-      resource_type
-      resource_id
-      success
-      error_message
-      ip_address
-      metadata
-    }
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUserRole } from "@/hooks/use-user-role";
 
-    # Audit log count for metrics
-    audit_log_count: audit_audit_log_aggregate(
-      where: { event_time: { _gte: $twentyFourHoursAgo } }
-    ) {
-      aggregate {
-        count
-      }
-    }
-
-    # Failed operations count
-    failed_operations_count: audit_audit_log_aggregate(
-      where: {
-        success: { _eq: false }
-        event_time: { _gte: $twentyFourHoursAgo }
-      }
-    ) {
-      aggregate {
-        count
-      }
-    }
-
-    # Authentication events
-    auth_events: audit_auth_events(
-      where: { event_time: { _gte: $twentyFourHoursAgo } }
-      order_by: { event_time: desc }
-      limit: 20
-    ) {
-      id
-      event_time
-      event_type
-      user_email
-      success
-      failure_reason
-      ip_address
-    }
-
-    # Auth events count
-    auth_events_count: audit_auth_events_aggregate(
-      where: { event_time: { _gte: $twentyFourHoursAgo } }
-    ) {
-      aggregate {
-        count
-      }
-    }
-
-    # Failed auth count
-    failed_auth_count: audit_auth_events_aggregate(
-      where: {
-        success: { _eq: false }
-        event_time: { _gte: $twentyFourHoursAgo }
-      }
-    ) {
-      aggregate {
-        count
-      }
-    }
-
-    # Data access logs
-    data_access_logs: audit_data_access_log(
-      where: { accessed_at: { _gte: $twentyFourHoursAgo } }
-      order_by: { accessed_at: desc }
-      limit: 50
-    ) {
-      id
-      accessed_at
-      user_id
-      resource_type
-      access_type
-      data_classification
-      row_count
-      ip_address
-    }
-
-    # Critical data access count
-    critical_access_count: audit_data_access_log_aggregate(
-      where: {
-        data_classification: { _eq: "CRITICAL" }
-        accessed_at: { _gte: $sevenDaysAgo }
-      }
-    ) {
-      aggregate {
-        count
-      }
-    }
-
-    # Recent failed operations
-    failed_operations: audit_audit_log(
-      where: {
-        success: { _eq: false }
-        event_time: { _gte: $twentyFourHoursAgo }
-      }
-      order_by: { event_time: desc }
-      limit: 10
-    ) {
-      id
-      event_time
-      user_email
-      user_role
-      action
-      resource_type
-      error_message
-      ip_address
-    }
-
-    # User activity summary
-    users: users(where: { is_active: { _eq: true } }) {
-      id
-      name
-      email
-      role
-      is_staff
-      clerk_user_id
-    }
-  }
-`;
 
 export default function SecurityDashboard() {
   const {
@@ -179,7 +38,7 @@ export default function SecurityDashboard() {
     error,
     refetch,
     networkStatus,
-  } = useQuery(SECURITY_OVERVIEW_QUERY, {
+  } = useQuery(SECURITY_OVERVIEW, {
     variables: {
       twentyFourHoursAgo: subHours(new Date(), 24).toISOString(),
       sevenDaysAgo: subDays(new Date(), 7).toISOString(),
@@ -194,8 +53,10 @@ export default function SecurityDashboard() {
   const {
     isDeveloper,
     isAdmin,
+    isAdministrator,
     hasAdminAccess,
     isLoading: roleLoading,
+    userRole,
   } = useUserRole();
   const router = useRouter();
 
@@ -217,7 +78,7 @@ export default function SecurityDashboard() {
       hasAdminAccess,
       isDeveloper,
       isAdmin,
-      userRole: useUserRole().userRole
+      userRole,
     });
     return (
       <div className="container mx-auto p-6">

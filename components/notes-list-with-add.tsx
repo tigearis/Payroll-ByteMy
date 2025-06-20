@@ -1,8 +1,11 @@
 // components/notes-list-with-add.tsx
 "use client";
 
-import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
+import { Edit, AlertTriangle, Save, X } from "lucide-react";
+import { useState } from "react";
+
+import { AddNote } from "@/components/add-note";
 import {
   Card,
   CardContent,
@@ -18,38 +21,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { AddNote } from "@/components/add-note";
-import { GET_NOTES } from "@/graphql/queries/notes/get-notes";
-import { UPDATE_NOTE } from "@/graphql/mutations/notes/updateNote";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "./ui/button";
+import { GetNotesSimple } from "@/domains/notes/graphql/queries.graphql";
+import { UpdateNoteWithSetInput } from "@/domains/notes/graphql/mutations.graphql";
+import { NoteFromGraphQL, NotesListWithAddProps } from "@/domains/notes/types";
+
 import { safeFormatDateTime } from "@/utils/date-utils";
-import { Edit, AlertTriangle, Save, X } from "lucide-react";
-
-interface NotesListWithAddProps {
-  entityType: "payroll" | "client";
-  entityId: string;
-  title?: string;
-  description?: string;
-  user?: {
-    name: string;
-    id: string;
-  };
-}
-
-// Type for the actual GraphQL response structure
-interface NoteFromGraphQL {
-  id: string;
-  content: string;
-  is_important: boolean;
-  created_at: string;
-  updated_at: string;
-  user?: {
-    name: string;
-  } | null;
-}
 
 export function NotesListWithAdd({
   entityType,
@@ -67,12 +47,12 @@ export function NotesListWithAdd({
   // GraphQL operations
   const { data, loading, error, refetch } = useQuery<{
     notes: NoteFromGraphQL[];
-  }>(GET_NOTES, {
+  }>(GetNotesSimple, {
     variables: { entityType, entityId },
     fetchPolicy: "cache-and-network",
   });
 
-  const [updateNote] = useMutation(UPDATE_NOTE, {
+  const [updateNote] = useMutation(UpdateNoteWithSetInput, {
     onCompleted: () => {
       setIsUpdating(false);
       setShowEditModal(false);
@@ -103,7 +83,9 @@ export function NotesListWithAdd({
 
   // Handle saving note updates
   const handleSaveNote = async () => {
-    if (!editingNote || !editContent.trim()) return;
+    if (!editingNote || !editContent.trim()) {
+      return;
+    }
 
     setIsUpdating(true);
     try {
@@ -226,7 +208,7 @@ export function NotesListWithAdd({
           <DialogHeader>
             <DialogTitle>Edit Note</DialogTitle>
             <DialogDescription>
-              Make changes to this note. Click save when you're done.
+              Make changes to this note. Click save when you&apos;re done.
             </DialogDescription>
           </DialogHeader>
 

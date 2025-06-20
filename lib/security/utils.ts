@@ -4,6 +4,7 @@
  */
 
 import crypto from 'crypto';
+
 import { securityConfig } from './config';
 
 /**

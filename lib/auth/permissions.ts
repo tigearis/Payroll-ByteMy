@@ -1,141 +1,279 @@
-import { gql } from "@apollo/client";
-import { client as apolloClient } from "@/lib/apollo-client";
-import { USER_ROLES, UserRole } from "@/lib/user-sync";
+// types/permissions.ts - Single source of truth for all permission and role types
 
-// GraphQL query to check resource-level permissions
-const CHECK_USER_PERMISSION = gql`
-  query CheckUserPermission(
-    $userId: String!
-    $resource: String!
-    $action: String!
-  ) {
-    check_user_permission(
-      userId: $userId
-      resource: $resource
-      action: $action
-    ) {
-      granted
-      reason
-    }
-  }
-`;
+// Permission string literals
+export type PayrollPermission =
+  | "custom:payroll:read"
+  | "custom:payroll:write"
+  | "custom:payroll:delete"
+  | "custom:payroll:assign";
 
-// GraphQL query to get all permissions for a user
-const GET_USER_PERMISSIONS = gql`
-  query GetUserPermissions($userId: String!) {
-    user_permissions(where: { user_id: { _eq: $userId } }) {
-      id
-      resource
-      action
-      conditions
-      created_at
-    }
-  }
-`;
+export type StaffPermission =
+  | "custom:staff:read"
+  | "custom:staff:write"
+  | "custom:staff:delete"
+  | "custom:staff:invite";
 
-/**
- * Check if a user has permission to access a specific resource and perform an action
- *
- * @param userId The ID of the user to check
- * @param resource The resource identifier (e.g., "payroll", "client", "user")
- * @param action The action being performed (e.g., "view", "edit", "delete")
- * @returns A promise that resolves to a boolean indicating if the user has permission
- */
-export async function canUserAccessResource(
-  userId: string,
-  resource: string,
-  action: string
-): Promise<boolean> {
-  try {
-    const result = await apolloClient.query({
-      query: CHECK_USER_PERMISSION,
-      variables: { userId, resource, action },
-      fetchPolicy: "network-only",
-    });
+export type ClientPermission =
+  | "custom:client:read"
+  | "custom:client:write"
+  | "custom:client:delete";
 
-    return result.data?.check_user_permission?.granted || false;
-  } catch (error) {
-    console.error(
-      `Error checking permission for ${userId} on ${resource}:${action}`,
-      error
-    );
-    return false;
-  }
+export type AdminPermission =
+  | "custom:admin:manage"
+  | "custom:settings:write"
+  | "custom:billing:manage";
+
+export type ReportingPermission =
+  | "custom:reports:read"
+  | "custom:reports:export"
+  | "custom:audit:read"
+  | "custom:audit:write";
+
+// Combined permission type
+export type CustomPermission =
+  | PayrollPermission
+  | StaffPermission
+  | ClientPermission
+  | AdminPermission
+  | ReportingPermission;
+
+// Role type
+export type Role =
+  | "developer"
+  | "org_admin"
+  | "manager"
+  | "consultant"
+  | "viewer";
+
+// Role permissions interface
+export interface RoleConfig {
+  level: number;
+  permissions: CustomPermission[];
 }
 
-/**
- * Check if a user has permission to access a specific entity by ID
- * This is more specific than canUserAccessResource as it checks access to a specific instance
- *
- * @param userId The ID of the user to check
- * @param resourceType The type of resource (e.g., "payroll", "client", "user")
- * @param resourceId The specific ID of the resource instance
- * @param action The action being performed (e.g., "view", "edit", "delete")
- * @returns A promise that resolves to a boolean indicating if the user has permission
- */
-export async function canUserAccessEntity(
-  userId: string,
-  resourceType: string,
-  resourceId: string,
-  action: string
-): Promise<boolean> {
-  const resource = `${resourceType}:${resourceId}`;
-  return canUserAccessResource(userId, resource, action);
+export interface RolePermissions {
+  [key: string]: RoleConfig;
 }
 
-/**
- * Determine if a role can assign another role
- * Based on hierarchical permissions - a role can only assign roles below it
- *
- * @param assignerRole The role of the user assigning a role
- * @param targetRole The role being assigned
- * @returns Boolean indicating if assignment is allowed
- */
-export function canAssignRole(
-  assignerRole: UserRole,
-  targetRole: UserRole
+// ================================
+// CONSOLIDATED PERMISSION SYSTEM
+// ================================
+
+// 18 specific permissions across 5 hierarchical roles
+export const CUSTOM_PERMISSIONS = [
+  // Payroll permissions
+  "custom:payroll:read",
+  "custom:payroll:write",
+  "custom:payroll:delete",
+  "custom:payroll:assign",
+
+  // Staff permissions
+  "custom:staff:read",
+  "custom:staff:write",
+  "custom:staff:delete",
+  "custom:staff:invite",
+
+  // Client permissions
+  "custom:client:read",
+  "custom:client:write",
+  "custom:client:delete",
+
+  // Admin permissions
+  "custom:admin:manage",
+  "custom:settings:write",
+  "custom:billing:manage",
+
+  // Reporting permissions
+  "custom:reports:read",
+  "custom:reports:export",
+  "custom:audit:read",
+  "custom:audit:write",
+] as const;
+
+// Role hierarchy: developer(5) > org_admin(4) > manager(3) > consultant(2) > viewer(1)
+// SINGLE SOURCE OF TRUTH for all role hierarchy operations
+export const ROLE_HIERARCHY: Record<Role, number> = {
+  developer: 5,
+  org_admin: 4,
+  manager: 3,
+  consultant: 2,
+  viewer: 1,
+};
+
+// Role permissions mapping - combines hierarchy with granular permissions
+export const ROLE_PERMISSIONS: RolePermissions = {
+  developer: {
+    level: 5,
+    permissions: [...CUSTOM_PERMISSIONS] as CustomPermission[], // All permissions
+  },
+  org_admin: {
+    level: 4,
+    permissions: [
+      "custom:payroll:read",
+      "custom:payroll:write",
+      "custom:staff:read",
+      "custom:staff:write",
+      "custom:client:read",
+      "custom:client:write",
+      "custom:admin:manage",
+      "custom:settings:write",
+      "custom:reports:read",
+    ] as CustomPermission[],
+  },
+  manager: {
+    level: 3,
+    permissions: [
+      "custom:payroll:read",
+      "custom:staff:read",
+      "custom:client:read",
+      "custom:reports:read",
+    ] as CustomPermission[],
+  },
+  consultant: {
+    level: 2,
+    permissions: [
+      "custom:payroll:read",
+      "custom:client:read",
+    ] as CustomPermission[],
+  },
+  viewer: {
+    level: 1,
+    permissions: ["custom:payroll:read"] as CustomPermission[],
+  },
+};
+
+// Permission categories for easier management
+export const PERMISSION_CATEGORIES = {
+  PAYROLL: [
+    "custom:payroll:read",
+    "custom:payroll:write",
+    "custom:payroll:delete",
+    "custom:payroll:assign",
+  ] as CustomPermission[],
+
+  STAFF: [
+    "custom:staff:read",
+    "custom:staff:write",
+    "custom:staff:delete",
+    "custom:staff:invite",
+  ] as CustomPermission[],
+
+  CLIENT: [
+    "custom:client:read",
+    "custom:client:write",
+    "custom:client:delete",
+  ] as CustomPermission[],
+
+  ADMIN: [
+    "custom:admin:manage",
+    "custom:settings:write",
+    "custom:billing:manage",
+  ] as CustomPermission[],
+
+  REPORTING: [
+    "custom:reports:read",
+    "custom:reports:export",
+    "custom:audit:read",
+    "custom:audit:write",
+  ] as CustomPermission[],
+};
+
+// ================================
+// CONSOLIDATED METADATA INTERFACE
+// ================================
+
+// Standardized user metadata interface - SINGLE SOURCE OF TRUTH
+export interface UserMetadata {
+  role: Role;
+  permissions: CustomPermission[];
+  databaseId?: string;
+  assignedBy?: string;
+  assignedAt?: string;
+  lastUpdated?: string;
+  customAccess?: {
+    restrictedPayrolls?: string[];
+    allowedClients?: string[];
+  };
+  // Legacy fields for backward compatibility
+  onboardingComplete?: boolean;
+  department?: string;
+  employeeId?: string;
+  startDate?: string;
+}
+
+// ================================
+// CONSOLIDATED UTILITY FUNCTIONS
+// ================================
+
+// Function to check if a user has minimum role level - SINGLE IMPLEMENTATION
+export function hasRoleLevel(userRole: Role, requiredRole: Role): boolean {
+  return (ROLE_HIERARCHY[userRole] || 0) >= (ROLE_HIERARCHY[requiredRole] || 0);
+}
+
+// Utility functions for permission management
+export function isValidCustomPermission(
+  permission: string
+): permission is CustomPermission {
+  return CUSTOM_PERMISSIONS.includes(permission as any);
+}
+
+export function isValidUserRole(role: string): role is Role {
+  return role in ROLE_HIERARCHY;
+}
+
+export function getPermissionsForRole(role: Role): CustomPermission[] {
+  return [...(ROLE_PERMISSIONS[role]?.permissions || [])];
+}
+
+export function getRoleLevel(role: Role): number {
+  return ROLE_HIERARCHY[role] || 0;
+}
+
+// Check if a role has a specific permission
+export function roleHasPermission(
+  role: Role,
+  permission: CustomPermission
 ): boolean {
-  const assignerLevel = USER_ROLES[assignerRole] || 0;
-  const targetLevel = USER_ROLES[targetRole] || 0;
-
-  // A role can only assign roles with a lower level (higher number = higher permission)
-  return assignerLevel > targetLevel;
+  return ROLE_PERMISSIONS[role]?.permissions.includes(permission) || false;
 }
 
-/**
- * Check if a user can perform an operation based on their role
- *
- * @param userRole The role of the user
- * @param requiredLevel The minimum role level required
- * @returns Boolean indicating if the user has sufficient permissions
- */
-export function hasRoleLevel(
-  userRole: UserRole,
-  requiredLevel: UserRole
+// Check if userRole meets minimum level requirement
+export function hasMinimumRoleLevel(
+  userRole: Role,
+  minimumRole: Role
 ): boolean {
-  const userLevel = USER_ROLES[userRole] || 0;
-  const required = USER_ROLES[requiredLevel] || 0;
-
-  return userLevel >= required;
+  return hasRoleLevel(userRole, minimumRole);
 }
 
-/**
- * Get all permissions for a user from the database
- *
- * @param userId The ID of the user
- * @returns A promise that resolves to an array of permission objects
- */
-export async function getUserPermissions(userId: string) {
-  try {
-    const result = await apolloClient.query({
-      query: GET_USER_PERMISSIONS,
-      variables: { userId },
-      fetchPolicy: "network-only",
-    });
+// Validate if current role can assign target role (hierarchy validation)
+export function canAssignRole(currentRole: Role, targetRole: Role): boolean {
+  return getRoleLevel(currentRole) >= getRoleLevel(targetRole);
+}
 
-    return result.data?.user_permissions || [];
-  } catch (error) {
-    console.error("Error fetching user permissions:", error);
-    return [];
+// Sanitize and validate a role with safe fallback
+export function sanitizeUserRole(role: unknown): Role {
+  if (typeof role === "string" && isValidUserRole(role)) {
+    return role as Role;
   }
+  return "viewer";
+}
+
+// Define permission action types
+export enum PermissionAction {
+  Create = "create",
+  Read = "read",
+  Update = "update",
+  Delete = "delete",
+  List = "list",
+  Manage = "manage",
+  Approve = "approve",
+  Reject = "reject",
+}
+
+// Type for permission validation result
+export interface PermissionValidationResult {
+  isValid: boolean;
+  error?: string;
+  requiredRole?: Role;
+  userRole?: Role;
 }

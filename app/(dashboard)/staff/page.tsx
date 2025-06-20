@@ -1,39 +1,14 @@
 "use client";
+import Image from "next/image";
 
-import * as React from "react";
+import { useQuery, useMutation, useApolloClient } from "@apollo/client";
+import { useAuth } from "@clerk/nextjs";
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useQuery, useMutation, useApolloClient } from "@apollo/client";
-import { isAuthError } from "@/lib/apollo-client";
-import {
-  GET_STAFF_LIST,
-  GET_ALL_USERS_LIST,
-} from "@/graphql/queries/staff/getStaffList";
-import { UPDATE_STAFF } from "@/graphql/mutations/staff/updateStaff";
-import { DELETE_STAFF } from "@/graphql/mutations/staff/deleteStaff";
-import { useUserRole } from "@/hooks/useUserRole";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useAuth } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import {
   Trash2,
   UserPlus,
@@ -48,6 +23,8 @@ import {
   Pencil,
   X,
 } from "lucide-react";
+
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,6 +35,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -69,7 +54,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -80,7 +65,29 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
 import { ChevronDown } from "lucide-react";
+import * as React from "react";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  UPDATE_STAFF,
+  DELETE_STAFF,
+} from "@/domains/users/graphql/mutations.graphql";
+import {
+  GET_STAFF_LIST,
+  GET_ALL_USERS_LIST,
+} from "@/domains/users/graphql/queries.graphql";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useUserRole } from "@/hooks/use-user-role";
+import { isAuthError } from "@/lib/utils/auth-error-utils";
 
 // Define Staff Type
 interface Staff {
@@ -108,6 +115,7 @@ interface Staff {
     reason: string;
     status: string;
   }>;
+  label?: string;
 }
 
 // Define Edit Form Data
@@ -215,7 +223,8 @@ function MultiSelect({
 
 export default function StaffManagementPage() {
   // ⚠️ ALL HOOKS MUST BE CALLED AT THE TOP LEVEL - NEVER CONDITIONALLY
-  const { isAdmin, isManager, isConsultant, isDeveloper } = useUserRole();
+  const { isAdministrator, isManager, isConsultant, isDeveloper } =
+    useUserRole();
   const { userId, getToken, isLoaded } = useAuth();
   const apolloClient = useApolloClient();
   const {
@@ -262,6 +271,17 @@ export default function StaffManagementPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [staffList, setStaffList] = React.useState<Staff[]>([]);
   const itemsPerPage = 10;
+
+  const isCurrentUser = React.useCallback(
+    (staff: Staff): boolean => {
+      const isMatch = currentUserId === staff.id;
+      console.log(
+        `🔍 isCurrentUser check for ${staff.name}: currentUserId(${currentUserId}) === staff.id(${staff.id}) = ${isMatch}`
+      );
+      return isMatch;
+    },
+    [currentUserId]
+  );
 
   // Use different queries based on user role - developers see all users
   const { loading, error, data, refetch } = useQuery(
@@ -381,7 +401,9 @@ export default function StaffManagementPage() {
 
   // Filter staff based on search and filters
   const filteredStaff = React.useMemo<Staff[]>(() => {
-    if (!staffList) return [];
+    if (!staffList) {
+      return [];
+    }
 
     console.log("🔍 Filtering staff:");
     console.log("- staffList length:", staffList.length);
@@ -389,18 +411,15 @@ export default function StaffManagementPage() {
     console.log("- currentUserId for filtering:", currentUserId);
     console.log("- currentUserId type:", typeof currentUserId);
 
-    let filtered = staffList; // Temporarily disable manager filtering to debug UUID error
-
-    // COMMENTED OUT FOR DEBUGGING:
-    // let filtered =
-    //   isManager && currentUserId
-    //     ? staffList.filter(
-    //         (staff: Staff) => {
-    //           console.log(`Comparing staff.manager_id (${staff.manager_id}) with currentUserId (${currentUserId})`);
-    //           return staff.manager_id === currentUserId;
-    //         }
-    //       )
-    //     : staffList;
+    let filtered =
+      isManager && currentUserId
+        ? staffList.filter((staff: Staff) => {
+            console.log(
+              `Comparing staff.manager_id (${staff.manager_id}) with currentUserId (${currentUserId})`
+            );
+            return staff.manager_id === currentUserId;
+          })
+        : staffList;
 
     console.log("- After manager filter:", filtered.length);
 
@@ -466,7 +485,9 @@ export default function StaffManagementPage() {
 
   // Get unique managers for filter dropdown
   const managers = React.useMemo(() => {
-    if (!staffList) return [];
+    if (!staffList) {
+      return [];
+    }
     return staffList
       .filter(
         (staff) =>
@@ -487,15 +508,6 @@ export default function StaffManagementPage() {
     return filteredStaff.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredStaff, currentPage, itemsPerPage]);
 
-  // Move isCurrentUser function before table setup
-  const isCurrentUser = (staff: Staff): boolean => {
-    const isMatch = currentUserId === staff.id;
-    console.log(
-      `🔍 isCurrentUser check for ${staff.name}: currentUserId(${currentUserId}) === staff.id(${staff.id}) = ${isMatch}`
-    );
-    return isMatch;
-  };
-
   // Define columns for the table
   const columns = React.useMemo<ColumnDef<Staff>[]>(
     () => [
@@ -508,10 +520,12 @@ export default function StaffManagementPage() {
             <div className="flex items-center space-x-3">
               <Avatar className="h-8 w-8">
                 {staff.image ? (
-                  <img
+                  <Image
                     src={staff.image}
                     alt={staff.name}
                     className="h-8 w-8 rounded-full object-cover"
+                    width={32}
+                    height={32}
                   />
                 ) : (
                   <AvatarFallback>
@@ -595,8 +609,10 @@ export default function StaffManagementPage() {
         header: "Actions",
         cell: ({ row }) => {
           const staff = row.original;
-          const canEdit = isAdmin || isDeveloper || isCurrentUser(staff);
-          const canDelete = (isAdmin || isDeveloper) && !isCurrentUser(staff);
+          const canEdit =
+            isAdministrator || isDeveloper || isCurrentUser(staff);
+          const canDelete =
+            (isAdministrator || isDeveloper) && !isCurrentUser(staff);
 
           return (
             <div className="flex space-x-2">
@@ -631,7 +647,7 @@ export default function StaffManagementPage() {
         },
       },
     ],
-    [isAdmin, isDeveloper, currentUserId, isCurrentUser]
+    [isAdministrator, isDeveloper, isCurrentUser]
   );
 
   // Table setup - must be after all other hooks and useMemo calls
@@ -651,14 +667,14 @@ export default function StaffManagementPage() {
   console.log("- isManager:", isManager);
   console.log("🔍 Role Debug Information:");
   console.log("- isDeveloper:", isDeveloper);
-  console.log("- isAdmin:", isAdmin);
+  console.log("- isAdministrator:", isAdministrator);
   console.log(
     "- canEditRoles (should be true for developers):",
-    isAdmin || isDeveloper
+    isAdministrator || isDeveloper
   );
   console.log("- userRole from useUserRole context:", {
     isDeveloper,
-    isAdmin,
+    isAdministrator,
     isManager,
     isConsultant,
   });
@@ -824,7 +840,9 @@ export default function StaffManagementPage() {
 
   // Save staff changes using the new API endpoint
   const saveStaffChanges = async () => {
-    if (!editingStaff || (!isAdmin && !isDeveloper)) return;
+    if (!editingStaff || (!isAdministrator && !isDeveloper)) {
+      return;
+    }
 
     // Debug logging to catch invalid IDs
     console.log("🔍 saveStaffChanges called with editingStaff:", {
@@ -902,7 +920,7 @@ export default function StaffManagementPage() {
 
   // Confirm staff deletion using the new API endpoint
   const confirmDeleteStaff = async (forceHardDelete = false) => {
-    if (!staffToDelete || (!isAdmin && !isDeveloper)) {
+    if (!staffToDelete || (!isAdministrator && !isDeveloper)) {
       return;
     }
 
@@ -1123,14 +1141,15 @@ Do you want to proceed with HARD DELETE?`
 
       const data = await response.json();
 
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(data.error || "Failed to create staff member");
+      }
 
       // Show detailed success message based on what was created
-      const successMessage = data.staffData?.invitationSent 
+      const successMessage = data.staffData?.invitationSent
         ? `${createForm.firstName} ${createForm.lastName} created successfully! Invitation email sent.`
         : `${createForm.firstName} ${createForm.lastName} created successfully (database only).`;
-      
+
       toast.success(successMessage);
 
       // Refresh the staff list and close modal
@@ -1192,7 +1211,7 @@ Do you want to proceed with HARD DELETE?`
             </p>
           </div>
 
-          {isAdmin ||
+          {isAdministrator ||
             (isDeveloper && (
               <Button onClick={openCreateModal}>
                 <UserPlus className="mr-2 h-4 w-4" />
@@ -1465,7 +1484,7 @@ Do you want to proceed with HARD DELETE?`
                               : "No staff found."}
                           </p>
                           <p className="text-sm">
-                            {isAdmin ||
+                            {isAdministrator ||
                               (isDeveloper &&
                                 "Start by creating your first staff member.")}
                           </p>
@@ -1643,10 +1662,12 @@ Do you want to proceed with HARD DELETE?`
                 {/* Header with avatar */}
                 <div className="flex items-center space-x-4">
                   {viewingStaff.image ? (
-                    <img
+                    <Image
                       src={viewingStaff.image}
                       alt={viewingStaff.name}
                       className="w-16 h-16 rounded-full object-cover"
+                      width={64}
+                      height={64}
                     />
                   ) : (
                     <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
@@ -1758,7 +1779,7 @@ Do you want to proceed with HARD DELETE?`
               >
                 Close
               </Button>
-              {isAdmin ||
+              {isAdministrator ||
                 (isDeveloper && viewingStaff && (
                   <Button
                     onClick={() => {
@@ -1829,8 +1850,8 @@ Do you want to proceed with HARD DELETE?`
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                 <p className="text-sm text-blue-800">
                   <strong>Note:</strong> If this user has active payroll
-                  assignments or direct reports, you'll be prompted to reassign
-                  them before proceeding.
+                  assignments or direct reports, you&apos;ll be prompted to
+                  reassign them before proceeding.
                 </p>
               </div>
             </div>

@@ -1,36 +1,9 @@
 // app/(dashboard)/settings/account/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useQuery, useMutation } from "@apollo/client";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useUserRole } from "@/hooks/useUserRole";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
+import { gql } from "@apollo/client";
+import { useUser } from "@clerk/nextjs";
 import {
   User,
   Mail,
@@ -42,7 +15,35 @@ import {
   Eye,
   Monitor,
 } from "lucide-react";
-import { gql } from "@apollo/client";
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useUserRole } from "@/hooks/use-user-role";
 
 // GraphQL queries and mutations
 const GET_USER_PROFILE = gql`
@@ -92,7 +93,6 @@ const UPDATE_USER_PROFILE = gql`
     }
   }
 `;
-
 
 interface ProfileForm {
   firstName: string;
@@ -144,8 +144,10 @@ export default function AccountSettings() {
   const [updateUserProfile] = useMutation(UPDATE_USER_PROFILE);
 
   // Helper function to get the correct avatar image
-  const getAvatarImage = () => {
-    if (!clerkUser) return "";
+  const getAvatarImage = useCallback(() => {
+    if (!clerkUser) {
+      return "";
+    }
 
     // If user has uploaded a custom image, use that
     if (clerkUser.hasImage && clerkUser.imageUrl) {
@@ -162,7 +164,7 @@ export default function AccountSettings() {
 
     // Fallback to empty string for default avatar
     return "";
-  };
+  }, [clerkUser]);
 
   // Load user data when component mounts
   useEffect(() => {
@@ -180,7 +182,7 @@ export default function AccountSettings() {
         website: (clerkUser.unsafeMetadata?.website as string) || "",
       });
     }
-  }, [isLoaded, clerkUser, userData]);
+  }, [isLoaded, clerkUser, userData, getAvatarImage]);
 
   const handleInputChange = (field: keyof ProfileForm, value: string) => {
     setProfileForm((prev) => ({
@@ -193,7 +195,9 @@ export default function AccountSettings() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     setImageUploading(true);
     try {
@@ -282,7 +286,9 @@ export default function AccountSettings() {
         console.error("Failed to parse response as JSON:", parseError);
         const textResponse = await response.text();
         console.error("Raw response:", textResponse);
-        throw new Error(`Server returned invalid response: ${textResponse.substring(0, 100)}`);
+        throw new Error(
+          `Server returned invalid response: ${textResponse.substring(0, 100)}`
+        );
       }
 
       if (!response.ok) {
@@ -294,7 +300,7 @@ export default function AccountSettings() {
 
       toast.success(result.message || "Profile updated successfully");
       refetch(); // Refresh the user data
-      
+
       // Reload the Clerk user to get the latest data
       await clerkUser?.reload();
     } catch (error: any) {
@@ -320,7 +326,6 @@ export default function AccountSettings() {
       setPasswordLoading(false);
     }
   };
-
 
   if (!isLoaded || userLoading) {
     return (
@@ -674,7 +679,6 @@ export default function AccountSettings() {
               </p>
             </CardContent>
           </Card>
-
 
           {/* Active Sessions */}
           <Card>

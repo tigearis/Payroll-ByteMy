@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+
 import { Button } from "@/components/ui/button";
 
 export function SimpleWebSocketTest() {
@@ -13,6 +14,7 @@ export function SimpleWebSocketTest() {
     setLogs(prev => [...prev, `${new Date().toISOString().slice(11, 19)}: ${message}`]);
   };
 
+  // TODO: Review useEffect dependencies for exhaustive-deps rule
   useEffect(() => {
     // Log environment variables on component mount
     console.log("HTTP URL:", process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL);
@@ -111,7 +113,7 @@ export function SimpleWebSocketTest() {
       
       <p className="text-sm">
         This test uses a public echo server to verify basic WebSocket functionality.
-        If this works but your Hasura connection doesn't, the issue is specific to your Hasura configuration.
+        If this works but your Hasura connection doesn&apos;t, the issue is specific to your Hasura configuration.
       </p>
     </div>
   );

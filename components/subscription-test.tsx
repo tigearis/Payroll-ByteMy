@@ -1,8 +1,9 @@
 // components/subscription-test.tsx
 "use client";
 
-import { useState, useEffect } from "react";
 import { gql, useSubscription } from "@apollo/client";
+import { useState, useEffect } from "react";
+
 import { Button } from "@/components/ui/button";
 
 const TEST_SUBSCRIPTION = gql`

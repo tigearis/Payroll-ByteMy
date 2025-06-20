@@ -1,10 +1,11 @@
 // components/sync-user-button.tsx
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
 
 export function SyncUserButton() {
   const [isLoading, setIsLoading] = useState(false);

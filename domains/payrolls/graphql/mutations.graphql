@@ -136,18 +136,18 @@ mutation DeletePayroll($id: uuid!) {
   }
 }
 
-# Note: This mutation requires a custom Hasura action or database function
-# For now, we'll comment it out until the function is created
-# mutation GeneratePayrollDates(
-#   $payrollId: uuid!
-#   $startDate: date!
-#   $endDate: date!
-# ) {
-#   generate_payroll_dates(
-#     p_payroll_id: $payrollId
-#     p_start_date: $startDate
-#     p_end_date: $endDate
-#   ) {
-#     ...PayrollDate
-#   }
-# }
+mutation GeneratePayrollDates(
+  $payrollId: uuid!
+  $startDate: date!
+  $endDate: date!
+) {
+  generate_payroll_dates(
+    p_payroll_id: $payrollId
+    p_start_date: $startDate
+    p_end_date: $endDate
+  ) {
+    success
+    message
+    generated_count
+  }
+}

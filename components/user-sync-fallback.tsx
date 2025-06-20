@@ -1,9 +1,10 @@
 // components/user-sync-fallback.tsx
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { SyncUserButton } from "@/components/sync-user-button";
 import { AlertTriangle } from "lucide-react";
+
+import { SyncUserButton } from "@/components/sync-user-button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface UserSyncFallbackProps {
   clerkUserId?: string;

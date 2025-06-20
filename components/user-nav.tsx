@@ -2,6 +2,8 @@
 "use client";
 
 import { useUser, useClerk } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
 
 export function UserNav() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export function UserNav() {
 
   // Helper function to get the correct avatar image (same logic as settings page)
   const getAvatarImage = () => {
-    if (!user) return "";
+    if (!user) {return "";}
 
     // If user has uploaded a custom image, use that
     if (user.hasImage && user.imageUrl) {
@@ -43,11 +44,11 @@ export function UserNav() {
 
   // Get user initials for avatar fallback
   const getUserInitials = () => {
-    if (!isLoaded || !user?.fullName) return "U";
+    if (!isLoaded || !user?.fullName) {return "U";}
 
     // Split the name and get initials (up to 2 characters)
     const nameParts = user.fullName.split(" ");
-    if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
+    if (nameParts.length === 1) {return nameParts[0].charAt(0).toUpperCase();}
     return (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase();
   };
 

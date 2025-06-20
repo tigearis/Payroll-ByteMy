@@ -1,9 +1,12 @@
 // components/payrolls-missing-dates.tsx - UPDATED VERSION
 "use client";
 
-import { useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import { useUserRole } from "@/hooks/useUserRole";
+import { useEffect } from "react";
+import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,7 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -21,11 +23,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { GET_PAYROLLS_MISSING_DATES } from "@/graphql/queries/payrolls/getPayrollsMissingDates";
+import { useSmartPolling } from "@/hooks/use-polling";
+import { useUserRole } from "@/hooks/use-user-role";
+
+
 import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
-import { useSmartPolling } from "@/hooks/usePolling";
+import { GET_PAYROLLS_MISSING_DATES } from "@/graphql/queries/payrolls/getPayrollsMissingDates";
+
 
 interface PayrollWithDateCount {
   id: string;
@@ -41,22 +45,27 @@ interface PayrollWithDateCount {
 
 export function PayrollsMissingDates() {
   const { userRole } = useUserRole();
-  const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(GET_PAYROLLS_MISSING_DATES, {
-    fetchPolicy: "cache-and-network",
-    pollInterval: 60000, // Poll every minute
-  });
-  
+  const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(
+    GET_PAYROLLS_MISSING_DATES,
+    {
+      fetchPolicy: "cache-and-network",
+      pollInterval: 60000, // Poll every minute
+    }
+  );
+
   // Use our smart polling hook to manage polling
   useSmartPolling(
     { startPolling, stopPolling, refetch },
     {
       defaultInterval: 60000, // Poll every minute
-      pauseOnHidden: true,    // Save resources when tab not visible
-      refetchOnVisible: true  // Get fresh data when returning to tab
+      pauseOnHidden: true, // Save resources when tab not visible
+      refetchOnVisible: true, // Get fresh data when returning to tab
     }
   );
-  
-  const [generatePayrollDates, { loading: generating }] = useMutation(GENERATE_PAYROLL_DATES);
+
+  const [generatePayrollDates, { loading: generating }] = useMutation(
+    GENERATE_PAYROLL_DATES
+  );
 
   useEffect(() => {
     console.log("Fetching payrolls missing dates...");
@@ -78,12 +87,20 @@ export function PayrollsMissingDates() {
     (payroll) => payroll.payroll_dates_aggregate.aggregate.count === 0
   );
 
-  const missingDatesPayrollIds = payrollsMissingDates.map((payroll) => payroll.id);
+  const missingDatesPayrollIds = payrollsMissingDates.map(
+    (payroll) => payroll.id
+  );
 
   console.log("Missing payroll IDs:", missingDatesPayrollIds);
 
-  if (!userRole || !["org_admin", "developer"].includes(userRole) || missingDatesPayrollIds.length === 0) {
-    console.log("User does not have permission or no payrolls are missing dates.");
+  if (
+    !userRole ||
+    !["org_admin", "developer"].includes(userRole) ||
+    missingDatesPayrollIds.length === 0
+  ) {
+    console.log(
+      "User does not have permission or no payrolls are missing dates."
+    );
     return null;
   }
 
@@ -113,7 +130,8 @@ export function PayrollsMissingDates() {
       <CardHeader>
         <CardTitle>Payrolls Missing Dates</CardTitle>
         <CardDescription>
-          The following payrolls don&apos;t have any dates scheduled. Generate dates to create a schedule.
+          The following payrolls don&apos;t have any dates scheduled. Generate
+          dates to create a schedule.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -131,7 +149,11 @@ export function PayrollsMissingDates() {
                 <TableCell>{payroll.client?.name || "N/A"}</TableCell>
                 <TableCell>{payroll.name}</TableCell>
                 <TableCell>
-                  <Badge variant={payroll.status === "Active" ? "default" : "secondary"}>
+                  <Badge
+                    variant={
+                      payroll.status === "Active" ? "default" : "secondary"
+                    }
+                  >
                     {payroll.status}
                   </Badge>
                 </TableCell>

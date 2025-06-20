@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ModernLoading,
   PayrollsTabLoading,
@@ -13,6 +13,7 @@ import {
   SkeletonTable,
   ButtonLoading,
 } from "@/components/ui/loading-states";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function LoadingDemoPage() {
   const [isButtonLoading, setIsButtonLoading] = useState(false);

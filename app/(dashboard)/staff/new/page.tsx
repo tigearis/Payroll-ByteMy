@@ -1,12 +1,31 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
 import { useMutation } from "@apollo/client";
-import { CREATE_STAFF_DIRECT } from "@/graphql/mutations/staff/createStaffDirect";
+import { gql } from "@apollo/client";
+import { useAuth } from "@clerk/nextjs";
+import { UserPlus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+// Temporary inline mutation until GraphQL consolidation
+const CREATE_STAFF_DIRECT = gql`
+  mutation CreateStaffDirect($input: users_insert_input!) {
+    insert_users_one(object: $input) {
+      id
+      name
+      email
+      role
+    }
+  }
+`;
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectItem,
@@ -14,12 +33,7 @@ import {
   SelectValue,
   SelectContent,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import Link from "next/link";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { UserPlus } from "lucide-react";
-import { ArrowLeft } from "lucide-react";
+
 
 export default function CreateUserPage() {
   const router = useRouter();

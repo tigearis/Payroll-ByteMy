@@ -1,20 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
 import { useQuery } from "@apollo/client";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useUserRole } from "@/hooks/useUserRole";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { gql } from "@apollo/client";
+import { formatDistanceToNow, format } from "date-fns";
 import {
   User,
   Calendar,
@@ -26,9 +14,23 @@ import {
   Activity,
   Edit,
 } from "lucide-react";
-import { gql } from "@apollo/client";
 import Link from "next/link";
-import { formatDistanceToNow, format } from "date-fns";
+import React, { useState } from "react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useUserRole } from "@/hooks/use-user-role";
+
 
 // GraphQL query for user profile data
 const GET_USER_PROFILE = gql`

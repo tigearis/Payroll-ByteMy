@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -12,6 +11,8 @@ import {
   SortingState,
   ColumnFiltersState,
 } from "@tanstack/react-table";
+import React from "react";
+
 import { Button } from "./design-system";
 
 interface DataTableProps<TData, TValue> {

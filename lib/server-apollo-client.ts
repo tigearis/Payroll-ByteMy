@@ -20,8 +20,8 @@ const createCache = () => {
       },
       clients: {
         keyFields: (object: any) => {
-          if (object.id) return ["id"];
-          if (object.name) return ["name"];
+          if (object.id) {return ["id"];}
+          if (object.name) {return ["name"];}
           return false;
         },
         fields: {
@@ -42,8 +42,8 @@ const createCache = () => {
     },
     dataIdFromObject: (object: any) => {
       if (object.__typename === "clients") {
-        if (object.id) return `clients:${object.id}`;
-        if (object.name) return `clients:name:${object.name}`;
+        if (object.id) {return `clients:${object.id}`;}
+        if (object.name) {return `clients:name:${object.name}`;}
         return undefined;
       }
       return object.id ? `${object.__typename}:${object.id}` : undefined;

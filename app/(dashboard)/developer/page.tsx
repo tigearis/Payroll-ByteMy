@@ -1,7 +1,20 @@
 // app/(dashboard)/developer/page.tsx
 "use client";
 
+import {
+  Copy,
+  Eye,
+  EyeOff,
+  RefreshCw,
+  User,
+  Shield,
+  AlertTriangle,
+} from "lucide-react";
 import { useState, useEffect } from "react";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,14 +22,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Copy, Eye, EyeOff, RefreshCw, User, Shield, AlertTriangle } from "lucide-react";
-import { useUserRole } from "@/hooks/useUserRole";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { useUserRole } from "@/hooks/use-user-role";
 
 const features = [
   {
@@ -65,7 +74,7 @@ interface OAuthStatus {
 export default function DeveloperPage() {
   // SECURITY: Verify user has developer permissions
   const { isDeveloper, isLoading: roleLoading } = useUserRole();
-  
+
   const [enabledFeatures, setEnabledFeatures] = useState<string[]>([]);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const [oauthStatus, setOAuthStatus] = useState<OAuthStatus | null>(null);
@@ -77,6 +86,39 @@ export default function DeveloperPage() {
     "user_2uCU9pKf7RP2FiORHJVM5IH0Pd1"
   );
 
+  // All hooks must be called before early returns
+  useEffect(() => {
+    if (!roleLoading && isDeveloper) {
+      const fetchData = async () => {
+        try {
+          // Fetch token
+          setLoadingToken(true);
+          const response = await fetch("/api/auth/debug-token");
+          const data = await response.json();
+          setTokenData(data);
+        } catch (error) {
+          console.error("Failed to fetch token:", error);
+        } finally {
+          setLoadingToken(false);
+        }
+
+        try {
+          // Check OAuth status
+          setLoadingOAuth(true);
+          const response = await fetch("/api/auth/oauth-status");
+          const data = await response.json();
+          setOAuthStatus(data);
+        } catch (error) {
+          console.error("Failed to check OAuth status:", error);
+        } finally {
+          setLoadingOAuth(false);
+        }
+      };
+
+      fetchData();
+    }
+  }, [roleLoading, isDeveloper]);
+
   // SECURITY: Block access for non-developers
   if (!roleLoading && !isDeveloper) {
     return (
@@ -85,7 +127,8 @@ export default function DeveloperPage() {
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>
-            You need developer privileges to access this page. Only users with the 'admin' role can access developer tools.
+            You need developer privileges to access this page. Only users with
+            the &apos;admin&apos; role can access developer tools.
           </AlertDescription>
         </Alert>
       </div>
@@ -116,34 +159,6 @@ export default function DeveloperPage() {
     // Here you would typically save the enabled features to your backend
     console.log("Enabled features:", enabledFeatures);
     alert("Feature toggles saved!");
-  };
-
-  const fetchToken = async () => {
-    setLoadingToken(true);
-    try {
-      const response = await fetch("/api/auth/token");
-      const data = await response.json();
-      setTokenData(data);
-    } catch (error) {
-      console.error("Error fetching token:", error);
-      alert("Error fetching token");
-    } finally {
-      setLoadingToken(false);
-    }
-  };
-
-  const checkOAuthStatus = async () => {
-    setLoadingOAuth(true);
-    try {
-      const response = await fetch("/api/fix-oauth-user");
-      const data = await response.json();
-      setOAuthStatus(data);
-    } catch (error) {
-      console.error("Error checking OAuth status:", error);
-      alert("Error checking OAuth status");
-    } finally {
-      setLoadingOAuth(false);
-    }
   };
 
   const fixOAuthUser = async () => {
@@ -178,11 +193,6 @@ export default function DeveloperPage() {
     navigator.clipboard.writeText(text);
     alert("Copied to clipboard!");
   };
-
-  useEffect(() => {
-    fetchToken();
-    checkOAuthStatus();
-  }, []);
 
   return (
     <div className="space-y-6">
@@ -309,7 +319,7 @@ export default function DeveloperPage() {
                       })
                       .catch((err) => {
                         console.error("Error:", err);
-                        alert("Error: " + err.message);
+                        alert(`Error: ${err.message}`);
                       });
                   }}
                   variant="outline"
@@ -344,14 +354,14 @@ export default function DeveloperPage() {
                       })
                       .catch((err) => {
                         console.error("Error:", err);
-                        alert("Error: " + err.message);
+                        alert(`Error: ${err.message}`);
                       });
                   }}
                   variant="default"
                   size="sm"
                   disabled={!testUserId.trim()}
                 >
-                  Fix This User's Role
+                  Fix This User&apos;s Role
                 </Button>
               </div>
             </div>
@@ -420,7 +430,7 @@ export default function DeveloperPage() {
                       console.log("Staff creation test result:", data);
                       alert(
                         `Staff creation test: ${
-                          data.success ? "Success" : "Error: " + data.error
+                          data.success ? "Success" : `Error: ${data.error}`
                         }`
                       );
                     })
@@ -715,7 +725,7 @@ export default function DeveloperPage() {
                   placeholder="Enter payroll UUID"
                   className="w-80 text-xs"
                   value={testUserId.replace("user_", "")} // Reuse the test input for now
-                  onChange={(e) => setTestUserId("user_" + e.target.value)}
+                  onChange={(e) => setTestUserId(`user_${e.target.value}`)}
                 />
               </div>
 

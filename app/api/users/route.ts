@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { clerkClient } from "@clerk/nextjs/server";
 import { gql } from "@apollo/client";
-import { adminApolloClient } from "@/lib/server-apollo-client";
-import { getUserPermissions, canAssignRole, UserRole } from "@/lib/user-sync";
+import { clerkClient } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+
 import { withAuth } from "@/lib/api-auth";
 import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
+import { adminApolloClient } from "@/lib/server-apollo-client";
+import { getUserPermissions, canAssignRole, UserRole } from "@/lib/user-sync";
 
 // GraphQL query to get users with filtering and pagination
 const GET_USERS_QUERY = gql`
@@ -103,7 +104,7 @@ export const GET = withAuth(async (request: NextRequest, session) => {
     const managerId = url.searchParams.get("managerId");
 
     // Build where clause for filtering
-    let where: any = {};
+    const where: any = {};
 
     if (role && role !== "all") {
       where.role = { _eq: role };

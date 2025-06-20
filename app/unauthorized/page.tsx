@@ -1,7 +1,10 @@
 "use client";
 
-import { Suspense } from "react";
+import { AlertTriangle, ArrowLeft, Shield } from "lucide-react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,8 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlertTriangle, ArrowLeft, Shield } from "lucide-react";
-import Link from "next/link";
+
 
 function UnauthorizedContent() {
   const searchParams = useSearchParams();

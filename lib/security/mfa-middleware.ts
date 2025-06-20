@@ -1,9 +1,12 @@
 // lib/security/mfa-middleware.ts
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { SecureErrorHandler } from "./error-responses";
-import { securityConfig } from "./config";
+import { NextRequest, NextResponse } from "next/server";
+
 import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc2-logger";
+
+import { securityConfig } from "./config";
+import { SecureErrorHandler } from "./error-responses";
+
 
 // Feature flag check - MFA is disabled if not explicitly enabled
 const MFA_FEATURE_ENABLED = securityConfig.auth.mfaEnabled;

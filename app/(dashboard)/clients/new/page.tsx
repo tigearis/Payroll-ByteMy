@@ -1,11 +1,11 @@
 // app/(dashboard)/clients/new/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@apollo/client";
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +17,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -26,10 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CREATE_CLIENT } from "@/graphql/mutations/clients/createClient";
-import { CREATE_PAYROLL } from "@/graphql/mutations/payrolls/createPayroll";
-import { GET_CLIENTS } from "@/graphql/queries/clients/getClientsList";
-import { GET_ALL_USERS_LIST } from "@/graphql/queries/staff/getStaffList";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CREATE_CLIENT, GET_CLIENTS } from "@/domains/clients/services/client.service";
+import { CREATE_PAYROLL } from "@/domains/payrolls/services/payroll.service";
+
+import { GET_ALL_USERS_LIST } from "@/domains/staff/graphql/generated";
 
 // Hardcoded options for cycles and date types (these should ideally come from the database)
 const PAYROLL_CYCLES = [
@@ -75,9 +75,9 @@ const MONTH_DAYS = Array.from({ length: 31 }, (_, i) => ({
 function getOrdinalSuffix(num: number): string {
   const j = num % 10;
   const k = num % 100;
-  if (j === 1 && k !== 11) return "st";
-  if (j === 2 && k !== 12) return "nd";
-  if (j === 3 && k !== 13) return "rd";
+  if (j === 1 && k !== 11) {return "st";}
+  if (j === 2 && k !== 12) {return "nd";}
+  if (j === 3 && k !== 13) {return "rd";}
   return "th";
 }
 
@@ -85,8 +85,8 @@ function getOrdinalSuffix(num: number): string {
 function getBusinessWeekday(jsDay: number): number {
   // JavaScript: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
   // Business: 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday
-  if (jsDay === 0) return 0; // Sunday - not a business day
-  if (jsDay === 6) return 0; // Saturday - not a business day
+  if (jsDay === 0) {return 0;} // Sunday - not a business day
+  if (jsDay === 6) {return 0;} // Saturday - not a business day
   return jsDay; // Monday=1, Tuesday=2, etc.
 }
 
@@ -779,7 +779,7 @@ export default function NewClientPage() {
 
     // Bi-monthly, monthly, quarterly: need date type
     if (["bi_monthly", "monthly", "quarterly"].includes(payrollData.cycleId)) {
-      if (!payrollData.dateTypeId) return false;
+      if (!payrollData.dateTypeId) {return false;}
 
       // If fixed date type selected, need day value
       if (payrollData.dateTypeId === "fixed") {

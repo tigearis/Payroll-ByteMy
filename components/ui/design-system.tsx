@@ -2,9 +2,10 @@
  * Design System Component Library
  * Consistent, accessible UI components based on our design tokens
  */
-import React from "react";
-import { cn } from "@/lib/design-tokens";
 import { cva, type VariantProps } from "class-variance-authority";
+import React from "react";
+
+import { cn } from "@/lib/design-tokens";
 
 // ==============================================
 // Button Component
@@ -158,8 +159,7 @@ CardFooter.displayName = "CardFooter";
 // Input Component
 // ==============================================
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {

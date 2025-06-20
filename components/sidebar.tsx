@@ -1,10 +1,8 @@
 // components/sidebar.tsx
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { clsx, type ClassValue } from "clsx";
 import {
   LayoutDashboard,
   Users,
@@ -18,10 +16,15 @@ import {
   Code,
   Shield,
 } from "lucide-react";
-import { clsx, type ClassValue } from "clsx";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { twMerge } from "tailwind-merge";
+
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
+
 import { ThemeToggle } from "./theme-toggle";
 
 // Local utility function
@@ -42,63 +45,69 @@ const allRoutes = [
     href: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    roles: ["developer", "manager", "consultant", "org_admin"],
+    checkAccess: (permissions: any) =>
+      permissions.navigation.canAccess.dashboard,
   },
   {
     href: "/clients",
     label: "Clients",
     icon: Users,
-    roles: ["developer", "manager", "consultant", "org_admin"],
+    checkAccess: (permissions: any) => permissions.navigation.canAccess.clients,
   },
   {
     href: "/payrolls",
     label: "Payrolls",
     icon: Calculator,
-    roles: ["developer", "manager", "consultant", "org_admin"],
+    checkAccess: (permissions: any) =>
+      permissions.navigation.canAccess.payrolls,
   },
   {
     href: "/payroll-schedule",
     label: "Schedule",
     icon: CalendarDays,
-    roles: ["developer", "manager", "org_admin", "consultant"],
+    checkAccess: (permissions: any) =>
+      permissions.navigation.canAccess.payrolls,
   },
   {
     href: "/staff",
     label: "Staff",
     icon: UserCog,
-    roles: ["developer", "org_admin", "manager"], // Admin only
+    checkAccess: (permissions: any) => permissions.navigation.canAccess.staff,
   },
   {
     href: "/tax-calculator",
     label: "Tax Calculator",
     icon: DollarSign,
-    roles: ["developer"],
+    checkAccess: (permissions: any) => permissions.canAccessDashboard,
     devOnly: true, // Only show in development
   },
   {
     href: "/settings",
     label: "Settings",
     icon: Settings,
-    roles: ["developer"],
+    checkAccess: (permissions: any) =>
+      permissions.navigation.canAccess.settings,
   },
   {
     href: "/developer",
     label: "Developer",
     icon: Code,
-    roles: ["developer"], // Admin only
+    checkAccess: (permissions: any) =>
+      permissions.navigation.canAccess.developer,
     devOnly: true, // Only show in development
   },
   {
     href: "/security",
     label: "Security",
     icon: Shield,
-    roles: ["developer", "org_admin"], // Admin and org_admin only
+    checkAccess: (permissions: any) =>
+      permissions.navigation.canAccess.security,
   },
 ];
 
 // Filter out dev-only routes in production
-const routes = allRoutes.filter(route => {
-  if (route.devOnly && process.env.NODE_ENV === 'production') {
+const routes = allRoutes.filter((route) => {
+  if (route.devOnly && process.env.NODE_ENV === "production") {
     return false;
   }
   return true;
@@ -108,14 +117,12 @@ export function Sidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { user, isLoaded } = useUser();
+  const permissions = useEnhancedPermissions();
 
-  // Get user role from Clerk metadata
-  const userRole = user?.publicMetadata?.role as string;
-
-  // Filter routes based on user role
+  // Filter routes based on enhanced permission checks
   const accessibleRoutes = routes.filter((route) => {
-    if (!userRole) return false;
-    return route.roles.includes(userRole);
+    if (!permissions.isLoaded) {return false;}
+    return route.checkAccess(permissions);
   });
 
   // Show loading state while user data is being fetched
@@ -143,8 +150,8 @@ export function Sidebar() {
     );
   }
 
-  // If user has no role or invalid role, show minimal sidebar
-  if (!userRole || !["developer", "manager"].includes(userRole)) {
+  // If user has no role or permissions not loaded, show minimal sidebar
+  if (!permissions.isLoaded || !permissions.userRole) {
     return (
       <div
         className={cn(
@@ -157,7 +164,9 @@ export function Sidebar() {
         </div>
         <div className="flex-1 flex items-center justify-center">
           <p className="text-sm text-gray-500 text-center px-4">
-            Access restricted. Please contact your administrator.
+            {!permissions.isLoaded
+              ? "Loading permissions..."
+              : "Access restricted. Please contact your administrator."}
           </p>
         </div>
       </div>
@@ -209,7 +218,7 @@ export function Sidebar() {
             <p className="text-xs text-gray-500">
               Role:{" "}
               <span className="font-medium">
-                {roleDisplayNames[userRole] || userRole}
+                {roleDisplayNames[permissions.userRole] || permissions.userRole}
               </span>
             </p>
           </div>

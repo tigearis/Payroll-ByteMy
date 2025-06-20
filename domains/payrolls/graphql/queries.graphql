@@ -9,6 +9,14 @@ query GetPayrolls {
   }
 }
 
+query GetPayrollsFallback {
+  payrolls {
+    id
+    name
+    status
+  }
+}
+
 query GetPayrollById($id: uuid!) {
   payrolls_by_pk(id: $id) {
     ...PayrollWithDates
