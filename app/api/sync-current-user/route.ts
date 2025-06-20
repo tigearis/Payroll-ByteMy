@@ -1,13 +1,14 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/sync-current-user/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { syncUserWithDatabase } from "@/lib/user-sync";
+import { MetadataManager } from "@/lib/auth/metadata-manager.server";
 
 async function handleSync(req: NextRequest) {
   try {
     // Get the authenticated user
-    const authResult = await auth();
-    const userId = authResult.userId;
+    const { userId, sessionClaims } = await auth();
 
     if (!userId) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -16,24 +17,38 @@ async function handleSync(req: NextRequest) {
     // Get user details from Clerk
     const user = await currentUser();
     if (!user) {
-      return NextResponse.json({ error: "User not found in Clerk" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User not found in Clerk" },
+        { status: 404 }
+      );
     }
+
+    // Extract the user's current role from metadata, do not default to viewer
+    const existingRole = MetadataManager.extractUserRole({
+      publicMetadata: sessionClaims?.metadata,
+    });
 
     const userEmail = user.emailAddresses?.[0]?.emailAddress;
-    const userName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User";
+    const userName =
+      `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User";
 
     if (!userEmail) {
-      return NextResponse.json({ error: "User email not found" }, { status: 400 });
+      return NextResponse.json(
+        { error: "User email not found" },
+        { status: 400 }
+      );
     }
 
-    console.log(`🔄 Manual sync requested for user: ${userId} (${userEmail})`);
+    console.log(
+      `🔄 Manual sync requested for user: ${userId} (${userEmail}) with role ${existingRole}`
+    );
 
-    // Sync the user with the database
+    // Sync the user with the database, preserving their existing role
     const databaseUser = await syncUserWithDatabase(
       userId,
       userName,
       userEmail,
-      "viewer", // Default role
+      existingRole, // Pass the existing role
       undefined,
       user.imageUrl
     );
@@ -57,14 +72,8 @@ async function handleSync(req: NextRequest) {
       );
     }
   } catch (error) {
-    console.error("❌ Error in manual user sync:", error);
-    console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
-    return NextResponse.json(
-      { 
-        error: "Internal server error",
-        details: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined
-      },
+    return handleApiError(error, "sync-current-user");
+  },
       { status: 500 }
     );
   }

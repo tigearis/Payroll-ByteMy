@@ -1,3 +1,4 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
 import { validateCronRequest } from "@/lib/api-auth";
 import { secureHasuraService } from "@/lib/secure-hasura-service";
@@ -146,16 +147,8 @@ export async function POST(request: NextRequest) {
       stats_before: stats,
       failed_payrolls: failed,
     });
-  } catch (error: any) {
-    console.error("❌ Bulk generation error:", error);
-    return NextResponse.json(
-      {
-        error: "Bulk generation failed",
-        details: error.message,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    return handleApiError(error, "cron");
   }
 }
 

@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { adminApolloClient } from "@/lib/apollo/server-client";
 import { securityConfig } from "./config";
 
 // GraphQL mutation to log authentication events

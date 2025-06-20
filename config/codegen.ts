@@ -1,6 +1,7 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
 import * as dotenv from "dotenv";
 import { resolve } from "path";
+import { existsSync, readFileSync } from "fs";
 
 // Load environment variables from .env.local
 dotenv.config({ path: resolve(process.cwd(), ".env.local") });
@@ -16,20 +17,28 @@ if (!HASURA_URL || !HASURA_SECRET) {
 }
 
 // Define domains that have GraphQL files
+// Final streamlined domain structure for payroll management system
 const domains = [
-  "payrolls",
-  "clients",
-  "staff",
-  "users",
-  "holidays",
-  "notes",
-  "billing",
-  "audit",
-  "permissions",
-  "leave",
-  "work-schedule",
-  "external-systems",
-  // Future domains can be added here
+  // Core Business Domains (6) - Essential payroll management functionality
+  "payrolls",    // Core payroll processing and scheduling
+  "clients",     // Client management (absorbs external-systems, notes)
+  "users",       // User/staff management (consolidates staff + users)
+  "billing",     // Invoice and billing management
+  "leave",       // Employee leave management  
+  "work-schedule", // Work scheduling and time tracking
+  
+  // Infrastructure Domains (3) - Security and system functionality
+  "auth",        // Authentication and security
+  "audit",       // SOC2 compliance and logging
+  "shared",      // Common GraphQL infrastructure
+  
+  // Note: Removed domains
+  // - "employees": Empty placeholder, no business value
+  // - "holidays": Empty files, managed via API sync
+  // - "notes": Empty files, integrated into clients/payrolls
+  // - "external-systems": Merged into clients domain
+  // - "permissions": Simplified RBAC moved to users domain
+  // - "staff": Consolidated into users domain
 ];
 
 const SHARED_SCALARS = {
@@ -69,29 +78,67 @@ const sharedConfig = {
   scalars: SHARED_SCALARS,
 };
 
-const generatePerDomain = domains.reduce((acc, domain) => {
-  const base = `./domains/${domain}/graphql`;
-  const gen = `${base}/generated/`;
+// Helper function to check if a GraphQL file has actual operations
+const hasGraphQLContent = (filePath: string): boolean => {
+  if (!existsSync(filePath)) return false;
+  
+  const content = readFileSync(filePath, 'utf8');
+  // Remove comments and whitespace
+  const cleanContent = content
+    .replace(/#[^\n\r]*/g, '') // Remove comments
+    .replace(/\s+/g, ' ') // Normalize whitespace
+    .trim();
+  
+  // Check if file is empty after removing comments
+  if (cleanContent.length === 0) return false;
+  
+  // Check if it has actual GraphQL operations (not just scalar/enum definitions)
+  return /\b(query|mutation|subscription|fragment)\s+\w+/i.test(cleanContent);
+};
 
-  // Generate hooks and operations using client preset
-  acc[gen] = {
-    documents: [
+// Helper function to check if domain has any valid GraphQL operations
+const domainHasValidOperations = (domain: string): boolean => {
+  const base = `./domains/${domain}/graphql`;
+  const graphqlFiles = [
+    `${base}/fragments.graphql`,
+    `${base}/queries.graphql`, 
+    `${base}/mutations.graphql`,
+    `${base}/subscriptions.graphql`,
+  ];
+  
+  return graphqlFiles.some(hasGraphQLContent);
+};
+
+const generatePerDomain = domains
+  .filter(domainHasValidOperations) // Only include domains with valid operations
+  .reduce((acc, domain) => {
+    const base = `./domains/${domain}/graphql`;
+    const gen = `${base}/generated/`;
+
+    // Check which GraphQL files actually have content
+    const graphqlFiles = [
       `${base}/fragments.graphql`,
-      `${base}/queries.graphql`,
+      `${base}/queries.graphql`, 
       `${base}/mutations.graphql`,
       `${base}/subscriptions.graphql`,
-    ],
-    preset: "client",
-    plugins: [],
-    config: {
-      ...sharedConfig,
-      documentMode: "string",
-      gqlTagName: "gql",
-    },
-  };
+    ];
 
-  return acc;
-}, {} as CodegenConfig["generates"]);
+    const validFiles = graphqlFiles.filter(hasGraphQLContent);
+
+    // Generate for valid files
+    acc[gen] = {
+      documents: validFiles,
+      preset: "client",
+      plugins: [],
+      config: {
+        ...sharedConfig,
+        documentMode: "documentNode",
+        gqlTagName: "gql",
+      },
+    };
+
+    return acc;
+  }, {} as CodegenConfig["generates"]);
 
 const config: CodegenConfig = {
   overwrite: true,

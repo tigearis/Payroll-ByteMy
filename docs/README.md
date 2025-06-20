@@ -175,14 +175,32 @@ curl -X POST "http://localhost:3000/api/holidays/sync" \
 
 ---
 
+## 🚀 Production Deployment
+
+### Production Environment
+- **URL**: https://payroll.app.bytemy.com.au
+- **Platform**: Vercel with automatic CI/CD
+- **Security**: SOC2-compliant with comprehensive CSP
+
+### Deployment Documentation
+- **[Production Deployment Guide](./docs/PRODUCTION_DEPLOYMENT.md)** - Complete deployment procedures
+- **[Security Configuration](./docs/PRODUCTION_DEPLOYMENT.md#content-security-policy-csp-configuration)** - CSP troubleshooting
+- **[Environment Setup](./docs/PRODUCTION_DEPLOYMENT.md#pre-deployment-checklist)** - Production configuration
+
+### Recent Production Updates
+- ✅ **CSP Configuration Fixed**: Resolved Next.js inline script execution issues
+- ✅ **Vercel Integration**: Automated deployment with proper security headers
+- ✅ **Authentication**: Production Clerk configuration with custom domains
+
 ## 📞 Support
 
 For help and support:
 
 1. **📖 Check Documentation**: Start with the [Documentation Hub](./docs/README.md)
-2. **🔍 Search FAQ**: Review [Staff Management FAQ](./docs/USER_DOCUMENTATION_STAFF_MANAGEMENT.md#frequently-asked-questions)
-3. **🛠️ Troubleshooting**: Use the [Troubleshooting Guide](./docs/USER_DOCUMENTATION_STAFF_MANAGEMENT.md#troubleshooting)
-4. **💬 Contact Support**: Reach out through your organization's support channels
+2. **🚀 Production Issues**: Review [Production Deployment Guide](./docs/PRODUCTION_DEPLOYMENT.md)
+3. **🔍 Search FAQ**: Review [Staff Management FAQ](./docs/USER_DOCUMENTATION_STAFF_MANAGEMENT.md#frequently-asked-questions)
+4. **🛠️ Troubleshooting**: Use the [Troubleshooting Guide](./docs/USER_DOCUMENTATION_STAFF_MANAGEMENT.md#troubleshooting)
+5. **💬 Contact Support**: Reach out through your organization's support channels
 
 ---
 

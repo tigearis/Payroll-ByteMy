@@ -17,7 +17,7 @@ export function useUserRole() {
 
   // Legacy compatibility - map to old naming conventions
   const isDeveloper = userRole === "developer"; // Developer = developer in Hasura (has DEVELOPER_TOOLS permission)
-  const isAdmin = userRole === "org_admin"; // Admin = org_admin in Hasura
+  const isAdministrator = userRole === "org_admin"; // Administrator = org_admin in Hasura
   const isManager = userRole === "manager";
   const isConsultant = userRole === "consultant";
   const isViewer = userRole === "viewer";
@@ -61,7 +61,7 @@ export function useUserRole() {
 
     // Legacy compatibility
     isDeveloper,
-    isAdmin,
+    isAdministrator,
     isManager,
     isConsultant,
     isViewer,

@@ -1,22 +1,28 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/cron/sync-holidays/route.ts
 import { NextResponse } from "next/server";
 import { syncAustralianHolidays } from "@/lib/holiday-sync-service";
-import { auditLogger } from "@/lib/audit/audit-logger";
+import { logger, LogCategory } from "@/lib/logging";
 
 export async function GET(request: Request) {
   try {
     // SECURITY: Verify request is from authorized source
     const cronSecret = request.headers.get("x-cron-secret");
-    
+
     // Check for cron secret (for Vercel cron jobs)
     if (cronSecret !== process.env.CRON_SECRET) {
-      console.error("🚨 Unauthorized cron request - invalid secret for sync-holidays");
-      await auditLogger.logSecurityEvent(
-        "unauthorized_cron_access",
-        "error",
-        { source: "sync-holidays", ip: request.headers.get("x-forwarded-for") },
-        undefined,
-        request.headers.get("x-forwarded-for") || undefined
+      console.error(
+        "🚨 Unauthorized cron request - invalid secret for sync-holidays"
+      );
+      await logger.security(
+        "Unauthorized cron request - invalid secret for sync-holidays",
+        {
+          category: LogCategory.SECURITY_EVENT,
+          metadata: {
+            source: "sync-holidays",
+            ip: request.headers.get("x-forwarded-for"),
+          },
+        }
       );
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
@@ -46,15 +52,7 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    console.error("❌ Cron holiday sync error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to sync holidays via cron",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
+    return handleApiError(error, "cron");
   }
 }
 

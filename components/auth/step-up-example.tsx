@@ -26,7 +26,7 @@ export function StepUpExample() {
       const newEmail = "new-email@example.com"; // This would come from a form
       
       try {
-        await user?.createEmailAddress({ emailAddress: newEmail });
+        await user?.createEmailAddress({ email: newEmail });
         toast.success("Email added successfully");
       } catch (error) {
         console.error("Failed to add email:", error);
@@ -79,7 +79,7 @@ export function StepUpExample() {
     const action = async () => {
       try {
         // This would be your actual 2FA enablement logic
-        await user?.create2FABackupCodes();
+        await user?.createBackupCode();
         toast.success("Two-factor authentication enabled");
       } catch (error) {
         console.error("Failed to enable 2FA:", error);

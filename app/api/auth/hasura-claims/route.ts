@@ -1,3 +1,4 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { SecureHasuraService } from "@/lib/secure-hasura-service";
@@ -55,7 +56,7 @@ export async function GET(req: NextRequest) {
       console.log("🔍 Retrieved claims:", {
         hasUserId: !!claims?.["x-hasura-user-id"],
         defaultRole: claims?.["x-hasura-default-role"],
-        allowedRoles: claims?.["x-hasura-allowed-roles"],
+        minimumRole: claims?.["x-hasura-allowed-roles"],
       });
 
       if (!claims || !claims["x-hasura-user-id"]) {
@@ -74,16 +75,12 @@ export async function GET(req: NextRequest) {
         clerkUserId,
         success: true,
       });
-    } catch (queryError) {
-      console.error("🚨 Error executing claims query:", queryError);
-      return NextResponse.json(
-        {
-          error: "Database query failed",
-          details:
-            queryError instanceof Error ? queryError.message : "Unknown error",
-        },
-        { status: 500 }
-      );
+    } catch (error) {
+      console.error("Error extracting Hasura claims:", error);
+      return NextResponse.json({
+        error: "Failed to extract Hasura claims",
+        details: error instanceof Error ? error.message : "Unknown error"
+      }, { status: 500 });
     }
   } catch (error) {
     console.error("🚨 Error in hasura-claims endpoint:", error);

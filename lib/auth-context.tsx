@@ -10,8 +10,9 @@ import React, {
 } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { authMutex } from "@/lib/auth/auth-mutex";
-import { centralizedTokenManager } from "@/lib/auth/centralized-token-manager";
+import { extractUserRoleFromJWT } from "@/lib/auth/soc2-auth";
+// Removed auth mutex - using simpler state management
+// Removed centralized token manager - using Clerk's native token management
 
 // Add type declaration for global Clerk object
 declare global {
@@ -239,68 +240,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      await authMutex.acquire(
-        `user-validation-${userId}-${now}`,
-        "session_validation",
-        async () => {
-          setValidationState((prev) => ({
-            ...prev,
-            validationInProgress: true,
-            lastValidationTime: now,
-          }));
+      setValidationState((prev) => ({
+        ...prev,
+        validationInProgress: true,
+        lastValidationTime: now,
+      }));
 
-          const newValidStatus = !!databaseUser;
+      const newValidStatus = !!databaseUser;
 
-          // Only update state if it actually changed
-          if (hasValidDatabaseUser !== newValidStatus) {
-            setHasValidDatabaseUser(newValidStatus);
-          }
+      // Only update state if it actually changed
+      if (hasValidDatabaseUser !== newValidStatus) {
+        setHasValidDatabaseUser(newValidStatus);
+      }
 
-          if (newValidStatus && databaseUser) {
-            // If we have a database user, use their role directly
-            const newRole = databaseUser.role as UserRole;
-            if (userRole !== newRole) {
-              setUserRole(newRole);
-            }
-            setIsRoleLoading(false);
-
-            // Reset failure count on success
-            setValidationState((prev) => ({
-              ...prev,
-              consecutiveFailures: 0,
-            }));
-          } else {
-            // Only log warning if we've tried multiple times and still no user
-            if (extractionAttempts >= 2) {
-              console.warn(
-                "🚨 AuthContext - SECURITY: Authenticated user not found in database after multiple attempts",
-                {
-                  clerkUserId: userId,
-                  userEmail: user?.emailAddresses?.[0]?.emailAddress,
-                  extractionAttempts,
-                }
-              );
-            }
-
-            // SECURITY: Do not fall back to JWT role without database user
-            // This prevents permission bypass attacks
-            console.warn(
-              "🚨 SECURITY: User authenticated but not found in database - access will be restricted"
-            );
-            // Force role to viewer only for security
-            setUserRole("viewer");
-            setIsRoleLoading(false);
-
-            // Increment failure count
-            setValidationState((prev) => ({
-              ...prev,
-              consecutiveFailures: prev.consecutiveFailures + 1,
-            }));
-          }
-
-          return true;
+      if (newValidStatus && databaseUser) {
+        // If we have a database user, use their role directly
+        const newRole = databaseUser.role as UserRole;
+        if (userRole !== newRole) {
+          setUserRole(newRole);
         }
-      );
+        setIsRoleLoading(false);
+
+        // Reset failure count on success
+        setValidationState((prev) => ({
+          ...prev,
+          consecutiveFailures: 0,
+        }));
+      } else {
+        // Only log warning if we've tried multiple times and still no user
+        if (extractionAttempts >= 2) {
+          console.warn(
+            "🚨 AuthContext - SECURITY: Authenticated user not found in database after multiple attempts",
+            {
+              clerkUserId: userId,
+              userEmail: user?.emailAddresses?.[0]?.emailAddress,
+              extractionAttempts,
+            }
+          );
+        }
+
+        // SECURITY: Do not fall back to JWT role without database user
+        // This prevents permission bypass attacks
+        console.warn(
+          "🚨 SECURITY: User authenticated but not found in database - access will be restricted"
+        );
+        // Force role to viewer only for security
+        setUserRole("viewer");
+        setIsRoleLoading(false);
+
+        // Increment failure count
+        setValidationState((prev) => ({
+          ...prev,
+          consecutiveFailures: prev.consecutiveFailures + 1,
+        }));
+      }
     } catch (error) {
       console.error("❌ User validation failed:", error);
       setValidationState((prev) => ({
@@ -313,21 +306,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         validationInProgress: false,
       }));
     }
-  }, [
-    isSignedIn,
-    isClerkLoaded,
-    dbUserLoading,
-    databaseUser,
-    userId,
-    user,
-    extractionAttempts,
-    hasValidDatabaseUser,
-    userRole,
-    isRoleLoading,
-    validationState.validationInProgress,
-    validationState.lastValidationTime,
-    validationState.consecutiveFailures,
-  ]);
+  }, [isSignedIn, isClerkLoaded, dbUserLoading, databaseUser, userId, extractionAttempts]);
 
   // Handle user sign out state
   const handleSignOutState = useCallback(() => {
@@ -355,7 +334,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isSignedIn, databaseUser, validateDatabaseUser, handleSignOutState]);
 
-  // Fetch user role from JWT token (only used as fallback) with mutex protection
+  // Fetch user role from JWT token (only used as fallback)
   const fetchUserRole = useCallback(async () => {
     if (!isClerkLoaded || !userId) {
       setIsRoleLoading(false);
@@ -363,28 +342,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      await authMutex.acquire(
-        `role-fetch-${userId}-${Date.now()}`,
-        "token_refresh",
-        async () => {
-          setIsRoleLoading(true);
-          const token = await getToken({ template: "hasura" });
-          if (token) {
-            const payload = JSON.parse(atob(token.split(".")[1]));
-            const claims = payload["https://hasura.io/jwt/claims"];
-            const role = claims?.["x-hasura-default-role"] as UserRole;
+      setIsRoleLoading(true);
+      const token = await getToken({ template: "hasura" });
+      if (token) {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        // Use standardized role extraction from JWT
+        const role = extractUserRoleFromJWT(payload);
 
-            if (role && ROLE_PERMISSIONS[role]) {
-              setUserRole(role);
-            } else {
-              setUserRole("viewer");
-            }
-          } else {
-            setUserRole("viewer");
-          }
-          return true;
+        if (role && ROLE_PERMISSIONS[role]) {
+          setUserRole(role);
+        } else {
+          setUserRole("viewer");
         }
-      );
+      } else {
+        setUserRole("viewer");
+      }
     } catch (error) {
       console.error("Error fetching user role:", error);
       setUserRole("viewer");
@@ -400,10 +372,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Update permissions when memoized permissions change
   useEffect(() => {
-    if (JSON.stringify(permissions) !== JSON.stringify(memoizedPermissions)) {
-      setPermissions(memoizedPermissions);
-    }
-  }, [memoizedPermissions, permissions]);
+    setPermissions(memoizedPermissions);
+  }, [memoizedPermissions]);
 
   // Permission check functions - STRICT security-aware
   const hasPermission = (permission: string): boolean => {
@@ -493,50 +463,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Refresh user data with mutex protection
+  // Refresh user data using Clerk's native methods
   const refreshUserData = useCallback(async () => {
     if (!userId) return;
 
     try {
-      await authMutex.acquire(
-        `user-refresh-${userId}-${Date.now()}`,
-        "session_validation",
-        async () => {
-          setIsRoleLoading(true);
+      setIsRoleLoading(true);
 
-          // Force token refresh using the centralized token manager
-          const token = await centralizedTokenManager.forceRefresh(
-            () => getToken({ template: "hasura" }),
-            userId
-          );
+      // Force token refresh using Clerk's native method
+      const token = await getToken({ template: "hasura" });
 
-          if (token) {
-            const payload = JSON.parse(atob(token.split(".")[1]));
-            const claims = payload["https://hasura.io/jwt/claims"];
-            const role = claims?.["x-hasura-default-role"] as UserRole;
+      if (token) {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        // Use standardized role extraction from JWT
+        const role = extractUserRoleFromJWT(payload);
 
-            if (role && ROLE_PERMISSIONS[role]) {
-              setUserRole(role);
-            }
-          }
-
-          // Reset validation state on successful refresh
-          setValidationState((prev) => ({
-            ...prev,
-            consecutiveFailures: 0,
-            lastValidationTime: Date.now(),
-          }));
-
-          return true;
+        if (role && ROLE_PERMISSIONS[role]) {
+          setUserRole(role);
         }
-      );
+      }
+
+      // Reset validation state on successful refresh
+      setValidationState((prev) => ({
+        ...prev,
+        consecutiveFailures: 0,
+        lastValidationTime: Date.now(),
+      }));
     } catch (error) {
       console.error("Error refreshing user data:", error);
       throw error; // Re-throw for the session handler to catch
     } finally {
       setIsRoleLoading(false);
     }
-  }, [userId]);
+  }, [userId, getToken]);
 
   const value: AuthContextType = {
     // Authentication state

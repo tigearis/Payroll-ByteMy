@@ -21,6 +21,22 @@ type AffectedAssignment {
   payroll_date_id: String!
 }
 
+input AuditEventInput {
+  action: String!
+  ipAddress: String
+  metadata: json
+  resourceId: String
+  resourceType: String!
+  userAgent: String
+  userId: String!
+}
+
+type AuditEventResponse {
+  eventId: String
+  message: String
+  success: Boolean!
+}
+
 """
 Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'.
 """
@@ -41,6 +57,20 @@ type CommitPayrollAssignmentsOutput {
   errors: [String!]
   message: String
   success: Boolean!
+}
+
+input ComplianceReportInput {
+  endDate: String!
+  includeDetails: Boolean
+  reportType: String!
+  startDate: String!
+}
+
+type ComplianceReportResponse {
+  generatedAt: String!
+  reportUrl: String
+  success: Boolean!
+  summary: json
 }
 
 """
@@ -136,6 +166,20 @@ input String_comparison_exp {
 
   """does the column match the given SQL regular expression"""
   _similar: String
+}
+
+type SuspiciousActivityResponse {
+  events: [SuspiciousEvent!]
+  message: String
+  success: Boolean!
+  suspicious: Boolean!
+}
+
+type SuspiciousEvent {
+  count: Int!
+  eventType: String!
+  severity: String!
+  timeframe: String!
 }
 
 """Scalar _Any"""
@@ -772,6 +816,2163 @@ input app_settings_updates {
 
   """filter the rows which have to be updated"""
   where: app_settings_bool_exp!
+}
+
+"""
+columns and relationships of "audit.audit_log"
+"""
+type audit_audit_log {
+  action: String!
+  created_at: timestamptz
+  error_message: String
+  event_time: timestamptz!
+  id: uuid!
+  ip_address: inet
+  metadata(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  new_values(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  old_values(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  request_id: String
+  resource_id: String
+  resource_type: String!
+  session_id: String
+  success: Boolean
+  user_agent: String
+  user_email: String
+  user_id: uuid
+  user_role: String
+}
+
+"""
+aggregated selection of "audit.audit_log"
+"""
+type audit_audit_log_aggregate {
+  aggregate: audit_audit_log_aggregate_fields
+  nodes: [audit_audit_log!]!
+}
+
+"""
+aggregate fields of "audit.audit_log"
+"""
+type audit_audit_log_aggregate_fields {
+  count(columns: [audit_audit_log_select_column!], distinct: Boolean): Int!
+  max: audit_audit_log_max_fields
+  min: audit_audit_log_min_fields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input audit_audit_log_append_input {
+  metadata: jsonb
+  new_values: jsonb
+  old_values: jsonb
+}
+
+"""
+Boolean expression to filter rows from the table "audit.audit_log". All fields are combined with a logical 'AND'.
+"""
+input audit_audit_log_bool_exp {
+  _and: [audit_audit_log_bool_exp!]
+  _not: audit_audit_log_bool_exp
+  _or: [audit_audit_log_bool_exp!]
+  action: String_comparison_exp
+  created_at: timestamptz_comparison_exp
+  error_message: String_comparison_exp
+  event_time: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  ip_address: inet_comparison_exp
+  metadata: jsonb_comparison_exp
+  new_values: jsonb_comparison_exp
+  old_values: jsonb_comparison_exp
+  request_id: String_comparison_exp
+  resource_id: String_comparison_exp
+  resource_type: String_comparison_exp
+  session_id: String_comparison_exp
+  success: Boolean_comparison_exp
+  user_agent: String_comparison_exp
+  user_email: String_comparison_exp
+  user_id: uuid_comparison_exp
+  user_role: String_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "audit.audit_log"
+"""
+enum audit_audit_log_constraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  audit_log_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input audit_audit_log_delete_at_path_input {
+  metadata: [String!]
+  new_values: [String!]
+  old_values: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input audit_audit_log_delete_elem_input {
+  metadata: Int
+  new_values: Int
+  old_values: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input audit_audit_log_delete_key_input {
+  metadata: String
+  new_values: String
+  old_values: String
+}
+
+"""
+input type for inserting data into table "audit.audit_log"
+"""
+input audit_audit_log_insert_input {
+  action: String
+  created_at: timestamptz
+  error_message: String
+  event_time: timestamptz
+  id: uuid
+  ip_address: inet
+  metadata: jsonb
+  new_values: jsonb
+  old_values: jsonb
+  request_id: String
+  resource_id: String
+  resource_type: String
+  session_id: String
+  success: Boolean
+  user_agent: String
+  user_email: String
+  user_id: uuid
+  user_role: String
+}
+
+"""aggregate max on columns"""
+type audit_audit_log_max_fields {
+  action: String
+  created_at: timestamptz
+  error_message: String
+  event_time: timestamptz
+  id: uuid
+  request_id: String
+  resource_id: String
+  resource_type: String
+  session_id: String
+  user_agent: String
+  user_email: String
+  user_id: uuid
+  user_role: String
+}
+
+"""aggregate min on columns"""
+type audit_audit_log_min_fields {
+  action: String
+  created_at: timestamptz
+  error_message: String
+  event_time: timestamptz
+  id: uuid
+  request_id: String
+  resource_id: String
+  resource_type: String
+  session_id: String
+  user_agent: String
+  user_email: String
+  user_id: uuid
+  user_role: String
+}
+
+"""
+response of any mutation on the table "audit.audit_log"
+"""
+type audit_audit_log_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [audit_audit_log!]!
+}
+
+"""
+on_conflict condition type for table "audit.audit_log"
+"""
+input audit_audit_log_on_conflict {
+  constraint: audit_audit_log_constraint!
+  update_columns: [audit_audit_log_update_column!]! = []
+  where: audit_audit_log_bool_exp
+}
+
+"""Ordering options when selecting data from "audit.audit_log"."""
+input audit_audit_log_order_by {
+  action: order_by
+  created_at: order_by
+  error_message: order_by
+  event_time: order_by
+  id: order_by
+  ip_address: order_by
+  metadata: order_by
+  new_values: order_by
+  old_values: order_by
+  request_id: order_by
+  resource_id: order_by
+  resource_type: order_by
+  session_id: order_by
+  success: order_by
+  user_agent: order_by
+  user_email: order_by
+  user_id: order_by
+  user_role: order_by
+}
+
+"""primary key columns input for table: audit.audit_log"""
+input audit_audit_log_pk_columns_input {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input audit_audit_log_prepend_input {
+  metadata: jsonb
+  new_values: jsonb
+  old_values: jsonb
+}
+
+"""
+select columns of table "audit.audit_log"
+"""
+enum audit_audit_log_select_column {
+  """column name"""
+  action
+
+  """column name"""
+  created_at
+
+  """column name"""
+  error_message
+
+  """column name"""
+  event_time
+
+  """column name"""
+  id
+
+  """column name"""
+  ip_address
+
+  """column name"""
+  metadata
+
+  """column name"""
+  new_values
+
+  """column name"""
+  old_values
+
+  """column name"""
+  request_id
+
+  """column name"""
+  resource_id
+
+  """column name"""
+  resource_type
+
+  """column name"""
+  session_id
+
+  """column name"""
+  success
+
+  """column name"""
+  user_agent
+
+  """column name"""
+  user_email
+
+  """column name"""
+  user_id
+
+  """column name"""
+  user_role
+}
+
+"""
+input type for updating data in table "audit.audit_log"
+"""
+input audit_audit_log_set_input {
+  action: String
+  created_at: timestamptz
+  error_message: String
+  event_time: timestamptz
+  id: uuid
+  ip_address: inet
+  metadata: jsonb
+  new_values: jsonb
+  old_values: jsonb
+  request_id: String
+  resource_id: String
+  resource_type: String
+  session_id: String
+  success: Boolean
+  user_agent: String
+  user_email: String
+  user_id: uuid
+  user_role: String
+}
+
+"""
+Streaming cursor of the table "audit_audit_log"
+"""
+input audit_audit_log_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: audit_audit_log_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input audit_audit_log_stream_cursor_value_input {
+  action: String
+  created_at: timestamptz
+  error_message: String
+  event_time: timestamptz
+  id: uuid
+  ip_address: inet
+  metadata: jsonb
+  new_values: jsonb
+  old_values: jsonb
+  request_id: String
+  resource_id: String
+  resource_type: String
+  session_id: String
+  success: Boolean
+  user_agent: String
+  user_email: String
+  user_id: uuid
+  user_role: String
+}
+
+"""
+update columns of table "audit.audit_log"
+"""
+enum audit_audit_log_update_column {
+  """column name"""
+  action
+
+  """column name"""
+  created_at
+
+  """column name"""
+  error_message
+
+  """column name"""
+  event_time
+
+  """column name"""
+  id
+
+  """column name"""
+  ip_address
+
+  """column name"""
+  metadata
+
+  """column name"""
+  new_values
+
+  """column name"""
+  old_values
+
+  """column name"""
+  request_id
+
+  """column name"""
+  resource_id
+
+  """column name"""
+  resource_type
+
+  """column name"""
+  session_id
+
+  """column name"""
+  success
+
+  """column name"""
+  user_agent
+
+  """column name"""
+  user_email
+
+  """column name"""
+  user_id
+
+  """column name"""
+  user_role
+}
+
+input audit_audit_log_updates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: audit_audit_log_append_input
+
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _delete_at_path: audit_audit_log_delete_at_path_input
+
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _delete_elem: audit_audit_log_delete_elem_input
+
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _delete_key: audit_audit_log_delete_key_input
+
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: audit_audit_log_prepend_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: audit_audit_log_set_input
+
+  """filter the rows which have to be updated"""
+  where: audit_audit_log_bool_exp!
+}
+
+"""
+columns and relationships of "audit.auth_events"
+"""
+type audit_auth_events {
+  created_at: timestamptz
+  event_time: timestamptz!
+  event_type: String!
+  failure_reason: String
+  id: uuid!
+  ip_address: inet
+  metadata(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  success: Boolean
+  user_agent: String
+  user_email: String
+  user_id: uuid
+}
+
+"""
+aggregated selection of "audit.auth_events"
+"""
+type audit_auth_events_aggregate {
+  aggregate: audit_auth_events_aggregate_fields
+  nodes: [audit_auth_events!]!
+}
+
+"""
+aggregate fields of "audit.auth_events"
+"""
+type audit_auth_events_aggregate_fields {
+  count(columns: [audit_auth_events_select_column!], distinct: Boolean): Int!
+  max: audit_auth_events_max_fields
+  min: audit_auth_events_min_fields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input audit_auth_events_append_input {
+  metadata: jsonb
+}
+
+"""
+Boolean expression to filter rows from the table "audit.auth_events". All fields are combined with a logical 'AND'.
+"""
+input audit_auth_events_bool_exp {
+  _and: [audit_auth_events_bool_exp!]
+  _not: audit_auth_events_bool_exp
+  _or: [audit_auth_events_bool_exp!]
+  created_at: timestamptz_comparison_exp
+  event_time: timestamptz_comparison_exp
+  event_type: String_comparison_exp
+  failure_reason: String_comparison_exp
+  id: uuid_comparison_exp
+  ip_address: inet_comparison_exp
+  metadata: jsonb_comparison_exp
+  success: Boolean_comparison_exp
+  user_agent: String_comparison_exp
+  user_email: String_comparison_exp
+  user_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "audit.auth_events"
+"""
+enum audit_auth_events_constraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  auth_events_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input audit_auth_events_delete_at_path_input {
+  metadata: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input audit_auth_events_delete_elem_input {
+  metadata: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input audit_auth_events_delete_key_input {
+  metadata: String
+}
+
+"""
+input type for inserting data into table "audit.auth_events"
+"""
+input audit_auth_events_insert_input {
+  created_at: timestamptz
+  event_time: timestamptz
+  event_type: String
+  failure_reason: String
+  id: uuid
+  ip_address: inet
+  metadata: jsonb
+  success: Boolean
+  user_agent: String
+  user_email: String
+  user_id: uuid
+}
+
+"""aggregate max on columns"""
+type audit_auth_events_max_fields {
+  created_at: timestamptz
+  event_time: timestamptz
+  event_type: String
+  failure_reason: String
+  id: uuid
+  user_agent: String
+  user_email: String
+  user_id: uuid
+}
+
+"""aggregate min on columns"""
+type audit_auth_events_min_fields {
+  created_at: timestamptz
+  event_time: timestamptz
+  event_type: String
+  failure_reason: String
+  id: uuid
+  user_agent: String
+  user_email: String
+  user_id: uuid
+}
+
+"""
+response of any mutation on the table "audit.auth_events"
+"""
+type audit_auth_events_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [audit_auth_events!]!
+}
+
+"""
+on_conflict condition type for table "audit.auth_events"
+"""
+input audit_auth_events_on_conflict {
+  constraint: audit_auth_events_constraint!
+  update_columns: [audit_auth_events_update_column!]! = []
+  where: audit_auth_events_bool_exp
+}
+
+"""Ordering options when selecting data from "audit.auth_events"."""
+input audit_auth_events_order_by {
+  created_at: order_by
+  event_time: order_by
+  event_type: order_by
+  failure_reason: order_by
+  id: order_by
+  ip_address: order_by
+  metadata: order_by
+  success: order_by
+  user_agent: order_by
+  user_email: order_by
+  user_id: order_by
+}
+
+"""primary key columns input for table: audit.auth_events"""
+input audit_auth_events_pk_columns_input {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input audit_auth_events_prepend_input {
+  metadata: jsonb
+}
+
+"""
+select columns of table "audit.auth_events"
+"""
+enum audit_auth_events_select_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  event_time
+
+  """column name"""
+  event_type
+
+  """column name"""
+  failure_reason
+
+  """column name"""
+  id
+
+  """column name"""
+  ip_address
+
+  """column name"""
+  metadata
+
+  """column name"""
+  success
+
+  """column name"""
+  user_agent
+
+  """column name"""
+  user_email
+
+  """column name"""
+  user_id
+}
+
+"""
+input type for updating data in table "audit.auth_events"
+"""
+input audit_auth_events_set_input {
+  created_at: timestamptz
+  event_time: timestamptz
+  event_type: String
+  failure_reason: String
+  id: uuid
+  ip_address: inet
+  metadata: jsonb
+  success: Boolean
+  user_agent: String
+  user_email: String
+  user_id: uuid
+}
+
+"""
+Streaming cursor of the table "audit_auth_events"
+"""
+input audit_auth_events_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: audit_auth_events_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input audit_auth_events_stream_cursor_value_input {
+  created_at: timestamptz
+  event_time: timestamptz
+  event_type: String
+  failure_reason: String
+  id: uuid
+  ip_address: inet
+  metadata: jsonb
+  success: Boolean
+  user_agent: String
+  user_email: String
+  user_id: uuid
+}
+
+"""
+update columns of table "audit.auth_events"
+"""
+enum audit_auth_events_update_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  event_time
+
+  """column name"""
+  event_type
+
+  """column name"""
+  failure_reason
+
+  """column name"""
+  id
+
+  """column name"""
+  ip_address
+
+  """column name"""
+  metadata
+
+  """column name"""
+  success
+
+  """column name"""
+  user_agent
+
+  """column name"""
+  user_email
+
+  """column name"""
+  user_id
+}
+
+input audit_auth_events_updates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: audit_auth_events_append_input
+
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _delete_at_path: audit_auth_events_delete_at_path_input
+
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _delete_elem: audit_auth_events_delete_elem_input
+
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _delete_key: audit_auth_events_delete_key_input
+
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: audit_auth_events_prepend_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: audit_auth_events_set_input
+
+  """filter the rows which have to be updated"""
+  where: audit_auth_events_bool_exp!
+}
+
+"""
+columns and relationships of "audit.data_access_log"
+"""
+type audit_data_access_log {
+  access_type: String!
+  accessed_at: timestamptz!
+  data_classification: String
+  fields_accessed: [String!]
+  id: uuid!
+  ip_address: inet
+  metadata(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  query_executed: String
+  resource_id: String
+  resource_type: String!
+  row_count: Int
+  session_id: String
+  user_id: uuid!
+}
+
+"""
+aggregated selection of "audit.data_access_log"
+"""
+type audit_data_access_log_aggregate {
+  aggregate: audit_data_access_log_aggregate_fields
+  nodes: [audit_data_access_log!]!
+}
+
+"""
+aggregate fields of "audit.data_access_log"
+"""
+type audit_data_access_log_aggregate_fields {
+  avg: audit_data_access_log_avg_fields
+  count(columns: [audit_data_access_log_select_column!], distinct: Boolean): Int!
+  max: audit_data_access_log_max_fields
+  min: audit_data_access_log_min_fields
+  stddev: audit_data_access_log_stddev_fields
+  stddev_pop: audit_data_access_log_stddev_pop_fields
+  stddev_samp: audit_data_access_log_stddev_samp_fields
+  sum: audit_data_access_log_sum_fields
+  var_pop: audit_data_access_log_var_pop_fields
+  var_samp: audit_data_access_log_var_samp_fields
+  variance: audit_data_access_log_variance_fields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input audit_data_access_log_append_input {
+  metadata: jsonb
+}
+
+"""aggregate avg on columns"""
+type audit_data_access_log_avg_fields {
+  row_count: Float
+}
+
+"""
+Boolean expression to filter rows from the table "audit.data_access_log". All fields are combined with a logical 'AND'.
+"""
+input audit_data_access_log_bool_exp {
+  _and: [audit_data_access_log_bool_exp!]
+  _not: audit_data_access_log_bool_exp
+  _or: [audit_data_access_log_bool_exp!]
+  access_type: String_comparison_exp
+  accessed_at: timestamptz_comparison_exp
+  data_classification: String_comparison_exp
+  fields_accessed: String_array_comparison_exp
+  id: uuid_comparison_exp
+  ip_address: inet_comparison_exp
+  metadata: jsonb_comparison_exp
+  query_executed: String_comparison_exp
+  resource_id: String_comparison_exp
+  resource_type: String_comparison_exp
+  row_count: Int_comparison_exp
+  session_id: String_comparison_exp
+  user_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "audit.data_access_log"
+"""
+enum audit_data_access_log_constraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  data_access_log_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input audit_data_access_log_delete_at_path_input {
+  metadata: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input audit_data_access_log_delete_elem_input {
+  metadata: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input audit_data_access_log_delete_key_input {
+  metadata: String
+}
+
+"""
+input type for incrementing numeric columns in table "audit.data_access_log"
+"""
+input audit_data_access_log_inc_input {
+  row_count: Int
+}
+
+"""
+input type for inserting data into table "audit.data_access_log"
+"""
+input audit_data_access_log_insert_input {
+  access_type: String
+  accessed_at: timestamptz
+  data_classification: String
+  fields_accessed: [String!]
+  id: uuid
+  ip_address: inet
+  metadata: jsonb
+  query_executed: String
+  resource_id: String
+  resource_type: String
+  row_count: Int
+  session_id: String
+  user_id: uuid
+}
+
+"""aggregate max on columns"""
+type audit_data_access_log_max_fields {
+  access_type: String
+  accessed_at: timestamptz
+  data_classification: String
+  fields_accessed: [String!]
+  id: uuid
+  query_executed: String
+  resource_id: String
+  resource_type: String
+  row_count: Int
+  session_id: String
+  user_id: uuid
+}
+
+"""aggregate min on columns"""
+type audit_data_access_log_min_fields {
+  access_type: String
+  accessed_at: timestamptz
+  data_classification: String
+  fields_accessed: [String!]
+  id: uuid
+  query_executed: String
+  resource_id: String
+  resource_type: String
+  row_count: Int
+  session_id: String
+  user_id: uuid
+}
+
+"""
+response of any mutation on the table "audit.data_access_log"
+"""
+type audit_data_access_log_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [audit_data_access_log!]!
+}
+
+"""
+on_conflict condition type for table "audit.data_access_log"
+"""
+input audit_data_access_log_on_conflict {
+  constraint: audit_data_access_log_constraint!
+  update_columns: [audit_data_access_log_update_column!]! = []
+  where: audit_data_access_log_bool_exp
+}
+
+"""Ordering options when selecting data from "audit.data_access_log"."""
+input audit_data_access_log_order_by {
+  access_type: order_by
+  accessed_at: order_by
+  data_classification: order_by
+  fields_accessed: order_by
+  id: order_by
+  ip_address: order_by
+  metadata: order_by
+  query_executed: order_by
+  resource_id: order_by
+  resource_type: order_by
+  row_count: order_by
+  session_id: order_by
+  user_id: order_by
+}
+
+"""primary key columns input for table: audit.data_access_log"""
+input audit_data_access_log_pk_columns_input {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input audit_data_access_log_prepend_input {
+  metadata: jsonb
+}
+
+"""
+select columns of table "audit.data_access_log"
+"""
+enum audit_data_access_log_select_column {
+  """column name"""
+  access_type
+
+  """column name"""
+  accessed_at
+
+  """column name"""
+  data_classification
+
+  """column name"""
+  fields_accessed
+
+  """column name"""
+  id
+
+  """column name"""
+  ip_address
+
+  """column name"""
+  metadata
+
+  """column name"""
+  query_executed
+
+  """column name"""
+  resource_id
+
+  """column name"""
+  resource_type
+
+  """column name"""
+  row_count
+
+  """column name"""
+  session_id
+
+  """column name"""
+  user_id
+}
+
+"""
+input type for updating data in table "audit.data_access_log"
+"""
+input audit_data_access_log_set_input {
+  access_type: String
+  accessed_at: timestamptz
+  data_classification: String
+  fields_accessed: [String!]
+  id: uuid
+  ip_address: inet
+  metadata: jsonb
+  query_executed: String
+  resource_id: String
+  resource_type: String
+  row_count: Int
+  session_id: String
+  user_id: uuid
+}
+
+"""aggregate stddev on columns"""
+type audit_data_access_log_stddev_fields {
+  row_count: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type audit_data_access_log_stddev_pop_fields {
+  row_count: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type audit_data_access_log_stddev_samp_fields {
+  row_count: Float
+}
+
+"""
+Streaming cursor of the table "audit_data_access_log"
+"""
+input audit_data_access_log_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: audit_data_access_log_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input audit_data_access_log_stream_cursor_value_input {
+  access_type: String
+  accessed_at: timestamptz
+  data_classification: String
+  fields_accessed: [String!]
+  id: uuid
+  ip_address: inet
+  metadata: jsonb
+  query_executed: String
+  resource_id: String
+  resource_type: String
+  row_count: Int
+  session_id: String
+  user_id: uuid
+}
+
+"""aggregate sum on columns"""
+type audit_data_access_log_sum_fields {
+  row_count: Int
+}
+
+"""
+update columns of table "audit.data_access_log"
+"""
+enum audit_data_access_log_update_column {
+  """column name"""
+  access_type
+
+  """column name"""
+  accessed_at
+
+  """column name"""
+  data_classification
+
+  """column name"""
+  fields_accessed
+
+  """column name"""
+  id
+
+  """column name"""
+  ip_address
+
+  """column name"""
+  metadata
+
+  """column name"""
+  query_executed
+
+  """column name"""
+  resource_id
+
+  """column name"""
+  resource_type
+
+  """column name"""
+  row_count
+
+  """column name"""
+  session_id
+
+  """column name"""
+  user_id
+}
+
+input audit_data_access_log_updates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: audit_data_access_log_append_input
+
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _delete_at_path: audit_data_access_log_delete_at_path_input
+
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _delete_elem: audit_data_access_log_delete_elem_input
+
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _delete_key: audit_data_access_log_delete_key_input
+
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: audit_data_access_log_inc_input
+
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: audit_data_access_log_prepend_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: audit_data_access_log_set_input
+
+  """filter the rows which have to be updated"""
+  where: audit_data_access_log_bool_exp!
+}
+
+"""aggregate var_pop on columns"""
+type audit_data_access_log_var_pop_fields {
+  row_count: Float
+}
+
+"""aggregate var_samp on columns"""
+type audit_data_access_log_var_samp_fields {
+  row_count: Float
+}
+
+"""aggregate variance on columns"""
+type audit_data_access_log_variance_fields {
+  row_count: Float
+}
+
+"""
+columns and relationships of "audit.permission_changes"
+"""
+type audit_permission_changes {
+  approved_by_user_id: uuid
+  change_type: String!
+  changed_at: timestamptz!
+  changed_by_user_id: uuid!
+  id: uuid!
+  metadata(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  new_permissions(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  old_permissions(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  permission_type: String
+  reason: String
+  target_role_id: uuid
+  target_user_id: uuid
+}
+
+"""
+aggregated selection of "audit.permission_changes"
+"""
+type audit_permission_changes_aggregate {
+  aggregate: audit_permission_changes_aggregate_fields
+  nodes: [audit_permission_changes!]!
+}
+
+"""
+aggregate fields of "audit.permission_changes"
+"""
+type audit_permission_changes_aggregate_fields {
+  count(columns: [audit_permission_changes_select_column!], distinct: Boolean): Int!
+  max: audit_permission_changes_max_fields
+  min: audit_permission_changes_min_fields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input audit_permission_changes_append_input {
+  metadata: jsonb
+  new_permissions: jsonb
+  old_permissions: jsonb
+}
+
+"""
+Boolean expression to filter rows from the table "audit.permission_changes". All fields are combined with a logical 'AND'.
+"""
+input audit_permission_changes_bool_exp {
+  _and: [audit_permission_changes_bool_exp!]
+  _not: audit_permission_changes_bool_exp
+  _or: [audit_permission_changes_bool_exp!]
+  approved_by_user_id: uuid_comparison_exp
+  change_type: String_comparison_exp
+  changed_at: timestamptz_comparison_exp
+  changed_by_user_id: uuid_comparison_exp
+  id: uuid_comparison_exp
+  metadata: jsonb_comparison_exp
+  new_permissions: jsonb_comparison_exp
+  old_permissions: jsonb_comparison_exp
+  permission_type: String_comparison_exp
+  reason: String_comparison_exp
+  target_role_id: uuid_comparison_exp
+  target_user_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "audit.permission_changes"
+"""
+enum audit_permission_changes_constraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  permission_changes_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input audit_permission_changes_delete_at_path_input {
+  metadata: [String!]
+  new_permissions: [String!]
+  old_permissions: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input audit_permission_changes_delete_elem_input {
+  metadata: Int
+  new_permissions: Int
+  old_permissions: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input audit_permission_changes_delete_key_input {
+  metadata: String
+  new_permissions: String
+  old_permissions: String
+}
+
+"""
+input type for inserting data into table "audit.permission_changes"
+"""
+input audit_permission_changes_insert_input {
+  approved_by_user_id: uuid
+  change_type: String
+  changed_at: timestamptz
+  changed_by_user_id: uuid
+  id: uuid
+  metadata: jsonb
+  new_permissions: jsonb
+  old_permissions: jsonb
+  permission_type: String
+  reason: String
+  target_role_id: uuid
+  target_user_id: uuid
+}
+
+"""aggregate max on columns"""
+type audit_permission_changes_max_fields {
+  approved_by_user_id: uuid
+  change_type: String
+  changed_at: timestamptz
+  changed_by_user_id: uuid
+  id: uuid
+  permission_type: String
+  reason: String
+  target_role_id: uuid
+  target_user_id: uuid
+}
+
+"""aggregate min on columns"""
+type audit_permission_changes_min_fields {
+  approved_by_user_id: uuid
+  change_type: String
+  changed_at: timestamptz
+  changed_by_user_id: uuid
+  id: uuid
+  permission_type: String
+  reason: String
+  target_role_id: uuid
+  target_user_id: uuid
+}
+
+"""
+response of any mutation on the table "audit.permission_changes"
+"""
+type audit_permission_changes_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [audit_permission_changes!]!
+}
+
+"""
+on_conflict condition type for table "audit.permission_changes"
+"""
+input audit_permission_changes_on_conflict {
+  constraint: audit_permission_changes_constraint!
+  update_columns: [audit_permission_changes_update_column!]! = []
+  where: audit_permission_changes_bool_exp
+}
+
+"""Ordering options when selecting data from "audit.permission_changes"."""
+input audit_permission_changes_order_by {
+  approved_by_user_id: order_by
+  change_type: order_by
+  changed_at: order_by
+  changed_by_user_id: order_by
+  id: order_by
+  metadata: order_by
+  new_permissions: order_by
+  old_permissions: order_by
+  permission_type: order_by
+  reason: order_by
+  target_role_id: order_by
+  target_user_id: order_by
+}
+
+"""primary key columns input for table: audit.permission_changes"""
+input audit_permission_changes_pk_columns_input {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input audit_permission_changes_prepend_input {
+  metadata: jsonb
+  new_permissions: jsonb
+  old_permissions: jsonb
+}
+
+"""
+select columns of table "audit.permission_changes"
+"""
+enum audit_permission_changes_select_column {
+  """column name"""
+  approved_by_user_id
+
+  """column name"""
+  change_type
+
+  """column name"""
+  changed_at
+
+  """column name"""
+  changed_by_user_id
+
+  """column name"""
+  id
+
+  """column name"""
+  metadata
+
+  """column name"""
+  new_permissions
+
+  """column name"""
+  old_permissions
+
+  """column name"""
+  permission_type
+
+  """column name"""
+  reason
+
+  """column name"""
+  target_role_id
+
+  """column name"""
+  target_user_id
+}
+
+"""
+input type for updating data in table "audit.permission_changes"
+"""
+input audit_permission_changes_set_input {
+  approved_by_user_id: uuid
+  change_type: String
+  changed_at: timestamptz
+  changed_by_user_id: uuid
+  id: uuid
+  metadata: jsonb
+  new_permissions: jsonb
+  old_permissions: jsonb
+  permission_type: String
+  reason: String
+  target_role_id: uuid
+  target_user_id: uuid
+}
+
+"""
+Streaming cursor of the table "audit_permission_changes"
+"""
+input audit_permission_changes_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: audit_permission_changes_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input audit_permission_changes_stream_cursor_value_input {
+  approved_by_user_id: uuid
+  change_type: String
+  changed_at: timestamptz
+  changed_by_user_id: uuid
+  id: uuid
+  metadata: jsonb
+  new_permissions: jsonb
+  old_permissions: jsonb
+  permission_type: String
+  reason: String
+  target_role_id: uuid
+  target_user_id: uuid
+}
+
+"""
+update columns of table "audit.permission_changes"
+"""
+enum audit_permission_changes_update_column {
+  """column name"""
+  approved_by_user_id
+
+  """column name"""
+  change_type
+
+  """column name"""
+  changed_at
+
+  """column name"""
+  changed_by_user_id
+
+  """column name"""
+  id
+
+  """column name"""
+  metadata
+
+  """column name"""
+  new_permissions
+
+  """column name"""
+  old_permissions
+
+  """column name"""
+  permission_type
+
+  """column name"""
+  reason
+
+  """column name"""
+  target_role_id
+
+  """column name"""
+  target_user_id
+}
+
+input audit_permission_changes_updates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: audit_permission_changes_append_input
+
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _delete_at_path: audit_permission_changes_delete_at_path_input
+
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _delete_elem: audit_permission_changes_delete_elem_input
+
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _delete_key: audit_permission_changes_delete_key_input
+
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: audit_permission_changes_prepend_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: audit_permission_changes_set_input
+
+  """filter the rows which have to be updated"""
+  where: audit_permission_changes_bool_exp!
+}
+
+"""
+columns and relationships of "audit.permission_usage_report"
+"""
+type audit_permission_usage_report {
+  action: permission_action
+  last_used: timestamptz
+  resource_name: String
+  role_name: String
+  total_usage_count: bigint
+  users_who_used_permission: bigint
+  users_with_permission: bigint
+}
+
+"""
+aggregated selection of "audit.permission_usage_report"
+"""
+type audit_permission_usage_report_aggregate {
+  aggregate: audit_permission_usage_report_aggregate_fields
+  nodes: [audit_permission_usage_report!]!
+}
+
+"""
+aggregate fields of "audit.permission_usage_report"
+"""
+type audit_permission_usage_report_aggregate_fields {
+  avg: audit_permission_usage_report_avg_fields
+  count(columns: [audit_permission_usage_report_select_column!], distinct: Boolean): Int!
+  max: audit_permission_usage_report_max_fields
+  min: audit_permission_usage_report_min_fields
+  stddev: audit_permission_usage_report_stddev_fields
+  stddev_pop: audit_permission_usage_report_stddev_pop_fields
+  stddev_samp: audit_permission_usage_report_stddev_samp_fields
+  sum: audit_permission_usage_report_sum_fields
+  var_pop: audit_permission_usage_report_var_pop_fields
+  var_samp: audit_permission_usage_report_var_samp_fields
+  variance: audit_permission_usage_report_variance_fields
+}
+
+"""aggregate avg on columns"""
+type audit_permission_usage_report_avg_fields {
+  total_usage_count: Float
+  users_who_used_permission: Float
+  users_with_permission: Float
+}
+
+"""
+Boolean expression to filter rows from the table "audit.permission_usage_report". All fields are combined with a logical 'AND'.
+"""
+input audit_permission_usage_report_bool_exp {
+  _and: [audit_permission_usage_report_bool_exp!]
+  _not: audit_permission_usage_report_bool_exp
+  _or: [audit_permission_usage_report_bool_exp!]
+  action: permission_action_comparison_exp
+  last_used: timestamptz_comparison_exp
+  resource_name: String_comparison_exp
+  role_name: String_comparison_exp
+  total_usage_count: bigint_comparison_exp
+  users_who_used_permission: bigint_comparison_exp
+  users_with_permission: bigint_comparison_exp
+}
+
+"""aggregate max on columns"""
+type audit_permission_usage_report_max_fields {
+  action: permission_action
+  last_used: timestamptz
+  resource_name: String
+  role_name: String
+  total_usage_count: bigint
+  users_who_used_permission: bigint
+  users_with_permission: bigint
+}
+
+"""aggregate min on columns"""
+type audit_permission_usage_report_min_fields {
+  action: permission_action
+  last_used: timestamptz
+  resource_name: String
+  role_name: String
+  total_usage_count: bigint
+  users_who_used_permission: bigint
+  users_with_permission: bigint
+}
+
+"""
+Ordering options when selecting data from "audit.permission_usage_report".
+"""
+input audit_permission_usage_report_order_by {
+  action: order_by
+  last_used: order_by
+  resource_name: order_by
+  role_name: order_by
+  total_usage_count: order_by
+  users_who_used_permission: order_by
+  users_with_permission: order_by
+}
+
+"""
+select columns of table "audit.permission_usage_report"
+"""
+enum audit_permission_usage_report_select_column {
+  """column name"""
+  action
+
+  """column name"""
+  last_used
+
+  """column name"""
+  resource_name
+
+  """column name"""
+  role_name
+
+  """column name"""
+  total_usage_count
+
+  """column name"""
+  users_who_used_permission
+
+  """column name"""
+  users_with_permission
+}
+
+"""aggregate stddev on columns"""
+type audit_permission_usage_report_stddev_fields {
+  total_usage_count: Float
+  users_who_used_permission: Float
+  users_with_permission: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type audit_permission_usage_report_stddev_pop_fields {
+  total_usage_count: Float
+  users_who_used_permission: Float
+  users_with_permission: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type audit_permission_usage_report_stddev_samp_fields {
+  total_usage_count: Float
+  users_who_used_permission: Float
+  users_with_permission: Float
+}
+
+"""
+Streaming cursor of the table "audit_permission_usage_report"
+"""
+input audit_permission_usage_report_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: audit_permission_usage_report_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input audit_permission_usage_report_stream_cursor_value_input {
+  action: permission_action
+  last_used: timestamptz
+  resource_name: String
+  role_name: String
+  total_usage_count: bigint
+  users_who_used_permission: bigint
+  users_with_permission: bigint
+}
+
+"""aggregate sum on columns"""
+type audit_permission_usage_report_sum_fields {
+  total_usage_count: bigint
+  users_who_used_permission: bigint
+  users_with_permission: bigint
+}
+
+"""aggregate var_pop on columns"""
+type audit_permission_usage_report_var_pop_fields {
+  total_usage_count: Float
+  users_who_used_permission: Float
+  users_with_permission: Float
+}
+
+"""aggregate var_samp on columns"""
+type audit_permission_usage_report_var_samp_fields {
+  total_usage_count: Float
+  users_who_used_permission: Float
+  users_with_permission: Float
+}
+
+"""aggregate variance on columns"""
+type audit_permission_usage_report_variance_fields {
+  total_usage_count: Float
+  users_who_used_permission: Float
+  users_with_permission: Float
+}
+
+"""
+columns and relationships of "audit.slow_queries"
+"""
+type audit_slow_queries {
+  application_name: String
+  client_addr: inet
+  created_at: timestamptz
+  id: uuid!
+  query: String!
+  query_duration: interval!
+  query_start: timestamptz!
+  user_id: uuid
+}
+
+"""
+aggregated selection of "audit.slow_queries"
+"""
+type audit_slow_queries_aggregate {
+  aggregate: audit_slow_queries_aggregate_fields
+  nodes: [audit_slow_queries!]!
+}
+
+"""
+aggregate fields of "audit.slow_queries"
+"""
+type audit_slow_queries_aggregate_fields {
+  count(columns: [audit_slow_queries_select_column!], distinct: Boolean): Int!
+  max: audit_slow_queries_max_fields
+  min: audit_slow_queries_min_fields
+}
+
+"""
+Boolean expression to filter rows from the table "audit.slow_queries". All fields are combined with a logical 'AND'.
+"""
+input audit_slow_queries_bool_exp {
+  _and: [audit_slow_queries_bool_exp!]
+  _not: audit_slow_queries_bool_exp
+  _or: [audit_slow_queries_bool_exp!]
+  application_name: String_comparison_exp
+  client_addr: inet_comparison_exp
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  query: String_comparison_exp
+  query_duration: interval_comparison_exp
+  query_start: timestamptz_comparison_exp
+  user_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "audit.slow_queries"
+"""
+enum audit_slow_queries_constraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  slow_queries_pkey
+}
+
+"""
+input type for inserting data into table "audit.slow_queries"
+"""
+input audit_slow_queries_insert_input {
+  application_name: String
+  client_addr: inet
+  created_at: timestamptz
+  id: uuid
+  query: String
+  query_duration: interval
+  query_start: timestamptz
+  user_id: uuid
+}
+
+"""aggregate max on columns"""
+type audit_slow_queries_max_fields {
+  application_name: String
+  created_at: timestamptz
+  id: uuid
+  query: String
+  query_start: timestamptz
+  user_id: uuid
+}
+
+"""aggregate min on columns"""
+type audit_slow_queries_min_fields {
+  application_name: String
+  created_at: timestamptz
+  id: uuid
+  query: String
+  query_start: timestamptz
+  user_id: uuid
+}
+
+"""
+response of any mutation on the table "audit.slow_queries"
+"""
+type audit_slow_queries_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [audit_slow_queries!]!
+}
+
+"""
+on_conflict condition type for table "audit.slow_queries"
+"""
+input audit_slow_queries_on_conflict {
+  constraint: audit_slow_queries_constraint!
+  update_columns: [audit_slow_queries_update_column!]! = []
+  where: audit_slow_queries_bool_exp
+}
+
+"""Ordering options when selecting data from "audit.slow_queries"."""
+input audit_slow_queries_order_by {
+  application_name: order_by
+  client_addr: order_by
+  created_at: order_by
+  id: order_by
+  query: order_by
+  query_duration: order_by
+  query_start: order_by
+  user_id: order_by
+}
+
+"""primary key columns input for table: audit.slow_queries"""
+input audit_slow_queries_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "audit.slow_queries"
+"""
+enum audit_slow_queries_select_column {
+  """column name"""
+  application_name
+
+  """column name"""
+  client_addr
+
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  query
+
+  """column name"""
+  query_duration
+
+  """column name"""
+  query_start
+
+  """column name"""
+  user_id
+}
+
+"""
+input type for updating data in table "audit.slow_queries"
+"""
+input audit_slow_queries_set_input {
+  application_name: String
+  client_addr: inet
+  created_at: timestamptz
+  id: uuid
+  query: String
+  query_duration: interval
+  query_start: timestamptz
+  user_id: uuid
+}
+
+"""
+Streaming cursor of the table "audit_slow_queries"
+"""
+input audit_slow_queries_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: audit_slow_queries_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input audit_slow_queries_stream_cursor_value_input {
+  application_name: String
+  client_addr: inet
+  created_at: timestamptz
+  id: uuid
+  query: String
+  query_duration: interval
+  query_start: timestamptz
+  user_id: uuid
+}
+
+"""
+update columns of table "audit.slow_queries"
+"""
+enum audit_slow_queries_update_column {
+  """column name"""
+  application_name
+
+  """column name"""
+  client_addr
+
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  query
+
+  """column name"""
+  query_duration
+
+  """column name"""
+  query_start
+
+  """column name"""
+  user_id
+}
+
+input audit_slow_queries_updates {
+  """sets the columns of the filtered rows to the given values"""
+  _set: audit_slow_queries_set_input
+
+  """filter the rows which have to be updated"""
+  where: audit_slow_queries_bool_exp!
+}
+
+"""
+columns and relationships of "audit.user_access_summary"
+"""
+type audit_user_access_summary {
+  created_at: timestamptz
+  email: String
+  id: uuid
+  is_active: Boolean
+  is_staff: Boolean
+  name: String
+  role: user_role
+  updated_at: timestamptz
+}
+
+"""
+aggregated selection of "audit.user_access_summary"
+"""
+type audit_user_access_summary_aggregate {
+  aggregate: audit_user_access_summary_aggregate_fields
+  nodes: [audit_user_access_summary!]!
+}
+
+"""
+aggregate fields of "audit.user_access_summary"
+"""
+type audit_user_access_summary_aggregate_fields {
+  count(columns: [audit_user_access_summary_select_column!], distinct: Boolean): Int!
+  max: audit_user_access_summary_max_fields
+  min: audit_user_access_summary_min_fields
+}
+
+"""
+Boolean expression to filter rows from the table "audit.user_access_summary". All fields are combined with a logical 'AND'.
+"""
+input audit_user_access_summary_bool_exp {
+  _and: [audit_user_access_summary_bool_exp!]
+  _not: audit_user_access_summary_bool_exp
+  _or: [audit_user_access_summary_bool_exp!]
+  created_at: timestamptz_comparison_exp
+  email: String_comparison_exp
+  id: uuid_comparison_exp
+  is_active: Boolean_comparison_exp
+  is_staff: Boolean_comparison_exp
+  name: String_comparison_exp
+  role: user_role_comparison_exp
+  updated_at: timestamptz_comparison_exp
+}
+
+"""
+input type for inserting data into table "audit.user_access_summary"
+"""
+input audit_user_access_summary_insert_input {
+  created_at: timestamptz
+  email: String
+  id: uuid
+  is_active: Boolean
+  is_staff: Boolean
+  name: String
+  role: user_role
+  updated_at: timestamptz
+}
+
+"""aggregate max on columns"""
+type audit_user_access_summary_max_fields {
+  created_at: timestamptz
+  email: String
+  id: uuid
+  name: String
+  role: user_role
+  updated_at: timestamptz
+}
+
+"""aggregate min on columns"""
+type audit_user_access_summary_min_fields {
+  created_at: timestamptz
+  email: String
+  id: uuid
+  name: String
+  role: user_role
+  updated_at: timestamptz
+}
+
+"""
+response of any mutation on the table "audit.user_access_summary"
+"""
+type audit_user_access_summary_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [audit_user_access_summary!]!
+}
+
+"""Ordering options when selecting data from "audit.user_access_summary"."""
+input audit_user_access_summary_order_by {
+  created_at: order_by
+  email: order_by
+  id: order_by
+  is_active: order_by
+  is_staff: order_by
+  name: order_by
+  role: order_by
+  updated_at: order_by
+}
+
+"""
+select columns of table "audit.user_access_summary"
+"""
+enum audit_user_access_summary_select_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  email
+
+  """column name"""
+  id
+
+  """column name"""
+  is_active
+
+  """column name"""
+  is_staff
+
+  """column name"""
+  name
+
+  """column name"""
+  role
+
+  """column name"""
+  updated_at
+}
+
+"""
+input type for updating data in table "audit.user_access_summary"
+"""
+input audit_user_access_summary_set_input {
+  created_at: timestamptz
+  email: String
+  id: uuid
+  is_active: Boolean
+  is_staff: Boolean
+  name: String
+  role: user_role
+  updated_at: timestamptz
+}
+
+"""
+Streaming cursor of the table "audit_user_access_summary"
+"""
+input audit_user_access_summary_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: audit_user_access_summary_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input audit_user_access_summary_stream_cursor_value_input {
+  created_at: timestamptz
+  email: String
+  id: uuid
+  is_active: Boolean
+  is_staff: Boolean
+  name: String
+  role: user_role
+  updated_at: timestamptz
+}
+
+input audit_user_access_summary_updates {
+  """sets the columns of the filtered rows to the given values"""
+  _set: audit_user_access_summary_set_input
+
+  """filter the rows which have to be updated"""
+  where: audit_user_access_summary_bool_exp!
+}
+
+scalar bigint
+
+"""
+Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'.
+"""
+input bigint_comparison_exp {
+  _eq: bigint
+  _gt: bigint
+  _gte: bigint
+  _in: [bigint!]
+  _is_null: Boolean
+  _lt: bigint
+  _lte: bigint
+  _neq: bigint
+  _nin: [bigint!]
 }
 
 """
@@ -5744,6 +7945,14 @@ input generate_payroll_dates_args {
   p_start_date: date
 }
 
+input get_latest_payroll_version_args {
+  p_payroll_id: uuid
+}
+
+input get_payroll_version_history_args {
+  p_payroll_id: uuid
+}
+
 """
 columns and relationships of "holidays"
 """
@@ -6230,6 +8439,42 @@ type holidays_variance_fields {
   launch_year: Float
 }
 
+scalar inet
+
+"""
+Boolean expression to compare columns of type "inet". All fields are combined with logical 'AND'.
+"""
+input inet_comparison_exp {
+  _eq: inet
+  _gt: inet
+  _gte: inet
+  _in: [inet!]
+  _is_null: Boolean
+  _lt: inet
+  _lte: inet
+  _neq: inet
+  _nin: [inet!]
+}
+
+scalar interval
+
+"""
+Boolean expression to compare columns of type "interval". All fields are combined with logical 'AND'.
+"""
+input interval_comparison_exp {
+  _eq: interval
+  _gt: interval
+  _gte: interval
+  _in: [interval!]
+  _is_null: Boolean
+  _lt: interval
+  _lte: interval
+  _neq: interval
+  _nin: [interval!]
+}
+
+scalar json
+
 scalar jsonb
 
 input jsonb_cast_exp {
@@ -6280,9 +8525,6 @@ type latest_payroll_version_results {
   version_number: Int!
 }
 
-"""
-aggregated selection of "latest_payroll_version_results"
-"""
 type latest_payroll_version_results_aggregate {
   aggregate: latest_payroll_version_results_aggregate_fields
   nodes: [latest_payroll_version_results!]!
@@ -6961,6 +9203,8 @@ input leave_updates {
 
 """mutation root"""
 type mutation_root {
+  """Check for suspicious activity patterns"""
+  checkSuspiciousActivity(timeWindow: Int, userId: String): SuspiciousActivityResponse
   commitPayrollAssignments(changes: [PayrollAssignmentInput!]!): CommitPayrollAssignmentsOutput
 
   """
@@ -6994,6 +9238,79 @@ type mutation_root {
     """Unique identifier for application setting"""
     id: String!
   ): app_settings
+
+  """
+  delete data from the table: "audit.audit_log"
+  """
+  delete_audit_audit_log(
+    """filter the rows which have to be deleted"""
+    where: audit_audit_log_bool_exp!
+  ): audit_audit_log_mutation_response
+
+  """
+  delete single row from the table: "audit.audit_log"
+  """
+  delete_audit_audit_log_by_pk(id: uuid!): audit_audit_log
+
+  """
+  delete data from the table: "audit.auth_events"
+  """
+  delete_audit_auth_events(
+    """filter the rows which have to be deleted"""
+    where: audit_auth_events_bool_exp!
+  ): audit_auth_events_mutation_response
+
+  """
+  delete single row from the table: "audit.auth_events"
+  """
+  delete_audit_auth_events_by_pk(id: uuid!): audit_auth_events
+
+  """
+  delete data from the table: "audit.data_access_log"
+  """
+  delete_audit_data_access_log(
+    """filter the rows which have to be deleted"""
+    where: audit_data_access_log_bool_exp!
+  ): audit_data_access_log_mutation_response
+
+  """
+  delete single row from the table: "audit.data_access_log"
+  """
+  delete_audit_data_access_log_by_pk(id: uuid!): audit_data_access_log
+
+  """
+  delete data from the table: "audit.permission_changes"
+  """
+  delete_audit_permission_changes(
+    """filter the rows which have to be deleted"""
+    where: audit_permission_changes_bool_exp!
+  ): audit_permission_changes_mutation_response
+
+  """
+  delete single row from the table: "audit.permission_changes"
+  """
+  delete_audit_permission_changes_by_pk(id: uuid!): audit_permission_changes
+
+  """
+  delete data from the table: "audit.slow_queries"
+  """
+  delete_audit_slow_queries(
+    """filter the rows which have to be deleted"""
+    where: audit_slow_queries_bool_exp!
+  ): audit_slow_queries_mutation_response
+
+  """
+  delete single row from the table: "audit.slow_queries"
+  """
+  delete_audit_slow_queries_by_pk(id: uuid!): audit_slow_queries
+
+  """
+  delete data from the table: "audit.user_access_summary"
+  """
+  delete_audit_user_access_summary(
+    """filter the rows which have to be deleted"""
+    where: audit_user_access_summary_bool_exp!
+  ): audit_user_access_summary_mutation_response
 
   """
   delete data from the table: "billing_event_log"
@@ -7241,6 +9558,32 @@ type mutation_root {
   delete_payroll_activation_results_by_pk(id: uuid!): payroll_activation_results
 
   """
+  delete data from the table: "payroll_assignment_audit"
+  """
+  delete_payroll_assignment_audit(
+    """filter the rows which have to be deleted"""
+    where: payroll_assignment_audit_bool_exp!
+  ): payroll_assignment_audit_mutation_response
+
+  """
+  delete single row from the table: "payroll_assignment_audit"
+  """
+  delete_payroll_assignment_audit_by_pk(id: uuid!): payroll_assignment_audit
+
+  """
+  delete data from the table: "payroll_assignments"
+  """
+  delete_payroll_assignments(
+    """filter the rows which have to be deleted"""
+    where: payroll_assignments_bool_exp!
+  ): payroll_assignments_mutation_response
+
+  """
+  delete single row from the table: "payroll_assignments"
+  """
+  delete_payroll_assignments_by_pk(id: uuid!): payroll_assignments
+
+  """
   delete data from the table: "payroll_cycles"
   """
   delete_payroll_cycles(
@@ -7435,6 +9778,9 @@ type mutation_root {
     id: uuid!
   ): work_schedule
 
+  """Generate SOC2 compliance reports"""
+  generateComplianceReport(input: ComplianceReportInput!): ComplianceReportResponse
+
   """
   insert data into the table: "adjustment_rules"
   """
@@ -7478,6 +9824,132 @@ type mutation_root {
     """upsert condition"""
     on_conflict: app_settings_on_conflict
   ): app_settings
+
+  """
+  insert data into the table: "audit.audit_log"
+  """
+  insert_audit_audit_log(
+    """the rows to be inserted"""
+    objects: [audit_audit_log_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: audit_audit_log_on_conflict
+  ): audit_audit_log_mutation_response
+
+  """
+  insert a single row into the table: "audit.audit_log"
+  """
+  insert_audit_audit_log_one(
+    """the row to be inserted"""
+    object: audit_audit_log_insert_input!
+
+    """upsert condition"""
+    on_conflict: audit_audit_log_on_conflict
+  ): audit_audit_log
+
+  """
+  insert data into the table: "audit.auth_events"
+  """
+  insert_audit_auth_events(
+    """the rows to be inserted"""
+    objects: [audit_auth_events_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: audit_auth_events_on_conflict
+  ): audit_auth_events_mutation_response
+
+  """
+  insert a single row into the table: "audit.auth_events"
+  """
+  insert_audit_auth_events_one(
+    """the row to be inserted"""
+    object: audit_auth_events_insert_input!
+
+    """upsert condition"""
+    on_conflict: audit_auth_events_on_conflict
+  ): audit_auth_events
+
+  """
+  insert data into the table: "audit.data_access_log"
+  """
+  insert_audit_data_access_log(
+    """the rows to be inserted"""
+    objects: [audit_data_access_log_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: audit_data_access_log_on_conflict
+  ): audit_data_access_log_mutation_response
+
+  """
+  insert a single row into the table: "audit.data_access_log"
+  """
+  insert_audit_data_access_log_one(
+    """the row to be inserted"""
+    object: audit_data_access_log_insert_input!
+
+    """upsert condition"""
+    on_conflict: audit_data_access_log_on_conflict
+  ): audit_data_access_log
+
+  """
+  insert data into the table: "audit.permission_changes"
+  """
+  insert_audit_permission_changes(
+    """the rows to be inserted"""
+    objects: [audit_permission_changes_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: audit_permission_changes_on_conflict
+  ): audit_permission_changes_mutation_response
+
+  """
+  insert a single row into the table: "audit.permission_changes"
+  """
+  insert_audit_permission_changes_one(
+    """the row to be inserted"""
+    object: audit_permission_changes_insert_input!
+
+    """upsert condition"""
+    on_conflict: audit_permission_changes_on_conflict
+  ): audit_permission_changes
+
+  """
+  insert data into the table: "audit.slow_queries"
+  """
+  insert_audit_slow_queries(
+    """the rows to be inserted"""
+    objects: [audit_slow_queries_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: audit_slow_queries_on_conflict
+  ): audit_slow_queries_mutation_response
+
+  """
+  insert a single row into the table: "audit.slow_queries"
+  """
+  insert_audit_slow_queries_one(
+    """the row to be inserted"""
+    object: audit_slow_queries_insert_input!
+
+    """upsert condition"""
+    on_conflict: audit_slow_queries_on_conflict
+  ): audit_slow_queries
+
+  """
+  insert data into the table: "audit.user_access_summary"
+  """
+  insert_audit_user_access_summary(
+    """the rows to be inserted"""
+    objects: [audit_user_access_summary_insert_input!]!
+  ): audit_user_access_summary_mutation_response
+
+  """
+  insert a single row into the table: "audit.user_access_summary"
+  """
+  insert_audit_user_access_summary_one(
+    """the row to be inserted"""
+    object: audit_user_access_summary_insert_input!
+  ): audit_user_access_summary
 
   """
   insert data into the table: "billing_event_log"
@@ -7854,6 +10326,50 @@ type mutation_root {
   ): payroll_activation_results
 
   """
+  insert data into the table: "payroll_assignment_audit"
+  """
+  insert_payroll_assignment_audit(
+    """the rows to be inserted"""
+    objects: [payroll_assignment_audit_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: payroll_assignment_audit_on_conflict
+  ): payroll_assignment_audit_mutation_response
+
+  """
+  insert a single row into the table: "payroll_assignment_audit"
+  """
+  insert_payroll_assignment_audit_one(
+    """the row to be inserted"""
+    object: payroll_assignment_audit_insert_input!
+
+    """upsert condition"""
+    on_conflict: payroll_assignment_audit_on_conflict
+  ): payroll_assignment_audit
+
+  """
+  insert data into the table: "payroll_assignments"
+  """
+  insert_payroll_assignments(
+    """the rows to be inserted"""
+    objects: [payroll_assignments_insert_input!]!
+
+    """upsert condition"""
+    on_conflict: payroll_assignments_on_conflict
+  ): payroll_assignments_mutation_response
+
+  """
+  insert a single row into the table: "payroll_assignments"
+  """
+  insert_payroll_assignments_one(
+    """the row to be inserted"""
+    object: payroll_assignments_insert_input!
+
+    """upsert condition"""
+    on_conflict: payroll_assignments_on_conflict
+  ): payroll_assignments
+
+  """
   insert data into the table: "payroll_cycles"
   """
   insert_payroll_cycles(
@@ -8155,6 +10671,9 @@ type mutation_root {
     on_conflict: work_schedule_on_conflict
   ): work_schedule
 
+  """Log audit events for SOC2 compliance"""
+  logAuditEvent(event: AuditEventInput!): AuditEventResponse
+
   """
   update data of the table: "adjustment_rules"
   """
@@ -8252,6 +10771,339 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [app_settings_updates!]!
   ): [app_settings_mutation_response]
+
+  """
+  update data of the table: "audit.audit_log"
+  """
+  update_audit_audit_log(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: audit_audit_log_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: audit_audit_log_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: audit_audit_log_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: audit_audit_log_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: audit_audit_log_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_audit_log_set_input
+
+    """filter the rows which have to be updated"""
+    where: audit_audit_log_bool_exp!
+  ): audit_audit_log_mutation_response
+
+  """
+  update single row of the table: "audit.audit_log"
+  """
+  update_audit_audit_log_by_pk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: audit_audit_log_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: audit_audit_log_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: audit_audit_log_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: audit_audit_log_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: audit_audit_log_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_audit_log_set_input
+    pk_columns: audit_audit_log_pk_columns_input!
+  ): audit_audit_log
+
+  """
+  update multiples rows of table: "audit.audit_log"
+  """
+  update_audit_audit_log_many(
+    """updates to execute, in order"""
+    updates: [audit_audit_log_updates!]!
+  ): [audit_audit_log_mutation_response]
+
+  """
+  update data of the table: "audit.auth_events"
+  """
+  update_audit_auth_events(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: audit_auth_events_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: audit_auth_events_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: audit_auth_events_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: audit_auth_events_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: audit_auth_events_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_auth_events_set_input
+
+    """filter the rows which have to be updated"""
+    where: audit_auth_events_bool_exp!
+  ): audit_auth_events_mutation_response
+
+  """
+  update single row of the table: "audit.auth_events"
+  """
+  update_audit_auth_events_by_pk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: audit_auth_events_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: audit_auth_events_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: audit_auth_events_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: audit_auth_events_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: audit_auth_events_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_auth_events_set_input
+    pk_columns: audit_auth_events_pk_columns_input!
+  ): audit_auth_events
+
+  """
+  update multiples rows of table: "audit.auth_events"
+  """
+  update_audit_auth_events_many(
+    """updates to execute, in order"""
+    updates: [audit_auth_events_updates!]!
+  ): [audit_auth_events_mutation_response]
+
+  """
+  update data of the table: "audit.data_access_log"
+  """
+  update_audit_data_access_log(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: audit_data_access_log_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: audit_data_access_log_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: audit_data_access_log_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: audit_data_access_log_delete_key_input
+
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: audit_data_access_log_inc_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: audit_data_access_log_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_data_access_log_set_input
+
+    """filter the rows which have to be updated"""
+    where: audit_data_access_log_bool_exp!
+  ): audit_data_access_log_mutation_response
+
+  """
+  update single row of the table: "audit.data_access_log"
+  """
+  update_audit_data_access_log_by_pk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: audit_data_access_log_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: audit_data_access_log_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: audit_data_access_log_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: audit_data_access_log_delete_key_input
+
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: audit_data_access_log_inc_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: audit_data_access_log_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_data_access_log_set_input
+    pk_columns: audit_data_access_log_pk_columns_input!
+  ): audit_data_access_log
+
+  """
+  update multiples rows of table: "audit.data_access_log"
+  """
+  update_audit_data_access_log_many(
+    """updates to execute, in order"""
+    updates: [audit_data_access_log_updates!]!
+  ): [audit_data_access_log_mutation_response]
+
+  """
+  update data of the table: "audit.permission_changes"
+  """
+  update_audit_permission_changes(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: audit_permission_changes_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: audit_permission_changes_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: audit_permission_changes_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: audit_permission_changes_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: audit_permission_changes_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_permission_changes_set_input
+
+    """filter the rows which have to be updated"""
+    where: audit_permission_changes_bool_exp!
+  ): audit_permission_changes_mutation_response
+
+  """
+  update single row of the table: "audit.permission_changes"
+  """
+  update_audit_permission_changes_by_pk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: audit_permission_changes_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: audit_permission_changes_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: audit_permission_changes_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: audit_permission_changes_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: audit_permission_changes_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_permission_changes_set_input
+    pk_columns: audit_permission_changes_pk_columns_input!
+  ): audit_permission_changes
+
+  """
+  update multiples rows of table: "audit.permission_changes"
+  """
+  update_audit_permission_changes_many(
+    """updates to execute, in order"""
+    updates: [audit_permission_changes_updates!]!
+  ): [audit_permission_changes_mutation_response]
+
+  """
+  update data of the table: "audit.slow_queries"
+  """
+  update_audit_slow_queries(
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_slow_queries_set_input
+
+    """filter the rows which have to be updated"""
+    where: audit_slow_queries_bool_exp!
+  ): audit_slow_queries_mutation_response
+
+  """
+  update single row of the table: "audit.slow_queries"
+  """
+  update_audit_slow_queries_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_slow_queries_set_input
+    pk_columns: audit_slow_queries_pk_columns_input!
+  ): audit_slow_queries
+
+  """
+  update multiples rows of table: "audit.slow_queries"
+  """
+  update_audit_slow_queries_many(
+    """updates to execute, in order"""
+    updates: [audit_slow_queries_updates!]!
+  ): [audit_slow_queries_mutation_response]
+
+  """
+  update data of the table: "audit.user_access_summary"
+  """
+  update_audit_user_access_summary(
+    """sets the columns of the filtered rows to the given values"""
+    _set: audit_user_access_summary_set_input
+
+    """filter the rows which have to be updated"""
+    where: audit_user_access_summary_bool_exp!
+  ): audit_user_access_summary_mutation_response
+
+  """
+  update multiples rows of table: "audit.user_access_summary"
+  """
+  update_audit_user_access_summary_many(
+    """updates to execute, in order"""
+    updates: [audit_user_access_summary_updates!]!
+  ): [audit_user_access_summary_mutation_response]
 
   """
   update data of the table: "billing_event_log"
@@ -8862,6 +11714,62 @@ type mutation_root {
   ): [payroll_activation_results_mutation_response]
 
   """
+  update data of the table: "payroll_assignment_audit"
+  """
+  update_payroll_assignment_audit(
+    """sets the columns of the filtered rows to the given values"""
+    _set: payroll_assignment_audit_set_input
+
+    """filter the rows which have to be updated"""
+    where: payroll_assignment_audit_bool_exp!
+  ): payroll_assignment_audit_mutation_response
+
+  """
+  update single row of the table: "payroll_assignment_audit"
+  """
+  update_payroll_assignment_audit_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: payroll_assignment_audit_set_input
+    pk_columns: payroll_assignment_audit_pk_columns_input!
+  ): payroll_assignment_audit
+
+  """
+  update multiples rows of table: "payroll_assignment_audit"
+  """
+  update_payroll_assignment_audit_many(
+    """updates to execute, in order"""
+    updates: [payroll_assignment_audit_updates!]!
+  ): [payroll_assignment_audit_mutation_response]
+
+  """
+  update data of the table: "payroll_assignments"
+  """
+  update_payroll_assignments(
+    """sets the columns of the filtered rows to the given values"""
+    _set: payroll_assignments_set_input
+
+    """filter the rows which have to be updated"""
+    where: payroll_assignments_bool_exp!
+  ): payroll_assignments_mutation_response
+
+  """
+  update single row of the table: "payroll_assignments"
+  """
+  update_payroll_assignments_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: payroll_assignments_set_input
+    pk_columns: payroll_assignments_pk_columns_input!
+  ): payroll_assignments
+
+  """
+  update multiples rows of table: "payroll_assignments"
+  """
+  update_payroll_assignments_many(
+    """updates to execute, in order"""
+    updates: [payroll_assignments_updates!]!
+  ): [payroll_assignments_mutation_response]
+
+  """
   update data of the table: "payroll_cycles"
   """
   update_payroll_cycles(
@@ -9315,6 +12223,23 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [work_schedule_updates!]!
   ): [work_schedule_mutation_response]
+}
+
+scalar name
+
+"""
+Boolean expression to compare columns of type "name". All fields are combined with logical 'AND'.
+"""
+input name_comparison_exp {
+  _eq: name
+  _gt: name
+  _gte: name
+  _in: [name!]
+  _is_null: Boolean
+  _lt: name
+  _lte: name
+  _neq: name
+  _nin: [name!]
 }
 
 """
@@ -10206,9 +13131,6 @@ type payroll_activation_results {
   version_number: Int!
 }
 
-"""
-aggregated selection of "payroll_activation_results"
-"""
 type payroll_activation_results_aggregate {
   aggregate: payroll_activation_results_aggregate_fields
   nodes: [payroll_activation_results!]!
@@ -10447,6 +13369,747 @@ type payroll_activation_results_var_samp_fields {
 """aggregate variance on columns"""
 type payroll_activation_results_variance_fields {
   version_number: Float
+}
+
+"""
+columns and relationships of "payroll_assignment_audit"
+"""
+type payroll_assignment_audit {
+  assignment_id: uuid
+  change_reason: String
+  changed_by: uuid
+  created_at: timestamptz
+  from_consultant_id: uuid
+  id: uuid!
+
+  """An object relationship"""
+  payroll_assignment: payroll_assignments
+
+  """An object relationship"""
+  payroll_date: payroll_dates!
+  payroll_date_id: uuid!
+  to_consultant_id: uuid!
+
+  """An object relationship"""
+  user: users
+
+  """An object relationship"""
+  userByFromConsultantId: users
+
+  """An object relationship"""
+  userByToConsultantId: users!
+}
+
+"""
+aggregated selection of "payroll_assignment_audit"
+"""
+type payroll_assignment_audit_aggregate {
+  aggregate: payroll_assignment_audit_aggregate_fields
+  nodes: [payroll_assignment_audit!]!
+}
+
+input payroll_assignment_audit_aggregate_bool_exp {
+  count: payroll_assignment_audit_aggregate_bool_exp_count
+}
+
+input payroll_assignment_audit_aggregate_bool_exp_count {
+  arguments: [payroll_assignment_audit_select_column!]
+  distinct: Boolean
+  filter: payroll_assignment_audit_bool_exp
+  predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "payroll_assignment_audit"
+"""
+type payroll_assignment_audit_aggregate_fields {
+  count(columns: [payroll_assignment_audit_select_column!], distinct: Boolean): Int!
+  max: payroll_assignment_audit_max_fields
+  min: payroll_assignment_audit_min_fields
+}
+
+"""
+order by aggregate values of table "payroll_assignment_audit"
+"""
+input payroll_assignment_audit_aggregate_order_by {
+  count: order_by
+  max: payroll_assignment_audit_max_order_by
+  min: payroll_assignment_audit_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "payroll_assignment_audit"
+"""
+input payroll_assignment_audit_arr_rel_insert_input {
+  data: [payroll_assignment_audit_insert_input!]!
+
+  """upsert condition"""
+  on_conflict: payroll_assignment_audit_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "payroll_assignment_audit". All fields are combined with a logical 'AND'.
+"""
+input payroll_assignment_audit_bool_exp {
+  _and: [payroll_assignment_audit_bool_exp!]
+  _not: payroll_assignment_audit_bool_exp
+  _or: [payroll_assignment_audit_bool_exp!]
+  assignment_id: uuid_comparison_exp
+  change_reason: String_comparison_exp
+  changed_by: uuid_comparison_exp
+  created_at: timestamptz_comparison_exp
+  from_consultant_id: uuid_comparison_exp
+  id: uuid_comparison_exp
+  payroll_assignment: payroll_assignments_bool_exp
+  payroll_date: payroll_dates_bool_exp
+  payroll_date_id: uuid_comparison_exp
+  to_consultant_id: uuid_comparison_exp
+  user: users_bool_exp
+  userByFromConsultantId: users_bool_exp
+  userByToConsultantId: users_bool_exp
+}
+
+"""
+unique or primary key constraints on table "payroll_assignment_audit"
+"""
+enum payroll_assignment_audit_constraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  payroll_assignment_audit_pkey
+}
+
+"""
+input type for inserting data into table "payroll_assignment_audit"
+"""
+input payroll_assignment_audit_insert_input {
+  assignment_id: uuid
+  change_reason: String
+  changed_by: uuid
+  created_at: timestamptz
+  from_consultant_id: uuid
+  id: uuid
+  payroll_assignment: payroll_assignments_obj_rel_insert_input
+  payroll_date: payroll_dates_obj_rel_insert_input
+  payroll_date_id: uuid
+  to_consultant_id: uuid
+  user: users_obj_rel_insert_input
+  userByFromConsultantId: users_obj_rel_insert_input
+  userByToConsultantId: users_obj_rel_insert_input
+}
+
+"""aggregate max on columns"""
+type payroll_assignment_audit_max_fields {
+  assignment_id: uuid
+  change_reason: String
+  changed_by: uuid
+  created_at: timestamptz
+  from_consultant_id: uuid
+  id: uuid
+  payroll_date_id: uuid
+  to_consultant_id: uuid
+}
+
+"""
+order by max() on columns of table "payroll_assignment_audit"
+"""
+input payroll_assignment_audit_max_order_by {
+  assignment_id: order_by
+  change_reason: order_by
+  changed_by: order_by
+  created_at: order_by
+  from_consultant_id: order_by
+  id: order_by
+  payroll_date_id: order_by
+  to_consultant_id: order_by
+}
+
+"""aggregate min on columns"""
+type payroll_assignment_audit_min_fields {
+  assignment_id: uuid
+  change_reason: String
+  changed_by: uuid
+  created_at: timestamptz
+  from_consultant_id: uuid
+  id: uuid
+  payroll_date_id: uuid
+  to_consultant_id: uuid
+}
+
+"""
+order by min() on columns of table "payroll_assignment_audit"
+"""
+input payroll_assignment_audit_min_order_by {
+  assignment_id: order_by
+  change_reason: order_by
+  changed_by: order_by
+  created_at: order_by
+  from_consultant_id: order_by
+  id: order_by
+  payroll_date_id: order_by
+  to_consultant_id: order_by
+}
+
+"""
+response of any mutation on the table "payroll_assignment_audit"
+"""
+type payroll_assignment_audit_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [payroll_assignment_audit!]!
+}
+
+"""
+on_conflict condition type for table "payroll_assignment_audit"
+"""
+input payroll_assignment_audit_on_conflict {
+  constraint: payroll_assignment_audit_constraint!
+  update_columns: [payroll_assignment_audit_update_column!]! = []
+  where: payroll_assignment_audit_bool_exp
+}
+
+"""Ordering options when selecting data from "payroll_assignment_audit"."""
+input payroll_assignment_audit_order_by {
+  assignment_id: order_by
+  change_reason: order_by
+  changed_by: order_by
+  created_at: order_by
+  from_consultant_id: order_by
+  id: order_by
+  payroll_assignment: payroll_assignments_order_by
+  payroll_date: payroll_dates_order_by
+  payroll_date_id: order_by
+  to_consultant_id: order_by
+  user: users_order_by
+  userByFromConsultantId: users_order_by
+  userByToConsultantId: users_order_by
+}
+
+"""primary key columns input for table: payroll_assignment_audit"""
+input payroll_assignment_audit_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "payroll_assignment_audit"
+"""
+enum payroll_assignment_audit_select_column {
+  """column name"""
+  assignment_id
+
+  """column name"""
+  change_reason
+
+  """column name"""
+  changed_by
+
+  """column name"""
+  created_at
+
+  """column name"""
+  from_consultant_id
+
+  """column name"""
+  id
+
+  """column name"""
+  payroll_date_id
+
+  """column name"""
+  to_consultant_id
+}
+
+"""
+input type for updating data in table "payroll_assignment_audit"
+"""
+input payroll_assignment_audit_set_input {
+  assignment_id: uuid
+  change_reason: String
+  changed_by: uuid
+  created_at: timestamptz
+  from_consultant_id: uuid
+  id: uuid
+  payroll_date_id: uuid
+  to_consultant_id: uuid
+}
+
+"""
+Streaming cursor of the table "payroll_assignment_audit"
+"""
+input payroll_assignment_audit_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: payroll_assignment_audit_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input payroll_assignment_audit_stream_cursor_value_input {
+  assignment_id: uuid
+  change_reason: String
+  changed_by: uuid
+  created_at: timestamptz
+  from_consultant_id: uuid
+  id: uuid
+  payroll_date_id: uuid
+  to_consultant_id: uuid
+}
+
+"""
+update columns of table "payroll_assignment_audit"
+"""
+enum payroll_assignment_audit_update_column {
+  """column name"""
+  assignment_id
+
+  """column name"""
+  change_reason
+
+  """column name"""
+  changed_by
+
+  """column name"""
+  created_at
+
+  """column name"""
+  from_consultant_id
+
+  """column name"""
+  id
+
+  """column name"""
+  payroll_date_id
+
+  """column name"""
+  to_consultant_id
+}
+
+input payroll_assignment_audit_updates {
+  """sets the columns of the filtered rows to the given values"""
+  _set: payroll_assignment_audit_set_input
+
+  """filter the rows which have to be updated"""
+  where: payroll_assignment_audit_bool_exp!
+}
+
+"""
+columns and relationships of "payroll_assignments"
+"""
+type payroll_assignments {
+  assigned_by: uuid
+  assigned_date: timestamptz
+  consultant_id: uuid!
+  created_at: timestamptz
+  id: uuid!
+  is_backup: Boolean
+  original_consultant_id: uuid
+
+  """An array relationship"""
+  payroll_assignment_audits(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): [payroll_assignment_audit!]!
+
+  """An aggregate relationship"""
+  payroll_assignment_audits_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): payroll_assignment_audit_aggregate!
+
+  """An object relationship"""
+  payroll_date: payroll_dates!
+  payroll_date_id: uuid!
+  updated_at: timestamptz
+
+  """An object relationship"""
+  user: users
+
+  """An object relationship"""
+  userByConsultantId: users!
+
+  """An object relationship"""
+  userByOriginalConsultantId: users
+}
+
+"""
+aggregated selection of "payroll_assignments"
+"""
+type payroll_assignments_aggregate {
+  aggregate: payroll_assignments_aggregate_fields
+  nodes: [payroll_assignments!]!
+}
+
+input payroll_assignments_aggregate_bool_exp {
+  bool_and: payroll_assignments_aggregate_bool_exp_bool_and
+  bool_or: payroll_assignments_aggregate_bool_exp_bool_or
+  count: payroll_assignments_aggregate_bool_exp_count
+}
+
+input payroll_assignments_aggregate_bool_exp_bool_and {
+  arguments: payroll_assignments_select_column_payroll_assignments_aggregate_bool_exp_bool_and_arguments_columns!
+  distinct: Boolean
+  filter: payroll_assignments_bool_exp
+  predicate: Boolean_comparison_exp!
+}
+
+input payroll_assignments_aggregate_bool_exp_bool_or {
+  arguments: payroll_assignments_select_column_payroll_assignments_aggregate_bool_exp_bool_or_arguments_columns!
+  distinct: Boolean
+  filter: payroll_assignments_bool_exp
+  predicate: Boolean_comparison_exp!
+}
+
+input payroll_assignments_aggregate_bool_exp_count {
+  arguments: [payroll_assignments_select_column!]
+  distinct: Boolean
+  filter: payroll_assignments_bool_exp
+  predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "payroll_assignments"
+"""
+type payroll_assignments_aggregate_fields {
+  count(columns: [payroll_assignments_select_column!], distinct: Boolean): Int!
+  max: payroll_assignments_max_fields
+  min: payroll_assignments_min_fields
+}
+
+"""
+order by aggregate values of table "payroll_assignments"
+"""
+input payroll_assignments_aggregate_order_by {
+  count: order_by
+  max: payroll_assignments_max_order_by
+  min: payroll_assignments_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "payroll_assignments"
+"""
+input payroll_assignments_arr_rel_insert_input {
+  data: [payroll_assignments_insert_input!]!
+
+  """upsert condition"""
+  on_conflict: payroll_assignments_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "payroll_assignments". All fields are combined with a logical 'AND'.
+"""
+input payroll_assignments_bool_exp {
+  _and: [payroll_assignments_bool_exp!]
+  _not: payroll_assignments_bool_exp
+  _or: [payroll_assignments_bool_exp!]
+  assigned_by: uuid_comparison_exp
+  assigned_date: timestamptz_comparison_exp
+  consultant_id: uuid_comparison_exp
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  is_backup: Boolean_comparison_exp
+  original_consultant_id: uuid_comparison_exp
+  payroll_assignment_audits: payroll_assignment_audit_bool_exp
+  payroll_assignment_audits_aggregate: payroll_assignment_audit_aggregate_bool_exp
+  payroll_date: payroll_dates_bool_exp
+  payroll_date_id: uuid_comparison_exp
+  updated_at: timestamptz_comparison_exp
+  user: users_bool_exp
+  userByConsultantId: users_bool_exp
+  userByOriginalConsultantId: users_bool_exp
+}
+
+"""
+unique or primary key constraints on table "payroll_assignments"
+"""
+enum payroll_assignments_constraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  payroll_assignments_pkey
+
+  """
+  unique or primary key constraint on columns "payroll_date_id"
+  """
+  uq_payroll_assignment_payroll_date
+}
+
+"""
+input type for inserting data into table "payroll_assignments"
+"""
+input payroll_assignments_insert_input {
+  assigned_by: uuid
+  assigned_date: timestamptz
+  consultant_id: uuid
+  created_at: timestamptz
+  id: uuid
+  is_backup: Boolean
+  original_consultant_id: uuid
+  payroll_assignment_audits: payroll_assignment_audit_arr_rel_insert_input
+  payroll_date: payroll_dates_obj_rel_insert_input
+  payroll_date_id: uuid
+  updated_at: timestamptz
+  user: users_obj_rel_insert_input
+  userByConsultantId: users_obj_rel_insert_input
+  userByOriginalConsultantId: users_obj_rel_insert_input
+}
+
+"""aggregate max on columns"""
+type payroll_assignments_max_fields {
+  assigned_by: uuid
+  assigned_date: timestamptz
+  consultant_id: uuid
+  created_at: timestamptz
+  id: uuid
+  original_consultant_id: uuid
+  payroll_date_id: uuid
+  updated_at: timestamptz
+}
+
+"""
+order by max() on columns of table "payroll_assignments"
+"""
+input payroll_assignments_max_order_by {
+  assigned_by: order_by
+  assigned_date: order_by
+  consultant_id: order_by
+  created_at: order_by
+  id: order_by
+  original_consultant_id: order_by
+  payroll_date_id: order_by
+  updated_at: order_by
+}
+
+"""aggregate min on columns"""
+type payroll_assignments_min_fields {
+  assigned_by: uuid
+  assigned_date: timestamptz
+  consultant_id: uuid
+  created_at: timestamptz
+  id: uuid
+  original_consultant_id: uuid
+  payroll_date_id: uuid
+  updated_at: timestamptz
+}
+
+"""
+order by min() on columns of table "payroll_assignments"
+"""
+input payroll_assignments_min_order_by {
+  assigned_by: order_by
+  assigned_date: order_by
+  consultant_id: order_by
+  created_at: order_by
+  id: order_by
+  original_consultant_id: order_by
+  payroll_date_id: order_by
+  updated_at: order_by
+}
+
+"""
+response of any mutation on the table "payroll_assignments"
+"""
+type payroll_assignments_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [payroll_assignments!]!
+}
+
+"""
+input type for inserting object relation for remote table "payroll_assignments"
+"""
+input payroll_assignments_obj_rel_insert_input {
+  data: payroll_assignments_insert_input!
+
+  """upsert condition"""
+  on_conflict: payroll_assignments_on_conflict
+}
+
+"""
+on_conflict condition type for table "payroll_assignments"
+"""
+input payroll_assignments_on_conflict {
+  constraint: payroll_assignments_constraint!
+  update_columns: [payroll_assignments_update_column!]! = []
+  where: payroll_assignments_bool_exp
+}
+
+"""Ordering options when selecting data from "payroll_assignments"."""
+input payroll_assignments_order_by {
+  assigned_by: order_by
+  assigned_date: order_by
+  consultant_id: order_by
+  created_at: order_by
+  id: order_by
+  is_backup: order_by
+  original_consultant_id: order_by
+  payroll_assignment_audits_aggregate: payroll_assignment_audit_aggregate_order_by
+  payroll_date: payroll_dates_order_by
+  payroll_date_id: order_by
+  updated_at: order_by
+  user: users_order_by
+  userByConsultantId: users_order_by
+  userByOriginalConsultantId: users_order_by
+}
+
+"""primary key columns input for table: payroll_assignments"""
+input payroll_assignments_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "payroll_assignments"
+"""
+enum payroll_assignments_select_column {
+  """column name"""
+  assigned_by
+
+  """column name"""
+  assigned_date
+
+  """column name"""
+  consultant_id
+
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  is_backup
+
+  """column name"""
+  original_consultant_id
+
+  """column name"""
+  payroll_date_id
+
+  """column name"""
+  updated_at
+}
+
+"""
+select "payroll_assignments_aggregate_bool_exp_bool_and_arguments_columns" columns of table "payroll_assignments"
+"""
+enum payroll_assignments_select_column_payroll_assignments_aggregate_bool_exp_bool_and_arguments_columns {
+  """column name"""
+  is_backup
+}
+
+"""
+select "payroll_assignments_aggregate_bool_exp_bool_or_arguments_columns" columns of table "payroll_assignments"
+"""
+enum payroll_assignments_select_column_payroll_assignments_aggregate_bool_exp_bool_or_arguments_columns {
+  """column name"""
+  is_backup
+}
+
+"""
+input type for updating data in table "payroll_assignments"
+"""
+input payroll_assignments_set_input {
+  assigned_by: uuid
+  assigned_date: timestamptz
+  consultant_id: uuid
+  created_at: timestamptz
+  id: uuid
+  is_backup: Boolean
+  original_consultant_id: uuid
+  payroll_date_id: uuid
+  updated_at: timestamptz
+}
+
+"""
+Streaming cursor of the table "payroll_assignments"
+"""
+input payroll_assignments_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: payroll_assignments_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input payroll_assignments_stream_cursor_value_input {
+  assigned_by: uuid
+  assigned_date: timestamptz
+  consultant_id: uuid
+  created_at: timestamptz
+  id: uuid
+  is_backup: Boolean
+  original_consultant_id: uuid
+  payroll_date_id: uuid
+  updated_at: timestamptz
+}
+
+"""
+update columns of table "payroll_assignments"
+"""
+enum payroll_assignments_update_column {
+  """column name"""
+  assigned_by
+
+  """column name"""
+  assigned_date
+
+  """column name"""
+  consultant_id
+
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  is_backup
+
+  """column name"""
+  original_consultant_id
+
+  """column name"""
+  payroll_date_id
+
+  """column name"""
+  updated_at
+}
+
+input payroll_assignments_updates {
+  """sets the columns of the filtered rows to the given values"""
+  _set: payroll_assignments_set_input
+
+  """filter the rows which have to be updated"""
+  where: payroll_assignments_bool_exp!
 }
 
 scalar payroll_cycle_type
@@ -10809,6 +14472,242 @@ input payroll_cycles_updates {
 
   """filter the rows which have to be updated"""
   where: payroll_cycles_bool_exp!
+}
+
+"""
+columns and relationships of "payroll_dashboard_stats"
+"""
+type payroll_dashboard_stats {
+  backup_consultant_user_id: uuid
+  client_name: String
+  cycle_name: payroll_cycle_type
+  future_dates: bigint
+  id: uuid
+  manager_user_id: uuid
+  name: String
+  next_eft_date: date
+  past_dates: bigint
+  primary_consultant_user_id: uuid
+  status: payroll_status
+  total_dates: bigint
+}
+
+"""
+aggregated selection of "payroll_dashboard_stats"
+"""
+type payroll_dashboard_stats_aggregate {
+  aggregate: payroll_dashboard_stats_aggregate_fields
+  nodes: [payroll_dashboard_stats!]!
+}
+
+"""
+aggregate fields of "payroll_dashboard_stats"
+"""
+type payroll_dashboard_stats_aggregate_fields {
+  avg: payroll_dashboard_stats_avg_fields
+  count(columns: [payroll_dashboard_stats_select_column!], distinct: Boolean): Int!
+  max: payroll_dashboard_stats_max_fields
+  min: payroll_dashboard_stats_min_fields
+  stddev: payroll_dashboard_stats_stddev_fields
+  stddev_pop: payroll_dashboard_stats_stddev_pop_fields
+  stddev_samp: payroll_dashboard_stats_stddev_samp_fields
+  sum: payroll_dashboard_stats_sum_fields
+  var_pop: payroll_dashboard_stats_var_pop_fields
+  var_samp: payroll_dashboard_stats_var_samp_fields
+  variance: payroll_dashboard_stats_variance_fields
+}
+
+"""aggregate avg on columns"""
+type payroll_dashboard_stats_avg_fields {
+  future_dates: Float
+  past_dates: Float
+  total_dates: Float
+}
+
+"""
+Boolean expression to filter rows from the table "payroll_dashboard_stats". All fields are combined with a logical 'AND'.
+"""
+input payroll_dashboard_stats_bool_exp {
+  _and: [payroll_dashboard_stats_bool_exp!]
+  _not: payroll_dashboard_stats_bool_exp
+  _or: [payroll_dashboard_stats_bool_exp!]
+  backup_consultant_user_id: uuid_comparison_exp
+  client_name: String_comparison_exp
+  cycle_name: payroll_cycle_type_comparison_exp
+  future_dates: bigint_comparison_exp
+  id: uuid_comparison_exp
+  manager_user_id: uuid_comparison_exp
+  name: String_comparison_exp
+  next_eft_date: date_comparison_exp
+  past_dates: bigint_comparison_exp
+  primary_consultant_user_id: uuid_comparison_exp
+  status: payroll_status_comparison_exp
+  total_dates: bigint_comparison_exp
+}
+
+"""aggregate max on columns"""
+type payroll_dashboard_stats_max_fields {
+  backup_consultant_user_id: uuid
+  client_name: String
+  cycle_name: payroll_cycle_type
+  future_dates: bigint
+  id: uuid
+  manager_user_id: uuid
+  name: String
+  next_eft_date: date
+  past_dates: bigint
+  primary_consultant_user_id: uuid
+  status: payroll_status
+  total_dates: bigint
+}
+
+"""aggregate min on columns"""
+type payroll_dashboard_stats_min_fields {
+  backup_consultant_user_id: uuid
+  client_name: String
+  cycle_name: payroll_cycle_type
+  future_dates: bigint
+  id: uuid
+  manager_user_id: uuid
+  name: String
+  next_eft_date: date
+  past_dates: bigint
+  primary_consultant_user_id: uuid
+  status: payroll_status
+  total_dates: bigint
+}
+
+"""Ordering options when selecting data from "payroll_dashboard_stats"."""
+input payroll_dashboard_stats_order_by {
+  backup_consultant_user_id: order_by
+  client_name: order_by
+  cycle_name: order_by
+  future_dates: order_by
+  id: order_by
+  manager_user_id: order_by
+  name: order_by
+  next_eft_date: order_by
+  past_dates: order_by
+  primary_consultant_user_id: order_by
+  status: order_by
+  total_dates: order_by
+}
+
+"""
+select columns of table "payroll_dashboard_stats"
+"""
+enum payroll_dashboard_stats_select_column {
+  """column name"""
+  backup_consultant_user_id
+
+  """column name"""
+  client_name
+
+  """column name"""
+  cycle_name
+
+  """column name"""
+  future_dates
+
+  """column name"""
+  id
+
+  """column name"""
+  manager_user_id
+
+  """column name"""
+  name
+
+  """column name"""
+  next_eft_date
+
+  """column name"""
+  past_dates
+
+  """column name"""
+  primary_consultant_user_id
+
+  """column name"""
+  status
+
+  """column name"""
+  total_dates
+}
+
+"""aggregate stddev on columns"""
+type payroll_dashboard_stats_stddev_fields {
+  future_dates: Float
+  past_dates: Float
+  total_dates: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type payroll_dashboard_stats_stddev_pop_fields {
+  future_dates: Float
+  past_dates: Float
+  total_dates: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type payroll_dashboard_stats_stddev_samp_fields {
+  future_dates: Float
+  past_dates: Float
+  total_dates: Float
+}
+
+"""
+Streaming cursor of the table "payroll_dashboard_stats"
+"""
+input payroll_dashboard_stats_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: payroll_dashboard_stats_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input payroll_dashboard_stats_stream_cursor_value_input {
+  backup_consultant_user_id: uuid
+  client_name: String
+  cycle_name: payroll_cycle_type
+  future_dates: bigint
+  id: uuid
+  manager_user_id: uuid
+  name: String
+  next_eft_date: date
+  past_dates: bigint
+  primary_consultant_user_id: uuid
+  status: payroll_status
+  total_dates: bigint
+}
+
+"""aggregate sum on columns"""
+type payroll_dashboard_stats_sum_fields {
+  future_dates: bigint
+  past_dates: bigint
+  total_dates: bigint
+}
+
+"""aggregate var_pop on columns"""
+type payroll_dashboard_stats_var_pop_fields {
+  future_dates: Float
+  past_dates: Float
+  total_dates: Float
+}
+
+"""aggregate var_samp on columns"""
+type payroll_dashboard_stats_var_samp_fields {
+  future_dates: Float
+  past_dates: Float
+  total_dates: Float
+}
+
+"""aggregate variance on columns"""
+type payroll_dashboard_stats_variance_fields {
+  future_dates: Float
+  past_dates: Float
+  total_dates: Float
 }
 
 scalar payroll_date_type
@@ -11195,6 +15094,45 @@ type payroll_dates {
   """An object relationship"""
   payroll: payrolls!
 
+  """An object relationship"""
+  payroll_assignment: payroll_assignments
+
+  """An array relationship"""
+  payroll_assignment_audits(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): [payroll_assignment_audit!]!
+
+  """An aggregate relationship"""
+  payroll_assignment_audits_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): payroll_assignment_audit_aggregate!
+
   """Reference to the payroll this date belongs to"""
   payroll_id: uuid!
 
@@ -11265,6 +15203,9 @@ input payroll_dates_bool_exp {
   notes: String_comparison_exp
   original_eft_date: date_comparison_exp
   payroll: payrolls_bool_exp
+  payroll_assignment: payroll_assignments_bool_exp
+  payroll_assignment_audits: payroll_assignment_audit_bool_exp
+  payroll_assignment_audits_aggregate: payroll_assignment_audit_aggregate_bool_exp
   payroll_id: uuid_comparison_exp
   processing_date: date_comparison_exp
   updated_at: timestamptz_comparison_exp
@@ -11304,6 +15245,8 @@ input payroll_dates_insert_input {
   """Originally calculated EFT date before adjustments"""
   original_eft_date: date
   payroll: payrolls_obj_rel_insert_input
+  payroll_assignment: payroll_assignments_obj_rel_insert_input
+  payroll_assignment_audits: payroll_assignment_audit_arr_rel_insert_input
 
   """Reference to the payroll this date belongs to"""
   payroll_id: uuid
@@ -11439,6 +15382,16 @@ type payroll_dates_mutation_response {
 }
 
 """
+input type for inserting object relation for remote table "payroll_dates"
+"""
+input payroll_dates_obj_rel_insert_input {
+  data: payroll_dates_insert_input!
+
+  """upsert condition"""
+  on_conflict: payroll_dates_on_conflict
+}
+
+"""
 on_conflict condition type for table "payroll_dates"
 """
 input payroll_dates_on_conflict {
@@ -11455,6 +15408,8 @@ input payroll_dates_order_by {
   notes: order_by
   original_eft_date: order_by
   payroll: payrolls_order_by
+  payroll_assignment: payroll_assignments_order_by
+  payroll_assignment_audits_aggregate: payroll_assignment_audit_aggregate_order_by
   payroll_id: order_by
   processing_date: order_by
   updated_at: order_by
@@ -11617,6 +15572,111 @@ input payroll_status_comparison_exp {
 }
 
 """
+columns and relationships of "payroll_triggers_status"
+"""
+type payroll_triggers_status {
+  action_statement: String
+  action_timing: String
+  event_manipulation: String
+  event_object_table: name
+  trigger_name: name
+}
+
+"""
+aggregated selection of "payroll_triggers_status"
+"""
+type payroll_triggers_status_aggregate {
+  aggregate: payroll_triggers_status_aggregate_fields
+  nodes: [payroll_triggers_status!]!
+}
+
+"""
+aggregate fields of "payroll_triggers_status"
+"""
+type payroll_triggers_status_aggregate_fields {
+  count(columns: [payroll_triggers_status_select_column!], distinct: Boolean): Int!
+  max: payroll_triggers_status_max_fields
+  min: payroll_triggers_status_min_fields
+}
+
+"""
+Boolean expression to filter rows from the table "payroll_triggers_status". All fields are combined with a logical 'AND'.
+"""
+input payroll_triggers_status_bool_exp {
+  _and: [payroll_triggers_status_bool_exp!]
+  _not: payroll_triggers_status_bool_exp
+  _or: [payroll_triggers_status_bool_exp!]
+  action_statement: String_comparison_exp
+  action_timing: String_comparison_exp
+  event_manipulation: String_comparison_exp
+  event_object_table: name_comparison_exp
+  trigger_name: name_comparison_exp
+}
+
+"""aggregate max on columns"""
+type payroll_triggers_status_max_fields {
+  action_statement: String
+  action_timing: String
+  event_manipulation: String
+}
+
+"""aggregate min on columns"""
+type payroll_triggers_status_min_fields {
+  action_statement: String
+  action_timing: String
+  event_manipulation: String
+}
+
+"""Ordering options when selecting data from "payroll_triggers_status"."""
+input payroll_triggers_status_order_by {
+  action_statement: order_by
+  action_timing: order_by
+  event_manipulation: order_by
+  event_object_table: order_by
+  trigger_name: order_by
+}
+
+"""
+select columns of table "payroll_triggers_status"
+"""
+enum payroll_triggers_status_select_column {
+  """column name"""
+  action_statement
+
+  """column name"""
+  action_timing
+
+  """column name"""
+  event_manipulation
+
+  """column name"""
+  event_object_table
+
+  """column name"""
+  trigger_name
+}
+
+"""
+Streaming cursor of the table "payroll_triggers_status"
+"""
+input payroll_triggers_status_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: payroll_triggers_status_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input payroll_triggers_status_stream_cursor_value_input {
+  action_statement: String
+  action_timing: String
+  event_manipulation: String
+  event_object_table: name
+  trigger_name: name
+}
+
+"""
 columns and relationships of "payroll_version_history_results"
 """
 type payroll_version_history_results {
@@ -11632,9 +15692,6 @@ type payroll_version_history_results {
   version_reason: String
 }
 
-"""
-aggregated selection of "payroll_version_history_results"
-"""
 type payroll_version_history_results_aggregate {
   aggregate: payroll_version_history_results_aggregate_fields
   nodes: [payroll_version_history_results!]!
@@ -13864,6 +17921,46 @@ type query_root {
   _entities(representations: [_Any!]!): _Entity
   _service: _Service!
 
+  """
+  execute function "activate_payroll_versions" which returns "payroll_activation_results"
+  """
+  activate_payroll_versions(
+    """distinct select on columns"""
+    distinct_on: [payroll_activation_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_activation_results_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_activation_results_bool_exp
+  ): [payroll_activation_results!]!
+
+  """
+  execute function "activate_payroll_versions" and query aggregates on result of table type "payroll_activation_results"
+  """
+  activate_payroll_versions_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_activation_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_activation_results_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_activation_results_bool_exp
+  ): payroll_activation_results_aggregate!
+
   """An array relationship"""
   adjustment_rules(
     """distinct select on columns"""
@@ -13953,6 +18050,309 @@ type query_root {
     """Unique identifier for application setting"""
     id: String!
   ): app_settings
+
+  """
+  fetch data from the table: "audit.audit_log"
+  """
+  audit_audit_log(
+    """distinct select on columns"""
+    distinct_on: [audit_audit_log_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_audit_log_order_by!]
+
+    """filter the rows returned"""
+    where: audit_audit_log_bool_exp
+  ): [audit_audit_log!]!
+
+  """
+  fetch aggregated fields from the table: "audit.audit_log"
+  """
+  audit_audit_log_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_audit_log_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_audit_log_order_by!]
+
+    """filter the rows returned"""
+    where: audit_audit_log_bool_exp
+  ): audit_audit_log_aggregate!
+
+  """fetch data from the table: "audit.audit_log" using primary key columns"""
+  audit_audit_log_by_pk(id: uuid!): audit_audit_log
+
+  """
+  fetch data from the table: "audit.auth_events"
+  """
+  audit_auth_events(
+    """distinct select on columns"""
+    distinct_on: [audit_auth_events_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_auth_events_order_by!]
+
+    """filter the rows returned"""
+    where: audit_auth_events_bool_exp
+  ): [audit_auth_events!]!
+
+  """
+  fetch aggregated fields from the table: "audit.auth_events"
+  """
+  audit_auth_events_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_auth_events_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_auth_events_order_by!]
+
+    """filter the rows returned"""
+    where: audit_auth_events_bool_exp
+  ): audit_auth_events_aggregate!
+
+  """
+  fetch data from the table: "audit.auth_events" using primary key columns
+  """
+  audit_auth_events_by_pk(id: uuid!): audit_auth_events
+
+  """
+  fetch data from the table: "audit.data_access_log"
+  """
+  audit_data_access_log(
+    """distinct select on columns"""
+    distinct_on: [audit_data_access_log_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_data_access_log_order_by!]
+
+    """filter the rows returned"""
+    where: audit_data_access_log_bool_exp
+  ): [audit_data_access_log!]!
+
+  """
+  fetch aggregated fields from the table: "audit.data_access_log"
+  """
+  audit_data_access_log_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_data_access_log_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_data_access_log_order_by!]
+
+    """filter the rows returned"""
+    where: audit_data_access_log_bool_exp
+  ): audit_data_access_log_aggregate!
+
+  """
+  fetch data from the table: "audit.data_access_log" using primary key columns
+  """
+  audit_data_access_log_by_pk(id: uuid!): audit_data_access_log
+
+  """
+  fetch data from the table: "audit.permission_changes"
+  """
+  audit_permission_changes(
+    """distinct select on columns"""
+    distinct_on: [audit_permission_changes_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_permission_changes_order_by!]
+
+    """filter the rows returned"""
+    where: audit_permission_changes_bool_exp
+  ): [audit_permission_changes!]!
+
+  """
+  fetch aggregated fields from the table: "audit.permission_changes"
+  """
+  audit_permission_changes_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_permission_changes_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_permission_changes_order_by!]
+
+    """filter the rows returned"""
+    where: audit_permission_changes_bool_exp
+  ): audit_permission_changes_aggregate!
+
+  """
+  fetch data from the table: "audit.permission_changes" using primary key columns
+  """
+  audit_permission_changes_by_pk(id: uuid!): audit_permission_changes
+
+  """
+  fetch data from the table: "audit.permission_usage_report"
+  """
+  audit_permission_usage_report(
+    """distinct select on columns"""
+    distinct_on: [audit_permission_usage_report_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_permission_usage_report_order_by!]
+
+    """filter the rows returned"""
+    where: audit_permission_usage_report_bool_exp
+  ): [audit_permission_usage_report!]!
+
+  """
+  fetch aggregated fields from the table: "audit.permission_usage_report"
+  """
+  audit_permission_usage_report_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_permission_usage_report_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_permission_usage_report_order_by!]
+
+    """filter the rows returned"""
+    where: audit_permission_usage_report_bool_exp
+  ): audit_permission_usage_report_aggregate!
+
+  """
+  fetch data from the table: "audit.slow_queries"
+  """
+  audit_slow_queries(
+    """distinct select on columns"""
+    distinct_on: [audit_slow_queries_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_slow_queries_order_by!]
+
+    """filter the rows returned"""
+    where: audit_slow_queries_bool_exp
+  ): [audit_slow_queries!]!
+
+  """
+  fetch aggregated fields from the table: "audit.slow_queries"
+  """
+  audit_slow_queries_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_slow_queries_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_slow_queries_order_by!]
+
+    """filter the rows returned"""
+    where: audit_slow_queries_bool_exp
+  ): audit_slow_queries_aggregate!
+
+  """
+  fetch data from the table: "audit.slow_queries" using primary key columns
+  """
+  audit_slow_queries_by_pk(id: uuid!): audit_slow_queries
+
+  """
+  fetch data from the table: "audit.user_access_summary"
+  """
+  audit_user_access_summary(
+    """distinct select on columns"""
+    distinct_on: [audit_user_access_summary_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_user_access_summary_order_by!]
+
+    """filter the rows returned"""
+    where: audit_user_access_summary_bool_exp
+  ): [audit_user_access_summary!]!
+
+  """
+  fetch aggregated fields from the table: "audit.user_access_summary"
+  """
+  audit_user_access_summary_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_user_access_summary_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_user_access_summary_order_by!]
+
+    """filter the rows returned"""
+    where: audit_user_access_summary_bool_exp
+  ): audit_user_access_summary_aggregate!
 
   """
   fetch data from the table: "billing_event_log"
@@ -14584,6 +18984,106 @@ type query_root {
   ): payroll_dates_aggregate!
 
   """
+  execute function "get_latest_payroll_version" which returns "latest_payroll_version_results"
+  """
+  get_latest_payroll_version(
+    """
+    input parameters for function "get_latest_payroll_version"
+    """
+    args: get_latest_payroll_version_args!
+
+    """distinct select on columns"""
+    distinct_on: [latest_payroll_version_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [latest_payroll_version_results_order_by!]
+
+    """filter the rows returned"""
+    where: latest_payroll_version_results_bool_exp
+  ): [latest_payroll_version_results!]!
+
+  """
+  execute function "get_latest_payroll_version" and query aggregates on result of table type "latest_payroll_version_results"
+  """
+  get_latest_payroll_version_aggregate(
+    """
+    input parameters for function "get_latest_payroll_version_aggregate"
+    """
+    args: get_latest_payroll_version_args!
+
+    """distinct select on columns"""
+    distinct_on: [latest_payroll_version_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [latest_payroll_version_results_order_by!]
+
+    """filter the rows returned"""
+    where: latest_payroll_version_results_bool_exp
+  ): latest_payroll_version_results_aggregate!
+
+  """
+  execute function "get_payroll_version_history" which returns "payroll_version_history_results"
+  """
+  get_payroll_version_history(
+    """
+    input parameters for function "get_payroll_version_history"
+    """
+    args: get_payroll_version_history_args!
+
+    """distinct select on columns"""
+    distinct_on: [payroll_version_history_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_version_history_results_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_version_history_results_bool_exp
+  ): [payroll_version_history_results!]!
+
+  """
+  execute function "get_payroll_version_history" and query aggregates on result of table type "payroll_version_history_results"
+  """
+  get_payroll_version_history_aggregate(
+    """
+    input parameters for function "get_payroll_version_history_aggregate"
+    """
+    args: get_payroll_version_history_args!
+
+    """distinct select on columns"""
+    distinct_on: [payroll_version_history_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_version_history_results_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_version_history_results_bool_exp
+  ): payroll_version_history_results_aggregate!
+
+  """
   fetch data from the table: "holidays"
   """
   holidays(
@@ -14860,6 +19360,92 @@ type query_root {
   payroll_activation_results_by_pk(id: uuid!): payroll_activation_results
 
   """
+  fetch data from the table: "payroll_assignment_audit"
+  """
+  payroll_assignment_audit(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): [payroll_assignment_audit!]!
+
+  """
+  fetch aggregated fields from the table: "payroll_assignment_audit"
+  """
+  payroll_assignment_audit_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): payroll_assignment_audit_aggregate!
+
+  """
+  fetch data from the table: "payroll_assignment_audit" using primary key columns
+  """
+  payroll_assignment_audit_by_pk(id: uuid!): payroll_assignment_audit
+
+  """An array relationship"""
+  payroll_assignments(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignments_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): [payroll_assignments!]!
+
+  """An aggregate relationship"""
+  payroll_assignments_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignments_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): payroll_assignments_aggregate!
+
+  """
+  fetch data from the table: "payroll_assignments" using primary key columns
+  """
+  payroll_assignments_by_pk(id: uuid!): payroll_assignments
+
+  """
   fetch data from the table: "payroll_cycles"
   """
   payroll_cycles(
@@ -14904,6 +19490,46 @@ type query_root {
     """Unique identifier for the payroll cycle"""
     id: uuid!
   ): payroll_cycles
+
+  """
+  fetch data from the table: "payroll_dashboard_stats"
+  """
+  payroll_dashboard_stats(
+    """distinct select on columns"""
+    distinct_on: [payroll_dashboard_stats_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_dashboard_stats_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_dashboard_stats_bool_exp
+  ): [payroll_dashboard_stats!]!
+
+  """
+  fetch aggregated fields from the table: "payroll_dashboard_stats"
+  """
+  payroll_dashboard_stats_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_dashboard_stats_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_dashboard_stats_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_dashboard_stats_bool_exp
+  ): payroll_dashboard_stats_aggregate!
 
   """
   fetch data from the table: "payroll_date_types"
@@ -14994,6 +19620,46 @@ type query_root {
     """Unique identifier for the payroll date"""
     id: uuid!
   ): payroll_dates
+
+  """
+  fetch data from the table: "payroll_triggers_status"
+  """
+  payroll_triggers_status(
+    """distinct select on columns"""
+    distinct_on: [payroll_triggers_status_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_triggers_status_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_triggers_status_bool_exp
+  ): [payroll_triggers_status!]!
+
+  """
+  fetch aggregated fields from the table: "payroll_triggers_status"
+  """
+  payroll_triggers_status_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_triggers_status_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_triggers_status_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_triggers_status_bool_exp
+  ): payroll_triggers_status_aggregate!
 
   """
   fetch data from the table: "payroll_version_history_results"
@@ -16446,6 +21112,46 @@ type roles_variance_fields {
 }
 
 type subscription_root {
+  """
+  execute function "activate_payroll_versions" which returns "payroll_activation_results"
+  """
+  activate_payroll_versions(
+    """distinct select on columns"""
+    distinct_on: [payroll_activation_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_activation_results_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_activation_results_bool_exp
+  ): [payroll_activation_results!]!
+
+  """
+  execute function "activate_payroll_versions" and query aggregates on result of table type "payroll_activation_results"
+  """
+  activate_payroll_versions_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_activation_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_activation_results_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_activation_results_bool_exp
+  ): payroll_activation_results_aggregate!
+
   """An array relationship"""
   adjustment_rules(
     """distinct select on columns"""
@@ -16563,6 +21269,407 @@ type subscription_root {
     """filter the rows returned"""
     where: app_settings_bool_exp
   ): [app_settings!]!
+
+  """
+  fetch data from the table: "audit.audit_log"
+  """
+  audit_audit_log(
+    """distinct select on columns"""
+    distinct_on: [audit_audit_log_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_audit_log_order_by!]
+
+    """filter the rows returned"""
+    where: audit_audit_log_bool_exp
+  ): [audit_audit_log!]!
+
+  """
+  fetch aggregated fields from the table: "audit.audit_log"
+  """
+  audit_audit_log_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_audit_log_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_audit_log_order_by!]
+
+    """filter the rows returned"""
+    where: audit_audit_log_bool_exp
+  ): audit_audit_log_aggregate!
+
+  """fetch data from the table: "audit.audit_log" using primary key columns"""
+  audit_audit_log_by_pk(id: uuid!): audit_audit_log
+
+  """
+  fetch data from the table in a streaming manner: "audit.audit_log"
+  """
+  audit_audit_log_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [audit_audit_log_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: audit_audit_log_bool_exp
+  ): [audit_audit_log!]!
+
+  """
+  fetch data from the table: "audit.auth_events"
+  """
+  audit_auth_events(
+    """distinct select on columns"""
+    distinct_on: [audit_auth_events_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_auth_events_order_by!]
+
+    """filter the rows returned"""
+    where: audit_auth_events_bool_exp
+  ): [audit_auth_events!]!
+
+  """
+  fetch aggregated fields from the table: "audit.auth_events"
+  """
+  audit_auth_events_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_auth_events_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_auth_events_order_by!]
+
+    """filter the rows returned"""
+    where: audit_auth_events_bool_exp
+  ): audit_auth_events_aggregate!
+
+  """
+  fetch data from the table: "audit.auth_events" using primary key columns
+  """
+  audit_auth_events_by_pk(id: uuid!): audit_auth_events
+
+  """
+  fetch data from the table in a streaming manner: "audit.auth_events"
+  """
+  audit_auth_events_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [audit_auth_events_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: audit_auth_events_bool_exp
+  ): [audit_auth_events!]!
+
+  """
+  fetch data from the table: "audit.data_access_log"
+  """
+  audit_data_access_log(
+    """distinct select on columns"""
+    distinct_on: [audit_data_access_log_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_data_access_log_order_by!]
+
+    """filter the rows returned"""
+    where: audit_data_access_log_bool_exp
+  ): [audit_data_access_log!]!
+
+  """
+  fetch aggregated fields from the table: "audit.data_access_log"
+  """
+  audit_data_access_log_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_data_access_log_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_data_access_log_order_by!]
+
+    """filter the rows returned"""
+    where: audit_data_access_log_bool_exp
+  ): audit_data_access_log_aggregate!
+
+  """
+  fetch data from the table: "audit.data_access_log" using primary key columns
+  """
+  audit_data_access_log_by_pk(id: uuid!): audit_data_access_log
+
+  """
+  fetch data from the table in a streaming manner: "audit.data_access_log"
+  """
+  audit_data_access_log_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [audit_data_access_log_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: audit_data_access_log_bool_exp
+  ): [audit_data_access_log!]!
+
+  """
+  fetch data from the table: "audit.permission_changes"
+  """
+  audit_permission_changes(
+    """distinct select on columns"""
+    distinct_on: [audit_permission_changes_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_permission_changes_order_by!]
+
+    """filter the rows returned"""
+    where: audit_permission_changes_bool_exp
+  ): [audit_permission_changes!]!
+
+  """
+  fetch aggregated fields from the table: "audit.permission_changes"
+  """
+  audit_permission_changes_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_permission_changes_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_permission_changes_order_by!]
+
+    """filter the rows returned"""
+    where: audit_permission_changes_bool_exp
+  ): audit_permission_changes_aggregate!
+
+  """
+  fetch data from the table: "audit.permission_changes" using primary key columns
+  """
+  audit_permission_changes_by_pk(id: uuid!): audit_permission_changes
+
+  """
+  fetch data from the table in a streaming manner: "audit.permission_changes"
+  """
+  audit_permission_changes_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [audit_permission_changes_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: audit_permission_changes_bool_exp
+  ): [audit_permission_changes!]!
+
+  """
+  fetch data from the table: "audit.permission_usage_report"
+  """
+  audit_permission_usage_report(
+    """distinct select on columns"""
+    distinct_on: [audit_permission_usage_report_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_permission_usage_report_order_by!]
+
+    """filter the rows returned"""
+    where: audit_permission_usage_report_bool_exp
+  ): [audit_permission_usage_report!]!
+
+  """
+  fetch aggregated fields from the table: "audit.permission_usage_report"
+  """
+  audit_permission_usage_report_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_permission_usage_report_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_permission_usage_report_order_by!]
+
+    """filter the rows returned"""
+    where: audit_permission_usage_report_bool_exp
+  ): audit_permission_usage_report_aggregate!
+
+  """
+  fetch data from the table in a streaming manner: "audit.permission_usage_report"
+  """
+  audit_permission_usage_report_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [audit_permission_usage_report_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: audit_permission_usage_report_bool_exp
+  ): [audit_permission_usage_report!]!
+
+  """
+  fetch data from the table: "audit.slow_queries"
+  """
+  audit_slow_queries(
+    """distinct select on columns"""
+    distinct_on: [audit_slow_queries_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_slow_queries_order_by!]
+
+    """filter the rows returned"""
+    where: audit_slow_queries_bool_exp
+  ): [audit_slow_queries!]!
+
+  """
+  fetch aggregated fields from the table: "audit.slow_queries"
+  """
+  audit_slow_queries_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_slow_queries_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_slow_queries_order_by!]
+
+    """filter the rows returned"""
+    where: audit_slow_queries_bool_exp
+  ): audit_slow_queries_aggregate!
+
+  """
+  fetch data from the table: "audit.slow_queries" using primary key columns
+  """
+  audit_slow_queries_by_pk(id: uuid!): audit_slow_queries
+
+  """
+  fetch data from the table in a streaming manner: "audit.slow_queries"
+  """
+  audit_slow_queries_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [audit_slow_queries_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: audit_slow_queries_bool_exp
+  ): [audit_slow_queries!]!
+
+  """
+  fetch data from the table: "audit.user_access_summary"
+  """
+  audit_user_access_summary(
+    """distinct select on columns"""
+    distinct_on: [audit_user_access_summary_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_user_access_summary_order_by!]
+
+    """filter the rows returned"""
+    where: audit_user_access_summary_bool_exp
+  ): [audit_user_access_summary!]!
+
+  """
+  fetch aggregated fields from the table: "audit.user_access_summary"
+  """
+  audit_user_access_summary_aggregate(
+    """distinct select on columns"""
+    distinct_on: [audit_user_access_summary_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [audit_user_access_summary_order_by!]
+
+    """filter the rows returned"""
+    where: audit_user_access_summary_bool_exp
+  ): audit_user_access_summary_aggregate!
+
+  """
+  fetch data from the table in a streaming manner: "audit.user_access_summary"
+  """
+  audit_user_access_summary_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [audit_user_access_summary_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: audit_user_access_summary_bool_exp
+  ): [audit_user_access_summary!]!
 
   """
   fetch data from the table: "billing_event_log"
@@ -17362,6 +22469,106 @@ type subscription_root {
   ): payroll_dates_aggregate!
 
   """
+  execute function "get_latest_payroll_version" which returns "latest_payroll_version_results"
+  """
+  get_latest_payroll_version(
+    """
+    input parameters for function "get_latest_payroll_version"
+    """
+    args: get_latest_payroll_version_args!
+
+    """distinct select on columns"""
+    distinct_on: [latest_payroll_version_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [latest_payroll_version_results_order_by!]
+
+    """filter the rows returned"""
+    where: latest_payroll_version_results_bool_exp
+  ): [latest_payroll_version_results!]!
+
+  """
+  execute function "get_latest_payroll_version" and query aggregates on result of table type "latest_payroll_version_results"
+  """
+  get_latest_payroll_version_aggregate(
+    """
+    input parameters for function "get_latest_payroll_version_aggregate"
+    """
+    args: get_latest_payroll_version_args!
+
+    """distinct select on columns"""
+    distinct_on: [latest_payroll_version_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [latest_payroll_version_results_order_by!]
+
+    """filter the rows returned"""
+    where: latest_payroll_version_results_bool_exp
+  ): latest_payroll_version_results_aggregate!
+
+  """
+  execute function "get_payroll_version_history" which returns "payroll_version_history_results"
+  """
+  get_payroll_version_history(
+    """
+    input parameters for function "get_payroll_version_history"
+    """
+    args: get_payroll_version_history_args!
+
+    """distinct select on columns"""
+    distinct_on: [payroll_version_history_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_version_history_results_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_version_history_results_bool_exp
+  ): [payroll_version_history_results!]!
+
+  """
+  execute function "get_payroll_version_history" and query aggregates on result of table type "payroll_version_history_results"
+  """
+  get_payroll_version_history_aggregate(
+    """
+    input parameters for function "get_payroll_version_history_aggregate"
+    """
+    args: get_payroll_version_history_args!
+
+    """distinct select on columns"""
+    distinct_on: [payroll_version_history_results_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_version_history_results_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_version_history_results_bool_exp
+  ): payroll_version_history_results_aggregate!
+
+  """
   fetch data from the table: "holidays"
   """
   holidays(
@@ -17722,6 +22929,120 @@ type subscription_root {
   ): [payroll_activation_results!]!
 
   """
+  fetch data from the table: "payroll_assignment_audit"
+  """
+  payroll_assignment_audit(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): [payroll_assignment_audit!]!
+
+  """
+  fetch aggregated fields from the table: "payroll_assignment_audit"
+  """
+  payroll_assignment_audit_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): payroll_assignment_audit_aggregate!
+
+  """
+  fetch data from the table: "payroll_assignment_audit" using primary key columns
+  """
+  payroll_assignment_audit_by_pk(id: uuid!): payroll_assignment_audit
+
+  """
+  fetch data from the table in a streaming manner: "payroll_assignment_audit"
+  """
+  payroll_assignment_audit_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [payroll_assignment_audit_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): [payroll_assignment_audit!]!
+
+  """An array relationship"""
+  payroll_assignments(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignments_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): [payroll_assignments!]!
+
+  """An aggregate relationship"""
+  payroll_assignments_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignments_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): payroll_assignments_aggregate!
+
+  """
+  fetch data from the table: "payroll_assignments" using primary key columns
+  """
+  payroll_assignments_by_pk(id: uuid!): payroll_assignments
+
+  """
+  fetch data from the table in a streaming manner: "payroll_assignments"
+  """
+  payroll_assignments_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [payroll_assignments_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): [payroll_assignments!]!
+
+  """
   fetch data from the table: "payroll_cycles"
   """
   payroll_cycles(
@@ -17780,6 +23101,60 @@ type subscription_root {
     """filter the rows returned"""
     where: payroll_cycles_bool_exp
   ): [payroll_cycles!]!
+
+  """
+  fetch data from the table: "payroll_dashboard_stats"
+  """
+  payroll_dashboard_stats(
+    """distinct select on columns"""
+    distinct_on: [payroll_dashboard_stats_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_dashboard_stats_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_dashboard_stats_bool_exp
+  ): [payroll_dashboard_stats!]!
+
+  """
+  fetch aggregated fields from the table: "payroll_dashboard_stats"
+  """
+  payroll_dashboard_stats_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_dashboard_stats_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_dashboard_stats_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_dashboard_stats_bool_exp
+  ): payroll_dashboard_stats_aggregate!
+
+  """
+  fetch data from the table in a streaming manner: "payroll_dashboard_stats"
+  """
+  payroll_dashboard_stats_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [payroll_dashboard_stats_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: payroll_dashboard_stats_bool_exp
+  ): [payroll_dashboard_stats!]!
 
   """
   fetch data from the table: "payroll_date_types"
@@ -17898,6 +23273,60 @@ type subscription_root {
     """filter the rows returned"""
     where: payroll_dates_bool_exp
   ): [payroll_dates!]!
+
+  """
+  fetch data from the table: "payroll_triggers_status"
+  """
+  payroll_triggers_status(
+    """distinct select on columns"""
+    distinct_on: [payroll_triggers_status_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_triggers_status_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_triggers_status_bool_exp
+  ): [payroll_triggers_status!]!
+
+  """
+  fetch aggregated fields from the table: "payroll_triggers_status"
+  """
+  payroll_triggers_status_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_triggers_status_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_triggers_status_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_triggers_status_bool_exp
+  ): payroll_triggers_status_aggregate!
+
+  """
+  fetch data from the table in a streaming manner: "payroll_triggers_status"
+  """
+  payroll_triggers_status_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [payroll_triggers_status_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: payroll_triggers_status_bool_exp
+  ): [payroll_triggers_status!]!
 
   """
   fetch data from the table: "payroll_version_history_results"
@@ -18980,6 +24409,222 @@ type users {
   ): notes_aggregate!
 
   """An array relationship"""
+  payrollAssignmentAuditsByFromConsultantId(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): [payroll_assignment_audit!]!
+
+  """An aggregate relationship"""
+  payrollAssignmentAuditsByFromConsultantId_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): payroll_assignment_audit_aggregate!
+
+  """An array relationship"""
+  payrollAssignmentAuditsByToConsultantId(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): [payroll_assignment_audit!]!
+
+  """An aggregate relationship"""
+  payrollAssignmentAuditsByToConsultantId_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): payroll_assignment_audit_aggregate!
+
+  """An array relationship"""
+  payrollAssignmentsByConsultantId(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignments_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): [payroll_assignments!]!
+
+  """An aggregate relationship"""
+  payrollAssignmentsByConsultantId_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignments_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): payroll_assignments_aggregate!
+
+  """An array relationship"""
+  payrollAssignmentsByOriginalConsultantId(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignments_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): [payroll_assignments!]!
+
+  """An aggregate relationship"""
+  payrollAssignmentsByOriginalConsultantId_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignments_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): payroll_assignments_aggregate!
+
+  """An array relationship"""
+  payroll_assignment_audits(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): [payroll_assignment_audit!]!
+
+  """An aggregate relationship"""
+  payroll_assignment_audits_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignment_audit_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignment_audit_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignment_audit_bool_exp
+  ): payroll_assignment_audit_aggregate!
+
+  """An array relationship"""
+  payroll_assignments(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignments_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): [payroll_assignments!]!
+
+  """An aggregate relationship"""
+  payroll_assignments_aggregate(
+    """distinct select on columns"""
+    distinct_on: [payroll_assignments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [payroll_assignments_order_by!]
+
+    """filter the rows returned"""
+    where: payroll_assignments_bool_exp
+  ): payroll_assignments_aggregate!
+
+  """An array relationship"""
   payrollsByBackupConsultantUserId(
     """distinct select on columns"""
     distinct_on: [payrolls_select_column!]
@@ -19329,6 +24974,18 @@ input users_bool_exp {
   name: String_comparison_exp
   notes_written: notes_bool_exp
   notes_written_aggregate: notes_aggregate_bool_exp
+  payrollAssignmentAuditsByFromConsultantId: payroll_assignment_audit_bool_exp
+  payrollAssignmentAuditsByFromConsultantId_aggregate: payroll_assignment_audit_aggregate_bool_exp
+  payrollAssignmentAuditsByToConsultantId: payroll_assignment_audit_bool_exp
+  payrollAssignmentAuditsByToConsultantId_aggregate: payroll_assignment_audit_aggregate_bool_exp
+  payrollAssignmentsByConsultantId: payroll_assignments_bool_exp
+  payrollAssignmentsByConsultantId_aggregate: payroll_assignments_aggregate_bool_exp
+  payrollAssignmentsByOriginalConsultantId: payroll_assignments_bool_exp
+  payrollAssignmentsByOriginalConsultantId_aggregate: payroll_assignments_aggregate_bool_exp
+  payroll_assignment_audits: payroll_assignment_audit_bool_exp
+  payroll_assignment_audits_aggregate: payroll_assignment_audit_aggregate_bool_exp
+  payroll_assignments: payroll_assignments_bool_exp
+  payroll_assignments_aggregate: payroll_assignments_aggregate_bool_exp
   payrollsByBackupConsultantUserId: payrolls_bool_exp
   payrollsByBackupConsultantUserId_aggregate: payrolls_aggregate_bool_exp
   payrollsByManagerUserId: payrolls_bool_exp
@@ -19408,6 +25065,12 @@ input users_insert_input {
   """User's full name"""
   name: String
   notes_written: notes_arr_rel_insert_input
+  payrollAssignmentAuditsByFromConsultantId: payroll_assignment_audit_arr_rel_insert_input
+  payrollAssignmentAuditsByToConsultantId: payroll_assignment_audit_arr_rel_insert_input
+  payrollAssignmentsByConsultantId: payroll_assignments_arr_rel_insert_input
+  payrollAssignmentsByOriginalConsultantId: payroll_assignments_arr_rel_insert_input
+  payroll_assignment_audits: payroll_assignment_audit_arr_rel_insert_input
+  payroll_assignments: payroll_assignments_arr_rel_insert_input
   payrollsByBackupConsultantUserId: payrolls_arr_rel_insert_input
   payrollsByManagerUserId: payrolls_arr_rel_insert_input
   payrollsByPrimaryConsultantUserId: payrolls_arr_rel_insert_input
@@ -19617,6 +25280,12 @@ input users_order_by {
   manager_id: order_by
   name: order_by
   notes_written_aggregate: notes_aggregate_order_by
+  payrollAssignmentAuditsByFromConsultantId_aggregate: payroll_assignment_audit_aggregate_order_by
+  payrollAssignmentAuditsByToConsultantId_aggregate: payroll_assignment_audit_aggregate_order_by
+  payrollAssignmentsByConsultantId_aggregate: payroll_assignments_aggregate_order_by
+  payrollAssignmentsByOriginalConsultantId_aggregate: payroll_assignments_aggregate_order_by
+  payroll_assignment_audits_aggregate: payroll_assignment_audit_aggregate_order_by
+  payroll_assignments_aggregate: payroll_assignments_aggregate_order_by
   payrollsByBackupConsultantUserId_aggregate: payrolls_aggregate_order_by
   payrollsByManagerUserId_aggregate: payrolls_aggregate_order_by
   payrollsByPrimaryConsultantUserId_aggregate: payrolls_aggregate_order_by

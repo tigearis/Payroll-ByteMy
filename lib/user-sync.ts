@@ -1,19 +1,12 @@
 // lib/user-sync.ts
 import { clerkClient } from "@clerk/nextjs/server";
 import { gql } from "@apollo/client";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { adminApolloClient } from "@/lib/apollo/server-client";
+import { ROLE_HIERARCHY, Role } from "@/types/permissions";
 
-// Define user role hierarchy for permission checking
-// These must match the Hasura database enum values exactly
-export const USER_ROLES = {
-  developer: 5, // Developers - highest level
-  org_admin: 4, // Standard Admins
-  manager: 3,
-  consultant: 2,
-  viewer: 1,
-} as const;
-
-export type UserRole = keyof typeof USER_ROLES;
+// Re-export for backward compatibility
+export { ROLE_HIERARCHY as USER_ROLES };
+export type { Role as UserRole };
 
 // Query to find a user by email
 const GET_USER_BY_EMAIL = gql`
@@ -183,7 +176,7 @@ export async function syncUserWithDatabase(
   role: UserRole = "viewer",
   managerId?: string,
   imageUrl?: string
-) {
+): Promise<any> {
   try {
     console.log(`🔄 Syncing user with database: ${clerkId} (${email})`);
 
@@ -268,32 +261,33 @@ export async function syncUserWithDatabase(
         `📝 Creating new user in database: ${name} (${email}) with role: ${role}`
       );
 
-      const { data: newUserData, errors: mutationErrors } =
+      // Now, upsert the user with all available info
+      const { data: upsertData, errors: upsertErrors } =
         await adminApolloClient.mutate({
           mutation: UPSERT_USER,
           variables: {
-            clerkId,
-            name,
-            email,
-            role,
-            isStaff: role === "org_admin" || role === "manager",
-            managerId: managerId || null,
-            image: clerkImageUrl || null,
+            clerkId: clerkId,
+            name: name || "New User",
+            email: email,
+            role: role,
+            isStaff: role !== "viewer", // Simple logic, can be refined
+            managerId: managerId,
+            image: clerkImageUrl,
           },
           errorPolicy: "all",
         });
 
-      if (mutationErrors) {
-        console.error("User creation errors:", mutationErrors);
+      if (upsertErrors) {
+        console.error("Upsert errors:", upsertErrors);
         throw new Error(
-          `Failed to create user: ${mutationErrors
+          `Failed to upsert user: ${upsertErrors
             .map((e) => e.message)
             .join(", ")}`
         );
       }
 
-      databaseUser = newUserData?.insert_users_one;
-      console.log("✅ Created new user in database:", databaseUser);
+      databaseUser = upsertData?.insert_users_one;
+      console.log("✅ User upserted successfully:", databaseUser.name);
     } else if (
       databaseUser &&
       clerkImageUrl &&
@@ -503,8 +497,8 @@ export async function deleteUserFromDatabase(clerkId: string) {
   }
 }
 
-// Function to check if user has permission for role assignment
-export function canAssignRole(
+// Function to check if user has permission for role assignment (legacy version)
+export function canAssignUserRole(
   currentUserRole: UserRole | "developer",
   targetRole: UserRole
 ): boolean {
@@ -515,7 +509,11 @@ export function canAssignRole(
   const targetLevel = USER_ROLES[targetRole];
 
   // Developers (developer) and Standard Admins (org_admin) can assign any role
-  if (normalizedCurrentRole === "developer" || normalizedCurrentRole === "org_admin") return true;
+  if (
+    normalizedCurrentRole === "developer" ||
+    normalizedCurrentRole === "org_admin"
+  )
+    return true;
 
   // Managers can assign consultant and viewer roles
   if (
@@ -528,6 +526,9 @@ export function canAssignRole(
   // Users cannot assign roles higher than or equal to their own
   return currentLevel > targetLevel;
 }
+
+// Re-export the consolidated function for new code
+export { canAssignRole } from "@/types/permissions";
 
 // Function to get user permissions
 export function getUserPermissions(role: UserRole | "developer") {

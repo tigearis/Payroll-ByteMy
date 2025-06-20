@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { GET_PAYROLLS } from "@/graphql/queries/payrolls/getPayrolls";
-import { Payroll } from "@/types/interface";
+import { Payroll } from "@/domains/payrolls/types";
 import { useSmartPolling } from "@/hooks/usePolling";
 
 interface PayrollListCardProps {

@@ -1,10 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import {
-  ApiResponses,
-  validateRequiredFields,
-  handleApiError,
-} from "@/lib/api-responses";
+import { ApiResponses, handleApiError } from "@/lib/api/responses";
 
 interface UpdateProfileRequest {
   firstName?: string;
