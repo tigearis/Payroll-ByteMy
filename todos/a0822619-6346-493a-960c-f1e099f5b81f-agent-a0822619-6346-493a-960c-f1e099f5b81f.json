@@ -1,0 +1,56 @@
+[
+  {
+    "content": "Fix GraphQL validation errors in existing domain files",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Complete missing GraphQL files for partially migrated domains",
+    "status": "pending",
+    "priority": "medium",
+    "id": "2"
+  },
+  {
+    "content": "Create domain migration plan document",
+    "status": "pending",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Set up codegen automation and CI integration",
+    "status": "pending",
+    "priority": "low",
+    "id": "4"
+  },
+  {
+    "content": "Migrate client domain inline GraphQL operations to domain files",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Find and catalog all client domain inline GraphQL operations",
+    "status": "completed",
+    "priority": "high",
+    "id": "6"
+  },
+  {
+    "content": "Move client operations to domain GraphQL files",
+    "status": "completed",
+    "priority": "high",
+    "id": "7"
+  },
+  {
+    "content": "Update imports and test client domain migration",
+    "status": "completed",
+    "priority": "high",
+    "id": "8"
+  },
+  {
+    "content": "Fix TypeScript export and import errors in restored scheduler components",
+    "status": "completed",
+    "priority": "high",
+    "id": "9"
+  }
+]

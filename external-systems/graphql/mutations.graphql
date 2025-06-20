@@ -1,0 +1,48 @@
+# External Systems Domain Mutations
+
+# External Systems
+mutation CreateExternalSystem($object: external_systems_insert_input!) {
+  insert_external_systems_one(object: $object) {
+    ...ExternalSystemCore
+  }
+}
+
+mutation UpdateExternalSystem($id: uuid!, $set: external_systems_set_input!) {
+  update_external_systems_by_pk(pk_columns: { id: $id }, _set: $set) {
+    ...ExternalSystemCore
+  }
+}
+
+mutation DeleteExternalSystem($id: uuid!) {
+  delete_external_systems_by_pk(id: $id) {
+    id
+  }
+}
+
+# Client External Systems
+mutation LinkClientToExternalSystem($object: client_external_systems_insert_input!) {
+  insert_client_external_systems_one(object: $object) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+mutation UpdateClientExternalSystem($id: uuid!, $set: client_external_systems_set_input!) {
+  update_client_external_systems_by_pk(pk_columns: { id: $id }, _set: $set) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+mutation UnlinkClientFromExternalSystem($id: uuid!) {
+  delete_client_external_systems_by_pk(id: $id) {
+    id
+  }
+}
+
+mutation BulkLinkClientsToExternalSystem($objects: [client_external_systems_insert_input!]!) {
+  insert_client_external_systems(objects: $objects) {
+    returning {
+      ...ClientExternalSystemWithRelations
+    }
+    affected_rows
+  }
+}

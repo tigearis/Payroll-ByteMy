@@ -1,0 +1,159 @@
+# Secure Payroll Fragments
+# Contains sensitive financial and employee data
+
+"""
+Basic payroll information
+@securityLevel: MEDIUM
+@requiredRole: viewer
+@usage: Payroll lists, basic displays
+"""
+fragment PayrollBasicInfo on payrolls {
+  id
+  name # MEDIUM
+  status # MEDIUM
+  created_at # LOW
+  updated_at # LOW
+}
+
+"""
+Payroll operational details
+@securityLevel: MEDIUM
+@requiredRole: consultant
+@usage: Payroll management, scheduling
+"""
+fragment PayrollOperationalInfo on payrolls {
+  id
+  name # MEDIUM
+  status # MEDIUM
+  processing_time # MEDIUM
+  processing_days_before_eft # MEDIUM
+  payroll_system # MEDIUM
+  date_value # MEDIUM
+  created_at # LOW
+  updated_at # LOW
+  client {
+    id
+    name # MEDIUM
+  }
+  payroll_cycle {
+    id
+    name # LOW
+  }
+  payroll_date_type {
+    id
+    name # LOW
+  }
+}
+
+"""
+Payroll with assignments
+@securityLevel: HIGH
+@requiredRole: consultant
+@usage: Payroll assignment management
+@audit: true
+"""
+fragment PayrollWithAssignments on payrolls {
+  ...PayrollOperationalInfo
+  primary_consultant_user_id # MEDIUM
+  backup_consultant_user_id # MEDIUM
+  manager_user_id # MEDIUM
+  userByPrimaryConsultantUserId {
+    id
+    name # HIGH - PII
+    email # HIGH - PII
+  }
+  userByBackupConsultantUserId {
+    id
+    name # HIGH - PII
+    email # HIGH - PII
+  }
+  userByManagerUserId {
+    id
+    name # HIGH - PII
+    email # HIGH - PII
+  }
+}
+
+"""
+Payroll with sensitive metrics
+@securityLevel: HIGH
+@requiredRole: manager
+@usage: Management reporting, analytics
+@audit: true
+@compliance: SOC2-C1.1
+"""
+fragment PayrollWithMetrics on payrolls {
+  ...PayrollWithAssignments
+  employee_count # HIGH - Sensitive business metric
+  go_live_date # MEDIUM
+}
+
+"""
+Payroll with financial dates
+@securityLevel: HIGH
+@requiredRole: consultant
+@usage: Payroll processing, scheduling
+@audit: true
+@compliance: SOC2-PI1.1
+"""
+fragment PayrollWithDates on payrolls {
+  ...PayrollOperationalInfo
+  payroll_dates(order_by: { adjusted_eft_date: asc }) {
+    id # LOW
+    original_eft_date # HIGH - Financial date
+    adjusted_eft_date # HIGH - Financial date
+    processing_date # HIGH - Financial date
+    notes # MEDIUM
+    created_at # LOW
+    updated_at # LOW
+  }
+}
+
+"""
+Payroll version history
+@securityLevel: MEDIUM
+@requiredRole: manager
+@usage: Audit trails, version tracking
+@audit: true
+"""
+fragment PayrollVersionInfo on payrolls {
+  id
+  version_number # LOW
+  parent_payroll_id # MEDIUM
+  superseded_date # MEDIUM
+  version_reason # MEDIUM
+  created_by_user_id # MEDIUM
+  created_at # LOW
+}
+
+"""
+Complete payroll details for admins
+@securityLevel: HIGH
+@requiredRole: admin
+@usage: Full payroll administration
+@audit: true
+@compliance: SOC2-CC6.1, SOC2-PI1.1
+"""
+fragment PayrollAdminDetails on payrolls {
+  ...PayrollWithMetrics
+  ...PayrollVersionInfo
+  payroll_dates(order_by: { adjusted_eft_date: asc }) {
+    id # LOW
+    original_eft_date # HIGH - Financial date
+    adjusted_eft_date # HIGH - Financial date
+    processing_date # HIGH - Financial date
+    notes # MEDIUM
+    created_at # LOW
+    updated_at # LOW
+  }
+  # Version history
+  payroll {
+    id
+    version_number
+  }
+  payrolls {
+    id
+    version_number
+    superseded_date
+  }
+}

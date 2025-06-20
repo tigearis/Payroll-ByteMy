@@ -1,0 +1,62 @@
+# Security Classification Types
+# These types define the security levels for data access and operations
+
+"""
+Data classification levels for SOC2 compliance
+"""
+enum DataClassification {
+  """
+  Highest security level - SSN, bank details, salary data
+  Requires: Admin role + MFA + Full audit trail
+  """
+  CRITICAL
+  
+  """
+  High security - PII, employee data, financial information
+  Requires: Audit trail + Encryption at rest
+  """
+  HIGH
+  
+  """
+  Medium security - Work schedules, general notes
+  Requires: Role-based access control
+  """
+  MEDIUM
+  
+  """
+  Low security - Public holidays, system configurations
+  Standard access controls
+  """
+  LOW
+}
+
+"""
+Audit action types for compliance tracking
+"""
+enum AuditAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  EXPORT
+  BULK_OPERATION
+}
+
+"""
+Security event severity levels
+"""
+enum SecurityEventSeverity {
+  info
+  warning
+  error
+  critical
+}
+
+"""
+Compliance check status
+"""
+enum ComplianceStatus {
+  passed
+  failed
+  warning
+}

@@ -1,0 +1,74 @@
+# Work Schedule Domain Queries
+
+query GetWorkSchedules($where: work_schedule_bool_exp, $order_by: [work_schedule_order_by!]) {
+  work_schedule(where: $where, order_by: $order_by) {
+    ...WorkScheduleWithUser
+  }
+}
+
+query GetWorkScheduleByUser($user_id: uuid!) {
+  work_schedule(
+    where: { user_id: { _eq: $user_id } }
+    order_by: { work_day: asc }
+  ) {
+    ...WorkScheduleCore
+  }
+}
+
+query GetWorkScheduleById($id: uuid!) {
+  work_schedule_by_pk(id: $id) {
+    ...WorkScheduleWithUser
+  }
+}
+
+query GetTeamWorkSchedules($user_ids: [uuid!]!) {
+  work_schedule(
+    where: { user_id: { _in: $user_ids } }
+    order_by: [{ user_id: asc }, { work_day: asc }]
+  ) {
+    ...WorkScheduleWithUser
+  }
+}
+
+query GetWorkScheduleAnalytics {
+  total_hours_by_day: work_schedule_aggregate {
+    nodes {
+      work_day
+    }
+    aggregate {
+      sum {
+        work_hours
+      }
+      avg {
+        work_hours
+      }
+      count
+    }
+  }
+  
+  users_by_work_day: work_schedule {
+    work_day
+    user {
+      id
+      name
+    }
+    work_hours
+  }
+  
+  average_hours_per_user: work_schedule_aggregate {
+    aggregate {
+      sum {
+        work_hours
+      }
+      avg {
+        work_hours
+      }
+    }
+    nodes {
+      user {
+        id
+        name
+      }
+    }
+  }
+}

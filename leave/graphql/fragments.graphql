@@ -1,0 +1,33 @@
+# Leave Domain Fragments
+
+fragment LeaveCore on leave {
+  id
+  user_id
+  start_date
+  end_date
+  leave_type
+  reason
+  status
+}
+
+fragment LeaveWithUser on leave {
+  ...LeaveCore
+  user {
+    id
+    name
+    email
+    is_staff
+    manager_id
+  }
+}
+
+fragment LeaveWithManager on leave {
+  ...LeaveWithUser
+  user {
+    manager {
+      id
+      name
+      email
+    }
+  }
+}

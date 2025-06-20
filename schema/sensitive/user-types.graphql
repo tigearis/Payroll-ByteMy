@@ -1,0 +1,187 @@
+# User Types with Security Classifications
+# HIGH and CRITICAL fields are marked and require special handling
+
+"""
+User type with field-level security classifications
+@securityLevel: HIGH
+@compliance: SOC2-CC6.1, GDPR-Article-32
+"""
+type users {
+  """
+  User ID
+  @securityLevel: MEDIUM
+  """
+  id: UUID!
+  
+  """
+  User full name
+  @securityLevel: HIGH
+  @pii: true
+  @compliance: GDPR-Article-4
+  """
+  name: String!
+  
+  """
+  User email address
+  @securityLevel: HIGH
+  @pii: true
+  @compliance: GDPR-Article-4
+  @masking: email
+  """
+  email: String!
+  
+  """
+  User role
+  @securityLevel: MEDIUM
+  @audit: true
+  """
+  role: user_role!
+  
+  """
+  Clerk authentication ID
+  @securityLevel: HIGH
+  @restricted: admin_only
+  """
+  clerk_user_id: String
+  
+  """
+  Profile image URL
+  @securityLevel: LOW
+  """
+  image: String
+  
+  """
+  Staff member flag
+  @securityLevel: MEDIUM
+  """
+  is_staff: Boolean!
+  
+  """
+  Manager relationship
+  @securityLevel: MEDIUM
+  """
+  manager_id: UUID
+  
+  """
+  Account creation timestamp
+  @securityLevel: LOW
+  @audit: true
+  """
+  created_at: timestamptz!
+  
+  """
+  Last update timestamp
+  @securityLevel: LOW
+  @audit: true
+  """
+  updated_at: timestamptz!
+  
+  # Relationships
+  manager: users
+  staffByManager: [users!]!
+  payrollsByPrimaryConsultantUserId: [payrolls!]!
+  payrollsByBackupConsultantUserId: [payrolls!]!
+  payrollsByManagerUserId: [payrolls!]!
+  leaves: [leave!]!
+  work_schedules: [work_schedule!]!
+  notes_written: [notes!]!
+}
+
+"""
+Secure user input type for mutations
+@securityLevel: HIGH
+@compliance: SOC2-CC6.1
+"""
+input users_insert_input {
+  """
+  @securityLevel: HIGH
+  @validation: required, min_length:2
+  """
+  name: String!
+  
+  """
+  @securityLevel: HIGH
+  @validation: required, email_format
+  """
+  email: String!
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: enum
+  """
+  role: user_role
+  
+  """
+  @securityLevel: HIGH
+  @restricted: system_only
+  """
+  clerk_user_id: String
+  
+  """
+  @securityLevel: LOW
+  @validation: url_format
+  """
+  image: String
+  
+  """
+  @securityLevel: MEDIUM
+  """
+  is_staff: Boolean
+  
+  """
+  @securityLevel: MEDIUM
+  @validation: valid_user_id
+  """
+  manager_id: UUID
+}
+
+"""
+Secure user update type
+@securityLevel: HIGH
+@compliance: SOC2-CC6.1
+"""
+input users_set_input {
+  """
+  @securityLevel: HIGH
+  @audit: true
+  """
+  name: String
+  
+  """
+  @securityLevel: HIGH
+  @audit: true
+  @validation: email_format
+  """
+  email: String
+  
+  """
+  @securityLevel: MEDIUM
+  @audit: true
+  @restricted: manager_up
+  """
+  role: user_role
+  
+  """
+  @securityLevel: LOW
+  """
+  image: String
+  
+  """
+  @securityLevel: MEDIUM
+  @audit: true
+  @restricted: admin_only
+  """
+  is_staff: Boolean
+  
+  """
+  @securityLevel: MEDIUM
+  @audit: true
+  """
+  manager_id: UUID
+  
+  """
+  @securityLevel: LOW
+  @system_managed: true
+  """
+  updated_at: timestamptz
+}

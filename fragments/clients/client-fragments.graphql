@@ -1,0 +1,63 @@
+# Client Fragments
+# @securityLevel: MEDIUM
+
+# Basic client information
+# @securityLevel: MEDIUM
+fragment ClientBasic on clients {
+  id
+  name
+  active
+  created_at
+}
+
+# Detailed client information
+# @securityLevel: MEDIUM
+fragment ClientDetailed on clients {
+  id
+  name
+  contact_person
+  contact_email
+  contact_phone
+  active
+  created_at
+  updated_at
+  # Related payrolls count
+  payrolls_aggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Client list item
+# @securityLevel: MEDIUM
+fragment ClientListItem on clients {
+  id
+  name
+  contact_person
+  contact_email
+  active
+  created_at
+  payrolls_aggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Client with payrolls
+# @securityLevel: MEDIUM
+fragment ClientWithPayrolls on clients {
+  id
+  name
+  contact_person
+  contact_email
+  contact_phone
+  active
+  payrolls(order_by: { name: asc }) {
+    id
+    name
+    status
+    employee_count
+  }
+}

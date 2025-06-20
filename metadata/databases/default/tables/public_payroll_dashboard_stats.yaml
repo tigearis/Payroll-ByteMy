@@ -1,0 +1,68 @@
+table:
+  name: payroll_dashboard_stats
+  schema: public
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - name
+        - status
+        - client_name
+        - cycle_name
+        - total_dates
+        - future_dates
+        - past_dates
+        - next_eft_date
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+      filter:
+        _or:
+          - primary_consultant_user_id:
+              _eq: X-Hasura-User-Id
+          - backup_consultant_user_id:
+              _eq: X-Hasura-User-Id
+    comment: Consultants can view dashboard stats for their assigned payrolls
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - id
+        - name
+        - status
+        - client_name
+        - cycle_name
+        - total_dates
+        - future_dates
+        - past_dates
+        - next_eft_date
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all dashboard statistics
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - name
+        - status
+        - client_name
+        - cycle_name
+        - total_dates
+        - future_dates
+        - past_dates
+        - next_eft_date
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all dashboard statistics including system health

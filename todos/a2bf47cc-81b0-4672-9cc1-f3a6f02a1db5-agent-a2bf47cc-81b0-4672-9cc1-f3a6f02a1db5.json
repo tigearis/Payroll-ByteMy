@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Implement full staff creation logic",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Create user in Clerk",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Store user record in database",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Send invitation email",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Add proper error handling and validation",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  }
+]

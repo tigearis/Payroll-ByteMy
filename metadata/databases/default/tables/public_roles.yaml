@@ -1,0 +1,86 @@
+table:
+  name: roles
+  schema: public
+array_relationships:
+  - name: role_permissions
+    using:
+      foreign_key_constraint_on:
+        column: role_id
+        table:
+          name: role_permissions
+          schema: public
+  - name: user_roles
+    using:
+      foreign_key_constraint_on:
+        column: role_id
+        table:
+          name: user_roles
+          schema: public
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - name
+        - description
+        - priority
+        - created_at
+        - updated_at
+      filter: {}
+    comment: Consultants can view available roles
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - id
+        - name
+        - description
+        - priority
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all roles
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - name
+        - description
+        - priority
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all roles
+  - role: viewer
+    permission:
+      columns:
+        - id
+        - name
+        - priority
+      filter: {}
+    comment: Viewers can see basic role information
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
