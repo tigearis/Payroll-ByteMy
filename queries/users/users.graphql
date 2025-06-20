@@ -1,0 +1,87 @@
+# Get all users with pagination and filtering
+query GetUsers($limit: Int = 50, $offset: Int = 0, $where: users_bool_exp) {
+  users(
+    limit: $limit
+    offset: $offset
+    where: $where
+    order_by: { created_at: desc }
+  ) {
+    id
+    name
+    role
+    created_at
+    updated_at
+    is_staff
+    manager_id
+    clerk_user_id
+    manager {
+      id
+      name
+    }
+  }
+  users_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Get user by ID
+query GetUserById($id: uuid!) {
+  users_by_pk(id: $id) {
+    id
+    name
+    role
+    created_at
+    updated_at
+    is_staff
+    manager_id
+    clerk_user_id
+    manager {
+      id
+      name
+      role
+    }
+  }
+}
+
+# Get user by Clerk ID
+query GetUserByClerkId($clerkId: String!) {
+  users(where: { clerk_user_id: { _eq: $clerkId } }) {
+    id
+    name
+    role
+    created_at
+    updated_at
+    is_staff
+    manager_id
+    clerk_user_id
+    manager {
+      id
+      name
+      role
+    }
+  }
+}
+
+# Get users by role
+query GetUsersByRole($role: user_role!) {
+  users(where: { role: { _eq: $role } }, order_by: { name: asc }) {
+    id
+    name
+    role
+    created_at
+    is_staff
+    manager_id
+    clerk_user_id
+  }
+}
+
+# Get managers for assignment
+query GetManagers {
+  users(where: { role: { _in: ["developer", "org_admin", "manager"] } }, order_by: { name: asc }) {
+    id
+    name
+    role
+  }
+}

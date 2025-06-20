@@ -1,0 +1,98 @@
+# User Queries
+# @securityLevel: HIGH
+# @pii: true
+# @audit: true
+
+# Get user by ID
+query GetUserById($id: uuid!) {
+  users_by_pk(id: $id) {
+    ...UserDetailed
+  }
+}
+
+# Get current user profile
+query GetCurrentUser($id: uuid!) {
+  users_by_pk(id: $id) {
+    ...UserProfile
+  }
+}
+
+# List users with pagination
+query ListUsers(
+  $limit: Int = 10
+  $offset: Int = 0
+  $where: users_bool_exp = {}
+  $order_by: [users_order_by!] = [{ created_at: desc }]
+) {
+  users(
+    limit: $limit
+    offset: $offset
+    where: $where
+    order_by: $order_by
+  ) {
+    ...UserListItem
+  }
+  users_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Search users by email or name
+query SearchUsers(
+  $search: String!
+  $limit: Int = 10
+  $offset: Int = 0
+) {
+  users(
+    limit: $limit
+    offset: $offset
+    where: {
+      _or: [
+        { email: { _ilike: $search } }
+        { name: { _ilike: $search } }
+      ]
+    }
+    order_by: { name: asc }
+  ) {
+    ...UserBasic
+  }
+}
+
+# Get users by role
+query GetUsersByRole(
+  $role: user_role!
+  $active: Boolean = true
+) {
+  users(
+    where: {
+      role: { _eq: $role }
+      active: { _eq: $active }
+    }
+    order_by: { name: asc }
+  ) {
+    ...UserListItem
+  }
+}
+
+# Get user audit information
+query GetUserAudit($id: uuid!) {
+  users_by_pk(id: $id) {
+    ...UserAudit
+  }
+  audit_log(
+    where: { user_id: { _eq: $id } }
+    order_by: { created_at: desc }
+    limit: 50
+  ) {
+    id
+    action
+    entity_type
+    entity_id
+    data_classification
+    success
+    created_at
+    ip_address
+  }
+}

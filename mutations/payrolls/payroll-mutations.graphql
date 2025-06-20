@@ -1,0 +1,131 @@
+# Payroll Mutations
+# @securityLevel: HIGH
+# @financial: true
+# @audit: true
+
+# Create a new payroll
+mutation CreatePayroll(
+  $name: String!
+  $client_id: uuid!
+  $primary_consultant_user_id: uuid!
+  $backup_consultant_user_id: uuid
+  $manager_user_id: uuid
+  $employee_count: Int!
+  $cycle_id: uuid!
+  $date_type_id: uuid!
+) {
+  insert_payrolls_one(
+    object: {
+      name: $name
+      client_id: $client_id
+      primary_consultant_user_id: $primary_consultant_user_id
+      backup_consultant_user_id: $backup_consultant_user_id
+      manager_user_id: $manager_user_id
+      employee_count: $employee_count
+      cycle_id: $cycle_id
+      date_type_id: $date_type_id
+      status: Implementation
+    }
+  ) {
+    ...PayrollDetailed
+  }
+}
+
+# Update payroll information
+mutation UpdatePayroll(
+  $id: uuid!
+  $name: String
+  $employee_count: Int
+  $status: payroll_status
+  $primary_consultant_user_id: uuid
+  $backup_consultant_user_id: uuid
+  $manager_user_id: uuid
+  $cycle_id: uuid
+  $date_type_id: uuid
+) {
+  update_payrolls_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      name: $name
+      employee_count: $employee_count
+      status: $status
+      primary_consultant_user_id: $primary_consultant_user_id
+      backup_consultant_user_id: $backup_consultant_user_id
+      manager_user_id: $manager_user_id
+      cycle_id: $cycle_id
+      date_type_id: $date_type_id
+    }
+  ) {
+    ...PayrollDetailed
+  }
+}
+
+# Update payroll status
+mutation UpdatePayrollStatus(
+  $id: uuid!
+  $status: payroll_status!
+) {
+  update_payrolls_by_pk(
+    pk_columns: { id: $id }
+    _set: { status: $status }
+  ) {
+    id
+    name
+    status
+  }
+}
+
+# Generate payroll dates
+mutation GeneratePayrollDates(
+  $payroll_id: uuid!
+  $start_date: date!
+  $end_date: date!
+) {
+  generate_payroll_dates(
+    args: {
+      p_payroll_id: $payroll_id
+      p_start_date: $start_date
+      p_end_date: $end_date
+    }
+  ) {
+    success
+    message
+  }
+}
+
+# Delete payroll (hard delete)
+mutation DeletePayroll($id: uuid!) {
+  delete_payrolls_by_pk(id: $id) {
+    id
+    name
+    client {
+      id
+      name
+    }
+  }
+}
+
+# Bulk update payroll consultants
+mutation BulkUpdatePayrollConsultants(
+  $from_consultant_id: uuid!
+  $to_consultant_id: uuid!
+  $payroll_ids: [uuid!]!
+) {
+  update_payrolls(
+    where: {
+      id: { _in: $payroll_ids }
+      primary_consultant_user_id: { _eq: $from_consultant_id }
+    }
+    _set: { primary_consultant_user_id: $to_consultant_id }
+  ) {
+    affected_rows
+    returning {
+      id
+      name
+      userByPrimaryConsultantUserId {
+        id
+        name
+      }
+    }
+  }
+}

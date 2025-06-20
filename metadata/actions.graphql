@@ -1,0 +1,91 @@
+type Mutation {
+  checkSuspiciousActivity(
+    userId: String
+    timeWindow: Int
+  ): SuspiciousActivityResponse
+}
+
+type Mutation {
+  commitPayrollAssignments(
+    changes: [PayrollAssignmentInput!]!
+  ): CommitPayrollAssignmentsOutput
+}
+
+type Mutation {
+  generateComplianceReport(
+    input: ComplianceReportInput!
+  ): ComplianceReportResponse
+}
+
+type Mutation {
+  logAuditEvent(
+    event: AuditEventInput!
+  ): AuditEventResponse
+}
+
+input PayrollAssignmentInput {
+  payrollId: String!
+  fromConsultantId: String!
+  toConsultantId: String!
+  date: String!
+}
+
+input AuditEventInput {
+  userId: String!
+  action: String!
+  resourceType: String!
+  resourceId: String
+  metadata: json
+  ipAddress: String
+  userAgent: String
+}
+
+input ComplianceReportInput {
+  reportType: String!
+  startDate: String!
+  endDate: String!
+  includeDetails: Boolean
+}
+
+type AffectedAssignment {
+  id: String!
+  payroll_date_id: String!
+  original_consultant_id: String!
+  new_consultant_id: String!
+  adjusted_eft_date: String!
+}
+
+type CommitPayrollAssignmentsOutput {
+  success: Boolean!
+  message: String
+  errors: [String!]
+  affected_assignments: [AffectedAssignment!]
+}
+
+type AuditEventResponse {
+  success: Boolean!
+  eventId: String
+  message: String
+}
+
+type ComplianceReportResponse {
+  success: Boolean!
+  reportUrl: String
+  summary: json
+  generatedAt: String!
+}
+
+type SuspiciousActivityResponse {
+  success: Boolean!
+  suspicious: Boolean!
+  events: [SuspiciousEvent!]
+  message: String
+}
+
+type SuspiciousEvent {
+  eventType: String!
+  count: Int!
+  timeframe: String!
+  severity: String!
+}
+

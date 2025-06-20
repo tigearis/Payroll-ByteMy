@@ -1,0 +1,50 @@
+[
+  {
+    "content": "Examine Hasura GraphQL configurations and metadata structure",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Analyze database security configurations, migrations, and RLS policies",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Review all API routes under app/api/ for security patterns and vulnerabilities",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Analyze deployment configurations (next.config.js, package.json)",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Search for logging, monitoring, and audit trail configurations",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Examine environment variable usage and security implications",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  },
+  {
+    "content": "Look for CI/CD or deployment scripts and security configurations",
+    "status": "completed",
+    "priority": "low",
+    "id": "7"
+  },
+  {
+    "content": "Compile comprehensive security audit report with findings and recommendations",
+    "status": "completed",
+    "priority": "high",
+    "id": "8"
+  }
+]

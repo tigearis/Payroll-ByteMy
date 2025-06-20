@@ -1,0 +1,19 @@
+# User domain subscriptions - simplified version
+
+subscription UsersUpdated(
+  $where: users_bool_exp = {}
+) {
+  users(where: $where, order_by: { updated_at: desc }) {
+    ...UserFragment
+    manager {
+      id
+      name
+    }
+  }
+}
+
+subscription UserProfileUpdated($userId: uuid!) {
+  users_by_pk(id: $userId) {
+    ...UserWithManagerFragment
+  }
+}

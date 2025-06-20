@@ -1,0 +1,81 @@
+table:
+  name: permission_overrides
+  schema: public
+object_relationships:
+  - name: created_by_user
+    using:
+      foreign_key_constraint_on: created_by
+  - name: override_user
+    using:
+      foreign_key_constraint_on: user_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+  - role: org_admin
+    permission:
+      check:
+        created_by:
+          _eq: X-Hasura-User-Id
+      columns:
+        - user_id
+        - role
+        - resource
+        - operation
+        - granted
+        - conditions
+        - created_by
+        - expires_at
+    comment: Only org admins can create permission overrides
+select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - user_id
+        - role
+        - resource
+        - operation
+        - granted
+        - conditions
+        - created_at
+        - created_by
+        - expires_at
+      filter: {}
+    comment: Only org admins can view permission overrides
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+  - role: org_admin
+    permission:
+      columns:
+        - granted
+        - conditions
+        - expires_at
+      filter: {}
+      check: {}
+    comment: Only org admins can update permission overrides
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
+  - role: org_admin
+    permission:
+      filter: {}
+    comment: Only org admins can delete permission overrides

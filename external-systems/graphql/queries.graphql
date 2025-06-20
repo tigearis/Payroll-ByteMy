@@ -1,0 +1,50 @@
+# External Systems Domain Queries
+
+query GetExternalSystems($where: external_systems_bool_exp, $order_by: [external_systems_order_by!]) {
+  external_systems(where: $where, order_by: $order_by) {
+    ...ExternalSystemCore
+    client_external_systems_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+query GetExternalSystemById($id: uuid!) {
+  external_systems_by_pk(id: $id) {
+    ...ExternalSystemCore
+    client_external_systems {
+      ...ClientExternalSystemWithRelations
+    }
+  }
+}
+
+query GetClientExternalSystems($client_id: uuid!) {
+  client_external_systems(
+    where: { client_id: { _eq: $client_id } }
+    order_by: { created_at: desc }
+  ) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+query GetClientsByExternalSystem($system_id: uuid!) {
+  client_external_systems(
+    where: { system_id: { _eq: $system_id } }
+    order_by: { client: { name: asc } }
+  ) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+query GetExternalSystemUsage {
+  external_systems {
+    ...ExternalSystemCore
+    client_count: client_external_systems_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
