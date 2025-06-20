@@ -1,9 +1,8 @@
-import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { withEnhancedAuth } from "@/lib/auth/enhanced-api-auth";
+import { withAuth } from "@/lib/api-auth";
 
-export const GET = withEnhancedAuth(
+export const GET = withAuth(
   async (req: NextRequest) => {
     try {
       console.log("📋 API called: /api/staff/invitation-status");
@@ -55,19 +54,32 @@ export const GET = withEnhancedAuth(
         needsResend: metadata.needsResend || false,
         metadata,
       });
-    } catch (error) {
-    return handleApiError(error, "staff");
-  },
+    } catch (userError) {
+      console.log("ℹ️ User not found in Clerk");
+      return NextResponse.json({
+        exists: false,
+        onboardingComplete: false,
+        invitationStatus: "not_sent",
+        message: "User not found in Clerk",
+      });
+    }
+  } catch (error) {
+    console.error("❌ Error checking invitation status:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to check invitation status",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
   },
   {
-    permission: "custom:staff:write"
+    requiredRole: "manager"
   }
 );
 
-export const POST = withEnhancedAuth(
+export const POST = withAuth(
   async (req: NextRequest) => {
     try {
       console.log("📧 API called: /api/staff/invitation-status (resend)");
@@ -135,13 +147,17 @@ export const POST = withEnhancedAuth(
       invitationId: invitation.id,
     });
   } catch (error) {
-    return handleApiError(error, "staff");
-  },
+    console.error("❌ Error resending invitation:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to resend invitation",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
   },
   {
-    permission: "custom:staff:write"
+    requiredRole: "manager"
   }
 );

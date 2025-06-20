@@ -51,113 +51,107 @@ mutation SetUserRoles($userId: uuid!, $roleIds: [user_roles_insert_input!]!) {
   }
 }
 
-# Create custom permission for a user (via custom role)
-# Note: Since permission_overrides table doesn't exist, we create a custom role
-mutation CreateUserCustomPermission(
+# Create permission override for user
+mutation CreateUserPermissionOverride(
   $userId: uuid!,
-  $roleName: String!,
-  $roleDescription: String!,
-  $permissionId: uuid!,
-  $conditions: jsonb = null
+  $resource: String!,
+  $operation: String!,
+  $granted: Boolean!,
+  $conditions: jsonb = null,
+  $expiresAt: timestamptz = null,
+  $reason: String = null
 ) {
-  # First create a custom role for this user
-  insert_roles_one(object: {
-    name: $roleName,
-    display_name: $roleName,
-    description: $roleDescription,
-    priority: 1,
-    is_system_role: false
+  insert_permission_overrides_one(object: {
+    user_id: $userId,
+    resource: $resource,
+    operation: $operation,
+    granted: $granted,
+    conditions: $conditions,
+    expires_at: $expiresAt,
+    reason: $reason
   }) {
     id
-    name
-    display_name
-    created_at
-  }
-}
-
-# Add permission to existing role
-# This replaces the role-based permission override functionality
-mutation AddPermissionToRole(
-  $roleId: uuid!,
-  $permissionId: uuid!,
-  $conditions: jsonb = null
-) {
-  insert_role_permissions_one(object: {
-    role_id: $roleId,
-    permission_id: $permissionId,
-    conditions: $conditions
-  }) {
-    id
-    role_id
-    permission_id
+    user_id
+    resource
+    operation
+    granted
     conditions
+    expires_at
+    reason
     created_at
-    permission {
-      id
-      action
-      description
-      resource {
-        name
-        display_name
-      }
-    }
-    role {
-      name
-      display_name
-    }
   }
 }
 
-# Update role permission conditions
-# This replaces permission override updates
-mutation UpdateRolePermission(
-  $rolePermissionId: uuid!,
-  $conditions: jsonb = null
+# Create role-based permission override
+mutation CreateRolePermissionOverride(
+  $role: String!,
+  $resource: String!,
+  $operation: String!,
+  $granted: Boolean!,
+  $conditions: jsonb = null,
+  $expiresAt: timestamptz = null,
+  $reason: String = null
 ) {
-  update_role_permissions_by_pk(
-    pk_columns: { id: $rolePermissionId },
+  insert_permission_overrides_one(object: {
+    role: $role,
+    resource: $resource,
+    operation: $operation,
+    granted: $granted,
+    conditions: $conditions,
+    expires_at: $expiresAt,
+    reason: $reason
+  }) {
+    id
+    role
+    resource
+    operation
+    granted
+    conditions
+    expires_at
+    reason
+    created_at
+  }
+}
+
+# Update permission override
+mutation UpdatePermissionOverride(
+  $id: uuid!,
+  $granted: Boolean = null,
+  $conditions: jsonb = null,
+  $expiresAt: timestamptz = null,
+  $reason: String = null
+) {
+  update_permission_overrides_by_pk(
+    pk_columns: { id: $id },
     _set: {
+      granted: $granted,
       conditions: $conditions,
+      expires_at: $expiresAt,
+      reason: $reason,
       updated_at: "now()"
     }
   ) {
     id
-    role_id
-    permission_id
+    user_id
+    role
+    resource
+    operation
+    granted
     conditions
+    expires_at
+    reason
     updated_at
-    permission {
-      action
-      resource {
-        name
-        display_name
-      }
-    }
-    role {
-      name
-      display_name
-    }
   }
 }
 
-# Remove permission from role
-# This replaces permission override deletion
-mutation RemoveRolePermission($rolePermissionId: uuid!) {
-  delete_role_permissions_by_pk(id: $rolePermissionId) {
+# Delete permission override
+mutation DeletePermissionOverride($id: uuid!) {
+  delete_permission_overrides_by_pk(id: $id) {
     id
-    role_id
-    permission_id
-    role {
-      name
-      display_name
-    }
-    permission {
-      action
-      resource {
-        name
-        display_name
-      }
-    }
+    user_id
+    role
+    resource
+    operation
   }
 }
 
@@ -320,26 +314,58 @@ mutation EmergencyRevokeUserAccess($userId: uuid!, $reason: String!) {
     affected_rows
   }
   
-  # Note: In the absence of permission_overrides table,
-  # emergency access revocation is handled by removing all role assignments
-  # Additional security measures would need to be implemented at the application level
+  # Add explicit deny overrides for critical resources
+  insert_permission_overrides(objects: [
+    {
+      user_id: $userId,
+      resource: "system_settings",
+      operation: "read",
+      granted: false,
+      reason: $reason
+    },
+    {
+      user_id: $userId,
+      resource: "user_management",
+      operation: "read",
+      granted: false,
+      reason: $reason
+    },
+    {
+      user_id: $userId,
+      resource: "billing",
+      operation: "read",
+      granted: false,
+      reason: $reason
+    }
+  ]) {
+    affected_rows
+  }
 }
 
-# Restore user access (assign default viewer role)
-mutation RestoreUserAccess($userId: uuid!, $viewerRoleId: uuid!) {
-  # Assign default viewer role to restore basic access
+# Restore user access (remove emergency restrictions)
+mutation RestoreUserAccess($userId: uuid!) {
+  # Remove deny overrides
+  delete_permission_overrides(
+    where: { 
+      user_id: { _eq: $userId },
+      granted: { _eq: false }
+    }
+  ) {
+    affected_rows
+  }
+  
+  # Assign default viewer role
   insert_user_roles_one(object: {
     user_id: $userId,
-    role_id: $viewerRoleId
+    role_id: (
+      # This should reference the viewer role ID
+      # In practice, you'd pass this as a variable
+    )
   }) {
     id
-    user_id
-    role_id
-    created_at
     role {
       name
       display_name
-      priority
     }
   }
 } 

@@ -8,12 +8,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "fix:codebase": "node scripts/fix-codebase.js",
-    "fix:dry-run": "node scripts/fix-codebase.js --dry-run",
-    "fix:auth": "node scripts/fix-codebase.js --fix=auth --backup",
-    "fix:errors": "node scripts/fix-codebase.js --fix=errors --backup",
-    "fix:all": "node scripts/fix-codebase.js --fix=auth,errors --backup",
-    "fix:duplication": "node scripts/fix-codebase.js --fix=duplication",
     "generate": "graphql-codegen",
     "codegen": "graphql-codegen --config config/codegen.ts",
     "codegen:watch": "graphql-codegen --config config/codegen.ts --watch",
@@ -24,6 +18,7 @@
     "@apollo/client": "^3.13.8",
     "@apollo/server": "^4.12.1",
     "@as-integrations/next": "^3.2.0",
+    "@auth/drizzle-adapter": "^1.9.1",
     "@clerk/elements": "^0.23.31",
     "@clerk/express": "^1.5.2",
     "@clerk/nextjs": "^6.20.2",
@@ -62,6 +57,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.40.1",
     "fs": "0.0.1-security",
     "graphql": "^16.11.0",
     "graphql-ws": "^6.0.5",
@@ -84,7 +80,8 @@
     "svix": "^1.66.0",
     "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "vercel": "^42.3.0"
+    "vercel": "^42.3.0",
+    "zod": "^3.25.47"
   },
   "devDependencies": {
     "@anthropic-ai/claude-code": "^1.0.24",
@@ -102,16 +99,13 @@
     "@types/node": "^20.17.57",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.5",
-    "autoprefixer": "^10.4.21",
     "dotenv": "^16.5.0",
     "eslint": "^9.28.0",
     "eslint-config-next": "15.1.0",
-    "fast-glob": "^3.3.3",
     "hasura-cli": "^2.38.0",
     "postcss": "^8.5.4",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.8.3",
-    "zod": "^3.25.47"
+    "typescript": "^5.8.3"
   },
   "packageManager": "pnpm@10.12.1"
 }

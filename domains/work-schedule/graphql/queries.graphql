@@ -55,7 +55,9 @@ query GetWorkScheduleAnalytics {
     work_hours
   }
   
-  average_hours_per_user: work_schedule_aggregate {
+  average_hours_per_user: work_schedule_aggregate(
+    group_by: user_id
+  ) {
     aggregate {
       sum {
         work_hours

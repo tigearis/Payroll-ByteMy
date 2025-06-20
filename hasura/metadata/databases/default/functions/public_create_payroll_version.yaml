@@ -7,7 +7,7 @@ configuration:
   exposed_as: query
 permissions:
   - role: user
-  - role: developer
+  - role: admin
   - role: org_admin
   - role: manager
   - role: consultant

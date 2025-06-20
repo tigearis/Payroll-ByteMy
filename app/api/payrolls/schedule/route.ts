@@ -1,8 +1,6 @@
-import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/payrolls/schedule/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { extractUserRoleFromJWT } from "@/lib/auth/soc2-auth";
 // import { generatePayrollSchedule } from "@/lib/payroll-service"; // Commented out due to missing Drizzle schema
 
 export async function GET(req: NextRequest) {
@@ -15,7 +13,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Check user role
-    const userRole = extractUserRoleFromJWT(sessionClaims);
+    const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
+    const userRole = claims?.["x-hasura-default-role"];
 
     if (!["developer", "org_admin", "manager", "consultant"].includes(userRole)) {
       return NextResponse.json(
@@ -48,6 +47,10 @@ export async function GET(req: NextRequest) {
       // schedule: await generatePayrollSchedule(parseInt(payrollId), new Date(startDate), parseInt(periods))
     });
   } catch (error) {
-    return handleApiError(error, "payrolls");
+    console.error("Schedule generation error:", error);
+    return NextResponse.json(
+      { error: "Failed to generate payroll schedule" },
+      { status: 500 }
+    );
   }
 }

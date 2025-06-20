@@ -27,7 +27,6 @@ import {
 import { CREATE_PAYROLL } from "@/graphql/mutations/payrolls/createPayroll";
 import { GET_CLIENTS } from "@/graphql/queries/clients/getClientsList";
 import { GET_ALL_USERS_LIST } from "@/graphql/queries/staff/getStaffList";
-import { EnhancedPermissionGuard } from "@/components/auth/EnhancedPermissionGuard";
 
 // GraphQL mutation for generating payroll dates (it's a database function exposed as mutation)
 const GENERATE_PAYROLL_DATES_MUTATION = gql`
@@ -503,11 +502,7 @@ export default function NewPayrollPage() {
 
   // GraphQL operations
   const { data: clientsData } = useQuery(GET_CLIENTS);
-  const {
-    data: usersData,
-    loading: usersLoading,
-    error: usersError,
-  } = useQuery(GET_ALL_USERS_LIST);
+  const { data: usersData } = useQuery(GET_ALL_USERS_LIST);
 
   const [createPayroll] = useMutation(CREATE_PAYROLL);
 
@@ -810,352 +805,327 @@ export default function NewPayrollPage() {
   };
 
   return (
-    <EnhancedPermissionGuard.CanEditPayrolls>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link href="/payrolls">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Payrolls
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Create New Payroll
-              </h1>
-              <p className="text-gray-500">
-                Set up a new payroll with schedule and consultant assignments
-              </p>
-            </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Link href="/payrolls">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Payrolls
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Create New Payroll
+            </h1>
+            <p className="text-gray-500">
+              Set up a new payroll with schedule and consultant assignments
+            </p>
           </div>
         </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Left Column: Main Payroll Details */}
-            <div className="md:col-span-2 space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Payroll Configuration</CardTitle>
-                  <CardDescription>
-                    Configure the payroll schedule, assignments, and processing
-                    details.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Basic Information */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="client">Client *</Label>
-                      <Select
-                        value={formData.clientId}
-                        onValueChange={(value) =>
-                          handleInputChange("clientId", value)
-                        }
-                        disabled={isLoading}
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select client..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {clientsData?.clients?.map((client: any) => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="payroll-name">Payroll Name *</Label>
-                      <Input
-                        id="payroll-name"
-                        placeholder="Enter payroll name..."
-                        value={formData.name}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          handleInputChange("name", e.target.value)
-                        }
-                        className="mt-1"
-                        disabled={isLoading}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Payroll Schedule Configuration */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">
-                      Schedule Configuration
-                    </h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="cycle-id">Payroll Cycle *</Label>
-                        <Select
-                          value={formData.cycleId}
-                          onValueChange={(value) => handleCycleChange(value)}
-                          disabled={isLoading}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue placeholder="Select cycle..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {PAYROLL_CYCLES.map((cycle) => (
-                              <SelectItem key={cycle.id} value={cycle.id}>
-                                {cycle.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Only show date type for cycles that need it */}
-                      {(formData.cycleId === "bi_monthly" ||
-                        formData.cycleId === "monthly" ||
-                        formData.cycleId === "quarterly") && (
-                        <div>
-                          <Label htmlFor="date-type-id">Date Type *</Label>
-                          <Select
-                            value={formData.dateTypeId}
-                            onValueChange={(value) =>
-                              handleDateTypeChange(value)
-                            }
-                            disabled={isLoading}
-                          >
-                            <SelectTrigger className="mt-1">
-                              <SelectValue placeholder="Select date type..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {availableDateTypes.map((dateType) => (
-                                <SelectItem
-                                  key={dateType.id}
-                                  value={dateType.id}
-                                >
-                                  {dateType.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
-
-                      {/* Show processing days in the second column if no date type needed */}
-                      {(formData.cycleId === "weekly" ||
-                        formData.cycleId === "fortnightly") && (
-                        <div>
-                          <Label htmlFor="processing-days">
-                            Processing Days Before EFT *
-                          </Label>
-                          <Input
-                            id="processing-days"
-                            type="number"
-                            placeholder="e.g., 3"
-                            value={formData.processingDaysBeforeEft}
-                            onChange={(
-                              e: React.ChangeEvent<HTMLInputElement>
-                            ) =>
-                              handleInputChange(
-                                "processingDaysBeforeEft",
-                                e.target.value
-                              )
-                            }
-                            className="mt-1"
-                            disabled={isLoading}
-                            min="1"
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Date configuration section */}
-                    <div>
-                      <Label htmlFor="date-value">Date Configuration</Label>
-                      {renderDateValueInput()}
-                    </div>
-
-                    {/* Processing days for cycles that have date type dropdown */}
-                    {(formData.cycleId === "bi_monthly" ||
-                      formData.cycleId === "monthly" ||
-                      formData.cycleId === "quarterly") && (
-                      <div>
-                        <Label htmlFor="processing-days">
-                          Processing Days Before EFT *
-                        </Label>
-                        <Input
-                          id="processing-days"
-                          type="number"
-                          placeholder="e.g., 3"
-                          value={formData.processingDaysBeforeEft}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            handleInputChange(
-                              "processingDaysBeforeEft",
-                              e.target.value
-                            )
-                          }
-                          className="mt-1"
-                          disabled={isLoading}
-                          min="1"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Staff Assignments */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Staff Assignments</h3>
-
-                    <div>
-                      <Label htmlFor="primary-consultant">
-                        Primary Consultant
-                      </Label>
-                      <Select
-                        value={formData.primaryConsultantId}
-                        onValueChange={(value) =>
-                          handleInputChange("primaryConsultantId", value)
-                        }
-                        disabled={isLoading}
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select primary consultant..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availablePrimaryConsultants.map(
-                            (consultant: any) => (
-                              <SelectItem
-                                key={consultant.id}
-                                value={consultant.id}
-                              >
-                                {consultant.name} ({consultant.email}) -{" "}
-                                {consultant.role}
-                              </SelectItem>
-                            )
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Any staff member can be assigned as primary consultant
-                      </p>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="backup-consultant">
-                        Backup Consultant
-                      </Label>
-                      <Select
-                        value={formData.backupConsultantId || "none"}
-                        onValueChange={(value) =>
-                          handleInputChange(
-                            "backupConsultantId",
-                            value === "none" ? "" : value
-                          )
-                        }
-                        disabled={isLoading}
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select backup consultant..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">None</SelectItem>
-                          {availableBackupConsultants.map((consultant: any) => (
-                            <SelectItem
-                              key={consultant.id}
-                              value={consultant.id}
-                            >
-                              {consultant.name} ({consultant.email}) -{" "}
-                              {consultant.role}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {formData.primaryConsultantId &&
-                        availableBackupConsultants.length === 0 && (
-                          <p className="text-xs text-amber-600 mt-1">
-                            ⚠️ No other staff available - primary consultant
-                            cannot be backup
-                          </p>
-                        )}
-                      {!formData.primaryConsultantId && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Select primary consultant first to see available
-                          backup options
-                        </p>
-                      )}
-                      {formData.primaryConsultantId &&
-                        availableBackupConsultants.length > 0 && (
-                          <p className="text-xs text-gray-500 mt-1">
-                            Cannot select the same person as primary consultant
-                          </p>
-                        )}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="manager">Manager</Label>
-                      <Select
-                        value={formData.managerId}
-                        onValueChange={(value) =>
-                          handleInputChange("managerId", value)
-                        }
-                        disabled={isLoading}
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select manager..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableManagers.map((manager: any) => (
-                            <SelectItem key={manager.id} value={manager.id}>
-                              {manager.name} ({manager.email}) - {manager.role}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Only users with Manager, Admin, or Org Admin roles can
-                        be assigned as managers
-                        {availableManagers.length === 0 && (
-                          <span className="text-amber-600 block mt-1">
-                            ⚠️ No users with manager-level roles available
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Add quarterly note */}
-                  {formData.cycleId === "quarterly" && (
-                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                      <p className="text-sm text-blue-700">
-                        <strong>Quarterly Processing:</strong> Payrolls will be
-                        processed in March, June, September, and December.
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Right Column: Key People */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Actions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    type="submit"
-                    disabled={isLoading || !isFormValid()}
-                    className="w-full"
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    {isLoading ? "Creating..." : "Create Payroll"}
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </form>
       </div>
-    </EnhancedPermissionGuard.CanEditPayrolls>
+
+      {/* Create Payroll Form */}
+      <form onSubmit={handleSubmit}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Payroll Configuration</CardTitle>
+            <CardDescription>
+              Configure the payroll schedule, assignments, and processing
+              details.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Basic Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="client">Client *</Label>
+                <Select
+                  value={formData.clientId}
+                  onValueChange={(value) =>
+                    handleInputChange("clientId", value)
+                  }
+                  disabled={isLoading}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select client..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clientsData?.clients?.map((client: any) => (
+                      <SelectItem key={client.id} value={client.id}>
+                        {client.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="payroll-name">Payroll Name *</Label>
+                <Input
+                  id="payroll-name"
+                  placeholder="Enter payroll name..."
+                  value={formData.name}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleInputChange("name", e.target.value)
+                  }
+                  className="mt-1"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Payroll Schedule Configuration */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Schedule Configuration</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="cycle-id">Payroll Cycle *</Label>
+                  <Select
+                    value={formData.cycleId}
+                    onValueChange={(value) => handleCycleChange(value)}
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select cycle..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PAYROLL_CYCLES.map((cycle) => (
+                        <SelectItem key={cycle.id} value={cycle.id}>
+                          {cycle.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Only show date type for cycles that need it */}
+                {(formData.cycleId === "bi_monthly" ||
+                  formData.cycleId === "monthly" ||
+                  formData.cycleId === "quarterly") && (
+                  <div>
+                    <Label htmlFor="date-type-id">Date Type *</Label>
+                    <Select
+                      value={formData.dateTypeId}
+                      onValueChange={(value) => handleDateTypeChange(value)}
+                      disabled={isLoading}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select date type..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableDateTypes.map((dateType) => (
+                          <SelectItem key={dateType.id} value={dateType.id}>
+                            {dateType.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {/* Show processing days in the second column if no date type needed */}
+                {(formData.cycleId === "weekly" ||
+                  formData.cycleId === "fortnightly") && (
+                  <div>
+                    <Label htmlFor="processing-days">
+                      Processing Days Before EFT *
+                    </Label>
+                    <Input
+                      id="processing-days"
+                      type="number"
+                      placeholder="e.g., 3"
+                      value={formData.processingDaysBeforeEft}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange(
+                          "processingDaysBeforeEft",
+                          e.target.value
+                        )
+                      }
+                      className="mt-1"
+                      disabled={isLoading}
+                      min="1"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Date configuration section */}
+              <div>
+                <Label htmlFor="date-value">Date Configuration</Label>
+                {renderDateValueInput()}
+              </div>
+
+              {/* Processing days for cycles that have date type dropdown */}
+              {(formData.cycleId === "bi_monthly" ||
+                formData.cycleId === "monthly" ||
+                formData.cycleId === "quarterly") && (
+                <div>
+                  <Label htmlFor="processing-days">
+                    Processing Days Before EFT *
+                  </Label>
+                  <Input
+                    id="processing-days"
+                    type="number"
+                    placeholder="e.g., 3"
+                    value={formData.processingDaysBeforeEft}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange(
+                        "processingDaysBeforeEft",
+                        e.target.value
+                      )
+                    }
+                    className="mt-1"
+                    disabled={isLoading}
+                    min="1"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Staff Assignments */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Staff Assignments</h3>
+
+              <div>
+                <Label htmlFor="primary-consultant">Primary Consultant</Label>
+                <Select
+                  value={formData.primaryConsultantId}
+                  onValueChange={(value) =>
+                    handleInputChange("primaryConsultantId", value)
+                  }
+                  disabled={isLoading}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select primary consultant..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availablePrimaryConsultants.map((consultant: any) => (
+                      <SelectItem key={consultant.id} value={consultant.id}>
+                        {consultant.name} ({consultant.email}) -{" "}
+                        {consultant.role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Any staff member can be assigned as primary consultant
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="backup-consultant">Backup Consultant</Label>
+                <Select
+                  value={formData.backupConsultantId || "none"}
+                  onValueChange={(value) =>
+                    handleInputChange(
+                      "backupConsultantId",
+                      value === "none" ? "" : value
+                    )
+                  }
+                  disabled={isLoading}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select backup consultant..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {availableBackupConsultants.map((consultant: any) => (
+                      <SelectItem key={consultant.id} value={consultant.id}>
+                        {consultant.name} ({consultant.email}) -{" "}
+                        {consultant.role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formData.primaryConsultantId &&
+                  availableBackupConsultants.length === 0 && (
+                    <p className="text-xs text-amber-600 mt-1">
+                      ⚠️ No other staff available - primary consultant cannot be
+                      backup
+                    </p>
+                  )}
+                {!formData.primaryConsultantId && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Select primary consultant first to see available backup
+                    options
+                  </p>
+                )}
+                {formData.primaryConsultantId &&
+                  availableBackupConsultants.length > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Cannot select the same person as primary consultant
+                    </p>
+                  )}
+              </div>
+
+              <div>
+                <Label htmlFor="manager">Manager</Label>
+                <Select
+                  value={formData.managerId}
+                  onValueChange={(value) =>
+                    handleInputChange("managerId", value)
+                  }
+                  disabled={isLoading}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select manager..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableManagers.map((manager: any) => (
+                      <SelectItem key={manager.id} value={manager.id}>
+                        {manager.name} ({manager.email}) - {manager.role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Only users with Manager, Admin, or Org Admin roles can be
+                  assigned as managers
+                  {availableManagers.length === 0 && (
+                    <span className="text-amber-600 block mt-1">
+                      ⚠️ No users with manager-level roles available
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* Add quarterly note */}
+            {formData.cycleId === "quarterly" && (
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-sm text-blue-700">
+                  <strong>Quarterly Processing:</strong> Payrolls will be
+                  processed in March, June, September, and December.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Form Actions */}
+        <div className="flex justify-between mt-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/payrolls")}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isLoading || !isFormValid()}>
+            {isLoading ? (
+              <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              <Save className="w-4 h-4 mr-2" />
+            )}
+            {isLoading ? "Creating..." : "Create Payroll"}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }

@@ -1,10 +1,9 @@
-import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/payroll-dates/[payrollId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { adminApolloClient } from "@/lib/apollo/server-client";
+import { adminApolloClient } from "@/lib/server-apollo-client";
 import { gql } from "@apollo/client";
-import { withAuthParams } from "@/lib/auth/enhanced-api-auth";
+import { withAuthParams } from "@/lib/api-auth";
 
 // GraphQL query to get payroll dates
 const GET_PAYROLL_DATES = gql`
@@ -60,13 +59,17 @@ export const GET = withAuthParams(
       dates: data.payroll_dates,
     });
   } catch (error) {
-    return handleApiError(error, "payroll-dates");
-  },
+    console.error("Error fetching payroll dates:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to fetch payroll dates",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
   },
   {
-    minimumRole: "viewer",
+    requiredRole: "viewer",
   }
 );

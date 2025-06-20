@@ -1,15 +1,6 @@
-/**
- * @deprecated This file is deprecated in favor of custom-permissions.ts
- * Please use the following import instead:
- * - import { hasMinimumRoleLevel } from '@/lib/auth/custom-permissions';
- *
- * See lib/auth/README.md for migration guide
- */
-
 import { gql } from "@apollo/client";
-import { clientApolloClient } from "@/lib/apollo/unified-client";
-import { USER_ROLES } from "@/lib/auth/roles";
-import { Role } from "@/types/permissions";
+import { client as apolloClient } from "@/lib/apollo-client";
+import { USER_ROLES, UserRole } from "@/lib/user-sync";
 
 // GraphQL query to check resource-level permissions
 const CHECK_USER_PERMISSION = gql`
@@ -56,7 +47,7 @@ export async function canUserAccessResource(
   action: string
 ): Promise<boolean> {
   try {
-    const result = await clientApolloClient.query({
+    const result = await apolloClient.query({
       query: CHECK_USER_PERMISSION,
       variables: { userId, resource, action },
       fetchPolicy: "network-only",
@@ -100,7 +91,10 @@ export async function canUserAccessEntity(
  * @param targetRole The role being assigned
  * @returns Boolean indicating if assignment is allowed
  */
-export function canAssignRole(assignerRole: Role, targetRole: Role): boolean {
+export function canAssignRole(
+  assignerRole: UserRole,
+  targetRole: UserRole
+): boolean {
   const assignerLevel = USER_ROLES[assignerRole] || 0;
   const targetLevel = USER_ROLES[targetRole] || 0;
 
@@ -115,7 +109,10 @@ export function canAssignRole(assignerRole: Role, targetRole: Role): boolean {
  * @param requiredLevel The minimum role level required
  * @returns Boolean indicating if the user has sufficient permissions
  */
-export function hasRoleLevel(userRole: Role, requiredLevel: Role): boolean {
+export function hasRoleLevel(
+  userRole: UserRole,
+  requiredLevel: UserRole
+): boolean {
   const userLevel = USER_ROLES[userRole] || 0;
   const required = USER_ROLES[requiredLevel] || 0;
 
@@ -130,7 +127,7 @@ export function hasRoleLevel(userRole: Role, requiredLevel: Role): boolean {
  */
 export async function getUserPermissions(userId: string) {
   try {
-    const result = await clientApolloClient.query({
+    const result = await apolloClient.query({
       query: GET_USER_PERMISSIONS,
       variables: { userId },
       fetchPolicy: "network-only",
