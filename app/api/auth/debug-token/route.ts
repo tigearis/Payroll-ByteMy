@@ -1,4 +1,3 @@
-import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
@@ -56,12 +55,16 @@ export async function GET(req: NextRequest) {
           decodedPayload.metadata,
         success: true,
       });
-    } catch (error) {
-      console.error("Error extracting token claims:", error);
-      return NextResponse.json({
-        error: "Failed to extract token claims",
-        details: error instanceof Error ? error.message : "Unknown error"
-      }, { status: 500 });
+    } catch (parseError) {
+      console.error("🚨 Failed to parse token:", parseError);
+      return NextResponse.json(
+        {
+          error: "Failed to parse token",
+          clerkUserId,
+          tokenLength: token.length,
+        },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error("🚨 Error in debug-token endpoint:", error);

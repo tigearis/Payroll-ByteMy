@@ -23,7 +23,6 @@ import { twMerge } from "tailwind-merge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ThemeToggle } from "./theme-toggle";
-import { useEnhancedPermissions } from "@/hooks/useEnhancedPermissions";
 
 // Local utility function
 function cn(...inputs: ClassValue[]) {
@@ -43,69 +42,63 @@ const allRoutes = [
     href: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.dashboard,
+    roles: ["developer", "manager", "consultant", "org_admin"],
   },
   {
     href: "/clients",
     label: "Clients",
     icon: Users,
-    checkAccess: (permissions: any) => permissions.navigation.canAccess.clients,
+    roles: ["developer", "manager", "consultant", "org_admin"],
   },
   {
     href: "/payrolls",
     label: "Payrolls",
     icon: Calculator,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.payrolls,
+    roles: ["developer", "manager", "consultant", "org_admin"],
   },
   {
     href: "/payroll-schedule",
     label: "Schedule",
     icon: CalendarDays,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.payrolls,
+    roles: ["developer", "manager", "org_admin", "consultant"],
   },
   {
     href: "/staff",
     label: "Staff",
     icon: UserCog,
-    checkAccess: (permissions: any) => permissions.navigation.canAccess.staff,
+    roles: ["developer", "org_admin", "manager"], // Admin only
   },
   {
     href: "/tax-calculator",
     label: "Tax Calculator",
     icon: DollarSign,
-    checkAccess: (permissions: any) => permissions.canAccessDashboard,
+    roles: ["developer"],
     devOnly: true, // Only show in development
   },
   {
     href: "/settings",
     label: "Settings",
     icon: Settings,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.settings,
+    roles: ["developer"],
   },
   {
     href: "/developer",
     label: "Developer",
     icon: Code,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.developer,
+    roles: ["developer"], // Admin only
     devOnly: true, // Only show in development
   },
   {
     href: "/security",
     label: "Security",
     icon: Shield,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.security,
+    roles: ["developer", "org_admin"], // Admin and org_admin only
   },
 ];
 
 // Filter out dev-only routes in production
-const routes = allRoutes.filter((route) => {
-  if (route.devOnly && process.env.NODE_ENV === "production") {
+const routes = allRoutes.filter(route => {
+  if (route.devOnly && process.env.NODE_ENV === 'production') {
     return false;
   }
   return true;
@@ -115,12 +108,14 @@ export function Sidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { user, isLoaded } = useUser();
-  const permissions = useEnhancedPermissions();
 
-  // Filter routes based on enhanced permission checks
+  // Get user role from Clerk metadata
+  const userRole = user?.publicMetadata?.role as string;
+
+  // Filter routes based on user role
   const accessibleRoutes = routes.filter((route) => {
-    if (!permissions.isLoaded) return false;
-    return route.checkAccess(permissions);
+    if (!userRole) return false;
+    return route.roles.includes(userRole);
   });
 
   // Show loading state while user data is being fetched
@@ -148,8 +143,8 @@ export function Sidebar() {
     );
   }
 
-  // If user has no role or permissions not loaded, show minimal sidebar
-  if (!permissions.isLoaded || !permissions.userRole) {
+  // If user has no role or invalid role, show minimal sidebar
+  if (!userRole || !["developer", "manager"].includes(userRole)) {
     return (
       <div
         className={cn(
@@ -162,9 +157,7 @@ export function Sidebar() {
         </div>
         <div className="flex-1 flex items-center justify-center">
           <p className="text-sm text-gray-500 text-center px-4">
-            {!permissions.isLoaded
-              ? "Loading permissions..."
-              : "Access restricted. Please contact your administrator."}
+            Access restricted. Please contact your administrator.
           </p>
         </div>
       </div>
@@ -216,7 +209,7 @@ export function Sidebar() {
             <p className="text-xs text-gray-500">
               Role:{" "}
               <span className="font-medium">
-                {roleDisplayNames[permissions.userRole] || permissions.userRole}
+                {roleDisplayNames[userRole] || userRole}
               </span>
             </p>
           </div>

@@ -3,73 +3,92 @@
 # Note: Audit logs are typically created automatically by the system
 # These mutations are for administrative purposes only
 
-# Security Events (using auth_events table)
-mutation CreateSecurityEvent($object: audit_auth_events_insert_input!) {
-  insert_audit_auth_events_one(object: $object) {
+# Security Events
+mutation CreateSecurityEvent($object: security_event_log_insert_input!) {
+  insert_security_event_log_one(object: $object) {
     ...SecurityEventLogCore
   }
 }
 
-# Note: Resolution fields don't exist in the actual schema
-# This mutation updates the metadata field to track resolution status
 mutation ResolveSecurityEvent($id: uuid!, $resolution_notes: String!) {
-  update_audit_auth_events_by_pk(
+  update_security_event_log_by_pk(
     pk_columns: { id: $id }
     _set: {
-      metadata: {resolution_notes: $resolution_notes, resolved: true, resolved_at: "now()"}
+      resolved: true
+      resolution_notes: $resolution_notes
+      resolved_at: "now()"
     }
   ) {
     ...SecurityEventLogWithUser
   }
 }
 
-# Note: Severity field doesn't exist in the actual schema
-# This mutation updates the metadata field to track severity
 mutation UpdateSecurityEventSeverity($id: uuid!, $severity: String!) {
-  update_audit_auth_events_by_pk(
+  update_security_event_log_by_pk(
     pk_columns: { id: $id }
-    _set: {
-      metadata: {severity: $severity}
-    }
+    _set: { severity: $severity }
   ) {
     ...SecurityEventLogCore
   }
 }
 
-# Data Access Logging
-mutation CreateDataAccessLog($object: audit_data_access_log_insert_input!) {
-  insert_audit_data_access_log_one(object: $object) {
+# Compliance Checks
+mutation CreateComplianceCheck($object: compliance_check_insert_input!) {
+  insert_compliance_check_one(object: $object) {
+    ...ComplianceCheckWithUser
+  }
+}
+
+mutation UpdateComplianceCheck($id: uuid!, $set: compliance_check_set_input!) {
+  update_compliance_check_by_pk(pk_columns: { id: $id }, _set: $set) {
+    ...ComplianceCheckWithUser
+  }
+}
+
+mutation MarkComplianceCheckRemediated($id: uuid!, $remediation_notes: String!, $next_check_due: date!) {
+  update_compliance_check_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      remediation_required: false
+      remediation_notes: $remediation_notes
+      next_check_due: $next_check_due
+    }
+  ) {
+    ...ComplianceCheckCore
+  }
+}
+
+# Data Access Logging (for manual entries)
+mutation LogDataAccess($object: data_access_log_insert_input!) {
+  insert_data_access_log_one(object: $object) {
     ...DataAccessLogCore
   }
 }
 
-# Audit Log Management
-mutation CreateAuditLog($object: audit_audit_log_insert_input!) {
-  insert_audit_audit_log_one(object: $object) {
-    ...AuditLogCore
-  }
-}
-
-# Permission Change Logging
-mutation LogPermissionChange($object: audit_permission_changes_insert_input!) {
-  insert_audit_permission_changes_one(object: $object) {
-    ...PermissionChangeCore
-  }
-}
-
 # Bulk Operations
-# Note: Resolution fields don't exist in the actual schema
-# This mutation updates the metadata field to track resolution status
 mutation BulkResolveSecurityEvents($event_ids: [uuid!]!, $resolution_notes: String!) {
-  update_audit_auth_events(
+  update_security_event_log(
     where: { id: { _in: $event_ids } }
     _set: {
-      metadata: {resolution_notes: $resolution_notes, resolved: true, resolved_at: "now()"}
+      resolved: true
+      resolution_notes: $resolution_notes
+      resolved_at: "now()"
     }
   ) {
     affected_rows
     returning {
       ...SecurityEventLogCore
     }
+  }
+}
+
+# Retention Management
+mutation EnforceAuditRetention {
+  enforce_audit_retention {
+    success
+    message
+    deleted_audit_logs
+    deleted_access_logs
+    archived_security_events
   }
 }

@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Payroll } from "@/domains/payrolls/types";
+import { Payroll } from "@/types/interface";
 
 interface ClientPayrollsTableProps {
   payrolls: Payroll[];

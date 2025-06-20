@@ -1,14 +1,7 @@
 "use client";
 
 import { useQuery, gql } from "@apollo/client";
-// Simple auth error check
-const isAuthError = (error: any): boolean => {
-  return error?.graphQLErrors?.some((err: any) =>
-    err.extensions?.code === "invalid-jwt" ||
-    err.extensions?.code === "access-denied" ||
-    err.message.includes("JWTExpired")
-  ) || false;
-};
+import { isAuthError } from "../../lib/apollo-client";
 import {
   Card,
   CardContent,
@@ -24,6 +17,7 @@ const GET_USERS = gql`
     users(limit: $limit) {
       id
       name
+      email
       role
       is_staff
       clerk_user_id

@@ -3,7 +3,7 @@
 import { ApolloProvider } from "@apollo/client";
 import { useAuth } from "@clerk/nextjs";
 import { useEffect } from "react";
-import { clientApolloClient } from "./apollo/unified-client";
+import client, { clearAuthCache } from "./apollo-client";
 
 export function ApolloProviderWrapper({
   children,
@@ -12,12 +12,12 @@ export function ApolloProviderWrapper({
 }) {
   const { isSignedIn } = useAuth();
 
-  // Clear Apollo cache on sign out
+  // Clear cache on sign out
   useEffect(() => {
     if (!isSignedIn) {
-      clientApolloClient.clearStore();
+      clearAuthCache();
     }
   }, [isSignedIn]);
 
-  return <ApolloProvider client={clientApolloClient}>{children}</ApolloProvider>;
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
 }

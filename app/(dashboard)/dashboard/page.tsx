@@ -7,8 +7,6 @@ import { CalendarDays, Users, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UrgentAlerts } from "@/components/urgent-alerts";
-import { RecentActivity } from "@/components/recent-activity";
-import { LazyLoad, LoadingSkeletons } from "@/components/ui/lazy-load";
 import {
   GET_DASHBOARD_STATS,
   GET_UPCOMING_PAYROLLS,
@@ -180,30 +178,14 @@ export default function DashboardPage() {
         </Card>
       </div> */}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>My Upcoming Payrolls</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <UrgentAlerts />
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <LazyLoad
-              fallback={<LoadingSkeletons.Card />}
-              rootMargin="150px 0px"
-            >
-              <RecentActivity />
-            </LazyLoad>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>My Upcoming Payrolls</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <UrgentAlerts />
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -9,7 +9,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
-import { SecureErrorHandler } from "@/lib/api/responses";
+import { SecureErrorHandler } from "@/lib/security/error-responses";
 
 // Define allowed roles for admin operations
 const ADMIN_ROLES = ["developer", "org_admin"];

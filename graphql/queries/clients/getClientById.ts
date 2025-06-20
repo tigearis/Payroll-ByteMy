@@ -38,9 +38,7 @@ export const GET_CLIENTS_BY_ID = gql`
         payroll_dates(order_by: { adjusted_eft_date: desc }) {
           id
           adjusted_eft_date
-          original_eft_date
-          processing_date
-          notes
+          employee_count
           created_at
           updated_at
         }

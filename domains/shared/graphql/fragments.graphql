@@ -1,8 +1,0 @@
-# Shared GraphQL Fragments
-# Common fragments used across domains
-
-# Common timestamp fields (used as inline fragments)
-# Usage: ... on table_name { ...TimestampFields }
-
-# Common audit fields (used as inline fragments)
-# Usage: ... on table_name { ...AuditFields }

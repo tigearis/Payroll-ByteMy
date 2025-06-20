@@ -112,7 +112,7 @@ function handlePermissionError(graphQLError: any, originalError: ApolloError): G
 
   // Extract role information from error
   let currentRole: string | undefined;
-  let minimumRole: string | undefined;
+  let requiredRole: string | undefined;
 
   // Try to extract role from error message patterns
   const roleMatch = message.match(/role\s+["']([^"']+)["']/i);
@@ -336,7 +336,7 @@ export function logAndShowError(error: ApolloError | Error, context?: string): G
     originalMessage: details.message,
     userMessage: details.userMessage,
     currentRole: details.currentRole,
-    minimumRole: details.requiredRole,
+    requiredRole: details.requiredRole,
     originalError: details.originalError
   });
 

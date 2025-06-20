@@ -1,4 +1,3 @@
-import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { syncUserWithDatabase } from "@/lib/user-sync";
@@ -140,8 +139,12 @@ export async function POST(req: NextRequest) {
       ],
     });
   } catch (error) {
-    return handleApiError(error, "fix-oauth-user");
-  },
+    console.error("❌ Error fixing OAuth user:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to fix OAuth user",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
@@ -190,8 +193,9 @@ export async function GET(req: NextRequest) {
       privateMetadata: user.privateMetadata,
     });
   } catch (error) {
-    return handleApiError(error, "fix-oauth-user");
-  },
+    console.error("Error checking OAuth status:", error);
+    return NextResponse.json(
+      { error: "Failed to check OAuth status" },
       { status: 500 }
     );
   }

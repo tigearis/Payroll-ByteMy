@@ -1,5 +1,12 @@
-// Note: Role types have been moved to @/types/permissions.ts
-// Import Role from @/types/permissions instead of using this enum
+// types/roles.ts
+
+export enum Role {
+  Admin = "org_admin", // Organisation Admin role
+  Manager = "manager", // Manager role
+  Consultant = "consultant", // Consultant role
+  Viewer = "viewer", // Basic viewer role
+  Developer = "org_admin", // Developer role (maps to org_admin for database consistency)
+}
 // types/custom-enums.ts
 
 // Weekday enum for payroll scheduling (1-5 for Monday-Friday)
@@ -26,15 +33,15 @@ export enum FortnightlyWeekEnum {
   WeekB = "B",
 }
 
-// LeaveStatus enum (standardized naming)
-export enum LeaveStatus {
+// LeaveStatus enum
+export enum leave_status_enum {
   Pending = "Pending",
   Approved = "Approved",
   Rejected = "Rejected",
 }
 
-// PayrollCycleType enum (standardized naming)
-export enum PayrollCycleType {
+// PayrollCycleType enum
+export enum payroll_cycle_type {
   Weekly = "weekly",
   Fortnightly = "fortnightly",
   BiMonthly = "bi_monthly",
@@ -42,8 +49,8 @@ export enum PayrollCycleType {
   Quarterly = "quarterly",
 }
 
-// PayrollDateType enum (standardized naming)
-export enum PayrollDateType {
+// PayrollDateType enum
+export enum payroll_date_type {
   FixedDate = "fixed_date",
   EOM = "eom",
   SOM = "som",
@@ -52,18 +59,33 @@ export enum PayrollDateType {
   DOW = "dow",
 }
 
-// Consolidated PayrollStatus enum (replaces payroll_status and payroll_status_new)
-export enum PayrollStatus {
+// PayrollStatus enum
+export enum payroll_status {
   Active = "Active",
-  Inactive = "Inactive",
   Implementation = "Implementation",
-  Live = "live",
-  Onboarding = "onboarding",
-  Possible = "possible",
+  Inactive = "Inactive",
 }
 
-// PermissionAction enum (standardized naming)
-export enum PermissionAction {
+// PayrollStatusNew enum
+export enum payroll_status_new {
+  Live = "live",
+  Inactive = "inactive",
+  Onboarding = "onboarding",
+  Possible = "possible",
+  Implementation = "implementation",
+}
+
+// UserRole enum
+export enum user_role {
+  Developer = "developer",
+  OrgAdmin = "org_admin",
+  Manager = "manager",
+  Consultant = "consultant",
+  Viewer = "viewer",
+}
+
+// PermissionAction enum
+export enum permission_action {
   Create = "create",
   Read = "read",
   Update = "update",
@@ -74,8 +96,8 @@ export enum PermissionAction {
   Reject = "reject",
 }
 
-// Status enum (standardized naming)
-export enum Status {
+// Status enum
+export enum status {
   Active = "active",
   Inactive = "inactive",
   Archived = "archived",

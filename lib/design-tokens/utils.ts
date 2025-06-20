@@ -131,7 +131,7 @@ export function focusRing(colour: string = 'primary'): string {
  */
 export function transition(
   properties: string[] = ['all'],
-  duration: keyof typeof tokens.transitions.duration = 200,
+  duration: keyof typeof tokens.transitions.duration = '200',
   timing: keyof typeof tokens.transitions.timing = 'inOut'
 ): string {
   const transitionProps = properties.join(', ');

@@ -14,7 +14,7 @@ import { AlertTriangle, RefreshCw, Shield, HelpCircle } from "lucide-react";
 import {
   isPermissionError,
   parsePermissionError,
-} from "../../lib/apollo/error-handler";
+} from "../../lib/apollo-error-handler";
 
 interface Props {
   children: ReactNode;

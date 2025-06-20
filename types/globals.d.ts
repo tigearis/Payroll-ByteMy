@@ -1,65 +1,33 @@
 // types/globals.d.ts
-import { CustomPermission, Role } from "./permissions";
-
 export {};
 
 declare global {
   interface ClerkAuthorization {
-    // Define roles that match your custom RBAC system
-    role: Role;
+    // Define roles that match your Hasura roles
+    role: "developer" | "org_admin" | "manager" | "consultant" | "viewer";
 
-    // Define custom permissions for native Clerk checking
-    permission: CustomPermission;
+    // Define permissions if needed
+    permission:
+      | "manage:users"
+      | "manage:clients"
+      | "manage:payrolls"
+      | "view:reports";
   }
 
-  // Enhanced JWT claims structure for custom permissions
+  // Define JWT claims structure for Hasura
   interface CustomJwtSessionClaims {
     "https://hasura.io/jwt/claims": {
-      metadata: UserPublicMetadata;
-      "x-hasura-role": Role;
+      "x-hasura-allowed-roles": string[];
+      "x-hasura-default-role": string;
       "x-hasura-user-id": string;
-      "x-hasura-default-role": "viewer";
-      "x-hasura-allowed-roles": [
-        "developer",
-        "org_admin",
-        "manager",
-        "consultant",
-        "viewer"
-      ];
-      "x-hasura-clerk-user-id": string;
+      "x-hasura-org-id"?: string;
     };
-    metadata: UserPublicMetadata;
-  }
-
-  interface UserPublicMetadata {
-    role?: Role;
-    databaseId?: string;
-    permissions?: CustomPermission[];
-    assignedBy?: string;
-    assignedAt?: string;
-    lastUpdated?: string;
-    customAccess?: {
-      restrictedPayrolls?: string[];
-      allowedClients?: string[];
-    };
-    // Legacy fields
-    onboardingComplete?: boolean;
-    department?: string;
-    employeeId?: string;
-    startDate?: string;
-  }
-
-  interface UserPrivateMetadata {
-    // any private metadata fields
-    securitySettings?: {
-      mfaEnabled: boolean;
-      lastPasswordChange?: string;
-      securityQuestions?: boolean;
-    };
-    auditInfo?: {
-      lastLogin?: string;
-      loginCount?: number;
-      createdBy?: string;
+    metadata: {
+      onboardingComplete?: boolean;
+      role?: string;
+      department?: string;
+      employeeId?: string;
+      startDate?: string;
     };
   }
 }
@@ -174,5 +142,5 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: Role;
+  role: "developer" | "org_admin" | "manager" | "consultant" | "viewer";
 }

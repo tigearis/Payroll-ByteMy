@@ -1,5 +1,6 @@
 disabled_for_roles:
-  - viewer
-  - org_admin
   - consultant
+  - viewer
   - manager
+  - org_admin
+  - developer
