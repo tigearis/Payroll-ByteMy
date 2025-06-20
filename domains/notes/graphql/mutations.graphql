@@ -82,3 +82,32 @@ mutation UpdateNoteWithSetInput($id: uuid!, $input: notes_set_input!) {
     updated_at
   }
 }
+
+# Extracted from inline GraphQL operations
+mutation AddNoteExtracted($entityType: String!, $entityId: uuid!, $content: String!) {
+  insert_notes_one(object: {
+    entity_type: $entityType,
+    entity_id: $entityId,
+    content: $content,
+    is_important: false
+  }) {
+    id
+    entity_id
+    entity_type
+    content
+    is_important
+    created_at
+    updated_at
+  }
+}
+
+mutation UpdateNoteExtracted($id: uuid!, $content: String!) {
+  update_notes_by_pk(
+    pk_columns: { id: $id },
+    _set: { content: $content, updated_at: "now()" }
+  ) {
+    id
+    content
+    updated_at
+  }
+}

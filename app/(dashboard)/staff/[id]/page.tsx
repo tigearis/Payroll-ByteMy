@@ -7,7 +7,7 @@ import { UserDetails } from "@/types/interface";
 import { gql } from "@apollo/client";
 import { useRouter, useParams } from "next/navigation";
 
-// Temporary inline query until GraphQL consolidation
+// Import extracted GraphQL operations (simplified version)
 const GET_STAFF_BY_ID = gql`
   query GetStaffById($id: uuid!) {
     users_by_pk(id: $id) {

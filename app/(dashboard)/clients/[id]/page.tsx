@@ -33,7 +33,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-import { NotesListWithAdd } from "@/components/notes-list-with-add";
+import { NotesListWithAdd } from "@/components/notes-list";
 import {
   AlertDialog,
   AlertDialogAction,

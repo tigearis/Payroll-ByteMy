@@ -61,6 +61,7 @@ import {
 } from "@/components/ui/select";
 import { GET_PAYROLLS } from "@/domains/payrolls/graphql/queries.graphql";
 import { useUserRole } from "@/hooks/use-user-role";
+import { PayrollUpdatesListener } from "@/components/real-time-updates";
 
 type ViewMode = "cards" | "table" | "list";
 
@@ -185,7 +186,9 @@ const formatCurrency = (amount: number) => {
 };
 
 const formatDate = (date: string | Date) => {
-  if (!date) {return "Not set";}
+  if (!date) {
+    return "Not set";
+  }
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     day: "numeric",
@@ -195,7 +198,9 @@ const formatDate = (date: string | Date) => {
 };
 
 const formatDateTime = (date: string | Date) => {
-  if (!date) {return "Not set";}
+  if (!date) {
+    return "Not set";
+  }
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     day: "numeric",
@@ -211,7 +216,9 @@ const formatPayrollCycle = (payroll: any) => {
   const dateTypeName = payroll.payroll_date_type?.name;
   const dateValue = payroll.date_value;
 
-  if (!cycleName) {return "Not configured";}
+  if (!cycleName) {
+    return "Not configured";
+  }
 
   // Create readable cycle name
   let readableCycle = "";
@@ -282,9 +289,15 @@ const formatPayrollCycle = (payroll: any) => {
 const getOrdinalSuffix = (num: number) => {
   const j = num % 10;
   const k = num % 100;
-  if (j === 1 && k !== 11) {return "st";}
-  if (j === 2 && k !== 12) {return "nd";}
-  if (j === 3 && k !== 13) {return "rd";}
+  if (j === 1 && k !== 11) {
+    return "st";
+  }
+  if (j === 2 && k !== 12) {
+    return "nd";
+  }
+  if (j === 3 && k !== 13) {
+    return "rd";
+  }
   return "th";
 };
 
@@ -425,7 +438,7 @@ export default function PayrollsPage() {
 
   // Choose which data to use
   const finalData = data || fallbackData;
-  const finalLoading = loading || (error && fallbackLoading);
+  const finalLoading = (loading || (error && fallbackLoading)) ?? false;
   const finalError = error && fallbackError ? fallbackError : null;
   const finalRefetch = data ? refetch : fallbackRefetch;
 
@@ -443,7 +456,9 @@ export default function PayrollsPage() {
     }
   }, [roleLoading]);
 
-  if (roleLoading) {return null;}
+  if (roleLoading) {
+    return null;
+  }
 
   if (finalLoading && !payrolls.length) {
     return (
@@ -480,7 +495,9 @@ export default function PayrollsPage() {
 
     // Get next EFT date from payroll_dates
     const getNextEftDate = (payrollDates: any[]) => {
-      if (!payrollDates || payrollDates.length === 0) {return null;}
+      if (!payrollDates || payrollDates.length === 0) {
+        return null;
+      }
 
       const today = new Date();
       const futureDates = payrollDates
@@ -588,9 +605,15 @@ export default function PayrollsPage() {
 
     // Handle null dates (put nulls at the end)
     if (sortField === "nextEftDate") {
-      if (aValue === null && bValue === null) {return 0;}
-      if (aValue === null) {return 1;}
-      if (bValue === null) {return -1;}
+      if (aValue === null && bValue === null) {
+        return 0;
+      }
+      if (aValue === null) {
+        return 1;
+      }
+      if (bValue === null) {
+        return -1;
+      }
       if (aValue instanceof Date && bValue instanceof Date) {
         return sortDirection === "asc"
           ? aValue.getTime() - bValue.getTime()
@@ -913,7 +936,9 @@ export default function PayrollsPage() {
 
   const renderSortableHeader = (label: string, field: string) => {
     const column = COLUMN_DEFINITIONS.find((col) => col.key === field);
-    if (!column?.sortable) {return label;}
+    if (!column?.sortable) {
+      return label;
+    }
 
     return (
       <Button
@@ -933,406 +958,403 @@ export default function PayrollsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Payrolls</h1>
-          <p className="text-gray-500">Manage payrolls for your clients</p>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          {(isAdmin || isManager || isDeveloper) && (
-            <Link href="/payrolls/new">
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Payroll
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
-
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Payrolls
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {sortedPayrolls.length}
-                </p>
-              </div>
-              <FileText className="w-8 h-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Active Payrolls
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {activePayrolls}
-                </p>
-              </div>
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Employees
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {totalEmployees}
-                </p>
-              </div>
-              <Users className="w-8 h-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Pending Payrolls
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {pendingPayrolls}
-                </p>
-              </div>
-              <Clock className="w-8 h-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters and Controls */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search payrolls, clients, consultants..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-[300px]"
-                />
-              </div>
-
-              {/* Advanced Filters Button */}
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className={showFilters ? "bg-primary/10" : ""}
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-                {hasActiveFilters && (
-                  <Badge variant="secondary" className="ml-2 text-xs">
-                    {
-                      [
-                        searchTerm,
-                        statusFilter.length > 0,
-                        clientFilter.length > 0,
-                        consultantFilter.length > 0,
-                        payCycleFilter.length > 0,
-                        dateTypeFilter.length > 0,
-                      ].filter(Boolean).length
-                    }
-                  </Badge>
-                )}
-              </Button>
-
-              {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters}>
-                  <X className="w-4 h-4 mr-1" />
-                  Clear
-                </Button>
-              )}
-
-              {/* Sort Dropdown */}
-              <Select
-                value={`${sortField}-${sortDirection}`}
-                onValueChange={(value) => {
-                  const [field, direction] = value.split("-");
-                  setSortField(field);
-                  setSortDirection(direction as "asc" | "desc");
-                }}
-              >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Sort by..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="nextEftDate-asc">
-                    Next EFT Date ↑
-                  </SelectItem>
-                  <SelectItem value="nextEftDate-desc">
-                    Next EFT Date ↓
-                  </SelectItem>
-                  <SelectItem value="name-asc">Name A-Z</SelectItem>
-                  <SelectItem value="name-desc">Name Z-A</SelectItem>
-                  <SelectItem value="client-asc">Client A-Z</SelectItem>
-                  <SelectItem value="client-desc">Client Z-A</SelectItem>
-                  <SelectItem value="status-asc">Status A-Z</SelectItem>
-                  <SelectItem value="status-desc">Status Z-A</SelectItem>
-                  <SelectItem value="employees-asc">Employees ↑</SelectItem>
-                  <SelectItem value="employees-desc">Employees ↓</SelectItem>
-                  <SelectItem value="lastUpdated-asc">
-                    Last Updated ↑
-                  </SelectItem>
-                  <SelectItem value="lastUpdated-desc">
-                    Last Updated ↓
-                  </SelectItem>
-                  <SelectItem value="payrollCycle-asc">
-                    Pay Cycle A-Z
-                  </SelectItem>
-                  <SelectItem value="payrollCycle-desc">
-                    Pay Cycle Z-A
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex items-center space-x-2">
-              <Button
-                variant={viewMode === "cards" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("cards")}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={viewMode === "table" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("table")}
-              >
-                <TableIcon className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-              >
-                <List className="w-4 h-4" />
-              </Button>
-
-              {viewMode === "table" && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Columns className="w-4 h-4 mr-2" />
-                      Columns
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {COLUMN_DEFINITIONS.map((column) => (
-                      <DropdownMenuCheckboxItem
-                        key={column.key}
-                        checked={visibleColumns.includes(column.key)}
-                        onCheckedChange={() =>
-                          toggleColumnVisibility(column.key)
-                        }
-                      >
-                        {column.label}
-                      </DropdownMenuCheckboxItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-            </div>
+    <>
+      <PayrollUpdatesListener showToasts={true} />
+      <div className="p-4 md:p-6 lg:p-8 space-y-6">
+        <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold text-gray-900">Payrolls</h1>
+            <p className="text-gray-500">Manage payrolls for your clients</p>
           </div>
 
-          {/* Advanced Filter Dropdowns */}
-          {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 pt-4 border-t mt-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Status</label>
-                <MultiSelect
-                  options={uniqueStatuses.map((status: string) => ({
-                    value: status,
-                    label: status,
-                  }))}
-                  selected={statusFilter}
-                  onSelectionChange={setStatusFilter}
-                  placeholder="All statuses"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">Client</label>
-                <MultiSelect
-                  options={uniqueClients.map((client: any) => ({
-                    value: client.id as string,
-                    label: client.name,
-                  }))}
-                  selected={clientFilter}
-                  onSelectionChange={setClientFilter}
-                  placeholder="All clients"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Consultant
-                </label>
-                <MultiSelect
-                  options={uniqueConsultants.map((consultant: any) => ({
-                    value: consultant.id as string,
-                    label: consultant.name,
-                  }))}
-                  selected={consultantFilter}
-                  onSelectionChange={setConsultantFilter}
-                  placeholder="All consultants"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Pay Cycle
-                </label>
-                <MultiSelect
-                  options={uniquePayCycles.map((cycle: string) => ({
-                    value: cycle,
-                    label:
-                      cycle.charAt(0).toUpperCase() +
-                      cycle.slice(1).replace("_", " "),
-                  }))}
-                  selected={payCycleFilter}
-                  onSelectionChange={setPayCycleFilter}
-                  placeholder="All cycles"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Date Type
-                </label>
-                <MultiSelect
-                  options={uniqueDateTypes.map((type: string) => ({
-                    value: type,
-                    label: type.toUpperCase().replace("_", " "),
-                  }))}
-                  selected={dateTypeFilter}
-                  onSelectionChange={setDateTypeFilter}
-                  placeholder="All types"
-                />
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Bulk Actions */}
-      {selectedPayrolls.length > 0 && viewMode === "table" && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">
-                  {selectedPayrolls.length} payroll
-                  {selectedPayrolls.length > 1 ? "s" : ""} selected
-                </span>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Download className="w-4 h-4 mr-2" />
-                  Export Selected
+          <div className="flex items-center space-x-2">
+            {(isAdmin || isManager || isDeveloper) && (
+              <Link href="/payrolls/new">
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add Payroll
                 </Button>
-                <Button variant="outline" size="sm">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Bulk Update
-                </Button>
+              </Link>
+            )}
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Payrolls
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {sortedPayrolls.length}
+                  </p>
+                </div>
+                <FileText className="w-8 h-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Active Payrolls
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {activePayrolls}
+                  </p>
+                </div>
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Employees
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {totalEmployees}
+                  </p>
+                </div>
+                <Users className="w-8 h-8 text-purple-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Pending Payrolls
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {pendingPayrolls}
+                  </p>
+                </div>
+                <Clock className="w-8 h-8 text-orange-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    placeholder="Search payrolls, clients, consultants..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 w-[300px]"
+                  />
+                </div>
+
                 <Button
                   variant="outline"
-                  size="sm"
-                  onClick={() => setSelectedPayrolls([])}
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={showFilters ? "bg-primary/10" : ""}
                 >
-                  <X className="w-4 h-4 mr-1" />
-                  Clear Selection
+                  <Filter className="w-4 h-4 mr-2" />
+                  Filters
+                  {hasActiveFilters && (
+                    <Badge variant="secondary" className="ml-2 text-xs">
+                      {
+                        [
+                          searchTerm,
+                          statusFilter.length > 0,
+                          clientFilter.length > 0,
+                          consultantFilter.length > 0,
+                          payCycleFilter.length > 0,
+                          dateTypeFilter.length > 0,
+                        ].filter(Boolean).length
+                      }
+                    </Badge>
+                  )}
                 </Button>
+
+                {hasActiveFilters && (
+                  <Button variant="ghost" size="sm" onClick={clearFilters}>
+                    <X className="w-4 h-4 mr-1" />
+                    Clear
+                  </Button>
+                )}
+
+                <Select
+                  value={`${sortField}-${sortDirection}`}
+                  onValueChange={(value) => {
+                    const [field, direction] = value.split("-");
+                    setSortField(field);
+                    setSortDirection(direction as "asc" | "desc");
+                  }}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Sort by..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nextEftDate-asc">
+                      Next EFT Date ↑
+                    </SelectItem>
+                    <SelectItem value="nextEftDate-desc">
+                      Next EFT Date ↓
+                    </SelectItem>
+                    <SelectItem value="name-asc">Name A-Z</SelectItem>
+                    <SelectItem value="name-desc">Name Z-A</SelectItem>
+                    <SelectItem value="client-asc">Client A-Z</SelectItem>
+                    <SelectItem value="client-desc">Client Z-A</SelectItem>
+                    <SelectItem value="status-asc">Status A-Z</SelectItem>
+                    <SelectItem value="status-desc">Status Z-A</SelectItem>
+                    <SelectItem value="employees-asc">Employees ↑</SelectItem>
+                    <SelectItem value="employees-desc">Employees ↓</SelectItem>
+                    <SelectItem value="lastUpdated-asc">
+                      Last Updated ↑
+                    </SelectItem>
+                    <SelectItem value="lastUpdated-desc">
+                      Last Updated ↓
+                    </SelectItem>
+                    <SelectItem value="payrollCycle-asc">
+                      Pay Cycle A-Z
+                    </SelectItem>
+                    <SelectItem value="payrollCycle-desc">
+                      Pay Cycle Z-A
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant={viewMode === "cards" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("cards")}
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "table" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("table")}
+                >
+                  <TableIcon className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                >
+                  <List className="w-4 h-4" />
+                </Button>
+
+                {viewMode === "table" && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Columns className="w-4 h-4 mr-2" />
+                        Columns
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {COLUMN_DEFINITIONS.map((column) => (
+                        <DropdownMenuCheckboxItem
+                          key={column.key}
+                          checked={visibleColumns.includes(column.key)}
+                          onCheckedChange={() =>
+                            toggleColumnVisibility(column.key)
+                          }
+                        >
+                          {column.label}
+                        </DropdownMenuCheckboxItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
             </div>
+
+            {showFilters && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 pt-4 border-t mt-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">
+                    Status
+                  </label>
+                  <MultiSelect
+                    options={uniqueStatuses.map((status: string) => ({
+                      value: status,
+                      label: status,
+                    }))}
+                    selected={statusFilter}
+                    onSelectionChange={setStatusFilter}
+                    placeholder="All statuses"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">
+                    Client
+                  </label>
+                  <MultiSelect
+                    options={uniqueClients.map((client: any) => ({
+                      value: client.id as string,
+                      label: client.name,
+                    }))}
+                    selected={clientFilter}
+                    onSelectionChange={setClientFilter}
+                    placeholder="All clients"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">
+                    Consultant
+                  </label>
+                  <MultiSelect
+                    options={uniqueConsultants.map((consultant: any) => ({
+                      value: consultant.id as string,
+                      label: consultant.name,
+                    }))}
+                    selected={consultantFilter}
+                    onSelectionChange={setConsultantFilter}
+                    placeholder="All consultants"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">
+                    Pay Cycle
+                  </label>
+                  <MultiSelect
+                    options={uniquePayCycles.map((cycle: string) => ({
+                      value: cycle,
+                      label:
+                        cycle.charAt(0).toUpperCase() +
+                        cycle.slice(1).replace("_", " "),
+                    }))}
+                    selected={payCycleFilter}
+                    onSelectionChange={setPayCycleFilter}
+                    placeholder="All cycles"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">
+                    Date Type
+                  </label>
+                  <MultiSelect
+                    options={uniqueDateTypes.map((type: string) => ({
+                      value: type,
+                      label: type.toUpperCase().replace("_", " "),
+                    }))}
+                    selected={dateTypeFilter}
+                    onSelectionChange={setDateTypeFilter}
+                    placeholder="All types"
+                  />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
-      )}
 
-      {/* Content based on view mode */}
-      {finalLoading && !payrolls.length ? (
-        <Card>
-          <CardContent className="p-12">
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-          </CardContent>
-        </Card>
-      ) : sortedPayrolls.length === 0 ? (
-        <Card>
-          <CardContent className="p-12">
-            <div className="text-center">
-              <FileText className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {searchTerm || hasActiveFilters
-                  ? "No payrolls found"
-                  : "No payrolls yet"}
-              </h3>
-              <p className="text-gray-500 mb-4">
-                {searchTerm || hasActiveFilters
-                  ? "Try adjusting your search criteria or filters"
-                  : "Get started by adding your first payroll"}
-              </p>
-              {(isAdmin || isManager || isDeveloper) &&
-                !searchTerm &&
-                !hasActiveFilters && (
-                  <Link href="/payrolls/new">
-                    <Button>
-                      <PlusCircle className="w-4 h-4 mr-2" />
-                      Add First Payroll
-                    </Button>
-                  </Link>
-                )}
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div>
-          {viewMode === "table" && (
-            <PayrollsTable
-              payrolls={sortedPayrolls}
-              loading={finalLoading}
-              onRefresh={finalRefetch}
-              selectedPayrolls={selectedPayrolls}
-              onSelectPayroll={handleSelectPayroll}
-              onSelectAll={handleSelectAll}
-              visibleColumns={visibleColumns}
-              sortField={sortField}
-              sortDirection={sortDirection}
-              onSort={handleSort}
-            />
-          )}
+        {selectedPayrolls.length > 0 && viewMode === "table" && (
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">
+                    {selectedPayrolls.length} payroll
+                    {selectedPayrolls.length > 1 ? "s" : ""} selected
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Selected
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Bulk Update
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedPayrolls([])}
+                  >
+                    <X className="w-4 h-4 mr-1" />
+                    Clear Selection
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-          {viewMode === "cards" && renderCardView()}
+        {finalLoading && !payrolls.length ? (
+          <Card>
+            <CardContent className="p-12">
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : sortedPayrolls.length === 0 ? (
+          <Card>
+            <CardContent className="p-12">
+              <div className="text-center">
+                <FileText className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  {searchTerm || hasActiveFilters
+                    ? "No payrolls found"
+                    : "No payrolls yet"}
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  {searchTerm || hasActiveFilters
+                    ? "Try adjusting your search criteria or filters"
+                    : "Get started by adding your first payroll"}
+                </p>
+                {(isAdmin || isManager || isDeveloper) &&
+                  !searchTerm &&
+                  !hasActiveFilters && (
+                    <Link href="/payrolls/new">
+                      <Button>
+                        <PlusCircle className="w-4 h-4 mr-2" />
+                        Add First Payroll
+                      </Button>
+                    </Link>
+                  )}
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div>
+            {viewMode === "table" && (
+              <PayrollsTable
+                payrolls={sortedPayrolls}
+                loading={!!finalLoading}
+                onRefresh={finalRefetch}
+                selectedPayrolls={selectedPayrolls}
+                onSelectPayroll={handleSelectPayroll}
+                onSelectAll={handleSelectAll}
+                visibleColumns={visibleColumns}
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
+            )}
 
-          {viewMode === "list" && renderListView()}
-        </div>
-      )}
-    </div>
+            {viewMode === "cards" && renderCardView()}
+
+            {viewMode === "list" && renderListView()}
+          </div>
+        )}
+      </div>
+    </>
   );
 }

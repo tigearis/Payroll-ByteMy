@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// Define the mutation
+// Import extracted GraphQL operations
 const GENERATE_PAYROLL_DATES = gql`
-  mutation GeneratePayrollDates($payrollId: uuid!, $startDate: date!, $endDate: date!) {
+  mutation GeneratePayrollDatesExtracted($payrollId: uuid!, $startDate: date!, $endDate: date!) {
     generate_payroll_dates(
       p_payroll_id: $payrollId, 
       p_start_date: $startDate, 
@@ -24,9 +24,8 @@ const GENERATE_PAYROLL_DATES = gql`
   }
 `;
 
-// Query to fetch payroll dates
 const GET_PAYROLL_DATES = gql`
-  query GetPayrollDates($id: uuid!) {
+  query GetPayrollDatesById($id: uuid!) {
     payroll_dates(
       where: { payroll_id: { _eq: $id } },
       order_by: { adjusted_eft_date: asc }

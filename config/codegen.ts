@@ -52,12 +52,12 @@ const domains = [
   // { name: "permissions", securityLevel: "CRITICAL" }, // Temporarily disabled - schema mismatch
 
   // HIGH Security Level - PII and Business Critical Data
-  // { name: "users", securityLevel: "HIGH" }, // Temporarily disabled - schema mismatch
+  // { name: "users", securityLevel: "HIGH" }, // Schema mismatch - need to fix fields first
   // { name: "clients", securityLevel: "HIGH" }, // Temporarily disabled - schema mismatch
   // { name: "billing", securityLevel: "HIGH" }, // Temporarily disabled - schema mismatch
 
   // MEDIUM Security Level - Internal Business Data
-  // { name: "payrolls", securityLevel: "MEDIUM" }, // Temporarily disabled - schema mismatch
+  // { name: "payrolls", securityLevel: "MEDIUM" }, // Schema mismatch - need to fix fields first
   { name: "notes", securityLevel: "MEDIUM" }, // Internal communications - WORKING
   // { name: "leave", securityLevel: "MEDIUM" }, // Temporarily disabled - schema mismatch
   // { name: "work-schedule", securityLevel: "MEDIUM" }, // Temporarily disabled - schema mismatch

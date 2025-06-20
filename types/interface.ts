@@ -280,3 +280,40 @@ export interface EnhancedCalendarProps {
   onWeekSelect?: (week: string) => void;
   onDaySelect: (day: string) => void;
 }
+
+// Extracted from inline types - UI/Component interfaces
+export interface MultiSelectProps {
+  options: Array<{ value: string; label: string }>;
+  selected: string[];
+  onSelectionChange: (selected: string[]) => void;
+  placeholder: string;
+  label?: string;
+}
+
+// Permission and auth types
+export interface GraphQLPermissionError {
+  message: string;
+  field?: string;
+  table?: string;
+  role?: string;
+}
+
+export interface ApiError {
+  error: string;
+  details?: string | Record<string, any>;
+  code?: string;
+  timestamp?: string;
+}
+
+export interface ApiSuccess<T = any> {
+  success: true;
+  data?: T;
+  message?: string;
+  timestamp?: string;
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
+  code?: string;
+}

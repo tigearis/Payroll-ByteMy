@@ -159,3 +159,68 @@ query GetUserSessionInfo($id: uuid!) {
     last_login_at
   }
 }
+
+# Extracted from inline GraphQL operations
+query GetCurrentUser($currentUserId: uuid!) {
+  users_by_pk(id: $currentUserId) {
+    id
+    name
+    role
+    is_staff
+    is_active
+    manager_id
+    clerk_user_id
+    created_at
+    updated_at
+  }
+}
+
+query GetUserRole($userId: uuid!) {
+  users_by_pk(id: $userId) {
+    id
+    role
+    is_staff
+    is_active
+  }
+}
+
+query GetUserRoleFallback($userId: uuid!) {
+  users_by_pk(id: $userId) {
+    id
+    role
+    is_staff
+    is_active
+    clerk_user_id
+  }
+}
+
+query GetUsersWithLimit($limit: Int = 10) {
+  users(limit: $limit) {
+    id
+    name
+    email
+    role
+    is_staff
+    clerk_user_id
+  }
+}
+
+query GetUserProfileSettings($id: uuid!) {
+  users_by_pk(id: $id) {
+    id
+    name
+    email
+    avatar_url
+    role
+    is_staff
+    is_active
+    created_at
+    updated_at
+    clerk_user_id
+    manager {
+      id
+      name
+      email
+    }
+  }
+}

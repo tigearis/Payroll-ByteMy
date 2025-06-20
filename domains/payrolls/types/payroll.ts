@@ -105,3 +105,52 @@ export interface EnhancedCalendarProps {
   onWeekSelect?: (week: string) => void;
   onDaySelect: (day: string) => void;
 }
+
+// Extracted from inline types
+export interface PayrollsTableProps {
+  payrolls: any[];
+  loading?: boolean;
+  onRefresh?: () => void;
+  selectedPayrolls?: string[];
+  onSelectPayroll?: (payrollId: string, checked: boolean) => void;
+  onSelectAll?: (checked: boolean) => void;
+  visibleColumns?: string[];
+  sortField?: string;
+  sortDirection?: "asc" | "desc";
+  onSort?: (field: string) => void;
+}
+
+export interface PayrollDetailsCardProps {
+  payroll: {
+    status: string;
+    processing_days_before_eft: number;
+    payroll_system?: string;
+  };
+  className?: string;
+}
+
+export type ViewMode = "cards" | "table" | "list";
+
+// Payroll versioning types
+export interface PayrollVersionData {
+  id: string;
+  name: string;
+  version_number: number;
+  status: string;
+  created_at: string;
+  superseded_date?: string;
+  go_live_date?: string;
+  notes?: string;
+  parent_payroll_id?: string;
+}
+
+export interface PayrollCreationData {
+  name: string;
+  clientId: string;
+  cycleId: string;
+  primaryConsultantId: string;
+  managerId: string;
+  processingDaysBeforeEft: number;
+  status?: string;
+  version_number?: number;
+}

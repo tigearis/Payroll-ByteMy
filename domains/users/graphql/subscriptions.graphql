@@ -1,0 +1,31 @@
+# Users Domain Subscriptions
+# Security Classification: CRITICAL - Employee PII and authentication data
+# SOC2 Compliance: Strict access controls with audit logging
+
+# Extracted from inline GraphQL operations
+subscription staffSubscription {
+  users(where: { is_staff: { _eq: true } }) {
+    id
+    name
+    role
+    updated_at
+  }
+}
+
+subscription UserUpdates($id: uuid!) {
+  users_by_pk(id: $id) {
+    ...UserBasicInfo
+  }
+}
+
+subscription StaffListUpdates {
+  users(
+    where: {
+      status: { _neq: "deleted" }
+      role: { _in: ["consultant", "manager", "org_admin"] }
+    }
+    order_by: { name: asc }
+  ) {
+    ...UserBasicInfo
+  }
+}

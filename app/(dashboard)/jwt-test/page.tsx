@@ -1,5 +1,5 @@
 // app/(dashboard)/jwt-test/page.tsx
-import { JWTTestPanel } from "@/components/jwt-test-panel";
+import { JwtTestPanel } from "@/lib/dev/test-components";
 
 export default function JWTTestPage() {
   return (
@@ -11,7 +11,7 @@ export default function JWTTestPage() {
         </p>
       </div>
       
-      <JWTTestPanel />
+      <JwtTestPanel />
     </div>
   );
 }

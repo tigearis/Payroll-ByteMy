@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 
+// Import extracted GraphQL operations
 const TEST_SUBSCRIPTION = gql`
   subscription TestSubscription {
     payrolls(limit: 1) {

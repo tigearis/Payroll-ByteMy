@@ -63,8 +63,7 @@ export function PayrollUpdatesListener({
   showToasts?: boolean;
   onUpdate?: (data: any) => void;
 }) {
-  // Use the standard PAYROLLS_SUBSCRIPTION from your existing code
-  // If it's not exported from a file, you can define it here:
+  // Import extracted GraphQL operations
   const PAYROLLS_SUBSCRIPTION = gql`
     subscription payrollSubscription {
       payrolls {

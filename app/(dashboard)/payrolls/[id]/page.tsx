@@ -64,7 +64,7 @@ import { toast } from "sonner";
 
 import { ExportCsv } from "@/components/export-csv";
 import { ExportPdf } from "@/components/export-pdf";
-import { NotesListWithAdd } from "@/components/notes-list-with-add";
+import { NotesListWithAdd } from "@/components/notes-list";
 import { PayrollDatesView } from "@/components/payroll-dates-view";
 import { PayrollVersionHistory } from "@/components/payroll-version-history";
 import { Badge } from "@/components/ui/badge";

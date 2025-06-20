@@ -18,9 +18,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-// Define the mutation
+// Import extracted GraphQL operations
 const UPDATE_PAYROLL = gql`
-  mutation UpdatePayroll($id: uuid!, $name: String, $notes: String) {
+  mutation UpdatePayrollExtracted($id: uuid!, $name: String, $notes: String) {
     update_payrolls_by_pk(
       pk_columns: { id: $id }, 
       _set: { 
@@ -37,9 +37,8 @@ const UPDATE_PAYROLL = gql`
   }
 `;
 
-// Query for payrolls list (used for optimistic updates)
 const GET_PAYROLLS = gql`
-  query GetPayrolls {
+  query GetPayrollsSimple {
     payrolls {
       id
       name
