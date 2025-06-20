@@ -8,9 +8,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `pnpm dev` - Start development server with Turbopack
 - `pnpm build` - Build for production
+- `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
 - `pnpm codegen` - Generate GraphQL types from schema
 - `pnpm codegen:watch` - Watch mode for GraphQL code generation
+
+### Codebase Maintenance
+
+- `pnpm fix:codebase` - Run automated codebase fixes
+- `pnpm fix:dry-run` - Preview codebase fixes without applying
+- `pnpm fix:auth` - Fix authentication-related issues with backup
+- `pnpm fix:errors` - Fix code errors with backup
+- `pnpm fix:all` - Fix both auth and errors with backup
+- `pnpm fix:duplication` - Remove code duplication
 
 ### GraphQL Operations
 
@@ -20,7 +30,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Testing
 
 - Tests are located in `__tests__/` directory
-- No specific test runner configured - check for test scripts if needed
+- Testing framework: Jest with React Testing Library
+- Dependencies: `@jest/globals`, `@testing-library/jest-dom`, `@testing-library/react`
+- No test runner script configured - tests should be run manually or via IDE integration
 
 ### Security Audit
 
