@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@apollo/client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useEnhancedPermissions } from "@/hooks/useEnhancedPermissions";
+import { useUserRole } from "@/hooks/useUserRole";
 import {
   Card,
   CardContent,
@@ -143,7 +143,7 @@ const roleMapping: Record<
 
 export default function ProfilePage() {
   const { currentUser, currentUserId, loading: userLoading } = useCurrentUser();
-  const { userRole, isLoaded: permissionsLoaded } = useEnhancedPermissions();
+  const { userRole } = useUserRole();
   const [activeTab, setActiveTab] = useState("overview");
 
   const { data, loading, error } = useQuery(GET_USER_PROFILE, {
@@ -152,7 +152,7 @@ export default function ProfilePage() {
     fetchPolicy: "cache-and-network",
   });
 
-  if (userLoading || loading || !permissionsLoaded) {
+  if (userLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
@@ -175,7 +175,7 @@ export default function ProfilePage() {
   }
 
   const user = data.users_by_pk;
-  const roleInfo = roleMapping[userRole as string] || roleMapping.viewer;
+  const roleInfo = roleMapping[user.role] || roleMapping.viewer;
 
   // Calculate statistics
   const stats = {

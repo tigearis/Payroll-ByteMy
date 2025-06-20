@@ -39,93 +39,31 @@ query GetCurrentUserRoles {
   }
 }
 
-# Get user's effective permissions (through role relationships)
-# Note: get_user_effective_permissions function doesn't exist, using role-based approach
+# Get user's effective permissions (includes inheritance)
 query GetUserEffectivePermissions($userId: uuid!) {
-  user_roles(where: { user_id: { _eq: $userId } }) {
-    role {
-      name
-      display_name
-      priority
-      role_permissions {
-        permission {
-          action
-          resource {
-            name
-            display_name
-          }
-        }
-        conditions
-      }
-    }
+  get_user_effective_permissions(args: { p_user_id: $userId }) {
+    resource
+    action
+    granted_by
+    source_type
+    conditions
   }
 }
 
-# Check if user has permission through their roles
-# Note: user_can_perform_action function doesn't exist, using role-based lookup
+# Check if user can perform specific action
 query CanUserPerformAction(
   $userId: uuid!
-  $resourceName: String!
-  $actionName: permission_action!
+  $resource: String!
+  $action: String!
 ) {
-  user_roles(
-    where: { 
-      user_id: { _eq: $userId },
-      role: {
-        role_permissions: {
-          permission: {
-            resource: { name: { _eq: $resourceName } },
-            action: { _eq: $actionName }
-          }
-        }
-      }
-    }
-  ) {
-    role {
-      name
-      role_permissions(
-        where: {
-          permission: {
-            resource: { name: { _eq: $resourceName } },
-            action: { _eq: $actionName }
-          }
-        }
-      ) {
-        conditions
-        permission {
-          action
-          resource {
-            name
-          }
-        }
-      }
-    }
-  }
+  user_can_perform_action(
+    args: { p_user_id: $userId, p_resource: $resource, p_action: $action }
+  )
 }
 
-# Get user information for Hasura JWT claims
-# Note: get_hasura_claims function doesn't exist, getting user data directly
-query GetUserForHasuraClaims($clerkUserId: String!) {
-  users(where: { clerk_user_id: { _eq: $clerkUserId } }) {
-    id
-    email
-    is_active
-    is_staff
-    user_roles {
-      role {
-        name
-        priority
-        role_permissions {
-          permission {
-            action
-            resource {
-              name
-            }
-          }
-        }
-      }
-    }
-  }
+# Get Hasura JWT claims for user
+query GetHasuraClaimsForUser($clerkUserId: String!) {
+  get_hasura_claims(args: { user_clerk_id: $clerkUserId })
 }
 
 # Get all available roles (for admin interfaces)
@@ -193,67 +131,37 @@ query GetUsersWithRoles($limit: Int = 50, $offset: Int = 0) {
   }
 }
 
-# Get custom roles and permissions for a user
-# This replaces permission overrides functionality
-query GetUserCustomPermissions($userId: uuid!) {
-  user_roles(
-    where: { 
-      user_id: { _eq: $userId },
-      role: { is_system_role: { _eq: false } }
-    }
+# Get permission overrides for a user
+query GetUserPermissionOverrides($userId: uuid!) {
+  permission_overrides(
+    where: { user_id: { _eq: $userId } }
     order_by: { created_at: desc }
   ) {
     id
+    resource
+    operation
+    granted
+    conditions
+    expires_at
     created_at
-    role {
-      id
-      name
-      display_name
-      description
-      role_permissions {
-        id
-        conditions
-        permission {
-          id
-          action
-          description
-          resource {
-            name
-            display_name
-          }
-        }
-      }
-    }
+    updated_at
   }
 }
 
-# Get permissions for a specific role
-# This replaces role-based permission overrides
-query GetRolePermissions($roleName: String!) {
-  roles(
-    where: { name: { _eq: $roleName } }
+# Get role-based permission overrides
+query GetRolePermissionOverrides($roleName: String!) {
+  permission_overrides(
+    where: { role: { _eq: $roleName } }
+    order_by: { created_at: desc }
   ) {
     id
-    name
-    display_name
-    description
-    role_permissions(order_by: { created_at: desc }) {
-      id
-      conditions
-      created_at
-      updated_at
-      permission {
-        id
-        action
-        description
-        resource {
-          id
-          name
-          display_name
-          description
-        }
-      }
-    }
+    resource
+    operation
+    granted
+    conditions
+    expires_at
+    created_at
+    updated_at
   }
 }
 
@@ -300,32 +208,27 @@ query GetRoleHierarchy {
   }
 }
 
-# Get role assignment history for users
-# This provides audit trail for permission changes through role assignments
-query GetUserRoleHistory(
+# Get audit logs related to permission changes
+query GetPermissionAuditLogs(
   $limit: Int = 50
   $offset: Int = 0
   $userId: uuid = null
 ) {
-  user_roles(
+  permission_audit_log(
     limit: $limit
     offset: $offset
-    order_by: { created_at: desc }
+    order_by: { timestamp: desc }
     where: { user_id: { _eq: $userId } }
   ) {
     id
     user_id
-    role_id
-    created_at
-    updated_at
-    role {
-      name
-      display_name
-      description
-      priority
-    }
-    user {
-      email
-    }
+    action
+    resource_type
+    resource_id
+    old_permissions
+    new_permissions
+    changed_by
+    timestamp
+    reason
   }
 }

@@ -2,7 +2,7 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "@apollo/client";
-import { UserDetails } from "@/types";
+import { UserDetails } from "@/types/interface";
 import { GET_STAFF_BY_ID } from "@/graphql/queries/staff/getStaffById";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
@@ -25,8 +25,7 @@ export default function UserInfoPage() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
-  const { isAdministrator, isManager, isDeveloper, isConsultant } =
-    useUserRole();
+  const { isAdmin, isManager, isDeveloper, isConsultant } = useUserRole();
   const { loading, error, data } = useQuery(GET_STAFF_BY_ID, {
     variables: { id },
     skip: !id, // Skip query if id is not available
@@ -39,8 +38,7 @@ export default function UserInfoPage() {
   const user = data.users.find((u: UserDetails) => u.id === id);
   if (!user) return <p>User not found.</p>;
 
-  const canEditLeave =
-    isAdministrator || isManager || isDeveloper || isConsultant;
+  const canEditLeave = isAdmin || isManager || isDeveloper || isConsultant;
 
   return (
     <div className="max-w-3xl mx-auto mt-10">

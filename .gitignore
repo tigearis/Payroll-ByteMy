@@ -10,12 +10,6 @@
 !.yarn/releases
 !.yarn/versions
 
-# lock files (only use pnpm)
-package-lock.json
-yarn.lock
-./**/package-lock.json
-./**/yarn.lock
-
 # testing
 /coverage
 
@@ -50,6 +44,3 @@ next-env.d.ts
 /.clerk/
 .env*.local
 .claude/
-
-# pnpm store
-.pnpm-store/

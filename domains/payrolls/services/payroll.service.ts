@@ -1,21 +1,156 @@
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
+import { graphql } from "../graphql/generated/gql";
 import { useFragment } from "../graphql/generated/fragment-masking";
 import {
   GetPayrollsQuery,
   GetPayrollByIdQuery,
   CreatePayrollMutation,
   UpdatePayrollMutation,
-  GetPayrollsDocument,
-  GetPayrollByIdDocument,
-  GetPayrollsByClientDocument,
-  GetPayrollsByMonthDocument,
-  CreatePayrollDocument,
-  UpdatePayrollDocument,
-  UpdatePayrollStatusDocument,
-  DeletePayrollDocument,
 } from "../graphql/generated/graphql";
 
-// GraphQL documents are now imported directly from generated files
+// Define the GraphQL documents
+const GetPayrollsDocument = graphql(`
+  query GetPayrolls {
+    payrolls(
+      where: { superseded_date: { _is_null: true } }
+      order_by: { updated_at: desc }
+    ) {
+      ...PayrollWithDates
+    }
+  }
+`);
+
+const GetPayrollByIdDocument = graphql(`
+  query GetPayrollById($id: uuid!) {
+    payrolls_by_pk(id: $id) {
+      ...PayrollWithDates
+    }
+  }
+`);
+
+const GetPayrollsByClientDocument = graphql(`
+  query GetPayrollsByClient($clientId: uuid!) {
+    payrolls(
+      where: {
+        client_id: { _eq: $clientId }
+        superseded_date: { _is_null: true }
+      }
+      order_by: { updated_at: desc }
+    ) {
+      ...PayrollWithDates
+    }
+  }
+`);
+
+const GetPayrollsByMonthDocument = graphql(`
+  query GetPayrollsByMonth($startDate: date!, $endDate: date!) {
+    payrolls(
+      where: {
+        superseded_date: { _is_null: true }
+        payroll_dates: {
+          adjusted_eft_date: { _gte: $startDate, _lte: $endDate }
+        }
+      }
+      order_by: { updated_at: desc }
+    ) {
+      ...PayrollWithDates
+    }
+  }
+`);
+
+const CreatePayrollDocument = graphql(`
+  mutation CreatePayroll(
+    $name: String!
+    $clientId: uuid!
+    $cycleId: uuid!
+    $dateTypeId: uuid!
+    $dateValue: Int
+    $primaryConsultantId: uuid!
+    $backupConsultantId: uuid
+    $managerId: uuid!
+    $processingDaysBeforeEft: Int!
+    $payrollSystem: String
+    $employeeCount: Int
+  ) {
+    insert_payrolls_one(
+      object: {
+        name: $name
+        client_id: $clientId
+        cycle_id: $cycleId
+        date_type_id: $dateTypeId
+        date_value: $dateValue
+        primary_consultant_user_id: $primaryConsultantId
+        backup_consultant_user_id: $backupConsultantId
+        manager_user_id: $managerId
+        processing_days_before_eft: $processingDaysBeforeEft
+        payroll_system: $payrollSystem
+        employee_count: $employeeCount
+        status: "Implementation"
+        version_number: 1
+      }
+    ) {
+      ...PayrollWithRelations
+    }
+  }
+`);
+
+const UpdatePayrollDocument = graphql(`
+  mutation UpdatePayroll(
+    $id: uuid!
+    $name: String
+    $cycleId: uuid
+    $dateTypeId: uuid
+    $dateValue: Int
+    $primaryConsultantId: uuid
+    $backupConsultantId: uuid
+    $managerId: uuid
+    $processingDaysBeforeEft: Int
+    $payrollSystem: String
+    $employeeCount: Int
+    $status: payroll_status
+  ) {
+    update_payrolls_by_pk(
+      pk_columns: { id: $id }
+      _set: {
+        name: $name
+        cycle_id: $cycleId
+        date_type_id: $dateTypeId
+        date_value: $dateValue
+        primary_consultant_user_id: $primaryConsultantId
+        backup_consultant_user_id: $backupConsultantId
+        manager_user_id: $managerId
+        processing_days_before_eft: $processingDaysBeforeEft
+        payroll_system: $payrollSystem
+        employee_count: $employeeCount
+        status: $status
+        updated_at: "now()"
+      }
+    ) {
+      ...PayrollWithRelations
+    }
+  }
+`);
+
+const UpdatePayrollStatusDocument = graphql(`
+  mutation UpdatePayrollStatus($id: uuid!, $status: payroll_status!) {
+    update_payrolls_by_pk(
+      pk_columns: { id: $id }
+      _set: { status: $status, updated_at: "now()" }
+    ) {
+      id
+      status
+      updated_at
+    }
+  }
+`);
+
+const DeletePayrollDocument = graphql(`
+  mutation DeletePayroll($id: uuid!) {
+    delete_payrolls_by_pk(id: $id) {
+      id
+    }
+  }
+`);
 
 export class PayrollService {
   constructor(private apolloClient: ApolloClient<NormalizedCacheObject>) {}
@@ -142,8 +277,8 @@ export class PayrollService {
     const payroll = await this.getPayrollById(id);
     if (!payroll) return null;
 
-    // Access the payroll data with type assertion to handle fragment types
-    const payrollData = payroll as any;
+    // Use fragment to access the data
+    const payrollData = useFragment(PayrollWithDatesFragment, payroll);
 
     return {
       isSuperseded: !!payrollData?.superseded_date,

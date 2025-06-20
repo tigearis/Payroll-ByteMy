@@ -17,8 +17,12 @@ import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-// Import role enums - Update to use the standardized enum names
-import { PayrollCycleType, PayrollDateType } from "@/types/enums";
+// Import role enums
+import {
+  user_role,
+  payroll_cycle_type,
+  payroll_date_type,
+} from "@/types/enums";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -80,7 +84,6 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { PayrollDetailsLoading } from "@/components/ui/loading-states";
-import { useEnhancedPermissions } from "@/hooks/useEnhancedPermissions";
 
 // Add error boundary component for debugging
 function ErrorBoundary({ children }: { children: React.ReactNode }) {
@@ -168,29 +171,29 @@ const getStatusConfig = (status: string) => {
 
 // Payroll cycle constants (from creation form)
 const PAYROLL_CYCLES = [
-  { id: PayrollCycleType.Weekly, name: "Weekly" },
-  { id: PayrollCycleType.Fortnightly, name: "Fortnightly" },
-  { id: PayrollCycleType.BiMonthly, name: "Bi-Monthly" },
-  { id: PayrollCycleType.Monthly, name: "Monthly" },
-  { id: PayrollCycleType.Quarterly, name: "Quarterly" },
+  { id: payroll_cycle_type.Weekly, name: "Weekly" },
+  { id: payroll_cycle_type.Fortnightly, name: "Fortnightly" },
+  { id: payroll_cycle_type.BiMonthly, name: "Bi-Monthly" },
+  { id: payroll_cycle_type.Monthly, name: "Monthly" },
+  { id: payroll_cycle_type.Quarterly, name: "Quarterly" },
 ];
 
 const PAYROLL_DATE_TYPES = {
-  [PayrollCycleType.Weekly]: [],
-  [PayrollCycleType.Fortnightly]: [],
-  [PayrollCycleType.BiMonthly]: [
-    { id: PayrollDateType.SOM, name: "Start of Month" },
-    { id: PayrollDateType.EOM, name: "End of Month" },
+  [payroll_cycle_type.Weekly]: [],
+  [payroll_cycle_type.Fortnightly]: [],
+  [payroll_cycle_type.BiMonthly]: [
+    { id: payroll_date_type.SOM, name: "Start of Month" },
+    { id: payroll_date_type.EOM, name: "End of Month" },
   ],
-  [PayrollCycleType.Monthly]: [
-    { id: PayrollDateType.SOM, name: "Start of Month" },
-    { id: PayrollDateType.EOM, name: "End of Month" },
-    { id: PayrollDateType.FixedDate, name: "Fixed Date" },
+  [payroll_cycle_type.Monthly]: [
+    { id: payroll_date_type.SOM, name: "Start of Month" },
+    { id: payroll_date_type.EOM, name: "End of Month" },
+    { id: payroll_date_type.FixedDate, name: "Fixed Date" },
   ],
-  [PayrollCycleType.Quarterly]: [
-    { id: PayrollDateType.SOM, name: "Start of Month" },
-    { id: PayrollDateType.EOM, name: "End of Month" },
-    { id: PayrollDateType.FixedDate, name: "Fixed Date" },
+  [payroll_cycle_type.Quarterly]: [
+    { id: payroll_date_type.SOM, name: "Start of Month" },
+    { id: payroll_date_type.EOM, name: "End of Month" },
+    { id: payroll_date_type.FixedDate, name: "Fixed Date" },
   ],
 };
 
@@ -917,18 +920,20 @@ const DELETE_PAYROLL_DATES = gql`
 `;
 
 // Helper function to get user-friendly role display name
+// Helper function to get user-friendly role display name
 const getRoleDisplayName = (role: string) => {
   switch (role) {
-    case "developer":
-      return "Developer";
-    case "org_admin":
-      return "Organization Admin";
-    case "manager":
+    case user_role.Developer:
+    case user_role.OrgAdmin:
+      return "Admin";
+    case user_role.Manager:
       return "Manager";
-    case "consultant":
+    case user_role.Consultant:
       return "Consultant";
+    case user_role.Viewer:
+      return "Viewer";
     default:
-      return role;
+      return role; // fallback to original value
   }
 };
 
@@ -938,13 +943,12 @@ export default function PayrollPage() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
-  const { permissions } = useEnhancedPermissions();
 
   console.log("📋 Payroll ID:", id);
 
   const [loadingToastShown, setLoadingToastShown] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [isEditing, setIsEditing] = useState(false);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [showScheduleChangeDialog, setShowScheduleChangeDialog] =
     useState(false);
@@ -962,8 +966,6 @@ export default function PayrollPage() {
   const [versioningNote, setVersioningNote] = useState("");
 
   console.log("🔧 State initialized");
-
-  const canEdit = permissions.includes("custom:payroll:write");
 
   // Versioning hook
   const {
@@ -1043,12 +1045,7 @@ export default function PayrollPage() {
 
   // Get payroll data - use network-only to prevent flash of old cached data
   // Skip this query if we're still checking versions or about to redirect
-  const {
-    data,
-    loading: payrollLoading,
-    error,
-    refetch,
-  } = useQuery(GET_PAYROLL_BY_ID, {
+  const { data, loading, error, refetch } = useQuery(GET_PAYROLL_BY_ID, {
     variables: { id },
     skip: !id || isVersionCheckingOrRedirecting,
     fetchPolicy: "network-only", // Prevent flash of cached old data
@@ -1057,38 +1054,21 @@ export default function PayrollPage() {
   console.log("✅ Main payroll query loaded");
 
   // Query for users (for consultant/manager assignments)
-  const { data: usersData, loading: usersLoading } = useQuery(
-    GET_ALL_USERS_LIST,
-    {
-      skip: isVersionCheckingOrRedirecting,
-    }
-  );
+  const { data: usersData } = useQuery(GET_ALL_USERS_LIST, {
+    skip: isVersionCheckingOrRedirecting,
+  });
   console.log("✅ Users query loaded");
 
   // Query for lookup tables
-  const { data: cyclesData, loading: cyclesLoading } = useQuery(
-    GET_PAYROLL_CYCLES,
-    {
-      skip: isVersionCheckingOrRedirecting,
-    }
-  );
+  const { data: cyclesData } = useQuery(GET_PAYROLL_CYCLES, {
+    skip: isVersionCheckingOrRedirecting,
+  });
   console.log("✅ Cycles query loaded");
 
-  const { data: dateTypesData, loading: dateTypesLoading } = useQuery(
-    GET_PAYROLL_DATE_TYPES,
-    {
-      skip: isVersionCheckingOrRedirecting,
-    }
-  );
+  const { data: dateTypesData } = useQuery(GET_PAYROLL_DATE_TYPES, {
+    skip: isVersionCheckingOrRedirecting,
+  });
   console.log("✅ Date types query loaded");
-
-  // Overall loading state
-  const loading =
-    payrollLoading ||
-    usersLoading ||
-    cyclesLoading ||
-    dateTypesLoading ||
-    isVersionCheckingOrRedirecting;
 
   // Lazy query for regenerating payroll dates
   const [generatePayrollDates] = useLazyQuery(GENERATE_PAYROLL_DATES_QUERY, {
@@ -1175,8 +1155,8 @@ export default function PayrollPage() {
       ...prev,
       cycle_id: value,
       date_type_id:
-        value === PayrollCycleType.Weekly ||
-        value === PayrollCycleType.Fortnightly
+        value === payroll_cycle_type.Weekly ||
+        value === payroll_cycle_type.Fortnightly
           ? "DOW"
           : "",
       date_value: "",
@@ -1204,7 +1184,7 @@ export default function PayrollPage() {
     (user: any) => user.id !== editedPayroll.primary_consultant_user_id
   );
   const availableManagers = staffUsers.filter((user: any) =>
-    ["manager", "developer", "org_admin"].includes(user.role)
+    [user_role.Manager, user_role.Developer, user_role.OrgAdmin].includes(user.role)
   );
 
   // Enhanced renderDateValueInput with same logic as creation page
@@ -1223,7 +1203,7 @@ export default function PayrollPage() {
     }
 
     // Weekly: Only day of week selection
-    if (cycle_id === PayrollCycleType.Weekly) {
+    if (cycle_id === payroll_cycle_type.Weekly) {
       return (
         <div className="space-y-2">
           <Label htmlFor="weekday">Day of Week</Label>
@@ -1247,7 +1227,7 @@ export default function PayrollPage() {
     }
 
     // Fortnightly: Enhanced calendar selection for week type and day of week
-    if (cycle_id === PayrollCycleType.Fortnightly) {
+    if (cycle_id === payroll_cycle_type.Fortnightly) {
       return (
         <div className="space-y-2">
           <Label htmlFor="fortnightly-calendar">Select Week & Day</Label>
@@ -1263,13 +1243,13 @@ export default function PayrollPage() {
     }
 
     // Bi-Monthly: Only SOM/EOM selection (no date value needed)
-    if (cycle_id === PayrollCycleType.BiMonthly) {
+    if (cycle_id === payroll_cycle_type.BiMonthly) {
       return (
         <div className="mt-1">
           <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
-            {editedPayroll.date_type_id === PayrollDateType.SOM &&
+            {editedPayroll.date_type_id === payroll_date_type.SOM &&
               "1st and 15th of each month (14th in February)"}
-            {editedPayroll.date_type_id === PayrollDateType.EOM &&
+            {editedPayroll.date_type_id === payroll_date_type.EOM &&
               "30th and 15th of each month (14th & 28th in February)"}
             {!editedPayroll.date_type_id && "Select date type above"}
           </p>
@@ -1279,12 +1259,12 @@ export default function PayrollPage() {
 
     // Monthly/Quarterly: Handle SOM, EOM, or Fixed Date
     if (
-      cycle_id === PayrollCycleType.Monthly ||
-      cycle_id === PayrollCycleType.Quarterly
+      cycle_id === payroll_cycle_type.Monthly ||
+      cycle_id === payroll_cycle_type.Quarterly
     ) {
       const { date_type_id } = editedPayroll;
 
-      if (date_type_id === PayrollDateType.SOM) {
+      if (date_type_id === payroll_date_type.SOM) {
         return (
           <div className="mt-1">
             <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
@@ -1294,7 +1274,7 @@ export default function PayrollPage() {
         );
       }
 
-      if (date_type_id === PayrollDateType.EOM) {
+      if (date_type_id === payroll_date_type.EOM) {
         return (
           <div className="mt-1">
             <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
@@ -1304,7 +1284,7 @@ export default function PayrollPage() {
         );
       }
 
-      if (date_type_id === PayrollDateType.FixedDate) {
+      if (date_type_id === payroll_date_type.FixedDate) {
         return (
           <div className="space-y-2">
             <Label htmlFor="fixed-date-calendar">Select Day of Month</Label>
@@ -1999,7 +1979,6 @@ export default function PayrollPage() {
                                 onValueChange={(value) =>
                                   handleCycleChange(value)
                                 }
-                                disabled={!isEditing || versioningLoading}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select cycle..." />
@@ -2027,7 +2006,6 @@ export default function PayrollPage() {
                                   onValueChange={(value) =>
                                     handleDateTypeChange(value)
                                   }
-                                  disabled={!isEditing || versioningLoading}
                                 >
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select date type..." />
@@ -2068,7 +2046,6 @@ export default function PayrollPage() {
                                     )
                                   }
                                   min="1"
-                                  disabled={!isEditing || versioningLoading}
                                 />
                               </div>
                             )}
@@ -2104,7 +2081,6 @@ export default function PayrollPage() {
                                   )
                                 }
                                 min="1"
-                                disabled={!isEditing || versioningLoading}
                               />
                             </div>
                           )}
@@ -2141,7 +2117,6 @@ export default function PayrollPage() {
                                     value === "none" ? "" : value
                                   )
                                 }
-                                disabled={!isEditing || versioningLoading}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select primary consultant..." />
@@ -2182,7 +2157,6 @@ export default function PayrollPage() {
                                     value === "none" ? "" : value
                                   )
                                 }
-                                disabled={!isEditing || versioningLoading}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select backup consultant..." />
@@ -2234,7 +2208,6 @@ export default function PayrollPage() {
                                     value === "none" ? "" : value
                                   )
                                 }
-                                disabled={!isEditing || versioningLoading}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select manager..." />

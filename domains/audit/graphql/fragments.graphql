@@ -1,16 +1,14 @@
 # Audit Domain Fragments
 
-fragment AuditLogCore on audit_audit_log {
+fragment AuditLogCore on audit_log {
   id
-  event_time
   user_id
-  user_email
   user_role
   action
-  resource_type
-  resource_id
-  old_values
-  new_values
+  entity_type
+  entity_id
+  data_classification
+  fields_affected
   ip_address
   user_agent
   session_id
@@ -20,65 +18,78 @@ fragment AuditLogCore on audit_audit_log {
   created_at
 }
 
-fragment AuditLogWithUser on audit_audit_log {
+fragment AuditLogWithUser on audit_log {
   ...AuditLogCore
-  # Note: Direct user relationship doesn't exist in schema
-  # User data is available via user_id and user_email fields
+  user {
+    id
+    name
+    email
+    role
+  }
 }
 
-fragment DataAccessLogCore on audit_data_access_log {
+fragment DataAccessLogCore on data_access_log {
   id
-  accessed_at
   user_id
-  resource_type
-  resource_id
-  access_type
+  data_type
   data_classification
-  fields_accessed
-  query_executed
-  row_count
-  ip_address
-  session_id
-  metadata
+  record_count
+  access_purpose
+  export_format
+  accessed_at
 }
 
-fragment DataAccessLogWithUser on audit_data_access_log {
+fragment DataAccessLogWithUser on data_access_log {
   ...DataAccessLogCore
-  # Note: Direct user relationship doesn't exist in schema
-  # User data is available via user_id field
+  user {
+    id
+    name
+    email
+    role
+  }
 }
 
-fragment SecurityEventLogCore on audit_auth_events {
+fragment SecurityEventLogCore on security_event_log {
   id
-  event_time
   event_type
+  severity
   user_id
-  user_email
+  details
   ip_address
-  user_agent
-  success
-  failure_reason
-  metadata
+  resolved
+  resolution_notes
   created_at
+  resolved_at
 }
 
-fragment SecurityEventLogWithUser on audit_auth_events {
+fragment SecurityEventLogWithUser on security_event_log {
   ...SecurityEventLogCore
-  # Note: Direct user relationship doesn't exist in schema
-  # User data is available via user_id and user_email fields
+  user {
+    id
+    name
+    email
+    role
+  }
 }
 
-fragment PermissionChangeCore on audit_permission_changes {
+fragment ComplianceCheckCore on compliance_check {
   id
-  changed_at
-  changed_by_user_id
-  target_user_id
-  target_role_id
-  change_type
-  permission_type
-  old_permissions
-  new_permissions
-  reason
-  approved_by_user_id
-  metadata
+  check_type
+  status
+  findings
+  remediation_required
+  remediation_notes
+  performed_by
+  performed_at
+  next_check_due
+}
+
+fragment ComplianceCheckWithUser on compliance_check {
+  ...ComplianceCheckCore
+  user {
+    id
+    name
+    email
+    role
+  }
 }

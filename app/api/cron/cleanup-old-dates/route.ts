@@ -1,4 +1,3 @@
-import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
 
 // GraphQL query for cleanup
@@ -110,8 +109,16 @@ export async function POST(request: NextRequest) {
       results,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
-    return handleApiError(error, "cron");
+  } catch (error: any) {
+    console.error("❌ Cleanup error:", error);
+    return NextResponse.json(
+      {
+        error: "Cleanup failed",
+        details: error.message,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
   }
 }
 
