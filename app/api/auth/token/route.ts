@@ -1,9 +1,15 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/auth/token/route.ts - Simple token endpoint for Apollo Client
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { currentUser } from "@clerk/nextjs/server";
-import { SecureErrorHandler } from "@/lib/security/error-responses";
-import { logSuccessfulLogin, logFailedLogin, logTokenRefresh, extractClientInfo } from "@/lib/security/auth-audit";
+import { SecureErrorHandler } from "@/lib/api/responses";
+import {
+  logFailedLogin,
+  logTokenRefresh,
+  extractClientInfo,
+} from "@/lib/security/auth-audit";
+import { extractJWTClaims } from "@/lib/auth/soc2-auth";
 
 export async function GET(req: NextRequest) {
   console.log("🔍 Token endpoint called");
@@ -18,21 +24,21 @@ export async function GET(req: NextRequest) {
       userAgent,
       ipAddress,
       origin: req.headers.get("origin"),
-      referer: req.headers.get("referer")
+      referer: req.headers.get("referer"),
     });
 
     // Get the authenticated user's session
     const authResult = await auth();
     const userId = authResult.userId;
-    console.log("🔍 Auth result:", { 
-      hasUserId: !!userId, 
+    console.log("🔍 Auth result:", {
+      hasUserId: !!userId,
       userId: userId?.substring(0, 8) + "...",
-      sessionId: authResult.sessionId?.substring(0, 8) + "..." || "none"
+      sessionId: authResult.sessionId?.substring(0, 8) + "..." || "none",
     });
 
     if (!userId) {
       console.log("🚨 No userId found in auth result");
-      
+
       // Log failed authentication attempt
       await logFailedLogin(
         "unknown",
@@ -44,10 +50,10 @@ export async function GET(req: NextRequest) {
           endpoint: "/api/auth/token",
           method: "GET",
           hasAuthHeader: !!req.headers.get("authorization"),
-          hasCookie: !!req.headers.get("cookie")
+          hasCookie: !!req.headers.get("cookie"),
         }
       );
-      
+
       const error = SecureErrorHandler.authenticationError();
       return NextResponse.json(error, { status: 401 });
     }
@@ -72,11 +78,14 @@ export async function GET(req: NextRequest) {
           userId,
           endpoint: "/api/auth/token",
           method: "GET",
-          failureStage: "token_generation"
+          failureStage: "token_generation",
         }
       );
-      
-      const error = SecureErrorHandler.sanitizeError(new Error("Token generation failed"), "auth_token");
+
+      const error = SecureErrorHandler.sanitizeError(
+        new Error("Token generation failed"),
+        "auth_token"
+      );
       return NextResponse.json(error, { status: 500 });
     }
 
@@ -87,7 +96,7 @@ export async function GET(req: NextRequest) {
         Buffer.from(token.split(".")[1], "base64").toString()
       );
       expiresIn = payload.exp - Math.floor(Date.now() / 1000);
-      
+
       // Log Session JWT V2 specific fields for monitoring
       console.log("🔍 Token details:", {
         expiresIn: expiresIn,
@@ -95,59 +104,15 @@ export async function GET(req: NextRequest) {
         hasMetadata: !!payload.metadata,
         hasOrgId: !!payload.org_id,
         jwtVersion: payload.metadata ? "v2" : "v1",
-        roles: payload.metadata?.roles || payload["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"],
-        defaultRole: payload.metadata?.default_role || payload["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"]
+        roles:
+          payload.metadata?.roles ||
+          payload["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"],
+        Role:
+          payload.metadata?.role ||
+          payload["https://hasura.io/jwt/claims"]?.["x-hasura-role"],
       });
-    } catch (parseError) {
-      console.warn("🔍 Failed to parse token expiry, using default:", parseError);
-    }
-
-    // Log successful token request
-    await logTokenRefresh(
-      userId,
-      userEmail,
-      ipAddress,
-      userAgent,
-      req,
-      {
-        endpoint: "/api/auth/token",
-        method: "GET",
-        tokenExpiresIn: expiresIn,
-        jwtVersion: (() => {
-          try {
-            const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
-            return payload.metadata ? "v2" : "v1";
-          } catch {
-            return "unknown";
-          }
-        })()
-      }
-    );
-
-    return NextResponse.json({
-      token,
-      expiresIn,
-    });
-  } catch (error) {
-    console.error("Error getting token:", error);
-
-    // Log error
-    const { ipAddress: errorIp, userAgent: errorUA } = extractClientInfo(req);
-    await logFailedLogin(
-      "unknown",
-      errorIp,
-      errorUA,
-      error instanceof Error ? error.message : "Unknown error",
-      req,
-      {
-        endpoint: "/api/auth/token",
-        method: "GET",
-        errorType: error instanceof Error ? error.constructor.name : "UnknownError",
-        failureStage: "general_error"
-      }
-    );
-
-    const sanitizedError = SecureErrorHandler.sanitizeError(error, "auth_token_endpoint");
-    return NextResponse.json(sanitizedError, { status: 500 });
+    } catch (error) {
+    return handleApiError(error, "auth");
+  });
   }
 }

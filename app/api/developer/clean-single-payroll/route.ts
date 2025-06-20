@@ -1,7 +1,8 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth } from "@/lib/api-auth";
+import { withEnhancedAuth } from "@/lib/auth/enhanced-api-auth";
 
-export const POST = withAuth(
+export const POST = withEnhancedAuth(
   async (request: NextRequest) => {
     // Restrict to development environment only
     if (process.env.NODE_ENV === 'production') {
@@ -76,18 +77,14 @@ export const POST = withAuth(
       deletedVersions,
       updatedPayroll: updated,
     });
-  } catch (error: any) {
-    console.error("❌ Error cleaning single payroll:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message,
-      },
+  } catch (error) {
+    return handleApiError(error, "developer");
+  },
       { status: 500 }
     );
   }
   },
   {
-    requiredRole: "developer",
+    minimumRole: "developer",
   }
 );

@@ -236,7 +236,7 @@ export function checkRateLimit(
 ): { allowed: boolean; retryAfter?: number } {
   const key = `${ip}:${endpoint}`;
   const now = Date.now();
-  const limit = securityConfig.rateLimit.endpoints[endpoint] || securityConfig.rateLimit;
+  const limit = securityConfig.rateLimit.endpoints[endpoint as keyof typeof securityConfig.rateLimit.endpoints] || securityConfig.rateLimit;
   
   const record = attempts.get(key);
   

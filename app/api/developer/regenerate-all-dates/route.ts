@@ -1,8 +1,9 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
 import { Pool } from "pg";
-import { withAuth } from "@/lib/api-auth";
+import { withEnhancedAuth } from "@/lib/auth/enhanced-api-auth";
 
-export const POST = withAuth(
+export const POST = withEnhancedAuth(
   async (request: NextRequest) => {
     // Restrict to development environment only
     if (process.env.NODE_ENV === 'production') {
@@ -88,50 +89,14 @@ export const POST = withAuth(
           success: true,
           generatedCount,
         });
-      } catch (error: any) {
-        console.warn(
-          `Warning: Could not regenerate dates for ${payroll.name}:`,
-          error
-        );
-        results.push({
-          payrollId: payroll.id,
-          payrollName: payroll.name,
-          success: false,
-          error: error.message,
-        });
-      }
-    }
-
-    const successCount = results.filter((r) => r.success).length;
-    const totalGenerated = results.reduce(
-      (sum, r) => sum + (r.generatedCount || 0),
-      0
-    );
-
-    console.log(
-      `✅ Regenerate complete: ${successCount}/${payrolls.length} payrolls processed, ${totalGenerated} total dates generated`
-    );
-
-    return NextResponse.json({
-      success: true,
-      message: `Regenerated dates for ${successCount}/${payrolls.length} payrolls`,
-      totalPayrolls: payrolls.length,
-      successCount,
-      totalGenerated,
-      results,
-    });
-  } catch (error: any) {
-    console.error("❌ Error regenerating all dates:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message,
-      },
+      } catch (error) {
+    return handleApiError(error, "developer");
+  },
       { status: 500 }
     );
   }
   },
   {
-    requiredRole: "developer",
+    minimumRole: "developer",
   }
 );

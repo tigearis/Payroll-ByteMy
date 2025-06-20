@@ -12,7 +12,7 @@ import {
   SortingState,
   ColumnFiltersState,
 } from "@tanstack/react-table";
-import { Button } from "./design-system";
+import { Button } from "./button";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

@@ -1,0 +1,41 @@
+# Client Domain Subscriptions
+# Real-time updates for client data
+
+# Subscribe to client list changes
+subscription ClientsSubscription {
+  clients(order_by: { name: asc }) {
+    ...ClientListItem
+  }
+}
+
+# Subscribe to specific client changes
+subscription ClientSubscription($id: uuid!) {
+  clients_by_pk(id: $id) {
+    ...ClientDetailed
+  }
+}
+
+# Subscribe to active clients only
+subscription ActiveClientsSubscription {
+  clients(
+    where: { active: { _eq: true } }
+    order_by: { name: asc }
+  ) {
+    ...ClientBasic
+  }
+}
+
+# Subscribe to client payroll changes
+subscription ClientPayrollsSubscription($clientId: uuid!) {
+  clients_by_pk(id: $clientId) {
+    id
+    name
+    payrolls(order_by: { name: asc }) {
+      id
+      name
+      status
+      employee_count
+      updated_at
+    }
+  }
+}

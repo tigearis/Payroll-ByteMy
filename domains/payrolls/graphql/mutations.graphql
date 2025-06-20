@@ -151,3 +151,25 @@ mutation DeletePayroll($id: uuid!) {
 #     ...PayrollDate
 #   }
 # }
+
+# Update payroll consultants (for scheduler)
+mutation UpdatePayrollConsultants($updates: [payrolls_updates!]!) {
+  update_payrolls_many(updates: $updates) {
+    affected_rows
+    returning {
+      id
+      name
+      primary_consultant_user_id
+      backup_consultant_user_id
+      userByPrimaryConsultantUserId {
+        id
+        name
+      }
+      userByBackupConsultantUserId {
+        id
+        name
+      }
+      updated_at
+    }
+  }
+}

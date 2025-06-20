@@ -1,9 +1,10 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/payrolls/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerApolloClient } from "@/lib/server-apollo-client";
+import { createServerApolloClient } from "@/lib/apollo/server-client";
 import { GET_PAYROLL_BY_ID } from "@/graphql/queries/payrolls/getPayrollById";
 import { auth } from "@clerk/nextjs/server";
-import { withAuthParams } from "@/lib/api-auth";
+import { withAuthParams } from "@/lib/auth/enhanced-api-auth";
 
 export const GET = withAuthParams(
   async (
@@ -21,7 +22,7 @@ export const GET = withAuthParams(
     const token = await authInstance.getToken({ template: "hasura" });
 
     // Get Apollo Client
-    const client = await getServerApolloClient();
+    const client = await createServerApolloClient();
 
     const { data } = await client.query({
       query: GET_PAYROLL_BY_ID,
@@ -34,14 +35,13 @@ export const GET = withAuthParams(
 
     return NextResponse.json(data.payrolls[0]);
   } catch (error) {
-    console.error("Payroll fetch error:", error);
-    return NextResponse.json(
-      { error: "Something went wrong" },
+    return handleApiError(error, "payrolls");
+  },
       { status: 500 }
     );
   }
   },
   {
-    requiredRole: "viewer",
+    minimumRole: "viewer",
   }
 );

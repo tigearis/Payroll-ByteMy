@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useQuery } from "@apollo/client";
+import { PayrollUpdatesComponent } from "@/components/payroll-subscription";
 import {
   PlusCircle,
   Search,
@@ -63,7 +64,7 @@ import {
   GET_PAYROLLS_FALLBACK,
 } from "@/graphql/queries/payrolls/getPayrolls";
 import { toast } from "sonner";
-import { useUserRole } from "@/hooks/useUserRole";
+import { useEnhancedPermissions } from "@/hooks/useEnhancedPermissions";
 import { PayrollsTable } from "@/components/payrolls-table";
 
 type ViewMode = "cards" | "table" | "list";
@@ -404,11 +405,13 @@ export default function PayrollsPage() {
   );
 
   const {
-    isAdmin,
+    isAdministrator,
     isManager,
     isDeveloper,
-    isLoading: roleLoading,
-  } = useUserRole();
+    canManagePayrolls, 
+    canCreatePayrolls,
+    isLoaded: permissionsLoaded
+  } = useEnhancedPermissions();
 
   const { data, loading, error, refetch } = useQuery(GET_PAYROLLS, {
     fetchPolicy: "cache-and-network",
@@ -435,8 +438,13 @@ export default function PayrollsPage() {
 
   const payrolls = finalData?.payrolls || [];
 
+  // Real-time subscription for payroll updates
+  const handlePayrollRefetch = async () => {
+    return await finalRefetch();
+  };
+
   useEffect(() => {
-    if (roleLoading) {
+    if (!permissionsLoaded) {
       const timeout = setTimeout(() => {
         toast.info("Loading payrolls...", {
           duration: 3000,
@@ -445,9 +453,9 @@ export default function PayrollsPage() {
       }, 2000);
       return () => clearTimeout(timeout);
     }
-  }, [roleLoading]);
+  }, [permissionsLoaded]);
 
-  if (roleLoading) return null;
+  if (!permissionsLoaded) return null;
 
   if (finalLoading && !payrolls.length) {
     return (
@@ -938,6 +946,9 @@ export default function PayrollsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Real-time payroll updates subscription */}
+      <PayrollUpdatesComponent refetchPayrolls={handlePayrollRefetch} />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -946,7 +957,7 @@ export default function PayrollsPage() {
         </div>
 
         <div className="flex items-center space-x-2">
-          {(isAdmin || isManager || isDeveloper) && (
+          {canCreatePayrolls && (
             <Link href="/payrolls/new">
               <Button>
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -1302,7 +1313,7 @@ export default function PayrollsPage() {
                   ? "Try adjusting your search criteria or filters"
                   : "Get started by adding your first payroll"}
               </p>
-              {(isAdmin || isManager || isDeveloper) &&
+              {canCreatePayrolls &&
                 !searchTerm &&
                 !hasActiveFilters && (
                   <Link href="/payrolls/new">

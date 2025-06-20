@@ -126,7 +126,7 @@ export function protectAdminRoute(
   handler: (req: NextRequest, context: AuthContext) => Promise<NextResponse>
 ) {
   return protectRoute(handler, {
-    requiredRole: ["developer", "org_admin"]
+    minimumRole: "org_admin"
   });
 }
 
@@ -135,6 +135,6 @@ export function protectManagerRoute(
   handler: (req: NextRequest, context: AuthContext) => Promise<NextResponse>
 ) {
   return protectRoute(handler, {
-    requiredRole: ["developer", "org_admin", "manager"]
+    minimumRole: "manager"
   });
 }

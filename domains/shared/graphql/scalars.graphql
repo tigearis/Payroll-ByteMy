@@ -1,0 +1,10 @@
+# Shared Scalar Types
+# These are custom scalar types used across all domains
+
+scalar uuid
+scalar timestamptz
+scalar timestamp
+scalar date
+scalar jsonb
+scalar numeric
+scalar bpchar

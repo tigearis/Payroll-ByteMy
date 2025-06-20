@@ -1,10 +1,12 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth, checkRateLimit } from "@/lib/api-auth";
+import { withEnhancedAuth } from "@/lib/auth/enhanced-api-auth";
+import { rateLimiter } from "@/lib/middleware/rate-limiter";
 import { secureHasuraService } from "@/lib/secure-hasura-service";
 import { gql } from "@apollo/client";
 
-export const POST = withAuth(
-  async (request: NextRequest, session) => {
+export const POST = withEnhancedAuth(
+  async (request: NextRequest, context) => {
     // Restrict to development environment only
     if (process.env.NODE_ENV === 'production') {
       return NextResponse.json({ error: "Not Found" }, { status: 404 });
@@ -12,18 +14,18 @@ export const POST = withAuth(
 
     try {
       // Rate limiting - allow only 5 requests per hour for this destructive operation
-      if (!checkRateLimit(`clean-dates-${session.userId}`, 5, 3600000)) {
-        return NextResponse.json(
-          {
-            error:
-              "Rate limit exceeded. This operation can only be performed 5 times per hour.",
-          },
-          { status: 429 }
-        );
+      const rateLimitResponse = await rateLimiter.applyRateLimit(
+        request,
+        context.userId,
+        { requests: 5, window: 3600000, message: "This operation can only be performed 5 times per hour." }
+      );
+      
+      if (rateLimitResponse) {
+        return rateLimitResponse;
       }
 
       console.log(
-        `🔄 Admin ${session.userId} (${session.role}) starting clean all dates and versions...`
+        `🔄 Admin ${context.userId} (${context.userRole}) starting clean all dates and versions...`
       );
 
       // Use secure service to clean payroll dates
@@ -54,21 +56,17 @@ export const POST = withAuth(
         message: `Cleaned all dates and versions`,
         ...result,
         performedBy: {
-          userId: session.userId,
-          role: session.role,
+          userId: context.userId,
+          role: context.userRole,
           timestamp: new Date().toISOString(),
         },
       });
-    } catch (error: any) {
-      console.error("❌ Error cleaning all dates and versions:", error);
-      return NextResponse.json(
-        {
-          success: false,
-          error: error.message,
-        },
+    } catch (error) {
+    return handleApiError(error, "developer");
+  },
         { status: 500 }
       );
     }
   },
-  { requiredRole: "developer" } // Only admins can perform this operation
+  { minimumRole: "developer" } // Only admins can perform this operation
 );

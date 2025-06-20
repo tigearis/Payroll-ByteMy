@@ -1,5 +1,5 @@
 // lib/security/persistent-api-keys.ts - Persistent API key management with database storage
-import { adminApolloClient } from "../server-apollo-client";
+import { adminApolloClient } from "../apollo/server-client";
 import { gql } from "@apollo/client";
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc2-logger";

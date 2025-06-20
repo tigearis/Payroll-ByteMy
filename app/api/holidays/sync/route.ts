@@ -1,3 +1,4 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/holidays/sync/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
@@ -46,13 +47,8 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("❌ Manual holiday sync error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to sync holidays",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
+    return handleApiError(error, "holidays");
+  },
       { status: 500 }
     );
   }

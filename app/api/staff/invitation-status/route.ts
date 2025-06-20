@@ -1,8 +1,9 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { withAuth } from "@/lib/api-auth";
+import { withEnhancedAuth } from "@/lib/auth/enhanced-api-auth";
 
-export const GET = withAuth(
+export const GET = withEnhancedAuth(
   async (req: NextRequest) => {
     try {
       console.log("📋 API called: /api/staff/invitation-status");
@@ -54,32 +55,19 @@ export const GET = withAuth(
         needsResend: metadata.needsResend || false,
         metadata,
       });
-    } catch (userError) {
-      console.log("ℹ️ User not found in Clerk");
-      return NextResponse.json({
-        exists: false,
-        onboardingComplete: false,
-        invitationStatus: "not_sent",
-        message: "User not found in Clerk",
-      });
-    }
-  } catch (error) {
-    console.error("❌ Error checking invitation status:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to check invitation status",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
+    } catch (error) {
+    return handleApiError(error, "staff");
+  },
       { status: 500 }
     );
   }
   },
   {
-    requiredRole: "manager"
+    permission: "custom:staff:write"
   }
 );
 
-export const POST = withAuth(
+export const POST = withEnhancedAuth(
   async (req: NextRequest) => {
     try {
       console.log("📧 API called: /api/staff/invitation-status (resend)");
@@ -147,17 +135,13 @@ export const POST = withAuth(
       invitationId: invitation.id,
     });
   } catch (error) {
-    console.error("❌ Error resending invitation:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to resend invitation",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
+    return handleApiError(error, "staff");
+  },
       { status: 500 }
     );
   }
   },
   {
-    requiredRole: "manager"
+    permission: "custom:staff:write"
   }
 );
