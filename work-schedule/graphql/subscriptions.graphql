@@ -1,0 +1,19 @@
+# Work Schedule Domain Subscriptions
+
+subscription SubscribeToWorkSchedule($user_id: uuid!) {
+  work_schedule(
+    where: { user_id: { _eq: $user_id } }
+    order_by: { work_day: asc }
+  ) {
+    ...WorkScheduleCore
+  }
+}
+
+subscription SubscribeToTeamWorkSchedules($user_ids: [uuid!]!) {
+  work_schedule(
+    where: { user_id: { _in: $user_ids } }
+    order_by: [{ user_id: asc }, { work_day: asc }]
+  ) {
+    ...WorkScheduleWithUser
+  }
+}

@@ -1,0 +1,90 @@
+# Sensitive User Queries
+# HIGH sensitivity operations requiring audit logging
+
+"""
+Get user by ID with contact info
+@securityLevel: HIGH
+@requiredRole: consultant
+@rateLimit: 20/minute
+@audit: true
+@compliance: SOC2-CC6.7
+"""
+query GetUserById($id: UUID!) {
+  users_by_pk(id: $id) {
+    ...UserContactInfo
+  }
+}
+
+"""
+Get users with full details
+@securityLevel: HIGH
+@requiredRole: manager
+@rateLimit: 10/minute
+@audit: true
+@compliance: SOC2-CC6.7
+"""
+query GetUsersWithDetails($limit: Int = 50, $offset: Int = 0) {
+  users(
+    limit: $limit
+    offset: $offset
+    order_by: { updated_at: desc }
+  ) {
+    ...UserFullDetails
+  }
+  users_aggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+"""
+Search users by email
+@securityLevel: HIGH
+@requiredRole: manager
+@rateLimit: 5/minute
+@audit: true
+@compliance: SOC2-CC6.7, GDPR-Article-32
+"""
+query SearchUsersByEmail($email: String!) {
+  users(
+    where: { email: { _ilike: $email } }
+    limit: 10
+  ) {
+    ...UserContactInfo
+  }
+}
+
+"""
+Get user with payroll assignments
+@securityLevel: HIGH
+@requiredRole: manager
+@rateLimit: 10/minute
+@audit: true
+"""
+query GetUserWithPayrolls($id: UUID!) {
+  users_by_pk(id: $id) {
+    ...UserFullDetails
+    payrollsByPrimaryConsultantUserId {
+      ...PayrollBasicInfo
+      client {
+        id
+        name
+      }
+    }
+    payrollsByBackupConsultantUserId {
+      ...PayrollBasicInfo
+      client {
+        id
+        name
+      }
+    }
+    payrollsByManagerUserId {
+      ...PayrollBasicInfo
+      client {
+        id
+        name
+      }
+    }
+  }
+}

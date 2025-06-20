@@ -1,0 +1,179 @@
+# Audit Domain Queries
+
+# Audit Logs
+query GetAuditLogs($where: audit_audit_log_bool_exp, $order_by: [audit_audit_log_order_by!], $limit: Int, $offset: Int) {
+  audit_audit_log(where: $where, order_by: $order_by, limit: $limit, offset: $offset) {
+    ...AuditLogWithUser
+  }
+  audit_audit_log_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetAuditLogsByEntity($resource_type: String!, $resource_id: String!, $limit: Int = 50) {
+  audit_audit_log(
+    where: {
+      resource_type: { _eq: $resource_type }
+      resource_id: { _eq: $resource_id }
+    }
+    order_by: { created_at: desc }
+    limit: $limit
+  ) {
+    ...AuditLogWithUser
+  }
+}
+
+query GetAuditLogsByUser($user_id: uuid!, $start_date: timestamptz, $end_date: timestamptz) {
+  audit_audit_log(
+    where: {
+      user_id: { _eq: $user_id }
+      created_at: { _gte: $start_date, _lte: $end_date }
+    }
+    order_by: { created_at: desc }
+  ) {
+    ...AuditLogCore
+  }
+}
+
+query GetFailedAuditLogs($start_date: timestamptz!, $end_date: timestamptz!) {
+  audit_audit_log(
+    where: {
+      success: { _eq: false }
+      created_at: { _gte: $start_date, _lte: $end_date }
+    }
+    order_by: { created_at: desc }
+  ) {
+    ...AuditLogWithUser
+  }
+}
+
+# Data Access Logs
+query GetDataAccessLogs($where: audit_data_access_log_bool_exp, $order_by: [audit_data_access_log_order_by!], $limit: Int, $offset: Int) {
+  audit_data_access_log(where: $where, order_by: $order_by, limit: $limit, offset: $offset) {
+    ...DataAccessLogWithUser
+  }
+  audit_data_access_log_aggregate(where: $where) {
+    aggregate {
+      count
+      sum {
+        row_count
+      }
+    }
+  }
+}
+
+query GetDataExports($start_date: timestamptz!, $end_date: timestamptz!) {
+  audit_data_access_log(
+    where: {
+      access_type: { _eq: "export" }
+      accessed_at: { _gte: $start_date, _lte: $end_date }
+    }
+    order_by: { accessed_at: desc }
+  ) {
+    ...DataAccessLogWithUser
+  }
+}
+
+# Security Events (using auth_events table)
+query GetSecurityEvents($where: audit_auth_events_bool_exp, $order_by: [audit_auth_events_order_by!], $limit: Int, $offset: Int) {
+  audit_auth_events(where: $where, order_by: $order_by, limit: $limit, offset: $offset) {
+    ...SecurityEventLogWithUser
+  }
+  audit_auth_events_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Note: resolved and severity fields don't exist in the schema
+# Using metadata field to check for resolution status
+query GetUnresolvedSecurityEvents {
+  audit_auth_events(
+    where: {
+      _not: {
+        metadata: { _has_key: "resolved" }
+      }
+    }
+    order_by: { created_at: desc }
+  ) {
+    ...SecurityEventLogWithUser
+  }
+}
+
+query GetSecurityEventsByUser($user_id: uuid!) {
+  audit_auth_events(
+    where: { user_id: { _eq: $user_id } }
+    order_by: { created_at: desc }
+  ) {
+    ...SecurityEventLogCore
+  }
+}
+
+# Permission Change Logs
+query GetPermissionChanges($where: audit_permission_changes_bool_exp, $order_by: [audit_permission_changes_order_by!]) {
+  audit_permission_changes(where: $where, order_by: $order_by) {
+    ...PermissionChangeCore
+  }
+}
+
+query GetUserPermissionChanges($user_id: uuid!, $limit: Int = 50) {
+  audit_permission_changes(
+    where: {
+      target_user_id: { _eq: $user_id }
+    }
+    order_by: { changed_at: desc }
+    limit: $limit
+  ) {
+    ...PermissionChangeCore
+  }
+}
+
+# Audit Analytics
+query GetAuditAnalytics($start_date: timestamptz!, $end_date: timestamptz!) {
+  actions_by_type: audit_audit_log_aggregate(
+    where: { created_at: { _gte: $start_date, _lte: $end_date } }
+  ) {
+    nodes {
+      action
+    }
+    aggregate {
+      count
+    }
+  }
+  
+  actions_by_resource: audit_audit_log_aggregate(
+    where: { created_at: { _gte: $start_date, _lte: $end_date } }
+  ) {
+    nodes {
+      resource_type
+    }
+    aggregate {
+      count
+    }
+  }
+  
+  failed_actions: audit_audit_log_aggregate(
+    where: {
+      success: { _eq: false }
+      created_at: { _gte: $start_date, _lte: $end_date }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  security_events_by_type: audit_auth_events_aggregate(
+    where: { created_at: { _gte: $start_date, _lte: $end_date } }
+  ) {
+    nodes {
+      event_type
+    }
+    aggregate {
+      count
+    }
+  }
+}

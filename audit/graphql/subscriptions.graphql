@@ -1,0 +1,59 @@
+# Audit Domain Subscriptions
+
+subscription SubscribeToAuditLogs($resource_type: String, $resource_id: String) {
+  audit_audit_log(
+    where: {
+      resource_type: { _eq: $resource_type }
+      resource_id: { _eq: $resource_id }
+    }
+    order_by: { created_at: desc }
+    limit: 10
+  ) {
+    ...AuditLogWithUser
+  }
+}
+
+subscription SubscribeToSecurityEvents {
+  audit_auth_events(
+    where: {
+      _not: {
+        metadata: { _has_key: "resolved" }
+      }
+    }
+    order_by: { created_at: desc }
+  ) {
+    ...SecurityEventLogWithUser
+  }
+}
+
+subscription SubscribeToUserAuditActivity($user_id: uuid!) {
+  audit_audit_log(
+    where: { user_id: { _eq: $user_id } }
+    order_by: { created_at: desc }
+    limit: 20
+  ) {
+    ...AuditLogCore
+  }
+}
+
+# Note: compliance_check table doesn't exist in the current schema
+# This subscription is disabled until the table is created
+# subscription SubscribeToComplianceChecks($check_type: String) {
+#   compliance_check(
+#     where: { check_type: { _eq: $check_type } }
+#     order_by: { performed_at: desc }
+#     limit: 5
+#   ) {
+#     ...ComplianceCheckWithUser
+#   }
+# }
+
+subscription SubscribeToDataExports {
+  audit_data_access_log(
+    where: { access_type: { _eq: "export" } }
+    order_by: { accessed_at: desc }
+    limit: 10
+  ) {
+    ...DataAccessLogWithUser
+  }
+}

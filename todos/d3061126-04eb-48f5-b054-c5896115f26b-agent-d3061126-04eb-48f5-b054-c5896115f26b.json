@@ -1,0 +1,56 @@
+[
+  {
+    "content": "Analyze current codebase to understand existing admin role usage patterns",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Update Clerk JWT template configuration to use developer role",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Create developer role in Hasura metadata with full permissions",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Update server-side token managers to use developer role",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Update Apollo Client configurations for developer role",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Implement enhanced GraphQL error handling utility",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  },
+  {
+    "content": "Update API routes and middleware for developer role",
+    "status": "completed",
+    "priority": "high",
+    "id": "7"
+  },
+  {
+    "content": "Update server actions and webhooks for developer role",
+    "status": "completed",
+    "priority": "medium",
+    "id": "8"
+  },
+  {
+    "content": "Test and validate the complete migration",
+    "status": "completed",
+    "priority": "high",
+    "id": "9"
+  }
+]

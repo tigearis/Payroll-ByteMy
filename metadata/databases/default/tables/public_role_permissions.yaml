@@ -1,0 +1,35 @@
+table:
+  name: role_permissions
+  schema: public
+object_relationships:
+  - name: permission
+    using:
+      foreign_key_constraint_on: permission_id
+  - name: role
+    using:
+      foreign_key_constraint_on: role_id
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

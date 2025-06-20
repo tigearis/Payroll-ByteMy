@@ -1,0 +1,6 @@
+function:
+  name: activate_payroll_versions
+  schema: public
+configuration:
+  custom_root_fields: {}
+  exposed_as: query

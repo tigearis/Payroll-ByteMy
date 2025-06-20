@@ -1,0 +1,194 @@
+# Permissions Domain Mutations
+
+# Resources
+mutation CreateResource($object: resources_insert_input!) {
+  insert_resources_one(object: $object) {
+    ...ResourceCore
+  }
+}
+
+mutation UpdateResource($id: uuid!, $set: resources_set_input!) {
+  update_resources_by_pk(pk_columns: { id: $id }, _set: $set) {
+    ...ResourceCore
+  }
+}
+
+mutation DeleteResource($id: uuid!) {
+  delete_resources_by_pk(id: $id) {
+    id
+  }
+}
+
+# Permissions
+mutation CreatePermission($object: permissions_insert_input!) {
+  insert_permissions_one(object: $object) {
+    ...PermissionWithResource
+  }
+}
+
+mutation CreatePermissions($objects: [permissions_insert_input!]!) {
+  insert_permissions(objects: $objects) {
+    returning {
+      ...PermissionWithResource
+    }
+    affected_rows
+  }
+}
+
+mutation UpdatePermission($id: uuid!, $set: permissions_set_input!) {
+  update_permissions_by_pk(pk_columns: { id: $id }, _set: $set) {
+    ...PermissionWithResource
+  }
+}
+
+mutation DeletePermission($id: uuid!) {
+  delete_permissions_by_pk(id: $id) {
+    id
+  }
+}
+
+# Roles
+mutation CreateRole($object: roles_insert_input!) {
+  insert_roles_one(object: $object) {
+    ...RoleCore
+  }
+}
+
+mutation UpdateRole($id: uuid!, $set: roles_set_input!) {
+  update_roles_by_pk(pk_columns: { id: $id }, _set: $set) {
+    ...RoleCore
+  }
+}
+
+mutation DeleteRole($id: uuid!) {
+  delete_roles_by_pk(id: $id) {
+    id
+  }
+}
+
+# Role Permissions
+mutation AssignPermissionToRole($role_id: uuid!, $permission_id: uuid!, $conditions: jsonb) {
+  insert_role_permissions_one(
+    object: {
+      role_id: $role_id
+      permission_id: $permission_id
+      conditions: $conditions
+    }
+  ) {
+    ...RolePermissionWithDetails
+  }
+}
+
+mutation AssignPermissionsToRole($objects: [role_permissions_insert_input!]!) {
+  insert_role_permissions(objects: $objects) {
+    returning {
+      ...RolePermissionWithDetails
+    }
+    affected_rows
+  }
+}
+
+mutation UpdateRolePermission($id: uuid!, $conditions: jsonb) {
+  update_role_permissions_by_pk(
+    pk_columns: { id: $id }
+    _set: { conditions: $conditions }
+  ) {
+    ...RolePermissionWithDetails
+  }
+}
+
+mutation RemovePermissionFromRole($id: uuid!) {
+  delete_role_permissions_by_pk(id: $id) {
+    id
+  }
+}
+
+mutation RemoveAllPermissionsFromRole($role_id: uuid!) {
+  delete_role_permissions(where: { role_id: { _eq: $role_id } }) {
+    affected_rows
+  }
+}
+
+# User Roles
+mutation AssignRoleToUser($user_id: uuid!, $role_id: uuid!) {
+  insert_user_roles_one(
+    object: { user_id: $user_id, role_id: $role_id }
+  ) {
+    ...UserRoleWithDetails
+  }
+}
+
+mutation AssignRolesToUser($objects: [user_roles_insert_input!]!) {
+  insert_user_roles(objects: $objects) {
+    returning {
+      ...UserRoleWithDetails
+    }
+    affected_rows
+  }
+}
+
+mutation RemoveRoleFromUser($id: uuid!) {
+  delete_user_roles_by_pk(id: $id) {
+    id
+  }
+}
+
+mutation RemoveAllRolesFromUser($user_id: uuid!) {
+  delete_user_roles(where: { user_id: { _eq: $user_id } }) {
+    affected_rows
+  }
+}
+
+mutation ReplaceUserRoles($user_id: uuid!, $role_ids: [uuid!]!) {
+  delete_user_roles(where: { user_id: { _eq: $user_id } }) {
+    affected_rows
+  }
+  insert_user_roles(
+    objects: [
+      { user_id: $user_id, role_id: $role_ids }
+    ]
+  ) {
+    returning {
+      ...UserRoleWithDetails
+    }
+    affected_rows
+  }
+}
+
+# Feature Flags
+mutation CreateFeatureFlag($object: feature_flags_insert_input!) {
+  insert_feature_flags_one(object: $object) {
+    ...FeatureFlagCore
+  }
+}
+
+mutation UpdateFeatureFlag($id: uuid!, $set: feature_flags_set_input!) {
+  update_feature_flags_by_pk(pk_columns: { id: $id }, _set: $set) {
+    ...FeatureFlagCore
+  }
+}
+
+mutation ToggleFeatureFlag($id: uuid!, $is_enabled: Boolean!) {
+  update_feature_flags_by_pk(
+    pk_columns: { id: $id }
+    _set: { is_enabled: $is_enabled }
+  ) {
+    ...FeatureFlagCore
+  }
+}
+
+mutation DeleteFeatureFlag($id: uuid!) {
+  delete_feature_flags_by_pk(id: $id) {
+    id
+  }
+}
+
+# App Settings
+mutation UpdateAppSettings($id: String!, $permissions: jsonb!) {
+  update_app_settings_by_pk(
+    pk_columns: { id: $id }
+    _set: { permissions: $permissions }
+  ) {
+    ...AppSettingsCore
+  }
+}

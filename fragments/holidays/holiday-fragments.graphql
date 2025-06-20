@@ -1,0 +1,31 @@
+# Holiday Fragments
+# @securityLevel: LOW
+
+# Basic holiday information
+# @securityLevel: LOW
+fragment HolidayBasic on holidays {
+  id
+  name
+  date
+  is_global
+}
+
+# Detailed holiday information
+# @securityLevel: LOW
+fragment HolidayDetailed on holidays {
+  id
+  name
+  date
+  is_global
+  created_at
+  updated_at
+}
+
+# Holiday list item
+# @securityLevel: LOW
+fragment HolidayListItem on holidays {
+  id
+  name
+  date
+  is_global
+}

@@ -1,0 +1,85 @@
+# Client Domain Fragments
+# All client-related GraphQL fragments
+
+# Basic client information
+fragment ClientBasic on clients {
+  id
+  name
+  active
+  created_at
+}
+
+# Detailed client information with contact details
+fragment ClientDetailed on clients {
+  id
+  name
+  contact_person
+  contact_email
+  contact_phone
+  active
+  created_at
+  updated_at
+  # Related payrolls count
+  payrolls_aggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Client list item for table displays
+fragment ClientListItem on clients {
+  id
+  name
+  contact_person
+  contact_email
+  active
+  created_at
+  payrolls_aggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Client with full payroll relationships
+fragment ClientWithPayrolls on clients {
+  id
+  name
+  contact_person
+  contact_email
+  contact_phone
+  active
+  created_at
+  updated_at
+  payrolls(order_by: { name: asc }) {
+    id
+    name
+    status
+    date_value
+    employee_count
+    primary_consultant_user_id
+    superseded_date
+    go_live_date
+    version_number
+    created_at
+    updated_at
+    userByPrimaryConsultantUserId {
+      id
+      name
+      email
+    }
+    payroll_cycle {
+      name
+    }
+    payroll_date_type {
+      name
+    }
+    payroll_dates(order_by: { adjusted_eft_date: desc }, limit: 5) {
+      id
+      adjusted_eft_date
+      created_at
+      updated_at
+    }
+  }
+}
