@@ -1,12 +1,12 @@
 "use client";
 
-import * as React from "react";
-import { Suspense } from "react";
 import { useSignUp, useUser } from "@clerk/nextjs";
 import { useSearchParams, useRouter } from "next/navigation";
+import * as React from "react";
+import { Suspense } from "react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -14,7 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface InvitationData {
   email?: string;
@@ -33,7 +34,7 @@ function AcceptInvitationContent() {
   const [lastName, setLastName] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
-  const [invitationData, setInvitationData] =
+  const [, setInvitationData] =
     React.useState<InvitationData | null>(null);
 
   // Handle signed-in users visiting this page
@@ -119,10 +120,14 @@ function AcceptInvitationContent() {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      return;
+    }
 
     try {
-      if (!token) return null;
+      if (!token) {
+        return null;
+      }
 
       // Create a new sign-up with the supplied invitation token.
       // The ticket strategy automatically verifies the email address.
@@ -143,7 +148,7 @@ function AcceptInvitationContent() {
           const response = await fetch("/api/auth/complete-onboarding", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+              "content-type": "application/json",
             },
             body: JSON.stringify({
               invitationToken: token,

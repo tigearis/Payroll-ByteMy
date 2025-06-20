@@ -1,0 +1,351 @@
+# Users Domain Mutations
+# Security Classification: CRITICAL - Employee PII and role modifications
+# SOC2 Compliance: Full audit trail with role-based restrictions
+
+mutation CreateUser(
+  $name: String!
+  $email: String!
+  $role: user_role!
+  $clerkUserId: String!
+  $phone: String
+  $department: String
+  $jobTitle: String
+  $hireDate: date
+  $timezone: String = "Australia/Sydney"
+) {
+  insert_users_one(
+    object: {
+      name: $name
+      email: $email
+      role: $role
+      clerk_user_id: $clerkUserId
+      phone: $phone
+      department: $department
+      job_title: $jobTitle
+      hire_date: $hireDate
+      timezone: $timezone
+      status: "active"
+      is_active: true
+    }
+  ) {
+    ...UserWithProfile
+  }
+}
+
+# Staff creation (enhanced user creation)
+mutation CreateStaffDirect(
+  $name: String!
+  $email: String!
+  $role: user_role!
+  $clerkUserId: String!
+  $employeeId: String
+  $phone: String
+  $department: String
+  $jobTitle: String
+  $hireDate: date
+  $address: String
+  $city: String
+  $state: String
+  $postalCode: String
+  $country: String = "Australia"
+  $dateOfBirth: date
+  $taxFileNumber: String
+  $emergencyContactName: String
+  $emergencyContactPhone: String
+) {
+  insert_users_one(
+    object: {
+      name: $name
+      email: $email
+      role: $role
+      clerk_user_id: $clerkUserId
+      employee_id: $employeeId
+      phone: $phone
+      department: $department
+      job_title: $jobTitle
+      hire_date: $hireDate
+      address: $address
+      city: $city
+      state: $state
+      postal_code: $postalCode
+      country: $country
+      date_of_birth: $dateOfBirth
+      tax_file_number: $taxFileNumber
+      emergency_contact_name: $emergencyContactName
+      emergency_contact_phone: $emergencyContactPhone
+      status: "active"
+      is_active: true
+    }
+  ) {
+    ...UserForStaff
+  }
+}
+
+mutation UpdateUserProfile(
+  $id: uuid!
+  $name: String
+  $phone: String
+  $department: String
+  $jobTitle: String
+  $timezone: String
+  $avatarUrl: String
+) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      name: $name
+      phone: $phone
+      department: $department
+      job_title: $jobTitle
+      timezone: $timezone
+      avatar_url: $avatarUrl
+      updated_at: "now()"
+    }
+  ) {
+    ...UserWithProfile
+  }
+}
+
+mutation UpdateStaff(
+  $id: uuid!
+  $name: String
+  $email: String
+  $phone: String
+  $department: String
+  $jobTitle: String
+  $employeeId: String
+  $address: String
+  $city: String
+  $state: String
+  $postalCode: String
+  $country: String
+  $emergencyContactName: String
+  $emergencyContactPhone: String
+) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      name: $name
+      email: $email
+      phone: $phone
+      department: $department
+      job_title: $jobTitle
+      employee_id: $employeeId
+      address: $address
+      city: $city
+      state: $state
+      postal_code: $postalCode
+      country: $country
+      emergency_contact_name: $emergencyContactName
+      emergency_contact_phone: $emergencyContactPhone
+      updated_at: "now()"
+    }
+  ) {
+    ...UserForStaff
+  }
+}
+
+mutation UpdateUserRole($id: uuid!, $role: user_role!) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      role: $role
+      permissions_last_updated: "now()"
+      updated_at: "now()"
+    }
+  ) {
+    ...UserBasicInfo
+  }
+}
+
+mutation DeactivateUser($id: uuid!) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: { is_active: false, status: "inactive", updated_at: "now()" }
+  ) {
+    ...UserBasicInfo
+  }
+}
+
+mutation ActivateUser($id: uuid!) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: { is_active: true, status: "active", updated_at: "now()" }
+  ) {
+    ...UserBasicInfo
+  }
+}
+
+# Soft delete preserves audit trail
+mutation DeleteStaff($id: uuid!) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: { status: "deleted", is_active: false, updated_at: "now()" }
+  ) {
+    id
+    name
+    email
+    status
+    updated_at
+  }
+}
+
+mutation UpdateUserLoginTime($id: uuid!) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: { last_login_at: "now()" }
+  ) {
+    id
+    last_login_at
+  }
+}
+
+# Banking details update (restricted access)
+mutation UpdateUserBankingDetails(
+  $id: uuid!
+  $bankAccountName: String
+  $bankAccountNumber: String
+  $bankBsb: String
+  $superFundName: String
+  $superFundAccount: String
+) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      bank_account_name: $bankAccountName
+      bank_account_number: $bankAccountNumber
+      bank_bsb: $bankBsb
+      super_fund_name: $superFundName
+      super_fund_account: $superFundAccount
+      updated_at: "now()"
+    }
+  ) {
+    id
+    name
+    bank_account_name
+    updated_at
+  }
+}
+
+# Database-only user creation for API routes
+mutation CreateUserDb(
+  $name: String!
+  $email: String!
+  $role: user_role!
+  $isStaff: Boolean!
+  $managerId: uuid
+  $clerkUserId: String
+) {
+  insert_users_one(
+    object: {
+      name: $name
+      email: $email
+      role: $role
+      is_staff: $isStaff
+      manager_id: $managerId
+      clerk_user_id: $clerkUserId
+    }
+    on_conflict: {
+      constraint: users_email_key
+      update_columns: [name, role, is_staff, manager_id, updated_at]
+    }
+  ) {
+    id
+    name
+    email
+    role
+    is_staff
+    manager_id
+    clerk_user_id
+    created_at
+    updated_at
+  }
+}
+
+# User sync mutations for Clerk integration
+mutation UpsertUser(
+  $clerkId: String!
+  $name: String!
+  $email: String!
+  $role: user_role = viewer
+  $isStaff: Boolean = false
+  $managerId: uuid
+  $image: String
+) {
+  insert_users_one(
+    object: {
+      clerk_user_id: $clerkId
+      name: $name
+      email: $email
+      role: $role
+      is_staff: $isStaff
+      manager_id: $managerId
+      avatar_url: $image
+    }
+    on_conflict: {
+      constraint: users_clerk_user_id_key
+      update_columns: [name, email, avatar_url, updated_at]
+    }
+  ) {
+    id
+    name
+    email
+    role
+    clerk_user_id
+    is_staff
+    manager_id
+    avatar_url
+    created_at
+    updated_at
+  }
+}
+
+mutation UpdateUserClerkId($id: uuid!, $clerkId: String!) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: { clerk_user_id: $clerkId, updated_at: "now()" }
+  ) {
+    id
+    name
+    email
+    role
+    clerk_user_id
+    is_staff
+    manager_id
+    updated_at
+  }
+}
+
+mutation UpdateUserImage($id: uuid!, $image: String!) {
+  update_users_by_pk(
+    pk_columns: { id: $id }
+    _set: { avatar_url: $image, updated_at: "now()" }
+  ) {
+    id
+    name
+    email
+    role
+    clerk_user_id
+    is_staff
+    manager_id
+    avatar_url
+    updated_at
+  }
+}
+
+# Bulk operations
+mutation BulkUpdateUserStatus(
+  $userIds: [uuid!]!
+  $status: String!
+  $isActive: Boolean!
+) {
+  update_users(
+    where: { id: { _in: $userIds } }
+    _set: { status: $status, is_active: $isActive, updated_at: "now()" }
+  ) {
+    affected_rows
+    returning {
+      ...UserBasicInfo
+    }
+  }
+}

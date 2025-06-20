@@ -1,0 +1,84 @@
+# Notes Domain Mutations
+# Security Classification: MEDIUM - Internal data with role-based access
+# SOC2 Compliance: User-based access control with audit logging
+
+mutation AddNote(
+  $entityId: uuid!
+  $entityType: String!
+  $content: String!
+  $userId: uuid!
+  $isImportant: Boolean = false
+) {
+  insert_notes_one(
+    object: {
+      entity_id: $entityId
+      entity_type: $entityType
+      content: $content
+      user_id: $userId
+      is_important: $isImportant
+    }
+  ) {
+    ...NoteWithUser
+  }
+}
+
+mutation UpdateNote($id: uuid!, $content: String!, $isImportant: Boolean) {
+  update_notes_by_pk(
+    pk_columns: { id: $id }
+    _set: { content: $content, is_important: $isImportant, updated_at: "now()" }
+  ) {
+    ...NoteWithUser
+  }
+}
+
+mutation UpdateNoteContent($id: uuid!, $content: String!) {
+  update_notes_by_pk(
+    pk_columns: { id: $id }
+    _set: { content: $content, updated_at: "now()" }
+  ) {
+    ...NoteBasicInfo
+  }
+}
+
+mutation DeleteNote($id: uuid!) {
+  delete_notes_by_pk(id: $id) {
+    id
+    entity_type
+    entity_id
+    user_id
+    created_at
+    # Return minimal info for audit trail
+  }
+}
+
+mutation MarkNoteImportant($id: uuid!, $isImportant: Boolean!) {
+  update_notes_by_pk(
+    pk_columns: { id: $id }
+    _set: { is_important: $isImportant, updated_at: "now()" }
+  ) {
+    ...NoteBasicInfo
+  }
+}
+
+# Bulk operations for efficiency
+mutation BulkDeleteNotes($entityId: uuid!, $entityType: String!) {
+  delete_notes(
+    where: { entity_id: { _eq: $entityId }, entity_type: { _eq: $entityType } }
+  ) {
+    affected_rows
+    returning {
+      id
+      user_id
+      entity_type
+      entity_id
+    }
+  }
+}
+
+mutation UpdateNoteWithSetInput($id: uuid!, $input: notes_set_input!) {
+  update_notes_by_pk(pk_columns: { id: $id }, _set: $input) {
+    id
+    content
+    updated_at
+  }
+}

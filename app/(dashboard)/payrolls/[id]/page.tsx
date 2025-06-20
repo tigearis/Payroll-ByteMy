@@ -3,29 +3,21 @@
 
 import { useParams, notFound, useRouter } from "next/navigation";
 import { useMutation, useQuery, gql, useLazyQuery } from "@apollo/client";
-import { GET_PAYROLL_BY_ID } from "@/graphql/queries/payrolls/getPayrollById";
-import {
-  GET_PAYROLL_DATES,
-  GET_PAYROLL_FAMILY_DATES,
-} from "@/graphql/queries/payrolls/getPayrollDates";
-import { UPDATE_PAYROLL } from "@/graphql/mutations/payrolls/updatePayroll";
-import { GET_ALL_USERS_LIST } from "@/graphql/queries/staff/getStaffList";
-import { PayrollDatesView } from "@/components/payroll-dates-view";
-import { ExportCsv } from "@/components/export-csv";
-import { ExportPdf } from "@/components/export-pdf";
-import { toast } from "sonner";
-import { useState, useEffect } from "react";
-import Link from "next/link";
+
+// Temporary inline query until GraphQL consolidation is complete
+const GET_ALL_USERS_LIST = gql`
+  query GetAllUsersList {
+    users {
+      id
+      name
+      email
+      role
+    }
+  }
+`;
 
 // Import role enums
-import {
-  user_role,
-  payroll_cycle_type,
-  payroll_date_type,
-} from "@/types/enums";
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -66,14 +58,17 @@ import {
   UserCheck,
   Shield,
 } from "lucide-react";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
+import { ExportCsv } from "@/components/export-csv";
+import { ExportPdf } from "@/components/export-pdf";
 import { NotesListWithAdd } from "@/components/notes-list-with-add";
-import {
-  usePayrollVersioning,
-  usePayrollStatusUpdate,
-  getVersionReason,
-} from "@/hooks/usePayrollVersioning";
+import { PayrollDatesView } from "@/components/payroll-dates-view";
 import { PayrollVersionHistory } from "@/components/payroll-version-history";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -82,8 +77,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { PayrollDetailsLoading } from "@/components/ui/loading-states";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  usePayrollVersioning,
+  usePayrollStatusUpdate,
+  getVersionReason,
+} from "@/hooks/use-payroll-versioning";
+import {
+  user_role,
+  payroll_cycle_type,
+  payroll_date_type,
+} from "@/types/enums";
+
+import { 
+  GetPayrollByIdDocument, 
+  GetPayrollDatesDocument, 
+  GetPayrollFamilyDatesDocument,
+  UpdatePayrollDocument 
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 // Add error boundary component for debugging
 function ErrorBoundary({ children }: { children: React.ReactNode }) {
@@ -209,9 +221,9 @@ const WEEKDAYS = [
 function getOrdinalSuffix(num: number): string {
   const j = num % 10;
   const k = num % 100;
-  if (j === 1 && k !== 11) return "st";
-  if (j === 2 && k !== 12) return "nd";
-  if (j === 3 && k !== 13) return "rd";
+  if (j === 1 && k !== 11) {return "st";}
+  if (j === 2 && k !== 12) {return "nd";}
+  if (j === 3 && k !== 13) {return "rd";}
   return "th";
 }
 
@@ -219,8 +231,8 @@ function getOrdinalSuffix(num: number): string {
 function getBusinessWeekday(jsDay: number): number {
   // JavaScript: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
   // Business: 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday
-  if (jsDay === 0) return 0; // Sunday - not a business day
-  if (jsDay === 6) return 0; // Saturday - not a business day
+  if (jsDay === 0) {return 0;} // Sunday - not a business day
+  if (jsDay === 6) {return 0;} // Saturday - not a business day
   return jsDay; // Monday=1, Tuesday=2, etc.
 }
 
@@ -605,17 +617,17 @@ const getDateValueDisplay = (payroll: any) => {
 
   // If no date value is set, show appropriate message based on cycle
   if (!dateValue && dateValue !== 0) {
-    if (cycleId === "weekly") return "Day not selected";
-    if (cycleId === "fortnightly") return "Day not selected";
-    if (cycleId === "bi_monthly") return "Based on date type";
+    if (cycleId === "weekly") {return "Day not selected";}
+    if (cycleId === "fortnightly") {return "Day not selected";}
+    if (cycleId === "bi_monthly") {return "Based on date type";}
     if (cycleId === "monthly" || cycleId === "quarterly") {
       const dateTypeId = payroll.payroll_date_type?.id || payroll.date_type_id;
       if (dateTypeId === "SOM" || dateTypeId === "som")
-        return "Start of the Month (1st)";
+        {return "Start of the Month (1st)";}
       if (dateTypeId === "EOM" || dateTypeId === "eom")
-        return "End of the Month (last day)";
+        {return "End of the Month (last day)";}
       if (dateTypeId === "fixed" || dateTypeId === "fixed_date")
-        return "Day not selected";
+        {return "Day not selected";}
       return "Based on date type";
     }
     return "Not configured";
@@ -639,9 +651,9 @@ const getDateValueDisplay = (payroll: any) => {
   if (cycleId === "bi_monthly") {
     const dateTypeId = payroll.payroll_date_type?.id || payroll.date_type_id;
     if (dateTypeId === "SOM" || dateTypeId === "som")
-      return "1st and 15th of month";
+      {return "1st and 15th of month";}
     if (dateTypeId === "EOM" || dateTypeId === "eom")
-      return "15th and last day of month";
+      {return "15th and last day of month";}
     return "Based on date type";
   }
 
@@ -652,9 +664,9 @@ const getDateValueDisplay = (payroll: any) => {
       return `${dateValue}${getOrdinalSuffix(dateValue)} of the Month`;
     }
     if (dateTypeId === "SOM" || dateTypeId === "som")
-      return "Start of the Month (1st)";
+      {return "Start of the Month (1st)";}
     if (dateTypeId === "EOM" || dateTypeId === "eom")
-      return "End of the Month (last day)";
+      {return "End of the Month (last day)";}
   }
 
   // For other cases, just show the number
@@ -823,7 +835,7 @@ const formatCurrency = (amount: number) => {
 
 // Format date function
 const formatDate = (date: string | Date) => {
-  if (!date) return "Not set";
+  if (!date) {return "Not set";}
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     weekday: "short",
@@ -835,7 +847,7 @@ const formatDate = (date: string | Date) => {
 
 // Format date with time
 const formatDateTime = (date: string | Date) => {
-  if (!date) return "Not set";
+  if (!date) {return "Not set";}
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     weekday: "short",
@@ -1045,7 +1057,7 @@ export default function PayrollPage() {
 
   // Get payroll data - use network-only to prevent flash of old cached data
   // Skip this query if we're still checking versions or about to redirect
-  const { data, loading, error, refetch } = useQuery(GET_PAYROLL_BY_ID, {
+  const { data, loading, error, refetch } = useQuery(GetPayrollByIdDocument, {
     variables: { id },
     skip: !id || isVersionCheckingOrRedirecting,
     fetchPolicy: "network-only", // Prevent flash of cached old data
@@ -1083,11 +1095,11 @@ export default function PayrollPage() {
   });
   console.log("✅ Generate dates query loaded");
 
-  const [updatePayroll] = useMutation(UPDATE_PAYROLL, {
+  const [updatePayroll] = useMutation(UpdatePayrollDocument, {
     refetchQueries: [
-      { query: GET_PAYROLL_BY_ID, variables: { id } },
-      { query: GET_PAYROLL_DATES, variables: { id } },
-      { query: GET_PAYROLL_FAMILY_DATES, variables: { payrollId: id } },
+      { query: GetPayrollByIdDocument, variables: { id } },
+      { query: GetPayrollDatesDocument, variables: { id } },
+      { query: GetPayrollFamilyDatesDocument, variables: { payrollId: id } },
       "GET_PAYROLLS",
     ],
     awaitRefetchQueries: true,
@@ -1417,8 +1429,8 @@ export default function PayrollPage() {
       const mutationVariables = {
         id: payroll.id,
         name: editedPayroll.name.trim(),
-        cycleId: cycleId,
-        dateTypeId: dateTypeId,
+        cycleId,
+        dateTypeId,
         dateValue: editedPayroll.date_value
           ? parseInt(editedPayroll.date_value)
           : null,
@@ -1544,7 +1556,7 @@ export default function PayrollPage() {
   };
 
   const handleStatusChange = async () => {
-    if (!newStatus || !payroll?.id) return;
+    if (!newStatus || !payroll?.id) {return;}
 
     try {
       console.log(

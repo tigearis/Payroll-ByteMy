@@ -1,11 +1,12 @@
 "use client";
 
+import { Calendar, Clock, GitBranch } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { usePayrollVersionHistory } from "@/hooks/usePayrollVersioning";
-import { Calendar, Clock, GitBranch } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePayrollVersionHistory } from "@/hooks/use-payroll-versioning";
 
 // Local date formatting function
 const formatDate = (dateString: string) => {

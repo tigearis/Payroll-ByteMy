@@ -1,8 +1,9 @@
 // components/direct-websocket-test.tsx
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { useState, useEffect, useRef } from "react";
+
 import { Button } from "@/components/ui/button";
 
 export function DirectWebSocketTest() {

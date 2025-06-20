@@ -1,9 +1,11 @@
 // app/api/payrolls/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { getServerApolloClient } from "@/lib/server-apollo-client";
-import { GET_PAYROLLS } from "@/graphql/queries/payrolls/getPayrolls";
 import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+
 import { withAuth } from "@/lib/api-auth";
+import { getServerApolloClient } from "@/lib/server-apollo-client";
+
+import { GET_PAYROLLS } from "@/graphql/queries/payrolls/getPayrolls";
 
 export const GET = withAuth(
   async (_req: NextRequest) => {
@@ -27,7 +29,7 @@ export const GET = withAuth(
     ) as string;
 
     console.log("🔍 PAYROLL ROUTE - User role debug:", {
-      userId: userId?.substring(0, 8) + "...",
+      userId: `${userId?.substring(0, 8)  }...`,
       userRole,
       hasMetadata: !!sessionClaims?.metadata,
       hasHasuraClaims: !!hasuraClaims,

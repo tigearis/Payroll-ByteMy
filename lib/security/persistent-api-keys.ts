@@ -1,8 +1,10 @@
 // lib/security/persistent-api-keys.ts - Persistent API key management with database storage
-import { adminApolloClient } from "../server-apollo-client";
-import { gql } from "@apollo/client";
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
+
+import { gql } from "@apollo/client";
+
 import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc2-logger";
+import { adminApolloClient } from "../server-apollo-client";
 
 // API Key configuration
 export interface APIKeyConfig {
@@ -131,7 +133,7 @@ export class PersistentAPIKeyManager {
   private static verifySecret(secret: string, storedHash: string): boolean {
     try {
       const [salt, hash] = storedHash.split(':');
-      if (!salt || !hash) return false;
+      if (!salt || !hash) {return false;}
       
       const expectedHash = createHmac('sha256', salt)
         .update(secret)

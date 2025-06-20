@@ -3,9 +3,10 @@
  * Helper functions for using design tokens in components
  */
 
-import { tokens } from './tokens';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
+import { tokens } from './tokens';
 
 /**
  * Merge class names with Tailwind CSS
@@ -110,11 +111,11 @@ export function responsive(
 ): string {
   const classes = [base];
   
-  if (sm) classes.push(`sm:${sm}`);
-  if (md) classes.push(`md:${md}`);
-  if (lg) classes.push(`lg:${lg}`);
-  if (xl) classes.push(`xl:${xl}`);
-  if (xxl) classes.push(`2xl:${xxl}`);
+  if (sm) {classes.push(`sm:${sm}`);}
+  if (md) {classes.push(`md:${md}`);}
+  if (lg) {classes.push(`lg:${lg}`);}
+  if (xl) {classes.push(`xl:${xl}`);}
+  if (xxl) {classes.push(`2xl:${xxl}`);}
   
   return classes.join(' ');
 }

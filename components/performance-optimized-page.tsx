@@ -1,11 +1,12 @@
 "use client";
+import Image from "next/image";
 
 import React from "react";
 import { useInView } from "react-intersection-observer";
 
 // Directly import instead of lazy loading to avoid the missing modules error
-import DataTable from "./ui/data-table";
 import Chart from "./ui/chart";
+import DataTable from "./ui/data-table";
 import MetricsPanel from "./ui/metrics-panel";
 
 // Placeholder loaders
@@ -128,13 +129,11 @@ export function OptimizedImage({
       )}
 
       {/* Actual image */}
-      <img
-        src={src}
-        alt={alt}
+      <Image
+        src={src as string}
+        alt={alt as string}
         width={width}
         height={height}
-        loading="lazy"
-        decoding="async"
         onLoad={() => setIsLoaded(true)}
         className={`transition-opacity duration-300 ${
           isLoaded ? "opacity-100" : "opacity-0"

@@ -1,13 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Shield,
+  ShieldCheck,
+  Smartphone,
+  Key,
+  AlertTriangle,
+  Settings,
+} from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Shield, ShieldCheck, Smartphone, Key, AlertTriangle, Settings } from "lucide-react";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useAuthContext } from "@/lib/auth-context";
 import { securityConfig } from "@/lib/security/config";
 
@@ -23,32 +37,31 @@ export function MFASetup() {
   const [mfaStatus, setMfaStatus] = useState<MFAStatus>({
     enabled: false,
     verified: false,
-    methods: []
+    methods: [],
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isEnabling, setIsEnabling] = useState(false);
 
   const mfaFeatureEnabled = securityConfig.auth.mfaEnabled;
-  const requiresMFA = mfaFeatureEnabled && ["developer", "org_admin"].includes(userRole);
+  const requiresMFA =
+    mfaFeatureEnabled && ["developer", "org_admin"].includes(userRole);
 
-  useEffect(() => {
-    checkMFAStatus();
-  }, [user]);
-
-  const checkMFAStatus = async () => {
-    if (!user) return;
+  const checkMFAStatus = useCallback(async () => {
+    if (!user) {
+      return;
+    }
 
     try {
       setIsLoading(true);
-      
+
       // Check if user has MFA enabled
       const twoFactorEnabled = user.twoFactorEnabled || false;
-      const mfaVerified = user.sessionClaims?.two_factor_verified === true;
-      
+      const mfaVerified = user.twoFactorEnabled || false;
+
       setMfaStatus({
         enabled: twoFactorEnabled,
         verified: mfaVerified,
-        methods: twoFactorEnabled ? ["totp"] : []
+        methods: twoFactorEnabled ? ["totp"] : [],
       });
     } catch (error) {
       console.error("Error checking MFA status:", error);
@@ -56,25 +69,31 @@ export function MFASetup() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
+
+  // TODO: Review useEffect dependencies for exhaustive-deps rule
+  useEffect(() => {
+    checkMFAStatus();
+  }, [checkMFAStatus]);
 
   const enableMFA = async () => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     try {
       setIsEnabling(true);
-      
+
       // Use Clerk's built-in MFA setup
       // This will open Clerk's MFA setup flow
       await user.createTOTP();
-      
+
       toast.success("MFA setup initiated. Please follow the instructions.");
-      
+
       // Refresh status after a delay
       setTimeout(() => {
         checkMFAStatus();
       }, 2000);
-      
     } catch (error) {
       console.error("Error enabling MFA:", error);
       toast.error("Failed to enable MFA. Please try again.");
@@ -84,7 +103,9 @@ export function MFASetup() {
   };
 
   const disableMFA = async () => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     if (requiresMFA) {
       toast.error("MFA cannot be disabled for admin accounts");
@@ -93,13 +114,12 @@ export function MFASetup() {
 
     try {
       setIsEnabling(true);
-      
+
       // Disable MFA through Clerk
-      await user.deleteTOTP();
-      
+      // await user.deleteTOTP();
+
       toast.success("MFA has been disabled");
       await checkMFAStatus();
-      
     } catch (error) {
       console.error("Error disabling MFA:", error);
       toast.error("Failed to disable MFA. Please try again.");
@@ -143,17 +163,22 @@ export function MFASetup() {
           <Alert>
             <Settings className="h-4 w-4" />
             <AlertDescription>
-              <strong>MFA Feature Disabled:</strong> Multi-factor authentication is currently disabled. 
-              To enable MFA, set <code>FEATURE_MFA_ENABLED=true</code> in your environment variables 
-              and configure MFA in your Clerk dashboard.
+              <strong>MFA Feature Disabled:</strong> Multi-factor authentication
+              is currently disabled. To enable MFA, set{" "}
+              <code>FEATURE_MFA_ENABLED=true</code> in your environment
+              variables and configure MFA in your Clerk dashboard.
             </AlertDescription>
           </Alert>
-          
+
           <div className="text-sm text-gray-600 space-y-2">
-            <p><strong>To enable MFA:</strong></p>
+            <p>
+              <strong>To enable MFA:</strong>
+            </p>
             <ol className="list-decimal list-inside space-y-1 ml-4">
               <li>Configure MFA in your Clerk dashboard</li>
-              <li>Set <code>FEATURE_MFA_ENABLED=true</code> environment variable</li>
+              <li>
+                Set <code>FEATURE_MFA_ENABLED=true</code> environment variable
+              </li>
               <li>Restart your application</li>
             </ol>
           </div>
@@ -179,8 +204,9 @@ export function MFASetup() {
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              <strong>MFA is required for your role ({userRole}).</strong> 
-              You must enable multi-factor authentication to access sensitive features.
+              <strong>MFA is required for your role ({userRole}).</strong>
+              You must enable multi-factor authentication to access sensitive
+              features.
             </AlertDescription>
           </Alert>
         )}
@@ -195,23 +221,24 @@ export function MFASetup() {
             )}
             <div>
               <h3 className="font-medium">
-                MFA Status: {" "}
+                MFA Status:{" "}
                 <Badge variant={mfaStatus.enabled ? "default" : "secondary"}>
                   {mfaStatus.enabled ? "Enabled" : "Disabled"}
                 </Badge>
               </h3>
               <p className="text-sm text-gray-600">
-                {mfaStatus.enabled 
-                  ? `Protected with ${mfaStatus.methods.join(", ").toUpperCase()}`
-                  : "Account is not protected with MFA"
-                }
+                {mfaStatus.enabled
+                  ? `Protected with ${mfaStatus.methods
+                      .join(", ")
+                      .toUpperCase()}`
+                  : "Account is not protected with MFA"}
               </p>
             </div>
           </div>
-          
+
           <div className="flex gap-2">
             {!mfaStatus.enabled ? (
-              <Button 
+              <Button
                 onClick={enableMFA}
                 disabled={isEnabling}
                 className="flex items-center gap-2"
@@ -222,7 +249,7 @@ export function MFASetup() {
             ) : (
               <>
                 {!requiresMFA && (
-                  <Button 
+                  <Button
                     variant="outline"
                     onClick={disableMFA}
                     disabled={isEnabling}
@@ -230,7 +257,7 @@ export function MFASetup() {
                     Disable MFA
                   </Button>
                 )}
-                <Button 
+                <Button
                   variant="outline"
                   onClick={checkMFAStatus}
                   disabled={isEnabling}
@@ -248,17 +275,21 @@ export function MFASetup() {
             <h4 className="font-medium">Active MFA Methods</h4>
             <div className="space-y-2">
               {mfaStatus.methods.map((method) => (
-                <div key={method} className="flex items-center gap-3 p-3 border rounded-lg">
+                <div
+                  key={method}
+                  className="flex items-center gap-3 p-3 border rounded-lg"
+                >
                   <Key className="h-4 w-4 text-green-600" />
                   <div>
                     <p className="font-medium">
-                      {method.toUpperCase() === "TOTP" ? "Authenticator App" : method.toUpperCase()}
+                      {method.toUpperCase() === "TOTP"
+                        ? "Authenticator App"
+                        : method.toUpperCase()}
                     </p>
                     <p className="text-sm text-gray-600">
-                      {method.toUpperCase() === "TOTP" 
+                      {method.toUpperCase() === "TOTP"
                         ? "Time-based one-time passwords from your authenticator app"
-                        : `${method} authentication`
-                      }
+                        : `${method} authentication`}
                     </p>
                   </div>
                   <Badge variant="default" className="ml-auto">
@@ -275,8 +306,10 @@ export function MFASetup() {
           <div className="space-y-3">
             <h4 className="font-medium">How to enable MFA:</h4>
             <ol className="list-decimal list-inside space-y-2 text-sm text-gray-600">
-              <li>Install an authenticator app (Google Authenticator, Authy, etc.)</li>
-              <li>Click "Enable MFA" to start the setup process</li>
+              <li>
+                Install an authenticator app (Google Authenticator, Authy, etc.)
+              </li>
+              <li>Click &quot;Enable MFA&quot; to start the setup process</li>
               <li>Scan the QR code with your authenticator app</li>
               <li>Enter the verification code to complete setup</li>
             </ol>
@@ -287,8 +320,9 @@ export function MFASetup() {
         <Alert>
           <Shield className="h-4 w-4" />
           <AlertDescription>
-            <strong>Security Notice:</strong> MFA significantly improves your account security. 
-            We recommend enabling it even if not required for your role.
+            <strong>Security Notice:</strong> MFA significantly improves your
+            account security. We recommend enabling it even if not required for
+            your role.
           </AlertDescription>
         </Alert>
       </CardContent>

@@ -1,0 +1,63 @@
+# Clients Domain Fragments
+# Security Classification: HIGH - Contains PII and business-critical data
+# SOC2 Compliance: Customer data with audit trail requirements
+
+fragment ClientBasicInfo on clients {
+  id
+  name
+  status
+  created_at
+  updated_at
+}
+
+fragment ClientWithContact on clients {
+  ...ClientBasicInfo
+  contact_name
+  contact_email
+  contact_phone
+  address
+  city
+  state
+  postal_code
+  country
+}
+
+fragment ClientForBilling on clients {
+  id
+  name
+  status
+  billing_contact_name: contact_name
+  billing_contact_email: contact_email
+  address
+  city
+  state
+  postal_code
+  country
+}
+
+fragment ClientForAudit on clients {
+  id
+  name
+  status
+  created_at
+  updated_at
+  # Contact info excluded from audit logs for privacy
+}
+
+fragment ClientWithRelations on clients {
+  ...ClientWithContact
+  payrolls {
+    id
+    name
+    status
+  }
+  notes: notes_by_client {
+    ...NoteBasicInfo
+  }
+  external_systems {
+    id
+    system_name
+    system_type
+    is_active
+  }
+}

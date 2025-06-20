@@ -1,9 +1,11 @@
+import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import { withAuth } from "@/lib/api-auth";
 import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
-import { clerkClient } from "@clerk/nextjs/server";
 import { syncUserWithDatabase, UserRole } from "@/lib/user-sync";
-import { z } from "zod";
+
 
 // Input validation schema
 const CreateStaffSchema = z.object({
@@ -232,8 +234,8 @@ export const POST = withAuth(async (request: NextRequest, session) => {
       console.log('💾 GraphQL mutation result:', {
         hasData: !!data,
         hasErrors: !!errors,
-        errors: errors,
-        data: data
+        errors,
+        data
       });
       
       if (errors) {
@@ -281,7 +283,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     // Prepare response data
     const staffData = {
       id: databaseUser?.id,
-      invitationId: invitationId,
+      invitationId,
       name: staffInput.name,
       email: staffInput.email,
       role: staffInput.role,
@@ -289,7 +291,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
       manager_id: staffInput.managerId,
       createdBy: session.userId,
       createdAt: databaseUser?.created_at || new Date().toISOString(),
-      invitationSent: invitationSent
+      invitationSent
     };
     
     // Log successful staff creation
@@ -327,7 +329,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     });
   } catch (error: any) {
     console.error("Staff creation error - DETAILED:", {
-      error: error,
+      error,
       message: error.message,
       stack: error.stack,
       name: error.name,

@@ -1,8 +1,9 @@
 // app/api/admin/api-keys/route.ts
 import { NextRequest, NextResponse } from "next/server";
+
 import { withAuth } from "@/lib/api-auth";
-import { apiKeyManager } from "@/lib/security/api-signing";
 import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
+import { apiKeyManager } from "@/lib/security/api-signing";
 
 // List API keys (admin only)
 export const GET = withAuth(async (request: NextRequest, session) => {
@@ -24,7 +25,7 @@ export const GET = withAuth(async (request: NextRequest, session) => {
       keys: keys.map(key => ({
         ...key,
         // Mask the API key for security
-        apiKey: key.apiKey.substring(0, 8) + "..." + key.apiKey.slice(-4),
+        apiKey: `${key.apiKey.substring(0, 8)  }...${  key.apiKey.slice(-4)}`,
         fullKey: key.apiKey // Include full key for copying
       }))
     });

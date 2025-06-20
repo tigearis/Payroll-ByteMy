@@ -1,13 +1,14 @@
 // components/jwt-test-panel.tsx
 "use client";
 
-import { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { RefreshCw, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface JWTTestResult {
   test: {

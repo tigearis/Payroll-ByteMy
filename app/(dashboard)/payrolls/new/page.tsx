@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useMutation, useQuery, gql } from "@apollo/client";
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -24,9 +24,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CREATE_PAYROLL } from "@/graphql/mutations/payrolls/createPayroll";
-import { GET_CLIENTS } from "@/graphql/queries/clients/getClientsList";
-import { GET_ALL_USERS_LIST } from "@/graphql/queries/staff/getStaffList";
+
+import { CreatePayrollDocument } from "@/domains/payrolls/graphql/generated/graphql";
+
+// Temporary inline queries until GraphQL consolidation
+const GET_CLIENTS = gql`
+  query GetClients {
+    clients {
+      id
+      name
+    }
+  }
+`;
+
+const GET_ALL_USERS_LIST = gql`
+  query GetAllUsersList {
+    users {
+      id
+      name
+      email
+      role
+    }
+  }
+`;
 
 // GraphQL mutation for generating payroll dates (it's a database function exposed as mutation)
 const GENERATE_PAYROLL_DATES_MUTATION = gql`
@@ -93,9 +113,9 @@ const MONTH_DAYS = Array.from({ length: 31 }, (_, i) => ({
 function getOrdinalSuffix(num: number): string {
   const j = num % 10;
   const k = num % 100;
-  if (j === 1 && k !== 11) return "st";
-  if (j === 2 && k !== 12) return "nd";
-  if (j === 3 && k !== 13) return "rd";
+  if (j === 1 && k !== 11) {return "st";}
+  if (j === 2 && k !== 12) {return "nd";}
+  if (j === 3 && k !== 13) {return "rd";}
   return "th";
 }
 
@@ -103,8 +123,8 @@ function getOrdinalSuffix(num: number): string {
 function getBusinessWeekday(jsDay: number): number {
   // JavaScript: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
   // Business: 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday
-  if (jsDay === 0) return 0; // Sunday - not a business day
-  if (jsDay === 6) return 0; // Saturday - not a business day
+  if (jsDay === 0) {return 0;} // Sunday - not a business day
+  if (jsDay === 6) {return 0;} // Saturday - not a business day
   return jsDay; // Monday=1, Tuesday=2, etc.
 }
 
@@ -504,7 +524,7 @@ export default function NewPayrollPage() {
   const { data: clientsData } = useQuery(GET_CLIENTS);
   const { data: usersData } = useQuery(GET_ALL_USERS_LIST);
 
-  const [createPayroll] = useMutation(CREATE_PAYROLL);
+  const [createPayroll] = useMutation(CreatePayrollDocument);
 
   // Mutation for generating payroll dates after creation
   const [generatePayrollDates] = useMutation(GENERATE_PAYROLL_DATES_MUTATION, {
@@ -790,7 +810,7 @@ export default function NewPayrollPage() {
 
     // Bi-monthly, monthly, quarterly: need date type
     if (["bi_monthly", "monthly", "quarterly"].includes(formData.cycleId)) {
-      if (!formData.dateTypeId) return false;
+      if (!formData.dateTypeId) {return false;}
 
       // If fixed date type selected, need day value
       if (formData.dateTypeId === "fixed") {

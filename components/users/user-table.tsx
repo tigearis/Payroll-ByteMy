@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 import {
   MoreHorizontal,
   Edit,
@@ -11,11 +11,27 @@ import {
   Calendar,
   Clock,
 } from "lucide-react";
-import { useAuth } from "@clerk/nextjs";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { TableLoading } from "@/components/ui/loading-states";
 import {
   Table,
   TableBody,
@@ -25,27 +41,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { TableLoading } from "@/components/ui/loading-states";
-import { toast } from "sonner";
-
-import {
   User,
   UserPermissions,
   useUserManagement,
-} from "@/hooks/useUserManagement";
+} from "@/hooks/use-user-management";
 
 interface UserTableProps {
   users: User[];

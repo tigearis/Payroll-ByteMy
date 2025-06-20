@@ -1,0 +1,33 @@
+# Notes Domain Fragments
+# Security Classification: MEDIUM - Internal data with role-based access
+# SOC2 Compliance: Audit-ready with user tracking
+
+fragment NoteBasicInfo on notes {
+  id
+  content
+  is_important
+  entity_type
+  entity_id
+  created_at
+  updated_at
+}
+
+fragment NoteWithUser on notes {
+  ...NoteBasicInfo
+  user {
+    id
+    name
+    email
+  }
+}
+
+fragment NoteForAudit on notes {
+  id
+  entity_type
+  entity_id
+  user_id
+  is_important
+  created_at
+  updated_at
+  # Content excluded for audit logs - contains potentially sensitive info
+}

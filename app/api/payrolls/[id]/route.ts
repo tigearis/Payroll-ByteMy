@@ -1,9 +1,11 @@
 // app/api/payrolls/[id]/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { getServerApolloClient } from "@/lib/server-apollo-client";
-import { GET_PAYROLL_BY_ID } from "@/graphql/queries/payrolls/getPayrollById";
 import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+
 import { withAuthParams } from "@/lib/api-auth";
+import { getServerApolloClient } from "@/lib/server-apollo-client";
+
+import { GET_PAYROLL_BY_ID } from "@/graphql/queries/payrolls/getPayrollById";
 
 export const GET = withAuthParams(
   async (
@@ -14,7 +16,7 @@ export const GET = withAuthParams(
   try {
     const { id } = await params;
 
-    if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+    if (!id) {return NextResponse.json({ error: "Missing ID" }, { status: 400 });}
 
     // Get Clerk authentication token
     const authInstance = await auth();
@@ -30,7 +32,7 @@ export const GET = withAuthParams(
     });
 
     if (!data.payrolls.length)
-      return NextResponse.json({ error: "Not Found" }, { status: 404 });
+      {return NextResponse.json({ error: "Not Found" }, { status: 404 });}
 
     return NextResponse.json(data.payrolls[0]);
   } catch (error) {

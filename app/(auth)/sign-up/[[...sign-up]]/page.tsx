@@ -3,6 +3,7 @@
 import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
 import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,9 +13,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Icons } from "@/components/ui/icons";
 
 export default function SignUpPage() {
   return (

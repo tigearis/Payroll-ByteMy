@@ -1,7 +1,8 @@
 // components/real-time-updates.tsx
-import { ReactNode } from 'react';
 import { gql, DocumentNode } from '@apollo/client';
-import { useRealTimeSubscription } from '@/hooks/useSubscription';
+import { ReactNode } from 'react';
+
+import { useRealTimeSubscription } from '@/hooks/use-subscription';
 
 interface RealTimeUpdatesProps {
   subscription: DocumentNode;

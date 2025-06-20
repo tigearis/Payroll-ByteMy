@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { secureHasuraService } from "@/lib/secure-hasura-service";
-import { auditLogger } from "@/lib/audit/audit-logger";
 import { gql } from "@apollo/client";
 import { subDays } from "date-fns";
+import { NextRequest, NextResponse } from "next/server";
+
+import { auditLogger } from "@/lib/audit/audit-logger";
+import { secureHasuraService } from "@/lib/secure-hasura-service";
 
 const COMPLIANCE_CHECKS = gql`
   query RunComplianceChecks(
@@ -187,13 +188,13 @@ export async function POST(request: NextRequest) {
         INSERT_COMPLIANCE_CHECK,
         {
           checkType: "automated_compliance_check",
-          status: status,
+          status,
           findings: {
             ...findings,
             issues,
             timestamp: new Date().toISOString(),
           },
-          remediationRequired: remediationRequired,
+          remediationRequired,
           remediationNotes: issues.join("; "),
           performedBy: "00000000-0000-0000-0000-000000000000", // System user
           nextCheckDue: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
@@ -232,9 +233,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        status: status,
+        status,
         findings,
-        remediationRequired: remediationRequired,
+        remediationRequired,
         remediationNotes: issues.join("; "),
         nextCheckDue: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         checkId: checkData?.insert_compliance_checks_one?.id,

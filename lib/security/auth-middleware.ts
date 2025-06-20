@@ -3,6 +3,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+
 import { SecureErrorHandler, PermissionValidator } from "./error-responses";
 
 export interface AuthMiddlewareOptions {
@@ -70,11 +71,11 @@ export async function withAuth(
       hasPermission: (permission: string) => {
         // This would need to be enhanced with actual permission checking
         // For now, basic role-based permissions
-        if (userRole === "developer") return true;
-        if (userRole === "org_admin" && !permission.includes("system_admin")) return true;
-        if (userRole === "manager" && ["view_dashboard", "manage_staff", "view_clients", "process_payrolls"].includes(permission)) return true;
-        if (userRole === "consultant" && ["view_dashboard", "view_clients", "process_payrolls"].includes(permission)) return true;
-        if (userRole === "viewer" && permission === "view_dashboard") return true;
+        if (userRole === "developer") {return true;}
+        if (userRole === "org_admin" && !permission.includes("system_admin")) {return true;}
+        if (userRole === "manager" && ["view_dashboard", "manage_staff", "view_clients", "process_payrolls"].includes(permission)) {return true;}
+        if (userRole === "consultant" && ["view_dashboard", "view_clients", "process_payrolls"].includes(permission)) {return true;}
+        if (userRole === "viewer" && permission === "view_dashboard") {return true;}
         return false;
       },
       hasRole: (roles: string[]) => {

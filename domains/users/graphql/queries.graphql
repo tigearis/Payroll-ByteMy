@@ -1,0 +1,161 @@
+# Users Domain Queries
+# Security Classification: CRITICAL - Employee PII and authentication data
+# SOC2 Compliance: Strict access controls with audit logging
+
+query GetUsers {
+  users(where: { status: { _neq: "deleted" } }, order_by: { name: asc }) {
+    ...UserBasicInfo
+  }
+}
+
+query GetActiveUsers {
+  users(
+    where: { status: { _eq: "active" }, is_active: { _eq: true } }
+    order_by: { name: asc }
+  ) {
+    ...UserBasicInfo
+  }
+}
+
+query GetUserById($id: uuid!) {
+  users_by_pk(id: $id) {
+    ...UserWithProfile
+  }
+}
+
+query GetUserByClerkId($clerkUserId: String!) {
+  users(where: { clerk_user_id: { _eq: $clerkUserId } }, limit: 1) {
+    ...UserForAuth
+  }
+}
+
+# Alternative query for user-sync compatibility
+query GetUserByEmail($email: String!) {
+  users(where: { email: { _eq: $email } }) {
+    id
+    clerk_user_id
+    role
+    name
+    email
+    is_staff
+    manager_id
+    avatar_url
+    created_at
+    updated_at
+    manager {
+      id
+      name
+      email
+      role
+    }
+  }
+}
+
+# Staff-specific queries (replacing old staff domain)
+query GetStaffList {
+  users(
+    where: {
+      status: { _neq: "deleted" }
+      role: { _in: ["consultant", "manager", "org_admin"] }
+    }
+    order_by: { name: asc }
+  ) {
+    ...UserWithProfile
+  }
+}
+
+query GetStaffById($id: uuid!) {
+  users_by_pk(id: $id) {
+    ...UserForStaff
+  }
+}
+
+query GetAllUsersList {
+  users(where: { status: { _neq: "deleted" } }, order_by: { name: asc }) {
+    ...UserBasicInfo
+  }
+}
+
+query GetUserProfile($id: uuid!) {
+  users_by_pk(id: $id) {
+    ...UserWithProfile
+  }
+}
+
+query GetUsersWithRoles {
+  users(where: { status: { _neq: "deleted" } }, order_by: { name: asc }) {
+    ...UserRoleInfo
+  }
+}
+
+query GetUserPermissions($id: uuid!) {
+  users_by_pk(id: $id) {
+    ...UserPermissionsInfo
+  }
+}
+
+query SearchUsers($searchTerm: String!) {
+  users(
+    where: {
+      _and: [
+        { status: { _neq: "deleted" } }
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } }
+            { email: { _ilike: $searchTerm } }
+            { employee_id: { _ilike: $searchTerm } }
+          ]
+        }
+      ]
+    }
+    order_by: { name: asc }
+    limit: 50
+  ) {
+    ...UserWithProfile
+  }
+}
+
+# Audit queries - limited fields for compliance
+query GetUsersForAudit {
+  users(order_by: { created_at: desc }) {
+    ...UserForAudit
+  }
+}
+
+query GetUserStats {
+  users_aggregate {
+    aggregate {
+      count
+    }
+  }
+  active_users: users_aggregate(
+    where: { status: { _eq: "active" }, is_active: { _eq: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  by_role: users_aggregate {
+    nodes {
+      role
+    }
+    aggregate {
+      count
+    }
+  }
+}
+
+# Authentication helper queries
+query GetUserSessionInfo($id: uuid!) {
+  users_by_pk(id: $id) {
+    id
+    name
+    email
+    role
+    status
+    is_active
+    avatar_url
+    timezone
+    last_login_at
+  }
+}

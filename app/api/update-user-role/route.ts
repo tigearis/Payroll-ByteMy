@@ -1,6 +1,7 @@
 // app/api/update-user-role/route.ts
-import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+
 import { withAuth } from "@/lib/api-auth";
 
 export const POST = withAuth(
@@ -44,7 +45,7 @@ export const POST = withAuth(
     // Update target user's role in metadata
     await client.users.updateUserMetadata(targetUserId, {
       publicMetadata: {
-        role: role,
+        role,
       },
     });
 

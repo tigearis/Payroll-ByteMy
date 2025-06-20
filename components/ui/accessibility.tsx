@@ -3,13 +3,13 @@
  * Tools for implementing WCAG 2.1 AA compliant interfaces
  */
 import React from "react";
+
 import { cn } from "@/lib/design-tokens";
 
 // ==============================================
 // VisuallyHidden - Hide content visually but keep it accessible to screen readers
 // ==============================================
-export interface VisuallyHiddenProps
-  extends React.HTMLAttributes<HTMLSpanElement> {}
+export type VisuallyHiddenProps = React.HTMLAttributes<HTMLSpanElement>;
 
 export const VisuallyHidden = React.forwardRef<
   HTMLSpanElement,
@@ -122,13 +122,19 @@ export const FocusTrap = React.forwardRef<HTMLDivElement, FocusTrapProps>(
 
     // Handle focus trap
     React.useEffect(() => {
-      if (!active) return;
+      if (!active) {
+        return;
+      }
 
       const handleFocusTrap = (e: KeyboardEvent) => {
-        if (e.key !== "Tab") return;
+        if (e.key !== "Tab") {
+          return;
+        }
 
         const container = ref as React.RefObject<HTMLDivElement>;
-        if (!container.current) return;
+        if (!container.current) {
+          return;
+        }
 
         // Get all focusable elements
         const focusableEls = container.current.querySelectorAll(
@@ -165,7 +171,9 @@ export const FocusTrap = React.forwardRef<HTMLDivElement, FocusTrapProps>(
             tabIndex={0}
             onFocus={() => {
               const container = ref as React.RefObject<HTMLDivElement>;
-              if (!container.current) return;
+              if (!container.current) {
+                return;
+              }
               const focusableEls = container.current.querySelectorAll(
                 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
               );
@@ -195,7 +203,9 @@ export const FocusTrap = React.forwardRef<HTMLDivElement, FocusTrapProps>(
             tabIndex={0}
             onFocus={() => {
               const container = ref as React.RefObject<HTMLDivElement>;
-              if (!container.current) return;
+              if (!container.current) {
+                return;
+              }
               const focusableEls = container.current.querySelectorAll(
                 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
               );
@@ -233,7 +243,9 @@ export function announceToScreenReader(
   message: string,
   priority: "assertive" | "polite" = "polite"
 ) {
-  if (typeof document === "undefined") return;
+  if (typeof document === "undefined") {
+    return;
+  }
 
   const el = document.createElement("div");
   el.setAttribute("aria-live", priority);
@@ -284,7 +296,9 @@ export function checkContrast(
   const rgb1 = hexToRgb(foreground);
   const rgb2 = hexToRgb(background);
 
-  if (!rgb1 || !rgb2) return false;
+  if (!rgb1 || !rgb2) {
+    return false;
+  }
 
   const l1 = luminance(rgb1.r, rgb1.g, rgb1.b);
   const l2 = luminance(rgb2.r, rgb2.g, rgb2.b);

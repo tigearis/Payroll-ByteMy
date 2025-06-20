@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     console.log("🔍 Auth data:", {
       hasUserId: !!userId,
       hasSessionClaims: !!sessionClaims,
-      userId: userId?.substring(0, 8) + "..."
+      userId: `${userId?.substring(0, 8)  }...`
     });
     
     if (!userId) {
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      userId: userId,
+      userId,
       role: userRole,
       hasToken: !!token,
       tokenLength: token?.length,

@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import {
   ApolloClient,
   HttpLink,
@@ -9,6 +8,8 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
+import { auth } from "@clerk/nextjs/server";
+
 import { SecureErrorHandler } from "@/lib/security/error-responses";
 
 // Define allowed roles for admin operations

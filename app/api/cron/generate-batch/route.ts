@@ -1,9 +1,11 @@
 // app/api/cron/generate-batch/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { adminApolloClient } from "@/lib/server-apollo-client"; // Updated import to use the consolidated file
 import { gql } from "@apollo/client";
+import { auth } from "@clerk/nextjs/server";
 import { format, addMonths } from "date-fns";
+import { NextRequest, NextResponse } from "next/server";
+
+import { adminApolloClient } from "@/lib/server-apollo-client"; // Updated import to use the consolidated file
+
 
 // GraphQL mutation to generate payroll dates for a single payroll
 const GENERATE_PAYROLL_DATES = gql`

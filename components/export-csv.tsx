@@ -1,9 +1,11 @@
 // components/export-csv.tsx
 
 import { useQuery } from "@apollo/client";
-import { GET_PAYROLL_DATES } from "@/graphql/queries/payrolls/getPayrollDates";
 import { format, parseISO } from "date-fns";
+
 import { Button } from "@/components/ui/button";
+
+import { GetPayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 interface PayrollDate {
   id: string;
@@ -18,18 +20,18 @@ interface ExportCsvProps {
 }
 
 export function ExportCsv({ payrollId }: ExportCsvProps) {
-  const { loading, error, data } = useQuery(GET_PAYROLL_DATES, {
+  const { loading, error, data } = useQuery(GetPayrollDatesDocument, {
     variables: { id: payrollId },
     skip: !payrollId,
   });
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (loading) {return <div>Loading...</div>;}
+  if (error) {return <div>Error: {error.message}</div>;}
 
   const dates: PayrollDate[] = data?.payroll_dates || [];
 
   const downloadCsv = () => {
-    if (dates.length === 0) return;
+    if (dates.length === 0) {return;}
 
     const headers = [
       "Period",

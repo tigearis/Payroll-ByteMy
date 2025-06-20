@@ -1,8 +1,6 @@
 // app/(dashboard)/clients/page.tsx
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -22,11 +20,14 @@ import {
   Download,
   ChevronDown,
 } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
+import { ClientsTable } from "@/components/clients-table";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,12 +35,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -47,11 +48,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { ClientsTable } from "@/components/clients-table";
-import { useSmartPolling } from "@/hooks/usePolling";
-import { useUserRole } from "@/hooks/useUserRole";
-import { GET_CLIENTS } from "@/graphql/queries/clients/getClientsList";
+import { GET_CLIENTS } from "@/domains/clients/services/client.service";
+import { useSmartPolling } from "@/hooks/use-polling";
+import { useUserRole } from "@/hooks/use-user-role";
 
 type ViewMode = "cards" | "table" | "list";
 

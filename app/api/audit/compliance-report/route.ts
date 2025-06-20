@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { adminApolloClient } from "@/lib/server-apollo-client";
 import { gql } from "@apollo/client";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { withAuth } from "@/lib/api-auth";
 import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
+import { adminApolloClient } from "@/lib/server-apollo-client";
 
 // Input validation schema
 const reportInputSchema = z.object({

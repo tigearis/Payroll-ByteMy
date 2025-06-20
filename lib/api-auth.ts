@@ -1,8 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { monitorRequest } from "./security/enhanced-route-monitor";
+
 import { rateLimiter } from "./middleware/rate-limiter";
 import { logUnauthorizedAccess, extractClientInfo } from "./security/auth-audit";
+import { monitorRequest } from "./security/enhanced-route-monitor";
 
 export interface AuthSession {
   userId: string;
@@ -57,7 +58,7 @@ export async function requireAuth(
     
     // Debug logging for role extraction
     console.log("🔍 Auth Debug (V1/V2 compatible):", {
-      userId: userId?.substring(0, 8) + "...",
+      userId: `${userId?.substring(0, 8)  }...`,
       jwtVersion: hasuraClaims ? "v1" : (sessionClaims?.metadata ? "v2" : "unknown"),
       hasMetadata: !!sessionClaims?.metadata,
       hasHasuraClaims: !!hasuraClaims,
@@ -366,7 +367,7 @@ export async function validateWebhookSignature(
     }
 
     const payload = await request.text();
-    const crypto = require("crypto");
+    import crypto from 'crypto';
     const expectedSignature = crypto
       .createHmac("sha256", secret)
       .update(payload)

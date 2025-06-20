@@ -1,8 +1,10 @@
 // components/payroll-list-card.tsx
-import { useState } from "react";
-import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import { Search, Download } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,6 +15,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -20,17 +29,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { GET_PAYROLLS } from "@/graphql/queries/payrolls/getPayrolls";
-import { Payroll } from "@/types/interface";
-import { useSmartPolling } from "@/hooks/usePolling";
+import { Payroll } from "@/domains/payrolls/types";
+import { useSmartPolling } from "@/hooks/use-polling";
+
+import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 interface PayrollListCardProps {
   searchQuery: string;
@@ -48,7 +50,7 @@ export function PayrollListCard({
 
   // Use polling to periodically refresh data
   const { loading, error, data, startPolling, stopPolling, refetch } = useQuery(
-    GET_PAYROLLS,
+    GetPayrollsDocument,
     {
       fetchPolicy: "cache-and-network",
       nextFetchPolicy: "cache-first",
@@ -79,7 +81,7 @@ export function PayrollListCard({
     }
   );
 
-  if (loading) return <div>Loading payrolls...</div>;
+  if (loading) {return <div>Loading payrolls...</div>;}
   if (error && !data) {
     console.error("PayrollListCard Error:", error.message);
     return (
@@ -93,7 +95,7 @@ export function PayrollListCard({
 
   // Add safety check for incomplete data
   const safePayrolls = payrolls.filter((payroll) => {
-    if (!payroll) return false;
+    if (!payroll) {return false;}
     // Ensure client has at least a name if no id
     if (payroll.client && !payroll.client.id && !payroll.client.name) {
       console.warn("Skipping payroll with incomplete client data:", payroll);
@@ -212,7 +214,7 @@ export function PayrollListCard({
 
   // Function to format name (removes underscores, capitalizes, and keeps DOW/EOM/SOM uppercase)
   const formatName = (name?: string) => {
-    if (!name) return "N/A";
+    if (!name) {return "N/A";}
 
     return name
       .replace(/_/g, " ") // Remove underscores
@@ -228,7 +230,7 @@ export function PayrollListCard({
 
   // Function to format the day of week
   const formatDayOfWeek = (dayValue?: number) => {
-    if (dayValue === undefined || dayValue === null) return "N/A";
+    if (dayValue === undefined || dayValue === null) {return "N/A";}
 
     const days = [
       "Sunday",
@@ -244,10 +246,10 @@ export function PayrollListCard({
 
   // Function to format fixed date with ordinal suffix
   const formatFixedDate = (dateValue?: number) => {
-    if (dateValue === undefined || dateValue === null) return "N/A";
+    if (dateValue === undefined || dateValue === null) {return "N/A";}
 
     const suffix = (num: number) => {
-      if (num >= 11 && num <= 13) return "th";
+      if (num >= 11 && num <= 13) {return "th";}
 
       switch (num % 10) {
         case 1:
@@ -266,7 +268,7 @@ export function PayrollListCard({
 
   // Function to display the appropriate date value based on date type
   const displayDateValue = (payroll: Payroll) => {
-    if (!payroll.payrollDateType?.name) return "N/A";
+    if (!payroll.payrollDateType?.name) {return "N/A";}
 
     const dateTypeName = payroll.payrollDateType.name.toUpperCase();
 

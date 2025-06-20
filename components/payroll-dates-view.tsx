@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useQuery } from "@apollo/client";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,6 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { format, parseISO, isEqual, startOfDay } from "date-fns";
 import {
   ArrowUpDown,
   ChevronDown,
@@ -22,26 +23,19 @@ import {
   RotateCcw,
   AlertCircle,
 } from "lucide-react";
-import { useQuery } from "@apollo/client";
-import {
-  GET_PAYROLL_DATES,
-  GET_PAYROLL_FAMILY_DATES,
-  GET_PAYROLL_DATES_SPLIT,
-  GET_FAMILY_ROOT_ID,
-} from "@/graphql/queries/payrolls/getPayrollDates";
-import { format, parseISO, isEqual, startOfDay } from "date-fns";
+import * as React from "react";
 import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
 
-import { Button } from "@/components/ui/button";
+
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -50,7 +44,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { NotesModal } from "./notes-modal";
+
+import {
+  GET_PAYROLL_DATES,
+  GET_PAYROLL_FAMILY_DATES,
+  GET_PAYROLL_DATES_SPLIT,
+  GET_FAMILY_ROOT_ID,
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 interface PayrollDate {
   id: string;
@@ -80,7 +83,7 @@ const categorizeDatesByTime = (dates: PayrollDate[]) => {
   const today = startOfDay(new Date());
 
   const futureDates = dates.filter((date) => {
-    if (!date.adjusted_eft_date) return false;
+    if (!date.adjusted_eft_date) {return false;}
 
     try {
       const adjustedDate = startOfDay(parseISO(date.adjusted_eft_date));
@@ -93,7 +96,7 @@ const categorizeDatesByTime = (dates: PayrollDate[]) => {
   });
 
   const pastDates = dates.filter((date) => {
-    if (!date.adjusted_eft_date) return false;
+    if (!date.adjusted_eft_date) {return false;}
 
     try {
       const adjustedDate = startOfDay(parseISO(date.adjusted_eft_date));
@@ -144,7 +147,7 @@ function PayrollDatesTable({
         );
       },
       cell: ({ row }) => {
-        if (!row.original.original_eft_date) return null;
+        if (!row.original.original_eft_date) {return null;}
         return format(parseISO(row.original.original_eft_date), "MMM d, yyyy");
       },
     },
@@ -164,7 +167,7 @@ function PayrollDatesTable({
       },
       cell: ({ row }) => {
         if (!row.original.original_eft_date || !row.original.adjusted_eft_date)
-          return null;
+          {return null;}
 
         const originalDate = parseISO(row.original.original_eft_date);
         const adjustedDate = parseISO(row.original.adjusted_eft_date);
@@ -218,7 +221,7 @@ function PayrollDatesTable({
         );
       },
       cell: ({ row }) => {
-        if (!row.original.processing_date) return null;
+        if (!row.original.processing_date) {return null;}
         return format(parseISO(row.original.processing_date), "MMM d, yyyy");
       },
     },

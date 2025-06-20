@@ -1,9 +1,10 @@
 // app/api/signed/payroll-operations/route.ts
+import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
+
+import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
 import { withSignatureValidation, apiKeyManager } from "@/lib/security/api-signing";
 import { adminApolloClient } from "@/lib/server-apollo-client";
-import { gql } from "@apollo/client";
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
 
 // GraphQL mutations for payroll operations
 const PROCESS_PAYROLL_BATCH = gql`

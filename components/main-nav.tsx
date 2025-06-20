@@ -1,8 +1,7 @@
 // components/main-nav.tsx
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { clsx, type ClassValue } from "clsx";
 import {
   LayoutDashboard,
   Users,
@@ -12,8 +11,10 @@ import {
   Settings,
   DollarSign,
 } from "lucide-react";
-import { clsx, type ClassValue } from "clsx";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { twMerge } from "tailwind-merge";
+
 import { Button } from "@/components/ui/button";
 
 // Local utility function

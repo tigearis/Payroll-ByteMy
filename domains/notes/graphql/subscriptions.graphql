@@ -1,0 +1,31 @@
+# Notes Domain Subscriptions
+# Security Classification: MEDIUM - Real-time internal data
+# SOC2 Compliance: User-based access control enforced by Hasura
+
+subscription NotesUpdates($entityId: uuid!, $entityType: String!) {
+  notes(
+    where: { entity_id: { _eq: $entityId }, entity_type: { _eq: $entityType } }
+    order_by: { created_at: desc }
+  ) {
+    ...NoteWithUser
+  }
+}
+
+subscription ImportantNotesUpdates($entityId: uuid!, $entityType: String!) {
+  notes(
+    where: {
+      entity_id: { _eq: $entityId }
+      entity_type: { _eq: $entityType }
+      is_important: { _eq: true }
+    }
+    order_by: { created_at: desc }
+  ) {
+    ...NoteWithUser
+  }
+}
+
+subscription NoteUpdates($id: uuid!) {
+  notes_by_pk(id: $id) {
+    ...NoteWithUser
+  }
+}

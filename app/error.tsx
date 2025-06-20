@@ -1,12 +1,14 @@
 // app/error.tsx
 "use client";
 
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
+
 
 interface ErrorProps {
   error: Error & { digest?: string };

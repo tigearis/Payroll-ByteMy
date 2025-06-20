@@ -2,11 +2,11 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 
 export function AIChat() {
   const [messages, setMessages] = useState<{ role: "system" | "user"; content: string }[]>([])
@@ -14,7 +14,7 @@ export function AIChat() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!input) return
+    if (!input) {return}
 
     const userMessage = { role: "user" as const, content: input }
     setMessages((prev) => [...prev, userMessage])

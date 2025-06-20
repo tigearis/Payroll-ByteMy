@@ -3,9 +3,11 @@
 import { type Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+
 import "./globals.css";
-import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/sonner";
+
+import { Providers } from "./providers";
 import "@/lib/debug-auth"; // Load debug utilities
 
 const geistSans = Geist({

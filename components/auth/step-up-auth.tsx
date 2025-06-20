@@ -1,8 +1,12 @@
 // components/auth/step-up-auth.tsx
 "use client";
 
-import React, { useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { Shield, AlertTriangle } from "lucide-react";
+import React, { useState } from "react";
+import { toast } from "sonner";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,9 +16,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Shield, AlertTriangle } from "lucide-react";
-import { toast } from "sonner";
 
 interface StepUpAuthProps {
   isOpen: boolean;
@@ -26,7 +27,7 @@ interface StepUpAuthProps {
 
 /**
  * Step-Up Authentication Component
- * 
+ *
  * Handles Clerk's new step-up authentication requirement for sensitive actions.
  * This component prompts users to re-verify themselves before performing
  * sensitive operations like adding emails, changing passwords, etc.
@@ -55,22 +56,22 @@ export function StepUpAuth({
       // For Session JWT V2, Clerk automatically handles step-up authentication
       // when sensitive actions are performed. The verification modal will
       // be shown by Clerk's components automatically.
-      
+
       // If the user has 2FA enabled, they'll be prompted for it
       // If not, they may be asked to re-enter their password
-      
+
       // This is a placeholder for the actual sensitive action
       // In your actual implementation, you would perform the sensitive action here
       // and Clerk will automatically prompt for step-up auth if needed
-      
+
       toast.success("Verification successful", {
         description: "You can now proceed with the sensitive action.",
       });
-      
+
       onSuccess();
     } catch (err: any) {
       console.error("Step-up authentication failed:", err);
-      
+
       // Handle different types of verification failures
       if (err.code === "verification_failed") {
         setError("Verification failed. Please try again.");
@@ -79,7 +80,7 @@ export function StepUpAuth({
       } else {
         setError("Verification failed. Please try again or contact support.");
       }
-      
+
       toast.error("Verification Failed", {
         description: "Unable to verify your identity. Please try again.",
       });
@@ -102,7 +103,8 @@ export function StepUpAuth({
             Security Verification Required
           </DialogTitle>
           <DialogDescription>
-            For your security, please verify your identity before {actionDescription}.
+            For your security, please verify your identity before{" "}
+            {actionDescription}.
           </DialogDescription>
         </DialogHeader>
 
@@ -110,11 +112,11 @@ export function StepUpAuth({
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              This action requires additional verification to protect your account.
-              {user?.twoFactorEnabled 
+              This action requires additional verification to protect your
+              account.
+              {user?.twoFactorEnabled
                 ? " You'll be prompted for your two-factor authentication code."
-                : " You may be asked to re-enter your password."
-              }
+                : " You may be asked to re-enter your password."}
             </AlertDescription>
           </Alert>
 
@@ -126,9 +128,7 @@ export function StepUpAuth({
           )}
 
           {children && (
-            <div className="p-4 bg-muted/50 rounded-lg">
-              {children}
-            </div>
+            <div className="p-4 bg-muted/50 rounded-lg">{children}</div>
           )}
         </div>
 
@@ -213,7 +213,7 @@ export function useStepUpAuth() {
 /**
  * Higher-order component to wrap sensitive actions with step-up authentication
  */
-export function withStepUpAuth<T extends {}>(
+export function withStepUpAuth<T extends object>(
   WrappedComponent: React.ComponentType<T>,
   sensitiveActions: string[] = []
 ) {

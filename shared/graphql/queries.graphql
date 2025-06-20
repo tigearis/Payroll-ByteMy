@@ -1,5 +1,192 @@
 # Shared Queries
-# Common queries used across domains
+# Security Classification: MEDIUM - Dashboard and cross-domain data
+# SOC2 Compliance: Aggregate data with no PII exposure
 
-# Placeholder for shared queries
-# Domain-specific queries should be in their respective domain files
+query GetDashboardStats {
+  clients_aggregate {
+    aggregate {
+      count
+    }
+  }
+  payrolls_aggregate {
+    aggregate {
+      count
+    }
+  }
+  active_payrolls: payrolls_aggregate(
+    where: { superseded_date: { _is_null: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  recent_payrolls: payrolls(
+    limit: 5
+    order_by: { updated_at: desc }
+    where: { superseded_date: { _is_null: true } }
+  ) {
+    id
+    name
+    updated_at
+    client {
+      id
+      name
+    }
+  }
+}
+
+query GetUpcomingPayrolls {
+  payrolls(
+    where: {
+      superseded_date: { _is_null: true }
+      payroll_dates: { adjusted_eft_date: { _gte: "now()" } }
+    }
+    order_by: { payroll_dates: { adjusted_eft_date: asc } }
+    limit: 10
+  ) {
+    id
+    name
+    client {
+      id
+      name
+    }
+    payroll_dates(
+      where: { adjusted_eft_date: { _gte: "now()" } }
+      order_by: { adjusted_eft_date: asc }
+      limit: 1
+    ) {
+      id
+      adjusted_eft_date
+      original_eft_date
+      processing_date
+    }
+  }
+}
+
+# Alert-specific queries for dashboard
+query GetAlerts {
+  # Payrolls needing attention
+  overdue_payrolls: payrolls(
+    where: {
+      superseded_date: { _is_null: true }
+      payroll_dates: {
+        adjusted_eft_date: { _lt: "now()" }
+        processed: { _is_null: true }
+      }
+    }
+    limit: 5
+  ) {
+    id
+    name
+    client {
+      id
+      name
+    }
+    payroll_dates(
+      where: {
+        adjusted_eft_date: { _lt: "now()" }
+        processed: { _is_null: true }
+      }
+      order_by: { adjusted_eft_date: asc }
+      limit: 1
+    ) {
+      id
+      adjusted_eft_date
+    }
+  }
+
+  # Missing payroll dates
+  payrolls_missing_dates: payrolls(
+    where: {
+      superseded_date: { _is_null: true }
+      payroll_dates: { _is_null: true }
+    }
+    limit: 10
+  ) {
+    id
+    name
+    client {
+      id
+      name
+    }
+  }
+}
+
+# System health queries
+query GetSystemHealth {
+  total_users: users_aggregate {
+    aggregate {
+      count
+    }
+  }
+  active_users: users_aggregate(
+    where: { is_active: { _eq: true }, status: { _eq: "active" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  total_clients: clients_aggregate {
+    aggregate {
+      count
+    }
+  }
+  active_clients: clients_aggregate(where: { status: { _eq: "active" } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Security-focused queries for audit
+query GetSecurityOverview {
+  recent_auth_events: audit_auth_events(
+    limit: 10
+    order_by: { created_at: desc }
+  ) {
+    id
+    event_type
+    user_id
+    created_at
+    success
+    ip_address
+  }
+
+  permission_changes: audit_permission_changes(
+    limit: 10
+    order_by: { changed_at: desc }
+  ) {
+    id
+    user_id
+    changed_by
+    old_role
+    new_role
+    changed_at
+  }
+}
+
+# Compliance reporting queries
+query GetComplianceReport($startDate: timestamptz!, $endDate: timestamptz!) {
+  user_access_summary: audit_user_access_summary {
+    user_id
+    user_name
+    role
+    # last_access
+    # access_count
+    # permission_count
+  }
+
+  audit_events: audit_audit_log(
+    where: { created_at: { _gte: $startDate, _lte: $endDate } }
+    order_by: { created_at: desc }
+    limit: 100
+  ) {
+    id
+    user_id
+    action
+    resource_type
+    resource_id
+    created_at
+    ip_address
+  }
+}

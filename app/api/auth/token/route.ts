@@ -1,9 +1,10 @@
 // app/api/auth/token/route.ts - Simple token endpoint for Apollo Client
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { currentUser } from "@clerk/nextjs/server";
-import { SecureErrorHandler } from "@/lib/security/error-responses";
+import { NextRequest, NextResponse } from "next/server";
+
 import { logSuccessfulLogin, logFailedLogin, logTokenRefresh, extractClientInfo } from "@/lib/security/auth-audit";
+import { SecureErrorHandler } from "@/lib/security/error-responses";
 
 export async function GET(req: NextRequest) {
   console.log("🔍 Token endpoint called");
@@ -26,8 +27,8 @@ export async function GET(req: NextRequest) {
     const userId = authResult.userId;
     console.log("🔍 Auth result:", { 
       hasUserId: !!userId, 
-      userId: userId?.substring(0, 8) + "...",
-      sessionId: authResult.sessionId?.substring(0, 8) + "..." || "none"
+      userId: `${userId?.substring(0, 8)  }...`,
+      sessionId: `${authResult.sessionId?.substring(0, 8)  }...` || "none"
     });
 
     if (!userId) {
@@ -90,7 +91,7 @@ export async function GET(req: NextRequest) {
       
       // Log Session JWT V2 specific fields for monitoring
       console.log("🔍 Token details:", {
-        expiresIn: expiresIn,
+        expiresIn,
         hasSessionId: !!payload.sid,
         hasMetadata: !!payload.metadata,
         hasOrgId: !!payload.org_id,

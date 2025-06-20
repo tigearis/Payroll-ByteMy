@@ -343,7 +343,7 @@ mutation EmergencyRevokeUserAccess($userId: uuid!, $reason: String!) {
 }
 
 # Restore user access (remove emergency restrictions)
-mutation RestoreUserAccess($userId: uuid!) {
+mutation RestoreUserAccess($userId: uuid!, $viewerRoleId: uuid!) {
   # Remove deny overrides
   delete_permission_overrides(
     where: { 
@@ -357,10 +357,7 @@ mutation RestoreUserAccess($userId: uuid!) {
   # Assign default viewer role
   insert_user_roles_one(object: {
     user_id: $userId,
-    role_id: (
-      # This should reference the viewer role ID
-      # In practice, you'd pass this as a variable
-    )
+    role_id: $viewerRoleId
   }) {
     id
     role {

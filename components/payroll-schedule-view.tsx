@@ -1,7 +1,10 @@
 // components/payroll-schedule-view.tsx
 "use client";
 
+import { format, isSameDay } from "date-fns";
 import { useState, useEffect } from "react";
+
+import { Badge } from "../components/ui/badge";
 import {
   Card,
   CardContent,
@@ -16,8 +19,6 @@ import {
   TableCell,
   TableBody,
 } from "../components/ui/table";
-import { format, isSameDay } from "date-fns";
-import { Badge } from "../components/ui/badge";
 
 interface PayrollScheduleProps {
   payrollId: number;

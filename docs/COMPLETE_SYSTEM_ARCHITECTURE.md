@@ -2,6 +2,14 @@
 
 ## System Overview
 
+**Payroll-ByteMy** is an enterprise-grade payroll management system designed to automate, streamline, and secure the payroll process for businesses of all sizes. Its primary goals are:
+
+- **Accurate Payroll Processing:** Handle complex payroll cycles, calculations, and compliance requirements.
+- **Business Day & Holiday Awareness:** Ensure payroll dates and payments are always compliant with business rules and public holidays.
+- **Role-Based Security:** Provide granular access control for different user roles.
+- **Real-Time Data:** Keep all users and systems in sync with live updates and reporting.
+- **Compliance:** Support Australian tax, superannuation, and payroll tax rules, with audit trails.
+
 This is a comprehensive Next.js payroll management system with authentication, role-based access control, and user management. The system integrates **Clerk** (authentication), **Hasura GraphQL** (data layer), and **PostgreSQL** (database) with sophisticated role synchronization and soft deletion capabilities.
 
 ## Core Architecture
@@ -34,6 +42,58 @@ This is a comprehensive Next.js payroll management system with authentication, r
                         │ • Real-time     │
                         └─────────────────┘
 ```
+
+## Core Business Logic
+
+### A. Payroll Processing
+
+#### Supported Payroll Frequencies
+
+- **Weekly:** Every week on a specified day (e.g., every Friday)
+- **Fortnightly:** Every two weeks, with week assignment (A/B)
+- **Bi-Monthly:** Twice a month (e.g., 1st & 15th, with February exceptions)
+- **Monthly/Quarterly:** End-of-month or custom rules
+
+#### Date Calculation & Business Day Adjustments
+
+- **Business Day Rules:** If a pay date falls on a weekend or holiday, it is adjusted to the previous or next business day, based on configuration.
+- **Holiday Awareness:** Integrates with holiday calendars (automatic sync and custom holidays).
+- **EFT Lead Times:** Payroll dates are adjusted to ensure electronic funds transfers are processed in time, considering bank cutoffs and holidays.
+
+#### Payroll Lifecycle
+
+- **Schedule Generation:** Automatically generates payroll schedules for the year, considering all business rules.
+- **Approval Workflow:** Tracks changes, approvals, and provides an audit trail.
+- **EFT Processing:** Handles the timing and batching of electronic payments.
+
+### B. Pay Calculation Logic
+
+#### Australian Tax Compliance
+
+- **Income Tax:** Uses current ATO tax brackets for PAYG withholding.
+- **Superannuation:** Calculates employer contributions (e.g., 11% of ordinary time earnings, with thresholds and caps).
+- **State Payroll Tax:** Calculates state-specific payroll taxes based on thresholds and rates.
+- **Net Pay:** Computes take-home pay after all deductions (tax, super, other deductions).
+
+#### How a Payroll Run is Calculated
+
+1. **Payroll Schedule Generation:**
+   - The system generates pay dates for the year based on the selected frequency, business day rules, and holiday calendars.
+   - Each pay date is adjusted to avoid weekends and holidays, using either the previous or next business day as configured.
+   - EFT lead times are considered to ensure payments are processed on time.
+2. **Gross Pay Calculation:**
+   - For each employee, the system determines the pay period and calculates gross pay based on their pay rate, hours worked, and any allowances or bonuses.
+3. **Tax and Deductions:**
+   - **Income Tax:** Calculated using the latest ATO tax brackets.
+   - **Superannuation:** Employer contributions are calculated (e.g., 11% of ordinary time earnings, subject to thresholds).
+   - **Payroll Tax:** If the employer's total payroll exceeds the state threshold, payroll tax is calculated at the applicable rate.
+   - **Other Deductions:** Union fees, salary sacrifice, or other custom deductions are applied.
+4. **Net Pay Calculation:**
+   - Net pay is computed as: `Gross Pay - Income Tax - Superannuation - Other Deductions`.
+5. **EFT Processing:**
+   - The system batches payments and schedules them for electronic funds transfer, ensuring all payments are made on or before the adjusted pay date.
+6. **Audit and Reporting:**
+   - All calculations, changes, and approvals are logged for compliance and reporting.
 
 ## 1. Authentication Layer (Clerk)
 

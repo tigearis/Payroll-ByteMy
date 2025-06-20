@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+
 import { withAuth } from "@/lib/api-auth";
 
 export const GET = withAuth(
@@ -120,7 +121,7 @@ export const POST = withAuth(
         resendCount: 1, // Could be incremented if tracking multiple resends
 
         // User role and permissions
-        role: role,
+        role,
         isStaff: true,
 
         // User information for prefilling

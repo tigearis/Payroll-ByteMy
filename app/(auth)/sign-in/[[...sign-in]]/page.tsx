@@ -1,10 +1,10 @@
 // app/(auth)/sign-in/[[...sign-in]]/page.tsx
 "use client";
 
-import { useState } from "react";
 import { useSignIn } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function SignInPage() {
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -36,9 +36,12 @@ export default function SignInPage() {
         await setActive({ session: result.createdSessionId });
         router.push("/dashboard");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Sign-in error:", err);
-      setError(err.errors?.[0]?.message || "Sign-in failed. Please try again.");
+      const errorMessage = err && typeof err === 'object' && 'errors' in err && Array.isArray((err as { errors?: Array<{ message?: string }> }).errors) 
+        ? (err as { errors: Array<{ message?: string }> }).errors[0]?.message
+        : "Sign-in failed. Please try again.";
+      setError(errorMessage || "Sign-in failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -57,11 +60,12 @@ export default function SignInPage() {
         redirectUrl: "/dashboard",
         redirectUrlComplete: "/dashboard",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Google sign-in error:", err);
-      setError(
-        err.errors?.[0]?.message || "Google sign-in failed. Please try again."
-      );
+      const errorMessage = err && typeof err === 'object' && 'errors' in err && Array.isArray((err as { errors?: Array<{ message?: string }> }).errors) 
+        ? (err as { errors: Array<{ message?: string }> }).errors[0]?.message
+        : "Google sign-in failed. Please try again.";
+      setError(errorMessage || "Google sign-in failed. Please try again.");
       setIsLoading(false);
     }
   };
@@ -210,7 +214,7 @@ export default function SignInPage() {
                 href="/sign-up"
                 className="text-sm text-blue-600 hover:text-blue-500 font-medium"
               >
-                Don't have an account? Sign up
+                Don&apos;t have an account? Sign up
               </Link>
             </div>
           </div>

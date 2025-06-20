@@ -1,10 +1,33 @@
 "use client";
 
-import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "@apollo/client";
+
 import { UserDetails } from "@/types/interface";
-import { GET_STAFF_BY_ID } from "@/graphql/queries/staff/getStaffById";
-import { useUserRole } from "@/hooks/useUserRole";
+
+import { gql } from "@apollo/client";
+import { useRouter, useParams } from "next/navigation";
+
+// Temporary inline query until GraphQL consolidation
+const GET_STAFF_BY_ID = gql`
+  query GetStaffById($id: uuid!) {
+    users_by_pk(id: $id) {
+      id
+      name
+      email
+      role
+      created_at
+      updated_at
+    }
+  }
+`;
+import {
+  Key,
+  ReactElement,
+  JSXElementConstructor,
+  ReactNode,
+  ReactPortal,
+} from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -13,13 +36,7 @@ import {
   TableCell,
   TableBody,
 } from "@/components/ui/table";
-import {
-  Key,
-  ReactElement,
-  JSXElementConstructor,
-  ReactNode,
-  ReactPortal,
-} from "react";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export default function UserInfoPage() {
   const params = useParams();
@@ -31,18 +48,18 @@ export default function UserInfoPage() {
     skip: !id, // Skip query if id is not available
   });
 
-  if (!id) return <p>Loading...</p>;
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading user data.</p>;
+  if (!id) {return <p>Loading...</p>;}
+  if (loading) {return <p>Loading...</p>;}
+  if (error) {return <p>Error loading user data.</p>;}
 
   const user = data.users.find((u: UserDetails) => u.id === id);
-  if (!user) return <p>User not found.</p>;
+  if (!user) {return <p>User not found.</p>;}
 
   const canEditLeave = isAdmin || isManager || isDeveloper || isConsultant;
 
   return (
     <div className="max-w-3xl mx-auto mt-10">
-      <h2 className="text-2xl font-semibold mb-4">{user.name}'s Profile</h2>
+      <h2 className="text-2xl font-semibold mb-4">{user.name}&apos;s Profile</h2>
 
       <Table>
         <TableHead>

@@ -1,15 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { adminApolloClient } from "@/lib/server-apollo-client";
 import { gql } from "@apollo/client";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+
+import { withAuthParams } from "@/lib/api-auth";
+import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
+import { adminApolloClient } from "@/lib/server-apollo-client";
 import {
   getUserPermissions,
   canAssignRole,
   UserRole,
   updateUserRole,
 } from "@/lib/user-sync";
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
-import { withAuthParams } from "@/lib/api-auth";
 
 // Get user by ID (either database ID or Clerk ID)
 const GET_USER_BY_ID = gql`
@@ -118,7 +119,7 @@ export async function GET(
       category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
       message: `User profile accessed for: ${targetId}`,
-      userId: userId,
+      userId,
       entityType: "user",
       entityId: targetId,
       metadata: { 

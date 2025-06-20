@@ -1,13 +1,13 @@
 // app/providers.tsx
 "use client";
 
-import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { ApolloProvider } from "@apollo/client";
-import client from "@/lib/apollo-client";
-import { AuthProvider } from "@/lib/auth-context";
+import { ClerkProvider, useAuth } from "@clerk/nextjs";
+
+import { StrictDatabaseGuard } from "@/components/auth/strict-database-guard";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { StrictDatabaseGuard } from "@/components/auth/StrictDatabaseGuard";
-import { SessionExpiryHandler } from "@/lib/session-expiry-handler";
+import { clientApolloClient } from "@/lib/apollo/unified-client";
+import { AuthProvider } from "@/lib/auth-context";
 
 // ================================
 // TYPES
@@ -33,7 +33,9 @@ function AuthenticatedApolloProvider({
     return <div>Loading...</div>;
   }
 
-  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+  return (
+    <ApolloProvider client={clientApolloClient}>{children}</ApolloProvider>
+  );
 }
 
 // ================================
@@ -51,11 +53,7 @@ export function Providers({ children }: ProvidersProps) {
       >
         <AuthenticatedApolloProvider>
           <AuthProvider>
-            <StrictDatabaseGuard>
-              {/* Global session expiry handler */}
-              <SessionExpiryHandler />
-              {children}
-            </StrictDatabaseGuard>
+            <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
           </AuthProvider>
         </AuthenticatedApolloProvider>
       </ClerkProvider>

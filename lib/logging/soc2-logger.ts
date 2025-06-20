@@ -3,10 +3,12 @@
  * Provides comprehensive logging for audit, security, and compliance requirements
  */
 
-import { NextRequest } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { adminApolloClient } from "../server-apollo-client";
 import { gql } from "@apollo/client";
+import { auth } from "@clerk/nextjs/server";
+import { NextRequest } from "next/server";
+
+import { adminApolloClient } from "../server-apollo-client";
+
 
 // Log levels aligned with SOC2 requirements
 export enum LogLevel {
@@ -441,7 +443,7 @@ export class SOC2Logger {
    * Flush buffered logs
    */
   private async flushBuffer(): Promise<void> {
-    if (this.buffer.length === 0) return;
+    if (this.buffer.length === 0) {return;}
 
     const logsToFlush = [...this.buffer];
     this.buffer = [];

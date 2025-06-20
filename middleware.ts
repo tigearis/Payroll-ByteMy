@@ -1,13 +1,16 @@
-// middleware.ts - Simplified route protection with SOC2 audit logging
+// middleware.ts – SOC2-compliant route protection with audit logging
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { AuditLogger } from "./lib/auth/soc2-auth";
+import {
+  AuditAction,
+  DataClassification,
+  auditLogger,
+} from "./lib/audit/audit-logger";
 
 // ================================
 // ROUTE MATCHERS
 // ================================
 
-// Public routes that don't require authentication
 const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
@@ -18,54 +21,56 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 // ================================
-// ENHANCED MIDDLEWARE
+// MIDDLEWARE FUNCTION
 // ================================
 
 export default clerkMiddleware(async (auth, req) => {
-  // Skip authentication for public routes
-  if (isPublicRoute(req)) {
-    return NextResponse.next();
-  }
+  if (isPublicRoute(req)) return NextResponse.next();
 
-  // Protect all non-public routes
   const authResult = await auth.protect();
-  
-  // SOC2: Log protected route access
+
   if (authResult?.userId) {
-    const isApiRoute = req.nextUrl.pathname.startsWith('/api');
-    
-    // Only log significant routes, not internal ones
-    if (!req.nextUrl.pathname.includes('_next') && 
-        !req.nextUrl.pathname.includes('favicon')) {
-      
-      AuditLogger.log({
-        userId: authResult.userId,
-        action: isApiRoute ? 'api_access' : 'page_access',
-        resource: req.nextUrl.pathname,
-        timestamp: new Date(),
-        details: {
+    const isApi = req.nextUrl.pathname.startsWith("/api");
+
+    const shouldLog =
+      !req.nextUrl.pathname.includes("_next") &&
+      !req.nextUrl.pathname.includes("favicon");
+
+    if (shouldLog) {
+      try {
+        await auditLogger.log({
+          userId: authResult.userId,
+          userRole: authResult.sessionClaims?.metadata?.role || "unknown",
+          action: AuditAction.READ,
+          entityType: isApi ? "api_route" : "page_route",
+          entityId: req.nextUrl.pathname,
+          dataClassification: DataClassification.LOW,
+          requestId: crypto.randomUUID(),
+          success: true,
           method: req.method,
-          userAgent: req.headers.get('user-agent')?.substring(0, 100),
-          ipAddress: req.headers.get('x-forwarded-for') || 
-                    req.headers.get('x-real-ip') || 
-                    'unknown',
-        }
-      });
+          userAgent:
+            req.headers.get("user-agent")?.substring(0, 100) || "unknown",
+          ipAddress:
+            req.headers.get("x-forwarded-for") ||
+            req.headers.get("x-real-ip") ||
+            "unknown",
+        });
+      } catch (err) {
+        console.error("[AUDIT] Failed to log middleware access:", err);
+      }
     }
   }
-  
+
   return NextResponse.next();
 });
 
 // ================================
-// MIDDLEWARE CONFIGURATION
+// MIDDLEWARE CONFIG
 // ================================
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
     "/(api|trpc)(.*)",
   ],
 };

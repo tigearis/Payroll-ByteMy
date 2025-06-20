@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   MoreHorizontal,
   Download,
@@ -21,9 +20,10 @@ import {
   ChevronDown,
   CalendarDays,
 } from "lucide-react";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -117,7 +117,7 @@ const getStatusConfig = (status: string) => {
 
 // Helper functions
 const formatDate = (date: string | Date) => {
-  if (!date) return "Not set";
+  if (!date) {return "Not set";}
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     day: "numeric",
@@ -222,7 +222,7 @@ export function PayrollsTable({
 }: PayrollsTableProps) {
   const renderSortableHeader = (label: string, field: string) => {
     const column = COLUMN_DEFINITIONS.find((col) => col.key === field);
-    if (!column?.sortable || !onSort) return label;
+    if (!column?.sortable || !onSort) {return label;}
 
     const isSorted = sortField === field;
 

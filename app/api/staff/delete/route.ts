@@ -1,10 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { adminApolloClient } from "@/lib/server-apollo-client";
 import { gql } from "@apollo/client";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+
+import { withAuth } from "@/lib/api-auth";
 import { protectAdminRoute } from "@/lib/security/auth-middleware";
 import { SecureErrorHandler } from "@/lib/security/error-responses";
-import { withAuth } from "@/lib/api-auth";
+import { adminApolloClient } from "@/lib/server-apollo-client";
+
 
 // GraphQL mutation to deactivate user (soft delete)
 const DEACTIVATE_USER = gql`

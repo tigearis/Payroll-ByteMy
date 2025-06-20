@@ -1,0 +1,85 @@
+# Clients Domain Queries
+# Security Classification: HIGH - Contains PII and business-critical data
+# SOC2 Compliance: Row-level security and audit logging enforced
+
+query GetClients {
+  clients(where: { status: { _neq: "deleted" } }, order_by: { name: asc }) {
+    ...ClientBasicInfo
+  }
+}
+
+query GetClientsWithContact {
+  clients(where: { status: { _neq: "deleted" } }, order_by: { name: asc }) {
+    ...ClientWithContact
+  }
+}
+
+query GetClientById($id: uuid!) {
+  clients_by_pk(id: $id) {
+    ...ClientWithRelations
+  }
+}
+
+query GetClientBasicById($id: uuid!) {
+  clients_by_pk(id: $id) {
+    ...ClientBasicInfo
+  }
+}
+
+query GetActiveClients {
+  clients(where: { status: { _eq: "active" } }, order_by: { name: asc }) {
+    ...ClientBasicInfo
+  }
+}
+
+query GetClientsForBilling {
+  clients(where: { status: { _eq: "active" } }, order_by: { name: asc }) {
+    ...ClientForBilling
+  }
+}
+
+query SearchClients($searchTerm: String!) {
+  clients(
+    where: {
+      _and: [
+        { status: { _neq: "deleted" } }
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } }
+            { contact_name: { _ilike: $searchTerm } }
+            { contact_email: { _ilike: $searchTerm } }
+          ]
+        }
+      ]
+    }
+    order_by: { name: asc }
+    limit: 50
+  ) {
+    ...ClientWithContact
+  }
+}
+
+# Audit query - limited fields for compliance
+query GetClientsForAudit {
+  clients(order_by: { created_at: desc }) {
+    ...ClientForAudit
+  }
+}
+
+query GetClientStats {
+  clients_aggregate {
+    aggregate {
+      count
+    }
+  }
+  active_clients: clients_aggregate(where: { status: { _eq: "active" } }) {
+    aggregate {
+      count
+    }
+  }
+  inactive_clients: clients_aggregate(where: { status: { _eq: "inactive" } }) {
+    aggregate {
+      count
+    }
+  }
+}

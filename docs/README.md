@@ -1,189 +1,273 @@
-# 🏢 Payroll Management System
+# Payroll ByteMy - Complete System Documentation
 
-A comprehensive payroll management solution built with Next.js, featuring role-based access control, staff management, and seamless authentication integration.
+## Overview
 
-## 📚 Documentation
+Payroll ByteMy is an enterprise-grade payroll management system built with Next.js 15, React 19, TypeScript, and Hasura GraphQL. The system implements SOC2-compliant security, comprehensive audit logging, and role-based access control for secure payroll processing and employee management.
 
-**📖 [Complete Documentation Hub](./docs/README.md)** - Start here for all user guides, technical documentation, and system information.
+## 📚 Core Documentation
 
-### Quick Links
+This project's documentation has been consolidated into a set of authoritative guides. Please refer to these documents for detailed information.
 
-- **[Staff Management User Guide](./docs/USER_DOCUMENTATION_STAFF_MANAGEMENT.md)** - Complete guide for managing staff members
-- **[System Architecture](./COMPLETE_SYSTEM_ARCHITECTURE.md)** - Technical architecture overview
-- **[Role Sync Implementation](./ROLE_SYNC_IMPLEMENTATION.md)** - Role synchronization details
+- **[System Architecture](./COMPLETE_SYSTEM_ARCHITECTURE.md)**: The single source of truth for architecture, business logic, and data models.
+- **[Authentication System](./AUTHENTICATION_SYSTEM_DOCUMENTATION.md)**: A deep dive into Clerk integration, JWTs, session management, and role synchronization.
+- **[Security Report](./SECURITY_IMPROVEMENT_REPORT.md)**: A comprehensive security audit, risk analysis, and description of key security implementations.
+- **[Payroll System](./PAYROLL_SYSTEM_DOCUMENTATION.md)**: Detailed documentation on the core payroll processing functionality, compliance, and architecture.
+- **[Hasura & GraphQL API](./HASURA_DOCUMENTATION.md)**: An overview of the Hasura configuration, security model, actions, and GraphQL schema.
+- **[Deployment Guide](./DEPLOYMENT_GUIDE.md)**: Step-by-step instructions for deploying the application to production.
+- **[GraphQL Code Generation](./CODEGEN_SYSTEM.md)**: Documentation for the automated system that generates TypeScript types and hooks.
 
----
+## Technology Stack
 
-## 🚀 Getting Started
+- **Frontend**: Next.js 15 (App Router) + React 19 + TypeScript
+- **Authentication**: Clerk with custom JWT templates for Hasura integration
+- **Database**: PostgreSQL (Neon) with comprehensive row-level security
+- **GraphQL API**: Hasura GraphQL Engine with metadata-driven configuration
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **Package Manager**: pnpm 10.12.1
+- **Hosting**: Vercel with serverless functions
 
-### Development Setup
+## Architecture Overview
 
-First, run the development server:
+### Enterprise Architecture Features
+
+- **Domain-Driven Design**: Business logic organized by functional domains
+- **Security-First Approach**: SOC2 compliance with comprehensive audit logging
+- **Role-Based Access Control**: 5-tier hierarchical role system with 18 granular permissions
+- **Native Clerk Integration**: Optimized authentication eliminating 1,200+ lines of custom code
+- **Metadata-Driven GraphQL**: Complete Hasura configuration with automated deployments
+
+### Security & Compliance
+
+- **SOC2 Type II Compliance**: Comprehensive audit trails and data protection
+- **Multi-Layer Authentication**: Clerk + Database user verification + Component-level guards
+- **Data Classification**: 4-level data classification system (CRITICAL, HIGH, MEDIUM, LOW)
+- **Automated Audit Logging**: Complete audit trail for all business operations
+- **7-Year Retention**: Compliance-driven data retention and lifecycle management
+
+## Documentation Structure
+
+This documentation is organized by the actual folder structure of the application:
+
+### 📁 Core Application Documentation
+
+#### [App Directory (`/app`)](./app/README.md)
+
+Complete Next.js App Router implementation with authentication and business logic:
+
+- **Route Groups**: `(auth)` and `(dashboard)` organization
+- **API Routes**: RESTful endpoints with role-based access control
+- **Authentication Flow**: Clerk integration with custom JWT templates
+- **Security Middleware**: Comprehensive route protection and audit logging
+
+#### [Dashboard Routes (`/app/(dashboard)`)](./app/dashboard/README.md)
+
+Protected application routes for payroll management:
+
+- **Payroll Management**: Complete payroll processing workflows
+- **Staff Management**: Employee lifecycle and role management
+- **Client Management**: Customer relationship management
+- **Security Dashboard**: SOC2 compliance and audit interfaces
+
+### 🧩 Component Architecture
+
+#### [Components (`/components`)](./components/README.md)
+
+Layered component architecture with security integration:
+
+- **Authentication Guards**: Role-based and permission-based access control
+- **Business Components**: Domain-specific UI components
+- **Error Boundaries**: Comprehensive error handling and recovery
+- **Design System**: shadcn/ui based design system with enterprise extensions
+
+### 🚀 API & Backend
+
+#### [API Routes (`/app/api`)](./pages/api/README.md)
+
+RESTful API layer with enterprise security:
+
+- **Authentication Endpoints**: Token management and validation
+- **Staff Operations**: Employee management with Clerk integration
+- **Payroll Processing**: Financial calculations and approval workflows
+- **Webhook Handlers**: External system integration and user synchronization
+
+#### [Library Functions (`/lib`)](./lib/README.md)
+
+Core infrastructure and shared utilities:
+
+- **Authentication System**: Clerk integration and session management
+- **Apollo GraphQL**: Unified client factory with automatic token injection
+- **Security Infrastructure**: Permission system and audit logging
+- **Utility Functions**: Date handling, error management, and formatting
+
+### 🏢 Business Logic Organization
+
+#### [Domains (`/domains`)](./domains/README.md)
+
+Domain-driven design with security classification:
+
+- **Authentication Domain** (CRITICAL): Core security operations
+- **Users Domain** (HIGH): Employee PII and role management
+- **Clients Domain** (HIGH): Customer data and relationships
+- **Payrolls Domain** (MEDIUM): Payroll processing and calculations
+- **Audit Domain** (CRITICAL): Compliance and audit logging
+
+#### [Custom Hooks (`/hooks`)](./hooks/README.md)
+
+React hooks with business logic encapsulation:
+
+- **Authentication Hooks**: User role and permission management
+- **Data Management**: GraphQL operations with error handling
+- **Business Logic**: Payroll creation and versioning workflows
+- **Real-time Features**: Subscriptions and polling strategies
+
+### 🗄️ Data Layer
+
+#### [Hasura Configuration (`/hasura`)](./hasura/README.md)
+
+Metadata-driven GraphQL API with comprehensive security:
+
+- **Role-Based Permissions**: 5-tier role hierarchy with row-level security
+- **Custom Functions**: Business logic enforcement at database level
+- **Audit Integration**: Complete audit trail for all data operations
+- **Performance Optimization**: Strategic indexing and query optimization
+
+#### [Shared Utilities (`/shared`)](./shared/README.md)
+
+Cross-domain utilities and type definitions:
+
+- **Common Types**: Shared TypeScript definitions and GraphQL scalars
+- **Validation Schemas**: Business rule validation and input sanitization
+- **Utility Functions**: Date calculations, formatting, and constants
+- **Configuration**: Feature flags and environment management
+
+## 🔒 Security Analysis
+
+### [Security Improvement Report](./SECURITY_IMPROVEMENT_REPORT.md)
+
+Comprehensive security audit with actionable recommendations:
+
+- **Critical Security Issues**: 4 critical vulnerabilities requiring immediate attention
+- **SOC2 Compliance Analysis**: Compliance gaps and remediation steps
+- **Technical Debt Inventory**: Code quality issues affecting security
+- **Business Logic Risks**: Client-side exposure and validation gaps
+
+## Key System Features
+
+### Authentication & Authorization
+
+- **Clerk Native Integration**: JWT templates with Hasura claims
+- **Multi-Layer Security**: Route, component, and data-level protection
+- **Role Hierarchy**: Developer > Org Admin > Manager > Consultant > Viewer
+- **Permission System**: 18 granular permissions across 5 categories
+
+### Business Operations
+
+- **Payroll Processing**: Complete payroll lifecycle with calculations
+- **Employee Management**: Onboarding, role management, and offboarding
+- **Client Management**: CRM with engagement and financial tracking
+- **Audit & Compliance**: SOC2-compliant logging and reporting
+
+### Data Protection
+
+- **Row-Level Security**: Hasura RLS policies for data protection
+- **Data Classification**: Security-based data handling and retention
+- **Audit Logging**: Complete audit trail for compliance
+- **Encryption**: Data encryption in transit and at rest
+
+### Performance & Scalability
+
+- **Apollo GraphQL**: Unified client with WebSocket subscriptions
+- **Server-Side Rendering**: Optimized page loads with security
+- **Real-time Updates**: Live data synchronization across clients
+- **Efficient Caching**: Strategic caching with invalidation policies
+
+## Development Workflow
+
+### Environment Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Start development server
 pnpm dev
-# or
-bun dev
+
+# Generate GraphQL types
+pnpm codegen
+
+# Run linting and validation
+pnpm lint
+pnpm validate:naming
 ```
 
-### Authentication Testing
-
-Test Hasura token generation:
-
-```javascript
-Clerk.session
-  .getToken({ template: "hasura" })
-  .then((token) => console.log("Hasura Token:", token));
-```
-
----
-
-## 💼 System Features
-
-### ✅ Staff Management System (Complete)
-
-- Complete CRUD operations for staff members
-- Role-based access control (5 distinct roles)
-- Real-time statistics dashboard
-- Advanced filtering and search capabilities
-- Modal-based editing interface
-- Soft deletion with audit trails
-- Clerk authentication integration
-
-### 🔄 Coming Soon
-
-- Payroll Processing System
-- Client Management
-- Leave Management
-- Reporting & Analytics
-
----
-
-## 🗃️ Database Operations
-
-### SQL Dump Commands
-
-Schema only:
+### Security & Compliance
 
 ```bash
-PGPASSWORD="npg_WavFRZ1lEx4U" pg_dump -s -U neondb_owner -h ep-black-sunset-a7wbc0zq-pooler.ap-southeast-2.aws.neon.tech neondb > schema.sql
+# Run security audit
+pnpm audit
+
+# Validate case conventions
+pnpm validate:naming
+
+# Check SOC2 compliance
+pnpm audit:compliance
 ```
 
-Specific tables:
+### Code Generation
 
 ```bash
-PGPASSWORD="npg_WavFRZ1lEx4U" pg_dump -U neondb_owner -d neondb -h ep-black-sunset-a7wbc0zq-pooler.ap-southeast-2.aws.neon.tech -t table1,table2 -f dump.sql
+# Generate all GraphQL types
+pnpm codegen
+
+# Watch mode for development
+pnpm codegen:watch
+
+# Validate generated types
+pnpm validate:types
 ```
 
----
+## Quick Navigation
 
-## 📅 Payroll Processing Rules
+### 🚨 Critical Areas
 
-### Supported Payroll Cycles
+- [Security Report](./SECURITY_IMPROVEMENT_REPORT.md) - **START HERE** for security analysis
+- [Authentication System](./AUTHENTICATION_SYSTEM_DOCUMENTATION.md) - Core auth implementation
+- [API Security](./pages/api/README.md#security-implementation) - Backend security patterns
+- [Hasura Permissions](./hasura/README.md#security-architecture) - Database-level security
 
-1. **Weekly Payroll**
+### 🏗️ Architecture Deep Dives
 
-   - Frequency: Weekly
-   - Timing: Specific day of the week (e.g., Friday)
-   - Date Type: Day of Week (DOW)
-   - Date Value: 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday
-   - Business Day Rule: Previous Business Day
+- [Complete System Architecture](./COMPLETE_SYSTEM_ARCHITECTURE.md) - The single source of truth for architecture, business logic, and data models.
 
-2. **Fortnightly Payroll**
+### 🔧 Developer Resources
 
-   - Frequency: Fortnightly
-   - Timing: Specific day of the week
-   - Week Assignment: Week A (first week of January) or Week B (second week of January)
-   - Date Type: Week A or Week B
-   - Date Value: 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday
-   - Business Day Rule: Previous Business Day
+- [Shared Utilities](./shared/README.md) - Reusable functions and types
+- [Custom Hooks](./hooks/README.md) - React hook patterns
+- [Code Conventions](./shared/README.md#configuration-management) - Naming and style guidelines
+- [Testing Strategy](./components/README.md#testing-strategy) - Testing approaches
 
-3. **Bi-Monthly Payroll**
+## Getting Started
 
-   - Frequency: Twice per month
-   - Date Types:
-     - Start of Month (SOM): 1st and 15th of the month; Next Business Day rule
-     - End of Month (EOM): 30th and 15th of the month; Previous Business Day rule
-   - February Exception: For both SOM and EOM, use the 14th instead of the 15th
+1. **Security First**: Review the **[Security Report](./SECURITY_IMPROVEMENT_REPORT.md)**.
+2. **Understand the Big Picture**: Read the **[System Architecture](./COMPLETE_SYSTEM_ARCHITECTURE.md)** document.
+3. **Authentication Flow**: Study the **[Authentication System](./AUTHENTICATION_SYSTEM_DOCUMENTATION.md)** guide.
+4. **Deployment**: Familiarize yourself with the **[Deployment Guide](./DEPLOYMENT_GUIDE.md)**.
+5. **Core Business Logic**: Dive into the **[Payroll System](./PAYROLL_SYSTEM_DOCUMENTATION.md)** documentation.
 
-4. **Monthly Payroll**
+## Contributing
 
-   - Frequency: Monthly
-   - Date Types:
-     - Start of Month (SOM): Next Business Day rule
-     - End of Month (EOM) or Fixed Date: Previous Business Day rule
-   - Date Value: (Only used with Fixed Date) Day of month (1-31)
+### Code Quality Standards
 
-5. **Quarterly Payroll**
-   - Frequency: Quarterly (March, June, September, December)
-   - Rules: Same as Monthly Payroll
+- **TypeScript Strict Mode**: No `any` types allowed in production code
+- **Case Conventions**: Enforced kebab-case for files, PascalCase for components
+- **Security Reviews**: All changes require security impact assessment
+- **Audit Compliance**: All business operations must include audit logging
 
-### Key Terms
+### Security Requirements
 
-- **DOW (Day of Week)**: Specific day of the week
-- **SOM (Start of Month)**: First day of the month
-- **EOM (End of Month)**: Last day of the month
-- **Fixed Date**: Predetermined date in the month
-- **Previous Business Day**: The business day before the scheduled date
-- **Next Business Day**: The business day after the scheduled date
+- **Permission Validation**: All new features require permission checking
+- **Input Validation**: Zod schemas required for all API endpoints
+- **Audit Logging**: Business operations must include comprehensive audit trails
+- **SOC2 Compliance**: All changes must maintain SOC2 compliance requirements
 
-### EFT Processing Rules
-
-1. **Processing Lead Time**
-
-   - `processing_days_before_eft` determines how many days before the EFT Date processing is done
-   - If the processing date falls on a weekend or public holiday, adjust to the Previous Business Day
-
-2. **EFT Date Adjustment**
-   - If the EFT date is changed, the payroll processing date must be recalculated to maintain the required lead time
-
-### Key Terms
-
-- **EFT (Electronic Funds Transfer)**: Electronic transfer of employee wages
-- **processing_days_before_eft**: Time between payroll processing and the EFT date
-
----
-
-## 🏖️ Holiday Sync API
-
-Sync public holidays for payroll processing:
-
-```bash
-curl -X POST "http://localhost:3000/api/holidays/sync" \
-     -H "Authorization: Bearer sk_test_Vmcx7vTwGJWmXtwVc5hWUxKGIF7BiwA2GevfPUNCVv" \
-     -H "x-hasura-admin-secret: KIATiwETsv3yBwN7e73W2kJwA0t5hf6UK94HDkPZrIQAtpLmK8fCPYE9bIc0Sd8B" \
-     -H "X-Hasura-Role: admin" \
-     -H "Content-Type: application/json" \
-     -d '{"year": 2025, "countryCode": "AU"}'
-```
-
----
-
-## 🔧 Technical Stack
-
-- **Frontend**: Next.js 14 with TypeScript
-- **UI**: Tailwind CSS + shadcn/ui components
-- **Database**: PostgreSQL via Neon
-- **GraphQL**: Hasura GraphQL Engine
-- **Authentication**: Clerk with JWT integration
-- **State Management**: Apollo Client
-- **Package Manager**: pnpm
-
----
-
-## 📞 Support
-
-For help and support:
-
-1. **📖 Check Documentation**: Start with the [Documentation Hub](./docs/README.md)
-2. **🔍 Search FAQ**: Review [Staff Management FAQ](./docs/USER_DOCUMENTATION_STAFF_MANAGEMENT.md#frequently-asked-questions)
-3. **🛠️ Troubleshooting**: Use the [Troubleshooting Guide](./docs/USER_DOCUMENTATION_STAFF_MANAGEMENT.md#troubleshooting)
-4. **💬 Contact Support**: Reach out through your organization's support channels
-
----
-
-_Last Updated: January 2025_
+This documentation provides a comprehensive guide to understanding, maintaining, and extending the Payroll ByteMy system while ensuring security, compliance, and code quality standards are maintained.

@@ -1,7 +1,6 @@
 // components/clients-table.tsx
 "use client";
 
-import Link from "next/link";
 import {
   MoreHorizontal,
   Eye,
@@ -16,9 +15,10 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -99,7 +99,7 @@ export function ClientsTable({
 }: ClientsTableProps) {
   const renderSortableHeader = (label: string, field: string) => {
     const column = COLUMN_DEFINITIONS.find((col) => col.key === field);
-    if (!column?.sortable || !onSort) return label;
+    if (!column?.sortable || !onSort) {return label;}
 
     const isSorted = sortField === field;
 

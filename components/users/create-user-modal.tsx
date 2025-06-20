@@ -1,10 +1,11 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, User, Mail, Shield, Users } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import * as z from "zod";
-import { Loader2, User, Mail, Shield, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,13 +33,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
-
 import {
   useUserManagement,
   Manager,
   UserPermissions,
-} from "@/hooks/useUserManagement";
+} from "@/hooks/use-user-management";
 
 const createUserSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -118,7 +117,7 @@ export function CreateUserModal({
   };
 
   const handleClose = () => {
-    if (isSubmitting) return;
+    if (isSubmitting) {return;}
     form.reset();
     onClose();
   };

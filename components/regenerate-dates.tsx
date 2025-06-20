@@ -1,8 +1,9 @@
 // components/regenerate-dates.tsx
-import { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
 import { format, addMonths } from "date-fns";
+import { useState } from "react";
 import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,7 +61,7 @@ export function RegenerateDates({ payrollId, onSuccess }: RegenerateDatesProps) 
       const count = data?.generate_payroll_dates?.length || 0;
       toast.success(`Successfully generated ${count} payroll dates`);
       setIsDialogOpen(false);
-      if (onSuccess) onSuccess();
+      if (onSuccess) {onSuccess();}
     },
     onError: (err) => {
       toast.error(`Failed to generate dates: ${err.message}`);

@@ -1,0 +1,116 @@
+# Clients Domain Mutations
+# Security Classification: HIGH - PII and business-critical operations
+# SOC2 Compliance: Full audit trail with user attribution
+
+mutation CreateClient(
+  $name: String!
+  $contactName: String
+  $contactEmail: String
+  $contactPhone: String
+  $address: String
+  $city: String
+  $state: String
+  $postalCode: String
+  $country: String = "Australia"
+) {
+  insert_clients_one(
+    object: {
+      name: $name
+      contact_name: $contactName
+      contact_email: $contactEmail
+      contact_phone: $contactPhone
+      address: $address
+      city: $city
+      state: $state
+      postal_code: $postalCode
+      country: $country
+      status: "active"
+    }
+  ) {
+    ...ClientWithContact
+  }
+}
+
+mutation UpdateClient(
+  $id: uuid!
+  $name: String
+  $contactName: String
+  $contactEmail: String
+  $contactPhone: String
+  $address: String
+  $city: String
+  $state: String
+  $postalCode: String
+  $country: String
+) {
+  update_clients_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      name: $name
+      contact_name: $contactName
+      contact_email: $contactEmail
+      contact_phone: $contactPhone
+      address: $address
+      city: $city
+      state: $state
+      postal_code: $postalCode
+      country: $country
+      updated_at: "now()"
+    }
+  ) {
+    ...ClientWithContact
+  }
+}
+
+mutation UpdateClientStatus($id: uuid!, $status: status!) {
+  update_clients_by_pk(
+    pk_columns: { id: $id }
+    _set: { status: $status, updated_at: "now()" }
+  ) {
+    ...ClientBasicInfo
+  }
+}
+
+mutation DeactivateClient($id: uuid!) {
+  update_clients_by_pk(
+    pk_columns: { id: $id }
+    _set: { status: "inactive", updated_at: "now()" }
+  ) {
+    ...ClientBasicInfo
+  }
+}
+
+mutation ActivateClient($id: uuid!) {
+  update_clients_by_pk(
+    pk_columns: { id: $id }
+    _set: { status: "active", updated_at: "now()" }
+  ) {
+    ...ClientBasicInfo
+  }
+}
+
+# Soft delete - preserves audit trail
+mutation ArchiveClient($id: uuid!) {
+  update_clients_by_pk(
+    pk_columns: { id: $id }
+    _set: { status: "deleted", updated_at: "now()" }
+  ) {
+    id
+    name
+    status
+    updated_at
+  }
+}
+
+# Bulk operations for efficiency
+mutation BulkUpdateClientStatus($clientIds: [uuid!]!, $status: status!) {
+  update_clients(
+    where: { id: { _in: $clientIds } }
+    _set: { status: $status, updated_at: "now()" }
+  ) {
+    affected_rows
+    returning {
+      ...ClientBasicInfo
+    }
+  }
+}
