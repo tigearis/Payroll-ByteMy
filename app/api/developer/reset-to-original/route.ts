@@ -1,12 +1,13 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 import { NextRequest, NextResponse } from "next/server";
 import { Pool } from "pg";
-import { withAuth } from "@/lib/api-auth";
+import { withEnhancedAuth } from "@/lib/auth/enhanced-api-auth";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-export const POST = withAuth(
+export const POST = withEnhancedAuth(
   async (request: NextRequest) => {
     // Restrict to development environment only
     if (process.env.NODE_ENV === 'production') {
@@ -51,23 +52,13 @@ export const POST = withAuth(
         resetPayrolls: resetPayrolls || 0,
       });
     } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
-    }
-  } catch (error: any) {
-    console.error("❌ Error resetting to original state:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message,
-      },
+    return handleApiError(error, "developer");
+  },
       { status: 500 }
     );
   }
   },
   {
-    requiredRole: "developer",
+    minimumRole: "developer",
   }
 );

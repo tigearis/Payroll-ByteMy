@@ -1,7 +1,8 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/cron/update-payroll-dates/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { getServerApolloClient } from "@/lib/server-apollo-client";
+import { createServerApolloClient } from "@/lib/apollo/server-client";
 import { format, addMonths } from "date-fns";
 import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
 import { UPDATE_PAYROLL_STATUS } from "@/graphql/mutations/payrolls/updatePayrollStatus";
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Initialize Apollo Client
-    const client = await getServerApolloClient();
+    const client = await createServerApolloClient();
 
     // Parse request body
     const {
@@ -116,47 +117,21 @@ export async function POST(req: NextRequest) {
                 statusErrors
               );
             }
-          } catch (statusUpdateError) {
-            console.error(
-              `Error updating status for payroll ${payrollId}:`,
-              statusUpdateError
-            );
+          } catch (error) {
+            console.error(`Error processing payroll ${payrollId}:`, error);
+            results.failed++;
+            results.errors.push(`Payroll ${payrollId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
           }
         }
 
-        // Check if dates were generated
-        const generatedDates = dateData.generate_payroll_dates;
-        if (!generatedDates || generatedDates.length === 0) {
-          console.warn(`No dates generated for payroll: ${payrollId}`);
-          results.failed++;
-          results.errors.push({
-            payrollId,
-            error: "No dates generated",
-          });
-          continue;
-        }
-
-        results.processed++;
-        console.log(`Successfully processed payroll: ${payrollId}`);
-      } catch (error) {
-        console.error(`Error processing payroll ${payrollId}:`, error);
-        results.failed++;
-        results.errors.push({
-          payrollId,
-          error: error instanceof Error ? error.message : String(error),
+        return NextResponse.json({
+          success: true,
+          message: `Successfully processed ${results.processed} of ${results.total} payrolls`,
+          total: results.total,
+          processed: results.processed,
+          failed: results.failed,
+          errors: results.errors.length > 0 ? results.errors : undefined,
         });
-      }
-    }
-
-    // Prepare and return response
-    return NextResponse.json({
-      success: results.processed > 0,
-      message: `Processed ${results.processed} of ${results.total} payrolls`,
-      total: results.total,
-      processed: results.processed,
-      failed: results.failed,
-      errors: results.errors.length > 0 ? results.errors : undefined,
-    });
   } catch (error) {
     console.error("Error in payroll processing:", error);
     return NextResponse.json(

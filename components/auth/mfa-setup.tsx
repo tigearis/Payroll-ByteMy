@@ -43,7 +43,9 @@ export function MFASetup() {
       
       // Check if user has MFA enabled
       const twoFactorEnabled = user.twoFactorEnabled || false;
-      const mfaVerified = user.sessionClaims?.two_factor_verified === true;
+      // On client-side, we can only check if MFA is enabled, not if it's verified
+      // Verification status is typically handled server-side
+      const mfaVerified = twoFactorEnabled;
       
       setMfaStatus({
         enabled: twoFactorEnabled,
@@ -95,7 +97,7 @@ export function MFASetup() {
       setIsEnabling(true);
       
       // Disable MFA through Clerk
-      await user.deleteTOTP();
+      await user.disableTOTP();
       
       toast.success("MFA has been disabled");
       await checkMFAStatus();

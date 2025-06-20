@@ -111,12 +111,15 @@ mutation DeleteClientBillingAssignment($id: uuid!) {
 }
 
 # Bulk Operations
-mutation GenerateInvoicesForPeriod($start_date: date!, $end_date: date!) {
-  generate_invoices_for_period(args: { start_date: $start_date, end_date: $end_date }) {
-    success
-    message
-    invoice_count
-    total_amount
+# Note: Custom function generate_invoices_for_period does not exist in schema
+# This would need to be implemented as a custom Hasura function or handled via API
+mutation BulkCreateInvoices($invoices: [billing_invoice_insert_input!]!) {
+  insert_billing_invoice(objects: $invoices) {
+    affected_rows
+    returning {
+      id
+      total_amount
+    }
   }
 }
 

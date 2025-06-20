@@ -1,6 +1,11 @@
 // app/(dashboard)/payroll-schedule/page.tsx
-import { AdvancedPayrollScheduler } from "@/domains/scheduling";
+import { AdvancedPayrollScheduler } from "@/domains/payrolls";
+import { EnhancedPermissionGuard } from "@/components/auth/EnhancedPermissionGuard";
 
 export default function PayrollSchedulePage() {
-  return <AdvancedPayrollScheduler />;
+  return (
+    <EnhancedPermissionGuard.ManagerGuard>
+      <AdvancedPayrollScheduler />
+    </EnhancedPermissionGuard.ManagerGuard>
+  );
 }

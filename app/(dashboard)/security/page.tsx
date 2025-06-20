@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
-import { useUserRole } from "@/hooks/useUserRole";
+import { EnhancedPermissionGuard } from "@/components/auth/EnhancedPermissionGuard";
 import {
   AlertTriangle,
   Shield,
@@ -26,7 +26,7 @@ import {
   XCircle,
   RefreshCcw,
 } from "lucide-react";
-import { formatDistanceToNow, format, subHours, subDays } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -172,109 +172,45 @@ const SECURITY_OVERVIEW_QUERY = gql`
   }
 `;
 
-export default function SecurityDashboard() {
-  const {
-    data,
-    loading: queryLoading,
-    error,
-    refetch,
-    networkStatus,
-  } = useQuery(SECURITY_OVERVIEW_QUERY, {
+function SecurityDashboardContent() {
+  const { data, loading, error, refetch } = useQuery(SECURITY_OVERVIEW_QUERY, {
     variables: {
-      twentyFourHoursAgo: subHours(new Date(), 24).toISOString(),
-      sevenDaysAgo: subDays(new Date(), 7).toISOString(),
+      twentyFourHoursAgo: new Date(
+        Date.now() - 24 * 60 * 60 * 1000
+      ).toISOString(),
+      sevenDaysAgo: new Date(
+        Date.now() - 7 * 24 * 60 * 60 * 1000
+      ).toISOString(),
     },
-    // Poll every 2 minutes instead of 30 seconds to reduce server load
-    // while still maintaining reasonable data freshness for security monitoring
     pollInterval: 120000,
-    errorPolicy: "all", // Return partial data even if there are errors
-    notifyOnNetworkStatusChange: true, // Important for polling
+    errorPolicy: "all",
+    notifyOnNetworkStatusChange: true,
   });
 
-  const {
-    isDeveloper,
-    isAdmin,
-    hasAdminAccess,
-    isLoading: roleLoading,
-  } = useUserRole();
   const router = useRouter();
 
-  // Debug loading states with more detail
-  console.log("🔍 Security Dashboard Loading States:", {
-    queryLoading,
-    roleLoading,
-    hasData: !!data,
-    hasError: !!error,
-    networkStatus, // 1: loading, 2: setVariables, 3: fetchMore, 4: refetch, 6: poll, 7: ready
-    isPolling: networkStatus === 6,
-    isRefetching: networkStatus === 4,
-  });
-
-  // Check if user has access to security features
-  if (!roleLoading && !hasAdminAccess && !isDeveloper && !isAdmin) {
-    console.log("🚨 Security page access denied:", {
-      roleLoading,
-      hasAdminAccess,
-      isDeveloper,
-      isAdmin,
-      userRole: useUserRole().userRole
-    });
-    return (
-      <div className="container mx-auto p-6">
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Access Denied</AlertTitle>
-          <AlertDescription>
-            You need administrator privileges to access the security dashboard.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
-  // Show loading state only if we're still loading role information
-  // or if we have access and the query is still loading
-  if (roleLoading || (hasAdminAccess && queryLoading)) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <Shield className="h-12 w-12 animate-pulse mx-auto mb-4" />
           <p>Loading security dashboard...</p>
-          {roleLoading && (
-            <p className="text-sm text-muted-foreground">
-              Verifying access permissions...
-            </p>
-          )}
-          {queryLoading && !roleLoading && (
-            <p className="text-sm text-muted-foreground">
-              {networkStatus === 6
-                ? "Refreshing security data..."
-                : "Loading security data..."}
-            </p>
-          )}
         </div>
       </div>
     );
   }
 
   if (error) {
-    console.error("🔒 Permission Error in SecurityOverview:", error);
     return (
-      <div className="container mx-auto p-6">
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error Loading Security Data</AlertTitle>
-          <AlertDescription>
-            {error.message.includes("permission")
-              ? "You don't have permission to access audit logs. Please check your role permissions."
-              : `Failed to load security data: ${error.message}`}
-          </AlertDescription>
-          <Button onClick={() => refetch()} className="mt-2" variant="outline">
-            <RefreshCcw className="mr-2 h-4 w-4" />
-            Retry
-          </Button>
-        </Alert>
-      </div>
+      <Alert variant="destructive">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Error Loading Data</AlertTitle>
+        <AlertDescription>
+          There was an issue fetching the security overview. Please try
+          refreshing the page.
+          <pre className="mt-2 text-xs">{error.message}</pre>
+        </AlertDescription>
+      </Alert>
     );
   }
 
@@ -590,5 +526,14 @@ export default function SecurityDashboard() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function SecurityDashboard() {
+  // Wrap the entire page with a guard that checks for 'org_admin' role or higher.
+  return (
+    <EnhancedPermissionGuard.AdminGuard>
+      <SecurityDashboardContent />
+    </EnhancedPermissionGuard.AdminGuard>
   );
 }

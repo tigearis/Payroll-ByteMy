@@ -1,9 +1,10 @@
+import { handleApiError, createSuccessResponse } from "@/lib/shared/error-handling";
 // app/api/developer/route.ts
 // SECURITY: Developer routes are disabled in production
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { gql } from "@apollo/client";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { adminApolloClient } from "@/lib/apollo/server-client";
 
 // SECURITY: Check if in production and return 404
 const isProduction = process.env.NODE_ENV === 'production';

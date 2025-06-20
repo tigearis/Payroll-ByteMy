@@ -10,7 +10,7 @@ import {
   isPermissionError,
   parsePermissionError,
   handlePermissionError,
-} from "@/lib/apollo-error-handler";
+} from "@/lib/apollo/error-handler";
 
 export interface GracefulQueryOptions<
   TData,
