@@ -27,8 +27,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserRoleManagement } from "@/components/user-role-management";
-import { useAuthContext } from "@/lib/auth-context";
+import { UserRoleManagement } from "@/domains/users/components/user-role-management";
+import { useAuthContext } from "@/lib/auth/auth-context";
 
 const roles = ["developer", "org_admin", "manager", "consultant", "viewer"];
 const features = [

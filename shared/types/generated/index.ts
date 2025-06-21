@@ -1,5 +1,5 @@
 /**
- * THIS FILE IS AUTO-GENERATED - DO NOT EDIT MANUALLY
+ * AUTO-GENERATED - DO NOT EDIT MANUALLY
  * 
  * SOC2 Compliant GraphQL Operations
  * Security Classifications Applied:
@@ -15,15 +15,10 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-20T22:36:15.621Z
+ * Generated: 2025-06-21T14:13:30.460Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v2.0
  */
 
 // Central export aggregator for all GraphQL operations
-
-// Re-export base types
-export * from './graphql';
-
-// Auto-aggregate domain exports
-export * from '../../domains/notes/graphql/generated';
+export * from "./graphql";

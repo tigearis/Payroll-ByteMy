@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 import { subDays } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
-import { auditLogger } from "@/lib/audit/audit-logger";
-import { secureHasuraService } from "@/lib/secure-hasura-service";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
+import { secureHasuraService } from "@/lib/apollo/secure-hasura-service";
 
 const COMPLIANCE_CHECKS = gql`
   query RunComplianceChecks(
@@ -92,13 +92,17 @@ export async function POST(request: NextRequest) {
     // Check for cron secret (for Vercel cron jobs)
     if (cronSecret !== process.env.CRON_SECRET) {
       console.error("🚨 Unauthorized cron request - invalid secret");
-      await auditLogger.logSecurityEvent(
-        "unauthorized_cron_access",
-        "error",
-        { source: "compliance-check", ip: request.headers.get("x-forwarded-for") },
-        undefined,
-        request.headers.get("x-forwarded-for") || undefined
-      );
+      const clientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
+        level: LogLevel.ERROR,
+        category: LogCategory.SECURITY_EVENT,
+        eventType: SOC2EventType.UNAUTHORIZED_ACCESS_ATTEMPT,
+        success: false,
+        errorMessage: "Unauthorized cron request - invalid secret",
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
+        metadata: { source: "compliance-check" }
+      });
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
         { status: 401 }
@@ -124,13 +128,17 @@ export async function POST(request: NextRequest) {
 
     if (errors) {
       console.error("Compliance check query failed:", errors);
-      await auditLogger.logSecurityEvent(
-        "compliance_check_failed",
-        "error",
-        { errors },
-        undefined,
-        request.headers.get("x-forwarded-for") || undefined
-      );
+      const errorClientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
+        level: LogLevel.ERROR,
+        category: LogCategory.COMPLIANCE,
+        eventType: SOC2EventType.SECURITY_VIOLATION,
+        success: false,
+        errorMessage: "Compliance check query failed",
+        ipAddress: errorClientInfo.ipAddress || "unknown",
+        userAgent: errorClientInfo.userAgent || "unknown",
+        metadata: { errors }
+      });
       return NextResponse.json(
         { success: false, message: "Failed to run compliance checks" },
         { status: 500 }
@@ -204,13 +212,17 @@ export async function POST(request: NextRequest) {
 
     if (checkErrors) {
       console.error("Failed to record compliance check:", checkErrors);
-      await auditLogger.logSecurityEvent(
-        "compliance_check_record_failed",
-        "error",
-        { errors: checkErrors },
-        undefined,
-        request.headers.get("x-forwarded-for") || undefined
-      );
+      const recordErrorClientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
+        level: LogLevel.ERROR,
+        category: LogCategory.COMPLIANCE,
+        eventType: SOC2EventType.SECURITY_VIOLATION,
+        success: false,
+        errorMessage: "Failed to record compliance check",
+        ipAddress: recordErrorClientInfo.ipAddress || "unknown",
+        userAgent: recordErrorClientInfo.userAgent || "unknown",
+        metadata: { errors: checkErrors }
+      });
       return NextResponse.json(
         { success: false, message: "Failed to record compliance check" },
         { status: 500 }
@@ -218,17 +230,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Log compliance check
-    await auditLogger.logSecurityEvent(
-      "compliance_check_completed",
-      status === "failed" ? "error" : status === "warning" ? "warning" : "info",
-      {
+    const successClientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
+      level: status === "failed" ? LogLevel.ERROR : status === "warning" ? LogLevel.WARNING : LogLevel.INFO,
+      category: LogCategory.COMPLIANCE,
+      eventType: status === "failed" ? SOC2EventType.SECURITY_VIOLATION : SOC2EventType.DATA_VIEWED,
+      success: status !== "failed",
+      ipAddress: successClientInfo.ipAddress || "unknown",
+      userAgent: successClientInfo.userAgent || "unknown",
+      metadata: {
         findings,
         issues,
         status,
-      },
-      undefined,
-      request.headers.get("x-forwarded-for") || undefined
-    );
+        message: "compliance_check_completed"
+      }
+    });
 
     return NextResponse.json({
       success: true,
@@ -243,13 +259,20 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error("Compliance check failed:", error);
-    await auditLogger.logSecurityEvent(
-      "compliance_check_error",
-      "error",
-      { error: error instanceof Error ? error.message : String(error) },
-      undefined,
-      request.headers.get("x-forwarded-for") || undefined
-    );
+    const catchErrorClientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
+      level: LogLevel.ERROR,
+      category: LogCategory.COMPLIANCE,
+      eventType: SOC2EventType.SECURITY_VIOLATION,
+      success: false,
+      errorMessage: error instanceof Error ? error.message : String(error),
+      ipAddress: catchErrorClientInfo.ipAddress || "unknown",
+      userAgent: catchErrorClientInfo.userAgent || "unknown",
+      metadata: {
+        message: "compliance_check_error",
+        error: error instanceof Error ? error.message : String(error)
+      }
+    });
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }

@@ -1,10 +1,15 @@
 # Leave Domain Queries
 
-query GetLeaveRequests($where: leave_bool_exp, $order_by: [leave_order_by!], $limit: Int, $offset: Int) {
-  leave(where: $where, order_by: $order_by, limit: $limit, offset: $offset) {
+query GetLeaveRequests(
+  $where: leave_bool_exp
+  $order_by: [leave_order_by!]
+  $limit: Int
+  $offset: Int
+) {
+  leaves(where: $where, order_by: $order_by, limit: $limit, offset: $offset) {
     ...LeaveWithManager
   }
-  leave_aggregate(where: $where) {
+  leavesAggregate(where: $where) {
     aggregate {
       count
     }
@@ -12,46 +17,56 @@ query GetLeaveRequests($where: leave_bool_exp, $order_by: [leave_order_by!], $li
 }
 
 query GetLeaveRequestById($id: uuid!) {
-  leave_by_pk(id: $id) {
+  leave(id: $id) {
     ...LeaveWithManager
   }
 }
 
-query GetLeaveRequestsByUser($user_id: uuid!, $start_date: date, $end_date: date) {
-  leave(
+query GetLeaveRequestsByUser(
+  $userId: uuid!
+  $startDate: date
+  $endDate: date
+) {
+  leaves(
     where: {
-      user_id: { _eq: $user_id }
       _and: [
-        { start_date: { _lte: $end_date } }
-        { end_date: { _gte: $start_date } }
+        { userId: { _eq: $userId } }
+        { startDate: { _lte: $endDate } }
+        { endDate: { _gte: $startDate } }
       ]
     }
-    order_by: { start_date: desc }
+    order_by: { startDate: desc }
   ) {
     ...LeaveCore
   }
 }
 
-query GetPendingLeaveRequests($manager_id: uuid) {
-  leave(
+query GetPendingLeaveRequests($managerId: uuid) {
+  leaves(
     where: {
-      status: { _eq: "Pending" }
-      user: { manager_id: { _eq: $manager_id } }
+      _and: [
+        { status: { _eq: "Pending" } }
+        { user: { managerId: { _eq: $managerId } } }
+      ]
     }
-    order_by: { start_date: asc }
+    order_by: { startDate: asc }
   ) {
     ...LeaveWithUser
   }
 }
 
-query GetLeaveOverlaps($start_date: date!, $end_date: date!, $exclude_id: uuid) {
-  leave(
+query GetLeaveOverlaps(
+  $startDate: date!
+  $endDate: date!
+  $excludeId: uuid
+) {
+  leaves(
     where: {
       _and: [
-        { start_date: { _lte: $end_date } }
-        { end_date: { _gte: $start_date } }
+        { startDate: { _lte: $endDate } }
+        { endDate: { _gte: $startDate } }
         { status: { _neq: "Rejected" } }
-        { id: { _neq: $exclude_id } }
+        { id: { _neq: $excludeId } }
       ]
     }
   ) {
@@ -59,41 +74,40 @@ query GetLeaveOverlaps($start_date: date!, $end_date: date!, $exclude_id: uuid) 
   }
 }
 
-query GetLeaveCalendar($start_date: date!, $end_date: date!, $user_ids: [uuid!]) {
-  leave(
+query GetLeaveCalendar(
+  $startDate: date!
+  $endDate: date!
+  $userIds: [uuid!]
+) {
+  leaves(
     where: {
       _and: [
-        { start_date: { _lte: $end_date } }
-        { end_date: { _gte: $start_date } }
+        { startDate: { _lte: $endDate } }
+        { endDate: { _gte: $startDate } }
         { status: { _eq: "Approved" } }
-        { user_id: { _in: $user_ids } }
+        { userId: { _in: $userIds } }
       ]
     }
-    order_by: { start_date: asc }
+    order_by: { startDate: asc }
   ) {
     ...LeaveWithUser
   }
 }
 
-query GetLeaveAnalytics($start_date: date!, $end_date: date!) {
-  leave_by_type: leave_aggregate(
-    where: {
-      start_date: { _gte: $start_date, _lte: $end_date }
-      status: { _eq: "Approved" }
-    }
+query GetLeaveAnalytics($startDate: date!, $endDate: date!) {
+  leave_by_type: leavesAggregate(
+    where: { startDate: { _gte: $startDate, _lte: $endDate } }
   ) {
     nodes {
-      leave_type
+      leaveType
     }
     aggregate {
       count
     }
   }
-  
-  leave_by_status: leave_aggregate(
-    where: {
-      start_date: { _gte: $start_date, _lte: $end_date }
-    }
+
+  leave_by_status: leavesAggregate(
+    where: { startDate: { _gte: $startDate, _lte: $endDate } }
   ) {
     nodes {
       status
@@ -102,17 +116,11 @@ query GetLeaveAnalytics($start_date: date!, $end_date: date!) {
       count
     }
   }
-  
-  leave_by_user: leave(
-    where: {
-      start_date: { _gte: $start_date, _lte: $end_date }
-      status: { _eq: "Approved" }
-    }
-  ) {
+
+  leave_by_user: leaves(where: {}) {
     user {
       id
       name
     }
-    leave_type
   }
 }

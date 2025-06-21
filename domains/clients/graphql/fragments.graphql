@@ -5,59 +5,37 @@
 fragment ClientBasicInfo on clients {
   id
   name
-  status
-  created_at
-  updated_at
 }
 
 fragment ClientWithContact on clients {
   ...ClientBasicInfo
-  contact_name
-  contact_email
-  contact_phone
-  address
-  city
-  state
-  postal_code
-  country
+  contactEmail
+  contactPhone
 }
 
 fragment ClientForBilling on clients {
   id
   name
-  status
-  billing_contact_name: contact_name
-  billing_contact_email: contact_email
-  address
-  city
-  state
-  postal_code
-  country
+  billing_contactPerson: contactPerson
+  billing_contact_email: contactEmail
 }
 
 fragment ClientForAudit on clients {
   id
   name
-  status
-  created_at
-  updated_at
   # Contact info excluded from audit logs for privacy
 }
 
 fragment ClientWithRelations on clients {
   ...ClientWithContact
+  active
   payrolls {
     id
     name
-    status
   }
-  notes: notes_by_client {
-    ...NoteBasicInfo
-  }
-  external_systems {
+  notes: externalSystems {
     id
-    system_name
-    system_type
-    is_active
+    id
+    system_id
   }
 }

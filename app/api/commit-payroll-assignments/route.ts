@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuth } from "@/lib/api-auth";
-import { validateCronRequest } from "@/lib/api-auth";
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
+import { withAuth } from "@/lib/auth/api-auth";
+import { validateCronRequest } from "@/lib/auth/api-auth";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 
 interface PayrollAssignmentInput {
   payrollId: string;
@@ -21,15 +21,19 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     console.log("🔧 Commit payroll assignments webhook called");
 
     // Log critical payroll operation
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
-      message: "Payroll assignment commit operation initiated",
       userId: session.userId,
       userRole: session.role,
-      entityType: "payroll_assignments"
-    }, request);
+      resourceType: "payroll_assignments",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
+      metadata: { message: "Payroll assignment commit operation initiated" }
+    });
 
     // Extract the request body
     const body = await request.json();
@@ -86,18 +90,26 @@ export const POST = withAuth(async (request: NextRequest, session) => {
   } catch (error) {
     console.error("❌ Action handler error:", error);
     
-    await soc2Logger.log({
+    const errorClientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.ERROR,
       category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
-      message: "Payroll assignment commit operation failed",
       userId: session.userId,
       userRole: session.role,
-      errorDetails: {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
+      resourceType: "payroll_assignments",
+      success: false,
+      errorMessage: error instanceof Error ? error.message : String(error),
+      ipAddress: errorClientInfo.ipAddress || "unknown",
+      userAgent: errorClientInfo.userAgent || "unknown",
+      metadata: { 
+        message: "Payroll assignment commit operation failed",
+        errorDetails: {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined
+        }
       }
-    }, request);
+    });
     
     return NextResponse.json(
       {

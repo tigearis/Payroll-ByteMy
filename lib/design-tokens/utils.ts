@@ -3,17 +3,11 @@
  * Helper functions for using design tokens in components
  */
 
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
 import { tokens } from './tokens';
+import { cn } from '@/lib/utils';
 
-/**
- * Merge class names with Tailwind CSS
- */
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+// Re-export cn for convenience
+export { cn };
 
 /**
  * Get a colour value from the design tokens
@@ -132,7 +126,7 @@ export function focusRing(colour: string = 'primary'): string {
  */
 export function transition(
   properties: string[] = ['all'],
-  duration: keyof typeof tokens.transitions.duration = '200',
+  duration: keyof typeof tokens.transitions.duration = 200,
   timing: keyof typeof tokens.transitions.timing = 'inOut'
 ): string {
   const transitionProps = properties.join(', ');

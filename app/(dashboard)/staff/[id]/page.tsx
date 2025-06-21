@@ -42,7 +42,7 @@ export default function UserInfoPage() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
-  const { isAdmin, isManager, isDeveloper, isConsultant } = useUserRole();
+  const { hasAdminAccess, isManager, isDeveloper, isConsultant } = useUserRole();
   const { loading, error, data } = useQuery(GET_STAFF_BY_ID, {
     variables: { id },
     skip: !id, // Skip query if id is not available
@@ -55,7 +55,7 @@ export default function UserInfoPage() {
   const user = data.users.find((u: UserDetails) => u.id === id);
   if (!user) {return <p>User not found.</p>;}
 
-  const canEditLeave = isAdmin || isManager || isDeveloper || isConsultant;
+  const canEditLeave = hasAdminAccess || isManager || isDeveloper || isConsultant;
 
   return (
     <div className="max-w-3xl mx-auto mt-10">

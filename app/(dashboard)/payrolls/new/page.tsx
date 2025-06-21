@@ -748,10 +748,12 @@ export default function NewPayrollPage() {
       };
 
       const result = await createPayroll({
-        variables: mutationVariables,
+        variables: {
+          object: mutationVariables,
+        },
       });
 
-      const newPayrollId = result.data?.insert_payrolls_one?.id;
+      const newPayrollId = result.data?.insertPayroll?.id;
 
       if (newPayrollId) {
         // Show success message for payroll creation

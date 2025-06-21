@@ -34,19 +34,30 @@
       "@/graphql/*": ["./graphql/*"],
       "@/domains/*": ["./domains/*"],
       "@/config/*": ["./config/*"],
-      "@/shared/*": ["./shared/*"]
+      "@/shared/*": ["./shared/*"],
+      "@/scripts/*": ["./scripts/*"],
+      "@/database/*": ["./database/*"],
+      "@/hasura/*": ["./hasura/*"],
+      "@/tests/*": ["./tests/*"]
     },
     "baseUrl": "."
   },
   "include": [
-    "next-env.d.ts", 
-    "**/*.ts", 
-    "**/*.tsx", 
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
     ".next/types/**/*.ts",
     "app/**/*",
     "components/**/*",
     "lib/**/*",
-    "domains/**/*"
+    "domains/**/*",
+    "hooks/**/*",
+    "types/**/*",
+    "shared/**/*",
+    "config/**/*",
+    "scripts/**/*",
+    "tests/**/*",
+    "database/**/*"
   ],
   "exclude": ["node_modules", "backups/**/*", "_backup_delete/**/*"]
 }

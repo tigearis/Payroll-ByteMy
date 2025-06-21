@@ -2,7 +2,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc2-logger";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "./audit/logger";
 
 import { securityConfig } from "./config";
 import { SecureErrorHandler } from "./error-responses";
@@ -93,18 +93,24 @@ export async function validateMFARequirement(
 
     if (!mfaVerified) {
       // Log MFA requirement
-      await soc2Logger.log({
+      const clientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
         level: LogLevel.WARNING,
         category: LogCategory.SECURITY_EVENT,
         eventType: SOC2EventType.MFA_CHALLENGE,
-        message: "MFA required but not verified",
         userId,
         userRole,
+        resourceType: "mfa",
+        action: "CHALLENGE",
+        success: false,
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           route: pathname,
           reason: "admin_role_or_sensitive_route"
-        }
-      }, request);
+        },
+        complianceNote: "MFA required but not verified"
+      });
 
       return {
         isValid: false,
@@ -124,17 +130,23 @@ export async function validateMFARequirement(
     }
 
     // Log successful MFA verification
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.INFO,
       category: LogCategory.AUTHENTICATION,
       eventType: SOC2EventType.MFA_SUCCESS,
-      message: "MFA verification successful",
       userId,
       userRole,
+      resourceType: "mfa",
+      action: "VERIFICATION",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
       metadata: {
         route: pathname
-      }
-    }, request);
+      },
+      complianceNote: "MFA verification successful"
+    });
 
     return {
       isValid: true,

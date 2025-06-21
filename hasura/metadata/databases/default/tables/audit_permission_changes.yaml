@@ -1,11 +1,51 @@
 table:
   name: permission_changes
   schema: audit
+configuration:
+  column_config:
+    approved_by_user_id:
+      custom_name: approvedByUserId
+    changed_at:
+      custom_name: changedAt
+    changed_by_user_id:
+      custom_name: changedByUserId
+    change_type:
+      custom_name: changeType
+    new_permissions:
+      custom_name: newPermissions
+    old_permissions:
+      custom_name: oldPermissions
+    permission_type:
+      custom_name: permissionType
+    target_role_id:
+      custom_name: targetRoleId
+    target_user_id:
+      custom_name: targetUserId
+  custom_column_names:
+    approved_by_user_id: approvedByUserId
+    changed_at: changedAt
+    changed_by_user_id: changedByUserId
+    change_type: changeType
+    new_permissions: newPermissions
+    old_permissions: oldPermissions
+    permission_type: permissionType
+    target_role_id: targetRoleId
+    target_user_id: targetUserId
+  custom_root_fields:
+    delete: deletePermissionChanges
+    delete_by_pk: deletePermissionChange
+    insert: insertPermissionChanges
+    insert_one: insertPermissionChange
+    select: permissionChanges
+    select_aggregate: permissionChangesAggregate
+    select_by_pk: permissionChange
+    update: updatePermissionChanges
+    update_by_pk: updatePermissionChange
 insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: '*'
+      columns: "*"
     comment: Developer role has full insert access
   - role: org_admin
     permission:
@@ -24,7 +64,7 @@ insert_permissions:
 select_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -47,7 +87,7 @@ select_permissions:
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

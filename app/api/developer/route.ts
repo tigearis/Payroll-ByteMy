@@ -4,7 +4,7 @@ import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 
 // SECURITY: Check if in production and return 404
 const isProduction = process.env.NODE_ENV === 'production';

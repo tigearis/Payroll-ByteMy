@@ -1,6 +1,28 @@
 table:
   name: permissions
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    resource_id:
+      custom_name: resourceId
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    resource_id: resourceId
+    updated_at: updatedAt
+  custom_root_fields:
+    delete: deletePermissions
+    delete_by_pk: deletePermission
+    insert: insertPermissions
+    insert_one: insertPermission
+    select: permissions
+    select_aggregate: permissionsAggregate
+    select_by_pk: permission
+    update: updatePermissions
+    update_by_pk: updatePermission
 object_relationships:
   - name: resource
     using:

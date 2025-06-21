@@ -9,9 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UrgentAlerts } from "@/components/urgent-alerts";
 import {
-  GET_DASHBOARD_STATS,
-  GET_UPCOMING_PAYROLLS,
-} from "@/shared";
+  GetDashboardStatsDocument,
+  GetUpcomingPayrollsDocument,
+} from "@/shared/types/generated/graphql";
 
 interface DashboardStatsData {
   clients_aggregate: { aggregate: { count: number } };
@@ -46,11 +46,11 @@ export default function DashboardPage() {
     data: statsData,
     loading: statsLoading,
     error: statsError,
-  } = useQuery<DashboardStatsData>(GET_DASHBOARD_STATS, { errorPolicy: "all" });
+  } = useQuery<DashboardStatsData>(GetDashboardStatsDocument, { errorPolicy: "all" });
 
   // Fetch upcoming payrolls for the count and next payroll date
   const { data: upcomingData, loading: upcomingLoading } =
-    useQuery<UpcomingPayrollsData>(GET_UPCOMING_PAYROLLS, {
+    useQuery<UpcomingPayrollsData>(GetUpcomingPayrollsDocument, {
       variables: { from_date: today, limit: 1 },
       errorPolicy: "all",
     });

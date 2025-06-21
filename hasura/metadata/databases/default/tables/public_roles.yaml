@@ -1,15 +1,40 @@
 table:
   name: roles
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    display_name:
+      custom_name: displayName
+    is_system_role:
+      custom_name: isSystemRole
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    display_name: displayName
+    is_system_role: isSystemRole
+    updated_at: updatedAt
+  custom_root_fields:
+    delete: deleteRoles
+    delete_by_pk: deleteRole
+    insert: insertRoles
+    insert_one: insertRole
+    select: roles
+    select_aggregate: rolesAggregate
+    select_by_pk: role
+    update: updateRoles
+    update_by_pk: updateRole
 array_relationships:
-  - name: role_permissions
+  - name: rolePermissions
     using:
       foreign_key_constraint_on:
         column: role_id
         table:
           name: role_permissions
           schema: public
-  - name: user_roles
+  - name: userRoles
     using:
       foreign_key_constraint_on:
         column: role_id
@@ -20,7 +45,7 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: '*'
+      columns: "*"
     comment: Developer role has full insert access
 select_permissions:
   - role: consultant
@@ -36,7 +61,7 @@ select_permissions:
     comment: Consultants can view available roles
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -75,7 +100,7 @@ select_permissions:
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

@@ -139,8 +139,8 @@ function handlePermissionError(graphQLError: any, originalError: ApolloError): G
     message,
     userMessage,
     originalError,
-    currentRole,
-    requiredRole,
+    ...(currentRole && { currentRole }),
+    ...(requiredRole && { requiredRole }),
     suggestions
   };
 }

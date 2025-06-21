@@ -1,272 +1,50 @@
 # Payroll Mutations
 
-mutation CreatePayroll(
-  $name: String!
-  $clientId: uuid!
-  $cycleId: uuid!
-  $dateTypeId: uuid!
-  $dateValue: Int
-  $primaryConsultantId: uuid!
-  $backupConsultantId: uuid
-  $managerId: uuid!
-  $processingDaysBeforeEft: Int!
-  $payrollSystem: String
-  $employeeCount: Int
-) {
-  insert_payrolls_one(
-    object: {
-      name: $name
-      client_id: $clientId
-      cycle_id: $cycleId
-      date_type_id: $dateTypeId
-      date_value: $dateValue
-      primary_consultant_user_id: $primaryConsultantId
-      backup_consultant_user_id: $backupConsultantId
-      manager_user_id: $managerId
-      processing_days_before_eft: $processingDaysBeforeEft
-      payroll_system: $payrollSystem
-      employee_count: $employeeCount
-      status: "Implementation"
-      version_number: 1
-    }
-  ) {
-    ...PayrollWithRelations
-  }
-}
-
-mutation UpdatePayroll(
-  $id: uuid!
-  $name: String
-  $cycleId: uuid
-  $dateTypeId: uuid
-  $dateValue: Int
-  $primaryConsultantId: uuid
-  $backupConsultantId: uuid
-  $managerId: uuid
-  $processingDaysBeforeEft: Int
-  $payrollSystem: String
-  $employeeCount: Int
-  $status: payroll_status
-) {
-  update_payrolls_by_pk(
-    pk_columns: { id: $id }
-    _set: {
-      name: $name
-      cycle_id: $cycleId
-      date_type_id: $dateTypeId
-      date_value: $dateValue
-      primary_consultant_user_id: $primaryConsultantId
-      backup_consultant_user_id: $backupConsultantId
-      manager_user_id: $managerId
-      processing_days_before_eft: $processingDaysBeforeEft
-      payroll_system: $payrollSystem
-      employee_count: $employeeCount
-      status: $status
-      updated_at: "now()"
-    }
-  ) {
-    ...PayrollWithRelations
-  }
-}
-
-mutation UpdatePayrollStatus($id: uuid!, $status: payroll_status!) {
-  update_payrolls_by_pk(
-    pk_columns: { id: $id }
-    _set: { status: $status, updated_at: "now()" }
-  ) {
+mutation CreatePayroll($object: payrolls_insert_input!) {
+  insertPayroll(object: $object) {
     id
-    status
-    updated_at
+    name
+    clientId
+    cycleId
+    dateTypeId
+    primaryConsultantUserId
+    employeeCount
   }
 }
 
-mutation CreatePayrollVersion(
-  $parentId: uuid!
-  $name: String!
-  $clientId: uuid!
-  $cycleId: uuid!
-  $dateTypeId: uuid!
-  $dateValue: Int
-  $primaryConsultantId: uuid!
-  $backupConsultantId: uuid
-  $managerId: uuid!
-  $processingDaysBeforeEft: Int!
-  $payrollSystem: String
-  $employeeCount: Int
-  $status: payroll_status!
-  $versionNumber: Int!
-  $goLiveDate: date
-  $versionReason: String!
-  $createdByUserId: uuid!
-) {
-  update_payrolls_by_pk(
-    pk_columns: { id: $parentId }
-    _set: { superseded_date: "now()" }
-  ) {
+mutation UpdatePayroll($id: uuid!, $set: payrolls_set_input!) {
+  updatePayroll(pk_columns: { id: $id }, _set: $set) {
     id
-  }
-  insert_payrolls_one(
-    object: {
-      parent_payroll_id: $parentId
-      name: $name
-      client_id: $clientId
-      cycle_id: $cycleId
-      date_type_id: $dateTypeId
-      date_value: $dateValue
-      primary_consultant_user_id: $primaryConsultantId
-      backup_consultant_user_id: $backupConsultantId
-      manager_user_id: $managerId
-      processing_days_before_eft: $processingDaysBeforeEft
-      payroll_system: $payrollSystem
-      employee_count: $employeeCount
-      status: $status
-      version_number: $versionNumber
-      go_live_date: $goLiveDate
-      version_reason: $versionReason
-      created_by_user_id: $createdByUserId
-    }
-  ) {
-    ...PayrollWithRelations
+    name
+    clientId
+    cycleId
+    dateTypeId
+    primaryConsultantUserId
+    employeeCount
   }
 }
 
 mutation DeletePayroll($id: uuid!) {
-  delete_payrolls_by_pk(id: $id) {
-    id
-  }
-}
-
-mutation GeneratePayrollDates(
-  $payrollId: uuid!
-  $startDate: date!
-  $endDate: date!
-) {
-  generate_payroll_dates(
-    p_payroll_id: $payrollId
-    p_start_date: $startDate
-    p_end_date: $endDate
-  ) {
-    success
-    message
-    generated_count
-  }
-}
-
-# Extracted from inline GraphQL operations
-mutation GeneratePayrollDatesExtracted($payrollId: uuid!, $startDate: date!, $endDate: date!) {
-  generate_payroll_dates(
-    p_payroll_id: $payrollId, 
-    p_start_date: $startDate, 
-    p_end_date: $endDate
-  ) {
-    id
-    original_eft_date
-    adjusted_eft_date
-    processing_date
-  }
-}
-
-mutation CreatePayrollExtracted(
-  $name: String!
-  $clientId: uuid!
-  $cycleId: uuid!
-  $primaryConsultantId: uuid!
-  $managerId: uuid!
-  $processingDaysBeforeEft: Int!
-) {
-  insert_payrolls_one(
-    object: {
-      name: $name
-      client_id: $clientId
-      cycle_id: $cycleId
-      primary_consultant_user_id: $primaryConsultantId
-      manager_user_id: $managerId
-      processing_days_before_eft: $processingDaysBeforeEft
-      status: "implementation"
-      version_number: 1
-    }
-  ) {
+  deletePayroll(id: $id) {
     id
     name
-    status
-    version_number
-    created_at
   }
 }
 
-mutation UpdatePayrollExtracted($id: uuid!, $name: String, $notes: String) {
-  update_payrolls_by_pk(
-    pk_columns: { id: $id }, 
-    _set: { 
-      name: $name,
-      notes: $notes,
-      updated_at: "now()"
-    }
-  ) {
+mutation UpdatePayrollStatus($id: uuid!, $status: payroll_status!) {
+  updatePayroll(pk_columns: { id: $id }, _set: { status: $status }) {
     id
     name
+  }
+}
+
+mutation UpdatePayrollDateNotes($id: uuid!, $notes: String) {
+  updatePayrollDate(pk_columns: { id: $id }, _set: { notes: $notes }) {
+    id
     notes
-    updated_at
-  }
-}
-
-# Payroll versioning mutations from hooks
-mutation SupersedeCurrentPayroll($payrollId: uuid!) {
-  update_payrolls_by_pk(
-    pk_columns: { id: $payrollId }
-    _set: { superseded_date: "now()" }
-  ) {
-    id
-    superseded_date
-  }
-}
-
-mutation InsertNewPayrollVersion(
-  $parentPayrollId: uuid!
-  $name: String!
-  $clientId: uuid!
-  $cycleId: uuid!
-  $primaryConsultantId: uuid!
-  $managerId: uuid!
-  $processingDaysBeforeEft: Int!
-  $versionNumber: Int!
-  $status: String!
-  $versionReason: String!
-  $createdByUserId: uuid!
-) {
-  insert_payrolls_one(
-    object: {
-      parent_payroll_id: $parentPayrollId
-      name: $name
-      client_id: $clientId
-      cycle_id: $cycleId
-      primary_consultant_user_id: $primaryConsultantId
-      manager_user_id: $managerId
-      processing_days_before_eft: $processingDaysBeforeEft
-      version_number: $versionNumber
-      status: $status
-      version_reason: $versionReason
-      created_by_user_id: $createdByUserId
-    }
-  ) {
-    id
-    name
-    version_number
-    status
-    created_at
-  }
-}
-
-mutation UpdatePayrollStatusOnly($payrollId: uuid!, $status: String!) {
-  update_payrolls_by_pk(
-    pk_columns: { id: $payrollId }
-    _set: { 
-      status: $status
-      updated_at: "now()"
-    }
-  ) {
-    id
-    status
-    updated_at
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
   }
 }

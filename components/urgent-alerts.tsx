@@ -9,43 +9,17 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { GET_USER_UPCOMING_PAYROLLS } from "@/graphql/queries/dashboard/getAlerts";
+import { GetUserUpcomingPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { 
+  PayrollDate, 
+  Client, 
+  Consultant, 
+  UserUpcomingPayroll, 
+  UserUpcomingPayrollsData, 
+  StatusVariant 
+} from "@/shared/types/dashboard";
 
-interface PayrollDate {
-  id: string;
-  adjusted_eft_date: string;
-  processing_date: string;
-  original_eft_date: string;
-}
-
-interface Client {
-  id: string;
-  name: string;
-}
-
-interface Consultant {
-  id: string;
-  name: string;
-}
-
-interface UserUpcomingPayroll {
-  id: string;
-  name: string;
-  status: string;
-  client: Client;
-  payroll_dates: PayrollDate[];
-  userByPrimaryConsultantUserId?: Consultant;
-  userByBackupConsultantUserId?: Consultant;
-  userByManagerUserId?: Consultant;
-}
-
-interface UserUpcomingPayrollsData {
-  payrolls: UserUpcomingPayroll[];
-}
-
-function getStatusVariant(
-  status: string
-): "default" | "secondary" | "destructive" | "outline" {
+function getStatusVariant(status: string): StatusVariant {
   switch (status?.toLowerCase()) {
     case "active":
       return "default";
@@ -77,13 +51,13 @@ function getUserRole(
   payroll: UserUpcomingPayroll,
   currentUserId: string
 ): string {
-  if (payroll.userByPrimaryConsultantUserId?.id === currentUserId) {
+  if (payroll.primaryConsultant?.id === currentUserId) {
     return "Primary Consultant";
   }
-  if (payroll.userByBackupConsultantUserId?.id === currentUserId) {
+  if (payroll.backupConsultant?.id === currentUserId) {
     return "Backup Consultant";
   }
-  if (payroll.userByManagerUserId?.id === currentUserId) {
+  if (payroll.manager?.id === currentUserId) {
     return "Manager";
   }
   return "Assigned";
@@ -94,7 +68,7 @@ export function UrgentAlerts() {
   const today = new Date().toISOString().split("T")[0];
 
   const { data, loading, error } = useQuery<UserUpcomingPayrollsData>(
-    GET_USER_UPCOMING_PAYROLLS,
+    GetUserUpcomingPayrollsDocument,
     {
       variables: {
         userId: currentUserId,
@@ -162,11 +136,11 @@ export function UrgentAlerts() {
   return (
     <div className="space-y-4">
       {payrolls.map((payroll) => {
-        const nextDate = payroll.payroll_dates?.[0];
+        const nextDate = payroll.payrollDates?.[0];
         const userRole = getUserRole(payroll, currentUserId);
-        const daysUntil = nextDate?.adjusted_eft_date
+        const daysUntil = nextDate?.adjustedEftDate
           ? Math.ceil(
-              (new Date(nextDate.adjusted_eft_date).getTime() - Date.now()) /
+              (new Date(nextDate.adjustedEftDate).getTime() - Date.now()) /
                 (1000 * 60 * 60 * 24)
             )
           : null;
@@ -195,9 +169,9 @@ export function UrgentAlerts() {
                   <div className="flex items-center justify-between">
                     <span>
                       Due:{" "}
-                      {nextDate?.adjusted_eft_date
+                      {nextDate?.adjustedEftDate
                         ? format(
-                            new Date(nextDate.adjusted_eft_date),
+                            new Date(nextDate.adjustedEftDate),
                             "MMM dd, yyyy"
                           )
                         : "Not scheduled"}
@@ -223,10 +197,10 @@ export function UrgentAlerts() {
 
                   <div className="flex items-center justify-between">
                     <span>Role: {userRole}</span>
-                    {nextDate?.processing_date && (
+                    {nextDate?.processingDate && (
                       <span className="text-xs">
                         Process:{" "}
-                        {format(new Date(nextDate.processing_date), "MMM dd")}
+                        {format(new Date(nextDate.processingDate), "MMM dd")}
                       </span>
                     )}
                   </div>

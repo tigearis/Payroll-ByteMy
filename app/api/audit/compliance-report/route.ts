@@ -2,9 +2,9 @@ import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-import { withAuth } from "@/lib/api-auth";
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { withAuth } from "@/lib/auth/api-auth";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 
 // Input validation schema
 const reportInputSchema = z.object({
@@ -101,15 +101,20 @@ const SECURITY_EVENTS_REPORT = gql`
 export const POST = withAuth(async (request: NextRequest, session) => {
   try {
     // Log compliance report access
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
-      message: "Compliance report generation requested",
       userId: session.userId,
       userRole: session.role,
-      entityType: "compliance_report"
-    }, request);
+      resourceType: "compliance_report",
+      action: "GENERATE",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
+      complianceNote: "Compliance report generation requested"
+    });
 
     // Parse and validate input
     const body = await request.json();
@@ -230,18 +235,24 @@ export const POST = withAuth(async (request: NextRequest, session) => {
   } catch (error: any) {
     console.error("[Compliance Report API] Error generating report:", error);
     
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.ERROR,
       category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
-      message: "Compliance report generation failed",
       userId: session.userId,
       userRole: session.role,
-      errorDetails: {
-        message: error.message,
-        stack: error.stack
-      }
-    }, request);
+      resourceType: "compliance_report",
+      action: "GENERATE",
+      success: false,
+      errorMessage: error.message,
+      metadata: {
+        errorStack: error.stack
+      },
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
+      complianceNote: "Compliance report generation failed"
+    });
     
     return NextResponse.json(
       {

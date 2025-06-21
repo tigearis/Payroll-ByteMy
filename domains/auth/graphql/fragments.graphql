@@ -1,0 +1,83 @@
+# Auth Domain Fragments
+
+fragment UserCore on users {
+  id
+  name
+  email
+  isActive
+  isStaff
+  role
+  clerkUserId
+  createdAt
+  updatedAt
+}
+
+fragment RoleCore on roles {
+  id
+  name
+  displayName
+  description
+  priority
+  isSystemRole
+  createdAt
+  updatedAt
+}
+
+fragment PermissionCore on permissions {
+  id
+  resourceId
+  action
+  description
+  legacy_permission_name
+  createdAt
+  updatedAt
+}
+
+fragment ResourceCore on resources {
+  id
+  name
+  displayName
+  description
+  createdAt
+  updatedAt
+}
+
+fragment UserRoleCore on user_roles {
+  id
+  userId
+  roleId
+  createdAt
+  updatedAt
+}
+
+fragment AuthUserRoleWithDetails on user_roles {
+  ...UserRoleCore
+  user {
+    ...UserCore
+  }
+  role {
+    ...RoleCore
+  }
+}
+
+fragment RolePermissionCore on role_permissions {
+  id
+  roleId
+  permissionId
+  conditions
+  createdAt
+  updatedAt
+}
+
+fragment PermissionOverrideCore on permission_overrides {
+  id
+  userId
+  resource
+  operation
+  granted
+  conditions
+  expiresAt
+  createdBy
+  createdAt
+  updatedAt
+}

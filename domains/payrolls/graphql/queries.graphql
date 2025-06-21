@@ -2,57 +2,129 @@
 
 query GetPayrolls {
   payrolls(
-    where: { superseded_date: { _is_null: true } }
-    order_by: { updated_at: desc }
+    where: { supersededDate: { _is_null: true } }
+    order_by: { updatedAt: desc }
   ) {
-    ...PayrollWithDates
+    id
+    name
+    clientId
+    cycleId
+    dateTypeId
+    primaryConsultantUserId
+    backupConsultantUserId
+    managerUserId
+    employeeCount
+    goLiveDate
+    status
+    client {
+      id
+      name
+    }
+    payrollCycle {
+      id
+      name
+    }
+    payrollDateType {
+      id
+      name
+    }
+    primaryConsultant {
+      id
+      name
+    }
+    backupConsultant {
+      id
+      name
+    }
+    manager {
+      id
+      name
+    }
+    payrollDates(order_by: { adjustedEftDate: asc }) {
+      id
+      originalEftDate
+      adjustedEftDate
+      processingDate
+    }
   }
 }
 
 query GetPayrollsFallback {
   payrolls {
     id
-    name
-    status
+    id
   }
 }
 
 query GetPayrollById($id: uuid!) {
-  payrolls_by_pk(id: $id) {
-    ...PayrollWithDates
+  payroll(id: $id) {
+    id
+    id
+    clientId
+    cycleId
+    dateTypeId
+    primaryConsultantUserId
+    backupConsultantUserId
+    managerUserId
+    employeeCount
+    goLiveDate
+    client {
+      id
+      id
+    }
+    payrollCycle {
+      id
+      id
+      id
+    }
+    payrollDateType {
+      id
+      id
+    }
+    payrollDates(order_by: { adjustedEftDate: asc }) {
+      id
+      originalEftDate
+      adjustedEftDate
+      processingDate
+    }
   }
 }
 
 query GetPayrollsByClient($clientId: uuid!) {
   payrolls(
-    where: {
-      client_id: { _eq: $clientId }
-      superseded_date: { _is_null: true }
-    }
-    order_by: { updated_at: desc }
+    where: { clientId: { _eq: $clientId }, supersededDate: { _is_null: true } }
+    order_by: { updatedAt: desc }
   ) {
-    ...PayrollWithDates
+    id
+    id
+    clientId
+    employeeCount
+    goLiveDate
   }
 }
 
 query GetPayrollsByMonth($startDate: date!, $endDate: date!) {
   payrolls(
     where: {
-      superseded_date: { _is_null: true }
-      payroll_dates: { adjusted_eft_date: { _gte: $startDate, _lte: $endDate } }
+      supersededDate: { _is_null: true }
+      payrollDates: { adjustedEftDate: { _gte: $startDate, _lte: $endDate } }
     }
-    order_by: { updated_at: desc }
+    order_by: { updatedAt: desc }
   ) {
     ...PayrollWithDates
   }
 }
 
 query GetPayrollDates($payrollId: uuid!) {
-  payroll_dates(
-    where: { payroll_id: { _eq: $payrollId } }
-    order_by: { adjusted_eft_date: asc }
+  payrollDates(
+    where: { payrollId: { _eq: $payrollId } }
+    order_by: { adjustedEftDate: asc }
   ) {
-    ...PayrollDate
+    id
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
   }
 }
 
@@ -61,14 +133,14 @@ query GetPayrollFamilyDates($payrollId: uuid!) {
     where: {
       _or: [
         { id: { _eq: $payrollId } }
-        { parent_payroll_id: { _eq: $payrollId } }
+        { parentPayrollId: { _eq: $payrollId } }
       ]
     }
-    order_by: { version_number: asc }
+    order_by: { versionNumber: asc }
   ) {
     id
-    version_number
-    payroll_dates(order_by: { adjusted_eft_date: asc }) {
+    versionNumber
+    payrollDates(order_by: { adjustedEftDate: asc }) {
       ...PayrollDate
     }
   }
@@ -76,12 +148,19 @@ query GetPayrollFamilyDates($payrollId: uuid!) {
 
 query GetPayrollsMissingDates {
   payrolls(
-    where: { superseded_date: { _is_null: true }, _not: { payroll_dates: {} } }
+    where: { supersededDate: { _is_null: true } }
   ) {
     id
     name
+    status
     client {
+      id
       name
+    }
+    payrollDates_aggregate {
+      aggregate {
+        count
+      }
     }
   }
 }
@@ -89,27 +168,22 @@ query GetPayrollsMissingDates {
 query GetPayrollsSimple {
   payrolls {
     id
-    name
-    status
-    updated_at
+    id
     client {
       id
-      name
+      id
     }
   }
 }
 
 query CheckPayrollVersion($id: uuid!) {
-  payrolls_by_pk(id: $id) {
+  payroll(id: $id) {
     id
-    superseded_date
-    version_number
+    supersededDate
+    versionNumber
   }
   latest: payrolls(
-    where: {
-      parent_payroll_id: { _eq: $id }
-      superseded_date: { _is_null: true }
-    }
+    where: { parentPayrollId: { _eq: $id }, supersededDate: { _is_null: true } }
     limit: 1
   ) {
     id
@@ -118,15 +192,15 @@ query CheckPayrollVersion($id: uuid!) {
 
 # Extracted from inline GraphQL operations
 query GetPayrollDatesById($id: uuid!) {
-  payroll_dates(
-    where: { payroll_id: { _eq: $id } },
-    order_by: { adjusted_eft_date: asc }
+  payrollDates(
+    where: { payrollId: { _eq: $id } }
+    order_by: { adjustedEftDate: asc }
   ) {
     id
-    original_eft_date
-    adjusted_eft_date
-    processing_date
-    notes
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    id
   }
 }
 
@@ -134,20 +208,18 @@ query GetPayrollVersionHistory($payrollId: uuid!) {
   payrolls(
     where: {
       _or: [
-        { id: { _eq: $payrollId } },
-        { parent_payroll_id: { _eq: $payrollId } }
+        { id: { _eq: $payrollId } }
+        { parentPayrollId: { _eq: $payrollId } }
       ]
     }
-    order_by: { version_number: desc }
+    order_by: { versionNumber: desc }
   ) {
     id
-    name
-    version_number
-    status
-    created_at
-    superseded_date
-    go_live_date
-    notes
+    id
+    versionNumber
+    supersededDate
+    goLiveDate
+    id
   }
 }
 
@@ -155,30 +227,93 @@ query GetLatestPayrollVersion($payrollId: uuid!) {
   payrolls(
     where: {
       _or: [
-        { id: { _eq: $payrollId } },
-        { parent_payroll_id: { _eq: $payrollId } }
-      ],
-      superseded_date: { _is_null: true }
+        { id: { _eq: $payrollId } }
+        { parentPayrollId: { _eq: $payrollId } }
+      ]
+      supersededDate: { _is_null: true }
     }
     limit: 1
   ) {
     id
-    name
-    version_number
-    status
-    parent_payroll_id
+    id
+    versionNumber
+    parentPayrollId
   }
 }
 
-query GeneratePayrollDatesTwoYears($startDate: date!, $endDate: date!) {
-  generate_payroll_dates_two_years(
-    args: { 
-      start_date: $startDate,
-      end_date: $endDate 
+query GeneratePayrollDates(
+  $payrollId: uuid!
+  $startDate: date
+  $endDate: date
+  $maxDates: Int
+) {
+  generatePayrollDates(
+    args: {
+      p_payroll_id: $payrollId
+      p_start_date: $startDate
+      p_end_date: $endDate
+      p_max_dates: $maxDates
     }
   ) {
-    original_eft_date
-    adjusted_eft_date
-    processing_date
+    id
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+  }
+}
+
+query GetUserUpcomingPayrolls(
+  $userId: uuid!
+  $from_date: date!
+  $limit: Int = 10
+) {
+  payrolls(
+    where: {
+      _and: [
+        { supersededDate: { _is_null: true } }
+        {
+          _or: [
+            { primaryConsultantUserId: { _eq: $userId } }
+            { backupConsultantUserId: { _eq: $userId } }
+            { managerUserId: { _eq: $userId } }
+          ]
+        }
+        { payrollDates: { adjustedEftDate: { _gte: $from_date } } }
+      ]
+    }
+    order_by: { payrollDates_aggregate: { min: { adjustedEftDate: asc } } }
+    limit: $limit
+  ) {
+    id
+    name
+    status
+    client {
+      id
+      name
+    }
+    payrollDates(
+      where: { adjustedEftDate: { _gte: $from_date } }
+      order_by: { adjustedEftDate: asc }
+      limit: 3
+    ) {
+      id
+      adjustedEftDate
+      processingDate
+      originalEftDate
+    }
+    primaryConsultant {
+      id
+      name
+    }
+    backupConsultant {
+      id
+      name
+    }
+    manager {
+      id
+      name
+    }
   }
 }

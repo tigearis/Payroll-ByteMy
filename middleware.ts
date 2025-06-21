@@ -5,7 +5,7 @@ import {
   AuditAction,
   DataClassification,
   auditLogger,
-} from "./lib/audit/audit-logger";
+} from "./lib/security/audit/logger";
 
 // ================================
 // ROUTE MATCHERS
@@ -38,7 +38,7 @@ export default clerkMiddleware(async (auth, req) => {
 
     if (shouldLog) {
       try {
-        await auditLogger.log({
+        await auditLogger.logAuditEvent({
           userId: authResult.userId,
           userRole: authResult.sessionClaims?.metadata?.role || "unknown",
           action: AuditAction.READ,

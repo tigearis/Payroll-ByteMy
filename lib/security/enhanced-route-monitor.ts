@@ -1,7 +1,7 @@
 // lib/security/enhanced-route-monitor.ts - Advanced route monitoring and analytics
 import { NextRequest } from "next/server";
 
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc2-logger";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "./audit/logger";
 
 interface RouteMetrics {
   totalRequests: number;
@@ -89,22 +89,25 @@ class EnhancedRouteMonitor {
 
     // Log significant events
     if (this.isSignificantRoute(route)) {
-      await soc2Logger.log({
+      const clientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
         level: success ? LogLevel.INFO : LogLevel.WARNING,
         category: LogCategory.SYSTEM_ACCESS,
         eventType: SOC2EventType.DATA_VIEWED,
-        message: `Route accessed: ${route}`,
-        userId,
+        userId: userId || "",
+        resourceType: "route",
+        action: "ACCESS",
+        success,
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           route,
           method: request.method,
           duration,
-          success,
-          ipAddress,
-          userAgent: request.headers.get('user-agent'),
           dataSize: responseData ? JSON.stringify(responseData).length : 0
-        }
-      }, request);
+        },
+        complianceNote: `Route accessed: ${route}`
+      });
     }
   }
 
@@ -125,21 +128,26 @@ class EnhancedRouteMonitor {
     }
 
     // Log auth events
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: eventType === 'auth_failure' ? LogLevel.WARNING : LogLevel.INFO,
       category: LogCategory.AUTHENTICATION,
       eventType: eventType === 'login' ? SOC2EventType.LOGIN_SUCCESS : 
                  eventType === 'logout' ? SOC2EventType.LOGOUT :
                  eventType === 'auth_failure' ? SOC2EventType.LOGIN_FAILURE :
                  SOC2EventType.LOGIN_SUCCESS,
-      message: `Authentication event: ${eventType}`,
-      userId,
+      userId: userId || "",
+      resourceType: "authentication",
+      action: eventType.toUpperCase(),
+      success: eventType !== 'auth_failure',
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
       metadata: {
         ...metadata,
-        ipAddress,
         timestamp: Date.now()
-      }
-    }, request);
+      },
+      complianceNote: `Authentication event: ${eventType}`
+    });
   }
 
   /**
@@ -276,14 +284,20 @@ class EnhancedRouteMonitor {
 
     this.alerts.push(alert);
     
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.WARNING,
       category: LogCategory.SECURITY_EVENT,
       eventType: SOC2EventType.RATE_LIMIT_EXCEEDED,
-      message: `Rate limit exceeded for route: ${route}`,
       userId,
-      metadata: alert.details
-    }, request);
+      resourceType: "route",
+      action: "RATE_LIMIT_EXCEEDED",
+      success: false,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
+      metadata: alert.details,
+      complianceNote: `Rate limit exceeded for route: ${route}`
+    });
   }
 
   private async checkSuspiciousPatterns(
@@ -359,7 +373,7 @@ class EnhancedRouteMonitor {
       type,
       severity,
       route: route || 'unknown',
-      userId,
+      userId: userId || "",
       ipAddress: ipAddress || 'unknown',
       timestamp: Date.now(),
       details
@@ -372,20 +386,26 @@ class EnhancedRouteMonitor {
     this.alerts = this.alerts.filter(a => a.timestamp > oneDayAgo);
 
     if (request) {
-      await soc2Logger.log({
+      const clientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
         level: severity === 'critical' ? LogLevel.CRITICAL : 
                severity === 'high' ? LogLevel.ERROR :
                severity === 'medium' ? LogLevel.WARNING : LogLevel.INFO,
         category: LogCategory.SECURITY_EVENT,
         eventType: SOC2EventType.SUSPICIOUS_ACTIVITY,
-        message: `Security alert: ${type}`,
-        userId,
+        userId: userId || "",
+        resourceType: "security_alert",
+        action: "ALERT_GENERATED",
+        success: false,
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           alertId: alert.id,
           severity,
           details
-        }
-      }, request);
+        },
+        complianceNote: `Security alert: ${type}`
+      });
     }
   }
 

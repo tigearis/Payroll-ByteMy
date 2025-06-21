@@ -1,6 +1,28 @@
 table:
   name: resources
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    display_name:
+      custom_name: displayName
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    display_name: displayName
+    updated_at: updatedAt
+  custom_root_fields:
+    delete: deleteResources
+    delete_by_pk: deleteResource
+    insert: insertResources
+    insert_one: insertResource
+    select: resources
+    select_aggregate: resourcesAggregate
+    select_by_pk: resource
+    update: updateResources
+    update_by_pk: updateResource
 array_relationships:
   - name: permissions
     using:
@@ -13,19 +35,19 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: '*'
+      columns: "*"
     comment: Developer role has full insert access
 select_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

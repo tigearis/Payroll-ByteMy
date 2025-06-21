@@ -1,8 +1,7 @@
 // hooks/useEnhancedPermissions.tsx
 import React, { useMemo, useCallback, createContext, useContext } from 'react';
 import { useAuth, useUser } from '@clerk/nextjs';
-import { MetadataUtils, type UserMetadata } from '@/lib/auth/metadata-utils';
-import { ROLE_PERMISSIONS, CustomPermission, Role as UserRole } from "@/types/permissions";
+import { UserMetadata, ROLE_PERMISSIONS, CustomPermission, Role as UserRole } from "@/lib/auth/permissions";
 
 // Context for shared permission cache to avoid redundant checks
 const PermissionCacheContext = createContext<Map<string, boolean>>(new Map());
@@ -20,7 +19,11 @@ export function useEnhancedPermissions() {
 
   // Memoize user role extraction
   const userRole = useMemo(() => {
-    return user ? MetadataUtils.extractUserRole(user) : 'viewer';
+    if (!user) return 'viewer';
+    const role = user.publicMetadata?.role || user.unsafeMetadata?.role;
+    return typeof role === 'string' && ['developer', 'org_admin', 'manager', 'consultant', 'viewer'].includes(role) 
+      ? role as UserRole 
+      : 'viewer';
   }, [user]);
 
   // Cached permission checker with memoization

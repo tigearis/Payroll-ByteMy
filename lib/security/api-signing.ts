@@ -3,7 +3,7 @@ import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 
 import { NextRequest, NextResponse } from "next/server";
 
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc2-logger";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "./audit/logger";
 
 import { SecureErrorHandler } from "./error-responses";
 
@@ -117,18 +117,24 @@ export async function validateSignature(
     const now = Date.now();
     
     if (Math.abs(now - timestampMs) > SIGNING_CONFIG.timestampTolerance) {
-      await soc2Logger.log({
+      const clientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
         level: LogLevel.WARNING,
         category: LogCategory.SECURITY_EVENT,
-        eventType: SOC2EventType.INVALID_INPUT,
-        message: "API request with invalid timestamp",
+        eventType: SOC2EventType.SECURITY_VIOLATION,
+        resourceType: "api_request",
+        action: "TIMESTAMP_VALIDATION",
+        success: false,
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           apiKey,
           timestamp,
           timeDiff: now - timestampMs,
           tolerance: SIGNING_CONFIG.timestampTolerance
-        }
-      }, request);
+        },
+        complianceNote: "API request with invalid timestamp"
+      });
 
       return {
         isValid: false,
@@ -138,17 +144,23 @@ export async function validateSignature(
 
     // Check nonce for replay attacks
     if (nonceStore.has(nonce)) {
-      await soc2Logger.log({
+      const clientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
         level: LogLevel.SECURITY,
         category: LogCategory.SECURITY_EVENT,
         eventType: SOC2EventType.SUSPICIOUS_ACTIVITY,
-        message: "API request replay attack detected",
+        resourceType: "api_request",
+        action: "REPLAY_ATTACK",
+        success: false,
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           apiKey,
           nonce,
           originalTimestamp: nonceStore.get(nonce)
-        }
-      }, request);
+        },
+        complianceNote: "API request replay attack detected"
+      });
 
       return {
         isValid: false,
@@ -159,13 +171,19 @@ export async function validateSignature(
     // Get API secret for the key
     const apiSecret = await getApiSecret(apiKey);
     if (!apiSecret) {
-      await soc2Logger.log({
+      const clientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
         level: LogLevel.WARNING,
         category: LogCategory.SECURITY_EVENT,
-        eventType: SOC2EventType.UNAUTHORIZED_ACCESS,
-        message: "API request with invalid API key",
-        metadata: { apiKey }
-      }, request);
+        eventType: SOC2EventType.UNAUTHORIZED_ACCESS_ATTEMPT,
+        resourceType: "api_key",
+        action: "VALIDATION",
+        success: false,
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
+        metadata: { apiKey },
+        complianceNote: "API request with invalid API key"
+      });
 
       return {
         isValid: false,
@@ -188,19 +206,25 @@ export async function validateSignature(
     if (signatureBuffer.length !== expectedBuffer.length || 
         !timingSafeEqual(signatureBuffer, expectedBuffer)) {
       
-      await soc2Logger.log({
+      const clientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
         level: LogLevel.WARNING,
         category: LogCategory.SECURITY_EVENT,
-        eventType: SOC2EventType.UNAUTHORIZED_ACCESS,
-        message: "API request with invalid signature",
+        eventType: SOC2EventType.UNAUTHORIZED_ACCESS_ATTEMPT,
+        resourceType: "api_signature",
+        action: "VALIDATION",
+        success: false,
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           apiKey,
           method,
           path,
           expectedLength: expectedBuffer.length,
           actualLength: signatureBuffer.length
-        }
-      }, request);
+        },
+        complianceNote: "API request with invalid signature"
+      });
 
       return {
         isValid: false,
@@ -212,17 +236,23 @@ export async function validateSignature(
     nonceStore.set(nonce, now);
 
     // Log successful validation
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.INFO,
       category: LogCategory.AUTHENTICATION,
       eventType: SOC2EventType.LOGIN_SUCCESS,
-      message: "API signature validation successful",
+      resourceType: "api_signature",
+      action: "VALIDATION",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
       metadata: {
         apiKey,
         method,
         path
-      }
-    }, request);
+      },
+      complianceNote: "API signature validation successful"
+    });
 
     return {
       isValid: true,
@@ -345,7 +375,7 @@ export class SignedAPIClient {
     const response = await fetch(`${this.baseUrl}${path}`, {
       method,
       headers,
-      body: bodyString || undefined,
+      ...(bodyString && { body: bodyString }),
     });
 
     if (!response.ok) {

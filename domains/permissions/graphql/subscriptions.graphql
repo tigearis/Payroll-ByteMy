@@ -1,36 +1,35 @@
 # Permissions Domain Subscriptions
 
-subscription SubscribeToRoles {
-  roles(order_by: { priority: asc }) {
+# Subscribe to role changes
+subscription RolesUpdated {
+  roles(order_by: { updatedAt: desc }) {
     ...RoleCore
-    role_permissions_aggregate {
-      aggregate {
-        count
-      }
-    }
   }
 }
 
-subscription SubscribeToUserRoles($user_id: uuid!) {
-  user_roles(where: { user_id: { _eq: $user_id } }) {
+# Subscribe to user role changes
+subscription UserRolesUpdated($userId: uuid!) {
+  userRoles(where: { userId: { _eq: $userId } }) {
     ...UserRoleWithDetails
   }
 }
 
-subscription SubscribeToRolePermissions($role_id: uuid!) {
-  role_permissions(where: { role_id: { _eq: $role_id } }) {
+# Subscribe to role permission changes
+subscription RolePermissionsUpdated($roleId: uuid!) {
+  rolePermissions(where: { roleId: { _eq: $roleId } }) {
     ...RolePermissionWithDetails
   }
 }
 
-subscription SubscribeToFeatureFlags {
-  feature_flags(order_by: { feature_name: asc }) {
-    ...FeatureFlagCore
+# Subscribe to feature flag changes
+subscription PermissionsUpdated {
+  permissions(order_by: { updatedAt: desc }) {
+    ...PermissionWithResource
   }
 }
 
-subscription SubscribeToEnabledFeatures {
-  feature_flags(where: { is_enabled: { _eq: true } }) {
-    ...FeatureFlagCore
+subscription ResourcesUpdated {
+  resources(order_by: { updatedAt: desc }) {
+    ...ResourceCore
   }
 }

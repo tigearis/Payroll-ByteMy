@@ -1,56 +1,37 @@
 # Audit Domain Subscriptions
 
-subscription SubscribeToAuditLogs($entity_type: String, $entity_id: uuid) {
-  audit_log(
-    where: {
-      entity_type: { _eq: $entity_type }
-      entity_id: { _eq: $entity_id }
-    }
-    order_by: { created_at: desc }
-    limit: 10
-  ) {
+# Subscribe to new audit logs
+subscription SubscribeToAuditLogs {
+  auditLogs(order_by: { eventTime: desc }, limit: 1) {
     ...AuditLogWithUser
   }
 }
 
-subscription SubscribeToSecurityEvents($severity: [String!]) {
-  security_event_log(
-    where: {
-      resolved: { _eq: false }
-      severity: { _in: $severity }
-    }
-    order_by: { created_at: desc }
+# Subscribe to failed operations
+subscription SubscribeToFailedOperations {
+  auditLogs(
+    where: { success: { _eq: false } }
+    order_by: { eventTime: desc }
+    limit: 10
   ) {
-    ...SecurityEventLogWithUser
+    ...AuditLogCore
   }
 }
 
+# Subscribe to user audit activity
 subscription SubscribeToUserAuditActivity($user_id: uuid!) {
-  audit_log(
-    where: { user_id: { _eq: $user_id } }
-    order_by: { created_at: desc }
+  auditLogs(
+    where: { userId: { _eq: $user_id } }
+    order_by: { eventTime: desc }
     limit: 20
   ) {
     ...AuditLogCore
   }
 }
 
-subscription SubscribeToComplianceChecks($check_type: String) {
-  compliance_check(
-    where: { check_type: { _eq: $check_type } }
-    order_by: { performed_at: desc }
-    limit: 5
-  ) {
-    ...ComplianceCheckWithUser
-  }
-}
-
-subscription SubscribeToDataExports {
-  data_access_log(
-    where: { export_format: { _is_null: false } }
-    order_by: { accessed_at: desc }
-    limit: 10
-  ) {
-    ...DataAccessLogWithUser
+# Subscribe to data access logs
+subscription SubscribeToDataAccessLogs {
+  dataAccessLogs(order_by: { accessedAt: desc }, limit: 10) {
+    ...DataAccessLogCore
   }
 }

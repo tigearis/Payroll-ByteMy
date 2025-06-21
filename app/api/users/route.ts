@@ -2,10 +2,10 @@ import { gql } from "@apollo/client";
 import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuth } from "@/lib/api-auth";
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
-import { adminApolloClient } from "@/lib/server-apollo-client";
-import { getUserPermissions, canAssignRole, UserRole } from "@/lib/user-sync";
+import { withAuth } from "@/lib/auth/api-auth";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { getUserPermissions, canAssignRole, UserRole } from "@/domains/users/services/user-sync";
 
 // GraphQL query to get users with filtering and pagination
 const GET_USERS_QUERY = gql`
@@ -66,16 +66,23 @@ async function getCurrentUserRole(userId: string): Promise<UserRole | "developer
 // GET /api/users - List users with filtering and pagination
 export const GET = withAuth(async (request: NextRequest, session) => {
   try {
+    // Extract client info once
+    const clientInfo = auditLogger.extractClientInfo(request);
+    
     // Log user access
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.INFO,
       category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
-      message: "User list accessed",
       userId: session.userId,
       userRole: session.role,
-      entityType: "users"
-    }, request);
+      resourceType: "users",
+      action: "LIST",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
+      complianceNote: "User list accessed"
+    });
 
     // Check user permissions using the existing helper
     const permissions = getUserPermissions(session.role as UserRole);
@@ -169,18 +176,21 @@ export const GET = withAuth(async (request: NextRequest, session) => {
   } catch (error) {
     console.error("❌ Error fetching users:", error);
     
-    await soc2Logger.log({
+    const errorClientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.ERROR,
       category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
-      message: "Failed to fetch users",
       userId: session.userId,
       userRole: session.role,
-      errorDetails: {
-        message: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined
-      }
-    }, request);
+      resourceType: "users",
+      action: "LIST",
+      success: false,
+      errorMessage: error instanceof Error ? error.message : "Unknown error",
+      ipAddress: errorClientInfo.ipAddress || "unknown",
+      userAgent: errorClientInfo.userAgent || "unknown",
+      complianceNote: "Failed to fetch users"
+    });
     
     return NextResponse.json(
       {
@@ -197,6 +207,9 @@ export const GET = withAuth(async (request: NextRequest, session) => {
 // POST /api/users - Invite new user (admin/manager only)
 export const POST = withAuth(async (request: NextRequest, session) => {
   try {
+    // Extract client info once
+    const clientInfo = auditLogger.extractClientInfo(request);
+    
     // Check user permissions using the existing helper
     const permissions = getUserPermissions(session.role as UserRole);
 
@@ -236,20 +249,24 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     );
 
     // Log user creation attempt
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-      message: "User invitation initiated",
+      eventType: SOC2EventType.USER_CREATED,
       userId: session.userId,
       userRole: session.role,
-      entityType: "user",
+      resourceType: "user",
+      action: "INVITE_INITIATE",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
       metadata: {
         targetEmail: email,
         targetRole: role,
         invitedBy: session.userId
-      }
-    }, request);
+      },
+      complianceNote: "User invitation initiated"
+    });
 
     // Create user via Clerk
     const client = await clerkClient();
@@ -272,21 +289,25 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     console.log(`✅ User invitation created: ${newUser.id}`);
 
     // Log successful user creation
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-      message: "User invitation created successfully",
+      eventType: SOC2EventType.USER_CREATED,
       userId: session.userId,
       userRole: session.role,
-      entityType: "user",
-      entityId: newUser.id,
+      resourceId: newUser.id,
+      resourceType: "user",
+      action: "INVITE",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
       metadata: {
         targetEmail: email,
         targetRole: role,
         invitedBy: session.userId
-      }
-    }, request);
+      },
+      complianceNote: "User invitation created successfully"
+    });
 
     return NextResponse.json({
       success: true,
@@ -303,18 +324,21 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     console.error("❌ Error creating user:", error);
 
     // Log failed user creation
-    await soc2Logger.log({
+    const inviteErrorClientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.ERROR,
       category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-      message: "User invitation failed",
+      eventType: SOC2EventType.USER_CREATED,
       userId: session.userId,
       userRole: session.role,
-      errorDetails: {
-        message: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined
-      }
-    }, request);
+      resourceType: "user",
+      action: "INVITE",
+      success: false,
+      errorMessage: error instanceof Error ? error.message : "Unknown error",
+      ipAddress: inviteErrorClientInfo.ipAddress || "unknown",
+      userAgent: inviteErrorClientInfo.userAgent || "unknown",
+      complianceNote: "User invitation failed"
+    });
 
     // Handle specific Clerk errors
     if (error instanceof Error && error.message.includes("already exists")) {

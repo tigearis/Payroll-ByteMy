@@ -4,7 +4,7 @@ import * as React from "react";
 import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 // Import lucide-react icons with explicit typing
@@ -45,9 +45,9 @@ import {
   isWeekend,
 } from "date-fns";
 import { useQuery, useMutation } from "@apollo/client";
-import { 
-  GetPayrollDataDocument, 
-  UpdatePayrollConsultantsDocument
+import {
+  GetPayrollsByMonthDocument,
+  UpdatePayrollDocument,
 } from "../graphql/generated/graphql";
 
 type ViewPeriod = "week" | "fortnight" | "month";
@@ -125,7 +125,7 @@ export default function AdvancedPayrollScheduler() {
 
   // Add hydration-safe state
   const [isClient, setIsClient] = useState(false);
-  
+
   // Add custom CSS variables for dark mode support
   React.useEffect(() => {
     setIsClient(true);
@@ -186,18 +186,17 @@ export default function AdvancedPayrollScheduler() {
   }, [dateRange]);
 
   // Real GraphQL data fetching
-  const { data, loading, error, refetch } = useQuery(GetPayrollDataDocument, {
+  const { data, loading, error, refetch } = useQuery(GetPayrollsByMonthDocument, {
     variables: {
-      start_date: format(dateRange.start, 'yyyy-MM-dd'),
-      end_date: format(dateRange.end, 'yyyy-MM-dd')
+      startDate: format(dateRange.start, "yyyy-MM-dd"),
+      endDate: format(dateRange.end, "yyyy-MM-dd"),
     },
-    errorPolicy: 'all',
-    skip: !isClient // Skip query until client-side hydration is complete
+    errorPolicy: "all",
+    skip: !isClient, // Skip query until client-side hydration is complete
   });
 
-  const [updatePayrollConsultants, { loading: updating, error: updateError }] = useMutation(
-    UpdatePayrollConsultantsDocument
-  );
+  const [updatePayrollConsultants, { loading: updating, error: updateError }] =
+    useMutation(UpdatePayrollDocument);
 
   // Helper function to check if consultant is on leave
   const isConsultantOnLeave = (consultant: any, date: Date): boolean => {
@@ -266,8 +265,8 @@ export default function AdvancedPayrollScheduler() {
         consultantId: finalConsultantId,
         consultantName: finalConsultantName,
         isBackup,
-        originalConsultantId,
-        originalConsultantName,
+        originalConsultantId: originalConsultantId || "",
+        originalConsultantName: originalConsultantName || "",
       };
 
       assignmentList.push(assignment);
@@ -340,7 +339,7 @@ export default function AdvancedPayrollScheduler() {
     return summaries;
   }, [consultants, assignments, dates]);
 
-  const holidays = data?.holidays || [];
+  const holidays: any[] = []; // holidays not included in GetPayrollsByMonthQuery
 
   // Helper functions
   const getHolidayForDate = (date: Date): Holiday | null => {
@@ -697,27 +696,31 @@ export default function AdvancedPayrollScheduler() {
       const updates = pendingChanges.map((change) => ({
         where: { id: { _eq: change.payrollId } },
         _set: {
-          primary_consultant_user_id: change.toConsultantId,
-          updated_at: new Date().toISOString(),
+          primaryConsultantUserId: change.toConsultantId,
         },
       }));
 
       console.log("🔧 GraphQL Updates:", updates);
 
-      const result = await updatePayrollConsultants({
-        variables: {
-          updates: updates
-        }
-      });
+      // Update each payroll individually since UpdatePayrollDocument only handles one at a time
+      const results = [];
+      for (const update of updates) {
+        const result = await updatePayrollConsultants({
+          variables: {
+            id: update.where.id._eq,
+            set: update._set,
+          },
+        });
+        results.push(result);
+      }
 
-      console.log("✅ Update result:", result);
+      console.log("✅ Update results:", results);
 
-      if (result.data?.update_payrolls_many) {
-        const totalAffectedRows = result.data.update_payrolls_many.reduce(
-          (total: number, response: any) => total + (response?.affected_rows || 0), 
-          0
-        );
+      // Check if all updates were successful
+      const successfulUpdates = results.filter(result => result.data?.updatePayroll);
+      const totalAffectedRows = successfulUpdates.length;
 
+      if (totalAffectedRows > 0) {
         // Success: exit preview mode and refresh data
         const cleanAssignments = removeGhosts(assignments);
         setIsPreviewMode(false);
@@ -727,15 +730,12 @@ export default function AdvancedPayrollScheduler() {
         // Show success message
         console.log(`✅ Successfully updated ${totalAffectedRows} payroll(s)`);
 
-        // Optional: Show success toast/notification
-        // You can replace this alert with a proper toast notification
-        if (totalAffectedRows > 0) {
-          alert(
-            `✅ Successfully updated ${totalAffectedRows} payroll assignment${
-              totalAffectedRows !== 1 ? "s" : ""
-            }!`
-          );
-        }
+        // Show success alert
+        alert(
+          `✅ Successfully updated ${totalAffectedRows} payroll assignment${
+            totalAffectedRows !== 1 ? "s" : ""
+          }!`
+        );
 
         // Refresh data
         refetch();
@@ -904,7 +904,9 @@ export default function AdvancedPayrollScheduler() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="text-red-500 mb-4">⚠️ Error loading data</div>
-          <p className="text-sm text-muted-foreground">{(error as any)?.message || 'Unknown error'}</p>
+          <p className="text-sm text-muted-foreground">
+            {(error as any)?.message || "Unknown error"}
+          </p>
           <Button className="mt-4" onClick={() => refetch()}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Retry
@@ -974,7 +976,9 @@ export default function AdvancedPayrollScheduler() {
               <Label>Period:</Label>
               <Tabs
                 value={viewPeriod}
-                onValueChange={(value: string) => setViewPeriod(value as ViewPeriod)}
+                onValueChange={(value: string) =>
+                  setViewPeriod(value as ViewPeriod)
+                }
               >
                 <TabsList>
                   <TabsTrigger value="week">Week</TabsTrigger>
@@ -1034,9 +1038,7 @@ export default function AdvancedPayrollScheduler() {
                   {pendingChanges.length} pending change
                   {pendingChanges.length !== 1 ? "s" : ""}
                 </Badge>
-                {updating && (
-                  <Badge variant="outline">Saving...</Badge>
-                )}
+                {updating && <Badge variant="outline">Saving...</Badge>}
                 {updateError && (
                   <Badge variant="destructive" className="text-xs">
                     Save failed
@@ -1054,9 +1056,7 @@ export default function AdvancedPayrollScheduler() {
                 <Button
                   size="sm"
                   onClick={commitChanges}
-                  disabled={
-                    updating || pendingChanges.length === 0
-                  }
+                  disabled={updating || pendingChanges.length === 0}
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {updating ? "Saving..." : "Save Changes"}
@@ -1150,7 +1150,7 @@ export default function AdvancedPayrollScheduler() {
           <div className="overflow-auto max-h-[70vh] border rounded-lg bg-background dark:bg-card relative scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-100 dark:scrollbar-track-gray-800">
             <Table>
               <TableHeader className="sticky top-0 z-20">
-                <TableRow className="bg-background dark:bg-card border-b-2 border-border">
+                <TableRow className="bg-background dark:bg-card border-b-2 border-gray-200">
                   <TableHead className="sticky left-0 bg-background dark:bg-card z-30 w-fit min-w-[40px] max-w-[140px] shadow-sm">
                     {tableOrientation === "consultants-as-columns"
                       ? "Date"
@@ -1265,7 +1265,7 @@ export default function AdvancedPayrollScheduler() {
                                   ? "bg-red-200 dark:bg-red-900/80 border-red-400 dark:border-red-600"
                                   : isWeekendDay
                                   ? "bg-blue-200 dark:bg-blue-900/80 border-blue-400 dark:border-blue-600"
-                                  : "bg-card border-border"
+                                  : "bg-card border-gray-200"
                               } shadow-sm`}
                             >
                               <CardContent className="p-1.5">
@@ -1304,9 +1304,7 @@ export default function AdvancedPayrollScheduler() {
                                         renderArrayBadges(
                                           holiday.region.map((r) =>
                                             r.length > 3
-                                              ? r
-                                                  .substring(0, 3)
-                                                  .toUpperCase()
+                                              ? r.substring(0, 3).toUpperCase()
                                               : r.toUpperCase()
                                           ),
                                           "bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800"
@@ -1359,7 +1357,7 @@ export default function AdvancedPayrollScheduler() {
                                   ? "bg-red-200 dark:bg-red-900/80 border-red-400 dark:border-red-600"
                                   : isWeekendDay
                                   ? "bg-blue-200 dark:bg-blue-900/80 border-blue-400 dark:border-blue-600"
-                                  : "bg-card border-border"
+                                  : "bg-card border-gray-200"
                               } shadow-sm`}
                             >
                               <CardContent className="p-2">
@@ -1487,7 +1485,7 @@ export default function AdvancedPayrollScheduler() {
                                           ${
                                             assignment.isBackup
                                               ? "border-red-200 dark:border-red-800"
-                                              : "border-border"
+                                              : "border-gray-200"
                                           }
                                           ${
                                             isBeingDragged
@@ -1794,7 +1792,7 @@ export default function AdvancedPayrollScheduler() {
                                           ${
                                             assignment.isBackup
                                               ? "border-red-200 dark:border-red-800"
-                                              : "border-border"
+                                              : "border-gray-200"
                                           }
                                           ${
                                             isBeingDragged

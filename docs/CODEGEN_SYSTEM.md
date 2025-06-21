@@ -12,7 +12,7 @@ pnpm codegen
 pnpm codegen:watch
 
 # Import and use
-import { useGetClientsQuery } from '@/domains/clients';
+import { GetClientsDocument } from '@/domains/clients';
 ```
 
 ### Setup Steps
@@ -55,16 +55,16 @@ import { useGetClientsQuery } from '@/domains/clients';
    ```typescript
    // Option 1: Direct domain import
    import {
-     useGetClientsQuery,
-     useCreateClientMutation,
+     GetClientsDocument,
+     CreateClientDocument,
    } from "@/domains/clients";
 
    // Option 2: Shared aggregator
-   import { useGetClientsQuery } from "@/shared/types/generated";
+   import { GetClientsDocument } from "@/shared/types/generated";
 
    // Usage
    function ClientsList() {
-     const { data, loading } = useGetClientsQuery();
+     const { data, loading } = GetClientsDocument();
 
      if (loading) return <div>Loading...</div>;
 
@@ -222,13 +222,13 @@ Each domain gets an auto-generated `index.ts` file that exports:
 
 ```typescript
 // From a specific domain
-import { useGetClientsQuery, CreateClientMutation } from "@/domains/clients";
+import { GetClientsDocument, CreateClientMutation } from "@/domains/clients";
 
 // From shared operations
-import { useGetDashboardStatsQuery } from "@/shared";
+import { GetDashboardStatsDocument } from "@/shared";
 
 // From the central aggregator
-import { useGetUsersQuery } from "@/shared/types/generated";
+import { GetUsersDocument } from "@/shared/types/generated";
 ```
 
 ### Adding New Operations
@@ -252,10 +252,10 @@ query GetClientDetails($id: uuid!) {
 3. **Use Generated Hook**:
 
 ```typescript
-import { useGetClientDetailsQuery } from "@/domains/clients";
+import { GetClientDetailsDocument } from "@/domains/clients";
 
 function ClientProfile({ clientId }: { clientId: string }) {
-  const { data, loading, error } = useGetClientDetailsQuery({
+  const { data, loading, error } = GetClientDetailsDocument({
     variables: { id: clientId },
   });
 

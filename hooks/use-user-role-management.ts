@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuthContext } from "@/lib/auth-context";
+import { useAuthContext } from "@/lib/auth/auth-context";
 import { toast } from "sonner";
 
 export interface UserRoleInfo {

@@ -1,6 +1,37 @@
 table:
   name: payroll_dates
   schema: public
+configuration:
+  column_config:
+    adjusted_eft_date:
+      custom_name: adjustedEftDate
+    created_at:
+      custom_name: createdAt
+    original_eft_date:
+      custom_name: originalEftDate
+    payroll_id:
+      custom_name: payrollId
+    processing_date:
+      custom_name: processingDate
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    adjusted_eft_date: adjustedEftDate
+    created_at: createdAt
+    original_eft_date: originalEftDate
+    payroll_id: payrollId
+    processing_date: processingDate
+    updated_at: updatedAt
+  custom_root_fields:
+    delete: deletePayrollDates
+    delete_by_pk: deletePayrollDate
+    insert: insertPayrollDates
+    insert_one: insertPayrollDate
+    select: payrollDates
+    select_aggregate: payrollDatesAggregate
+    select_by_pk: payrollDate
+    update: updatePayrollDates
+    update_by_pk: updatePayrollDate
 object_relationships:
   - name: payroll
     using:

@@ -2,6 +2,12 @@
 import Image from "next/image";
 
 import { useQuery, useMutation, useApolloClient } from "@apollo/client";
+import { 
+  GetStaffListDocument, 
+  GetAllUsersListDocument,
+  UpdateStaffDocument,
+  DeleteStaffDocument 
+} from "@/domains/users/graphql/generated/graphql";
 import { useAuth } from "@clerk/nextjs";
 import {
   ColumnDef,
@@ -77,36 +83,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  UPDATE_STAFF,
-  DELETE_STAFF,
-} from "@/domains/users/graphql/mutations.graphql";
-import {
-  GET_STAFF_LIST,
-  GET_ALL_USERS_LIST,
-} from "@/domains/users/graphql/queries.graphql";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUserRole } from "@/hooks/use-user-role";
-import { isAuthError } from "@/lib/utils/auth-error-utils";
+import { isAuthError } from "@/lib/utils/handle-graphql-error";
 import { StaffUpdatesListener } from "@/components/staff-updates-listener";
 
 // Define Staff Type
 interface Staff {
+  __typename?: "users";
   id: string;
   email: string;
   name: string;
   role: string;
-  username?: string;
-  image?: string;
-  is_staff: boolean;
-  manager_id?: string;
-  clerk_user_id?: string;
-  created_at?: string;
-  updated_at?: string;
+  username: string | null;
+  image: string | null;
+  isStaff: boolean | null;
+  isActive: boolean | null;
+  managerId: string | null;
+  clerkUserId: string | null;
+  createdAt?: string;
+  updatedAt?: string;
   manager?: {
     name: string;
     id: string;
     email: string;
+    role: string;
   };
   leaves?: Array<{
     id: string;
@@ -125,8 +126,8 @@ interface StaffEditForm {
   email: string;
   username: string;
   role: string;
-  manager_id: string;
-  is_staff: boolean;
+  managerId: string;
+  isStaff: boolean;
 }
 
 // Define Create Staff Form Data
@@ -135,7 +136,7 @@ interface CreateStaffForm {
   firstName: string;
   lastName: string;
   role: string;
-  is_staff: boolean;
+  isStaff: boolean;
 }
 
 // Role name mapping
@@ -244,8 +245,8 @@ export default function StaffManagementPage() {
     email: "",
     username: "",
     role: "",
-    manager_id: "",
-    is_staff: false,
+    managerId: "",
+    isStaff: false,
   });
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
@@ -258,7 +259,7 @@ export default function StaffManagementPage() {
     firstName: "",
     lastName: "",
     role: "viewer",
-    is_staff: true,
+    isStaff: true,
   });
   const [isCreatingStaff, setIsCreatingStaff] = React.useState(false);
   const [createError, setCreateError] = React.useState("");
@@ -286,7 +287,7 @@ export default function StaffManagementPage() {
 
   // Use different queries based on user role - developers see all users
   const { loading, error, data, refetch } = useQuery(
-    isDeveloper ? GET_ALL_USERS_LIST : GET_STAFF_LIST,
+    isDeveloper ? GetAllUsersListDocument : GetStaffListDocument,
     {
       // More comprehensive skip condition to prevent premature execution
       skip: !isLoaded || userLoading || (!currentUser && !userError) || !userId,
@@ -329,11 +330,11 @@ export default function StaffManagementPage() {
 
   // Mutation hooks for updating and deleting staff
   const [updateStaffMutation, { loading: isUpdating }] = useMutation(
-    UPDATE_STAFF,
+    UpdateStaffDocument,
     {
       onCompleted: (data) => {
-        if (data?.update_users_by_pk) {
-          const updatedUser = data.update_users_by_pk;
+        if (data?.updateUser) {
+          const updatedUser = data.updateUser;
           toast.success(
             `Role updated to ${
               roleMapping[updatedUser.role] || updatedUser.role
@@ -354,10 +355,10 @@ export default function StaffManagementPage() {
 
   // Delete staff mutation
   const [deleteStaffMutation, { loading: isDeleting }] = useMutation(
-    DELETE_STAFF,
+    DeleteStaffDocument,
     {
       onCompleted: (data) => {
-        if (data?.update_users_by_pk) {
+        if (data?.updateUser) {
           toast.success(`Staff member removed successfully`);
           refetch(); // Refresh the staff list
         } else {
@@ -386,7 +387,7 @@ export default function StaffManagementPage() {
             id: user.id,
             name: user.name,
             email: user.email,
-            clerk_user_id: user.clerk_user_id,
+            clerkUserId: user.clerkUserId,
           });
         } else {
           console.log(`✅ Valid UUID for ${user.name}: ${user.id}`);
@@ -416,9 +417,9 @@ export default function StaffManagementPage() {
       isManager && currentUserId
         ? staffList.filter((staff: Staff) => {
             console.log(
-              `Comparing staff.manager_id (${staff.manager_id}) with currentUserId (${currentUserId})`
+              `Comparing staff.managerId (${staff.managerId}) with currentUserId (${currentUserId})`
             );
-            return staff.manager_id === currentUserId;
+            return staff.managerId === currentUserId;
           })
         : staffList;
 
@@ -443,7 +444,7 @@ export default function StaffManagementPage() {
     // Apply status filter
     if (selectedStatus.length > 0) {
       filtered = filtered.filter((staff) => {
-        const status = staff.is_staff ? "active" : "inactive";
+        const status = staff.isStaff ? "active" : "inactive";
         return selectedStatus.includes(status);
       });
     }
@@ -452,7 +453,7 @@ export default function StaffManagementPage() {
     if (selectedManager.length > 0) {
       console.log("🔍 Manager filter selected:", selectedManager);
       filtered = filtered.filter((staff) => {
-        return staff.manager_id && selectedManager.includes(staff.manager_id);
+        return staff.managerId && selectedManager.includes(staff.managerId);
       });
     }
 
@@ -477,10 +478,10 @@ export default function StaffManagementPage() {
       managers: allStaff.filter((s) => s.role === "manager").length,
       consultants: allStaff.filter((s) => s.role === "consultant").length,
       viewers: allStaff.filter((s) => s.role === "viewer").length,
-      active: allStaff.filter((s) => s.is_staff).length,
-      inactive: allStaff.filter((s) => !s.is_staff).length,
-      withAuth: allStaff.filter((s) => s.clerk_user_id).length,
-      withoutAuth: allStaff.filter((s) => !s.clerk_user_id).length,
+      active: allStaff.filter((s) => s.isStaff).length,
+      inactive: allStaff.filter((s) => !s.isStaff).length,
+      withAuth: allStaff.filter((s) => s.clerkUserId).length,
+      withoutAuth: allStaff.filter((s) => !s.clerkUserId).length,
     };
   }, [staffList]);
 
@@ -574,10 +575,10 @@ export default function StaffManagementPage() {
         },
       },
       {
-        accessorKey: "is_staff",
+        accessorKey: "isStaff",
         header: "Status",
         cell: ({ row }) => {
-          const isStaff = row.getValue("is_staff") as boolean;
+          const isStaff = row.getValue("isStaff") as boolean;
           return (
             <Badge variant={isStaff ? "default" : "secondary"}>
               {isStaff ? "Active" : "Inactive"}
@@ -594,10 +595,10 @@ export default function StaffManagementPage() {
         },
       },
       {
-        accessorKey: "clerk_user_id",
+        accessorKey: "clerkUserId",
         header: "Auth Status",
         cell: ({ row }) => {
-          const clerkUserId = row.getValue("clerk_user_id") as string;
+          const clerkUserId = row.getValue("clerkUserId") as string;
           return (
             <Badge variant={clerkUserId ? "default" : "destructive"}>
               {clerkUserId ? "Authenticated" : "No Auth"}
@@ -754,7 +755,7 @@ export default function StaffManagementPage() {
     apolloClient.cache.reset().then(() => {
       console.log("✅ Apollo cache cleared");
       // Force a hard refresh of queries
-      refetch({ fetchPolicy: "cache-and-network" });
+      refetch();
     });
     setCurrentPage(1);
   };
@@ -802,8 +803,8 @@ export default function StaffManagementPage() {
       email: staff.email || "",
       username: staff.username || "",
       role: staff.role || "",
-      manager_id: staff.manager_id || "no-manager",
-      is_staff: staff.is_staff || false,
+      managerId: staff.managerId || "no-manager",
+      isStaff: staff.isStaff || false,
     });
     setIsEditModalOpen(true);
   };
@@ -823,8 +824,8 @@ export default function StaffManagementPage() {
       email: "",
       username: "",
       role: "",
-      manager_id: "no-manager",
-      is_staff: false,
+      managerId: "no-manager",
+      isStaff: false,
     });
   };
 
@@ -849,7 +850,7 @@ export default function StaffManagementPage() {
     console.log("🔍 saveStaffChanges called with editingStaff:", {
       id: editingStaff.id,
       name: editingStaff.name,
-      clerk_user_id: editingStaff.clerk_user_id,
+      clerkUserId: editingStaff.clerkUserId,
     });
 
     const isValidUUID =
@@ -880,8 +881,8 @@ export default function StaffManagementPage() {
           name: editForm.name,
           email: editForm.email,
           username: editForm.username,
-          is_staff: editForm.is_staff,
-          manager_id: editForm.manager_id || null,
+          isStaff: editForm.isStaff,
+          managerId: editForm.managerId || null,
         }),
       });
 
@@ -929,7 +930,7 @@ export default function StaffManagementPage() {
     console.log("🔍 confirmDeleteStaff called with staffToDelete:", {
       id: staffToDelete.id,
       name: staffToDelete.name,
-      clerk_user_id: staffToDelete.clerk_user_id,
+      clerkUserId: staffToDelete.clerkUserId,
       forceHardDelete,
     });
 
@@ -1062,7 +1063,7 @@ Do you want to proceed with HARD DELETE?`
       firstName: "",
       lastName: "",
       role: "viewer",
-      is_staff: true,
+      isStaff: true,
     });
     setCreateError("");
     setIsCreateModalOpen(true);
@@ -1076,7 +1077,7 @@ Do you want to proceed with HARD DELETE?`
       firstName: "",
       lastName: "",
       role: "viewer",
-      is_staff: true,
+      isStaff: true,
     });
     setCreateError("");
   };
@@ -1104,7 +1105,7 @@ Do you want to proceed with HARD DELETE?`
       console.log("🔑 Staff page - Token length:", token?.length || 0);
 
       // For non-developers, always create as staff member
-      const staffStatus = isDeveloper ? createForm.is_staff : true;
+      const staffStatus = isDeveloper ? createForm.isStaff : true;
 
       // Combine first and last name for the API
       const fullName =
@@ -1121,7 +1122,7 @@ Do you want to proceed with HARD DELETE?`
           name: fullName, // API expects 'name' not firstName/lastName
           email: createForm.email,
           role: createForm.role,
-          is_staff: staffStatus,
+          isStaff: staffStatus,
         }),
       });
 
@@ -1598,10 +1599,10 @@ Do you want to proceed with HARD DELETE?`
                 <div className="space-y-2">
                   <Label htmlFor="edit-manager">Manager</Label>
                   <Select
-                    value={editForm.manager_id}
+                    value={editForm.managerId}
                     onValueChange={(value) =>
                       handleFormChange(
-                        "manager_id",
+                        "managerId",
                         value === "no-manager" ? "" : value
                       )
                     }
@@ -1633,9 +1634,9 @@ Do you want to proceed with HARD DELETE?`
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="edit-is-staff"
-                      checked={editForm.is_staff}
+                      checked={editForm.isStaff}
                       onCheckedChange={(checked) =>
-                        handleFormChange("is_staff", !!checked)
+                        handleFormChange("isStaff", !!checked)
                       }
                     />
                     <Label
@@ -1735,7 +1736,7 @@ Do you want to proceed with HARD DELETE?`
                       <div>
                         <span className="text-gray-500">Staff Status:</span>
                         <p className="font-medium">
-                          {viewingStaff.is_staff ? "Staff Member" : "External"}
+                          {viewingStaff.isStaff ? "Staff Member" : "External"}
                         </p>
                       </div>
                     </div>
@@ -1757,20 +1758,20 @@ Do you want to proceed with HARD DELETE?`
                         <span className="text-gray-500">Clerk Account:</span>
                         <Badge
                           variant={
-                            viewingStaff.clerk_user_id ? "default" : "outline"
+                            viewingStaff.clerkUserId ? "default" : "outline"
                           }
                         >
-                          {viewingStaff.clerk_user_id
+                          {viewingStaff.clerkUserId
                             ? "Connected"
                             : "Not Connected"}
                         </Badge>
                       </div>
-                      {viewingStaff.created_at && (
+                      {viewingStaff.createdAt && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">Created:</span>
                           <span>
                             {new Date(
-                              viewingStaff.created_at
+                              viewingStaff.createdAt
                             ).toLocaleDateString()}
                           </span>
                         </div>
@@ -1947,19 +1948,19 @@ Do you want to proceed with HARD DELETE?`
                   </Select>
                 </div>
 
-                {/* Only show is_staff toggle to developers */}
+                {/* Only show isStaff toggle to developers */}
                 {isDeveloper && (
                   <div className="space-y-2">
-                    <Label htmlFor="is_staff">Staff Status</Label>
+                    <Label htmlFor="isStaff">Staff Status</Label>
                     <div className="flex items-center space-x-2">
                       <Checkbox
-                        id="is_staff"
-                        checked={createForm.is_staff}
+                        id="isStaff"
+                        checked={createForm.isStaff}
                         onCheckedChange={(checked) =>
-                          setCreateForm({ ...createForm, is_staff: !!checked })
+                          setCreateForm({ ...createForm, isStaff: !!checked })
                         }
                       />
-                      <Label htmlFor="is_staff" className="text-sm font-normal">
+                      <Label htmlFor="isStaff" className="text-sm font-normal">
                         Mark as staff member
                       </Label>
                     </div>

@@ -6,15 +6,9 @@ import { autoTable } from "jspdf-autotable";
 
 import { Button } from "@/components/ui/button";
 
-import { GetPayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GetPayrollDatesDocument, GetPayrollDatesQuery } from "@/domains/payrolls/graphql/generated/graphql";
 
-interface PayrollDate {
-  id: string;
-  original_eft_date: string;
-  adjusted_eft_date: string;
-  processing_date: string;
-  notes?: string;
-}
+type PayrollDate = GetPayrollDatesQuery['payrollDates'][0];
 
 interface ExportPdfProps {
   payrollId: string;
@@ -22,11 +16,11 @@ interface ExportPdfProps {
 
 export function ExportPdf({ payrollId }: ExportPdfProps) {
   const { data } = useQuery(GetPayrollDatesDocument, {
-    variables: { id: payrollId },
+    variables: { payrollId },
     skip: !payrollId,
   });
 
-  const dates: PayrollDate[] = data?.payroll_dates || [];
+  const dates = data?.payrollDates || [];
 
   const downloadPdf = () => {
     if (dates.length === 0) {return;}
@@ -34,10 +28,10 @@ export function ExportPdf({ payrollId }: ExportPdfProps) {
     const doc = new jsPDF();
     const tableData = dates.map((date: PayrollDate, index: number) => [
       index + 1,
-      format(parseISO(date.original_eft_date), "yyyy-MM-dd"),
-      format(parseISO(date.adjusted_eft_date), "yyyy-MM-dd"),
-      format(parseISO(date.processing_date), "yyyy-MM-dd"),
-      date.notes || "",
+      format(parseISO(date.originalEftDate), "yyyy-MM-dd"),
+      format(parseISO(date.adjustedEftDate), "yyyy-MM-dd"),
+      format(parseISO(date.processingDate), "yyyy-MM-dd"),
+      "", // notes field doesn't exist in current schema
     ]);
 
     autoTable(doc, {

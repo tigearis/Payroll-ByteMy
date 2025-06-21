@@ -1,6 +1,9 @@
 # External Systems Domain Queries
 
-query GetExternalSystems($where: external_systems_bool_exp, $order_by: [external_systems_order_by!]) {
+query GetExternalSystems(
+  $where: external_systems_bool_exp
+  $order_by: [external_systems_order_by!]
+) {
   external_systems(where: $where, order_by: $order_by) {
     ...ExternalSystemCore
     client_external_systems_aggregate {
@@ -20,9 +23,9 @@ query GetExternalSystemById($id: uuid!) {
   }
 }
 
-query GetClientExternalSystems($client_id: uuid!) {
+query GetClientExternalSystems($clientId: uuid!) {
   client_external_systems(
-    where: { client_id: { _eq: $client_id } }
+    where: { client_id: { _eq: $clientId } }
     order_by: { created_at: desc }
   ) {
     ...ClientExternalSystemWithRelations

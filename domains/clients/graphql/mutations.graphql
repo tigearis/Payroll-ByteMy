@@ -13,18 +13,11 @@ mutation CreateClient(
   $postalCode: String
   $country: String = "Australia"
 ) {
-  insert_clients_one(
+  insertClient(
     object: {
       name: $name
-      contact_name: $contactName
-      contact_email: $contactEmail
-      contact_phone: $contactPhone
-      address: $address
-      city: $city
-      state: $state
-      postal_code: $postalCode
-      country: $country
-      status: "active"
+      contactEmail: $contactEmail
+      contactPhone: $contactPhone
     }
   ) {
     ...ClientWithContact
@@ -43,47 +36,40 @@ mutation UpdateClient(
   $postalCode: String
   $country: String
 ) {
-  update_clients_by_pk(
+  updateClient(
     pk_columns: { id: $id }
     _set: {
       name: $name
-      contact_name: $contactName
-      contact_email: $contactEmail
-      contact_phone: $contactPhone
-      address: $address
-      city: $city
-      state: $state
-      postal_code: $postalCode
-      country: $country
-      updated_at: "now()"
+      contactEmail: $contactEmail
+      contactPhone: $contactPhone
     }
   ) {
     ...ClientWithContact
   }
 }
 
-mutation UpdateClientStatus($id: uuid!, $status: status!) {
-  update_clients_by_pk(
+mutation UpdateClientStatus($id: uuid!, $active: Boolean!) {
+  updateClient(
     pk_columns: { id: $id }
-    _set: { status: $status, updated_at: "now()" }
+    _set: { active: $active, updatedAt: "now()" }
   ) {
     ...ClientBasicInfo
   }
 }
 
 mutation DeactivateClient($id: uuid!) {
-  update_clients_by_pk(
+  updateClient(
     pk_columns: { id: $id }
-    _set: { status: "inactive", updated_at: "now()" }
+    _set: { active: false, updatedAt: "now()" }
   ) {
     ...ClientBasicInfo
   }
 }
 
 mutation ActivateClient($id: uuid!) {
-  update_clients_by_pk(
+  updateClient(
     pk_columns: { id: $id }
-    _set: { status: "active", updated_at: "now()" }
+    _set: { active: true, updatedAt: "now()" }
   ) {
     ...ClientBasicInfo
   }
@@ -91,22 +77,20 @@ mutation ActivateClient($id: uuid!) {
 
 # Soft delete - preserves audit trail
 mutation ArchiveClient($id: uuid!) {
-  update_clients_by_pk(
+  updateClient(
     pk_columns: { id: $id }
-    _set: { status: "deleted", updated_at: "now()" }
+    _set: { active: false, updatedAt: "now()" }
   ) {
     id
     name
-    status
-    updated_at
   }
 }
 
 # Bulk operations for efficiency
-mutation BulkUpdateClientStatus($clientIds: [uuid!]!, $status: status!) {
-  update_clients(
+mutation BulkUpdateClientStatus($clientIds: [uuid!]!, $active: Boolean!) {
+  updateClients(
     where: { id: { _in: $clientIds } }
-    _set: { status: $status, updated_at: "now()" }
+    _set: { active: $active, updatedAt: "now()" }
   ) {
     affected_rows
     returning {

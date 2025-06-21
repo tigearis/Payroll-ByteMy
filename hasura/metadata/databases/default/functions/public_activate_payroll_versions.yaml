@@ -2,5 +2,7 @@ function:
   name: activate_payroll_versions
   schema: public
 configuration:
-  custom_root_fields: {}
+  custom_root_fields:
+    function: activatePayrollVersions
+    function_aggregate: activatePayrollVersionsAggregate
   exposed_as: query

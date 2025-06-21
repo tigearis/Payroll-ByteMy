@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
+import { ComplianceReportDocument } from "@/domains/audit/graphql/generated/graphql";
 import { format, subDays, startOfMonth } from "date-fns";
 import {
   Download,
@@ -71,7 +72,7 @@ export default function ComplianceReportsPage() {
 
   const { startDate, endDate } = getDateRange();
 
-  const { data, loading, error } = useQuery(COMPLIANCE_REPORT, {
+  const { data, loading, error } = useQuery(ComplianceReportDocument, {
     variables: {
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
@@ -102,10 +103,10 @@ export default function ComplianceReportsPage() {
   }
 
   // Process data for charts
-  const totalOperations = data.audit_metrics.aggregate.count;
-  const failedOperations = data.audit_metrics.nodes.filter(
+  const totalOperations = data?.audit_metrics?.aggregate?.count || 0;
+  const failedOperations = data?.audit_metrics?.nodes?.filter(
     (n: any) => !n.success
-  ).length;
+  ).length || 0;
   const successRate = (
     ((totalOperations - failedOperations) / totalOperations) *
     100
@@ -113,21 +114,21 @@ export default function ComplianceReportsPage() {
 
   // Data classification breakdown
   const classificationData = Object.entries(
-    data.audit_metrics.nodes.reduce((acc: any, node: any) => {
+    data?.audit_metrics?.nodes?.reduce((acc: any, node: any) => {
       acc[node.data_classification] = (acc[node.data_classification] || 0) + 1;
       return acc;
-    }, {})
+    }, {}) || {}
   ).map(([name, value]) => ({ name, value }));
 
   // Daily activity trend
-  const dailyActivity = data.audit_metrics.nodes.reduce(
+  const dailyActivity = data?.audit_metrics?.nodes?.reduce(
     (acc: any, node: any) => {
       const date = format(new Date(node.created_at), "MMM dd");
       acc[date] = (acc[date] || 0) + 1;
       return acc;
     },
     {}
-  );
+  ) || {};
 
   const activityTrend = Object.entries(dailyActivity).map(([date, count]) => ({
     date,
@@ -135,13 +136,13 @@ export default function ComplianceReportsPage() {
   }));
 
   // Security events by severity
-  const securityEventsBySeverity = data.security_events_stats.nodes.reduce(
+  const securityEventsBySeverity = data?.failed_by_type?.reduce(
     (acc: any, event: any) => {
-      acc[event.severity] = (acc[event.severity] || 0) + 1;
+      acc[event.action] = (acc[event.action] || 0) + 1;
       return acc;
     },
     {}
-  );
+  ) || {};
 
   const handleExport = (format: string) => {
     // In production, this would call an API endpoint to generate the report
@@ -227,16 +228,16 @@ export default function ComplianceReportsPage() {
               <p className="text-sm font-medium">Security Events</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold">
-                  {data.security_events_stats.aggregate.count}
+                  {data?.failed_by_type?.length || 0}
                 </span>
-                {data.security_events_stats.nodes.filter(
+                {(data?.failed_by_type?.length || 0) > 0 && (data?.failed_by_type?.filter(
                   (e: any) => !e.resolved
-                ).length > 0 && (
+                ).length || 0) > 0 && (
                   <Badge variant="destructive">
                     {
-                      data.security_events_stats.nodes.filter(
+                      data?.failed_by_type?.filter(
                         (e: any) => !e.resolved
-                      ).length
+                      ).length || 0
                     }{" "}
                     Open
                   </Badge>
@@ -246,7 +247,7 @@ export default function ComplianceReportsPage() {
 
             <div className="space-y-2">
               <p className="text-sm font-medium">Active Users</p>
-              <p className="text-3xl font-bold">{data.user_activity.length}</p>
+              <p className="text-3xl font-bold">{data?.user_activity?.length || 0}</p>
             </div>
           </div>
         </CardContent>
@@ -322,31 +323,31 @@ export default function ComplianceReportsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {data.compliance_history.length === 0 ? (
+          {(data?.audit_metrics?.nodes?.length || 0) === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Shield className="h-12 w-12 mx-auto mb-2" />
               <p>No compliance checks performed in this period</p>
             </div>
           ) : (
             <div className="space-y-4">
-              {data.compliance_history.map((check: any) => (
+              {data?.audit_metrics?.nodes?.map((check: any) => (
                 <div
                   key={check.id}
                   className="flex items-center justify-between p-4 border rounded-lg"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{check.check_type}</span>
+                      <span className="font-medium">{check.action}</span>
                       <Badge
                         variant={
-                          check.status === "passed"
+                          check.success === true
                             ? "default"
-                            : check.status === "warning"
-                            ? "secondary"
-                            : "destructive"
+                            : check.success === false
+                            ? "destructive"
+                            : "secondary"
                         }
                       >
-                        {check.status}
+                        {check.success ? "PASSED" : "FAILED"}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
@@ -398,14 +399,14 @@ export default function ComplianceReportsPage() {
           </div>
 
           {/* Security Events */}
-          {data.security_events_stats.aggregate.count > 0 && (
+          {(data?.failed_by_type?.length || 0) > 0 && (
             <div className="p-4 border rounded-lg">
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-blue-500 mt-0.5" />
                 <div className="space-y-1">
                   <p className="font-medium">Security Events</p>
                   <p className="text-sm text-muted-foreground">
-                    {data.security_events_stats.aggregate.count} security events
+                    {data?.failed_by_type?.length || 0} security events
                     were logged.
                     {Object.entries(securityEventsBySeverity).map(
                       ([severity, count]) => (
@@ -429,7 +430,7 @@ export default function ComplianceReportsPage() {
               <div className="space-y-1">
                 <p className="font-medium">Data Access Controls</p>
                 <p className="text-sm text-muted-foreground">
-                  {data.data_access_stats.aggregate.sum?.record_count || 0}{" "}
+                  {data?.data_access_stats?.nodes?.length || 0}{" "}
                   records were accessed. All access was logged and classified
                   according to sensitivity levels.
                 </p>

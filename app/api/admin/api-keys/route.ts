@@ -1,22 +1,27 @@
 // app/api/admin/api-keys/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuth } from "@/lib/api-auth";
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
+import { withAuth } from "@/lib/auth/api-auth";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 import { apiKeyManager } from "@/lib/security/api-signing";
 
 // List API keys (admin only)
 export const GET = withAuth(async (request: NextRequest, session) => {
   try {
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.INFO,
       category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
-      message: "API keys list accessed",
       userId: session.userId,
       userRole: session.role,
-      entityType: "api_keys"
-    }, request);
+      resourceType: "api_keys",
+      action: "LIST",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
+      complianceNote: "API keys list accessed"
+    });
 
     const keys = apiKeyManager.listKeys();
     
@@ -53,20 +58,25 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     // Store the key with permissions
     apiKeyManager.storeKey(apiKey, apiSecret, permissions);
 
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-      message: "New API key created",
+      eventType: SOC2EventType.SYSTEM_CONFIG_CHANGE,
       userId: session.userId,
       userRole: session.role,
-      entityType: "api_key",
-      entityId: apiKey,
+      resourceId: apiKey,
+      resourceType: "api_key",
+      action: "CREATE",
+      success: true,
       metadata: {
         permissions,
         createdBy: session.userId
-      }
-    }, request);
+      },
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
+      complianceNote: "New API key created"
+    });
 
     return NextResponse.json({
       success: true,
@@ -103,19 +113,24 @@ export const DELETE = withAuth(async (request: NextRequest, session) => {
     // Revoke the key
     apiKeyManager.revokeKey(apiKey);
 
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-      message: "API key revoked",
+      eventType: SOC2EventType.SYSTEM_CONFIG_CHANGE,
       userId: session.userId,
       userRole: session.role,
-      entityType: "api_key",
-      entityId: apiKey,
+      resourceId: apiKey,
+      resourceType: "api_key",
+      action: "DELETE",
+      success: true,
       metadata: {
         revokedBy: session.userId
-      }
-    }, request);
+      },
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
+      complianceNote: "API key revoked"
+    });
 
     return NextResponse.json({
       success: true,

@@ -2,9 +2,9 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-import { withAuth } from "@/lib/api-auth";
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
-import { syncUserWithDatabase, UserRole } from "@/lib/user-sync";
+import { withAuth } from "@/lib/auth/api-auth";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
+import { syncUserWithDatabase, UserRole } from "@/domains/users/services/user-sync";
 
 
 // Input validation schema
@@ -36,17 +36,23 @@ export const POST = withAuth(async (request: NextRequest, session) => {
   });
   
   try {
+    // Extract client info once
+    const clientInfo = auditLogger.extractClientInfo(request);
 
     // Log staff creation attempt
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-      message: "Staff creation operation initiated",
+      eventType: SOC2EventType.USER_CREATED,
       userId: session.userId,
       userRole: session.role,
-      entityType: "staff"
-    }, request);
+      resourceType: "staff",
+      action: "CREATE_INITIATE",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
+      complianceNote: "Staff creation operation initiated"
+    });
 
     // Get and validate request body
     const body = await request.json();
@@ -56,18 +62,24 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     if (!validationResult.success) {
       const errors = validationResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
       
-      await soc2Logger.log({
+      await auditLogger.logSOC2Event({
         level: LogLevel.WARNING,
-      category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-        message: "Staff creation failed - validation error",
+        category: LogCategory.SYSTEM_ACCESS,
+        eventType: SOC2EventType.USER_CREATED,
         userId: session.userId,
         userRole: session.role,
+        resourceType: "staff",
+        action: "CREATE",
+        success: false,
+        errorMessage: "Validation failed",
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           validationErrors: errors,
           requestBody: body
-        }
-      }, request);
+        },
+        complianceNote: "Staff creation failed - validation error"
+      });
       
       return NextResponse.json({
         error: "Validation failed",
@@ -141,7 +153,7 @@ export const POST = withAuth(async (request: NextRequest, session) => {
       
       // Create database user (invitation will be linked when user signs up)
       console.log('💾 Using server Apollo client like working payroll routes...');
-      const { getServerApolloClient } = await import('@/lib/server-apollo-client');
+      const { serverApolloClient } = await import('@/lib/apollo/unified-client');
       const { gql } = await import('@apollo/client');
       const { auth } = await import('@clerk/nextjs/server');
       
@@ -165,14 +177,14 @@ export const POST = withAuth(async (request: NextRequest, session) => {
         console.log('⚠️ No JWT token available, checking if admin fallback is possible...');
         if (process.env.HASURA_ADMIN_SECRET) {
           console.log('💾 Using admin client as fallback for user creation');
-          const { adminApolloClient } = await import('@/lib/server-apollo-client');
+          const { adminApolloClient } = await import('@/lib/apollo/unified-client');
           apolloClient = adminApolloClient;
           useAdminFallback = true;
         } else {
           throw new Error('No authentication token and no admin secret available');
         }
       } else {
-        apolloClient = await getServerApolloClient();
+        apolloClient = serverApolloClient;
       }
       
       const CREATE_USER_DB = gql`
@@ -255,22 +267,24 @@ export const POST = withAuth(async (request: NextRequest, session) => {
         extraInfo: dbError.extraInfo
       });
       
-      await soc2Logger.log({
+      await auditLogger.logSOC2Event({
         level: LogLevel.ERROR,
-      category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-        message: "Staff creation failed - database error",
+        category: LogCategory.SYSTEM_ACCESS,
+        eventType: SOC2EventType.USER_CREATED,
         userId: session.userId,
         userRole: session.role,
-        errorDetails: {
-          message: dbError.message,
-          stack: dbError.stack
-        },
+        resourceType: "staff",
+        action: "CREATE",
+        success: false,
+        errorMessage: dbError.message,
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           graphQLErrors: dbError.graphQLErrors,
           networkError: dbError.networkError
-        }
-      }, request);
+        },
+        complianceNote: "Staff creation failed - database error"
+      });
       
       return NextResponse.json({
         error: "Failed to create user in database",
@@ -295,23 +309,27 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     };
     
     // Log successful staff creation
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-      message: "Staff member created successfully",
+      eventType: SOC2EventType.USER_CREATED,
       userId: session.userId,
       userRole: session.role,
-      entityType: "staff",
-      entityId: staffData.id,
+      resourceId: staffData.id,
+      resourceType: "staff",
+      action: "CREATE",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
       metadata: {
         staffEmail: staffInput.email,
         staffRole: staffInput.role,
         invitationSent: staffData.invitationSent,
         invitationId: staffData.invitationId,
         managerId: staffInput.managerId
-      }
-    }, request);
+      },
+      complianceNote: "Staff member created successfully"
+    });
     
     return NextResponse.json({
       success: true,
@@ -343,24 +361,27 @@ export const POST = withAuth(async (request: NextRequest, session) => {
     });
     
     try {
-      await soc2Logger.log({
+      const errorClientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
         level: LogLevel.ERROR,
-      category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-        message: "Staff creation failed - unexpected error",
+        category: LogCategory.SYSTEM_ACCESS,
+        eventType: SOC2EventType.USER_CREATED,
         userId: session.userId,
         userRole: session.role,
-        errorDetails: {
-          message: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          code: error.code
-        },
+        resourceType: "staff",
+        action: "CREATE",
+        success: false,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        ipAddress: errorClientInfo.ipAddress || "unknown",
+        userAgent: errorClientInfo.userAgent || "unknown",
         metadata: {
+          code: error.code,
           graphQLErrors: error.graphQLErrors,
           networkError: error.networkError,
           status: error.status
-        }
-      }, request);
+        },
+        complianceNote: "Staff creation failed - unexpected error"
+      });
     } catch (logError) {
       console.error("Failed to log error:", logError);
     }

@@ -1,6 +1,43 @@
 table:
   name: payroll_assignments
   schema: public
+configuration:
+  column_config:
+    assigned_by:
+      custom_name: assignedBy
+    assigned_date:
+      custom_name: assignedDate
+    consultant_id:
+      custom_name: consultantId
+    created_at:
+      custom_name: createdAt
+    is_backup:
+      custom_name: isBackup
+    original_consultant_id:
+      custom_name: originalConsultantId
+    payroll_date_id:
+      custom_name: payrollDateId
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    assigned_by: assignedBy
+    assigned_date: assignedDate
+    consultant_id: consultantId
+    created_at: createdAt
+    is_backup: isBackup
+    original_consultant_id: originalConsultantId
+    payroll_date_id: payrollDateId
+    updated_at: updatedAt
+  custom_root_fields:
+    delete: deletePayrollAssignments
+    delete_by_pk: deletePayrollAssignment
+    insert: insertPayrollAssignments
+    insert_one: insertPayrollAssignment
+    select: payrollAssignments
+    select_aggregate: payrollAssignmentsAggregate
+    select_by_pk: payrollAssignment
+    update: updatePayrollAssignments
+    update_by_pk: updatePayrollAssignment
 object_relationships:
   - name: payroll_date
     using:

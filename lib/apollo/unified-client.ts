@@ -20,72 +20,17 @@ import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { createClient } from "graphql-ws";
 
-// ================================
-// ERROR HANDLING UTILITIES
-// ================================
+// Import comprehensive error handling from consolidated utility
+import { 
+  handleGraphQLError, 
+  isPermissionError, 
+  isAuthError, 
+  getSimpleErrorMessage,
+  type GraphQLErrorDetails 
+} from "@/lib/utils/handle-graphql-error";
 
-export interface GraphQLPermissionError {
-  message: string;
-  field?: string;
-  table?: string;
-  role?: string | undefined;
-}
-
-export function isPermissionError(error: any): boolean {
-  if (!error?.message) {return false;}
-
-  const message = error.message.toLowerCase();
-  return (
-    (message.includes("field") && message.includes("not found in type")) ||
-    message.includes("insufficient permissions") ||
-    message.includes("access denied") ||
-    message.includes("forbidden")
-  );
-}
-
-export function parsePermissionError(error: any): GraphQLPermissionError {
-  const message = error.message || "";
-
-  // Extract field name from "field 'field_name' not found in type: 'table_name'"
-  const fieldMatch = message.match(
-    /field '([^']+)' not found in type: '([^']+)'/
-  );
-
-  return {
-    message,
-    field: fieldMatch?.[1],
-    table: fieldMatch?.[2],
-    role: undefined,
-  };
-}
-
-export function getPermissionErrorMessage(
-  error: GraphQLPermissionError
-): string {
-  if (error.field && error.table) {
-    return `You don't have permission to access the '${error.field}' field on ${error.table}. Contact your administrator to request access.`;
-  }
-
-  if (error.message.includes("insufficient permissions")) {
-    return "You don't have sufficient permissions to perform this action. Contact your administrator for access.";
-  }
-
-  return "Access denied. You may not have the required permissions for this resource.";
-}
-
-export function handlePermissionError(
-  error: GraphQLPermissionError,
-  context?: string
-): void {
-  console.warn(`🔒 Permission Error${context ? ` in ${context}` : ""}:`, {
-    field: error.field,
-    table: error.table,
-    originalMessage: error.message,
-  });
-
-  // Note: Toast functionality would need to be imported from a toast library
-  // This is a simplified version - in a real app you'd want to show user notifications
-}
+// Re-export for backward compatibility
+export { isPermissionError, isAuthError, getSimpleErrorMessage, type GraphQLErrorDetails };
 
 // Client configuration options
 export interface UnifiedClientOptions {
@@ -249,19 +194,35 @@ function createAuthLink(options: UnifiedClientOptions): ApolloLink {
 }
 
 /**
- * Simplified error handling with native Clerk token refresh
+ * Enhanced error handling using comprehensive error handler
  */
 function createErrorLink(options: UnifiedClientOptions): ApolloLink {
   return onError(({ graphQLErrors, networkError, operation, forward }) => {
-    if (graphQLErrors) {
-      graphQLErrors.forEach(({ message, extensions }) => {
-        console.error("[GraphQL error]:", message);
+    // Create an Apollo error for comprehensive handling
+    const apolloError = {
+      graphQLErrors: graphQLErrors || [],
+      networkError,
+      message: graphQLErrors?.[0]?.message || networkError?.message || "Unknown error"
+    } as any;
 
-        // Handle JWT errors with automatic token refresh
+    // Use comprehensive error handler for logging and user messaging
+    const errorDetails = handleGraphQLError(apolloError);
+    
+    // Log with operation context
+    console.error(`[Apollo Error in ${operation.operationName || 'operation'}]:`, {
+      type: errorDetails.type,
+      message: errorDetails.message,
+      userMessage: errorDetails.userMessage,
+      suggestions: errorDetails.suggestions
+    });
+
+    // Handle JWT errors with automatic token refresh for client context
+    if (graphQLErrors) {
+      for (const error of graphQLErrors) {
         const isJWTError =
-          extensions?.code === "invalid-jwt" ||
-          message.includes("JWTExpired") ||
-          message.includes("JWT token is expired");
+          error.extensions?.code === "invalid-jwt" ||
+          error.message.includes("JWTExpired") ||
+          error.message.includes("JWT token is expired");
 
         if (
           isJWTError &&
@@ -271,12 +232,11 @@ function createErrorLink(options: UnifiedClientOptions): ApolloLink {
           // Clerk handles token refresh automatically, just retry the operation
           return forward(operation);
         }
-      });
+      }
     }
-
-    if (networkError) {
-      console.error("[Network error]:", networkError);
-    }
+    
+    // Return void to satisfy TypeScript
+    return;
   });
 }
 

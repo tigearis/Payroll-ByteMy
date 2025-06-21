@@ -3,16 +3,17 @@
 import { AlertTriangle, RefreshCw, Shield, HelpCircle } from "lucide-react";
 import React, { Component, ReactNode } from "react";
 
-import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../../components/ui/card";
-import { isPermissionError, parsePermissionError } from "../../lib/apollo";
+} from "@/components/ui/card";
+import { isPermissionError } from "@/lib/apollo";
+import { handleGraphQLError } from "@/lib/utils/handle-graphql-error";
 
 interface Props {
   children: ReactNode;
@@ -59,8 +60,6 @@ export class GraphQLErrorBoundary extends Component<Props, State> {
   handleRetry = () => {
     this.setState({
       hasError: false,
-      error: undefined,
-      errorInfo: undefined,
       isPermissionError: false,
     });
   };
@@ -82,7 +81,7 @@ export class GraphQLErrorBoundary extends Component<Props, State> {
   }
 
   private renderPermissionError() {
-    const permissionError = parsePermissionError(this.state.error);
+    const permissionError = this.state.error ? handleGraphQLError(this.state.error) : null;
 
     return (
       <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
@@ -100,22 +99,13 @@ export class GraphQLErrorBoundary extends Component<Props, State> {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <p className="text-sm text-amber-800 dark:text-amber-200">
-              {permissionError.field && permissionError.table ? (
-                <>
-                  Missing access to{" "}
-                  <Badge variant="outline" className="mx-1">
-                    {permissionError.field}
-                  </Badge>{" "}
-                  field in{" "}
-                  <Badge variant="outline" className="mx-1">
-                    {permissionError.table}
-                  </Badge>{" "}
-                  table.
-                </>
-              ) : (
-                "You may need additional permissions to view this data."
-              )}
+              {permissionError?.userMessage || "You may need additional permissions to view this data."}
             </p>
+            {permissionError?.requiredRole && (
+              <p className="text-xs text-amber-600 dark:text-amber-400">
+                Required role: <Badge variant="outline" className="mx-1">{permissionError.requiredRole}</Badge>
+              </p>
+            )}
             <p className="text-xs text-amber-600 dark:text-amber-400">
               Contact your administrator to request the necessary permissions.
             </p>

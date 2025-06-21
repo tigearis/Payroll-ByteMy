@@ -22,7 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useAuthContext } from "@/lib/auth-context";
+import { useAuthContext } from "@/lib/auth/auth-context";
 import { securityConfig } from "@/lib/security/config";
 
 interface MFAStatus {

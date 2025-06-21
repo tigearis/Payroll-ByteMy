@@ -3,30 +3,30 @@
 fragment PayrollBasicInfo on payrolls {
   id
   name
-  status
-  employee_count
-  processing_time
-  created_at
-  updated_at
+  clientId
+  cycleId
+  dateTypeId
+  primaryConsultantUserId
+  backupConsultantUserId
+  managerUserId
+  employeeCount
+  goLiveDate
 }
 
 fragment PayrollFullDetails on payrolls {
   id
   name
-  status
-  employee_count
-  processing_time
-  processing_days_before_eft
-  payroll_system
-  date_value
-  version_number
-  parent_payroll_id
-  go_live_date
-  superseded_date
-  version_reason
-  created_by_user_id
-  created_at
-  updated_at
+  employeeCount
+  processingTime
+  processingDaysBeforeEft
+  payrollSystem
+  dateValue
+  versionNumber
+  parentPayrollId
+  goLiveDate
+  supersededDate
+  versionReason
+  createdByUserId
 }
 
 fragment PayrollWithRelations on payrolls {
@@ -35,45 +35,50 @@ fragment PayrollWithRelations on payrolls {
     id
     name
   }
-  payroll_cycle {
+  payrollCycle {
     id
     name
   }
-  payroll_date_type {
+  payrollDateType {
     id
     name
   }
-  userByPrimaryConsultantUserId {
+  primaryConsultant {
     id
     name
     email
   }
-  userByBackupConsultantUserId {
+  backupConsultant {
     id
     name
     email
   }
-  userByManagerUserId {
+  manager {
     id
     name
     email
+  }
+}
+
+fragment PayrollWithClient on payrolls {
+  ...PayrollBasicInfo
+  client {
+    id
+    name
   }
 }
 
 fragment PayrollDate on payroll_dates {
   id
-  payroll_id
-  original_eft_date
-  adjusted_eft_date
-  processing_date
-  notes
-  created_at
-  updated_at
+  payrollId
+  originalEftDate
+  adjustedEftDate
+  processingDate
 }
 
 fragment PayrollWithDates on payrolls {
   ...PayrollWithRelations
-  payroll_dates(order_by: { adjusted_eft_date: asc }) {
+  payrollDates(order_by: { adjustedEftDate: asc }) {
     ...PayrollDate
   }
 }

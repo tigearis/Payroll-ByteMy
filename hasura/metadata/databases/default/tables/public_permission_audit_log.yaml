@@ -1,6 +1,28 @@
 table:
   name: permission_audit_log
   schema: public
+configuration:
+  column_config:
+    target_user_id:
+      custom_name: targetUserId
+    timestamp:
+      custom_name: timestamp
+    user_id:
+      custom_name: userId
+  custom_column_names:
+    target_user_id: targetUserId
+    timestamp: timestamp
+    user_id: userId
+  custom_root_fields:
+    delete: deletePermissionAuditLogs
+    delete_by_pk: deletePermissionAuditLog
+    insert: insertPermissionAuditLogs
+    insert_one: insertPermissionAuditLog
+    select: permissionAuditLogs
+    select_aggregate: permissionAuditLogsAggregate
+    select_by_pk: permissionAuditLog
+    update: updatePermissionAuditLogs
+    update_by_pk: updatePermissionAuditLog
 object_relationships:
   - name: performed_by_user
     using:

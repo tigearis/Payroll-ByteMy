@@ -35,6 +35,8 @@
 - "!include public_payroll_version_history_results.yaml"
 - "!include public_payroll_version_results.yaml"
 - "!include public_payrolls.yaml"
+- "!include public_permission_audit_log.yaml"
+- "!include public_permission_overrides.yaml"
 - "!include public_permissions.yaml"
 - "!include public_resources.yaml"
 - "!include public_role_permissions.yaml"

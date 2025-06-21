@@ -1,17 +1,5 @@
-import { gql } from "@apollo/client";
 import { RealTimeUpdates } from "@/components/real-time-updates";
-
-// Import extracted GraphQL operations
-const STAFF_SUBSCRIPTION = gql`
-  subscription staffSubscription {
-    users(where: { is_staff: { _eq: true } }) {
-      id
-      name
-      role
-      updated_at
-    }
-  }
-`;
+import { StaffSubscriptionDocument } from "@/domains/users/graphql/generated/graphql";
 
 /**
  * Specialized component for staff updates
@@ -27,7 +15,7 @@ export function StaffUpdatesListener({
 }) {
   return (
     <RealTimeUpdates
-      subscription={STAFF_SUBSCRIPTION}
+      subscription={StaffSubscriptionDocument}
       refetchQueries={refetchQueries}
       showToasts={showToasts}
       {...(onUpdate && { onUpdate })}

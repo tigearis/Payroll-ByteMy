@@ -47,24 +47,24 @@ const SOC2_HEADER = `/**
 // Define domains with SOC2 compliance levels and auto-discovery
 const domains = [
   // CRITICAL Security Level - Authentication and System Access
-  // { name: "auth", securityLevel: "CRITICAL" }, // Temporarily disabled - schema mismatch
-  // { name: "audit", securityLevel: "CRITICAL" }, // Temporarily disabled - schema mismatch
-  // { name: "permissions", securityLevel: "CRITICAL" }, // Temporarily disabled - schema mismatch
+  { name: "auth", securityLevel: "CRITICAL" }, // Re-enabled for fixing
+  { name: "audit", securityLevel: "CRITICAL" }, // Re-enabled for fixing
+  { name: "permissions", securityLevel: "CRITICAL" }, // Re-enabled for fixing
 
   // HIGH Security Level - PII and Business Critical Data
-  // { name: "users", securityLevel: "HIGH" }, // Schema mismatch - need to fix fields first
-  // { name: "clients", securityLevel: "HIGH" }, // Temporarily disabled - schema mismatch
-  // { name: "billing", securityLevel: "HIGH" }, // Temporarily disabled - schema mismatch
+  { name: "users", securityLevel: "HIGH" }, // Schema mismatch - need to fix fields first
+  { name: "clients", securityLevel: "HIGH" }, // Temporarily disabled - schema mismatch
+  { name: "billing", securityLevel: "HIGH" }, // Re-enabled for fixing
 
   // MEDIUM Security Level - Internal Business Data
-  // { name: "payrolls", securityLevel: "MEDIUM" }, // Schema mismatch - need to fix fields first
+  { name: "payrolls", securityLevel: "MEDIUM" }, // Has validation errors - temporarily disabled
   { name: "notes", securityLevel: "MEDIUM" }, // Internal communications - WORKING
-  // { name: "leave", securityLevel: "MEDIUM" }, // Temporarily disabled - schema mismatch
-  // { name: "work-schedule", securityLevel: "MEDIUM" }, // Temporarily disabled - schema mismatch
-  // { name: "external-systems", securityLevel: "MEDIUM" }, // Temporarily disabled - schema mismatch
+  { name: "leave", securityLevel: "MEDIUM" }, // WORKING
+  { name: "work-schedule", securityLevel: "MEDIUM" }, // Re-enabled for fixing
+  { name: "external-systems", securityLevel: "MEDIUM" }, // WORKING
 
   // LOW Security Level - Configuration and Reference Data
-  // { name: "shared", securityLevel: "LOW" }, // Temporarily disabled - schema mismatch
+  { name: "shared", securityLevel: "LOW" }, // Dashboard stats and cross-domain aggregates - WORKING
 ];
 
 // Unified scalar mappings - single source of truth
@@ -94,13 +94,13 @@ const SHARED_SCALARS = {
   Boolean: "boolean",
   ID: "string",
 
-  // Custom enum scalars for type safety
-  user_role: "UserRole",
-  payroll_status: "PayrollStatus",
-  payroll_cycle_type: "PayrollCycleType",
-  payroll_date_type: "PayrollDateType",
-  status: "Status",
-  leave_status_enum: "LeaveStatusEnum",
+  // Custom scalars - these are scalars in Hasura, not enums
+  user_role: "string",
+  payroll_status: "string",
+  payroll_cycle_type: "string",
+  payroll_date_type: "string",
+  status: "string",
+  leave_status_enum: "string",
   permission_action: "string", // Fix for permission_action scalar
 
   // Security-enhanced scalars
@@ -217,15 +217,13 @@ function getAccessControlDescription(level: string): string {
 
 // Generate security-classified domain configurations with automatic export management
 const generatePerDomain = domains
-  .filter((domain) => domainHasValidOperations(domain.name))
+  .filter(
+    (domain) =>
+      domainHasValidOperations(domain.name) && domain.name !== "shared"
+  )
   .reduce((acc, domain) => {
-    const isShared = domain.name === "shared";
-    const base = isShared
-      ? `./shared/graphql`
-      : `./domains/${domain.name}/graphql`;
-    const outputDir = isShared
-      ? `./shared/types/generated/`
-      : `./domains/${domain.name}/graphql/generated/`;
+    const base = `./domains/${domain.name}/graphql`;
+    const outputDir = `./domains/${domain.name}/graphql/generated/`;
 
     // Check which GraphQL files actually have content
     const graphqlFiles = [
@@ -267,17 +265,15 @@ const generatePerDomain = domains
     };
 
     // Generate domain index file for clean exports
-    if (!isShared) {
-      acc[`./domains/${domain.name}/index.ts`] = {
-        plugins: [
-          {
-            add: {
-              content: `${securityHeader}// Auto-generated domain exports\n\n// Re-export all GraphQL operations\nexport * from './graphql/generated';\n`,
-            },
+    acc[`./domains/${domain.name}/index.ts`] = {
+      plugins: [
+        {
+          add: {
+            content: `${securityHeader}// Auto-generated domain exports\n\n// Re-export all GraphQL operations\nexport * from './graphql/generated';\n`,
           },
-        ],
-      };
-    }
+        },
+      ],
+    };
 
     return acc;
   }, {} as CodegenConfig["generates"]);
@@ -309,20 +305,52 @@ const config: CodegenConfig = {
       },
     },
 
+    // Handle shared domain separately with proper hooks generation
+    "./shared/types/generated/": {
+      documents: [
+        "./shared/graphql/fragments.graphql",
+        "./shared/graphql/queries.graphql",
+        "./shared/graphql/mutations.graphql",
+        "./shared/graphql/subscriptions.graphql",
+      ].filter(hasGraphQLContent),
+      preset: "client",
+      plugins: [
+        {
+          add: {
+            content: `${SOC2_HEADER}/* 
+ * DOMAIN: SHARED
+ * SECURITY LEVEL: LOW
+ * ACCESS CONTROLS: Basic Authentication
+ * AUTO-EXPORTED: This file is automatically exported from domain index
+ */\n\n`,
+          },
+        },
+      ],
+      config: {
+        ...sharedConfig,
+        domainName: "shared",
+        securityLevel: "LOW",
+      },
+      presetConfig: {
+        // Don't generate the default index.ts since we have a custom one below
+        fragmentMasking: false,
+      },
+    },
+
     // Generate for each valid domain with security classification and auto-exports
     ...generatePerDomain,
 
-    // Root exports aggregator for clean imports
+    // Root exports aggregator for clean imports (ensure this overwrites client preset index)
     "./shared/types/generated/index.ts": {
       plugins: [
         {
           add: {
-            content: `${SOC2_HEADER}// Central export aggregator for all GraphQL operations\n\n// Re-export base types\nexport * from './graphql';\n\n// Auto-aggregate domain exports\n${domains
+            content: `${SOC2_HEADER}// Central export aggregator for all GraphQL operations\n\n// Re-export fragment masking utilities\nexport * from './fragment-masking';\n\n// Re-export gql utilities\nexport * from './gql';\n\n// Re-export base types and generated operations\nexport * from './graphql';\n\n// Auto-aggregate domain exports\n${domains
               .filter((d) => domainHasValidOperations(d.name))
               .map((d) =>
                 d.name === "shared"
                   ? "// Shared operations exported directly above"
-                  : `export * from '../../domains/${d.name}/graphql/generated';`
+                  : `export * from '../../../domains/${d.name}/graphql/generated';`
               )
               .join("\n")}\n`,
           },
@@ -399,6 +427,8 @@ const config: CodegenConfig = {
   // Post-generation hooks for optimization
   hooks: {
     afterAllFileWrite: [
+      // Fix domain index files to include graphql exports
+      "node -e \"const fs = require('fs'); const domains = ['auth', 'audit', 'permissions', 'users', 'clients', 'billing', 'payrolls', 'notes', 'leave', 'work-schedule', 'external-systems']; domains.forEach(domain => { const indexPath = \\`domains/\\${domain}/graphql/generated/index.ts\\`; if (fs.existsSync(indexPath)) { const content = 'export * from \\\"./fragment-masking\\\";\\\\nexport * from \\\"./gql\\\";\\\\nexport * from \\\"./graphql\\\";\\\\n'; fs.writeFileSync(indexPath, content, 'utf8'); } });\"",
       // Format all generated files (optional)
       // "prettier --write",
     ],

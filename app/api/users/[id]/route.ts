@@ -2,15 +2,15 @@ import { gql } from "@apollo/client";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuthParams } from "@/lib/api-auth";
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { withAuthParams } from "@/lib/auth/api-auth";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 import {
   getUserPermissions,
   canAssignRole,
   UserRole,
   updateUserRole,
-} from "@/lib/user-sync";
+} from "@/domains/users/services/user-sync";
 
 // Get user by ID (either database ID or Clerk ID)
 const GET_USER_BY_ID = gql`
@@ -114,20 +114,25 @@ export async function GET(
     }
 
     // Log SOC2 audit event
-    await soc2Logger.log({
+    const clientInfo = auditLogger.extractClientInfo(request);
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
-      message: `User profile accessed for: ${targetId}`,
       userId,
-      entityType: "user",
-      entityId: targetId,
+      resourceId: targetId,
+      resourceType: "user",
+      action: "VIEW",
+      success: true,
+      ipAddress: clientInfo.ipAddress || "unknown",
+      userAgent: clientInfo.userAgent || "unknown",
       metadata: { 
         isSelf,
         viewerRole: currentUserRole,
         accessType: isSelf ? "self_view" : "admin_view"
       },
-    }, request);
+      complianceNote: `User profile accessed for: ${targetId}`
+    });
 
     console.log(`👤 Fetching user details for: ${targetId}`);
 

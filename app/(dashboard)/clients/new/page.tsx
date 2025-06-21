@@ -26,10 +26,12 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CREATE_CLIENT, GET_CLIENTS } from "@/domains/clients/services/client.service";
-import { CREATE_PAYROLL } from "@/domains/payrolls/services/payroll.service";
-
-import { GET_ALL_USERS_LIST } from "@/domains/staff/graphql/generated";
+import {
+  CreateClientDocument,
+  GetClientsDocument,
+} from "@/domains/clients/graphql/generated/graphql";
+import { CreatePayrollDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GetAllUsersListDocument } from "@/domains/users/graphql/generated";
 
 // Hardcoded options for cycles and date types (these should ideally come from the database)
 const PAYROLL_CYCLES = [
@@ -75,9 +77,15 @@ const MONTH_DAYS = Array.from({ length: 31 }, (_, i) => ({
 function getOrdinalSuffix(num: number): string {
   const j = num % 10;
   const k = num % 100;
-  if (j === 1 && k !== 11) {return "st";}
-  if (j === 2 && k !== 12) {return "nd";}
-  if (j === 3 && k !== 13) {return "rd";}
+  if (j === 1 && k !== 11) {
+    return "st";
+  }
+  if (j === 2 && k !== 12) {
+    return "nd";
+  }
+  if (j === 3 && k !== 13) {
+    return "rd";
+  }
   return "th";
 }
 
@@ -85,8 +93,12 @@ function getOrdinalSuffix(num: number): string {
 function getBusinessWeekday(jsDay: number): number {
   // JavaScript: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
   // Business: 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday
-  if (jsDay === 0) {return 0;} // Sunday - not a business day
-  if (jsDay === 6) {return 0;} // Saturday - not a business day
+  if (jsDay === 0) {
+    return 0;
+  } // Sunday - not a business day
+  if (jsDay === 6) {
+    return 0;
+  } // Saturday - not a business day
   return jsDay; // Monday=1, Tuesday=2, etc.
 }
 
@@ -498,13 +510,13 @@ export default function NewClientPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // GraphQL operations
-  const { data: usersData } = useQuery(GET_ALL_USERS_LIST);
+  const { data: usersData } = useQuery(GetAllUsersListDocument);
 
-  const [createClient] = useMutation(CREATE_CLIENT, {
-    refetchQueries: [{ query: GET_CLIENTS }],
+  const [createClient] = useMutation(CreateClientDocument, {
+    refetchQueries: [{ query: GetClientsDocument }],
   });
 
-  const [createPayrollMutation] = useMutation(CREATE_PAYROLL);
+  const [createPayrollMutation] = useMutation(CreatePayrollDocument);
 
   // Handle input changes
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -709,13 +721,13 @@ export default function NewClientPage() {
       const clientResult = await createClient({
         variables: {
           name: formData.name.trim(),
-          contactPerson: formData.contact_person.trim() || null,
+          contactName: formData.contact_person.trim() || null,
           contactEmail: formData.contact_email.trim() || null,
           contactPhone: formData.contact_phone.trim() || null,
         },
       });
 
-      const newClientId = clientResult.data?.insert_clients_one?.id;
+      const newClientId = (clientResult.data?.insertClient as any)?.id;
 
       // Create payroll if requested and form is valid
       if (createPayroll && newClientId && payrollData.name.trim()) {
@@ -746,7 +758,9 @@ export default function NewClientPage() {
         };
 
         await createPayrollMutation({
-          variables: mutationVariables,
+          variables: {
+            object: mutationVariables,
+          },
         });
       }
 
@@ -779,7 +793,9 @@ export default function NewClientPage() {
 
     // Bi-monthly, monthly, quarterly: need date type
     if (["bi_monthly", "monthly", "quarterly"].includes(payrollData.cycleId)) {
-      if (!payrollData.dateTypeId) {return false;}
+      if (!payrollData.dateTypeId) {
+        return false;
+      }
 
       // If fixed date type selected, need day value
       if (payrollData.dateTypeId === "fixed") {

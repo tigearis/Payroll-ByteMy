@@ -3,37 +3,37 @@
 # SOC2 Compliance: Row-level security and audit logging enforced
 
 query GetClients {
-  clients(where: { status: { _neq: "deleted" } }, order_by: { name: asc }) {
+  clients(where: { active: { _eq: true } }, order_by: { name: asc }) {
     ...ClientBasicInfo
   }
 }
 
 query GetClientsWithContact {
-  clients(where: { status: { _neq: "deleted" } }, order_by: { name: asc }) {
+  clients(where: { active: { _eq: true } }, order_by: { name: asc }) {
     ...ClientWithContact
   }
 }
 
 query GetClientById($id: uuid!) {
-  clients_by_pk(id: $id) {
+  client(id: $id) {
     ...ClientWithRelations
   }
 }
 
 query GetClientBasicById($id: uuid!) {
-  clients_by_pk(id: $id) {
+  client(id: $id) {
     ...ClientBasicInfo
   }
 }
 
 query GetActiveClients {
-  clients(where: { status: { _eq: "active" } }, order_by: { name: asc }) {
+  clients(where: { active: { _eq: true } }, order_by: { name: asc }) {
     ...ClientBasicInfo
   }
 }
 
 query GetClientsForBilling {
-  clients(where: { status: { _eq: "active" } }, order_by: { name: asc }) {
+  clients(where: { active: { _eq: true } }, order_by: { name: asc }) {
     ...ClientForBilling
   }
 }
@@ -42,12 +42,12 @@ query SearchClients($searchTerm: String!) {
   clients(
     where: {
       _and: [
-        { status: { _neq: "deleted" } }
+        { active: { _eq: true } }
         {
           _or: [
             { name: { _ilike: $searchTerm } }
-            { contact_name: { _ilike: $searchTerm } }
-            { contact_email: { _ilike: $searchTerm } }
+            { contactPerson: { _ilike: $searchTerm } }
+            { contactEmail: { _ilike: $searchTerm } }
           ]
         }
       ]
@@ -61,23 +61,23 @@ query SearchClients($searchTerm: String!) {
 
 # Audit query - limited fields for compliance
 query GetClientsForAudit {
-  clients(order_by: { created_at: desc }) {
+  clients(order_by: { createdAt: desc }) {
     ...ClientForAudit
   }
 }
 
 query GetClientStats {
-  clients_aggregate {
+  clientsAggregate {
     aggregate {
       count
     }
   }
-  active_clients: clients_aggregate(where: { status: { _eq: "active" } }) {
+  active_clients: clientsAggregate(where: { active: { _eq: true } }) {
     aggregate {
       count
     }
   }
-  inactive_clients: clients_aggregate(where: { status: { _eq: "inactive" } }) {
+  inactive_clients: clientsAggregate(where: { active: { _eq: false } }) {
     aggregate {
       count
     }

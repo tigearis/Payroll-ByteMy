@@ -6,8 +6,6 @@ fragment BillingPlanCore on billing_plan {
   description
   rate_per_payroll
   currency
-  created_at
-  updated_at
 }
 
 fragment BillingInvoiceCore on billing_invoice {
@@ -17,12 +15,9 @@ fragment BillingInvoiceCore on billing_invoice {
   billing_period_end
   issued_date
   due_date
-  status
   notes
   total_amount
   currency
-  created_at
-  updated_at
 }
 
 fragment BillingInvoiceWithItems on billing_invoice {
@@ -33,7 +28,7 @@ fragment BillingInvoiceWithItems on billing_invoice {
   client {
     id
     name
-    contact_email
+    contactEmail
   }
 }
 
@@ -44,19 +39,13 @@ fragment BillingInvoiceItemCore on billing_invoice_item {
   quantity
   unit_price
   amount
-  created_at
-  updated_at
 }
 
 fragment ClientBillingAssignmentCore on client_billing_assignment {
   id
   client_id
   billing_plan_id
-  start_date
-  end_date
   is_active
-  created_at
-  updated_at
 }
 
 fragment ClientBillingAssignmentWithRelations on client_billing_assignment {
@@ -76,14 +65,12 @@ fragment BillingEventLogCore on billing_event_log {
   event_type
   message
   created_by
-  created_at
 }
 
 fragment BillingEventLogWithRelations on billing_event_log {
   ...BillingEventLogCore
   billing_invoice {
     id
-    status
   }
   user {
     id

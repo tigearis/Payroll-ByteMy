@@ -126,7 +126,7 @@ function AcceptInvitationContent() {
 
     try {
       if (!token) {
-        return null;
+        return;
       }
 
       // Create a new sign-up with the supplied invitation token.

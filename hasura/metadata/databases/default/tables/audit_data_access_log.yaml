@@ -1,6 +1,52 @@
 table:
   name: data_access_log
   schema: audit
+configuration:
+  column_config:
+    accessed_at:
+      custom_name: accessedAt
+    access_type:
+      custom_name: accessType
+    data_classification:
+      custom_name: dataClassification
+    fields_accessed:
+      custom_name: fieldsAccessed
+    ip_address:
+      custom_name: ipAddress
+    query_executed:
+      custom_name: queryExecuted
+    resource_id:
+      custom_name: resourceId
+    resource_type:
+      custom_name: resourceType
+    row_count:
+      custom_name: rowCount
+    session_id:
+      custom_name: sessionId
+    user_id:
+      custom_name: userId
+  custom_column_names:
+    accessed_at: accessedAt
+    access_type: accessType
+    data_classification: dataClassification
+    fields_accessed: fieldsAccessed
+    ip_address: ipAddress
+    query_executed: queryExecuted
+    resource_id: resourceId
+    resource_type: resourceType
+    row_count: rowCount
+    session_id: sessionId
+    user_id: userId
+  custom_root_fields:
+    delete: deleteDataAccessLogs
+    delete_by_pk: deleteDataAccessLog
+    insert: insertDataAccessLogs
+    insert_one: insertDataAccessLog
+    select: dataAccessLogs
+    select_aggregate: dataAccessLogsAggregate
+    select_by_pk: dataAccessLog
+    update: updateDataAccessLogs
+    update_by_pk: updateDataAccessLog
 insert_permissions:
   - role: system
     permission:
@@ -20,7 +66,7 @@ insert_permissions:
 select_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -62,7 +108,7 @@ select_permissions:
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access
