@@ -27,7 +27,7 @@ export function useRealTimeSubscription({
 
   // Subscription options
   const options: SubscriptionHookOptions = {
-    variables,
+    variables: variables || {},
     onSubscriptionData: async ({ subscriptionData }) => {
       if (!isConnected) {
         setIsConnected(true);
@@ -79,6 +79,8 @@ export function useRealTimeSubscription({
     if (retryCount >= 5 && shouldToast) {
       toast.error('Could not establish real-time connection');
     }
+    
+    return undefined;
   }, [retryCount, isConnected, client, refetchQueries, shouldToast]);
 
   // Reset retry count when connection is successful

@@ -1,7 +1,10 @@
 # Permissions Domain Queries
 
 # Resources
-query GetResources($where: resources_bool_exp, $order_by: [resources_order_by!]) {
+query GetResources(
+  $where: resources_bool_exp
+  $order_by: [resources_order_by!]
+) {
   resources(where: $where, order_by: $order_by) {
     ...ResourceCore
     permissions {
@@ -11,7 +14,7 @@ query GetResources($where: resources_bool_exp, $order_by: [resources_order_by!])
 }
 
 query GetResourceById($id: uuid!) {
-  resources_by_pk(id: $id) {
+  resource(id: $id) {
     ...ResourceCore
     permissions(order_by: { action: asc }) {
       ...PermissionCore
@@ -20,7 +23,10 @@ query GetResourceById($id: uuid!) {
 }
 
 # Permissions
-query GetPermissions($where: permissions_bool_exp, $order_by: [permissions_order_by!]) {
+query GetPermissions(
+  $where: permissions_bool_exp
+  $order_by: [permissions_order_by!]
+) {
   permissions(where: $where, order_by: $order_by) {
     ...PermissionWithResource
   }
@@ -39,7 +45,7 @@ query GetPermissionsByResource($resource_name: String!) {
 query GetRoles($where: roles_bool_exp, $order_by: [roles_order_by!]) {
   roles(where: $where, order_by: $order_by) {
     ...RoleWithPermissions
-    user_roles_aggregate {
+    userRoles_aggregate {
       aggregate {
         count
       }
@@ -48,29 +54,29 @@ query GetRoles($where: roles_bool_exp, $order_by: [roles_order_by!]) {
 }
 
 query GetRoleById($id: uuid!) {
-  roles_by_pk(id: $id) {
+  role(id: $id) {
     ...RoleWithPermissions
-    user_roles {
+    userRoles {
       ...UserRoleWithDetails
     }
   }
 }
 
 query GetSystemRoles {
-  roles(where: { is_system_role: { _eq: true } }, order_by: { priority: asc }) {
+  roles(where: { isSystemRole: { _eq: true } }, order_by: { priority: asc }) {
     ...RoleCore
   }
 }
 
 # User Roles
-query GetUserRoles($user_id: uuid!) {
-  user_roles(where: { user_id: { _eq: $user_id } }) {
+query GetUserRoles($userId: uuid!) {
+  userRoles(where: { userId: { _eq: $userId } }) {
     ...UserRoleWithDetails
   }
 }
 
-query GetUsersWithRole($role_id: uuid!) {
-  user_roles(where: { role_id: { _eq: $role_id } }) {
+query GetUsersWithRole($roleId: uuid!) {
+  userRoles(where: { roleId: { _eq: $roleId } }) {
     ...UserRoleWithDetails
   }
 }
@@ -103,60 +109,38 @@ query GetAppSettings {
   }
 }
 
-# Permission Checks
-query CheckUserPermission($user_id: uuid!, $resource: String!, $action: String!) {
-  user_can_perform_action(
-    args: {
-      p_user_id: $user_id
-      p_resource: $resource
-      p_action: $action
-    }
-  ) {
-    can_perform
-  }
-}
-
-query GetUserEffectivePermissions($user_id: uuid!) {
-  get_user_effective_permissions(args: { p_user_id: $user_id }) {
-    resource
-    action
-    granted_by
-    source_type
-    conditions
-  }
-}
 
 # Analytics
 query GetPermissionAnalytics {
-  roles_count: roles_aggregate {
+  roles_count: rolesAggregate {
     aggregate {
       count
     }
   }
-  
-  permissions_count: permissions_aggregate {
+
+  permissions_count: permissionsAggregate {
     aggregate {
       count
     }
   }
-  
-  resources_count: resources_aggregate {
+
+  resources_count: resourcesAggregate {
     aggregate {
       count
     }
   }
-  
-  user_roles_count: user_roles_aggregate {
+
+  user_roles_count: userRolesAggregate {
     aggregate {
       count
     }
   }
-  
+
   roles_by_priority: roles(order_by: { priority: asc }) {
     name
-    display_name
+    displayName
     priority
-    user_roles_aggregate {
+    userRoles_aggregate {
       aggregate {
         count
       }

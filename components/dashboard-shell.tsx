@@ -3,7 +3,7 @@ import type React from "react"
 
 import { MainNav } from "@/components/main-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { UserNav } from "@/components/user-nav"
+import { UserNav } from "@/domains/users/components/user-nav"
 
 import { Sidebar } from "./sidebar"
 

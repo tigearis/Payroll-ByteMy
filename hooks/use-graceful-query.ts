@@ -8,9 +8,8 @@ import {
 import { useState, useEffect } from "react";
 import {
   isPermissionError,
-  parsePermissionError,
-  handlePermissionError,
 } from "@/lib/apollo";
+import { handleGraphQLError } from "@/lib/utils/handle-graphql-error";
 
 export interface GracefulQueryOptions<
   TData,
@@ -38,7 +37,7 @@ export interface GracefulQueryOptions<
 }
 
 export interface GracefulQueryResult<TData> {
-  data?: TData;
+  data: TData | undefined;
   loading: boolean;
   error?: any;
   refetch: () => void;
@@ -75,15 +74,18 @@ export function useGracefulQuery<
 
   useEffect(() => {
     if (error?.graphQLErrors) {
-      const permissionErrors = error.graphQLErrors.filter(isPermissionError);
+      const permissionErrors = error.graphQLErrors.filter((err) => 
+        err.message.toLowerCase().includes('permission') ||
+        err.message.toLowerCase().includes('denied') ||
+        err.extensions?.code === 'permission-denied'
+      );
 
       if (permissionErrors.length > 0) {
         setHasPermissionError(true);
         setPermissionError(permissionErrors[0]);
 
         if (showPermissionErrors) {
-          const parsedError = parsePermissionError(permissionErrors[0]);
-          handlePermissionError(parsedError, contextName);
+          console.warn(`Permission error in ${contextName}:`, permissionErrors[0].message);
         }
       } else {
         setHasPermissionError(false);
@@ -132,20 +134,23 @@ export function useGracefulMutation<
       const response = await mutationFn(mutationOptions);
 
       if (response.errors) {
-        const permissionErrors = response.errors.filter(isPermissionError);
+        const permissionErrors = response.errors.filter((err) => 
+          err.message.toLowerCase().includes('permission') ||
+          err.message.toLowerCase().includes('denied') ||
+          err.extensions?.code === 'permission-denied'
+        );
 
         if (permissionErrors.length > 0) {
-          const parsedError = parsePermissionError(permissionErrors[0]);
-          handlePermissionError(parsedError, options.contextName);
-          throw new Error(parsedError.message);
+          console.warn(`Permission error in ${options.contextName}:`, permissionErrors[0].message);
+          throw new Error(permissionErrors[0].message);
         }
       }
 
       return response;
     } catch (error: any) {
       if (isPermissionError(error)) {
-        const parsedError = parsePermissionError(error);
-        handlePermissionError(parsedError, options.contextName);
+        const parsedError = handleGraphQLError(error);
+        console.warn(`Permission error in ${options.contextName}:`, parsedError.userMessage);
       }
       throw error;
     }

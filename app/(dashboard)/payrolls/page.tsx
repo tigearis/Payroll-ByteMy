@@ -2,6 +2,7 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
+import { GetPayrollsDocument, GetPayrollsFallbackDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
   PlusCircle,
   Search,
@@ -33,7 +34,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
-import { PayrollsTable } from "@/components/payrolls-table";
+import { PayrollsTable } from "@/domains/payrolls/components/payrolls-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,7 +60,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GET_PAYROLLS } from "@/domains/payrolls/graphql/queries.graphql";
 import { useUserRole } from "@/hooks/use-user-role";
 import { PayrollUpdatesListener } from "@/components/real-time-updates";
 
@@ -413,13 +413,13 @@ export default function PayrollsPage() {
   );
 
   const {
-    isAdmin,
+    hasAdminAccess,
     isManager,
     isDeveloper,
     isLoading: roleLoading,
   } = useUserRole();
 
-  const { data, loading, error, refetch } = useQuery(GET_PAYROLLS, {
+  const { data, loading, error, refetch } = useQuery(GetPayrollsDocument, {
     fetchPolicy: "cache-and-network",
     errorPolicy: "all",
   });
@@ -430,7 +430,7 @@ export default function PayrollsPage() {
     loading: fallbackLoading,
     error: fallbackError,
     refetch: fallbackRefetch,
-  } = useQuery(GET_PAYROLLS_FALLBACK, {
+  } = useQuery(GetPayrollsFallbackDocument, {
     skip: !error, // Only run fallback if main query fails
     fetchPolicy: "cache-and-network",
     errorPolicy: "all",
@@ -454,10 +454,19 @@ export default function PayrollsPage() {
       }, 2000);
       return () => clearTimeout(timeout);
     }
+    // Void return for consistency
+    return;
   }, [roleLoading]);
 
   if (roleLoading) {
-    return null;
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="text-gray-500">Checking permissions...</p>
+        </div>
+      </div>
+    );
   }
 
   if (finalLoading && !payrolls.length) {
@@ -968,7 +977,7 @@ export default function PayrollsPage() {
           </div>
 
           <div className="flex items-center space-x-2">
-            {(isAdmin || isManager || isDeveloper) && (
+            {(hasAdminAccess || isManager || isDeveloper) && (
               <Link href="/payrolls/new">
                 <Button>
                   <PlusCircle className="mr-2 h-4 w-4" />
@@ -1319,7 +1328,7 @@ export default function PayrollsPage() {
                     ? "Try adjusting your search criteria or filters"
                     : "Get started by adding your first payroll"}
                 </p>
-                {(isAdmin || isManager || isDeveloper) &&
+                {(hasAdminAccess || isManager || isDeveloper) &&
                   !searchTerm &&
                   !hasActiveFilters && (
                     <Link href="/payrolls/new">

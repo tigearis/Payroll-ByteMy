@@ -14,8 +14,7 @@ export {
   type UnifiedClientOptions,
   // Error handling utilities
   isPermissionError,
-  parsePermissionError,
-  getPermissionErrorMessage,
-  handlePermissionError,
-  type GraphQLPermissionError,
+  isAuthError,
+  getSimpleErrorMessage,
+  type GraphQLErrorDetails,
 } from "./unified-client";

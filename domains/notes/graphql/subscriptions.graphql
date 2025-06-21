@@ -2,20 +2,18 @@
 # Security Classification: MEDIUM - Real-time internal data
 # SOC2 Compliance: User-based access control enforced by Hasura
 
-subscription NotesUpdates($entityId: uuid!, $entityType: String!) {
+subscription NotesUpdates($entity_id: uuid!, $entity_type: String!) {
   notes(
-    where: { entity_id: { _eq: $entityId }, entity_type: { _eq: $entityType } }
+    where: { entity_id: { _eq: $entity_id }, entity_type: { _eq: $entity_type } }
     order_by: { created_at: desc }
   ) {
     ...NoteWithUser
   }
 }
 
-subscription ImportantNotesUpdates($entityId: uuid!, $entityType: String!) {
+subscription ImportantNotesUpdates($entity_id: uuid!, $entity_type: String!) {
   notes(
     where: {
-      entity_id: { _eq: $entityId }
-      entity_type: { _eq: $entityType }
       is_important: { _eq: true }
     }
     order_by: { created_at: desc }

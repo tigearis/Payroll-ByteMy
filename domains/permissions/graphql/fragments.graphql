@@ -3,20 +3,20 @@
 fragment ResourceCore on resources {
   id
   name
-  display_name
+  displayName
   description
-  created_at
-  updated_at
+  createdAt
+  updatedAt
 }
 
 fragment PermissionCore on permissions {
   id
-  resource_id
+  resourceId
   action
   description
-  created_at
-  updated_at
   legacy_permission_name
+  createdAt
+  updatedAt
 }
 
 fragment PermissionWithResource on permissions {
@@ -29,24 +29,24 @@ fragment PermissionWithResource on permissions {
 fragment RoleCore on roles {
   id
   name
-  display_name
+  displayName
   description
   priority
-  is_system_role
-  created_at
-  updated_at
+  isSystemRole
+  createdAt
+  updatedAt
 }
 
 fragment RoleWithPermissions on roles {
   ...RoleCore
-  role_permissions {
+  rolePermissions {
     id
     conditions
     permission {
       ...PermissionWithResource
     }
   }
-  role_permissions_aggregate {
+  rolePermissions_aggregate {
     aggregate {
       count
     }
@@ -55,11 +55,11 @@ fragment RoleWithPermissions on roles {
 
 fragment RolePermissionCore on role_permissions {
   id
-  role_id
-  permission_id
+  roleId
+  permissionId
   conditions
-  created_at
-  updated_at
+  createdAt
+  updatedAt
 }
 
 fragment RolePermissionWithDetails on role_permissions {
@@ -74,10 +74,10 @@ fragment RolePermissionWithDetails on role_permissions {
 
 fragment UserRoleCore on user_roles {
   id
-  user_id
-  role_id
-  created_at
-  updated_at
+  userId
+  roleId
+  createdAt
+  updatedAt
 }
 
 fragment UserRoleWithDetails on user_roles {
@@ -89,8 +89,8 @@ fragment UserRoleWithDetails on user_roles {
     id
     name
     email
-    is_staff
-    is_active
+    isStaff
+    isActive
   }
 }
 
@@ -99,7 +99,6 @@ fragment FeatureFlagCore on feature_flags {
   feature_name
   is_enabled
   allowed_roles
-  updated_at
 }
 
 fragment AppSettingsCore on app_settings {

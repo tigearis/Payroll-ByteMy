@@ -2,10 +2,10 @@
 
 fragment LeaveCore on leave {
   id
-  user_id
-  start_date
-  end_date
-  leave_type
+  userId
+  startDate
+  endDate
+  leaveType
   reason
   status
 }
@@ -16,8 +16,8 @@ fragment LeaveWithUser on leave {
     id
     name
     email
-    is_staff
-    manager_id
+    isStaff
+    managerId
   }
 }
 

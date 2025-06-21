@@ -95,7 +95,7 @@ const [sessionExpired, setSessionExpired] = useState(false);
 import { clientApolloClient } from '@/lib/apollo/unified-client';
 
 // Domain-specific GraphQL operations
-import { useGetUsersQuery } from '@/domains/users/graphql/generated';
+import { GetUsersDocument } from '@/domains/users/graphql/generated';
 
 // Proper error handling with permission awareness
 import { useGracefulQuery } from '@/hooks/use-graceful-query';

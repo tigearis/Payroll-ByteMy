@@ -103,7 +103,7 @@ export class ErrorBoundary extends React.Component<
   };
 
   private handleReset = () => {
-    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    this.setState({ hasError: false });
   };
 
   private handleReload = () => {
@@ -119,13 +119,12 @@ export class ErrorBoundary extends React.Component<
       // Use custom fallback if provided
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;
-        return (
-          <FallbackComponent
-            error={this.state.error!}
-            reset={this.handleReset}
-            errorId={this.state.errorId}
-          />
-        );
+        const fallbackProps = {
+          error: this.state.error!,
+          reset: this.handleReset,
+          ...(this.state.errorId && { errorId: this.state.errorId })
+        };
+        return <FallbackComponent {...fallbackProps} />;
       }
 
       // Default error UI
@@ -200,8 +199,14 @@ export function ErrorBoundaryWrapper({
   onError,
   isolate = false,
 }: ErrorBoundaryProps) {
+  const errorBoundaryProps = {
+    isolate,
+    ...(fallback && { fallback }),
+    ...(onError && { onError })
+  };
+  
   return (
-    <ErrorBoundary fallback={fallback} onError={onError} isolate={isolate}>
+    <ErrorBoundary {...errorBoundaryProps}>
       {children}
     </ErrorBoundary>
   );

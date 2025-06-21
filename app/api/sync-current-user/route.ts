@@ -2,7 +2,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { syncUserWithDatabase } from "@/lib/user-sync";
+import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 
 async function handleSync(req: NextRequest) {
   try {

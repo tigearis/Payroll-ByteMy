@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { addMonths, format } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 
 
 // GraphQL mutation for generating payroll dates

@@ -1,69 +1,70 @@
 # Work Schedule Domain Queries
 
-query GetWorkSchedules($where: work_schedule_bool_exp, $order_by: [work_schedule_order_by!]) {
-  work_schedule(where: $where, order_by: $order_by) {
+query GetWorkSchedules(
+  $where: work_schedule_bool_exp
+  $order_by: [work_schedule_order_by!]
+) {
+  workSchedules(where: $where, order_by: $order_by) {
     ...WorkScheduleWithUser
   }
 }
 
 query GetWorkScheduleByUser($user_id: uuid!) {
-  work_schedule(
-    where: { user_id: { _eq: $user_id } }
-    order_by: { work_day: asc }
+  workSchedules(
+    where: { userId: { _eq: $user_id } }
+    order_by: { workDay: asc }
   ) {
     ...WorkScheduleCore
   }
 }
 
 query GetWorkScheduleById($id: uuid!) {
-  work_schedule_by_pk(id: $id) {
+  workSchedule(id: $id) {
     ...WorkScheduleWithUser
   }
 }
 
 query GetTeamWorkSchedules($user_ids: [uuid!]!) {
-  work_schedule(
-    where: { user_id: { _in: $user_ids } }
-    order_by: [{ user_id: asc }, { work_day: asc }]
+  workSchedules(
+    where: { userId: { _in: $user_ids } }
+    order_by: [{ userId: asc }, { workDay: asc }]
   ) {
     ...WorkScheduleWithUser
   }
 }
 
 query GetWorkScheduleAnalytics {
-  total_hours_by_day: work_schedule_aggregate {
+  total_hours_by_day: workSchedulesAggregate {
     nodes {
-      work_day
+      workDay
     }
     aggregate {
       sum {
-        work_hours
+        workHours
       }
       avg {
-        work_hours
+        workHours
       }
       count
     }
   }
-  
-  users_by_work_day: work_schedule {
-    work_day
+
+  users_by_workDay: workSchedules {
+    workDay
     user {
       id
       name
     }
-    work_hours
+    workHours
   }
-  
-  average_hours_per_user: work_schedule_aggregate(
-    group_by: user_id
-  ) {
+
+  average_hours_per_user: workSchedulesAggregate(order_by: { userId: asc }) {
     aggregate {
       sum {
-        work_hours
+        workHours
       }
       avg {
-        work_hours
+        workHours
       }
     }
     nodes {

@@ -3,7 +3,9 @@ function:
   schema: public
 configuration:
   custom_name: create_payroll_version
-  custom_root_fields: {}
+  custom_root_fields:
+    function: createPayrollVersion
+    function_aggregate: createPayrollVersionAggregate
   exposed_as: query
 permissions:
   - role: user

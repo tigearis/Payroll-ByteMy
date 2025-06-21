@@ -3,4 +3,4 @@
  */
 
 export * from './work-schedule';
-export * from '../graphql/generated';
+// Note: GraphQL generated types are imported directly from ../graphql/generated where needed

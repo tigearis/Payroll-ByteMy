@@ -2,11 +2,8 @@
 
 fragment WorkScheduleCore on work_schedule {
   id
-  user_id
-  work_day
-  work_hours
-  created_at
-  updated_at
+  workDay
+  workHours
 }
 
 fragment WorkScheduleWithUser on work_schedule {
@@ -15,6 +12,6 @@ fragment WorkScheduleWithUser on work_schedule {
     id
     name
     email
-    is_staff
+    isStaff
   }
 }

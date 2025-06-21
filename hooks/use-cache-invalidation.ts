@@ -44,9 +44,8 @@ export function useCacheInvalidation() {
   const invalidateEntity = async ({typename, id}: EntityOptions) => {
     try {
       // First try to evict the entity directly from the cache
-      const success = client.cache.evict({ 
-        id: client.cache.identify({ __typename: typename, id }) 
-      });
+      const cacheId = client.cache.identify({ __typename: typename, id });
+      const success = cacheId ? client.cache.evict({ id: cacheId }) : false;
       
       // Garbage collect any dangling references
       client.cache.gc();

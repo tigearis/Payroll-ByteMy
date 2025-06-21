@@ -1,6 +1,43 @@
 table:
   name: auth_events
   schema: audit
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    event_time:
+      custom_name: eventTime
+    event_type:
+      custom_name: eventType
+    failure_reason:
+      custom_name: failureReason
+    ip_address:
+      custom_name: ipAddress
+    user_agent:
+      custom_name: userAgent
+    user_email:
+      custom_name: userEmail
+    user_id:
+      custom_name: userId
+  custom_column_names:
+    created_at: createdAt
+    event_time: eventTime
+    event_type: eventType
+    failure_reason: failureReason
+    ip_address: ipAddress
+    user_agent: userAgent
+    user_email: userEmail
+    user_id: userId
+  custom_root_fields:
+    delete: deleteAuthEvents
+    delete_by_pk: deleteAuthEvent
+    insert: insertAuthEvents
+    insert_one: insertAuthEvent
+    select: authEvents
+    select_aggregate: authEventsAggregate
+    select_by_pk: authEvent
+    update: updateAuthEvents
+    update_by_pk: updateAuthEvent
 insert_permissions:
   - role: system
     permission:
@@ -17,7 +54,7 @@ insert_permissions:
 select_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -50,7 +87,7 @@ select_permissions:
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

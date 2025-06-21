@@ -13,12 +13,5 @@ export * from "./validation";
 // Export generated types (auto-managed by codegen)
 export * from "./types/generated";
 
-// Dashboard operations - imported from domain GraphQL files
-export {
-  GET_DASHBOARD_STATS,
-  GET_UPCOMING_PAYROLLS,
-  GET_ALERTS,
-  GET_SYSTEM_HEALTH,
-  GET_SECURITY_OVERVIEW,
-  GET_COMPLIANCE_REPORT,
-} from "./graphql/queries.graphql";
+// Dashboard operations - imported from generated GraphQL types
+// Note: These exports will be added when GraphQL codegen runs

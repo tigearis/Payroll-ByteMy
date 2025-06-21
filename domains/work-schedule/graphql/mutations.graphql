@@ -1,65 +1,67 @@
 # Work Schedule Domain Mutations
 
+# Create Work Schedule
 mutation CreateWorkSchedule($object: work_schedule_insert_input!) {
-  insert_work_schedule_one(object: $object) {
-    ...WorkScheduleCore
+  insertWorkSchedule(object: $object) {
+    ...WorkScheduleWithUser
   }
 }
 
 mutation CreateWorkSchedules($objects: [work_schedule_insert_input!]!) {
-  insert_work_schedule(objects: $objects) {
+  insertWorkSchedules(objects: $objects) {
     returning {
-      ...WorkScheduleCore
+      ...WorkScheduleWithUser
     }
     affected_rows
   }
 }
 
+# Update Work Schedule
 mutation UpdateWorkSchedule($id: uuid!, $set: work_schedule_set_input!) {
-  update_work_schedule_by_pk(pk_columns: { id: $id }, _set: $set) {
-    ...WorkScheduleCore
+  updateWorkSchedule(pk_columns: { id: $id }, _set: $set) {
+    ...WorkScheduleWithUser
   }
 }
 
-mutation UpdateUserWorkSchedule($user_id: uuid!, $work_day: String!, $work_hours: numeric!) {
-  update_work_schedule(
-    where: {
-      user_id: { _eq: $user_id }
-      work_day: { _eq: $work_day }
-    }
-    _set: { work_hours: $work_hours }
-  ) {
-    affected_rows
+mutation UpdateWorkSchedules(
+  $where: work_schedule_bool_exp!
+  $set: work_schedule_set_input!
+) {
+  updateWorkSchedules(where: $where, _set: $set) {
     returning {
-      ...WorkScheduleCore
+      ...WorkScheduleWithUser
     }
+    affected_rows
   }
 }
 
+# Delete Work Schedule
 mutation DeleteWorkSchedule($id: uuid!) {
-  delete_work_schedule_by_pk(id: $id) {
+  deleteWorkSchedule(id: $id) {
     id
   }
 }
 
-mutation DeleteUserWorkSchedule($user_id: uuid!, $work_day: String!) {
-  delete_work_schedule(
-    where: {
-      user_id: { _eq: $user_id }
-      work_day: { _eq: $work_day }
-    }
-  ) {
+mutation DeleteWorkSchedules($where: work_schedule_bool_exp!) {
+  deleteWorkSchedules(where: $where) {
     affected_rows
   }
 }
 
-mutation ReplaceUserWorkSchedule($user_id: uuid!, $schedules: [work_schedule_insert_input!]!) {
-  delete_work_schedule(where: { user_id: { _eq: $user_id } }) {
+# Bulk Operations
+mutation UpsertUserWorkSchedule(
+  $userId: uuid!
+  $schedules: [work_schedule_insert_input!]!
+) {
+  # First delete existing schedules for the user
+  deleteWorkSchedules(where: { userId: { _eq: $userId } }) {
     affected_rows
   }
-  insert_work_schedule(objects: $schedules) {
+
+  # Then insert new schedules
+  insertWorkSchedules(objects: $schedules) {
     returning {
-      ...WorkScheduleCore
+      ...WorkScheduleWithUser
     }
     affected_rows
   }

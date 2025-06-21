@@ -3,8 +3,8 @@ import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 
 import { gql } from "@apollo/client";
 
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc2-logger";
-import { adminApolloClient } from "../server-apollo-client";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "./audit/logger";
+import { adminApolloClient } from "../apollo/unified-client";
 
 // API Key configuration
 export interface APIKeyConfig {
@@ -199,19 +199,23 @@ export class PersistentAPIKeyManager {
       };
 
       // Log API key creation
-      await soc2Logger.log({
+      await auditLogger.logSOC2Event({
         level: LogLevel.AUDIT,
         category: LogCategory.CONFIGURATION_CHANGE,
-        eventType: SOC2EventType.CONFIG_CHANGED,
-        message: `API key created: ${name}`,
+        eventType: SOC2EventType.SYSTEM_CONFIG_CHANGE,
         userId: createdBy,
+        resourceId: config.id,
+        resourceType: "api_key",
+        action: "CREATE",
+        success: true,
         metadata: {
           apiKeyName: name,
           apiKeyId: config.id,
           permissions,
           rateLimitTier,
           expiresAt: expiresAt?.toISOString()
-        }
+        },
+        complianceNote: `API key created: ${name}`
       });
 
       return { apiKey, apiSecret, config };
@@ -339,16 +343,20 @@ export class PersistentAPIKeyManager {
 
       if (data.update_api_keys.affected_rows > 0) {
         // Log API key deactivation
-        await soc2Logger.log({
+        await auditLogger.logSOC2Event({
           level: LogLevel.AUDIT,
           category: LogCategory.CONFIGURATION_CHANGE,
-          eventType: SOC2EventType.CONFIG_CHANGED,
-          message: `API key deactivated: ${apiKey}`,
+          eventType: SOC2EventType.SYSTEM_CONFIG_CHANGE,
           userId: deactivatedBy,
+          resourceId: apiKey,
+          resourceType: "api_key",
+          action: "DEACTIVATE",
+          success: true,
           metadata: {
             apiKey,
             action: 'deactivate'
-          }
+          },
+          complianceNote: `API key deactivated: ${apiKey}`
         });
 
         return true;
@@ -428,15 +436,18 @@ export class PersistentAPIKeyManager {
       const affectedRows = data.update_api_keys.affected_rows;
       
       if (affectedRows > 0) {
-        await soc2Logger.log({
+        await auditLogger.logSOC2Event({
           level: LogLevel.INFO,
           category: LogCategory.SYSTEM_ACCESS,
-          eventType: SOC2EventType.RETENTION_POLICY_APPLIED,
-          message: `Cleaned up ${affectedRows} expired API keys`,
+          eventType: SOC2EventType.SYSTEM_CONFIG_CHANGE,
+          resourceType: "api_keys",
+          action: "CLEANUP",
+          success: true,
           metadata: {
             affectedKeys: affectedRows,
             cleanupType: 'expired_keys'
-          }
+          },
+          complianceNote: `Cleaned up ${affectedRows} expired API keys`
         });
       }
 

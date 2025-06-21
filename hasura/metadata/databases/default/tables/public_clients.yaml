@@ -1,29 +1,57 @@
 table:
   name: clients
   schema: public
+configuration:
+  column_config:
+    contact_email:
+      custom_name: contactEmail
+    contact_person:
+      custom_name: contactPerson
+    contact_phone:
+      custom_name: contactPhone
+    created_at:
+      custom_name: createdAt
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    contact_email: contactEmail
+    contact_person: contactPerson
+    contact_phone: contactPhone
+    created_at: createdAt
+    updated_at: updatedAt
+  custom_root_fields:
+    delete: deleteClients
+    delete_by_pk: deleteClient
+    insert: insertClients
+    insert_one: insertClient
+    select: clients
+    select_aggregate: clientsAggregate
+    select_by_pk: client
+    update: updateClients
+    update_by_pk: updateClient
 array_relationships:
-  - name: billing_invoices
-    using:
-      foreign_key_constraint_on:
-        column: client_id
-        table:
-          name: billing_invoice
-          schema: public
-  - name: client_billing_assignments
+  - name: billingAssignments
     using:
       foreign_key_constraint_on:
         column: client_id
         table:
           name: client_billing_assignment
           schema: public
-  - name: client_billing_invoices
+  - name: billingInvoices
+    using:
+      foreign_key_constraint_on:
+        column: client_id
+        table:
+          name: billing_invoice
+          schema: public
+  - name: billingInvoicesList
     using:
       foreign_key_constraint_on:
         column: client_id
         table:
           name: billing_invoices
           schema: public
-  - name: client_external_systems
+  - name: externalSystems
     using:
       foreign_key_constraint_on:
         column: client_id

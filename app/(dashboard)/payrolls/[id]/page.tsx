@@ -64,9 +64,9 @@ import { toast } from "sonner";
 
 import { ExportCsv } from "@/components/export-csv";
 import { ExportPdf } from "@/components/export-pdf";
-import { NotesListWithAdd } from "@/components/notes-list";
-import { PayrollDatesView } from "@/components/payroll-dates-view";
-import { PayrollVersionHistory } from "@/components/payroll-version-history";
+import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
+import { PayrollDatesView } from "@/domains/payrolls/components/payroll-dates-view";
+import { PayrollVersionHistory } from "@/domains/payrolls/components/payroll-version-history";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -85,10 +85,10 @@ import {
   getVersionReason,
 } from "@/hooks/use-payroll-versioning";
 import {
-  user_role,
   payroll_cycle_type,
   payroll_date_type,
 } from "@/types/enums";
+import type { UserRole } from "@/domains/users/types";
 
 import { 
   GetPayrollByIdDocument, 
@@ -935,14 +935,14 @@ const DELETE_PAYROLL_DATES = gql`
 // Helper function to get user-friendly role display name
 const getRoleDisplayName = (role: string) => {
   switch (role) {
-    case user_role.Developer:
-    case user_role.OrgAdmin:
+    case "developer":
+    case "org_admin":
       return "Admin";
-    case user_role.Manager:
+    case "manager":
       return "Manager";
-    case user_role.Consultant:
+    case "consultant":
       return "Consultant";
-    case user_role.Viewer:
+    case "viewer":
       return "Viewer";
     default:
       return role; // fallback to original value
@@ -1130,26 +1130,27 @@ export default function PayrollPage() {
       }, 2000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [loading, loadingToastShown]);
 
   // Initialize edit state when payroll data loads
   useEffect(() => {
-    if (data?.payrolls?.[0] && !editedPayroll.id) {
-      const payroll = data.payrolls[0];
+    if (data?.payroll && !editedPayroll.id) {
+      const payroll = data.payroll;
       setEditedPayroll({
         ...payroll,
         // Ensure field names match the form - use the enum values from nested relationships
-        cycle_id: payroll.payroll_cycle?.name || payroll.cycle_id || "",
+        cycle_id: (payroll.payrollCycle as any)?.name || payroll.cycleId || "",
         date_type_id:
-          payroll.payroll_date_type?.name || payroll.date_type_id || "",
-        date_value: payroll.date_value?.toString() || "",
+          (payroll.payrollDateType as any)?.name || payroll.dateTypeId || "",
+        date_value: (payroll as any).dateValue?.toString() || "",
         fortnightlyWeek: "", // Add fortnightly week field
-        primary_consultant_user_id: payroll.primary_consultant_user_id || "",
-        backup_consultant_user_id: payroll.backup_consultant_user_id || "",
-        manager_user_id: payroll.manager_user_id || "",
+        primary_consultant_user_id: payroll.primaryConsultantUserId || "",
+        backup_consultant_user_id: payroll.backupConsultantUserId || "",
+        manager_user_id: payroll.managerUserId || "",
         processing_days_before_eft:
-          payroll.processing_days_before_eft?.toString() || "",
-        go_live_date: payroll.go_live_date || "",
+          (payroll as any).processingDaysBeforeEft?.toString() || "",
+        go_live_date: payroll.goLiveDate || "",
       });
     }
   }, [data, editedPayroll.id]);
@@ -1196,7 +1197,7 @@ export default function PayrollPage() {
     (user: any) => user.id !== editedPayroll.primary_consultant_user_id
   );
   const availableManagers = staffUsers.filter((user: any) =>
-    [user_role.Manager, user_role.Developer, user_role.OrgAdmin].includes(user.role)
+    ["manager", "developer", "org_admin"].includes(user.role)
   );
 
   // Enhanced renderDateValueInput with same logic as creation page
@@ -1358,18 +1359,18 @@ export default function PayrollPage() {
     );
   }
 
-  if (!data || !data.payrolls || data.payrolls.length === 0) {
+  if (!data || !data.payroll) {
     toast.error("No payroll data found.");
     return notFound();
   }
 
-  const payroll = data.payrolls[0];
+  const payroll = data.payroll;
   const client = payroll.client;
-  const statusConfig = getStatusConfig(payroll.status || "Implementation");
+  const statusConfig = getStatusConfig((payroll as any).status || "Implementation");
   const StatusIcon = statusConfig.icon;
 
   // Calculate totals from payroll dates if available
-  const payrollDates = payroll.payroll_dates || [];
+  const payrollDates = payroll.payrollDates || [];
   const totalEmployees = payrollDates.reduce(
     (sum: number, date: any) => sum + (date.employee_count || 0),
     0
@@ -1381,16 +1382,16 @@ export default function PayrollPage() {
       console.log("📋 editedPayroll:", editedPayroll);
 
       // Get the original cycle and date type IDs
-      const originalCycleId = payroll.cycle_id;
-      const originalDateTypeId = payroll.date_type_id;
-      const originalDateValue = payroll.date_value;
+      const originalCycleId = payroll.cycleId;
+      const originalDateTypeId = payroll.dateTypeId;
+      const originalDateValue = (payroll as any).dateValue;
 
       // Only convert to UUIDs if the values have actually changed
       let cycleId = originalCycleId;
       let dateTypeId = originalDateTypeId;
 
       // Check if cycle changed by comparing display names
-      const originalCycleName = payroll.payroll_cycle?.name;
+      const originalCycleName = (payroll.payrollCycle as any)?.name;
       if (editedPayroll.cycle_id !== originalCycleName) {
         cycleId = getCycleIdFromName(editedPayroll.cycle_id);
         if (!cycleId) {
@@ -1400,7 +1401,7 @@ export default function PayrollPage() {
       }
 
       // Check if date type changed by comparing display names
-      const originalDateTypeName = payroll.payroll_date_type?.name;
+      const originalDateTypeName = (payroll as any).payrollDateType?.name;
       if (editedPayroll.date_type_id !== originalDateTypeName) {
         dateTypeId = getDateTypeIdFromName(editedPayroll.date_type_id);
         if (!dateTypeId) {
@@ -1440,7 +1441,7 @@ export default function PayrollPage() {
         processingDaysBeforeEft: editedPayroll.processing_days_before_eft
           ? parseInt(editedPayroll.processing_days_before_eft)
           : null,
-        status: payroll.status || "Implementation", // Include current status to prevent null error
+        status: (payroll as any).status || "Implementation", // Include current status to prevent null error
       };
 
       console.log("Mutation variables:", mutationVariables);
@@ -1452,8 +1453,12 @@ export default function PayrollPage() {
         setShowScheduleChangeDialog(true);
       } else {
         // No schedule change, just update the payroll
+        const { id, ...setFields } = mutationVariables;
         await updatePayroll({
-          variables: mutationVariables,
+          variables: {
+            id,
+            set: setFields,
+          },
         });
       }
     } catch (error) {
@@ -1477,38 +1482,38 @@ export default function PayrollPage() {
       const editedFields: any = {};
 
       // Check each field and only include if changed
-      if (scheduleChangeData.cycleId !== payroll.cycle_id) {
+      if (scheduleChangeData.cycleId !== (payroll as any).cycleId) {
         editedFields.cycle_id = scheduleChangeData.cycleId;
       }
-      if (scheduleChangeData.dateTypeId !== payroll.date_type_id) {
+      if (scheduleChangeData.dateTypeId !== (payroll as any).dateTypeId) {
         editedFields.date_type_id = scheduleChangeData.dateTypeId;
       }
-      if (scheduleChangeData.dateValue !== payroll.date_value) {
+      if (scheduleChangeData.dateValue !== (payroll as any).dateValue) {
         editedFields.date_value = scheduleChangeData.dateValue;
       }
-      if (scheduleChangeData.name !== payroll.name) {
+      if (scheduleChangeData.name !== (payroll as any).name) {
         editedFields.name = scheduleChangeData.name;
       }
       if (
         scheduleChangeData.primaryConsultantId !==
-        payroll.primary_consultant_user_id
+        (payroll as any).primaryConsultantUserId
       ) {
         editedFields.primary_consultant_user_id =
           scheduleChangeData.primaryConsultantId;
       }
       if (
         scheduleChangeData.backupConsultantId !==
-        payroll.backup_consultant_user_id
+        (payroll as any).backupConsultantUserId
       ) {
         editedFields.backup_consultant_user_id =
           scheduleChangeData.backupConsultantId;
       }
-      if (scheduleChangeData.managerId !== payroll.manager_user_id) {
+      if (scheduleChangeData.managerId !== (payroll as any).managerUserId) {
         editedFields.manager_user_id = scheduleChangeData.managerId;
       }
       if (
         scheduleChangeData.processingDaysBeforeEft !==
-        payroll.processing_days_before_eft
+        (payroll as any).processingDaysBeforeEft
       ) {
         editedFields.processing_days_before_eft =
           scheduleChangeData.processingDaysBeforeEft;
@@ -1680,20 +1685,20 @@ export default function PayrollPage() {
             </Link>
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold">{payroll.name}</h1>
+                <h1 className="text-3xl font-bold">{(payroll as any).name}</h1>
                 <Badge
                   className={`${statusConfig.color} cursor-pointer hover:opacity-80 transition-opacity`}
                   onClick={() => setShowStatusDialog(true)}
                   title="Click to change status"
                 >
                   <StatusIcon className="w-3 h-3 mr-1" />
-                  {payroll.status || "Implementation"}
+                  {(payroll as any).status || "Implementation"}
                 </Badge>
               </div>
               <div className="flex items-center gap-4 text-sm text-gray-600">
                 <div className="flex items-center gap-1">
                   <Building2 className="w-4 h-4" />
-                  {client.name}
+                  {(client as any).name}
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
@@ -1701,7 +1706,7 @@ export default function PayrollPage() {
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  Last updated {formatDate(payroll.updated_at)}
+                  Last updated {formatDate((payroll as any).updatedAt)}
                 </div>
               </div>
             </div>
@@ -1869,7 +1874,7 @@ export default function PayrollPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div className="text-center p-4 bg-blue-50 rounded-lg">
                         <div className="text-2xl font-bold text-blue-700">
-                          {payroll.employee_count || totalEmployees || 0}
+                          {(payroll as any).employeeCount || totalEmployees || 0}
                         </div>
                         <div className="text-sm text-blue-600">Employees</div>
                       </div>
@@ -1883,7 +1888,7 @@ export default function PayrollPage() {
                       </div>
                       <div className="text-center p-4 bg-orange-50 rounded-lg">
                         <div className="text-2xl font-bold text-orange-700">
-                          {payroll.processing_days_before_eft || 3}
+                          {(payroll as any).processingDaysBeforeEft || 3}
                         </div>
                         <div className="text-sm text-orange-600">
                           Processing Days
@@ -1958,7 +1963,7 @@ export default function PayrollPage() {
                               </Label>
                               <Input
                                 id="client"
-                                value={client?.name || ""}
+                                value={(client as any)?.name || ""}
                                 disabled
                                 className="bg-gray-50 cursor-not-allowed"
                               />
@@ -2264,14 +2269,14 @@ export default function PayrollPage() {
                               <Label className="text-xs font-medium text-gray-600">
                                 Payroll Name
                               </Label>
-                              <p className="mt-1">{payroll.name}</p>
+                              <p className="mt-1">{(payroll as any).name}</p>
                             </div>
                             <div>
                               <Label className="text-xs font-medium text-gray-600">
                                 Client
                               </Label>
                               <p className="mt-1">
-                                {client?.name || "No client"}
+                                {(client as any)?.name || "No client"}
                               </p>
                             </div>
                             <div>
@@ -2279,8 +2284,8 @@ export default function PayrollPage() {
                                 Go Live Date
                               </Label>
                               <p className="mt-1">
-                                {payroll.go_live_date
-                                  ? formatDate(payroll.go_live_date)
+                                {(payroll as any).goLiveDate
+                                  ? formatDate((payroll as any).goLiveDate)
                                   : "Not set"}
                               </p>
                             </div>
@@ -2291,7 +2296,7 @@ export default function PayrollPage() {
                               <div className="mt-1">
                                 <Badge className={statusConfig.color}>
                                   <StatusIcon className="w-3 h-3 mr-1" />
-                                  {payroll.status || "Implementation"}
+                                  {(payroll as any).status || "Implementation"}
                                 </Badge>
                               </div>
                             </div>
@@ -2329,7 +2334,7 @@ export default function PayrollPage() {
                                 Processing Days Before EFT
                               </Label>
                               <p className="mt-1">
-                                {payroll.processing_days_before_eft ||
+                                {(payroll as any).processingDaysBeforeEft ||
                                   "Not set"}
                               </p>
                             </div>
@@ -2347,7 +2352,7 @@ export default function PayrollPage() {
                                 Primary Consultant
                               </Label>
                               <p className="mt-1">
-                                {payroll.userByPrimaryConsultantUserId?.name ||
+                                {(payroll as any).userByPrimaryConsultantUserId?.name ||
                                   "Not assigned"}
                               </p>
                             </div>
@@ -2356,7 +2361,7 @@ export default function PayrollPage() {
                                 Backup Consultant
                               </Label>
                               <p className="mt-1">
-                                {payroll.userByBackupConsultantUserId?.name ||
+                                {(payroll as any).userByBackupConsultantUserId?.name ||
                                   "Not assigned"}
                               </p>
                             </div>
@@ -2365,7 +2370,7 @@ export default function PayrollPage() {
                                 Manager
                               </Label>
                               <p className="mt-1">
-                                {payroll.userByManagerUserId?.name ||
+                                {(payroll as any).userByManagerUserId?.name ||
                                   "Not assigned"}
                               </p>
                             </div>
@@ -2374,7 +2379,7 @@ export default function PayrollPage() {
                                 Created
                               </Label>
                               <p className="mt-1">
-                                {formatDateTime(payroll.created_at)}
+                                {formatDateTime((payroll as any).createdAt)}
                               </p>
                             </div>
                           </div>

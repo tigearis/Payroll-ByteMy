@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { useAuthContext, UserRole } from "../../lib/auth-context";
+import { useAuthContext, UserRole } from "@/lib/auth/auth-context";
 
 interface PermissionGuardProps {
   children: React.ReactNode;

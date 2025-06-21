@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 
-import { validateCronRequest } from "@/lib/api-auth";
-import { secureHasuraService } from "@/lib/secure-hasura-service";
+import { validateCronRequest } from "@/lib/auth/api-auth";
+import { secureHasuraService } from "@/lib/apollo/secure-hasura-service";
 
 // GraphQL query for bulk date generation
 const GENERATE_BULK_DATES_QUERY = gql`

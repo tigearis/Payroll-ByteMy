@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/card";
 import { useGracefulQuery } from "@/hooks/use-graceful-query";
 
-import { GraphQLErrorBoundary } from "@/components/error-boundary/GraphQLErrorBoundary";
-import { GET_CLIENTS } from "@/graphql/queries/clients/getClientsList";
+import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
+import { GetClientsDocument } from "@/domains/clients/graphql/generated/graphql";
 
 // Example fallback data for when permissions fail
 const FALLBACK_CLIENTS = [
@@ -103,7 +103,7 @@ function ClientsListContent() {
     hasPermissionError,
     permissionError,
     canRetry,
-  } = useGracefulQuery<{ clients: Client[] }>(GET_CLIENTS, {
+  } = useGracefulQuery<{ clients: Client[] }>(GetClientsDocument, {
     fallbackData: { clients: FALLBACK_CLIENTS },
     contextName: "Clients List",
     showPermissionErrors: true,

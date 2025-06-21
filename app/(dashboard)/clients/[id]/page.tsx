@@ -33,7 +33,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-import { NotesListWithAdd } from "@/components/notes-list";
+import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -75,13 +75,14 @@ import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  GET_CLIENTS_BY_ID,
-  UPDATE_CLIENT,
-  DELETE_CLIENT,
-} from "@/domains/clients/services/client.service";
+  GetClientByIdDocument,
+  UpdateClientDocument,
+  UpdateClientStatusDocument,
+  ArchiveClientDocument,
+} from "@/domains/clients/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 
-import { safeFormatDate } from "@/utils/date-utils";
+import { safeFormatDate } from "@/lib/utils/date-utils";
 
 import {
   Table,
@@ -188,7 +189,7 @@ export default function ClientDetailPage() {
 
   // GraphQL operations
   const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(
-    GET_CLIENTS_BY_ID,
+    GetClientByIdDocument,
     {
       variables: { id },
       skip: !id,
@@ -198,13 +199,18 @@ export default function ClientDetailPage() {
     }
   );
 
-  const [updateClient] = useMutation(UPDATE_CLIENT, {
-    refetchQueries: [{ query: GET_CLIENTS_BY_ID, variables: { id } }],
+  const [updateClient] = useMutation(UpdateClientDocument, {
+    refetchQueries: [{ query: GetClientByIdDocument, variables: { id } }],
   });
 
-  const [deleteClient] = useMutation(DELETE_CLIENT, {
+  const [updateClientStatus] = useMutation(UpdateClientStatusDocument, {
+    refetchQueries: [{ query: GetClientByIdDocument, variables: { id } }],
+  });
+
+  // Archive client functionality (soft delete)
+  const [archiveClient] = useMutation(ArchiveClientDocument, {
     onCompleted: () => {
-      // Redirect to clients list after successful deletion
+      // Redirect to clients list after successful archival
       window.location.href = "/clients";
     },
   });
@@ -239,7 +245,7 @@ export default function ClientDetailPage() {
     );
   }
 
-  const client = data?.clients_by_pk;
+  const client = data?.client;
 
   if (!client) {
     return (
@@ -352,22 +358,20 @@ export default function ClientDetailPage() {
 
   const handleDeleteClient = async () => {
     try {
-      await deleteClient({
-        variables: { id },
-      });
+      archiveClient({ variables: { id } });
     } catch (error) {
-      console.error("Error deleting client:", error);
+      console.error("Error archiving client:", error);
     }
   };
 
   // Handle opening edit dialog
   const handleEditClient = () => {
     setEditFormData({
-      name: client.name || "",
-      contact_person: client.contact_person || "",
-      contact_email: client.contact_email || "",
-      contact_phone: client.contact_phone || "",
-      active: client.active ?? true,
+      name: (client as any).name || "",
+      contact_person: (client as any).contactName || "",
+      contact_email: (client as any).contactEmail || "",
+      contact_phone: (client as any).contactPhone || "",
+      active: (client as any).active ?? true,
     });
     setShowEditDialog(true);
   };
@@ -400,16 +404,27 @@ export default function ClientDetailPage() {
 
     setIsUpdating(true);
     try {
+      // Update client basic info (name, email, phone)
       await updateClient({
         variables: {
           id,
           name: editFormData.name.trim(),
-          contactPerson: editFormData.contact_person.trim() || null,
           contactEmail: editFormData.contact_email.trim() || null,
           contactPhone: editFormData.contact_phone.trim() || null,
-          active: editFormData.active,
+          contactName: editFormData.contact_person.trim() || null,
         },
       });
+
+      // Update client status if it changed
+      if ((client as any)?.active !== editFormData.active) {
+        await updateClientStatus({
+          variables: {
+            id,
+            active: editFormData.active,
+          },
+        });
+      }
+
       setShowEditDialog(false);
       // Optionally show success message
     } catch (error) {
@@ -422,10 +437,10 @@ export default function ClientDetailPage() {
 
   // Calculate client statistics
   const activePayrolls =
-    client.payrolls?.filter((p: any) => !p.superseded_date)?.length || 0;
-  const totalPayrolls = client.payrolls?.length || 0;
+    (client as any)?.payrolls?.filter((p: any) => !p.superseded_date)?.length || 0;
+  const totalPayrolls = (client as any)?.payrolls?.length || 0;
   const totalEmployees =
-    client.payrolls?.reduce((sum: number, p: any) => {
+    (client as any)?.payrolls?.reduce((sum: number, p: any) => {
       // Use same logic as transformPayrollData for consistent employee counts
       const payrollDatesTotal =
         p.payroll_dates?.reduce(
@@ -451,7 +466,7 @@ export default function ClientDetailPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{client.name}</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{(client as any)?.name}</h1>
             <p className="text-gray-500">Client Details & Management</p>
           </div>
         </div>
@@ -496,15 +511,15 @@ export default function ClientDetailPage() {
                 <p className="text-sm font-medium text-gray-600">Status</p>
                 <Badge
                   className={getStatusColor(
-                    client.active ? "active" : "inactive"
+                    (client as any)?.active ? "active" : "inactive"
                   )}
                 >
-                  {client.active ? "Active" : "Inactive"}
+                  {(client as any)?.active ? "Active" : "Inactive"}
                 </Badge>
               </div>
               <CheckCircle
                 className={`w-8 h-8 ${
-                  client.active ? "text-green-600" : "text-gray-400"
+                  (client as any)?.active ? "text-green-600" : "text-gray-400"
                 }`}
               />
             </div>
@@ -611,7 +626,7 @@ export default function ClientDetailPage() {
                         Contact Person
                       </p>
                       <p className="text-sm text-gray-900">
-                        {client.contact_person || "Not specified"}
+                        {(client as any).contactPerson || "Not specified"}
                       </p>
                     </div>
                   </div>
@@ -625,7 +640,7 @@ export default function ClientDetailPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-500">Email</p>
                       <p className="text-sm text-gray-900">
-                        {client.contact_email || "Not specified"}
+                        {(client as any).contactEmail || "Not specified"}
                       </p>
                     </div>
                   </div>
@@ -639,7 +654,7 @@ export default function ClientDetailPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-500">Phone</p>
                       <p className="text-sm text-gray-900">
-                        {client.contact_phone || "Not specified"}
+                        {(client as any).contactPhone || "Not specified"}
                       </p>
                     </div>
                   </div>
@@ -657,13 +672,13 @@ export default function ClientDetailPage() {
                   <div>
                     <p className="font-medium text-gray-500">Created</p>
                     <p className="text-gray-900">
-                      {safeFormatDate(client.created_at)}
+                      {safeFormatDate((client as any).createdAt)}
                     </p>
                   </div>
                   <div>
                     <p className="font-medium text-gray-500">Last Updated</p>
                     <p className="text-gray-900">
-                      {safeFormatDate(client.updated_at)}
+                      {safeFormatDate((client as any).updatedAt)}
                     </p>
                   </div>
                   <div>
@@ -688,7 +703,7 @@ export default function ClientDetailPage() {
                 <div>
                   <CardTitle>Client Payrolls</CardTitle>
                   <CardDescription>
-                    Manage payrolls associated with {client.name}
+                    Manage payrolls associated with {(client as any)?.name}
                   </CardDescription>
                 </div>
                 <Link href={`/payrolls/new?client=${id}`}>
@@ -702,7 +717,7 @@ export default function ClientDetailPage() {
             <CardContent>
               {(() => {
                 const transformedPayrolls = transformPayrollData(
-                  client.payrolls || []
+                  (client as any)?.payrolls || []
                 );
 
                 return (
@@ -926,7 +941,7 @@ export default function ClientDetailPage() {
                 Client Notes
               </CardTitle>
               <CardDescription>
-                Notes and comments about {client.name}
+                Notes and comments about {(client as any)?.name}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1058,7 +1073,7 @@ export default function ClientDetailPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Client</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &quot;{client.name}&quot;? This
+              Are you sure you want to delete &quot;{(client as any)?.name}&quot;? This
               action cannot be undone and will also remove all associated
               payrolls and data.
             </AlertDialogDescription>

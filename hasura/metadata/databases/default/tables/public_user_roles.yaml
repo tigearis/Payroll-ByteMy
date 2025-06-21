@@ -1,6 +1,31 @@
 table:
   name: user_roles
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    role_id:
+      custom_name: roleId
+    updated_at:
+      custom_name: updatedAt
+    user_id:
+      custom_name: userId
+  custom_column_names:
+    created_at: createdAt
+    role_id: roleId
+    updated_at: updatedAt
+    user_id: userId
+  custom_root_fields:
+    delete: deleteUserRoles
+    delete_by_pk: deleteUserRole
+    insert: insertUserRoles
+    insert_one: insertUserRole
+    select: userRoles
+    select_aggregate: userRolesAggregate
+    select_by_pk: userRole
+    update: updateUserRoles
+    update_by_pk: updateUserRole
 object_relationships:
   - name: role
     using:

@@ -1,0 +1,709 @@
+.
+├── __tests__
+│   └── components
+│       └── dashboard.test.tsx
+├── Action-Plan.md
+├── add-relative-paths.js
+├── app
+│   ├── (auth)
+│   │   ├── accept-invitation
+│   │   │   └── page.tsx
+│   │   ├── layout.tsx
+│   │   ├── sign-in
+│   │   │   └── [[...sign-in]]
+│   │   │       └── page.tsx
+│   │   └── sign-up
+│   │       └── [[...sign-up]]
+│   │           └── page.tsx
+│   ├── (dashboard)
+│   │   ├── ai-assistant
+│   │   │   └── page.tsx
+│   │   ├── calendar
+│   │   │   └── page.tsx
+│   │   ├── clients
+│   │   │   ├── [id]
+│   │   │   │   └── page.tsx
+│   │   │   ├── loading.tsx
+│   │   │   ├── new
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── dashboard
+│   │   │   └── page.tsx
+│   │   ├── developer
+│   │   │   ├── loading-demo
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── jwt-test
+│   │   │   └── page.tsx
+│   │   ├── layout.tsx
+│   │   ├── onboarding
+│   │   │   └── page.tsx
+│   │   ├── payroll-schedule
+│   │   │   ├── loading.tsx
+│   │   │   └── page.tsx
+│   │   ├── payrolls
+│   │   │   ├── [id]
+│   │   │   │   ├── error.tsx
+│   │   │   │   ├── loading.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── loading.tsx
+│   │   │   ├── new
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── profile
+│   │   │   └── page.tsx
+│   │   ├── security
+│   │   │   ├── audit
+│   │   │   │   └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── reports
+│   │   │       └── page.tsx
+│   │   ├── settings
+│   │   │   ├── account
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── staff
+│   │   │   ├── [id]
+│   │   │   │   └── page.tsx
+│   │   │   ├── loading.tsx
+│   │   │   ├── new
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   └── tax-calculator
+│   │       └── page.tsx
+│   ├── api
+│   │   ├── admin
+│   │   │   └── api-keys
+│   │   │       └── route.ts
+│   │   ├── audit
+│   │   │   ├── compliance-report
+│   │   │   │   └── route.ts
+│   │   │   └── log
+│   │   │       └── route.ts
+│   │   ├── auth
+│   │   │   ├── debug-token
+│   │   │   │   └── route.ts
+│   │   │   ├── hasura-claims
+│   │   │   │   └── route.ts
+│   │   │   └── token
+│   │   │       └── route.ts
+│   │   ├── chat
+│   │   │   └── route.ts
+│   │   ├── check-role
+│   │   │   └── route.ts
+│   │   ├── commit-payroll-assignments
+│   │   │   └── route.ts
+│   │   ├── cron
+│   │   │   ├── cleanup-old-dates
+│   │   │   │   └── route.ts
+│   │   │   ├── compliance-check
+│   │   │   │   └── route.ts
+│   │   │   ├── generate-batch
+│   │   │   │   └── route.ts
+│   │   │   ├── generate-bulk-dates
+│   │   │   │   └── route.ts
+│   │   │   ├── sync-holidays
+│   │   │   │   └── route.ts
+│   │   │   └── update-payroll-dates
+│   │   │       └── route.ts
+│   │   ├── developer
+│   │   │   ├── clean-all-dates
+│   │   │   │   └── route.ts
+│   │   │   ├── clean-single-payroll
+│   │   │   │   └── route.ts
+│   │   │   ├── regenerate-all-dates
+│   │   │   │   └── route.ts
+│   │   │   ├── regenerate-single-dates
+│   │   │   │   └── route.ts
+│   │   │   ├── reset-to-original
+│   │   │   │   └── route.ts
+│   │   │   └── route.ts
+│   │   ├── fallback
+│   │   │   └── route.ts
+│   │   ├── fix-oauth-user
+│   │   │   └── route.ts
+│   │   ├── holidays
+│   │   │   └── sync
+│   │   │       └── route.ts
+│   │   ├── payroll-dates
+│   │   │   ├── [payrollId]
+│   │   │   │   └── route.ts
+│   │   │   └── generated
+│   │   │       └── route.ts
+│   │   ├── payrolls
+│   │   │   ├── [id]
+│   │   │   │   └── route.ts
+│   │   │   ├── route.ts
+│   │   │   └── schedule
+│   │   │       └── route.ts
+│   │   ├── signed
+│   │   │   └── payroll-operations
+│   │   │       └── route.ts
+│   │   ├── staff
+│   │   │   ├── create
+│   │   │   │   └── route.ts
+│   │   │   ├── delete
+│   │   │   │   └── route.ts
+│   │   │   ├── invitation-status
+│   │   │   │   └── route.ts
+│   │   │   └── update-role
+│   │   │       └── route.ts
+│   │   ├── sync-current-user
+│   │   │   └── route.ts
+│   │   ├── update-user-role
+│   │   │   └── route.ts
+│   │   ├── users
+│   │   │   ├── [id]
+│   │   │   │   └── route.ts
+│   │   │   ├── route.ts
+│   │   │   └── update-profile
+│   │   │       └── route.ts
+│   │   └── webhooks
+│   │       └── clerk
+│   │           └── route.ts
+│   ├── error.tsx
+│   ├── favicon.ico
+│   ├── global-error.tsx
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── providers.tsx
+│   └── unauthorized
+│       └── page.tsx
+├── AUTH_REMEDIATION_PLAN.md
+├── authentication plan.md
+├── check-locks.sh
+├── CLAUDE.md
+├── components
+│   ├── ai-chat.tsx
+│   ├── australian-tax-calculator.tsx
+│   ├── auth
+│   │   ├── database-user-guard.tsx
+│   │   ├── mfa-setup.tsx
+│   │   ├── permission-guard.tsx
+│   │   ├── role-guard.tsx
+│   │   ├── route-guard.tsx
+│   │   ├── step-up-auth.tsx
+│   │   └── strict-database-guard.tsx
+│   ├── dashboard-shell.tsx
+│   ├── error-boundary.tsx
+│   ├── export-csv.tsx
+│   ├── export-pdf.tsx
+│   ├── graphql-error-boundary.tsx
+│   ├── main-nav.tsx
+│   ├── markdown-viewer.tsx
+│   ├── modal-form.tsx
+│   ├── performance-optimized-page.tsx
+│   ├── real-time-updates.tsx
+│   ├── recent-activity.tsx
+│   ├── refresh-button.tsx
+│   ├── sidebar.tsx
+│   ├── staff-updates-listener.tsx
+│   ├── theme-toggle.tsx
+│   ├── ui
+│   │   ├── alert-dialog.tsx
+│   │   ├── alert.tsx
+│   │   ├── aspect-ratio.tsx
+│   │   ├── avatar.tsx
+│   │   ├── badge.tsx
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── chart.tsx
+│   │   ├── checkbox.tsx
+│   │   ├── data-table.tsx
+│   │   ├── design-system.tsx
+│   │   ├── dialog.tsx
+│   │   ├── dropdown-menu.tsx
+│   │   ├── error.tsx
+│   │   ├── form.tsx
+│   │   ├── icons.tsx
+│   │   ├── input.tsx
+│   │   ├── label.tsx
+│   │   ├── loading-states.tsx
+│   │   ├── metrics-panel.tsx
+│   │   ├── modal.tsx
+│   │   ├── popover.tsx
+│   │   ├── progress.tsx
+│   │   ├── resizable.tsx
+│   │   ├── scroll-area.tsx
+│   │   ├── select.tsx
+│   │   ├── separator.tsx
+│   │   ├── skeleton.tsx
+│   │   ├── sonner.tsx
+│   │   ├── switch.tsx
+│   │   ├── table.tsx
+│   │   ├── tabs.tsx
+│   │   ├── textarea.tsx
+│   │   └── unified-data-table.tsx
+│   └── urgent-alerts.tsx
+├── components.json
+├── COMPREHENSIVE_CLERK_OPTIMIZATION_STRATEGY.md
+├── config
+│   ├── case-conventions.config.ts
+│   ├── codegen.ts
+│   ├── eslint.config.js
+│   ├── jest.config.js
+│   ├── jest.setup.js
+│   ├── vercel-cron.json
+│   ├── vercel.json
+│   └── vercel.json.txt
+├── database
+│   ├── migrations
+│   │   └── fix_database_concerns.sql
+│   └── schema.sql
+├── dev-only.ts
+├── docs
+│   ├── app
+│   │   ├── auth
+│   │   ├── dashboard
+│   │   │   └── README.md
+│   │   └── README.md
+│   ├── archive
+│   │   ├── COMPREHENSIVE_ANALYSIS_AND_CLEANUP_PLAN.md
+│   │   ├── CRITICAL_ANALYSIS_AND_FIX_PLAN.md
+│   │   └── SYSTEM_ANALYSIS_REPORT.md
+│   ├── AUTHENTICATION_SYSTEM_DOCUMENTATION.md
+│   ├── business-logic
+│   │   ├── paycalculator-logic.md
+│   │   ├── payroll-processing.md
+│   │   ├── payroll-restrictions-and-validation.md
+│   │   └── taglines.md
+│   ├── CASE_CONVENTION_SYSTEM.md
+│   ├── CLEANUP_IMPLEMENTATION_SUMMARY.md
+│   ├── CODEGEN_SYSTEM.md
+│   ├── COMPLETE_SYSTEM_ARCHITECTURE.md
+│   ├── components
+│   │   └── README.md
+│   ├── CRON_JOBS_SETUP.md
+│   ├── DASHBOARD_DOCUMENTATION.md
+│   ├── DATA_CLASSIFICATION_MATRIX.md
+│   ├── DEPLOYMENT_GUIDE.md
+│   ├── domains
+│   │   ├── README.md
+│   │   └── SECURITY_DASHBOARD_IMPLEMENTATION.md
+│   ├── hasura
+│   │   ├── hasura_action_setup.md
+│   │   ├── HASURA_DOCUMENTATION.md
+│   │   ├── README.md
+│   │   └── schema-analysis.md
+│   ├── hooks
+│   │   └── README.md
+│   ├── implementation_guide.md
+│   ├── lib
+│   │   ├── functions
+│   │   └── README.md
+│   ├── MFA_FEATURE_FLAG.md
+│   ├── MIGRATION_SUMMARY.md
+│   ├── misc
+│   │   ├── structure.mdc
+│   │   └── text.txt
+│   ├── MODERN_LOADING_SYSTEM.md
+│   ├── OPERATIONAL_RECOVERY_PLAN.md
+│   ├── pages
+│   │   └── api
+│   │       └── README.md
+│   ├── paycalculator-logic.md
+│   ├── PAYROLL_SYSTEM_DOCUMENTATION.md
+│   ├── PAYROLL_SYSTEM_ENHANCEMENTS.md
+│   ├── PAYROLL_VERSIONING_SYSTEM.md
+│   ├── payroll-processing.md
+│   ├── payroll-restrictions-and-validation.md
+│   ├── pdf
+│   │   ├── PAYROLL_BYTEMY_DEEP_DIVE_ANALYSIS.pdf
+│   │   ├── SECURITY_MIGRATION_GUIDE.pdf
+│   │   ├── SOC2_GRAPHQL_IMPLEMENTATION_PLAN.pdf
+│   │   └── SOC2_GRAPHQL_IMPLEMENTATION_SUMMARY.pdf
+│   ├── README.md
+│   ├── Scheduling Component report.md
+│   ├── SECURITY_IMPROVEMENT_REPORT.md
+│   ├── shared
+│   │   ├── README.md
+│   │   └── vercel-deployment-guide.md
+│   ├── SOC2_COMPLIANCE_OVERVIEW.md
+│   ├── SOC2_vs_OLD.md
+│   ├── taglines.md
+│   ├── USER_DOCUMENTATION_STAFF_MANAGEMENT.md
+│   └── WEBHOOK_FIX_SUMMARY.md
+├── DOCS_MIGRATION_PLAN.md
+├── domains
+│   ├── audit
+│   │   ├── components
+│   │   │   ├── api-key-manager.tsx
+│   │   │   └── index.ts
+│   │   └── graphql
+│   │       ├── fragments.graphql
+│   │       ├── mutations.graphql
+│   │       ├── queries.graphql
+│   │       └── subscriptions.graphql
+│   ├── auth
+│   │   └── graphql
+│   │       ├── mutations.graphql
+│   │       └── queries.graphql
+│   ├── billing
+│   │   └── graphql
+│   │       ├── fragments.graphql
+│   │       ├── mutations.graphql
+│   │       ├── queries.graphql
+│   │       └── subscriptions.graphql
+│   ├── clients
+│   │   ├── components
+│   │   │   ├── client-card.tsx
+│   │   │   ├── client-payroll-table.tsx
+│   │   │   ├── client-wrapper.tsx
+│   │   │   ├── clients-table-unified.tsx
+│   │   │   ├── clients-table.tsx
+│   │   │   └── index.ts
+│   │   ├── graphql
+│   │   │   ├── fragments.graphql
+│   │   │   ├── mutations.graphql
+│   │   │   └── queries.graphql
+│   │   ├── services
+│   │   │   └── client.service.ts
+│   │   └── types
+│   │       ├── client.ts
+│   │       └── index.ts
+│   ├── external-systems
+│   │   ├── graphql
+│   │   │   ├── fragments.graphql
+│   │   │   ├── generated
+│   │   │   │   ├── fragment-masking.ts
+│   │   │   │   ├── gql.ts
+│   │   │   │   ├── graphql.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── mutations.graphql
+│   │   │   ├── queries.graphql
+│   │   │   └── subscriptions.graphql
+│   │   └── index.ts
+│   ├── leave
+│   │   ├── graphql
+│   │   │   ├── fragments.graphql
+│   │   │   ├── generated
+│   │   │   │   ├── fragment-masking.ts
+│   │   │   │   ├── gql.ts
+│   │   │   │   ├── graphql.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── mutations.graphql
+│   │   │   ├── queries.graphql
+│   │   │   └── subscriptions.graphql
+│   │   └── index.ts
+│   ├── notes
+│   │   ├── components
+│   │   │   ├── index.ts
+│   │   │   └── notes-list.tsx
+│   │   ├── graphql
+│   │   │   ├── fragments.graphql
+│   │   │   ├── generated
+│   │   │   │   ├── fragment-masking.ts
+│   │   │   │   ├── gql.ts
+│   │   │   │   ├── graphql.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── mutations.graphql
+│   │   │   ├── queries.graphql
+│   │   │   └── subscriptions.graphql
+│   │   ├── index.ts
+│   │   └── types
+│   │       └── index.ts
+│   ├── payrolls
+│   │   ├── components
+│   │   │   ├── advanced-payroll-scheduler.tsx
+│   │   │   ├── edit-payroll-dialog.tsx
+│   │   │   ├── generate-missing-dates-button.tsx
+│   │   │   ├── index.ts
+│   │   │   ├── payroll-dates-view.tsx
+│   │   │   ├── payroll-details-card.tsx
+│   │   │   ├── payroll-list-card.tsx
+│   │   │   ├── payroll-schedule-view.tsx
+│   │   │   ├── payroll-schedule.tsx
+│   │   │   ├── payroll-subscription.tsx
+│   │   │   ├── payroll-version-history.tsx
+│   │   │   ├── payrolls-missing-dates.tsx
+│   │   │   ├── payrolls-table-unified.tsx
+│   │   │   ├── payrolls-table.tsx
+│   │   │   ├── regenerate-dates.tsx
+│   │   │   └── upcoming-payrolls.tsx
+│   │   ├── graphql
+│   │   │   ├── fragments.graphql
+│   │   │   ├── mutations.graphql
+│   │   │   ├── queries.graphql
+│   │   │   └── subscriptions.graphql
+│   │   ├── services
+│   │   │   └── payroll.service.ts
+│   │   └── types
+│   │       ├── index.ts
+│   │       ├── payroll.ts
+│   │       └── scheduling.ts
+│   ├── permissions
+│   │   └── graphql
+│   │       ├── fragments.graphql
+│   │       ├── mutations.graphql
+│   │       ├── queries.graphql
+│   │       └── subscriptions.graphql
+│   ├── users
+│   │   ├── components
+│   │   │   ├── create-user-modal.tsx
+│   │   │   ├── edit-user-modal.tsx
+│   │   │   ├── index.ts
+│   │   │   ├── sync-user-button.tsx
+│   │   │   ├── user-form-modal.tsx
+│   │   │   ├── user-nav.tsx
+│   │   │   ├── user-role-management.tsx
+│   │   │   ├── user-sync-fallback.tsx
+│   │   │   ├── user-table.tsx
+│   │   │   └── users-table-unified.tsx
+│   │   ├── graphql
+│   │   │   ├── fragments.graphql
+│   │   │   ├── mutations.graphql
+│   │   │   ├── queries.graphql
+│   │   │   └── subscriptions.graphql
+│   │   └── types
+│   │       └── index.ts
+│   └── work-schedule
+│       ├── graphql
+│       │   ├── fragments.graphql
+│       │   ├── mutations.graphql
+│       │   ├── queries.graphql
+│       │   └── subscriptions.graphql
+│       └── types
+│           ├── index.ts
+│           └── work-schedule.ts
+├── favicon.ico
+├── fix-codebase.js
+├── globals.d.ts
+├── GRAPHQL_CLEANUP_PLAN.md
+├── GRAPHQL_CLEANUP_SUMMARY.md
+├── hasura
+│   ├── config.yaml
+│   ├── metadata
+│   │   ├── actions.graphql
+│   │   ├── actions.yaml
+│   │   ├── allow_list.yaml
+│   │   ├── api_limits.yaml
+│   │   ├── backend_configs.yaml
+│   │   ├── cron_triggers.yaml
+│   │   ├── databases
+│   │   │   ├── databases.yaml
+│   │   │   └── default
+│   │   │       ├── functions
+│   │   │       │   ├── functions.yaml
+│   │   │       │   ├── public_activate_payroll_versions.yaml
+│   │   │       │   ├── public_create_payroll_version.yaml
+│   │   │       │   ├── public_generate_payroll_dates.yaml
+│   │   │       │   ├── public_get_latest_payroll_version.yaml
+│   │   │       │   └── public_get_payroll_version_history.yaml
+│   │   │       └── tables
+│   │   │           ├── audit_audit_log.yaml
+│   │   │           ├── audit_auth_events.yaml
+│   │   │           ├── audit_data_access_log.yaml
+│   │   │           ├── audit_permission_changes.yaml
+│   │   │           ├── audit_permission_usage_report.yaml
+│   │   │           ├── audit_slow_queries.yaml
+│   │   │           ├── audit_user_access_summary.yaml
+│   │   │           ├── neon_auth_users_sync.yaml
+│   │   │           ├── public_adjustment_rules.yaml
+│   │   │           ├── public_app_settings.yaml
+│   │   │           ├── public_billing_event_log.yaml
+│   │   │           ├── public_billing_invoice_item.yaml
+│   │   │           ├── public_billing_invoice.yaml
+│   │   │           ├── public_billing_invoices.yaml
+│   │   │           ├── public_billing_items.yaml
+│   │   │           ├── public_billing_plan.yaml
+│   │   │           ├── public_client_billing_assignment.yaml
+│   │   │           ├── public_client_external_systems.yaml
+│   │   │           ├── public_clients.yaml
+│   │   │           ├── public_current_payrolls.yaml
+│   │   │           ├── public_external_systems.yaml
+│   │   │           ├── public_feature_flags.yaml
+│   │   │           ├── public_holidays.yaml
+│   │   │           ├── public_latest_payroll_version_results.yaml
+│   │   │           ├── public_leave.yaml
+│   │   │           ├── public_notes.yaml
+│   │   │           ├── public_payroll_activation_results.yaml
+│   │   │           ├── public_payroll_assignment_audit.yaml
+│   │   │           ├── public_payroll_assignments.yaml
+│   │   │           ├── public_payroll_cycles.yaml
+│   │   │           ├── public_payroll_dashboard_stats.yaml
+│   │   │           ├── public_payroll_date_types.yaml
+│   │   │           ├── public_payroll_dates.yaml
+│   │   │           ├── public_payroll_triggers_status.yaml
+│   │   │           ├── public_payroll_version_history_results.yaml
+│   │   │           ├── public_payroll_version_results.yaml
+│   │   │           ├── public_payrolls.yaml
+│   │   │           ├── public_permission_audit_log.yaml
+│   │   │           ├── public_permission_overrides.yaml
+│   │   │           ├── public_permissions.yaml
+│   │   │           ├── public_resources.yaml
+│   │   │           ├── public_role_permissions.yaml
+│   │   │           ├── public_roles.yaml
+│   │   │           ├── public_user_roles.yaml
+│   │   │           ├── public_users_role_backup.yaml
+│   │   │           ├── public_users.yaml
+│   │   │           ├── public_work_schedule.yaml
+│   │   │           └── tables.yaml
+│   │   ├── graphql_schema_introspection.yaml
+│   │   ├── inherited_roles.yaml
+│   │   ├── metrics_config.yaml
+│   │   ├── network.yaml
+│   │   ├── opentelemetry.yaml
+│   │   ├── query_collections.yaml
+│   │   ├── remote_schemas.yaml
+│   │   ├── rest_endpoints.yaml
+│   │   └── version.yaml
+│   ├── migrations
+│   └── seeds
+├── hooks
+│   ├── use-current-user.ts
+│   ├── use-enhanced-permissions.tsx
+│   ├── use-graceful-query.ts
+│   ├── use-payroll-creation.ts
+│   ├── use-payroll-versioning.ts
+│   ├── use-polling.ts
+│   ├── use-subscription.ts
+│   ├── use-user-management.ts
+│   ├── use-user-role-management.ts
+│   ├── use-user-role-secure.ts
+│   └── use-user-role.ts
+├── index.ts
+├── lib
+│   ├── api-auth.ts
+│   ├── api-responses.ts
+│   ├── apollo
+│   │   ├── index.ts
+│   │   └── unified-client.ts
+│   ├── audit
+│   ├── auth
+│   │   └── permissions.ts
+│   ├── auth-context.tsx
+│   ├── date-utils.ts
+│   ├── debug-auth.ts
+│   ├── design-tokens
+│   │   ├── index.ts
+│   │   ├── theme.ts
+│   │   ├── tokens.ts
+│   │   └── utils.ts
+│   ├── dev
+│   │   ├── examples
+│   │   │   ├── enhanced-users-list.tsx
+│   │   │   └── graceful-clients-list.tsx
+│   │   ├── index.ts
+│   │   ├── middleware.ts
+│   │   └── test-components
+│   │       ├── direct-websocket-test.tsx
+│   │       ├── hasura-websocket-test.tsx
+│   │       ├── index.ts
+│   │       ├── jwt-test-panel.tsx
+│   │       ├── simple-websocket-test.tsx
+│   │       └── subscription-test.tsx
+│   ├── dev-only.ts
+│   ├── errors.jpg
+│   ├── holiday-sync-service.ts
+│   ├── logging
+│   │   └── index.ts
+│   ├── middleware
+│   │   └── rate-limiter.ts
+│   ├── optimistic-updates.ts
+│   ├── payroll-date-service.ts
+│   ├── payroll-service.ts
+│   ├── resolvers
+│   │   └── backend_resolver.ts
+│   ├── secure-hasura-service.ts
+│   ├── security
+│   │   ├── api-signing.ts
+│   │   ├── audit
+│   │   │   └── logger.ts
+│   │   ├── auth-audit.ts
+│   │   ├── auth-middleware.ts
+│   │   ├── config.ts
+│   │   ├── enhanced-route-monitor.ts
+│   │   ├── error-responses.ts
+│   │   ├── mfa-middleware.ts
+│   │   ├── persistent-api-keys.ts
+│   │   └── utils.ts
+│   ├── session-monitor.tsx
+│   ├── user-sync.ts
+│   ├── utils
+│   │   ├── add-relative-paths.js
+│   │   ├── handle-graphql-error.ts
+│   │   └── safe-date-utils.ts
+│   └── utils.ts
+├── middleware.ts
+├── migrate-legacy-permissions.js
+├── migrate-to-enhanced-permissions.js
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── pnpm-lock.yaml
+├── postcss.config.mjs
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── refactor.sh
+├── scripts
+│   ├── fix-lint.js
+│   ├── test-auth-fixes.js
+│   ├── tests
+│   │   ├── test-auth-fixes.js
+│   │   ├── test-db-direct.mjs
+│   │   ├── test-developer-api.js
+│   │   ├── test-holiday-sync-direct.js
+│   │   ├── test-holiday-sync-direct.mjs
+│   │   ├── test-holiday-sync-enhanced.js
+│   │   ├── test-holiday-sync-simple.js
+│   │   ├── test-holiday-sync.js
+│   │   ├── test-logging.js
+│   │   ├── test-routes-auth.js
+│   │   └── test-routes.js
+│   └── validate-case-conventions.ts
+├── settings.json
+├── setup-jwt-template.js
+├── shared
+│   ├── common.ts
+│   ├── error-handling.ts
+│   ├── graphql
+│   │   ├── enums.graphql
+│   │   ├── fragments.graphql
+│   │   ├── mutations.graphql
+│   │   ├── queries.graphql
+│   │   ├── scalars.graphql
+│   │   ├── security-types.graphql
+│   │   └── subscriptions.graphql
+│   ├── index.ts
+│   ├── schema
+│   │   ├── introspection.json
+│   │   ├── schema.graphql
+│   │   └── security-report.json
+│   ├── types
+│   │   └── generated
+│   │       ├── fragment-masking.ts
+│   │       ├── gql.ts
+│   │       ├── graphql.ts
+│   │       └── index.ts
+│   └── validation.ts
+├── tailwind.config.ts
+├── tests
+│   ├── test-db-direct.mjs
+│   ├── test-developer-api.js
+│   ├── test-holiday-sync-direct.js
+│   ├── test-holiday-sync-direct.mjs
+│   ├── test-holiday-sync-enhanced.js
+│   ├── test-holiday-sync-simple.js
+│   ├── test-holiday-sync.js
+│   ├── test-routes-auth.js
+│   └── test-routes.js
+├── tree.txt
+├── tsconfig.json
+├── Type-Case-Conventions.md
+└── types
+    ├── enums.ts
+    ├── generated
+    │   ├── graphql.ts
+    │   └── shared-graphql.ts
+    ├── globals.d.ts
+    ├── index.ts
+    ├── interface.ts
+    └── scalars.ts
+
+181 directories, 526 files

@@ -23,7 +23,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-import { ClientsTable } from "@/components/clients-table";
+import { ClientsTable } from "@/domains/clients/components/clients-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,7 +48,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GET_CLIENTS } from "@/domains/clients/services/client.service";
+import { GetClientsWithContactDocument } from "@/domains/clients/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useUserRole } from "@/hooks/use-user-role";
 
@@ -142,7 +142,7 @@ export default function ClientsPage() {
 
   // GraphQL operations - only execute when user is loaded and authenticated
   const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(
-    GET_CLIENTS,
+    GetClientsWithContactDocument,
     {
       fetchPolicy: "cache-and-network",
       nextFetchPolicy: "cache-first",
@@ -248,40 +248,40 @@ export default function ClientsPage() {
 
   // Sort clients
   const sortedClients = [...filteredClients].sort((a, b) => {
-    let aValue = a[sortField];
-    let bValue = b[sortField];
+    let aValue = (a as any)[sortField];
+    let bValue = (b as any)[sortField];
 
     // Handle specific sort fields
     if (sortField === "payrollCount") {
-      aValue = a.payrolls?.length || 0;
-      bValue = b.payrolls?.length || 0;
+      aValue = (a as any).payrolls?.length || 0;
+      bValue = (b as any).payrolls?.length || 0;
     } else if (sortField === "activePayrolls") {
       aValue =
-        a.payrolls?.filter(
+        (a as any).payrolls?.filter(
           (p: any) =>
             p.status !== "Inactive" &&
             p.status !== "cancelled" &&
             p.status !== "on-hold"
         ).length || 0;
       bValue =
-        b.payrolls?.filter(
+        (b as any).payrolls?.filter(
           (p: any) =>
             p.status !== "Inactive" &&
             p.status !== "cancelled" &&
             p.status !== "on-hold"
         ).length || 0;
     } else if (sortField === "lastUpdated") {
-      aValue = new Date(a.updated_at || a.created_at);
-      bValue = new Date(b.updated_at || b.created_at);
+      aValue = new Date((a as any).updated_at || (a as any).created_at);
+      bValue = new Date((b as any).updated_at || (b as any).created_at);
     } else if (sortField === "contact_person") {
-      aValue = a.contact_person || "";
-      bValue = b.contact_person || "";
+      aValue = (a as any).contact_person || "";
+      bValue = (b as any).contact_person || "";
     } else if (sortField === "contact_email") {
-      aValue = a.contact_email || "";
-      bValue = b.contact_email || "";
+      aValue = (a as any).contact_email || "";
+      bValue = (b as any).contact_email || "";
     } else if (sortField === "status") {
-      aValue = a.active ? "Active" : "Inactive";
-      bValue = b.active ? "Active" : "Inactive";
+      aValue = (a as any).active ? "Active" : "Inactive";
+      bValue = (b as any).active ? "Active" : "Inactive";
     }
 
     // Handle different data types
@@ -778,7 +778,7 @@ export default function ClientsPage() {
         <div>
           {viewMode === "table" && (
             <ClientsTable
-              clients={sortedClients}
+              clients={sortedClients as any}
               loading={loading}
               onRefresh={refetch}
             />

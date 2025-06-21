@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
-import { useCurrentUser } from "./useCurrentUser";
+import { useCurrentUser } from "./use-current-user";
 
 // Import extracted GraphQL operations
 const GET_USER_ROLE = gql`

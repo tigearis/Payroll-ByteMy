@@ -1,29 +1,34 @@
 # Billing Domain Queries
 
 # Billing Plans
-query GetBillingPlans($where: billing_plan_bool_exp, $order_by: [billing_plan_order_by!], $limit: Int, $offset: Int) {
-  billing_plan(where: $where, order_by: $order_by, limit: $limit, offset: $offset) {
+query GetBillingPlans(
+  $where: billing_plan_bool_exp
+  $order_by: [billing_plan_order_by!]
+) {
+  billing_plan(where: $where, order_by: $order_by) {
     ...BillingPlanCore
-  }
-  billing_plan_aggregate(where: $where) {
-    aggregate {
-      count
-    }
   }
 }
 
 query GetBillingPlanById($id: uuid!) {
   billing_plan_by_pk(id: $id) {
     ...BillingPlanCore
-    client_billing_assignments(where: { is_active: { _eq: true } }) {
-      ...ClientBillingAssignmentWithRelations
-    }
   }
 }
 
 # Billing Invoices
-query GetBillingInvoices($where: billing_invoice_bool_exp, $order_by: [billing_invoice_order_by!], $limit: Int, $offset: Int) {
-  billing_invoice(where: $where, order_by: $order_by, limit: $limit, offset: $offset) {
+query GetBillingInvoices(
+  $where: billing_invoice_bool_exp
+  $order_by: [billing_invoice_order_by!]
+  $limit: Int
+  $offset: Int
+) {
+  billing_invoice(
+    where: $where
+    order_by: $order_by
+    limit: $limit
+    offset: $offset
+  ) {
     ...BillingInvoiceWithItems
   }
   billing_invoice_aggregate(where: $where) {
@@ -39,13 +44,15 @@ query GetBillingInvoices($where: billing_invoice_bool_exp, $order_by: [billing_i
 query GetBillingInvoiceById($id: uuid!) {
   billing_invoice_by_pk(id: $id) {
     ...BillingInvoiceWithItems
-    billing_event_logs(order_by: { created_at: desc }) {
-      ...BillingEventLogWithRelations
-    }
   }
 }
 
-query GetInvoicesByClient($client_id: uuid!, $start_date: date, $end_date: date) {
+# Get invoices by client with date filter
+query GetInvoicesByClient(
+  $client_id: uuid!
+  $start_date: date
+  $end_date: date
+) {
   billing_invoice(
     where: {
       client_id: { _eq: $client_id }
@@ -60,44 +67,42 @@ query GetInvoicesByClient($client_id: uuid!, $start_date: date, $end_date: date)
   }
 }
 
-query GetOverdueInvoices($today: date!) {
-  billing_invoice(
-    where: {
-      status: { _neq: "paid" }
-      due_date: { _lt: $today }
-    }
-    order_by: { due_date: asc }
-  ) {
-    ...BillingInvoiceWithItems
+# Invoice Items
+query GetBillingInvoiceItems(
+  $where: billing_invoice_item_bool_exp
+  $order_by: [billing_invoice_item_order_by!]
+) {
+  billing_invoice_item(where: $where, order_by: $order_by) {
+    ...BillingInvoiceItemCore
   }
 }
 
 # Client Billing Assignments
-query GetClientBillingAssignments($where: client_billing_assignment_bool_exp, $order_by: [client_billing_assignment_order_by!]) {
-  client_billing_assignment(where: $where, order_by: $order_by) {
+query GetClientBillingAssignments($where: client_billing_assignment_bool_exp) {
+  client_billing_assignment(where: $where) {
     ...ClientBillingAssignmentWithRelations
   }
 }
 
-query GetActiveClientBillingAssignment($client_id: uuid!, $date: date!) {
-  client_billing_assignment(
-    where: {
-      client_id: { _eq: $client_id }
-      is_active: { _eq: true }
-      start_date: { _lte: $date }
-      _or: [
-        { end_date: { _is_null: true } }
-        { end_date: { _gte: $date } }
-      ]
-    }
-    limit: 1
+query GetActiveClientBillingAssignments {
+  client_billing_assignment(where: { is_active: { _eq: true } }) {
+    ...ClientBillingAssignmentWithRelations
+  }
+}
+
+# Event Logs
+query GetBillingEventLogs($invoice_id: uuid!) {
+  billing_event_log(
+    where: { invoice_id: { _eq: $invoice_id } }
+    order_by: { created_at: desc }
   ) {
-    ...ClientBillingAssignmentWithRelations
+    ...BillingEventLogWithRelations
   }
 }
 
-# Billing Analytics
+# Analytics
 query GetBillingAnalytics($start_date: date!, $end_date: date!) {
+  # Total revenue
   total_revenue: billing_invoice_aggregate(
     where: {
       status: { _eq: "paid" }
@@ -111,10 +116,11 @@ query GetBillingAnalytics($start_date: date!, $end_date: date!) {
       count
     }
   }
-  
-  outstanding_revenue: billing_invoice_aggregate(
+
+  # Outstanding invoices
+  outstanding_invoices: billing_invoice_aggregate(
     where: {
-      status: { _neq: "paid" }
+      status: { _in: ["sent", "overdue"] }
       issued_date: { _gte: $start_date, _lte: $end_date }
     }
   ) {
@@ -125,17 +131,31 @@ query GetBillingAnalytics($start_date: date!, $end_date: date!) {
       count
     }
   }
-  
-  revenue_by_client: billing_invoice(
+
+  # Draft invoices
+  draft_invoices: billing_invoice_aggregate(
     where: {
+      status: { _eq: "draft" }
       issued_date: { _gte: $start_date, _lte: $end_date }
     }
   ) {
+    aggregate {
+      count
+    }
+  }
+
+  # Revenue by client
+  revenue_by_client: billing_invoice(
+    where: {
+      status: { _eq: "paid" }
+      issued_date: { _gte: $start_date, _lte: $end_date }
+    }
+    order_by: { total_amount: desc }
+  ) {
+    client_id
     client {
-      id
       name
     }
     total_amount
-    status
   }
 }

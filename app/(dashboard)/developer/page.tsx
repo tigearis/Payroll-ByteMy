@@ -147,6 +147,32 @@ export default function DeveloperPage() {
     );
   }
 
+  const checkOAuthStatus = async () => {
+    setLoadingOAuth(true);
+    try {
+      const response = await fetch("/api/auth/oauth-status");
+      const data = await response.json();
+      setOAuthStatus(data);
+    } catch (error) {
+      console.error("Failed to check OAuth status:", error);
+    } finally {
+      setLoadingOAuth(false);
+    }
+  };
+
+  const fetchToken = async () => {
+    setLoadingToken(true);
+    try {
+      const response = await fetch("/api/auth/debug-token");
+      const data = await response.json();
+      setTokenData(data);
+    } catch (error) {
+      console.error("Failed to fetch token:", error);
+    } finally {
+      setLoadingToken(false);
+    }
+  };
+
   const toggleFeature = (feature: string) => {
     setEnabledFeatures((prev) =>
       prev.includes(feature)

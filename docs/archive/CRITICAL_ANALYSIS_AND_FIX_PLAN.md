@@ -216,7 +216,7 @@ Ran tool
    const GET_PAYROLL = gql`...`;
 
    // After
-   import { useGetPayrollQuery } from "@/domains/payrolls/graphql/generated";
+   import { GetPayrollDocument } from "@/domains/payrolls/graphql/generated";
    ```
 
 #### Week 3: Component Architecture

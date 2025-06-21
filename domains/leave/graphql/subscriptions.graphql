@@ -1,34 +1,22 @@
 # Leave Domain Subscriptions
 
-subscription SubscribeToLeaveRequests($user_id: uuid) {
-  leave(
-    where: { user_id: { _eq: $user_id } }
-    order_by: { start_date: desc }
-  ) {
+subscription SubscribeToLeaveRequests($userId: uuid!) {
+  leaves(where: { userId: { _eq: $userId } }, order_by: { startDate: desc }) {
     ...LeaveWithManager
   }
 }
 
-subscription SubscribeToPendingLeaveRequests($manager_id: uuid!) {
-  leave(
-    where: {
-      status: { _eq: "Pending" }
-      user: { manager_id: { _eq: $manager_id } }
-    }
-    order_by: { start_date: asc }
+subscription SubscribeToPendingLeaveRequests($managerId: uuid!) {
+  leaves(
+    where: { user: { managerId: { _eq: $managerId } } }
+    order_by: { startDate: asc }
   ) {
     ...LeaveWithUser
   }
 }
 
 subscription SubscribeToTeamLeave($user_ids: [uuid!]!) {
-  leave(
-    where: {
-      user_id: { _in: $user_ids }
-      status: { _eq: "Approved" }
-    }
-    order_by: { start_date: asc }
-  ) {
+  leaves(where: {}, order_by: { startDate: asc }) {
     ...LeaveWithUser
   }
 }

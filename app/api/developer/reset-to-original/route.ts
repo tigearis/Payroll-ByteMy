@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Pool } from "pg";
 
-import { withAuth } from "@/lib/api-auth";
+import { withAuth } from "@/lib/auth/api-auth";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

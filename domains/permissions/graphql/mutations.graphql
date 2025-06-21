@@ -2,156 +2,114 @@
 
 # Resources
 mutation CreateResource($object: resources_insert_input!) {
-  insert_resources_one(object: $object) {
+  insertResource(object: $object) {
     ...ResourceCore
   }
 }
 
 mutation UpdateResource($id: uuid!, $set: resources_set_input!) {
-  update_resources_by_pk(pk_columns: { id: $id }, _set: $set) {
+  updateResource(pk_columns: { id: $id }, _set: $set) {
     ...ResourceCore
   }
 }
 
 mutation DeleteResource($id: uuid!) {
-  delete_resources_by_pk(id: $id) {
+  deleteResource(id: $id) {
     id
   }
 }
 
 # Permissions
 mutation CreatePermission($object: permissions_insert_input!) {
-  insert_permissions_one(object: $object) {
-    ...PermissionWithResource
-  }
-}
-
-mutation CreatePermissions($objects: [permissions_insert_input!]!) {
-  insert_permissions(objects: $objects) {
-    returning {
-      ...PermissionWithResource
-    }
-    affected_rows
+  insertPermission(object: $object) {
+    ...PermissionCore
   }
 }
 
 mutation UpdatePermission($id: uuid!, $set: permissions_set_input!) {
-  update_permissions_by_pk(pk_columns: { id: $id }, _set: $set) {
-    ...PermissionWithResource
+  updatePermission(pk_columns: { id: $id }, _set: $set) {
+    ...PermissionCore
   }
 }
 
 mutation DeletePermission($id: uuid!) {
-  delete_permissions_by_pk(id: $id) {
+  deletePermission(id: $id) {
     id
   }
 }
 
 # Roles
 mutation CreateRole($object: roles_insert_input!) {
-  insert_roles_one(object: $object) {
+  insertRole(object: $object) {
     ...RoleCore
   }
 }
 
 mutation UpdateRole($id: uuid!, $set: roles_set_input!) {
-  update_roles_by_pk(pk_columns: { id: $id }, _set: $set) {
+  updateRole(pk_columns: { id: $id }, _set: $set) {
     ...RoleCore
   }
 }
 
 mutation DeleteRole($id: uuid!) {
-  delete_roles_by_pk(id: $id) {
+  deleteRole(id: $id) {
     id
   }
 }
 
 # Role Permissions
-mutation AssignPermissionToRole($role_id: uuid!, $permission_id: uuid!, $conditions: jsonb) {
-  insert_role_permissions_one(
-    object: {
-      role_id: $role_id
-      permission_id: $permission_id
-      conditions: $conditions
-    }
-  ) {
-    ...RolePermissionWithDetails
+mutation AssignPermissionToRole($object: role_permissions_insert_input!) {
+  insertRolePermission(object: $object) {
+    ...RolePermissionCore
   }
 }
 
-mutation AssignPermissionsToRole($objects: [role_permissions_insert_input!]!) {
-  insert_role_permissions(objects: $objects) {
-    returning {
-      ...RolePermissionWithDetails
-    }
+mutation RemovePermissionFromRole($roleId: uuid!, $permissionId: uuid!) {
+  deleteRolePermissions(
+    where: { roleId: { _eq: $roleId }, permissionId: { _eq: $permissionId } }
+  ) {
     affected_rows
   }
 }
 
-mutation UpdateRolePermission($id: uuid!, $conditions: jsonb) {
-  update_role_permissions_by_pk(
-    pk_columns: { id: $id }
-    _set: { conditions: $conditions }
-  ) {
-    ...RolePermissionWithDetails
-  }
-}
-
-mutation RemovePermissionFromRole($id: uuid!) {
-  delete_role_permissions_by_pk(id: $id) {
-    id
-  }
-}
-
-mutation RemoveAllPermissionsFromRole($role_id: uuid!) {
-  delete_role_permissions(where: { role_id: { _eq: $role_id } }) {
-    affected_rows
+mutation UpdateRolePermission($id: uuid!, $set: role_permissions_set_input!) {
+  updateRolePermission(pk_columns: { id: $id }, _set: $set) {
+    ...RolePermissionCore
   }
 }
 
 # User Roles
-mutation AssignRoleToUser($user_id: uuid!, $role_id: uuid!) {
-  insert_user_roles_one(
-    object: { user_id: $user_id, role_id: $role_id }
-  ) {
+mutation AssignRoleToUser($userId: uuid!, $roleId: uuid!) {
+  insertUserRole(object: { userId: $userId, roleId: $roleId }) {
     ...UserRoleWithDetails
   }
 }
 
-mutation AssignRolesToUser($objects: [user_roles_insert_input!]!) {
-  insert_user_roles(objects: $objects) {
-    returning {
-      ...UserRoleWithDetails
-    }
-    affected_rows
-  }
-}
-
-mutation RemoveRoleFromUser($id: uuid!) {
-  delete_user_roles_by_pk(id: $id) {
-    id
-  }
-}
-
-mutation RemoveAllRolesFromUser($user_id: uuid!) {
-  delete_user_roles(where: { user_id: { _eq: $user_id } }) {
-    affected_rows
-  }
-}
-
-mutation ReplaceUserRoles($user_id: uuid!, $role_ids: [uuid!]!) {
-  delete_user_roles(where: { user_id: { _eq: $user_id } }) {
-    affected_rows
-  }
-  insert_user_roles(
-    objects: [
-      { user_id: $user_id, role_id: $role_ids }
-    ]
+mutation RemoveRoleFromUser($userId: uuid!, $roleId: uuid!) {
+  deleteUserRoles(
+    where: { userId: { _eq: $userId }, roleId: { _eq: $roleId } }
   ) {
+    affected_rows
+  }
+}
+
+mutation RemoveAllRolesFromUser($userId: uuid!) {
+  deleteUserRoles(where: { userId: { _eq: $userId } }) {
+    affected_rows
+  }
+}
+
+mutation ReplaceUserRoles(
+  $userId: uuid!
+  $objects: [user_roles_insert_input!]!
+) {
+  deleteUserRoles(where: { userId: { _eq: $userId } }) {
+    affected_rows
+  }
+  insertUserRoles(objects: $objects) {
     returning {
       ...UserRoleWithDetails
     }
-    affected_rows
   }
 }
 

@@ -3,11 +3,11 @@
 
 import type React from "react"
 
-import { ClientWrapper } from "@/components/client-wrapper"
+import { ClientWrapper } from "@/domains/clients/components/client-wrapper"
 import { DashboardShell } from "@/components/dashboard-shell"
 import { Sidebar } from "@/components/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { UserNav } from "@/components/user-nav"
+import { UserNav } from "@/domains/users/components/user-nav"
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

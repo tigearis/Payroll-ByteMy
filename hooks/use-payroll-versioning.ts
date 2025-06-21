@@ -1,132 +1,13 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
 import { toast } from "sonner";
-import { useCurrentUser } from "./useCurrentUser";
-
-// Import extracted GraphQL operations - using extracted versions where available
-const SUPERSEDE_CURRENT_PAYROLL = gql`
-  mutation SupersedeCurrentPayroll($id: uuid!, $superseded_date: date!) {
-    update_payrolls_by_pk(
-      pk_columns: { id: $id }
-      _set: { superseded_date: $superseded_date }
-    ) {
-      id
-      superseded_date
-    }
-  }
-`;
-
-// Insert new payroll version
-const INSERT_NEW_PAYROLL_VERSION = gql`
-  mutation InsertNewPayrollVersion(
-    $parent_payroll_id: uuid!
-    $version_number: Int!
-    $go_live_date: date!
-    $name: String!
-    $client_id: uuid!
-    $cycle_id: uuid!
-    $date_type_id: uuid
-    $date_value: Int
-    $primary_consultant_user_id: uuid
-    $backup_consultant_user_id: uuid
-    $manager_user_id: uuid
-    $processing_days_before_eft: Int!
-    $status: payroll_status!
-    $version_reason: String!
-    $created_by_user_id: uuid
-    $employee_count: Int!
-  ) {
-    insert_payrolls_one(
-      object: {
-        parent_payroll_id: $parent_payroll_id
-        version_number: $version_number
-        go_live_date: $go_live_date
-        name: $name
-        client_id: $client_id
-        cycle_id: $cycle_id
-        date_type_id: $date_type_id
-        date_value: $date_value
-        primary_consultant_user_id: $primary_consultant_user_id
-        backup_consultant_user_id: $backup_consultant_user_id
-        manager_user_id: $manager_user_id
-        processing_days_before_eft: $processing_days_before_eft
-        status: $status
-        version_reason: $version_reason
-        created_by_user_id: $created_by_user_id
-        employee_count: $employee_count
-        superseded_date: null
-      }
-    ) {
-      id
-      name
-      version_number
-      go_live_date
-      status
-      employee_count
-    }
-  }
-`;
-
-// Simple status update mutation (without versioning)
-const UPDATE_STATUS_ONLY = gql`
-  mutation UpdatePayrollStatusOnly($id: uuid!, $status: payroll_status!) {
-    update_payrolls_by_pk(
-      pk_columns: { id: $id }
-      _set: { status: $status, updated_at: "now()" }
-    ) {
-      id
-      status
-      updated_at
-    }
-  }
-`;
-
-// GraphQL query for getting payroll version history
-const GET_PAYROLL_VERSION_HISTORY_QUERY = gql`
-  query GetPayrollVersionHistory($payrollId: uuid!) {
-    payrolls(
-      where: {
-        _or: [
-          { id: { _eq: $payrollId } }
-          { parent_payroll_id: { _eq: $payrollId } }
-        ]
-      }
-      order_by: { version_number: asc }
-    ) {
-      id
-      name
-      version_number
-      go_live_date
-      superseded_date
-      version_reason
-      status
-      created_by_user_id
-    }
-  }
-`;
-
-// GraphQL query for getting latest payroll version
-const GET_LATEST_PAYROLL_VERSION_QUERY = gql`
-  query GetLatestPayrollVersion($payrollId: uuid!) {
-    payrolls(
-      where: {
-        _or: [
-          { id: { _eq: $payrollId } }
-          { parent_payroll_id: { _eq: $payrollId } }
-        ]
-        superseded_date: { _is_null: true }
-      }
-      order_by: { version_number: desc }
-      limit: 1
-    ) {
-      id
-      name
-      version_number
-      go_live_date
-      status
-    }
-  }
-`;
+import { useCurrentUser } from "@/hooks/use-current-user";
+import {
+  UpdatePayrollDocument,
+  CreatePayrollDocument,
+  UpdatePayrollStatusDocument,
+  GetPayrollVersionHistoryDocument,
+  GetLatestPayrollVersionDocument,
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 /**
  * Payroll Versioning Hook - Complete Field Requirements
@@ -196,9 +77,9 @@ interface SavePayrollEditInput {
 }
 
 export function usePayrollVersioning() {
-  const [supersedeCurrentPayroll] = useMutation(SUPERSEDE_CURRENT_PAYROLL);
-  const [insertNewPayrollVersion] = useMutation(INSERT_NEW_PAYROLL_VERSION);
-  const [updateStatus] = useMutation(UPDATE_STATUS_ONLY);
+  const [supersedeCurrentPayroll] = useMutation(UpdatePayrollDocument);
+  const [insertNewPayrollVersion] = useMutation(CreatePayrollDocument);
+  const [updateStatus] = useMutation(UpdatePayrollStatusDocument);
   const { currentUserId } = useCurrentUser();
 
   // Helper function to create a complete versioning input with current user
@@ -302,7 +183,7 @@ export function usePayrollVersioning() {
         await supersedeCurrentPayroll({
           variables: {
             id: currentPayroll.id,
-            superseded_date: today.toISOString().split("T")[0], // Use today's date
+            set: { supersededDate: today.toISOString().split("T")[0] }, // Use today's date
           },
         });
       } else {
@@ -315,7 +196,7 @@ export function usePayrollVersioning() {
         await supersedeCurrentPayroll({
           variables: {
             id: currentPayroll.id,
-            superseded_date: goLiveDate,
+            set: { supersededDate: goLiveDate },
           },
         });
       }
@@ -368,16 +249,18 @@ export function usePayrollVersioning() {
       console.log("📋 New version data:", newVersionData);
 
       const insertResult = await insertNewPayrollVersion({
-        variables: newVersionData,
+        variables: {
+          object: newVersionData,
+        },
       });
 
-      const newPayroll = insertResult.data?.insert_payrolls_one;
+      const newPayroll = insertResult.data?.insertPayroll;
       if (!newPayroll) {
         throw new Error("Failed to insert new payroll version");
       }
 
       console.log(
-        `✅ New payroll version ${newPayroll.version_number} created: ${newPayroll.id}`
+        `✅ New payroll version created: ${newPayroll.id}`
       );
       console.log(
         "✅ Database triggers handled date deletion and generation automatically"
@@ -390,19 +273,19 @@ export function usePayrollVersioning() {
           : `Dates will be generated from ${goLiveDate}`;
 
       toast.success(
-        `Created payroll version ${newPayroll.version_number} (go-live: ${goLiveDate})`
+        `Created payroll version (go-live: ${goLiveDate})`
       );
 
       toast.info(dateRegenerationMessage);
 
       toast.success(
-        `Version ${newPayroll.version_number} ready with employee count: ${employeeCount}`
+        `Payroll version ready with employee count: ${employeeCount}`
       );
 
       return {
         success: true,
         newVersionId: newPayroll.id,
-        versionNumber: newPayroll.version_number,
+        versionNumber: newVersionData.version_number,
         oldPayrollId: currentPayroll.id,
         employeeCount: employeeCount,
         dateRegenerationInfo: {
@@ -412,7 +295,7 @@ export function usePayrollVersioning() {
               ? today.toISOString().split("T")[0]
               : goLiveDate,
         },
-        message: `Version ${newPayroll.version_number} created with ${employeeCount} employees`,
+        message: `Version ${newVersionData.version_number} created with ${employeeCount} employees`,
       };
     } catch (error: any) {
       console.error("❌ Failed to save payroll edit:", error);
@@ -437,12 +320,12 @@ export function usePayrollVersioning() {
         },
       });
 
-      if (result.data?.update_payrolls_by_pk) {
+      if (result.data?.updatePayroll) {
         console.log(`✅ Status updated successfully to ${newStatus}`);
         toast.success(`Status changed to ${newStatus}`);
         return {
           success: true,
-          newStatus: result.data.update_payrolls_by_pk.status,
+          newStatus: newStatus, // The mutation doesn't return status in this generated version
         };
       } else {
         throw new Error("No data returned from status update");
@@ -469,7 +352,7 @@ export function usePayrollVersioning() {
 // Hook for querying payroll version history
 export function usePayrollVersionHistory(payrollId: string) {
   const { data, loading, error, refetch } = useQuery(
-    GET_PAYROLL_VERSION_HISTORY_QUERY,
+    GetPayrollVersionHistoryDocument,
     {
       variables: { payrollId },
       skip: !payrollId,
@@ -486,7 +369,7 @@ export function usePayrollVersionHistory(payrollId: string) {
 
 // Hook for getting latest version of a payroll
 export function useLatestPayrollVersion(payrollId: string) {
-  const { data, loading, error } = useQuery(GET_LATEST_PAYROLL_VERSION_QUERY, {
+  const { data, loading, error } = useQuery(GetLatestPayrollVersionDocument, {
     variables: { payrollId },
     skip: !payrollId,
   });
@@ -537,7 +420,7 @@ export function getVersionReason(changes: any): string {
 
 // Simple hook for just status updates (no versioning)
 export function usePayrollStatusUpdate() {
-  const [updateStatus] = useMutation(UPDATE_STATUS_ONLY);
+  const [updateStatus] = useMutation(UpdatePayrollStatusDocument);
 
   const updatePayrollStatus = async (payrollId: string, newStatus: string) => {
     try {
@@ -551,28 +434,20 @@ export function usePayrollStatusUpdate() {
         // Refetch queries to update the UI
         refetchQueries: [
           {
-            query: gql`
-              query RefreshPayroll($id: uuid!) {
-                payrolls(where: { id: { _eq: $id } }) {
-                  id
-                  status
-                  updated_at
-                }
-              }
-            `,
-            variables: { id: payrollId },
+            query: GetLatestPayrollVersionDocument,
+            variables: { payrollId: payrollId },
           },
         ],
         awaitRefetchQueries: true,
       });
 
-      if (result.data?.update_payrolls_by_pk) {
+      if (result.data?.updatePayroll) {
         console.log(`✅ Status updated successfully to ${newStatus}`);
         toast.success(`Status changed to ${newStatus}`);
         return {
           success: true,
-          newStatus: result.data.update_payrolls_by_pk.status,
-          updatedAt: result.data.update_payrolls_by_pk.updated_at,
+          newStatus: newStatus, // The mutation doesn't return status in this generated version
+          updatedAt: new Date().toISOString(), // Use current timestamp
         };
       } else {
         throw new Error("No data returned from status update");

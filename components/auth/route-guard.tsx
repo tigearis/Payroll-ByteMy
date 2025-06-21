@@ -4,19 +4,19 @@ import { ShieldAlert, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "../../components/ui/card";
+} from "@/components/ui/card";
 import {
   useAuthContext,
   ROUTE_PERMISSIONS,
   UserRole,
-} from "../../lib/auth-context";
+} from "@/lib/auth/auth-context";
 
 interface RouteGuardProps {
   children: React.ReactNode;

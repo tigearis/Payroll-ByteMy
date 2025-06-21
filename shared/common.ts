@@ -77,11 +77,6 @@ export interface FeatureFlag {
   updated_at: string;
 }
 
-export interface AppSettings {
-  id: string;
-  permissions?: Record<string, any>;
-}
-
 // External system integration
 export type ExternalSystem = {
   id: string;

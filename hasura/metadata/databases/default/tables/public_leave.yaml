@@ -1,6 +1,31 @@
 table:
   name: leave
   schema: public
+configuration:
+  column_config:
+    end_date:
+      custom_name: endDate
+    leave_type:
+      custom_name: leaveType
+    start_date:
+      custom_name: startDate
+    user_id:
+      custom_name: userId
+  custom_column_names:
+    end_date: endDate
+    leave_type: leaveType
+    start_date: startDate
+    user_id: userId
+  custom_root_fields:
+    delete: deleteLeaves
+    delete_by_pk: deleteLeave
+    insert: insertLeaves
+    insert_one: insertLeave
+    select: leaves
+    select_aggregate: leavesAggregate
+    select_by_pk: leave
+    update: updateLeaves
+    update_by_pk: updateLeave
 object_relationships:
   - name: leave_user
     using:

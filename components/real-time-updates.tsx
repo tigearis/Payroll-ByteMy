@@ -1,8 +1,9 @@
 // components/real-time-updates.tsx
-import { gql, DocumentNode } from '@apollo/client';
+import { DocumentNode } from '@apollo/client';
 import { ReactNode } from 'react';
 
 import { useRealTimeSubscription } from '@/hooks/use-subscription';
+import { PayrollSubscriptionDocument } from '@/domains/payrolls/graphql/generated/graphql';
 
 interface RealTimeUpdatesProps {
   subscription: DocumentNode;
@@ -26,13 +27,15 @@ export function RealTimeUpdates({
   children
 }: RealTimeUpdatesProps) {
   // Use our custom subscription hook
-  const { isConnected } = useRealTimeSubscription({
+  const subscriptionOptions = {
     document: subscription,
-    variables,
+    variables: variables || {},
     refetchQueries,
     shouldToast: showToasts,
-    onData: onUpdate
-  });
+    ...(onUpdate && { onData: onUpdate })
+  };
+  
+  const { isConnected } = useRealTimeSubscription(subscriptionOptions);
 
   // Either render children (if provided) or nothing
   return children ? (
@@ -64,23 +67,13 @@ export function PayrollUpdatesListener({
   onUpdate?: (data: any) => void;
 }) {
   // Import extracted GraphQL operations
-  const PAYROLLS_SUBSCRIPTION = gql`
-    subscription payrollSubscription {
-      payrolls {
-        id
-        name
-        status
-        updated_at
-      }
-    }
-  `;
   
-  return (
-    <RealTimeUpdates
-      subscription={PAYROLLS_SUBSCRIPTION}
-      refetchQueries={refetchQueries}
-      showToasts={showToasts}
-      onUpdate={onUpdate}
-    />
-  );
+  const realTimeProps = {
+    subscription: PayrollSubscriptionDocument,
+    refetchQueries,
+    showToasts,
+    ...(onUpdate && { onUpdate })
+  };
+
+  return <RealTimeUpdates {...realTimeProps} />;
 }

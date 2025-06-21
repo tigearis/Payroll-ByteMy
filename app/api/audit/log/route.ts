@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-import { soc2Logger, SOC2EventType, LogLevel, LogCategory } from "@/lib/logging/soc2-logger";
+import { auditLogger, SOC2EventType, LogLevel, LogCategory } from "@/lib/security/audit/logger";
 
 // Input validation schema
 const auditEventSchema = z.object({
@@ -33,29 +33,36 @@ export async function POST(request: NextRequest) {
 
     // Map action to SOC2 event type
     const eventTypeMap: Record<string, SOC2EventType> = {
-      CREATE: SOC2EventType.DATA_CREATED,
+      CREATE: SOC2EventType.USER_CREATED,
       READ: SOC2EventType.DATA_VIEWED,
-      UPDATE: SOC2EventType.DATA_UPDATED,
-      DELETE: SOC2EventType.DATA_DELETED,
-      EXPORT: SOC2EventType.DATA_EXPORTED,
-      BULK_OPERATION: SOC2EventType.BULK_OPERATION,
+      UPDATE: SOC2EventType.USER_UPDATED,
+      DELETE: SOC2EventType.USER_DELETED,
+      EXPORT: SOC2EventType.SENSITIVE_DATA_EXPORT,
+      BULK_OPERATION: SOC2EventType.BULK_DATA_ACCESS,
     };
 
     const eventType = eventTypeMap[validatedInput.action] || SOC2EventType.DATA_VIEWED;
 
     // Log the audit event
-    await soc2Logger.log({
+    const logEntry: any = {
       level: LogLevel.INFO,
       category: LogCategory.SYSTEM_ACCESS,
       eventType,
-      message: `${validatedInput.action} operation on ${validatedInput.resourceType}`,
       userId: validatedInput.userId,
-      entityType: validatedInput.resourceType,
-      entityId: validatedInput.resourceId,
+      resourceType: validatedInput.resourceType,
+      action: validatedInput.action,
+      success: true,
       metadata: validatedInput.metadata,
-      ipAddress: validatedInput.ipAddress,
-      userAgent: validatedInput.userAgent,
-    }, request);
+      ipAddress: validatedInput.ipAddress || "unknown",
+      userAgent: validatedInput.userAgent || "unknown",
+      complianceNote: `${validatedInput.action} operation on ${validatedInput.resourceType}`
+    };
+
+    if (validatedInput.resourceId) {
+      logEntry.resourceId = validatedInput.resourceId;
+    }
+
+    await auditLogger.logSOC2Event(logEntry);
 
     return NextResponse.json({
       success: true,

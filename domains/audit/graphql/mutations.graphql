@@ -3,92 +3,71 @@
 # Note: Audit logs are typically created automatically by the system
 # These mutations are for administrative purposes only
 
-# Security Events
-mutation CreateSecurityEvent($object: security_event_log_insert_input!) {
-  insert_security_event_log_one(object: $object) {
-    ...SecurityEventLogCore
+
+# Audit Log Management
+mutation CreateAuditLog($object: audit_audit_log_insert_input!) {
+  insertAuditLog(object: $object) {
+    ...AuditLogCore
   }
 }
 
-mutation ResolveSecurityEvent($id: uuid!, $resolution_notes: String!) {
-  update_security_event_log_by_pk(
-    pk_columns: { id: $id }
-    _set: {
-      resolved: true
-      resolution_notes: $resolution_notes
-      resolved_at: "now()"
-    }
-  ) {
-    ...SecurityEventLogWithUser
-  }
-}
-
-mutation UpdateSecurityEventSeverity($id: uuid!, $severity: String!) {
-  update_security_event_log_by_pk(
-    pk_columns: { id: $id }
-    _set: { severity: $severity }
-  ) {
-    ...SecurityEventLogCore
-  }
-}
-
-# Compliance Checks
-mutation CreateComplianceCheck($object: compliance_check_insert_input!) {
-  insert_compliance_check_one(object: $object) {
-    ...ComplianceCheckWithUser
-  }
-}
-
-mutation UpdateComplianceCheck($id: uuid!, $set: compliance_check_set_input!) {
-  update_compliance_check_by_pk(pk_columns: { id: $id }, _set: $set) {
-    ...ComplianceCheckWithUser
-  }
-}
-
-mutation MarkComplianceCheckRemediated($id: uuid!, $remediation_notes: String!, $next_check_due: date!) {
-  update_compliance_check_by_pk(
-    pk_columns: { id: $id }
-    _set: {
-      remediation_required: false
-      remediation_notes: $remediation_notes
-      next_check_due: $next_check_due
-    }
-  ) {
-    ...ComplianceCheckCore
-  }
-}
-
-# Data Access Logging (for manual entries)
-mutation LogDataAccess($object: data_access_log_insert_input!) {
-  insert_data_access_log_one(object: $object) {
+# Data Access Log Management
+mutation CreateDataAccessLog($object: audit_data_access_log_insert_input!) {
+  insertDataAccessLog(object: $object) {
     ...DataAccessLogCore
   }
 }
 
-# Bulk Operations
-mutation BulkResolveSecurityEvents($event_ids: [uuid!]!, $resolution_notes: String!) {
-  update_security_event_log(
-    where: { id: { _in: $event_ids } }
-    _set: {
-      resolved: true
-      resolution_notes: $resolution_notes
-      resolved_at: "now()"
-    }
-  ) {
-    affected_rows
-    returning {
-      ...SecurityEventLogCore
-    }
+# Auth Event Management
+mutation CreateAuthEvent($object: audit_auth_events_insert_input!) {
+  insertAuthEvent(object: $object) {
+    ...AuthEventCore
   }
 }
 
-# Retention Management
-mutation EnforceAuditRetention {
-  enforce_audit_retention {
-    success
-    message
-    deleted_audit_logs
-    deleted_access_logs
-    archived_security_events
+# Permission Change Management
+mutation CreatePermissionChange(
+  $object: audit_permission_changes_insert_input!
+) {
+  insertPermissionChange(object: $object) {
+    ...PermissionChangeCore
+  }
+}
+
+# Bulk Operations
+mutation BulkCreateAuditLogs($objects: [audit_audit_log_insert_input!]!) {
+  insertAuditLogs(objects: $objects) {
+    returning {
+      ...AuditLogCore
+    }
+    affected_rows
+  }
+}
+
+
+mutation UpdateAuditLog($id: uuid!, $set: audit_audit_log_set_input!) {
+  updateAuditLog(pk_columns: { id: $id }, _set: $set) {
+    ...AuditLogWithUser
+  }
+}
+
+# Bulk operations for performance
+mutation CreateMultipleAuditLogs($objects: [audit_audit_log_insert_input!]!) {
+  insertAuditLogs(objects: $objects) {
+    returning {
+      ...AuditLogCore
+    }
+    affected_rows
+  }
+}
+
+mutation CreateMultipleDataAccessLogs(
+  $objects: [audit_data_access_log_insert_input!]!
+) {
+  insertDataAccessLogs(objects: $objects) {
+    returning {
+      ...DataAccessLogCore
+    }
+    affected_rows
   }
 }

@@ -2,44 +2,132 @@
 # Security Classification: CRITICAL - Contains PII and authentication data
 # SOC2 Compliance: Employee data with strict access controls
 
+fragment UserCore on users {
+  id
+  name
+  email
+  isActive
+  isStaff
+  role
+  clerkUserId
+  createdAt
+  updatedAt
+}
+
+fragment UserWithProfile on users {
+  ...UserCore
+  username
+  image
+}
+
+fragment UserWithRoles on users {
+  ...UserCore
+  userRoles {
+    id
+    role {
+      id
+      name
+      displayName
+      description
+      priority
+      isSystemRole
+      rolePermissions {
+        id
+        conditions
+        permission {
+          id
+          action
+          description
+          resource {
+            id
+            name
+            displayName
+            description
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment UserWithTeam on users {
+  ...UserCore
+  teamMembers {
+    id
+    name
+    email
+    isActive
+    role
+  }
+}
+
+fragment UserWithWorkSchedule on users {
+  ...UserCore
+  workSchedules {
+    id
+    workDay
+    workHours
+    createdAt
+    updatedAt
+  }
+}
+
+fragment UserWithPayrolls on users {
+  ...UserCore
+}
+
+fragment UserWithAllRelations on users {
+  ...UserWithProfile
+  userRoles {
+    id
+    role {
+      id
+      name
+      displayName
+      description
+      priority
+    }
+  }
+  teamMembers {
+    id
+    name
+    email
+    role
+  }
+  workSchedules {
+    id
+    workDay
+    workHours
+    createdAt
+    updatedAt
+  }
+}
+
 fragment UserBasicInfo on users {
   id
   name
   email
   role
-  status
-  created_at
-  updated_at
+  username
+  image
+  isStaff
+  isActive
+  managerId
+  clerkUserId
 }
 
-fragment UserWithProfile on users {
+fragment UserWithManager on users {
   ...UserBasicInfo
-  avatar_url
-  phone
-  department
-  job_title
-  hire_date
-  timezone
-  is_active
+  manager {
+    id
+    name
+    email
+    role
+  }
 }
 
 fragment UserForStaff on users {
   ...UserWithProfile
-  employee_id
-  emergency_contact_name
-  emergency_contact_phone
-  address
-  city
-  state
-  postal_code
-  country
-  date_of_birth
-  tax_file_number
-  super_fund_name
-  super_fund_account
-  bank_account_name
-  bank_account_number
-  bank_bsb
 }
 
 fragment UserForAuth on users {
@@ -47,10 +135,8 @@ fragment UserForAuth on users {
   name
   email
   role
-  status
-  is_active
-  permissions_last_updated
-  clerk_user_id
+  isActive
+  clerkUserId
 }
 
 fragment UserForAudit on users {
@@ -58,11 +144,7 @@ fragment UserForAudit on users {
   name
   email
   role
-  status
-  is_active
-  created_at
-  updated_at
-  last_login_at
+  isActive
   # Sensitive fields excluded from audit logs
 }
 
@@ -71,17 +153,12 @@ fragment UserRoleInfo on users {
   name
   email
   role
-  status
-  is_active
-  user_roles {
-    role_name: role {
+  isActive
+  userRoles {
+    role {
       name
       description
-      level
     }
-    granted_at
-    granted_by
-    is_active
   }
 }
 
@@ -89,12 +166,14 @@ fragment UserPermissionsInfo on users {
   id
   name
   role
-  user_roles {
-    role_name: role {
+  userRoles {
+    role {
       name
-      permissions: role_permissions {
-        permission_name: permission {
-          resource
+      rolePermissions {
+        permission {
+          resource {
+            name
+          }
           action
           description
         }

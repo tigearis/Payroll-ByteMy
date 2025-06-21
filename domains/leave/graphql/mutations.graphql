@@ -1,19 +1,19 @@
 # Leave Domain Mutations
 
 mutation CreateLeaveRequest($object: leave_insert_input!) {
-  insert_leave_one(object: $object) {
+  insertLeave(object: $object) {
     ...LeaveWithManager
   }
 }
 
 mutation UpdateLeaveRequest($id: uuid!, $set: leave_set_input!) {
-  update_leave_by_pk(pk_columns: { id: $id }, _set: $set) {
+  updateLeave(pk_columns: { id: $id }, _set: $set) {
     ...LeaveWithManager
   }
 }
 
 mutation ApproveLeaveRequest($id: uuid!) {
-  update_leave_by_pk(
+  updateLeave(
     pk_columns: { id: $id }
     _set: { status: "Approved" }
   ) {
@@ -22,10 +22,9 @@ mutation ApproveLeaveRequest($id: uuid!) {
 }
 
 mutation RejectLeaveRequest($id: uuid!, $reason: String) {
-  update_leave_by_pk(
+  updateLeave(
     pk_columns: { id: $id }
     _set: { 
-      status: "Rejected"
       reason: $reason
     }
   ) {
@@ -34,13 +33,13 @@ mutation RejectLeaveRequest($id: uuid!, $reason: String) {
 }
 
 mutation DeleteLeaveRequest($id: uuid!) {
-  delete_leave_by_pk(id: $id) {
+  deleteLeave(id: $id) {
     id
   }
 }
 
 mutation BulkApproveLeaveRequests($ids: [uuid!]!) {
-  update_leave(
+  updateLeaves(
     where: { id: { _in: $ids } }
     _set: { status: "Approved" }
   ) {
@@ -52,10 +51,9 @@ mutation BulkApproveLeaveRequests($ids: [uuid!]!) {
 }
 
 mutation BulkRejectLeaveRequests($ids: [uuid!]!, $reason: String) {
-  update_leave(
+  updateLeaves(
     where: { id: { _in: $ids } }
     _set: { 
-      status: "Rejected"
       reason: $reason
     }
   ) {

@@ -34,6 +34,9 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
       
       return () => clearTimeout(timer);
     }
+    
+    // Always return a cleanup function, even if it's empty
+    return () => {};
   }, [clerkLoaded, clerkUser, gracePeriodEnded]);
 
   // Monitor access status

@@ -32,8 +32,16 @@ mutation UpdateBillingInvoice($id: uuid!, $set: billing_invoice_set_input!) {
   }
 }
 
-mutation UpdateInvoiceStatus($id: uuid!, $status: String!, $event_message: String!, $user_id: uuid!) {
-  update_billing_invoice_by_pk(pk_columns: { id: $id }, _set: { status: $status }) {
+mutation UpdateInvoiceStatus(
+  $id: uuid!
+  $status: String!
+  $event_message: String!
+  $user_id: uuid!
+) {
+  update_billing_invoice_by_pk(
+    pk_columns: { id: $id }
+    _set: { status: $status }
+  ) {
     ...BillingInvoiceCore
   }
   insert_billing_event_log_one(
@@ -61,7 +69,9 @@ mutation CreateBillingInvoiceItem($object: billing_invoice_item_insert_input!) {
   }
 }
 
-mutation CreateBillingInvoiceItems($objects: [billing_invoice_item_insert_input!]!) {
+mutation CreateBillingInvoiceItems(
+  $objects: [billing_invoice_item_insert_input!]!
+) {
   insert_billing_invoice_item(objects: $objects) {
     returning {
       ...BillingInvoiceItemCore
@@ -70,7 +80,10 @@ mutation CreateBillingInvoiceItems($objects: [billing_invoice_item_insert_input!
   }
 }
 
-mutation UpdateBillingInvoiceItem($id: uuid!, $set: billing_invoice_item_set_input!) {
+mutation UpdateBillingInvoiceItem(
+  $id: uuid!
+  $set: billing_invoice_item_set_input!
+) {
   update_billing_invoice_item_by_pk(pk_columns: { id: $id }, _set: $set) {
     ...BillingInvoiceItemCore
   }
@@ -83,13 +96,18 @@ mutation DeleteBillingInvoiceItem($id: uuid!) {
 }
 
 # Client Billing Assignments
-mutation CreateClientBillingAssignment($object: client_billing_assignment_insert_input!) {
+mutation CreateClientBillingAssignment(
+  $object: client_billing_assignment_insert_input!
+) {
   insert_client_billing_assignment_one(object: $object) {
     ...ClientBillingAssignmentWithRelations
   }
 }
 
-mutation UpdateClientBillingAssignment($id: uuid!, $set: client_billing_assignment_set_input!) {
+mutation UpdateClientBillingAssignment(
+  $id: uuid!
+  $set: client_billing_assignment_set_input!
+) {
   update_client_billing_assignment_by_pk(pk_columns: { id: $id }, _set: $set) {
     ...ClientBillingAssignmentWithRelations
   }
@@ -111,16 +129,11 @@ mutation DeleteClientBillingAssignment($id: uuid!) {
 }
 
 # Bulk Operations
-mutation GenerateInvoicesForPeriod($start_date: date!, $end_date: date!) {
-  generate_invoices_for_period(args: { start_date: $start_date, end_date: $end_date }) {
-    success
-    message
-    invoice_count
-    total_amount
-  }
-}
-
-mutation BulkUpdateInvoiceStatus($invoice_ids: [uuid!]!, $status: String!, $user_id: uuid!) {
+mutation BulkUpdateInvoiceStatus(
+  $invoice_ids: [uuid!]!
+  $status: String!
+  $user_id: uuid!
+) {
   update_billing_invoice(
     where: { id: { _in: $invoice_ids } }
     _set: { status: $status }
@@ -129,5 +142,18 @@ mutation BulkUpdateInvoiceStatus($invoice_ids: [uuid!]!, $status: String!, $user
     returning {
       ...BillingInvoiceCore
     }
+  }
+
+  # Log the bulk status change
+  insert_billing_event_log(
+    objects: [
+      {
+        event_type: $status
+        message: "Bulk status update"
+        created_by: $user_id
+      }
+    ]
+  ) {
+    affected_rows
   }
 }

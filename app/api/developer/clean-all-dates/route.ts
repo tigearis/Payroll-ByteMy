@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuth, checkRateLimit } from "@/lib/api-auth";
-import { secureHasuraService } from "@/lib/secure-hasura-service";
+import { withAuth, checkRateLimit } from "@/lib/auth/api-auth";
+import { secureHasuraService } from "@/lib/apollo/secure-hasura-service";
 
 export const POST = withAuth(
   async (request: NextRequest, session) => {

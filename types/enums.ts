@@ -80,3 +80,7 @@ export enum Status {
   Inactive = "inactive",
   Archived = "archived",
 }
+
+// Export aliases for backward compatibility with existing imports
+export const payroll_cycle_type = PayrollCycleType;
+export const payroll_date_type = PayrollDateType;

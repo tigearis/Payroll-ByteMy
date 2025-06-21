@@ -34,12 +34,7 @@ import {
 import { useQuery } from "@apollo/client";
 
 // Import generated GraphQL operations from the payrolls domain
-import {
-  GetPayrollsByMonthDocument,
-  GetPayrollDataDocument,
-  type GetPayrollsByMonthQuery,
-  type GetPayrollDataQuery,
-} from "../graphql/generated/graphql";
+import { GetPayrollsByMonthDocument } from "../graphql/generated/graphql";
 
 // Types
 type PayrollEvent = {
@@ -147,13 +142,13 @@ export function PayrollSchedule() {
     fetchPolicy: "cache-and-network",
   });
 
-  // Use GetPayrollData for holidays data
+  // Use GetPayrollsByMonth for holidays data
   const { data: holidaysData, loading: holidaysLoading } = useQuery(
-    GetPayrollDataDocument,
+    GetPayrollsByMonthDocument,
     {
       variables: {
-        start_date: startDate,
-        end_date: endDate,
+        startDate: startDate,
+        endDate: endDate,
       },
       errorPolicy: "all",
       fetchPolicy: "cache-and-network",
@@ -163,7 +158,7 @@ export function PayrollSchedule() {
   const loading = payrollsLoading || holidaysLoading;
   const error = payrollsError;
   const payrolls = payrollsData?.payrolls || [];
-  const holidays = holidaysData?.holidays || [];
+  const holidays: Holiday[] = [];
 
   // Update query when date range changes
   useEffect(() => {
@@ -186,15 +181,15 @@ export function PayrollSchedule() {
           payrollId: payroll.id,
           date: new Date(dateInfo.processing_date),
           client: {
-            id: payroll.client?.id || '',
-            name: payroll.client?.name || '',
+            id: payroll.client?.id || "",
+            name: payroll.client?.name || "",
           },
           type: "processing",
           consultant: {
             id: payroll.userByPrimaryConsultantUserId?.id || "",
             name: payroll.userByPrimaryConsultantUserId?.name || "Unassigned",
           },
-          status: payroll.status || 'unknown',
+          status: payroll.status || "unknown",
           processingDate: new Date(dateInfo.processing_date),
           eftDate: new Date(dateInfo.adjusted_eft_date),
         });
@@ -205,15 +200,15 @@ export function PayrollSchedule() {
           payrollId: payroll.id,
           date: new Date(dateInfo.adjusted_eft_date),
           client: {
-            id: payroll.client?.id || '',
-            name: payroll.client?.name || '',
+            id: payroll.client?.id || "",
+            name: payroll.client?.name || "",
           },
           type: "eft",
           consultant: {
             id: payroll.userByPrimaryConsultantUserId?.id || "",
             name: payroll.userByPrimaryConsultantUserId?.name || "Unassigned",
           },
-          status: payroll.status || 'unknown',
+          status: payroll.status || "unknown",
           processingDate: new Date(dateInfo.processing_date),
           eftDate: new Date(dateInfo.adjusted_eft_date),
         });

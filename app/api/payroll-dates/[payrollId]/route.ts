@@ -3,8 +3,8 @@ import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuthParams } from "@/lib/api-auth";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { withAuthParams } from "@/lib/auth/api-auth";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 
 
 // GraphQL query to get payroll dates

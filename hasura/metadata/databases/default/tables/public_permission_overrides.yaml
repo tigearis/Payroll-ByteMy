@@ -1,6 +1,34 @@
 table:
   name: permission_overrides
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    created_by:
+      custom_name: createdBy
+    expires_at:
+      custom_name: expiresAt
+    updated_at:
+      custom_name: updatedAt
+    user_id:
+      custom_name: userId
+  custom_column_names:
+    created_at: createdAt
+    created_by: createdBy
+    expires_at: expiresAt
+    updated_at: updatedAt
+    user_id: userId
+  custom_root_fields:
+    delete: deletePermissionOverrides
+    delete_by_pk: deletePermissionOverride
+    insert: insertPermissionOverrides
+    insert_one: insertPermissionOverride
+    select: permissionOverrides
+    select_aggregate: permissionOverridesAggregate
+    select_by_pk: permissionOverride
+    update: updatePermissionOverrides
+    update_by_pk: updatePermissionOverride
 object_relationships:
   - name: created_by_user
     using:

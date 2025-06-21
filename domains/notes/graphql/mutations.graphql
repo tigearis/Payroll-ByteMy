@@ -3,18 +3,15 @@
 # SOC2 Compliance: User-based access control with audit logging
 
 mutation AddNote(
-  $entityId: uuid!
-  $entityType: String!
+  $entity_id: uuid!
+  $entity_type: String!
   $content: String!
-  $userId: uuid!
+  $user_id: uuid!
   $isImportant: Boolean = false
 ) {
   insert_notes_one(
     object: {
-      entity_id: $entityId
-      entity_type: $entityType
       content: $content
-      user_id: $userId
       is_important: $isImportant
     }
   ) {
@@ -43,10 +40,6 @@ mutation UpdateNoteContent($id: uuid!, $content: String!) {
 mutation DeleteNote($id: uuid!) {
   delete_notes_by_pk(id: $id) {
     id
-    entity_type
-    entity_id
-    user_id
-    created_at
     # Return minimal info for audit trail
   }
 }
@@ -61,16 +54,13 @@ mutation MarkNoteImportant($id: uuid!, $isImportant: Boolean!) {
 }
 
 # Bulk operations for efficiency
-mutation BulkDeleteNotes($entityId: uuid!, $entityType: String!) {
+mutation BulkDeleteNotes($entity_id: uuid!, $entity_type: String!) {
   delete_notes(
-    where: { entity_id: { _eq: $entityId }, entity_type: { _eq: $entityType } }
+    where: { entity_id: { _eq: $entity_id }, entity_type: { _eq: $entity_type } }
   ) {
     affected_rows
     returning {
       id
-      user_id
-      entity_type
-      entity_id
     }
   }
 }
@@ -79,25 +69,18 @@ mutation UpdateNoteWithSetInput($id: uuid!, $input: notes_set_input!) {
   update_notes_by_pk(pk_columns: { id: $id }, _set: $input) {
     id
     content
-    updated_at
   }
 }
 
 # Extracted from inline GraphQL operations
-mutation AddNoteExtracted($entityType: String!, $entityId: uuid!, $content: String!) {
+mutation AddNoteExtracted($entity_type: String!, $entity_id: uuid!, $content: String!) {
   insert_notes_one(object: {
-    entity_type: $entityType,
-    entity_id: $entityId,
     content: $content,
     is_important: false
   }) {
     id
-    entity_id
-    entity_type
     content
     is_important
-    created_at
-    updated_at
   }
 }
 
@@ -108,6 +91,5 @@ mutation UpdateNoteExtracted($id: uuid!, $content: String!) {
   ) {
     id
     content
-    updated_at
   }
 }

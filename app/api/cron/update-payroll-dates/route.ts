@@ -3,11 +3,11 @@ import { auth } from "@clerk/nextjs/server";
 import { format, addMonths } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
-import { getServerApolloClient } from "@/lib/server-apollo-client";
+import { serverApolloClient } from "@/lib/apollo/unified-client";
 
 
 import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
-import { UPDATE_PAYROLL_STATUS } from "@/graphql/mutations/payrolls/updatePayrollStatus";
+import { UpdatePayrollStatusDocument as UPDATE_PAYROLL_STATUS } from "@/domains/payrolls";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Initialize Apollo Client
-    const client = await getServerApolloClient();
+    const client = serverApolloClient;
 
     // Parse request body
     const {
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
               await client.mutate({
                 mutation: UPDATE_PAYROLL_STATUS,
                 variables: {
-                  payrollId,
+                  id: payrollId,
                   status: newStatus,
                 },
                 context: {
@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Check if dates were generated
-        const generatedDates = dateData.generate_payroll_dates;
+        const generatedDates = dateData?.generatePayrollDates;
         if (!generatedDates || generatedDates.length === 0) {
           console.warn(`No dates generated for payroll: ${payrollId}`);
           results.failed++;

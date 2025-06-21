@@ -1,156 +1,21 @@
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
-import { graphql } from "../graphql/generated/gql";
-import { useFragment } from "../graphql/generated/fragment-masking";
 import {
+  GetPayrollsDocument,
+  GetPayrollByIdDocument,
+  CreatePayrollDocument,
+  UpdatePayrollDocument,
+  GetPayrollsByClientDocument,
+  GetPayrollsByMonthDocument,
+  UpdatePayrollStatusDocument,
+  DeletePayrollDocument,
+  CheckPayrollVersionDocument,
   GetPayrollsQuery,
   GetPayrollByIdQuery,
   CreatePayrollMutation,
   UpdatePayrollMutation,
+  CheckPayrollVersionQuery,
 } from "../graphql/generated/graphql";
-
-// Define the GraphQL documents
-const GetPayrollsDocument = graphql(`
-  query GetPayrolls {
-    payrolls(
-      where: { superseded_date: { _is_null: true } }
-      order_by: { updated_at: desc }
-    ) {
-      ...PayrollWithDates
-    }
-  }
-`);
-
-const GetPayrollByIdDocument = graphql(`
-  query GetPayrollById($id: uuid!) {
-    payrolls_by_pk(id: $id) {
-      ...PayrollWithDates
-    }
-  }
-`);
-
-const GetPayrollsByClientDocument = graphql(`
-  query GetPayrollsByClient($clientId: uuid!) {
-    payrolls(
-      where: {
-        client_id: { _eq: $clientId }
-        superseded_date: { _is_null: true }
-      }
-      order_by: { updated_at: desc }
-    ) {
-      ...PayrollWithDates
-    }
-  }
-`);
-
-const GetPayrollsByMonthDocument = graphql(`
-  query GetPayrollsByMonth($startDate: date!, $endDate: date!) {
-    payrolls(
-      where: {
-        superseded_date: { _is_null: true }
-        payroll_dates: {
-          adjusted_eft_date: { _gte: $startDate, _lte: $endDate }
-        }
-      }
-      order_by: { updated_at: desc }
-    ) {
-      ...PayrollWithDates
-    }
-  }
-`);
-
-const CreatePayrollDocument = graphql(`
-  mutation CreatePayroll(
-    $name: String!
-    $clientId: uuid!
-    $cycleId: uuid!
-    $dateTypeId: uuid!
-    $dateValue: Int
-    $primaryConsultantId: uuid!
-    $backupConsultantId: uuid
-    $managerId: uuid!
-    $processingDaysBeforeEft: Int!
-    $payrollSystem: String
-    $employeeCount: Int
-  ) {
-    insert_payrolls_one(
-      object: {
-        name: $name
-        client_id: $clientId
-        cycle_id: $cycleId
-        date_type_id: $dateTypeId
-        date_value: $dateValue
-        primary_consultant_user_id: $primaryConsultantId
-        backup_consultant_user_id: $backupConsultantId
-        manager_user_id: $managerId
-        processing_days_before_eft: $processingDaysBeforeEft
-        payroll_system: $payrollSystem
-        employee_count: $employeeCount
-        status: "Implementation"
-        version_number: 1
-      }
-    ) {
-      ...PayrollWithRelations
-    }
-  }
-`);
-
-const UpdatePayrollDocument = graphql(`
-  mutation UpdatePayroll(
-    $id: uuid!
-    $name: String
-    $cycleId: uuid
-    $dateTypeId: uuid
-    $dateValue: Int
-    $primaryConsultantId: uuid
-    $backupConsultantId: uuid
-    $managerId: uuid
-    $processingDaysBeforeEft: Int
-    $payrollSystem: String
-    $employeeCount: Int
-    $status: payroll_status
-  ) {
-    update_payrolls_by_pk(
-      pk_columns: { id: $id }
-      _set: {
-        name: $name
-        cycle_id: $cycleId
-        date_type_id: $dateTypeId
-        date_value: $dateValue
-        primary_consultant_user_id: $primaryConsultantId
-        backup_consultant_user_id: $backupConsultantId
-        manager_user_id: $managerId
-        processing_days_before_eft: $processingDaysBeforeEft
-        payroll_system: $payrollSystem
-        employee_count: $employeeCount
-        status: $status
-        updated_at: "now()"
-      }
-    ) {
-      ...PayrollWithRelations
-    }
-  }
-`);
-
-const UpdatePayrollStatusDocument = graphql(`
-  mutation UpdatePayrollStatus($id: uuid!, $status: payroll_status!) {
-    update_payrolls_by_pk(
-      pk_columns: { id: $id }
-      _set: { status: $status, updated_at: "now()" }
-    ) {
-      id
-      status
-      updated_at
-    }
-  }
-`);
-
-const DeletePayrollDocument = graphql(`
-  mutation DeletePayroll($id: uuid!) {
-    delete_payrolls_by_pk(id: $id) {
-      id
-    }
-  }
-`);
+import { useFragment } from "../graphql/generated/fragment-masking";
 
 // Export individual operations for backward compatibility
 export const CREATE_PAYROLL = CreatePayrollDocument;
@@ -179,7 +44,7 @@ export class PayrollService {
       query: GetPayrollByIdDocument,
       variables: { id },
     });
-    return data.payrolls_by_pk;
+    return data.payroll;
   }
 
   /**
@@ -224,7 +89,7 @@ export class PayrollService {
       mutation: CreatePayrollDocument,
       variables: input,
     });
-    return data?.insert_payrolls_one;
+    return data?.insertPayroll;
   }
 
   /**
@@ -250,7 +115,7 @@ export class PayrollService {
       mutation: UpdatePayrollDocument,
       variables: { id, ...input },
     });
-    return data?.update_payrolls_by_pk;
+    return data?.updatePayroll;
   }
 
   /**
@@ -261,7 +126,7 @@ export class PayrollService {
       mutation: UpdatePayrollStatusDocument,
       variables: { id, status },
     });
-    return data?.update_payrolls_by_pk;
+    return data?.updatePayroll;
   }
 
   /**
@@ -272,23 +137,25 @@ export class PayrollService {
       mutation: DeletePayrollDocument,
       variables: { id },
     });
-    return data?.delete_payrolls_by_pk;
+    return data?.deletePayroll;
   }
 
   /**
    * Check if a payroll has been superseded
    */
   async checkPayrollVersion(id: string) {
-    const payroll = await this.getPayrollById(id);
+    const { data } = await this.apolloClient.query<CheckPayrollVersionQuery>({
+      query: CheckPayrollVersionDocument,
+      variables: { id },
+    });
+
+    const payroll = data.payroll;
     if (!payroll) return null;
 
-    // Use fragment to access the data
-    const payrollData = useFragment(PayrollWithDatesFragment, payroll);
-
     return {
-      isSuperseded: !!payrollData?.superseded_date,
-      versionNumber: payrollData?.version_number,
-      supersededDate: payrollData?.superseded_date,
+      isSuperseded: !!payroll.supersededDate,
+      versionNumber: payroll.versionNumber,
+      supersededDate: payroll.supersededDate,
     };
   }
 }

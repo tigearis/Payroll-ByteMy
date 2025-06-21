@@ -1,6 +1,34 @@
 table:
   name: work_schedule
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    updated_at:
+      custom_name: updatedAt
+    user_id:
+      custom_name: userId
+    work_day:
+      custom_name: workDay
+    work_hours:
+      custom_name: workHours
+  custom_column_names:
+    created_at: createdAt
+    updated_at: updatedAt
+    user_id: userId
+    work_day: workDay
+    work_hours: workHours
+  custom_root_fields:
+    delete: deleteWorkSchedules
+    delete_by_pk: deleteWorkSchedule
+    insert: insertWorkSchedules
+    insert_one: insertWorkSchedule
+    select: workSchedules
+    select_aggregate: workSchedulesAggregate
+    select_by_pk: workSchedule
+    update: updateWorkSchedules
+    update_by_pk: updateWorkSchedule
 object_relationships:
   - name: user
     using:

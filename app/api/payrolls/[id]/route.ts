@@ -2,10 +2,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuthParams } from "@/lib/api-auth";
-import { getServerApolloClient } from "@/lib/server-apollo-client";
+import { withAuthParams } from "@/lib/auth/api-auth";
+import { serverApolloClient } from "@/lib/apollo/unified-client";
 
-import { GET_PAYROLL_BY_ID } from "@/graphql/queries/payrolls/getPayrollById";
+import { GetPayrollByIdDocument as GET_PAYROLL_BY_ID } from "@/domains/payrolls";
 
 export const GET = withAuthParams(
   async (
@@ -23,7 +23,7 @@ export const GET = withAuthParams(
     const token = await authInstance.getToken({ template: "hasura" });
 
     // Get Apollo Client
-    const client = await getServerApolloClient();
+    const client = serverApolloClient;
 
     const { data } = await client.query({
       query: GET_PAYROLL_BY_ID,
@@ -31,10 +31,10 @@ export const GET = withAuthParams(
       context: { headers: { authorization: `Bearer ${token}` } },
     });
 
-    if (!data.payrolls.length)
+    if (!data.payroll)
       {return NextResponse.json({ error: "Not Found" }, { status: 404 });}
 
-    return NextResponse.json(data.payrolls[0]);
+    return NextResponse.json(data.payroll);
   } catch (error) {
     console.error("Payroll fetch error:", error);
     return NextResponse.json(

@@ -7,7 +7,7 @@ import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { StrictDatabaseGuard } from "@/components/auth/strict-database-guard";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
-import { AuthProvider } from "@/lib/auth-context";
+import { AuthProvider } from "@/lib/auth/auth-context";
 
 // ================================
 // TYPES

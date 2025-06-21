@@ -4,8 +4,8 @@ import { headers } from "next/headers";
 import { NextRequest } from "next/server";
 import { Webhook } from "svix";
 
-import { adminApolloClient } from "@/lib/server-apollo-client";
-import { syncUserWithDatabase } from "@/lib/user-sync";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 
 
 // Verify webhook signature for security

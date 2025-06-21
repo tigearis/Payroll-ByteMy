@@ -1,7 +1,7 @@
 // lib/security/auth-audit.ts - Authentication audit logging functions
 import { NextRequest } from "next/server";
 
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "../logging/soc2-logger";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "./audit/logger";
 
 /**
  * Log successful authentication events
@@ -15,22 +15,25 @@ export async function logSuccessfulLogin(
   metadata?: Record<string, any>
 ): Promise<void> {
   try {
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.AUTHENTICATION,
       eventType: SOC2EventType.LOGIN_SUCCESS,
-      message: `Successful authentication for user ${userEmail}`,
       userId,
       userEmail,
+      resourceType: "authentication",
+      action: "LOGIN",
+      success: true,
+      ipAddress,
+      userAgent,
       metadata: {
-        ipAddress,
-        userAgent,
         timestamp: new Date().toISOString(),
         authenticationMethod: 'clerk_jwt',
         sessionType: 'web',
         ...metadata
-      }
-    }, request);
+      },
+      complianceNote: `Successful authentication for user ${userEmail}`
+    });
 
     console.log(`✅ [AUTH AUDIT] Successful login logged for user: ${userId}`);
   } catch (error) {
@@ -51,22 +54,25 @@ export async function logFailedLogin(
   metadata?: Record<string, any>
 ): Promise<void> {
   try {
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.SECURITY,
       category: LogCategory.AUTHENTICATION,
       eventType: SOC2EventType.LOGIN_FAILURE,
-      message: `Failed authentication attempt for ${attemptedEmail}: ${errorMessage}`,
       userEmail: attemptedEmail,
+      resourceType: "authentication",
+      action: "LOGIN",
+      success: false,
+      ipAddress,
+      userAgent,
+      errorMessage,
       metadata: {
-        ipAddress,
-        userAgent,
-        errorMessage,
         timestamp: new Date().toISOString(),
         authenticationMethod: 'clerk_jwt',
         failureReason: categorizeAuthFailure(errorMessage),
         ...metadata
-      }
-    }, request);
+      },
+      complianceNote: `Failed authentication attempt for ${attemptedEmail}: ${errorMessage}`
+    });
 
     console.log(`🚨 [AUTH AUDIT] Failed login logged for email: ${attemptedEmail}`);
   } catch (error) {
@@ -87,22 +93,25 @@ export async function logTokenRefresh(
   metadata?: Record<string, any>
 ): Promise<void> {
   try {
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.INFO,
       category: LogCategory.AUTHENTICATION,
       eventType: SOC2EventType.LOGIN_SUCCESS, // Token refresh is a form of re-authentication
-      message: `Token refresh for user ${userEmail}`,
       userId,
       userEmail,
+      resourceType: "authentication",
+      action: "TOKEN_REFRESH",
+      success: true,
+      ipAddress,
+      userAgent,
       metadata: {
-        ipAddress,
-        userAgent,
         timestamp: new Date().toISOString(),
         authenticationMethod: 'token_refresh',
         operation: 'token_refresh',
         ...metadata
-      }
-    }, request);
+      },
+      complianceNote: `Token refresh for user ${userEmail}`
+    });
 
     console.log(`🔄 [AUTH AUDIT] Token refresh logged for user: ${userId}`);
   } catch (error) {
@@ -122,21 +131,24 @@ export async function logLogout(
   metadata?: Record<string, any>
 ): Promise<void> {
   try {
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.AUTHENTICATION,
       eventType: SOC2EventType.LOGOUT,
-      message: `User logout: ${userEmail}`,
       userId,
       userEmail,
+      resourceType: "authentication",
+      action: "LOGOUT",
+      success: true,
+      ipAddress,
+      userAgent,
       metadata: {
-        ipAddress,
-        userAgent,
         timestamp: new Date().toISOString(),
         logoutType: metadata?.logoutType || 'user_initiated',
         ...metadata
-      }
-    }, request);
+      },
+      complianceNote: `User logout: ${userEmail}`
+    });
 
     console.log(`👋 [AUTH AUDIT] Logout logged for user: ${userId}`);
   } catch (error) {
@@ -156,22 +168,25 @@ export async function logSessionTimeout(
   metadata?: Record<string, any>
 ): Promise<void> {
   try {
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.WARNING,
       category: LogCategory.AUTHENTICATION,
       eventType: SOC2EventType.SESSION_TIMEOUT,
-      message: `Session timeout for user ${userEmail}`,
       userId,
       userEmail,
+      resourceType: "session",
+      action: "TIMEOUT",
+      success: false,
+      ipAddress,
+      userAgent,
       metadata: {
-        ipAddress,
-        userAgent,
         timestamp: new Date().toISOString(),
         timeoutReason: metadata?.timeoutReason || 'idle_timeout',
         sessionDuration: metadata?.sessionDuration,
         ...metadata
-      }
-    }, request);
+      },
+      complianceNote: `Session timeout for user ${userEmail}`
+    });
 
     console.log(`⏰ [AUTH AUDIT] Session timeout logged for user: ${userId}`);
   } catch (error) {
@@ -195,15 +210,18 @@ export async function logRoleChange(
   metadata?: Record<string, any>
 ): Promise<void> {
   try {
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.AUTHORIZATION,
-      eventType: SOC2EventType.ROLE_ASSIGNED,
-      message: `Role change: ${targetUserEmail} from ${oldRole} to ${newRole} by ${adminUserEmail}`,
+      eventType: SOC2EventType.ROLE_CHANGED,
       userId: adminUserId,
       userEmail: adminUserEmail,
-      entityType: 'user',
-      entityId: targetUserId,
+      resourceId: targetUserId,
+      resourceType: "user",
+      action: "ROLE_CHANGE",
+      success: true,
+      ipAddress,
+      userAgent,
       metadata: {
         targetUserId,
         targetUserEmail,
@@ -211,13 +229,12 @@ export async function logRoleChange(
         newRole,
         adminUserId,
         adminUserEmail,
-        ipAddress,
-        userAgent,
         timestamp: new Date().toISOString(),
         changeReason: metadata?.reason || 'administrative_action',
         ...metadata
-      }
-    }, request);
+      },
+      complianceNote: `Role change: ${targetUserEmail} from ${oldRole} to ${newRole} by ${adminUserEmail}`
+    });
 
     console.log(`🔄 [AUTH AUDIT] Role change logged: ${targetUserEmail} ${oldRole} -> ${newRole}`);
   } catch (error) {
@@ -238,24 +255,27 @@ export async function logUnauthorizedAccess(
   metadata?: Record<string, any>
 ): Promise<void> {
   try {
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: LogLevel.SECURITY,
       category: LogCategory.SECURITY_EVENT,
-      eventType: SOC2EventType.UNAUTHORIZED_ACCESS,
-      message: `Unauthorized access attempt to ${attemptedResource}`,
-      userId,
-      userEmail,
+      eventType: SOC2EventType.UNAUTHORIZED_ACCESS_ATTEMPT,
+      userId: userId || "",
+      userEmail: userEmail || "",
+      resourceType: "resource",
+      action: "ACCESS_ATTEMPT",
+      success: false,
+      ipAddress: ipAddress || "unknown",
+      userAgent: userAgent || "unknown",
       metadata: {
         attemptedResource,
-        ipAddress,
-        userAgent,
         timestamp: new Date().toISOString(),
         accessMethod: metadata?.accessMethod || 'api',
         userRole: metadata?.userRole,
         requiredRole: metadata?.requiredRole,
         ...metadata
-      }
-    }, request);
+      },
+      complianceNote: `Unauthorized access attempt to ${attemptedResource}`
+    });
 
     console.log(`🚨 [AUTH AUDIT] Unauthorized access logged: ${attemptedResource}`);
   } catch (error) {
@@ -286,22 +306,25 @@ export async function logMFAEvent(
 
     const logLevel = eventType === 'failure' ? LogLevel.WARNING : LogLevel.AUDIT;
 
-    await soc2Logger.log({
+    await auditLogger.logSOC2Event({
       level: logLevel,
       category: LogCategory.AUTHENTICATION,
       eventType: soc2EventType,
-      message: `MFA ${eventType} for user ${userEmail}`,
       userId,
       userEmail,
+      resourceType: "mfa",
+      action: eventType.toUpperCase(),
+      success: eventType !== 'failure',
+      ipAddress,
+      userAgent,
       metadata: {
-        ipAddress,
-        userAgent,
         timestamp: new Date().toISOString(),
         mfaMethod: metadata?.mfaMethod || 'totp',
         mfaEventType: eventType,
         ...metadata
-      }
-    }, request);
+      },
+      complianceNote: `MFA ${eventType} for user ${userEmail}`
+    });
 
     console.log(`🔐 [AUTH AUDIT] MFA ${eventType} logged for user: ${userId}`);
   } catch (error) {

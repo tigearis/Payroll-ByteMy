@@ -1,5 +1,5 @@
 // hooks/useUserRole.ts
-import { useAuthContext } from "@/lib/auth-context";
+import { useAuthContext } from "@/lib/auth/auth-context";
 
 export function useUserRole() {
   const {

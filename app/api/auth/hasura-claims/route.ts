@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { SecureHasuraService } from "@/lib/secure-hasura-service";
+import { SecureHasuraService } from "@/lib/apollo/secure-hasura-service";
 
 
 // GraphQL query to get Hasura claims

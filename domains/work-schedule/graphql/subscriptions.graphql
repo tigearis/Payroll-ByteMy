@@ -1,18 +1,27 @@
 # Work Schedule Domain Subscriptions
 
+# Subscribe to work schedule changes for a specific user
 subscription SubscribeToWorkSchedule($user_id: uuid!) {
-  work_schedule(
-    where: { user_id: { _eq: $user_id } }
-    order_by: { work_day: asc }
+  workSchedules(
+    where: { userId: { _eq: $user_id } }
+    order_by: { workDay: asc }
   ) {
-    ...WorkScheduleCore
+    ...WorkScheduleWithUser
   }
 }
 
+# Subscribe to all work schedule changes
+subscription SubscribeToAllWorkSchedules {
+  workSchedules(order_by: { updatedAt: desc }, limit: 20) {
+    ...WorkScheduleWithUser
+  }
+}
+
+# Subscribe to team work schedule changes
 subscription SubscribeToTeamWorkSchedules($user_ids: [uuid!]!) {
-  work_schedule(
-    where: { user_id: { _in: $user_ids } }
-    order_by: [{ user_id: asc }, { work_day: asc }]
+  workSchedules(
+    where: { userId: { _in: $user_ids } }
+    order_by: { updatedAt: desc }
   ) {
     ...WorkScheduleWithUser
   }

@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserRole } from "@/hooks/use-user-role";
+import { SecurityOverviewDocument } from "@/domains/audit/graphql/generated/graphql";
 
 
 export default function SecurityDashboard() {
@@ -38,7 +39,7 @@ export default function SecurityDashboard() {
     error,
     refetch,
     networkStatus,
-  } = useQuery(SECURITY_OVERVIEW, {
+  } = useQuery(SecurityOverviewDocument, {
     variables: {
       twentyFourHoursAgo: subHours(new Date(), 24).toISOString(),
       sevenDaysAgo: subDays(new Date(), 7).toISOString(),
@@ -52,7 +53,6 @@ export default function SecurityDashboard() {
 
   const {
     isDeveloper,
-    isAdmin,
     isAdministrator,
     hasAdminAccess,
     isLoading: roleLoading,
@@ -72,12 +72,12 @@ export default function SecurityDashboard() {
   });
 
   // Check if user has access to security features
-  if (!roleLoading && !hasAdminAccess && !isDeveloper && !isAdmin) {
+  if (!roleLoading && !hasAdminAccess && !isDeveloper && !isAdministrator) {
     console.log("🚨 Security page access denied:", {
       roleLoading,
       hasAdminAccess,
       isDeveloper,
-      isAdmin,
+      isAdministrator,
       userRole,
     });
     return (
@@ -141,12 +141,12 @@ export default function SecurityDashboard() {
 
   // Calculate security metrics
   const totalOps = data?.audit_log_count?.aggregate?.count || 0;
-  const failedOps = data?.failed_operations_count?.aggregate?.count || 0;
+  const failedOps = data?.failed_operations?.length || 0;
   const successRate =
     totalOps > 0
       ? (((totalOps - failedOps) / totalOps) * 100).toFixed(1)
       : "100.0";
-  const criticalAccess = data?.critical_access_count?.aggregate?.count || 0;
+  const criticalAccess = data?.data_access_summary?.length || 0;
 
   // Mock compliance status (in production, this would come from a real compliance check)
   const complianceStatus = failedOps > 0 ? "warning" : "passed";
@@ -269,7 +269,7 @@ export default function SecurityDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data?.users?.length || 0}</div>
+            <div className="text-2xl font-bold">{data?.auth_events_summary?.length || 0}</div>
             <p className="text-xs text-muted-foreground">With access</p>
           </CardContent>
         </Card>
@@ -349,14 +349,14 @@ export default function SecurityDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              {!data?.critical_access?.length ? (
+              {!data?.data_access_summary?.length ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Shield className="h-12 w-12 mx-auto mb-2" />
                   <p>No critical data access in the last 7 days</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {data.critical_access.map((access: any) => (
+                  {data.data_access_summary.map((access: any) => (
                     <div
                       key={access.id}
                       className="flex items-center justify-between p-4 border rounded-lg"

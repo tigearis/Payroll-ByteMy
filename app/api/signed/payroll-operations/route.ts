@@ -2,9 +2,9 @@
 import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 
-import { soc2Logger, LogLevel, LogCategory, SOC2EventType } from "@/lib/logging/soc2-logger";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 import { withSignatureValidation, apiKeyManager } from "@/lib/security/api-signing";
-import { adminApolloClient } from "@/lib/server-apollo-client";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 
 // GraphQL mutations for payroll operations
 const PROCESS_PAYROLL_BATCH = gql`
@@ -92,19 +92,24 @@ const handlePayrollOperations = withSignatureValidation(
       const { operation, payload } = body;
 
       // Log the sensitive operation
-      await soc2Logger.log({
+      const clientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
         level: LogLevel.AUDIT,
-      category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-        message: `Signed payroll operation: ${operation}`,
-        entityType: "payroll",
+        category: LogCategory.SYSTEM_ACCESS,
+        eventType: SOC2EventType.DATA_VIEWED,
+        resourceType: "payroll",
+        action: operation.toUpperCase(),
+        success: true,
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           operation,
           apiKey: context.apiKey,
           payloadSize: JSON.stringify(payload).length,
           timestamp: context.timestamp
-        }
-      }, request);
+        },
+        complianceNote: `Signed payroll operation: ${operation}`
+      });
 
       switch (operation) {
         case "process_batch": {
@@ -170,19 +175,24 @@ const handlePayrollOperations = withSignatureValidation(
           });
 
           // Log data access for compliance
-          await soc2Logger.log({
+          const clientInfo = auditLogger.extractClientInfo(request);
+          await auditLogger.logSOC2Event({
             level: LogLevel.INFO,
-      category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-            message: "Payroll report generated via signed API",
-            entityType: "payroll_report",
+            category: LogCategory.SYSTEM_ACCESS,
+            eventType: SOC2EventType.SENSITIVE_DATA_EXPORT,
+            resourceType: "payroll_report",
+            action: "GENERATE",
+            success: true,
+            ipAddress: clientInfo.ipAddress || "unknown",
+            userAgent: clientInfo.userAgent || "unknown",
             metadata: {
               startDate,
               endDate,
               recordCount: result.data?.payrolls?.length || 0,
               exportFormat: "json",
-            }
-          }, request);
+            },
+            complianceNote: "Payroll report generated via signed API"
+          });
 
           return NextResponse.json({
             success: true,
@@ -207,17 +217,20 @@ const handlePayrollOperations = withSignatureValidation(
     } catch (error) {
       console.error("Signed payroll operation error:", error);
       
-      await soc2Logger.log({
+      const clientInfo = auditLogger.extractClientInfo(request);
+      await auditLogger.logSOC2Event({
         level: LogLevel.ERROR,
-      category: LogCategory.SYSTEM_ACCESS,
-      eventType: SOC2EventType.DATA_VIEWED,
-        message: "Signed payroll operation failed",
-        errorDetails: {
-          message: error instanceof Error ? error.message : "Unknown error",
-          stack: error instanceof Error ? error.stack : undefined
-        },
-        metadata: { apiKey: context.apiKey }
-      }, request);
+        category: LogCategory.SYSTEM_ACCESS,
+        eventType: SOC2EventType.DATA_VIEWED,
+        resourceType: "payroll",
+        action: "OPERATION",
+        success: false,
+        errorMessage: error instanceof Error ? error.message : "Unknown error",
+        ipAddress: clientInfo.ipAddress || "unknown",
+        userAgent: clientInfo.userAgent || "unknown",
+        metadata: { apiKey: context.apiKey },
+        complianceNote: "Signed payroll operation failed"
+      });
 
       return NextResponse.json(
         { 
