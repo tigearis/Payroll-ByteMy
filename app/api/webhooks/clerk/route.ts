@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
               },
             });
 
-            if (updateResult?.updateUsers?.affected_rows > 0) {
+            if (updateResult?.updateUsers?.affected_rows && updateResult.updateUsers.affected_rows > 0) {
               console.log(`✅ Database role synced from Clerk: ${updatedRole}`);
             } else {
               console.log(`ℹ️ No database user found for Clerk ID: ${id}`);
