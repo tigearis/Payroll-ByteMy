@@ -8,21 +8,60 @@ import { monitorRequest } from "../security/enhanced-route-monitor";
 // Import comprehensive permission system
 import { roleHasPermission, Role, ROLE_HIERARCHY } from "./permissions";
 
+/**
+ * Represents an authenticated user session with role and permission information
+ */
 export interface AuthSession {
+  /** Unique identifier for the authenticated user */
   userId: string;
+  /** User's role in the system (e.g., 'admin', 'manager', 'consultant') */
   role: string;
+  /** User's email address (optional) */
   email?: string;
+  /** Raw session claims from the JWT token */
   sessionClaims?: any;
 }
 
-// Use comprehensive permission system instead of duplicate implementation
+/**
+ * Checks if a user role has permission to access a required role level
+ * Uses the role hierarchy system where higher numbers indicate more permissions
+ * 
+ * @param userRole - The user's current role
+ * @param requiredRole - The minimum role required for access
+ * @returns True if the user has sufficient permissions
+ * 
+ * @example
+ * ```typescript
+ * hasPermission('admin', 'manager') // true (admin > manager)
+ * hasPermission('viewer', 'admin') // false (viewer < admin)
+ * ```
+ */
 export function hasPermission(userRole: string, requiredRole: string): boolean {
   const userLevel = ROLE_HIERARCHY[userRole as Role] || 0;
   const requiredLevel = ROLE_HIERARCHY[requiredRole as Role] || 999;
   return userLevel >= requiredLevel;
 }
 
-// Main authentication middleware
+/**
+ * Main authentication middleware that validates user sessions and role permissions
+ * Supports both JWT v1 and v2 token formats from Clerk
+ * 
+ * @param request - The incoming NextRequest object
+ * @param options - Authentication options
+ * @param options.requiredRole - Minimum role required (uses hierarchy)
+ * @param options.allowedRoles - Specific roles that are allowed (exact match)
+ * @returns Promise resolving to authenticated user session
+ * @throws Error if authentication fails or insufficient permissions
+ * 
+ * @example
+ * ```typescript
+ * // Require minimum manager role
+ * const session = await requireAuth(request, { requiredRole: 'manager' });
+ * 
+ * // Allow only specific roles
+ * const session = await requireAuth(request, { allowedRoles: ['admin', 'developer'] });
+ * ```
+ */
 export async function requireAuth(
   request: NextRequest,
   options?: {
@@ -97,7 +136,12 @@ export async function requireAuth(
   }
 }
 
-// Helper to create unauthorized response
+/**
+ * Creates a standardized 401 Unauthorized response
+ * 
+ * @param message - Custom error message (defaults to "Unauthorized")
+ * @returns NextResponse with 401 status and error details
+ */
 export function unauthorizedResponse(
   message: string = "Unauthorized"
 ): NextResponse {
@@ -110,7 +154,12 @@ export function unauthorizedResponse(
   );
 }
 
-// Helper to create forbidden response
+/**
+ * Creates a standardized 403 Forbidden response
+ * 
+ * @param message - Custom error message (defaults to "Forbidden")
+ * @returns NextResponse with 403 status and error details
+ */
 export function forbiddenResponse(message: string = "Forbidden"): NextResponse {
   return NextResponse.json(
     {
@@ -121,7 +170,36 @@ export function forbiddenResponse(message: string = "Forbidden"): NextResponse {
   );
 }
 
-// Wrapper for API routes that require authentication
+/**
+ * Higher-order function that wraps API route handlers with authentication, authorization,
+ * rate limiting, and audit logging capabilities
+ * 
+ * @param handler - The API route handler function to wrap
+ * @param options - Authentication and security options
+ * @param options.requiredRole - Minimum role required (uses hierarchy)
+ * @param options.allowedRoles - Specific roles allowed (exact match)
+ * @param options.skipRateLimit - Whether to skip rate limiting for this route
+ * @returns Wrapped API route handler with security features
+ * 
+ * @example
+ * ```typescript
+ * // Protect route requiring manager role or higher
+ * export const POST = withAuth(async (request, session) => {
+ *   // Handler logic here
+ *   return NextResponse.json({ success: true });
+ * }, {
+ *   requiredRole: 'manager'
+ * });
+ * 
+ * // Protect route for specific roles only
+ * export const GET = withAuth(async (request, session) => {
+ *   // Handler logic here
+ *   return NextResponse.json({ data: [] });
+ * }, {
+ *   allowedRoles: ['admin', 'developer']
+ * });
+ * ```
+ */
 export function withAuth(
   handler: (
     request: NextRequest,

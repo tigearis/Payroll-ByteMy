@@ -1,4 +1,8 @@
-// components/user-nav.tsx
+/**
+ * @fileoverview User navigation component with avatar, profile menu, and sign-out functionality
+ * Displays the authenticated user's information and provides quick access to profile settings
+ */
+
 "use client";
 
 import { useUser, useClerk } from "@clerk/nextjs";
@@ -16,12 +20,36 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * UserNav Component
+ * 
+ * A navigation component that displays the current user's avatar and name,
+ * with a dropdown menu for accessing profile settings and signing out.
+ * 
+ * Features:
+ * - Shows user avatar with fallback to initials
+ * - Displays full name and email
+ * - Provides quick navigation to profile and settings
+ * - Handles secure sign-out with redirect
+ * 
+ * @component
+ * @example
+ * ```tsx
+ * // Used in the main layout header
+ * <UserNav />
+ * ```
+ */
 export function UserNav() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
 
-  // Helper function to get the correct avatar image (same logic as settings page)
+  /**
+   * Determines the best avatar image to display for the user
+   * Priority: Custom uploaded image > External account image > fallback
+   * 
+   * @returns The avatar image URL or empty string for fallback
+   */
   const getAvatarImage = () => {
     if (!user) {return "";}
 
@@ -42,7 +70,12 @@ export function UserNav() {
     return "";
   };
 
-  // Get user initials for avatar fallback
+  /**
+   * Generates user initials for avatar fallback
+   * Takes first letter of first name and first letter of last name
+   * 
+   * @returns User initials (1-2 characters) or "U" as final fallback
+   */
   const getUserInitials = () => {
     if (!isLoaded || !user?.fullName) {return "U";}
 
@@ -52,6 +85,10 @@ export function UserNav() {
     return (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase();
   };
 
+  /**
+   * Handles user sign-out process
+   * Signs out from Clerk and redirects to home page
+   */
   const handleSignOut = async () => {
     await signOut();
     router.push("/");
