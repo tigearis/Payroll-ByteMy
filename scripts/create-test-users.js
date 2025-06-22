@@ -26,7 +26,7 @@ const testUsers = [
         'custom:admin:manage', 'custom:settings:write', 'custom:billing:manage',
         'custom:reports:read', 'custom:reports:export', 'custom:audit:read', 'custom:audit:write'
       ],
-      databaseId: 'test-developer-uuid-001',
+      databaseId: '550e8400-e29b-41d4-a716-446655440001',
       assignedBy: 'system',
       assignedAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString()
@@ -46,7 +46,7 @@ const testUsers = [
         'custom:admin:manage', 'custom:settings:write',
         'custom:reports:read'
       ],
-      databaseId: 'test-orgadmin-uuid-002',
+      databaseId: '550e8400-e29b-41d4-a716-446655440002',
       assignedBy: 'system',
       assignedAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString()
@@ -65,7 +65,7 @@ const testUsers = [
         'custom:client:read',
         'custom:reports:read'
       ],
-      databaseId: 'test-manager-uuid-003',
+      databaseId: '550e8400-e29b-41d4-a716-446655440003',
       assignedBy: 'system',
       assignedAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString()
@@ -82,7 +82,7 @@ const testUsers = [
         'custom:payroll:read',
         'custom:client:read'
       ],
-      databaseId: 'test-consultant-uuid-004',
+      databaseId: '550e8400-e29b-41d4-a716-446655440004',
       assignedBy: 'system',
       assignedAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
@@ -102,7 +102,7 @@ const testUsers = [
       permissions: [
         'custom:payroll:read'
       ],
-      databaseId: 'test-viewer-uuid-005',
+      databaseId: '550e8400-e29b-41d4-a716-446655440005',
       assignedBy: 'system',
       assignedAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString()
@@ -118,7 +118,7 @@ const testUsers = [
       permissions: [
         'custom:payroll:read'
       ],
-      databaseId: 'test-general-uuid-006',
+      databaseId: '550e8400-e29b-41d4-a716-446655440006',
       assignedBy: 'system',
       assignedAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString()
