@@ -32,6 +32,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `pnpm generate` - Alias for codegen
 - `pnpm get-schema` - Download latest schema from Hasura
+- `pnpm codegen:debug` - Debug code generation with verbose output
+- `pnpm codegen:dry-run` - Check GraphQL types without generating
 
 ### Testing
 
@@ -138,7 +140,7 @@ GraphQL-first approach using Hasura over PostgreSQL:
 
 ### Critical Security Files
 
-```
+``` tree
 ├── middleware.ts                    # Primary auth middleware
 ├── app/api/webhooks/clerk/          # Clerk webhook handlers
 ├── lib/
@@ -180,6 +182,7 @@ The project enforces strict case conventions across all code:
 - **Database Fields**: snake_case (`user_id`, `created_at`)
 
 **Key Files**:
+
 - `config/case-conventions.config.ts` - Central configuration for all naming patterns
 - `scripts/validate-case-conventions.ts` - Automated validation and fixing
 - `docs/CASE_CONVENTION_SYSTEM.md` - Comprehensive documentation
@@ -284,3 +287,9 @@ When performing security audits, focus on these integration points:
 - **Security**: All authenticated routes protected by middleware, comprehensive audit logging enabled
 - **Authentication**: Optimized to use pure Clerk native functions, eliminated 1,200+ lines of custom token management
 - **GraphQL**: Domain-based organization with unified Apollo client, see `GRAPHQL_CLEANUP_PLAN.md` for ongoing improvements
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
