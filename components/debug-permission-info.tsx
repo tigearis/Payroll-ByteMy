@@ -47,7 +47,7 @@ export function DebugPermissionInfo() {
         <div>Clerk Permission Tests:</div>
         {testPermissions.map(perm => (
           <div key={perm} className="ml-2">
-            {perm}: {has({ permission: perm }) ? "✅" : "❌"}
+            {perm}: {has ? (has({ permission: perm }) ? "✅" : "❌") : "No has function"}
           </div>
         ))}
       </div>
