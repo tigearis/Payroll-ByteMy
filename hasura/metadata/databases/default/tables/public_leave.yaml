@@ -89,13 +89,13 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
-        - user_id
-        - start_date
         - end_date
+        - id
         - leave_type
         - reason
+        - start_date
         - status
+        - user_id
       filter:
         user_id:
           _eq: X-Hasura-User-Id
@@ -109,13 +109,13 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - id
-        - user_id
-        - start_date
         - end_date
+        - id
         - leave_type
         - reason
+        - start_date
         - status
+        - user_id
       filter:
         _or:
           - user_id:
@@ -128,25 +128,26 @@ select_permissions:
   - role: org_admin
     permission:
       columns:
-        - id
-        - user_id
-        - start_date
         - end_date
+        - id
         - leave_type
         - reason
+        - start_date
         - status
+        - user_id
       filter: {}
       allow_aggregations: true
     comment: Org Admins can view all leave records
   - role: viewer
     permission:
       columns:
-        - id
-        - user_id
-        - start_date
         - end_date
+        - id
         - leave_type
+        - reason
+        - start_date
         - status
+        - user_id
       filter:
         user_id:
           _eq: X-Hasura-User-Id

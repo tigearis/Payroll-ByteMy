@@ -88,7 +88,9 @@ select_permissions:
   - role: consultant
     permission:
       columns:
+        - created_at
         - id
+        - updated_at
         - user_id
         - work_day
         - work_hours
@@ -135,7 +137,9 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - created_at
         - id
+        - updated_at
         - user_id
         - work_day
         - work_hours

@@ -28,11 +28,13 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
-        - name
-        - url
+        - created_at
         - description
         - icon
+        - id
+        - name
+        - updated_at
+        - url
       filter: {}
     comment: Consultants can view external systems
   - role: developer
@@ -65,6 +67,18 @@ select_permissions:
         - updated_at
       filter: {}
     comment: Org admins can view external systems
+  - role: viewer
+    permission:
+      columns:
+        - created_at
+        - description
+        - icon
+        - id
+        - name
+        - updated_at
+        - url
+      filter: {}
+    comment: Viewers can see basic information
 update_permissions:
   - role: developer
     permission:

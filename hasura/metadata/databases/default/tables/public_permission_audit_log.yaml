@@ -37,28 +37,81 @@ insert_permissions:
       columns: '*'
     comment: Developer role has full insert access
 select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - action
+        - created_at
+        - id
+        - new_value
+        - operation
+        - previous_value
+        - reason
+        - resource
+        - target_role
+        - target_user_id
+        - timestamp
+        - user_id
+      filter: {}
+    comment: Consultants can view relevant data
   - role: developer
     permission:
       columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - action
+        - created_at
+        - id
+        - new_value
+        - operation
+        - previous_value
+        - reason
+        - resource
+        - target_role
+        - target_user_id
+        - timestamp
+        - user_id
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all data
   - role: org_admin
     permission:
       columns:
-        - id
-        - user_id
-        - target_user_id
-        - target_role
-        - resource
-        - operation
         - action
-        - previous_value
-        - new_value
-        - reason
         - created_at
+        - id
+        - new_value
+        - operation
+        - previous_value
+        - reason
+        - resource
+        - target_role
+        - target_user_id
+        - timestamp
+        - user_id
       filter: {}
     comment: Only org admins can view audit logs
+  - role: viewer
+    permission:
+      columns:
+        - action
+        - created_at
+        - id
+        - new_value
+        - operation
+        - previous_value
+        - reason
+        - resource
+        - target_role
+        - target_user_id
+        - timestamp
+        - user_id
+      filter: {}
+    comment: Viewers can see basic information
 update_permissions:
   - role: developer
     permission:

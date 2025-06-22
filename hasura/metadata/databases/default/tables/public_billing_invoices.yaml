@@ -20,12 +20,65 @@ insert_permissions:
       columns: '*'
     comment: Developer role has full insert access
 select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - billing_period_end
+        - billing_period_start
+        - client_id
+        - created_at
+        - id
+        - invoice_number
+        - status
+        - total_amount
+        - updated_at
+      filter: {}
+    comment: Consultants can view billing data for their assigned payrolls
   - role: developer
     permission:
       columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - billing_period_end
+        - billing_period_start
+        - client_id
+        - created_at
+        - id
+        - invoice_number
+        - status
+        - total_amount
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all billing data
+  - role: org_admin
+    permission:
+      columns:
+        - billing_period_end
+        - billing_period_start
+        - client_id
+        - created_at
+        - id
+        - invoice_number
+        - status
+        - total_amount
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all billing data
+  - role: viewer
+    permission:
+      columns:
+        - created_at
+        - id
+        - status
+        - updated_at
+      filter: {}
+    comment: Viewers can see basic billing information
 update_permissions:
   - role: developer
     permission:

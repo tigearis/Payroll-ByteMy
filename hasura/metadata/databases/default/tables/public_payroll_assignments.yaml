@@ -141,6 +141,20 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all payroll assignments
+  - role: viewer
+    permission:
+      columns:
+        - assigned_by
+        - assigned_date
+        - consultant_id
+        - created_at
+        - id
+        - is_backup
+        - original_consultant_id
+        - payroll_date_id
+        - updated_at
+      filter: {}
+    comment: Viewers can see basic information
 update_permissions:
   - role: developer
     permission:

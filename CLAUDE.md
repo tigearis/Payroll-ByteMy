@@ -42,6 +42,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Dependencies: `@jest/globals`, `@testing-library/jest-dom`, `@testing-library/react`
 - No test runner script configured - tests should be run manually or via IDE integration
 
+### Hasura Operations
+
+- `cd hasura && hasura metadata apply` - Apply metadata changes to Hasura
+- `cd hasura && hasura metadata export` - Export current metadata
+- `cd hasura && hasura migrate apply` - Apply database migrations
+- `cd hasura && hasura console` - Open Hasura console for development
+- `pnpm fix:permissions` - Automatically fix all permission issues across all tables
+- `pnpm fix:permissions:dry-run` - Preview permission fixes without applying changes
+
 ### Security Audit
 
 - Comprehensive security audit available via dedicated prompt
@@ -100,12 +109,12 @@ The authentication system uses a specific JWT template configured in Clerk Dashb
 
 This template ensures proper database UUID mapping and role-based access control for Hasura operations.
 
-### GraphQL Architecture
+### GraphQL & Domain Architecture
 
 Domain-driven GraphQL setup with unified Apollo client architecture:
 
-- **Domain Organization**: Each business domain (`payrolls`, `clients`, `staff`, `users`, etc.) has its own GraphQL folder structure: `domains/{domain}/graphql/{fragments,queries,mutations,subscriptions}.graphql`
-- **Unified Apollo Client**: Single `apollo/unified-client.ts` with native Clerk integration replacing multiple client implementations
+- **Domain Organization**: Each business domain has its own GraphQL folder structure with isolated operations
+- **Unified Apollo Client**: Single `apollo/unified-client.ts` with native Clerk integration
   - Client-side client (`clientApolloClient`) with WebSocket support and automatic token forwarding
   - Server-side client (`serverApolloClient`) for API routes and server components
   - Admin client (`adminApolloClient`) with service account access for system operations
@@ -113,6 +122,27 @@ Domain-driven GraphQL setup with unified Apollo client architecture:
 - **Code Generation**: Per-domain TypeScript generation with shared scalars and configurations
 - **Real-time Features**: WebSocket subscriptions with automatic Clerk authentication, optimistic updates
 - **Hasura Integration**: JWT-based authentication with native Clerk token templates, row-level security, role-based permissions
+
+**Core Domains:**
+
+- `domains/auth/` - Authentication and JWT handling
+- `domains/users/` - User management and staff lifecycle
+- `domains/clients/` - Client relationship management
+- `domains/payrolls/` - Payroll processing engine
+- `domains/audit/` - SOC2 compliance and logging
+- `domains/permissions/` - Role-based access control
+
+**Domain Structure:**
+
+```bash
+domains/{domain}/
+├── components/        # Domain-specific React components
+├── graphql/          # GraphQL operations (queries, mutations, subscriptions)
+│   └── generated/    # Auto-generated TypeScript types
+├── services/         # Business logic and API calls
+├── types/           # Domain-specific TypeScript types
+└── index.ts         # Domain export barrel
+```
 
 ### Security Layer
 
@@ -247,6 +277,7 @@ Key environment variables (see `.env.example` for full list):
 - **Configuration**: Shared scalars defined in `config/codegen.ts`
 - **Apollo Integration**: Generated hooks include authentication context
 
+
 ## Security Audit Guidelines
 
 When performing security audits, focus on these integration points:
@@ -288,7 +319,42 @@ When performing security audits, focus on these integration points:
 - **Authentication**: Optimized to use pure Clerk native functions, eliminated 1,200+ lines of custom token management
 - **GraphQL**: Domain-based organization with unified Apollo client, see `GRAPHQL_CLEANUP_PLAN.md` for ongoing improvements
 
-# important-instruction-reminders
+## Common Authentication Issues & Solutions
+
+### Permission Errors in GraphQL
+
+If you encounter "field not found" errors in GraphQL queries (like `isActive`, `managerId`, `supersededDate` fields):
+
+**Quick Fix:**
+
+1. Run `pnpm fix:permissions:dry-run` to see all permission issues
+2. Run `pnpm fix:permissions` to automatically fix all missing permissions
+3. Apply metadata changes with `cd hasura && hasura metadata apply`
+4. Regenerate GraphQL types with `pnpm codegen`
+
+**Manual Fix:**
+
+1. Check Hasura metadata permissions in `hasura/metadata/databases/default/tables/public_*.yaml`
+2. Ensure the field is included in the role's `select_permissions.columns` array
+3. Apply metadata changes and regenerate types
+
+### User Sync Issues
+
+If users exist in Clerk but not in database:
+
+- Use the sync button in the UI or call `/api/sync-current-user`
+- Check Clerk webhook configuration for automatic user sync
+- Verify `clerkUserId` and `databaseId` mapping in user metadata
+
+### ESLint Configuration
+
+The project uses ES modules (`"type": "module"` in package.json):
+
+- Use `_dirname` and `_filename` instead of `__dirname` and `__filename`
+- Import statements must include file extensions for local files
+- All config files use ES module syntax
+
+## Important Instruction Reminders
 
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.

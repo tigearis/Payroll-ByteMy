@@ -31,7 +31,9 @@
     "get-schema": "graphql-codegen --config config/codegen.ts --require dotenv/config --schema $NEXT_PUBLIC_HASURA_GRAPHQL_URL --header 'x-hasura-admin-secret:$HASURA_ADMIN_SECRET' --output shared/schema/schema.graphql --plugin schema-ast",
     "validate:naming": "tsx scripts/validate-case-conventions.ts",
     "validate:naming:fix": "tsx scripts/validate-case-conventions.ts --fix",
-    "validate:naming:dry-run": "tsx scripts/validate-case-conventions.ts --fix --no-dry-run"
+    "validate:naming:dry-run": "tsx scripts/validate-case-conventions.ts --fix --no-dry-run",
+    "fix:permissions": "node scripts/fix-hasura-permissions.js",
+    "fix:permissions:dry-run": "node scripts/fix-hasura-permissions.js --dry-run"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",
@@ -99,7 +101,8 @@
     "svix": "^1.66.0",
     "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "vercel": "^43.3.0"
+    "vercel": "^43.3.0",
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
     "@anthropic-ai/claude-code": "^1.0.24",

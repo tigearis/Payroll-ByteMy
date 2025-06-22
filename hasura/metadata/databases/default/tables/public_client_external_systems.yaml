@@ -34,10 +34,12 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
         - client_id
-        - system_id
+        - created_at
+        - id
         - system_client_id
+        - system_id
+        - updated_at
       filter: {}
     comment: Consultants can see which systems clients are linked to
   - role: developer
@@ -68,6 +70,17 @@ select_permissions:
         - updated_at
       filter: {}
     comment: Org admins have full access to external client systems
+  - role: viewer
+    permission:
+      columns:
+        - client_id
+        - created_at
+        - id
+        - system_client_id
+        - system_id
+        - updated_at
+      filter: {}
+    comment: Viewers can see basic information
 update_permissions:
   - role: developer
     permission:

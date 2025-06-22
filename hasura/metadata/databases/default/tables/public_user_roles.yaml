@@ -96,9 +96,11 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - created_at
         - id
-        - user_id
         - role_id
+        - updated_at
+        - user_id
       filter:
         user_id:
           _eq: X-Hasura-User-Id

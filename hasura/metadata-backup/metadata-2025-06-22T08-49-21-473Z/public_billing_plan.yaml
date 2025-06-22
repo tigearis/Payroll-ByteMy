@@ -1,0 +1,36 @@
+table:
+  name: billing_plan
+  schema: public
+array_relationships:
+  - name: client_billing_assignments
+    using:
+      foreign_key_constraint_on:
+        column: billing_plan_id
+        table:
+          name: client_billing_assignment
+          schema: public
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

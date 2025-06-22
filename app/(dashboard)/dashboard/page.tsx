@@ -22,8 +22,8 @@ interface DashboardStatsData {
 
 interface PayrollDate {
   id: string;
-  adjusted_eft_date: string;
-  processing_date: string;
+  adjustedEftDate: string;
+  processingDate: string;
 }
 
 interface UpcomingPayroll {
@@ -31,7 +31,7 @@ interface UpcomingPayroll {
   name: string;
   status: string;
   client: { name: string };
-  payroll_dates: PayrollDate[];
+  payrollDates: PayrollDate[];
 }
 
 interface UpcomingPayrollsData {
@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
   // Get next payroll date
   const nextPayroll = upcomingData?.payrolls?.[0];
-  const nextPayrollDate = nextPayroll?.payroll_dates?.[0]?.adjusted_eft_date;
+  const nextPayrollDate = nextPayroll?.payrollDates?.[0]?.adjustedEftDate;
 
   return (
     <div className="space-y-6">

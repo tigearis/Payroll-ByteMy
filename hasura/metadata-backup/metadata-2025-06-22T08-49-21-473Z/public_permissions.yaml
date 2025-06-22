@@ -1,0 +1,62 @@
+table:
+  name: permissions
+  schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    resource_id:
+      custom_name: resourceId
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    resource_id: resourceId
+    updated_at: updatedAt
+  custom_root_fields:
+    delete: deletePermissions
+    delete_by_pk: deletePermission
+    insert: insertPermissions
+    insert_one: insertPermission
+    select: permissions
+    select_aggregate: permissionsAggregate
+    select_by_pk: permission
+    update: updatePermissions
+    update_by_pk: updatePermission
+object_relationships:
+  - name: resource
+    using:
+      foreign_key_constraint_on: resource_id
+array_relationships:
+  - name: rolePermissions
+    using:
+      foreign_key_constraint_on:
+        column: permission_id
+        table:
+          name: role_permissions
+          schema: public
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

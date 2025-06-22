@@ -1,18 +1,114 @@
 # Shared GraphQL Fragments
-# Common fragments used across domains
+# Common fragments used across domains to eliminate duplication
 
-# Common timestamp fields (used as inline fragments)
-# Note: These are commented out as they would need to be defined per-type
-# or use a proper union/interface type that exists in the schema
+# Core User fragments - Used across auth, users, and permissions domains
+fragment UserCore on users {
+  id
+  name
+  email
+  username
+  role
+  isActive
+  isStaff
+  clerkUserId
+  createdAt
+  updatedAt
+}
 
-# fragment TimestampFields on SomeSpecificType {
-#   created_at
-#   updated_at
-# }
+fragment UserBasic on users {
+  id
+  name
+  email
+  role
+  isActive
+}
 
-# fragment AuditFields on SomeSpecificType {
-#   created_at
-#   updated_at
-#   created_by
-#   updated_by
-# }
+fragment UserWithManager on users {
+  ...UserCore
+  managerId
+  manager {
+    ...UserBasic
+  }
+}
+
+# Core Role fragments - Used across auth and permissions domains  
+fragment RoleCore on roles {
+  id
+  name
+  description
+  displayName
+  priority
+  isSystemRole
+  createdAt
+}
+
+# Core Permission fragments - Used across auth and permissions domains
+fragment PermissionCore on permissions {
+  id
+  action
+  description
+  resourceId
+  createdAt
+  updatedAt
+}
+
+fragment PermissionWithResource on permissions {
+  ...PermissionCore
+  resource {
+    id
+    name
+    description
+  }
+}
+
+# Core Client fragments - Used across clients and billing domains
+fragment ClientCore on clients {
+  id
+  name
+  contactEmail
+  contactPerson
+  contactPhone
+  active
+  createdAt
+  updatedAt
+}
+
+fragment ClientBasic on clients {
+  id
+  name
+  active
+}
+
+# Core Payroll fragments - Used across payrolls and related domains
+fragment PayrollCore on payrolls {
+  id
+  name
+  status
+  clientId
+  primaryConsultantUserId
+  managerUserId
+  createdAt
+  updatedAt
+}
+
+fragment PayrollBasic on payrolls {
+  id
+  name
+  status
+  clientId
+}
+
+# Audit and timestamp patterns
+fragment AuditFields on audit_audit_log {
+  id
+  eventTime
+  action
+  resourceType
+  resourceId
+  userId
+  ipAddress
+  userAgent
+  success
+  user_email
+  user_role
+}

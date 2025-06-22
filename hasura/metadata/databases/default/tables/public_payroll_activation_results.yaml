@@ -8,12 +8,52 @@ insert_permissions:
       columns: '*'
     comment: Developer role has full insert access
 select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - action_taken
+        - executed_at
+        - id
+        - payroll_id
+        - version_number
+      filter: {}
+    comment: Consultants can view relevant data
   - role: developer
     permission:
       columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - action_taken
+        - executed_at
+        - id
+        - payroll_id
+        - version_number
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all data
+  - role: org_admin
+    permission:
+      columns:
+        - action_taken
+        - executed_at
+        - id
+        - payroll_id
+        - version_number
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all data
+  - role: viewer
+    permission:
+      columns:
+        - executed_at
+        - id
+        - action_taken
+      filter: {}
+    comment: Viewers can see basic information
 update_permissions:
   - role: developer
     permission:

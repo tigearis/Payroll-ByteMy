@@ -49,36 +49,6 @@ object_relationships:
           name: users
           schema: public
 array_relationships:
-  - name: billingEventLogs
-    using:
-      foreign_key_constraint_on:
-        column: created_by
-        table:
-          name: billing_event_log
-          schema: public
-  - name: directReports
-    using:
-      foreign_key_constraint_on:
-        column: manager_id
-        table:
-          name: users
-          schema: public
-  - name: leaves
-    using:
-      foreign_key_constraint_on:
-        column: user_id
-        table:
-          name: leave
-          schema: public
-  - name: notesWritten
-    using:
-      manual_configuration:
-        column_mapping:
-          id: user_id
-        insertion_order: null
-        remote_table:
-          name: notes
-          schema: public
   - name: assignmentAuditsAsFromConsultant
     using:
       foreign_key_constraint_on:
@@ -128,6 +98,27 @@ array_relationships:
         table:
           name: payrolls
           schema: public
+  - name: billingEventLogs
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: billing_event_log
+          schema: public
+  - name: directReports
+    using:
+      foreign_key_constraint_on:
+        column: manager_id
+        table:
+          name: users
+          schema: public
+  - name: leaves
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: leave
+          schema: public
   - name: managedPayrolls
     using:
       foreign_key_constraint_on:
@@ -135,17 +126,26 @@ array_relationships:
         table:
           name: payrolls
           schema: public
-  - name: primaryConsultantPayrolls
+  - name: notesWritten
     using:
-      foreign_key_constraint_on:
-        column: primary_consultant_user_id
-        table:
-          name: payrolls
+      manual_configuration:
+        column_mapping:
+          id: user_id
+        insertion_order: null
+        remote_table:
+          name: notes
           schema: public
   - name: permissionAuditLogs
     using:
       foreign_key_constraint_on:
         column: user_id
+        table:
+          name: permission_audit_log
+          schema: public
+  - name: permissionAuditLogsAsTarget
+    using:
+      foreign_key_constraint_on:
+        column: target_user_id
         table:
           name: permission_audit_log
           schema: public
@@ -156,19 +156,19 @@ array_relationships:
         table:
           name: permission_overrides
           schema: public
-  - name: permissionAuditLogsAsTarget
-    using:
-      foreign_key_constraint_on:
-        column: target_user_id
-        table:
-          name: permission_audit_log
-          schema: public
   - name: permissionOverridesCreated
     using:
       foreign_key_constraint_on:
         column: created_by
         table:
           name: permission_overrides
+          schema: public
+  - name: primaryConsultantPayrolls
+    using:
+      foreign_key_constraint_on:
+        column: primary_consultant_user_id
+        table:
+          name: payrolls
           schema: public
   - name: teamMembers
     using:
@@ -230,16 +230,20 @@ select_permissions:
   - role: consultant
     permission:
       columns:
+        - clerk_user_id
+        - created_at
+        - deactivated_at
+        - deactivated_by
+        - email
         - id
         - image
-        - name
-        - username
-        - is_staff
         - is_active
-        - role
+        - is_staff
         - manager_id
-        - created_at
+        - name
+        - role
         - updated_at
+        - username
       filter:
         _or:
           - id:
@@ -262,47 +266,60 @@ select_permissions:
   - role: manager
     permission:
       columns:
+        - clerk_user_id
         - created_at
+        - deactivated_at
+        - deactivated_by
         - email
         - id
         - image
+        - is_active
+        - is_staff
+        - manager_id
         - name
         - role
         - updated_at
         - username
-        - is_staff
-        - is_active
-        - manager_id
       filter: {}
       allow_aggregations: true
     comment: Managers can view all user details
   - role: org_admin
     permission:
       columns:
+        - clerk_user_id
         - created_at
+        - deactivated_at
+        - deactivated_by
         - email
         - id
         - image
+        - is_active
+        - is_staff
+        - manager_id
         - name
         - role
         - updated_at
         - username
-        - is_staff
-        - is_active
-        - manager_id
-        - clerk_user_id
       filter: {}
       allow_aggregations: true
     comment: Org Admins can view all user data
   - role: viewer
     permission:
       columns:
+        - clerk_user_id
+        - created_at
+        - deactivated_at
+        - deactivated_by
+        - email
         - id
         - image
-        - name
-        - is_staff
         - is_active
+        - is_staff
+        - manager_id
+        - name
         - role
+        - updated_at
+        - username
       filter: {}
     comment: Viewers can see basic user information
 update_permissions:
