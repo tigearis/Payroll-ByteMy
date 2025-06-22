@@ -209,7 +209,7 @@ query GetUserSessionInfo($id: uuid!) {
 
 # Extracted from inline GraphQL operations
 query GetCurrentUser($currentUserId: uuid!) {
-  users_by_pk(id: $currentUserId) {
+  user(id: $currentUserId) {
     id
     name
     role

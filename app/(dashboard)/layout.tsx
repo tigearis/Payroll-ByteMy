@@ -8,7 +8,6 @@ import { DashboardShell } from "@/components/dashboard-shell"
 import { Sidebar } from "@/components/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { UserNav } from "@/domains/users/components/user-nav"
-import { AuthDebugPanel } from "@/components/debug/auth-debug-panel"
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -30,8 +29,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {children}
           </ClientWrapper>
         </main>
-        {/* Temporary debug panel - remove after fixing auth issue */}
-        <AuthDebugPanel />
       </div>
     </div>
   )

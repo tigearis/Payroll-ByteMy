@@ -6,7 +6,7 @@ import { useMemo } from "react";
 // Import extracted GraphQL operations
 const GET_CURRENT_USER = gql`
   query GetCurrentUser($currentUserId: uuid!) {
-    users_by_pk(id: $currentUserId) {
+    user(id: $currentUserId) {
       id
       name
       role
@@ -76,8 +76,8 @@ export function useCurrentUser() {
     // Enhanced error handling and debugging
     onCompleted: (result) => {
       console.log("🔍 useCurrentUser: GraphQL query completed", {
-        hasUser: !!result?.users_by_pk,
-        userData: result?.users_by_pk,
+        hasUser: !!result?.user,
+        userData: result?.user,
         databaseUserId,
       });
     },
@@ -92,7 +92,7 @@ export function useCurrentUser() {
     },
   });
 
-  const currentUser = data?.users_by_pk;
+  const currentUser = data?.user;
   const isReady = isLoaded && !loading;
 
   return {
