@@ -6,8 +6,10 @@ import { ClerkProvider, useAuth } from "@clerk/nextjs";
 
 import { StrictDatabaseGuard } from "@/components/auth/strict-database-guard";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { EnhancedPermissionProvider } from "@/hooks/use-enhanced-permissions";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
 import { AuthProvider } from "@/lib/auth/auth-context";
+import { LayoutPreferencesProvider } from "@/lib/preferences/layout-preferences";
 
 // ================================
 // TYPES
@@ -53,7 +55,11 @@ export function Providers({ children }: ProvidersProps) {
       >
         <AuthenticatedApolloProvider>
           <AuthProvider>
-            <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
+            <EnhancedPermissionProvider>
+              <LayoutPreferencesProvider>
+                <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
+              </LayoutPreferencesProvider>
+            </EnhancedPermissionProvider>
           </AuthProvider>
         </AuthenticatedApolloProvider>
       </ClerkProvider>
