@@ -33,7 +33,8 @@
     "validate:naming:fix": "tsx scripts/validate-case-conventions.ts --fix",
     "validate:naming:dry-run": "tsx scripts/validate-case-conventions.ts --fix --no-dry-run",
     "fix:permissions": "node scripts/fix-hasura-permissions.js",
-    "fix:permissions:dry-run": "node scripts/fix-hasura-permissions.js --dry-run"
+    "fix:permissions:dry-run": "node scripts/fix-hasura-permissions.js --dry-run",
+    "test:dev": "node scripts/dev-test.js"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",

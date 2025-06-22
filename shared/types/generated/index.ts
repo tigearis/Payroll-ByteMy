@@ -15,7 +15,7 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-22T10:26:18.724Z
+ * Generated: 2025-06-22T10:56:23.903Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v2.0
  */
