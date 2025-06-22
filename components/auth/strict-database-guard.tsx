@@ -73,7 +73,8 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
       console.log("✅ ACCESS GRANTED: User verified in both Clerk and database", {
         clerkUserId: clerkUser.id,
         databaseUserId: currentUser.id,
-        userEmail: currentUser.email
+        userName: currentUser.name,
+        userRole: currentUser.role
       });
       return;
     }
