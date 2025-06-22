@@ -1,0 +1,56 @@
+{
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production",
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  },
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- ':(exclude)docs/' ':(exclude)*.md' ':(exclude)e2e/' ':(exclude)playwright.config.ts'",
+  "crons": [
+    {
+      "path": "/api/cron/generate-bulk-dates",
+      "schedule": "0 2 1 * *",
+      "description": "Monthly bulk payroll date generation - 1st of every month at 2 AM UTC"
+    },
+    {
+      "path": "/api/cron/cleanup-old-dates",
+      "schedule": "0 3 1 1 *",
+      "description": "Annual cleanup of old payroll dates - January 1st at 3 AM UTC"
+    },
+    {
+      "path": "/api/cron/activate-payroll-versions",
+      "schedule": "0 1 * * *",
+      "description": "Daily payroll version activation - Every day at 1 AM UTC"
+    },
+    {
+      "path": "/api/cron/generate-bulk-dates?checkOnly=true",
+      "schedule": "0 1 * * 1",
+      "description": "Weekly health check - Every Monday at 1 AM UTC (analysis only)"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/dev/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/dev/:path*",
+      "destination": "/api/404"
+    }
+  ]
+}

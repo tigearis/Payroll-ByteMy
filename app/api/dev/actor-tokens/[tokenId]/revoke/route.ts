@@ -9,9 +9,7 @@ import {
 } from "@/lib/security/audit/logger";
 
 // SECURITY: Only allow in development
-if (process.env.NODE_ENV === "production") {
-  throw new Error("Actor token API is only available in development mode");
-}
+const isProduction = process.env.NODE_ENV === "production";
 
 /**
  * POST /api/dev/actor-tokens/[tokenId]/revoke - Revoke an actor token
@@ -37,6 +35,14 @@ export const POST = withAuthParams(
     context: { params: Promise<{ tokenId: string }> },
     session: AuthSession
   ) => {
+    // Production guard
+    if (isProduction) {
+      return NextResponse.json(
+        { error: "This endpoint is only available in development mode" },
+        { status: 404 }
+      );
+    }
+    
     try {
       const { tokenId } = await context.params;
 

@@ -11,9 +11,7 @@ import {
 } from "@/lib/security/audit/logger";
 
 // SECURITY: Only allow in development
-if (process.env.NODE_ENV === "production") {
-  throw new Error("Actor token API is only available in development mode");
-}
+const isProduction = process.env.NODE_ENV === "production";
 
 // Input validation schemas
 const CreateActorTokenSchema = z.object({
@@ -56,6 +54,14 @@ type RevokeActorTokenInput = z.infer<typeof RevokeActorTokenSchema>;
  */
 export const POST = withAuth(
   async (request: NextRequest, session) => {
+    // Production guard
+    if (isProduction) {
+      return NextResponse.json(
+        { error: "This endpoint is only available in development mode" },
+        { status: 404 }
+      );
+    }
+    
     try {
       // Parse and validate request body
       const body = await request.json();
@@ -208,6 +214,14 @@ export const POST = withAuth(
  */
 export const GET = withAuth(
   async (request: NextRequest, session) => {
+    // Production guard
+    if (isProduction) {
+      return NextResponse.json(
+        { error: "This endpoint is only available in development mode" },
+        { status: 404 }
+      );
+    }
+    
     try {
       console.log("🎭 Listing actor tokens for developer:", session.userId);
 

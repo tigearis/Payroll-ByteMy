@@ -60,5 +60,18 @@
     "database/**/*",
     "eslint.config.js"
   ],
-  "exclude": ["node_modules", "backups/**/*", "_backup_delete/**/*"]
+  "exclude": [
+    "node_modules",
+    "backups/**/*",
+    "_backup_delete/**/*",
+    "playwright.config.ts",
+    "jest.config.*",
+    "vitest.config.*",
+    "e2e/**/*",
+    "cypress/**/*",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
 }
