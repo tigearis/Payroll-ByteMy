@@ -6,7 +6,7 @@ const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: _dirname,
 });
 
 const eslintConfig = [

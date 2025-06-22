@@ -235,6 +235,7 @@ select_permissions:
         - name
         - username
         - is_staff
+        - is_active
         - role
         - manager_id
         - created_at
@@ -270,6 +271,7 @@ select_permissions:
         - updated_at
         - username
         - is_staff
+        - is_active
         - manager_id
       filter: {}
       allow_aggregations: true
@@ -286,6 +288,7 @@ select_permissions:
         - updated_at
         - username
         - is_staff
+        - is_active
         - manager_id
         - clerk_user_id
       filter: {}
@@ -298,6 +301,7 @@ select_permissions:
         - image
         - name
         - is_staff
+        - is_active
         - role
       filter: {}
     comment: Viewers can see basic user information

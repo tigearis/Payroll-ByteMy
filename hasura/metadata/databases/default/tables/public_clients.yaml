@@ -4,7 +4,7 @@ table:
 configuration:
   column_config:
     contact_email:
-      custom_name: contact_email
+      custom_name: contactEmail
     contact_person:
       custom_name: contactPerson
     contact_phone:
@@ -14,7 +14,7 @@ configuration:
     updated_at:
       custom_name: updatedAt
   custom_column_names:
-    contact_email: contact_email
+    contact_email: contactEmail
     contact_person: contactPerson
     contact_phone: contactPhone
     created_at: createdAt
