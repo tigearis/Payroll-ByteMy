@@ -169,7 +169,7 @@ class TargetedSyntaxFixer {
   printSummary() {
     console.log("📊 TARGETED FIX SUMMARY");
     console.log("=".repeat(80));
-    console.log(`✅ Files processed: ${TARGETED_FIXES.length + 1}`);
+    console.log(`✅ Files processed: ${TARGETEDFIXES.length + 1}`);
     console.log(`✅ Files fixed: ${this.fixedFiles.length}`);
     console.log(`❌ Files with errors: ${this.errors.length}`);
 

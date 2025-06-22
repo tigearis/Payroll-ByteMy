@@ -39,7 +39,6 @@ import {
   useUserManagement,
   User as UserType,
   Manager,
-  UserPermissions,
 } from "@/hooks/use-user-management";
 
 // Schema for both create and edit modes

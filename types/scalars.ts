@@ -20,11 +20,10 @@ export const SHARED_SCALARS = {
   String: "string",
   Boolean: "boolean",
   ID: "string",
-  // Add enum types when they exist
-  // leave_status_enum: "@/types/enums#leave_status_enum",
-  // payroll_status: "@/types/enums#payroll_status",
-  // payroll_cycle_type: "@/types/enums#payroll_cycle_type",
-  // payroll_date_type: "@/types/enums#payroll_date_type",
-  // permission_action: "@/types/enums#permission_action",
-  // user_role: "@/types/enums#user_role",
+  leave_status_enum: "@/types/enums#leave_status_enum",
+  payroll_status: "@/types/enums#payroll_status",
+  payroll_cycle_type: "@/types/enums#payroll_cycle_type",
+  payroll_date_type: "@/types/enums#payroll_date_type",
+  permission_action: "@/types/enums#permission_action",
+  userrole: "@/lib/auth/permissions#userrole",
 };

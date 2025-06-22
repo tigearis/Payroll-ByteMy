@@ -321,7 +321,7 @@ export default function SecurityDashboard() {
                           <Badge variant="destructive">Failed</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          User: {op.user_id} ({op.user_role}) •{" "}
+                          User: {op.user_id} ({op.userrole}) •{" "}
                           {formatDistanceToNow(new Date(op.created_at))} ago
                         </p>
                         <p className="text-sm text-destructive">
@@ -370,7 +370,7 @@ export default function SecurityDashboard() {
                           <Badge variant="destructive">CRITICAL</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          User: {access.user_id} ({access.user_role}) •{" "}
+                          User: {access.user_id} ({access.userrole}) •{" "}
                           {formatDistanceToNow(new Date(access.created_at))} ago
                         </p>
                         <p className="text-sm text-muted-foreground">

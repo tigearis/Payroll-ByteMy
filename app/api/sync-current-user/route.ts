@@ -1,22 +1,22 @@
 // app/api/sync-current-user/route.ts
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-import { _syncUserWithDatabase } from "@/domains/users/services/user-sync";
+import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 
 async function handleSync(req: NextRequest) {
   try {
     // Get the authenticated user
     const authResult = await auth();
-    const _userId = authResult.userId;
+    const userId = authResult.userId;
 
-    if (!_userId) {
+    if (!userId) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
     // Get user details from Clerk
-    const _user = await currentUser();
-    if (!_user) {
+    const user = await currentUser();
+    if (!user) {
       return NextResponse.json(
         { error: "User not found in Clerk" },
         { status: 404 }
@@ -34,11 +34,11 @@ async function handleSync(req: NextRequest) {
       );
     }
 
-    console.log(`🔄 Manual sync requested for user: ${_userId} (${userEmail})`);
+    console.log(`🔄 Manual sync requested for user: ${userId} (${userEmail})`);
 
     // Sync the user with the database
     const databaseUser = await syncUserWithDatabase(
-      _userId,
+      userId,
       userName,
       userEmail,
       "viewer", // Default role
@@ -54,7 +54,7 @@ async function handleSync(req: NextRequest) {
           id: databaseUser.id,
           name: databaseUser.name,
           email: databaseUser.email,
-          role: databaseUser._role,
+          role: databaseUser.role,
           clerkId: databaseUser.clerk_user_id,
         },
       });
@@ -64,8 +64,8 @@ async function handleSync(req: NextRequest) {
         { status: 500 }
       );
     }
-  } catch (_error) {
-    console.error("❌ Error in manual user sync:", _error);
+  } catch (error) {
+    console.error("❌ Error in manual user sync:", error);
     console.error(
       "Error stack:",
       error instanceof Error ? error.stack : "No stack trace"

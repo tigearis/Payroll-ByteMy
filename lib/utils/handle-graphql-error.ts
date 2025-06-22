@@ -122,7 +122,7 @@ function handlePermissionError(
   originalError: ApolloError
 ): GraphQLErrorDetails {
   const message = graphQLError.message || "";
-  const _extensions = graphQLError.extensions || {};
+  const extensions = graphQLError.extensions || {};
 
   // Extract role information from error
   let currentRole: string | undefined;

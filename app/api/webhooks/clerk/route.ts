@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import { Webhook } from "svix";
 
 import { UpdateUserRoleFromClerkDocument } from "@/domains/users/graphql/generated/graphql";
-import { _syncUserWithDatabase } from "@/domains/users/services/user-sync";
+import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 
 // Verify webhook signature for security
@@ -182,7 +182,7 @@ export async function POST(req: NextRequest) {
     }
   } catch (error: any) {
     console.error("❌ Error handling webhook - DETAILED:", {
-      _error,
+      error,
       message: error.message,
       stack: error.stack,
       name: error.name,

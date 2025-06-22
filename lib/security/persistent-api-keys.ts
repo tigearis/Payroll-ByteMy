@@ -191,16 +191,16 @@ export class PersistentAPIKeyManager {
       });
 
       const config: APIKeyConfig = {
-        id: data.insert_api_keys_one.id,
-        name: data.insert_api_keys_one.name,
-        key: data.insert_api_keys_one.key,
+        id: data.insertapi_keys_one.id,
+        name: data.insertapi_keys_one.name,
+        key: data.insertapi_keys_one.key,
         secretHash,
-        permissions: data.insert_api_keys_one.permissions,
-        isActive: data.insert_api_keys_one.is_active,
-        createdBy: data.insert_api_keys_one.created_by,
-        createdAt: data.insert_api_keys_one.created_at,
-        expiresAt: data.insert_api_keys_one.expires_at,
-        rateLimitTier: data.insert_api_keys_one.rate_limit_tier,
+        permissions: data.insertapi_keys_one.permissions,
+        isActive: data.insertapi_keys_one.is_active,
+        createdBy: data.insertapi_keys_one.created_by,
+        createdAt: data.insertapi_keys_one.created_at,
+        expiresAt: data.insertapi_keys_one.expires_at,
+        rateLimitTier: data.insertapi_keys_one.rate_limit_tier,
       };
 
       // Log API key creation
@@ -348,7 +348,7 @@ export class PersistentAPIKeyManager {
         variables: { key: apiKey },
       });
 
-      if (data.update_api_keys.affected_rows > 0) {
+      if (data.updateapi_keys.affected_rows > 0) {
         // Log API key deactivation
         await auditLogger.logSOC2Event({
           level: LogLevel.AUDIT,
@@ -387,7 +387,7 @@ export class PersistentAPIKeyManager {
         fetchPolicy: "network-only",
       });
 
-      return data.api_keys.map((key: any) => ({
+      return data.apikeys.map((key: any) => ({
         id: key.id,
         name: key.name,
         key: key.key,
@@ -440,7 +440,7 @@ export class PersistentAPIKeyManager {
         `,
       });
 
-      const affectedRows = data.update_api_keys.affected_rows;
+      const affectedRows = data.updateapi_keys.affected_rows;
 
       if (affectedRows > 0) {
         await auditLogger.logSOC2Event({

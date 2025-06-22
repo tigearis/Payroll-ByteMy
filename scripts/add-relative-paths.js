@@ -3,11 +3,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 // Convert `import.meta.url` to __dirname equivalent
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(_filename);
 
 // Root directory (entire project)
-const ROOT_DIR = path.resolve(__dirname);
+const ROOT_DIR = path.resolve(_dirname);
 
 // Directories to exclude
 const EXCLUDED_DIRS = new Set(["node_modules", ".next", ".vercel"]);
@@ -46,7 +46,7 @@ const scanDirectory = dir => {
     const fullPath = path.join(dir, file);
 
     if (fs.statSync(fullPath).isDirectory()) {
-      if (!EXCLUDED_DIRS.has(file)) {
+      if (!EXCLUDEDDIRS.has(file)) {
         scanDirectory(fullPath); // Only scan if not in excluded list
       }
     } else {

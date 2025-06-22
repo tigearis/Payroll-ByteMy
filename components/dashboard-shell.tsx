@@ -1,9 +1,9 @@
 // components/dashboard-shell.tsx
 import type React from "react";
 
-import { _Sidebar } from "./sidebar";
-import { _MainNav } from "@/components/main-nav";
-import { _ThemeToggle } from "@/components/theme-toggle";
+import { Sidebar } from "./sidebar";
+import { MainNav } from "@/components/main-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { UserNav } from "@/domains/users/components/user-nav";
 
 

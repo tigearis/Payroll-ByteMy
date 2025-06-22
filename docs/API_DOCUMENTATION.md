@@ -693,7 +693,7 @@ GET /api/payrolls/[id]
       "id": "uuid-client",
       "name": "Client A Pty Ltd",
       "contactPerson": "Contact Name",
-      "contactEmail": "contact@clienta.com"
+      "contact_email": "contact@clienta.com"
     },
     "cycle": "weekly",
     "dateType": "fixed_day",

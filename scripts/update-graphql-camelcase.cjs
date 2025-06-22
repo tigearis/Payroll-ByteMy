@@ -66,7 +66,7 @@ const fieldMappings = {
 
   // Clients table
   contact_person: "contactPerson",
-  contact_email: "contactEmail",
+  contact_email: "contact_email",
   contact_phone: "contactPhone",
   billing_address: "billingAddress",
   billing_city: "billingCity",

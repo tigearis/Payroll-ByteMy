@@ -16,7 +16,7 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-22T06:34:07.551Z
+ * Generated: 2025-06-22T08:06:01.779Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v2.0
  */
@@ -20519,20 +20519,20 @@ export type Users = {
   notesWritten_aggregate: NotesAggregate;
   /** An array relationship */
   permissionAuditLogs: Array<PermissionAuditLog>;
+  /** An array relationship */
+  permissionAuditLogsAsTarget: Array<PermissionAuditLog>;
+  /** An aggregate relationship */
+  permissionAuditLogsAsTarget_aggregate: PermissionAuditLogAggregate;
   /** An aggregate relationship */
   permissionAuditLogs_aggregate: PermissionAuditLogAggregate;
   /** An array relationship */
   permissionOverrides: Array<PermissionOverrides>;
+  /** An array relationship */
+  permissionOverridesCreated: Array<PermissionOverrides>;
+  /** An aggregate relationship */
+  permissionOverridesCreated_aggregate: PermissionOverridesAggregate;
   /** An aggregate relationship */
   permissionOverrides_aggregate: PermissionOverridesAggregate;
-  /** An array relationship */
-  permission_audit_logs: Array<PermissionAuditLog>;
-  /** An aggregate relationship */
-  permission_audit_logs_aggregate: PermissionAuditLogAggregate;
-  /** An array relationship */
-  permission_overrides: Array<PermissionOverrides>;
-  /** An aggregate relationship */
-  permission_overrides_aggregate: PermissionOverridesAggregate;
   /** An array relationship */
   primaryConsultantPayrolls: Array<Payrolls>;
   /** An aggregate relationship */
@@ -20809,7 +20809,7 @@ export type UsersPermissionAuditLogsArgs = {
 
 
 /** columns and relationships of "users" */
-export type UsersPermissionAuditLogsAggregateArgs = {
+export type UsersPermissionAuditLogsAsTargetArgs = {
   distinct_on?: InputMaybe<Array<PermissionAuditLogSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -20819,27 +20819,7 @@ export type UsersPermissionAuditLogsAggregateArgs = {
 
 
 /** columns and relationships of "users" */
-export type UsersPermissionOverridesArgs = {
-  distinct_on?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<PermissionOverridesOrderBy>>;
-  where?: InputMaybe<PermissionOverridesBoolExp>;
-};
-
-
-/** columns and relationships of "users" */
-export type UsersPermissionOverridesAggregateArgs = {
-  distinct_on?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<PermissionOverridesOrderBy>>;
-  where?: InputMaybe<PermissionOverridesBoolExp>;
-};
-
-
-/** columns and relationships of "users" */
-export type UsersPermissionAuditLogsArgs = {
+export type UsersPermissionAuditLogsAsTargetAggregateArgs = {
   distinct_on?: InputMaybe<Array<PermissionAuditLogSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -20860,6 +20840,26 @@ export type UsersPermissionAuditLogsAggregateArgs = {
 
 /** columns and relationships of "users" */
 export type UsersPermissionOverridesArgs = {
+  distinct_on?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<PermissionOverridesOrderBy>>;
+  where?: InputMaybe<PermissionOverridesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPermissionOverridesCreatedArgs = {
+  distinct_on?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<PermissionOverridesOrderBy>>;
+  where?: InputMaybe<PermissionOverridesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPermissionOverridesCreatedAggregateArgs = {
   distinct_on?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -21062,13 +21062,13 @@ export type UsersBoolExp = {
   notesWritten?: InputMaybe<NotesBoolExp>;
   notesWritten_aggregate?: InputMaybe<NotesAggregateBoolExp>;
   permissionAuditLogs?: InputMaybe<PermissionAuditLogBoolExp>;
+  permissionAuditLogsAsTarget?: InputMaybe<PermissionAuditLogBoolExp>;
+  permissionAuditLogsAsTarget_aggregate?: InputMaybe<PermissionAuditLogAggregateBoolExp>;
   permissionAuditLogs_aggregate?: InputMaybe<PermissionAuditLogAggregateBoolExp>;
   permissionOverrides?: InputMaybe<PermissionOverridesBoolExp>;
+  permissionOverridesCreated?: InputMaybe<PermissionOverridesBoolExp>;
+  permissionOverridesCreated_aggregate?: InputMaybe<PermissionOverridesAggregateBoolExp>;
   permissionOverrides_aggregate?: InputMaybe<PermissionOverridesAggregateBoolExp>;
-  permission_audit_logs?: InputMaybe<PermissionAuditLogBoolExp>;
-  permission_audit_logs_aggregate?: InputMaybe<PermissionAuditLogAggregateBoolExp>;
-  permission_overrides?: InputMaybe<PermissionOverridesBoolExp>;
-  permission_overrides_aggregate?: InputMaybe<PermissionOverridesAggregateBoolExp>;
   primaryConsultantPayrolls?: InputMaybe<PayrollsBoolExp>;
   primaryConsultantPayrolls_aggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   role?: InputMaybe<UserRoleComparisonExp>;
@@ -21129,9 +21129,9 @@ export type UsersInsertInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   notesWritten?: InputMaybe<NotesArrRelInsertInput>;
   permissionAuditLogs?: InputMaybe<PermissionAuditLogArrRelInsertInput>;
+  permissionAuditLogsAsTarget?: InputMaybe<PermissionAuditLogArrRelInsertInput>;
   permissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
-  permission_audit_logs?: InputMaybe<PermissionAuditLogArrRelInsertInput>;
-  permission_overrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
+  permissionOverridesCreated?: InputMaybe<PermissionOverridesArrRelInsertInput>;
   primaryConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
@@ -21299,10 +21299,10 @@ export type UsersOrderBy = {
   managerId?: InputMaybe<OrderBy>;
   name?: InputMaybe<OrderBy>;
   notesWritten_aggregate?: InputMaybe<NotesAggregateOrderBy>;
+  permissionAuditLogsAsTarget_aggregate?: InputMaybe<PermissionAuditLogAggregateOrderBy>;
   permissionAuditLogs_aggregate?: InputMaybe<PermissionAuditLogAggregateOrderBy>;
+  permissionOverridesCreated_aggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
   permissionOverrides_aggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
-  permission_audit_logs_aggregate?: InputMaybe<PermissionAuditLogAggregateOrderBy>;
-  permission_overrides_aggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
   primaryConsultantPayrolls_aggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   role?: InputMaybe<OrderBy>;
   teamMembers_aggregate?: InputMaybe<UsersAggregateOrderBy>;

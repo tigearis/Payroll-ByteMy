@@ -11,9 +11,6 @@ import { GetUserUpcomingPayrollsDocument } from "@/domains/payrolls/graphql/gene
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 import {
-  _PayrollDate,
-  _Client,
-  _Consultant,
   UserUpcomingPayroll,
   UserUpcomingPayrollsData,
   StatusVariant,
@@ -67,7 +64,7 @@ export function UrgentAlerts() {
   const { currentUserId, loading: userLoading } = useCurrentUser();
   const today = new Date().toISOString().split("T")[0];
 
-  const { _data, _loading, _error } = useQuery<UserUpcomingPayrollsData>(
+  const { data, loading, error } = useQuery<UserUpcomingPayrollsData>(
     GetUserUpcomingPayrollsDocument,
     {
       variables: {
@@ -80,7 +77,7 @@ export function UrgentAlerts() {
     }
   );
 
-  if (userLoading || _loading) {
+  if (userLoading || loading) {
     return (
       <div className="space-y-4">
         {[...Array(3)].map((_, i) => (
@@ -102,7 +99,7 @@ export function UrgentAlerts() {
     );
   }
 
-  if (_error) {
+  if (error) {
     return (
       <div className="text-center py-4 text-muted-foreground">
         <CalendarDays className="h-8 w-8 mx-auto mb-2 text-red-500" />

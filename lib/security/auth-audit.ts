@@ -363,13 +363,13 @@ function categorizeAuthFailure(errorMessage: string): string {
     return "invalid_token";
   }
   if (lowerError.includes("expired")) {
-    return "expired_session";
+    return "expiredsession";
   }
   if (lowerError.includes("rate limit")) {
     return "rate_limited";
   }
 
-  return "unknown_error";
+  return "unknownerror";
 }
 
 /**

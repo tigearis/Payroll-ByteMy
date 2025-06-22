@@ -41,7 +41,7 @@ This document tracks the process of reviewing and migrating documentation from t
 | `docs/legacy/LOGGING_VERIFICATION_REPORT.md`                   | **Delete** | Duplicate of existing `docs/` file.           | Marked for deletion.            |
 | `docs/legacy/MFA_FEATURE_FLAG.md`                              | **Delete** | Duplicate of existing `docs/` file.           | Marked for deletion.            |
 | `docs/legacy/MIGRATION_SUMMARY.md`                             | **Delete** | Duplicate of existing `docs/` file.           | Marked for deletion.            |
-| `docs/legacy/MODERN_LOADING_SYSTEM.md`                         | **Delete** | Duplicate of existing `docs/` file.           | Marked for deletion.            |
+| `docs/legacy/MODERNloading_SYSTEM.md`                          | **Delete** | Duplicate of existing `docs/` file.           | Marked for deletion.            |
 | `docs/legacy/PAYROLL_BYTEMY_DEEP_DIVE_ANALYSIS.md`             | **Delete** | Duplicate of existing `docs/` file.           | Marked for deletion.            |
 | `docs/legacy/PAYROLL_SYSTEM_ENHANCEMENTS.md`                   | **Delete** | Duplicate of existing `docs/` file.           | Marked for deletion.            |
 | `docs/legacy/PAYROLL_VERSIONING_SYSTEM.md`                     | **Delete** | Duplicate of existing `docs/` file.           | Marked for deletion.            |

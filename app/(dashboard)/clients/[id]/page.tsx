@@ -368,7 +368,7 @@ export default function ClientDetailPage() {
     setEditFormData({
       name: (client as any).name || "",
       contact_person: (client as any).contactName || "",
-      contact_email: (client as any).contactEmail || "",
+      contact_email: (client as any).contact_email || "",
       contact_phone: (client as any).contactPhone || "",
       active: (client as any).active ?? true,
     });
@@ -642,7 +642,7 @@ export default function ClientDetailPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-500">Email</p>
                       <p className="text-sm text-gray-900">
-                        {(client as any).contactEmail || "Not specified"}
+                        {(client as any).contact_email || "Not specified"}
                       </p>
                     </div>
                   </div>

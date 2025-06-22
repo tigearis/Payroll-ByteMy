@@ -20,7 +20,7 @@ if (
   (!process.env.HASURA_GRAPHQL_ADMIN_SECRET && !process.env.HASURA_ADMIN_SECRET)
 ) {
   console.warn(
-    "⚠️  Using default values for HASURA_URL and HASURA_SECRET. Set environment variables for production use."
+    "⚠️  Using default values for HASURA_URL and HASURASECRET. Set environment variables for production use."
   );
 }
 
@@ -96,6 +96,8 @@ const SHARED_SCALARS = {
 
   // GraphQL standard types
   _Any: "any",
+  _Service: "any",
+  Service: "any",
   Int: "number",
   Float: "number",
   String: "string",

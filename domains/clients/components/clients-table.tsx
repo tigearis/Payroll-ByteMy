@@ -46,7 +46,7 @@ const COLUMN_DEFINITIONS = [
     defaultVisible: true,
   },
   {
-    key: "contactEmail",
+    key: "contact_email",
     label: "Contact Email",
     sortable: true,
     defaultVisible: true,
@@ -162,9 +162,9 @@ export function ClientsTable({
                     {renderSortableHeader("Contact Person", "contactPerson")}
                   </TableHead>
                 )}
-                {visibleColumns.includes("contactEmail") && (
+                {visibleColumns.includes("contact_email") && (
                   <TableHead>
-                    {renderSortableHeader("Contact Email", "contactEmail")}
+                    {renderSortableHeader("Contact Email", "contact_email")}
                   </TableHead>
                 )}
                 {visibleColumns.includes("contactPhone") && (
@@ -221,7 +221,7 @@ export function ClientsTable({
                         </div>
                       </TableCell>
                     )}
-                    {visibleColumns.includes("contactEmail") && (
+                    {visibleColumns.includes("contact_email") && (
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Mail className="w-4 h-4 text-gray-500" />

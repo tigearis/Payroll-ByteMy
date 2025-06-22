@@ -43,14 +43,14 @@ export const CREATE_CLIENT = graphql(`
   mutation CreateClient(
     $name: String!
     $contactPerson: String
-    $contactEmail: String
+    $contact_email: String
     $contactPhone: String
   ) {
     insert_clients_one(
       object: {
         name: $name
         contact_person: $contactPerson
-        contact_email: $contactEmail
+        contact_email: $contact_email
         contact_phone: $contactPhone
         active: true
       }
@@ -65,7 +65,7 @@ export const UPDATE_CLIENT = graphql(`
     $id: uuid!
     $name: String
     $contactPerson: String
-    $contactEmail: String
+    $contact_email: String
     $contactPhone: String
     $active: Boolean
   ) {
@@ -74,7 +74,7 @@ export const UPDATE_CLIENT = graphql(`
       _set: {
         name: $name
         contact_person: $contactPerson
-        contact_email: $contactEmail
+        contact_email: $contact_email
         contact_phone: $contactPhone
         active: $active
         updated_at: "now()"

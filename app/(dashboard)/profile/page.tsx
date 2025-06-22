@@ -186,7 +186,7 @@ export default function ProfilePage() {
       user.payrollsByManagerUserId.length,
     primaryPayrolls: user.payrollsByPrimaryConsultantUserId.length,
     managedStaff: user.staffByManager.length,
-    notesWritten: user.notes_written.length,
+    notesWritten: user.noteswritten.length,
     totalEmployees: user.payrollsByPrimaryConsultantUserId.reduce(
       (sum: number, p: any) => sum + (p.employee_count || 0),
       0
@@ -370,7 +370,7 @@ export default function ProfilePage() {
             )}
 
             {/* Work Schedule */}
-            {user.work_schedules.length > 0 && (
+            {user.workschedules.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -398,7 +398,7 @@ export default function ProfilePage() {
                         Daily Schedule:
                       </span>
                       <div className="grid grid-cols-2 gap-2 text-sm">
-                        {user.work_schedules.map((schedule: any) => (
+                        {user.workschedules.map((schedule: any) => (
                           <div
                             key={schedule.id}
                             className="flex justify-between"
@@ -611,7 +611,7 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {user.notes_written.slice(0, 5).map((note: any) => (
+                  {user.noteswritten.slice(0, 5).map((note: any) => (
                     <div key={note.id} className="p-3 border rounded-lg">
                       <p className="text-sm text-gray-600 line-clamp-3">
                         {note.content}
@@ -628,7 +628,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   ))}
-                  {user.notes_written.length === 0 && (
+                  {user.noteswritten.length === 0 && (
                     <p className="text-gray-500 text-center py-4">
                       No notes written
                     </p>
@@ -651,7 +651,7 @@ export default function ProfilePage() {
                     <div key={leave.id} className="p-3 border rounded-lg">
                       <div className="flex items-center justify-between">
                         <p className="font-medium capitalize">
-                          {leave.leave_type.replace("_", " ")}
+                          {leave.leavetype.replace("_", " ")}
                         </p>
                         <Badge
                           variant={

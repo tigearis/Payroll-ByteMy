@@ -1,13 +1,13 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-import { _syncUserWithDatabase } from "@/domains/users/services/user-sync";
+import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 
 export async function POST(req: NextRequest) {
   try {
     console.log("🔧 API called: /api/fix-oauth-user");
 
-    const { _userId } = await auth();
+    const { userId } = await auth();
     const body = await req.json().catch(() => ({}));
     const targetUserId = body.targetUserId || userId; // Allow fixing specific users
 
@@ -20,9 +20,9 @@ export async function POST(req: NextRequest) {
 
     // Get user details from Clerk
     const client = await clerkClient();
-    const _user = await client.users.getUser(targetUserId);
+    const user = await client.users.getUser(targetUserId);
 
-    if (!_user) {
+    if (!user) {
       console.log("❌ User not found in Clerk");
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -139,8 +139,8 @@ export async function POST(req: NextRequest) {
         "🧪 Test by visiting /developer, /users, or /staff pages",
       ],
     });
-  } catch (_error) {
-    console.error("❌ Error fixing OAuth user:", _error);
+  } catch (error) {
+    console.error("❌ Error fixing OAuth user:", error);
     return NextResponse.json(
       {
         error: "Failed to fix OAuth user",
@@ -153,14 +153,14 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const { _userId } = await auth();
+    const { userId } = await auth();
 
-    if (!_userId) {
+    if (!userId) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
     const client = await clerkClient();
-    const _user = await client.users.getUser(_userId);
+    const user = await client.users.getUser(userId);
 
     const hasOAuthProvider =
       user.externalAccounts && user.externalAccounts.length > 0;
@@ -183,7 +183,7 @@ export async function GET(req: NextRequest) {
       (hasOAuthProvider && currentRole === "viewer");
 
     return NextResponse.json({
-      _userId,
+      userId,
       currentRole, // Actual role value: "org_admin", "manager", "consultant", "viewer"
       displayName, // Display name: "Developer", "Manager", "Consultant", "Viewer"
       hasuraRole, // Hasura role: "org_admin" or "viewer"
@@ -193,8 +193,8 @@ export async function GET(req: NextRequest) {
       publicMetadata: user.publicMetadata,
       privateMetadata: user.privateMetadata,
     });
-  } catch (_error) {
-    console.error("Error checking OAuth status:", _error);
+  } catch (error) {
+    console.error("Error checking OAuth status:", error);
     return NextResponse.json(
       { error: "Failed to check OAuth status" },
       { status: 500 }

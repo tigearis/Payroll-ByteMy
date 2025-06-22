@@ -1,6 +1,6 @@
 // app/api/payrolls/[id]/route.ts
 import { auth } from "@clerk/nextjs/server";
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { GetPayrollByIdDocument as GET_PAYROLL_BY_ID } from "@/domains/payrolls";
 import { serverApolloClient } from "@/lib/apollo/unified-client";
@@ -10,7 +10,7 @@ export const GET = withAuthParams(
   async (
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> },
-    _session
+    session
   ) => {
     try {
       const { id } = await params;
@@ -26,7 +26,7 @@ export const GET = withAuthParams(
       // Get Apollo Client
       const client = serverApolloClient;
 
-      const { _data } = await client.query({
+      const { data } = await client.query({
         query: GET_PAYROLL_BY_ID,
         variables: { id },
         context: { headers: { authorization: `Bearer ${token}` } },
@@ -37,8 +37,8 @@ export const GET = withAuthParams(
       }
 
       return NextResponse.json(data.payroll);
-    } catch (_error) {
-      console.error("Payroll fetch error:", _error);
+    } catch (error) {
+      console.error("Payroll fetch error:", error);
       return NextResponse.json(
         { error: "Something went wrong" },
         { status: 500 }

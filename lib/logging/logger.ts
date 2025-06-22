@@ -213,7 +213,7 @@ export class Logger {
       message: `${entry.action} ${entry.entityType}${
         entry.entityId ? ` (${entry.entityId})` : ""
       }`,
-      userId: entry._userId,
+      userId: entry.userId,
       userRole: entry.userRole,
       entityType: entry.entityType,
       entityId: entry.entityId || "",
@@ -258,7 +258,7 @@ export class Logger {
       level: LogLevel.ERROR,
       category,
       message,
-      _error,
+      error,
       ...metadata,
     });
   }
@@ -418,8 +418,8 @@ export class Logger {
       // In production, this would write to a logging service or database
       // For now, we'll use a simple database write
       console.log("Persisting log entry:", entry);
-    } catch (_error) {
-      console.error("Failed to persist log entry:", _error);
+    } catch (error) {
+      console.error("Failed to persist log entry:", error);
     }
   }
 
@@ -427,8 +427,8 @@ export class Logger {
     try {
       // SOC2-specific persistence logic
       console.log("Persisting SOC2 event:", entry);
-    } catch (_error) {
-      console.error("Failed to persist SOC2 event:", _error);
+    } catch (error) {
+      console.error("Failed to persist SOC2 event:", error);
     }
   }
 
@@ -438,8 +438,8 @@ export class Logger {
     try {
       // Audit-specific persistence logic
       console.log("Persisting audit log:", entry);
-    } catch (_error) {
-      console.error("Failed to persist audit log:", _error);
+    } catch (error) {
+      console.error("Failed to persist audit log:", error);
     }
   }
 
@@ -453,17 +453,17 @@ export class Logger {
     userAgent?: string;
   }> {
     try {
-      const { _userId } = await auth();
+      const { userId } = await auth();
 
       return {
-        ...(userId && { _userId }),
+        ...(userId && { userId }),
         ipAddress:
           request.headers.get("x-forwarded-for")?.split(",")[0] ||
           request.headers.get("x-real-ip") ||
           "unknown",
         userAgent: request.headers.get("user-agent") || "unknown",
       };
-    } catch (_error) {
+    } catch (error) {
       return {
         ipAddress: "unknown",
         userAgent: "unknown",

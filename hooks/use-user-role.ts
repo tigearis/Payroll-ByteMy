@@ -37,7 +37,7 @@ export function useUserRole() {
     canViewReports: hasPermission("view_reports"),
     canGenerateReports: hasPermission("generate_reports"),
     canManageSettings: hasPermission("manage_settings"),
-    canManageRoles: hasPermission("manage_roles"),
+    canManageRoles: hasPermission("manageroles"),
     canManageUsers: hasPermission("manage_users"),
     canInviteUsers: hasPermission("invite_users"),
     canUseDeveloperTools: hasPermission("developer_tools"),

@@ -1,6 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { NextRequest, _NextResponse } from "next/server";
-import { _syncUserWithDatabase } from "@/domains/users/services/user-sync";
+import { NextRequest, NextResponse } from "next/server";
+import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 
 /**
  * Manual user sync endpoint for fixing authentication issues
@@ -11,9 +11,9 @@ export async function POST(request: NextRequest) {
     console.log("🔧 Manual user sync initiated");
 
     // Get current Clerk user
-    const _user = await currentUser();
+    const user = await currentUser();
 
-    if (!_user) {
+    if (!user) {
       return NextResponse.json(
         { error: "No authenticated user found" },
         { status: 401 }
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
           id: databaseUser.id,
           name: databaseUser.name,
           email: databaseUser.email,
-          role: databaseUser._role,
+          role: databaseUser.role,
           clerkId: user.id,
         },
       });
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       throw new Error("Failed to create or find database user");
     }
   } catch (error: any) {
-    console.error("❌ Manual user sync failed:", _error);
+    console.error("❌ Manual user sync failed:", error);
 
     return NextResponse.json(
       {
@@ -96,9 +96,9 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    const _user = await currentUser();
+    const user = await currentUser();
 
-    if (!_user) {
+    if (!user) {
       return NextResponse.json(
         { error: "No authenticated user found" },
         { status: 401 }
@@ -110,14 +110,14 @@ export async function GET(request: NextRequest) {
         id: user.id,
         email: user.emailAddresses[0]?.emailAddress,
         name: `${user.firstName} ${user.lastName}`.trim(),
-        role: user.publicMetadata?._role,
+        role: user.publicMetadata?.role,
         databaseId: user.publicMetadata?.databaseId,
         hasOAuth: user.externalAccounts && user.externalAccounts.length > 0,
       },
       syncNeeded: !user.publicMetadata?.databaseId,
     });
   } catch (error: any) {
-    console.error("❌ Error checking user sync status:", _error);
+    console.error("❌ Error checking user sync status:", error);
 
     return NextResponse.json(
       {

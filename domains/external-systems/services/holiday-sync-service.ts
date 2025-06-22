@@ -185,7 +185,7 @@ export async function checkExistingHolidays(
     }
 
     if (data && data.holidays_aggregate) {
-      const count = data.holidays_aggregate.aggregate.count;
+      const count = data.holidaysaggregate.aggregate.count;
       const samples = data.holidays || [];
 
       console.log(
@@ -292,14 +292,14 @@ export async function syncHolidaysForCountry(
         }
 
         console.log(
-          `✅ Successfully synced ${data.insert_holidays.affected_rows} holidays for ${countryCode} ${year}`
+          `✅ Successfully synced ${data.insertholidays.affected_rows} holidays for ${countryCode} ${year}`
         );
 
         return {
           success: true,
-          affectedRows: data.insert_holidays.affected_rows,
+          affectedRows: data.insertholidays.affected_rows,
           newHolidays: holidaysToInsert.length,
-          message: `Synced ${data.insert_holidays.affected_rows} holidays for ${countryCode} ${year}`,
+          message: `Synced ${data.insertholidays.affected_rows} holidays for ${countryCode} ${year}`,
         };
       } catch (error) {
         // If unique constraint doesn't exist, fall back to primary key constraint
@@ -319,14 +319,14 @@ export async function syncHolidaysForCountry(
         }
 
         console.log(
-          `✅ Successfully synced ${data.insert_holidays.affected_rows} holidays for ${countryCode} ${year} (fallback)`
+          `✅ Successfully synced ${data.insertholidays.affected_rows} holidays for ${countryCode} ${year} (fallback)`
         );
 
         return {
           success: true,
-          affectedRows: data.insert_holidays.affected_rows,
+          affectedRows: data.insertholidays.affected_rows,
           newHolidays: holidaysToInsert.length,
-          message: `Synced ${data.insert_holidays.affected_rows} holidays for ${countryCode} ${year} (fallback)`,
+          message: `Synced ${data.insertholidays.affected_rows} holidays for ${countryCode} ${year} (fallback)`,
         };
       }
     }

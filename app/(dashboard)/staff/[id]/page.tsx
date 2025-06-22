@@ -87,8 +87,8 @@ export default function UserInfoPage() {
             <TableCell>{user.email}</TableCell>
             <TableCell>{user.role}</TableCell>
             <TableCell>
-              {user.leave_dates.length > 0
-                ? user.leave_dates.map(
+              {user.leavedates.length > 0
+                ? user.leavedates.map(
                     (leave: {
                       id: Key | null | undefined;
                       start_date:

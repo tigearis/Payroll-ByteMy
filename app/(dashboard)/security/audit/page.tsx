@@ -54,7 +54,7 @@ const AUDIT_LOG_QUERY = gql`
     ) {
       id
       user_id
-      user_role
+      userrole
       action
       entity_type
       entity_id
@@ -328,7 +328,7 @@ export default function AuditLogPage() {
                           <div>
                             <p className="font-medium">{entry.user?.email}</p>
                             <p className="text-sm text-muted-foreground">
-                              {entry.user_role}
+                              {entry.userrole}
                             </p>
                           </div>
                         </TableCell>

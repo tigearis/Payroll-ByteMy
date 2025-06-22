@@ -71,7 +71,7 @@ const UPSERT_USER = gql`
     $clerkId: String!
     $name: String!
     $email: String!
-    $role: user_role = viewer
+    $role: userrole = viewer
     $isStaff: Boolean = false
     $managerId: uuid
     $image: String
@@ -109,7 +109,7 @@ const UPSERT_USER = gql`
 const UPDATE_USER_ROLE = gql`
   mutation UpdateUserRole(
     $id: uuid!
-    $role: user_role!
+    $role: userrole!
     $managerId: uuid
     $isStaff: Boolean
   ) {

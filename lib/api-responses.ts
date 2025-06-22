@@ -141,7 +141,7 @@ export const ApiResponses = {
       {
         error: message,
         details: errors,
-        code: "VALIDATION_ERROR",
+        code: "VALIDATIONerror",
         timestamp: new Date().toISOString(),
       } as ApiError,
       { status: 422 }
@@ -186,7 +186,7 @@ export const ApiResponses = {
       {
         error: message,
         details: process.env.NODE_ENV === "development" ? details : undefined,
-        code: "INTERNAL_ERROR",
+        code: "INTERNALerror",
         timestamp: new Date().toISOString(),
       } as ApiError,
       { status: 500 }

@@ -390,7 +390,7 @@ const TEST_DATA = {
 };
 
 // Use this in your component temporarily
-// const { data, loading, error } = { data: TEST_DATA, loading: false, error: null };
+// const { data, loading, error } = { data: TESTdata, loading: false, error: null };
 ```
 
 ### 2. Progressive Enhancement

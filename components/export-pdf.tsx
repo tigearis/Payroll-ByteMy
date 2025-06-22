@@ -52,7 +52,7 @@ export function ExportPdf({ payrollId }: ExportPdfProps) {
       body: tableData,
     });
 
-    doc.save(`payroll_schedule.pdf`);
+    doc.save(`payrollschedule.pdf`);
   };
 
   return (

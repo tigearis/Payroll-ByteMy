@@ -196,7 +196,7 @@ async function testSyncEffectiveness() {
 
   if (beforeResult.ok && beforeResult.data.data) {
     const beforeCount =
-      beforeResult.data.data.holidays_aggregate.aggregate.count;
+      beforeResult.data.data.holidaysaggregate.aggregate.count;
     const recentHolidays = beforeResult.data.data.holidays;
 
     console.log(`📈 Current state:`);

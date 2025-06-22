@@ -46,7 +46,7 @@ function getErrorMessage(error: unknown): string {
   if (typeof error === "string") {
     return error;
   }
-  return String(_error);
+  return String(error);
 }
 
 export async function commitPayrollAssignments(
@@ -69,8 +69,8 @@ export async function commitPayrollAssignments(
 
     await client.query("BEGIN");
 
-    const affected_assignments = [];
-    const errors = [];
+    const affected_assignments: any[] = [];
+    const errors: any[] = [];
 
     for (const change of changes) {
       try {
@@ -216,13 +216,13 @@ export async function commitPayrollAssignments(
         affected_assignments,
       });
     }
-  } catch (_error) {
+  } catch (error) {
     await client.query("ROLLBACK");
-    console.error("Transaction error:", _error);
+    console.error("Transaction error:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
-      errors: [getErrorMessage(_error)],
+      errors: [getErrorMessage(error)],
     });
   } finally {
     client.release();
@@ -297,9 +297,9 @@ async function validateChange(
     }
 
     return null; // No validation errors
-  } catch (_error) {
-    console.error("Validation error:", _error);
-    return `Validation failed: ${getErrorMessage(_error)}`;
+  } catch (error) {
+    console.error("Validation error:", error);
+    return `Validation failed: ${getErrorMessage(error)}`;
   }
 }
 
@@ -352,7 +352,7 @@ export const hasuraActionHandler = {
           throw new Error("Consultant not found");
         }
 
-        if (validation.data.users_by_pk.leaves.length > 0) {
+        if (validation.data.usersby_pk.leaves.length > 0) {
           throw new Error("Consultant is on leave");
         }
 
