@@ -10,11 +10,14 @@ dotenv.config({ path: resolve(process.cwd(), ".env.local") });
 const HASURA_URL =
   process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL ||
   "https://bytemy.hasura.app/v1/graphql";
-const HASURA_SECRET = process.env.HASURA_ADMIN_SECRET || "development-secret";
+const HASURA_SECRET =
+  process.env.HASURA_GRAPHQL_ADMIN_SECRET ||
+  process.env.HASURA_ADMIN_SECRET ||
+  "3w+sHTuq8wQwddK4xyWO5LDeRH+anvJoFVyOMvtq8Lo=";
 
 if (
   !process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL ||
-  !process.env.HASURA_ADMIN_SECRET
+  (!process.env.HASURA_GRAPHQL_ADMIN_SECRET && !process.env.HASURA_ADMIN_SECRET)
 ) {
   console.warn(
     "⚠️  Using default values for HASURA_URL and HASURA_SECRET. Set environment variables for production use."
@@ -22,31 +25,32 @@ if (
 }
 
 // SOC2 Compliance Header - using function to avoid template literal issues
-const generateSOC2Header = () => [
-  "/**",
-  " * THIS FILE IS AUTO-GENERATED - DO NOT EDIT MANUALLY",
-  " * ",
-  " * SOC2 Compliant GraphQL Operations",
-  " * Security Classifications Applied:",
-  " * - CRITICAL: Auth, user roles, financial data - Requires admin access + MFA",
-  " * - HIGH: PII, client data, employee info - Requires role-based access", 
-  " * - MEDIUM: Internal business data - Requires authentication",
-  " * - LOW: Public/aggregate data - Basic access control",
-  " * ",
-  " * Compliance Features:",
-  " * ✓ Role-based access control (RBAC)",
-  " * ✓ Audit logging integration",
-  " * ✓ Data classification enforcement",
-  " * ✓ Permission boundary validation",
-  " * ✓ Automatic domain isolation and exports",
-  " * ",
-  ` * Generated: ${new Date().toISOString()}`,
-  " * Schema Version: Latest from Hasura",
-  " * CodeGen Version: Unified v2.0",
-  " */",
-  "",
-  ""
-].join("\n");
+const generateSOC2Header = () =>
+  [
+    "/**",
+    " * THIS FILE IS AUTO-GENERATED - DO NOT EDIT MANUALLY",
+    " * ",
+    " * SOC2 Compliant GraphQL Operations",
+    " * Security Classifications Applied:",
+    " * - CRITICAL: Auth, user roles, financial data - Requires admin access + MFA",
+    " * - HIGH: PII, client data, employee info - Requires role-based access",
+    " * - MEDIUM: Internal business data - Requires authentication",
+    " * - LOW: Public/aggregate data - Basic access control",
+    " * ",
+    " * Compliance Features:",
+    " * ✓ Role-based access control (RBAC)",
+    " * ✓ Audit logging integration",
+    " * ✓ Data classification enforcement",
+    " * ✓ Permission boundary validation",
+    " * ✓ Automatic domain isolation and exports",
+    " * ",
+    ` * Generated: ${new Date().toISOString()}`,
+    " * Schema Version: Latest from Hasura",
+    " * CodeGen Version: Unified v2.0",
+    " */",
+    "",
+    "",
+  ].join("\n");
 
 // Define domains with SOC2 compliance levels and auto-discovery
 const domains = [
@@ -142,7 +146,7 @@ const sharedConfig = {
   documentMode: "documentNode",
   gqlTagName: "gql",
   fragmentMasking: false,
-  
+
   // Prevent duplication and conflicts
   dedupeOperationSuffix: true,
   omitOperationSuffix: false,
@@ -252,11 +256,13 @@ const generatePerDomain = domains
       "/* ",
       ` * DOMAIN: ${domain.name.toUpperCase()}`,
       ` * SECURITY LEVEL: ${domain.securityLevel}`,
-      ` * ACCESS CONTROLS: ${getAccessControlDescription(domain.securityLevel)}`,
+      ` * ACCESS CONTROLS: ${getAccessControlDescription(
+        domain.securityLevel
+      )}`,
       " * AUTO-EXPORTED: This file is automatically exported from domain index",
       " */",
       "",
-      ""
+      "",
     ].join("\n");
 
     // Generate TypeScript files with hooks for each domain
@@ -292,7 +298,7 @@ const generatePerDomain = domains
               "",
               "// Note: Fragment masking and gql utilities are exported from shared/types/generated",
               "// Import those directly when needed to avoid conflicts",
-              ""
+              "",
             ].join("\n"),
           },
         },
@@ -347,12 +353,12 @@ const config: CodegenConfig = {
               generateSOC2Header(),
               "/* ",
               " * DOMAIN: SHARED",
-              " * SECURITY LEVEL: LOW", 
+              " * SECURITY LEVEL: LOW",
               " * ACCESS CONTROLS: Basic Authentication",
               " * AUTO-EXPORTED: This file is automatically exported from domain index",
               " */",
               "",
-              ""
+              "",
             ].join("\n"),
           },
         },
