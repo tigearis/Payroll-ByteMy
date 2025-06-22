@@ -14,6 +14,8 @@ import {
   Lock,
   Eye,
   Monitor,
+  Sidebar,
+  Layout,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
@@ -44,6 +46,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUserRole } from "@/hooks/use-user-role";
+import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 
 // Import extracted GraphQL operations
 const GET_USER_PROFILE = gql`
@@ -102,6 +105,7 @@ export default function AccountSettings() {
   const { user: clerkUser, isLoaded } = useUser();
   const { currentUserId } = useCurrentUser();
   const { userRole } = useUserRole();
+  const { layoutType, setLayoutType } = useLayoutPreferences();
 
   // Form state
   const [profileForm, setProfileForm] = useState<ProfileForm>({
@@ -776,6 +780,35 @@ export default function AccountSettings() {
                     <SelectItem value="de">German</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2">
+                <Label>Dashboard Layout</Label>
+                <div className="flex gap-2">
+                  <Button
+                    variant={layoutType === "sidebar" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setLayoutType("sidebar")}
+                    className="flex items-center gap-2"
+                  >
+                    <Sidebar className="h-4 w-4" />
+                    Sidebar
+                  </Button>
+                  <Button
+                    variant={layoutType === "header" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setLayoutType("header")}
+                    className="flex items-center gap-2"
+                  >
+                    <Layout className="h-4 w-4" />
+                    Header
+                  </Button>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Choose your preferred dashboard layout style
+                </p>
               </div>
             </CardContent>
           </Card>

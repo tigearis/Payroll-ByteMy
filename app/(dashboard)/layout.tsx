@@ -3,15 +3,27 @@
 
 import type React from "react";
 
+import { DashboardShell } from "@/components/dashboard-shell";
 import { Sidebar } from "@/components/sidebar";
 import { ClientWrapper } from "@/domains/clients/components/client-wrapper";
 import { UserNav } from "@/domains/users/components/user-nav";
+import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const { layoutType } = useLayoutPreferences();
+
+  if (layoutType === "header") {
+    return (
+      <DashboardShell>
+        <ClientWrapper>{children}</ClientWrapper>
+      </DashboardShell>
+    );
+  }
+
   return (
     <div className="flex h-screen">
       <Sidebar />

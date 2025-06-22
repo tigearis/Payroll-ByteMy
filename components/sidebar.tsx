@@ -25,6 +25,8 @@ import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
+import { DebugPermissions } from "./debug-permissions";
+import { DebugPermissionInfo } from "./debug-permission-info";
 
 
 // Local utility function
@@ -198,6 +200,7 @@ export function Sidebar() {
         </Button>
       </div>
       <ScrollArea className="flex-1">
+        <DebugPermissions />
         <nav className="flex flex-col gap-2 p-2">
           {accessibleRoutes.map(route => (
             <Button
@@ -213,6 +216,13 @@ export function Sidebar() {
             </Button>
           ))}
         </nav>
+
+        {/* Debug info - temporary */}
+        {!isCollapsed && (
+          <div className="p-2 border-t">
+            <DebugPermissionInfo />
+          </div>
+        )}
 
         {/* Optional: Show role indicator */}
         {!isCollapsed && (
