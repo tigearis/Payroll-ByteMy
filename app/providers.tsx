@@ -6,7 +6,7 @@ import { ClerkProvider, useAuth } from "@clerk/nextjs";
 
 import { StrictDatabaseGuard } from "@/components/auth/strict-database-guard";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { EnhancedPermissionProvider } from "@/hooks/use-enhanced-permissions";
+import { PermissionCacheProvider } from "@/hooks/use-cached-permissions";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
 import { AuthProvider } from "@/lib/auth/auth-context";
 import { LayoutPreferencesProvider } from "@/lib/preferences/layout-preferences";
@@ -44,7 +44,7 @@ function AuthenticatedApolloProvider({
 // PROVIDERS COMPONENT
 // ================================
 
-export function Providers({ children }: ProvidersProps) {
+export function Providers({ children }: ProvidersProps) {  
   return (
     <ErrorBoundary>
       <ClerkProvider
@@ -55,11 +55,11 @@ export function Providers({ children }: ProvidersProps) {
       >
         <AuthenticatedApolloProvider>
           <AuthProvider>
-            <EnhancedPermissionProvider>
+            <PermissionCacheProvider>
               <LayoutPreferencesProvider>
                 <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
               </LayoutPreferencesProvider>
-            </EnhancedPermissionProvider>
+            </PermissionCacheProvider>
           </AuthProvider>
         </AuthenticatedApolloProvider>
       </ClerkProvider>

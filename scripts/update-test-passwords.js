@@ -54,11 +54,9 @@ async function updateUserPasswords() {
       console.log(`\n🔑 Updating password for: ${update.email}`);
       
       // Find user by email
-      const users = await clerk.users.getUserList({
+      const { data: usersData, totalCount } = await clerk.users.getUserList({
         emailAddress: [update.email]
       });
-
-      const usersData = users.data || users;
       if (!usersData || usersData.length === 0) {
         console.log(`⚠️  User ${update.email} not found, skipping...`);
         continue;
@@ -66,7 +64,7 @@ async function updateUserPasswords() {
 
       const user = usersData[0];
       
-      // Update the user's password
+      // Update the user's password (server-side admin update)
       await clerk.users.updateUser(user.id, {
         password: update.newPassword,
       });

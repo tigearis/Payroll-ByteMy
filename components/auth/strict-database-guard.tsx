@@ -6,6 +6,11 @@ import React, { useEffect, useState } from "react";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 
+// Cache duration for database verification (10 minutes)
+const VERIFICATION_CACHE_DURATION = 10 * 60 * 1000;
+// Stale duration - show cached while refreshing in background (8 minutes)
+const VERIFICATION_STALE_DURATION = 8 * 60 * 1000;
+
 interface StrictDatabaseGuardProps {
   children: React.ReactNode;
 }
@@ -28,9 +33,68 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockReason, setBlockReason] = useState<string>("");
   const [gracePeriodEnded, setGracePeriodEnded] = useState(false);
+  const [isVerificationCached, setIsVerificationCached] = useState(false);
+  const [isBackgroundRefreshing, setIsBackgroundRefreshing] = useState(false);
 
-  // Grace period to allow authentication to settle
+  // Check for cached verification result on mount
   useEffect(() => {
+    if (!clerkLoaded || !clerkUser) return;
+
+    const cacheKey = `db_verification_${clerkUser.id}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    
+    if (cached) {
+      try {
+        const { timestamp, verified } = JSON.parse(cached);
+        const age = Date.now() - timestamp;
+        
+        // Check if cache is still completely valid (fresh)
+        if (age < VERIFICATION_STALE_DURATION) {
+          setIsVerificationCached(true);
+          setGracePeriodEnded(true);
+          
+          if (verified) {
+            setIsBlocked(false);
+            setBlockReason("");
+            console.log("✅ Using fresh cached verification - access granted");
+          } else {
+            setIsBlocked(true);
+            setBlockReason("User not found in database (cached)");
+            console.log("🚨 Using fresh cached verification - access blocked");
+          }
+          return;
+        }
+        
+        // Cache is stale but still usable - show cached result while refreshing in background
+        if (age < VERIFICATION_CACHE_DURATION) {
+          setIsVerificationCached(true);
+          setGracePeriodEnded(true);
+          setIsBackgroundRefreshing(true);
+          
+          if (verified) {
+            setIsBlocked(false);
+            setBlockReason("");
+            console.log("✅ Using stale cached verification - access granted (refreshing in background)");
+          } else {
+            setIsBlocked(true);
+            setBlockReason("User not found in database (cached)");
+            console.log("🚨 Using stale cached verification - access blocked (refreshing in background)");
+          }
+          
+          // Trigger background refresh - this will run silently without showing loading screen
+          // The verification will happen in the main useEffect but won't show loading
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to parse verification cache:", error);
+      }
+    }
+  }, [clerkLoaded, clerkUser]);
+
+  // Grace period to allow authentication to settle (skip if cached)
+  useEffect(() => {
+    if (isVerificationCached) return; // Skip grace period if using cached result
+    
     if (clerkLoaded && clerkUser && !gracePeriodEnded) {
       // Give authentication flow 3 seconds to settle
       const timer = setTimeout(() => {
@@ -42,10 +106,13 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
 
     // Always return a cleanup function, even if it's empty
     return () => {};
-  }, [clerkLoaded, clerkUser, gracePeriodEnded]);
+  }, [clerkLoaded, clerkUser, gracePeriodEnded, isVerificationCached]);
 
   // Monitor access status
   useEffect(() => {
+    // Skip if already using cached verification and not doing background refresh
+    if (isVerificationCached && !isBackgroundRefreshing) return;
+    
     // Wait for Clerk to load
     if (!clerkLoaded) {
       return;
@@ -59,7 +126,8 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
     }
 
     // Still loading database check OR initial user ID extraction, or within grace period
-    if (dbUserLoading || !isReady || !gracePeriodEnded) {
+    // But allow background refresh to continue
+    if (!isBackgroundRefreshing && (dbUserLoading || !isReady || !gracePeriodEnded)) {
       return;
     }
 
@@ -75,15 +143,33 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
     if (clerkUser && currentUser) {
       setIsBlocked(false);
       setBlockReason("");
-      console.log(
-        "✅ ACCESS GRANTED: User verified in both Clerk and database",
-        {
-          clerkUserId: clerkUser.id,
-          databaseUserId: currentUser.id,
-          userName: currentUser.name,
-          userRole: currentUser.role,
-        }
-      );
+      
+      // Cache successful verification
+      const cacheKey = `db_verification_${clerkUser.id}`;
+      const cacheData = {
+        timestamp: Date.now(),
+        verified: true,
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userRole: currentUser.role
+      };
+      sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
+      
+      // If this was a background refresh, mark it complete
+      if (isBackgroundRefreshing) {
+        setIsBackgroundRefreshing(false);
+        console.log("✅ Background verification refresh completed - cache updated");
+      } else {
+        console.log(
+          "✅ ACCESS GRANTED: User verified in both Clerk and database (cached for future)",
+          {
+            clerkUserId: clerkUser.id,
+            databaseUserId: currentUser.id,
+            userName: currentUser.name,
+            userRole: currentUser.role,
+          }
+        );
+      }
       return;
     }
 
@@ -94,21 +180,37 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
       !currentUser &&
       !dbUserLoading &&
       isReady &&
-      gracePeriodEnded
+      (gracePeriodEnded || isBackgroundRefreshing)
     ) {
       setIsBlocked(true);
       setBlockReason("User not found in database");
-      console.error(
-        "🚨 BLOCKING ACCESS: User authenticated with Clerk but not found in database",
-        {
-          clerkUserId: clerkUser.id,
-          userEmail: clerkUser.emailAddresses?.[0]?.emailAddress,
-          timestamp: new Date().toISOString(),
-          isReady,
-          gracePeriodEnded,
-          dbUserLoading,
-        }
-      );
+      
+      // Cache blocked verification (shorter duration for security)
+      const cacheKey = `db_verification_${clerkUser.id}`;
+      const cacheData = {
+        timestamp: Date.now(),
+        verified: false,
+        reason: "User not found in database"
+      };
+      sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
+      
+      // If this was a background refresh, mark it complete
+      if (isBackgroundRefreshing) {
+        setIsBackgroundRefreshing(false);
+        console.log("🚨 Background verification refresh completed - user still not found");
+      } else {
+        console.error(
+          "🚨 BLOCKING ACCESS: User authenticated with Clerk but not found in database",
+          {
+            clerkUserId: clerkUser.id,
+            userEmail: clerkUser.emailAddresses?.[0]?.emailAddress,
+            timestamp: new Date().toISOString(),
+            isReady,
+            gracePeriodEnded,
+            dbUserLoading,
+          }
+        );
+      }
 
       // Additional security logging
       console.error("🛡️ ACCESS DENIED - Security violation detected");
@@ -127,12 +229,14 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
     dbUserError,
     isReady,
     gracePeriodEnded,
+    isVerificationCached,
+    isBackgroundRefreshing,
   ]);
 
-  // Show loading while verifying
+  // Show loading while verifying (skip if using cached verification)
   if (
     !clerkLoaded ||
-    (clerkUser && (dbUserLoading || !isReady || !gracePeriodEnded))
+    (clerkUser && !isVerificationCached && (dbUserLoading || !isReady || !gracePeriodEnded))
   ) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
