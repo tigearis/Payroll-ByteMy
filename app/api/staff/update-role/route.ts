@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuth } from "@/lib/auth/api-auth";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { withAuth } from "@/lib/auth/api-auth";
 
 
 // GraphQL mutation to update user role in database

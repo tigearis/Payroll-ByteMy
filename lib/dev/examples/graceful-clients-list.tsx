@@ -2,6 +2,7 @@
 
 import { Building2, Users, AlertCircle } from "lucide-react";
 
+import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { GetClientsDocument } from "@/domains/clients/graphql/generated/graphql";
 import { useGracefulQuery } from "@/hooks/use-graceful-query";
 
-import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
-import { GetClientsDocument } from "@/domains/clients/graphql/generated/graphql";
 
 // Example fallback data for when permissions fail
 const FALLBACK_CLIENTS = [

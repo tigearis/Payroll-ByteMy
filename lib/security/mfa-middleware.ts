@@ -258,7 +258,7 @@ export function withAuthAndMFA(
 /**
  * Check if user has MFA enabled
  */
-export async function getUserMFAStatus(userId: string): Promise<{
+export async function getUserMFAStatus(_userId: string): Promise<{
   enabled: boolean;
   methods: string[];
   verified: boolean;

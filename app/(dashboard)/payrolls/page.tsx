@@ -2,7 +2,6 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
-import { GetPayrollsDocument, GetPayrollsFallbackDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
   PlusCircle,
   Search,
@@ -34,7 +33,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
-import { PayrollsTable } from "@/domains/payrolls/components/payrolls-table";
+import { PayrollUpdatesListener } from "@/components/real-time-updates";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -60,8 +59,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PayrollsTable } from "@/domains/payrolls/components/payrolls-table";
+import { GetPayrollsDocument, GetPayrollsFallbackDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useUserRole } from "@/hooks/use-user-role";
-import { PayrollUpdatesListener } from "@/components/real-time-updates";
 
 type ViewMode = "cards" | "table" | "list";
 

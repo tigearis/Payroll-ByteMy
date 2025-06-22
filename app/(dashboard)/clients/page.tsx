@@ -23,7 +23,6 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-import { ClientsTable } from "@/domains/clients/components/clients-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,6 +47,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ClientsTable } from "@/domains/clients/components/clients-table";
 import { GetClientsWithContactDocument } from "@/domains/clients/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useUserRole } from "@/hooks/use-user-role";

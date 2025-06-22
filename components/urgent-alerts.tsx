@@ -7,9 +7,9 @@ import { CalendarDays, User } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GetUserUpcomingPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { GetUserUpcomingPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { 
   PayrollDate, 
   Client, 

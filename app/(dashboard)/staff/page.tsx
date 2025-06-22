@@ -1,13 +1,6 @@
 "use client";
-import Image from "next/image";
 
 import { useQuery, useMutation, useApolloClient } from "@apollo/client";
-import { 
-  GetStaffListDocument, 
-  GetAllUsersListDocument,
-  UpdateStaffDocument,
-  DeleteStaffDocument 
-} from "@/domains/users/graphql/generated/graphql";
 import { useAuth } from "@clerk/nextjs";
 import {
   ColumnDef,
@@ -30,7 +23,12 @@ import {
   X,
 } from "lucide-react";
 
+import { ChevronDown } from "lucide-react";
+import Image from "next/image";
+import * as React from "react";
 import { toast } from "sonner";
+import { ErrorBoundaryWrapper } from "@/components/error-boundary";
+import { StaffUpdatesListener } from "@/components/staff-updates-listener";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,14 +39,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -58,22 +51,24 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ErrorBoundaryWrapper } from "@/components/error-boundary";
 import { StaffLoading } from "@/components/ui/loading-states";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
-import { ChevronDown } from "lucide-react";
-import * as React from "react";
 
 import {
   Table,
@@ -83,10 +78,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { 
+  GetStaffListDocument, 
+  GetAllUsersListDocument,
+  UpdateStaffDocument,
+  DeleteStaffDocument 
+} from "@/domains/users/graphql/generated/graphql";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUserRole } from "@/hooks/use-user-role";
 import { isAuthError } from "@/lib/utils/handle-graphql-error";
-import { StaffUpdatesListener } from "@/components/staff-updates-listener";
 
 // Define Staff Type
 interface Staff {

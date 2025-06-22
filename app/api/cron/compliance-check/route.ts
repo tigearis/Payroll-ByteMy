@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 import { subDays } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 import { secureHasuraService } from "@/lib/apollo/secure-hasura-service";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 
 const COMPLIANCE_CHECKS = gql`
   query RunComplianceChecks(

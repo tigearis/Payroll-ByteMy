@@ -3,10 +3,10 @@
 
 import type React from "react"
 
-import { ClientWrapper } from "@/domains/clients/components/client-wrapper"
 import { DashboardShell } from "@/components/dashboard-shell"
 import { Sidebar } from "@/components/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { ClientWrapper } from "@/domains/clients/components/client-wrapper"
 import { UserNav } from "@/domains/users/components/user-nav"
 
 interface DashboardLayoutProps {

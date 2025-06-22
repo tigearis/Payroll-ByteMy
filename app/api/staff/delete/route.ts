@@ -2,10 +2,10 @@ import { gql } from "@apollo/client";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
 import { protectAdminRoute } from "@/lib/security/auth-middleware";
 import { SecureErrorHandler } from "@/lib/security/error-responses";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
 
 
 // GraphQL mutation to deactivate user (soft delete)

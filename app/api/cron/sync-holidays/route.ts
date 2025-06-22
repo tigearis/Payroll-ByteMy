@@ -1,8 +1,8 @@
 // app/api/cron/sync-holidays/route.ts
 import { NextResponse } from "next/server";
 
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 import { syncAustralianHolidays } from "@/domains/external-systems/services/holiday-sync-service";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 
 export async function GET(request: Request) {
   try {

@@ -28,8 +28,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useUserRole } from "@/hooks/use-user-role";
 import { SecurityOverviewDocument } from "@/domains/audit/graphql/generated/graphql";
+import { useUserRole } from "@/hooks/use-user-role";
 
 
 export default function SecurityDashboard() {
