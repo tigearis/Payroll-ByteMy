@@ -143,7 +143,7 @@ async function createTestUsers() {
       console.log(`\n📧 Creating user: ${userData.emailAddress}`);
       
       // Check if user already exists
-      const existingUsers = await clerk.users.getUserList({
+      const { data: existingUsers, totalCount } = await clerk.users.getUserList({
         emailAddress: [userData.emailAddress]
       });
 
@@ -206,11 +206,9 @@ async function createTestUsers() {
 async function listExistingUsers() {
   try {
     console.log('\n👥 Existing test users:');
-    const response = await clerk.users.getUserList({
+    const { data: users, totalCount } = await clerk.users.getUserList({
       limit: 50
     });
-    
-    const users = response.data || response;
     const testUsers = users.filter(user => 
       user.emailAddresses.some(email => 
         email.emailAddress.includes('@test.payroll.com') || 
@@ -237,11 +235,9 @@ async function deleteTestUsers() {
   console.log('🗑️  Deleting existing test users...');
   
   try {
-    const response = await clerk.users.getUserList({
+    const { data: users, totalCount } = await clerk.users.getUserList({
       limit: 50
     });
-    
-    const users = response.data || response;
     const testUsers = users.filter(user => 
       user.emailAddresses.some(email => 
         email.emailAddress.includes('@test.payroll.com') || 
