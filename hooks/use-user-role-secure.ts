@@ -1,8 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useCurrentUser } from "./use-current-user";
 import { 
-  GetUserRoleSecureDocument, 
-  GetUserRoleFallbackSecureDocument 
+  GetUserRoleSecureDocument 
 } from "@/domains/users/graphql/generated/graphql";
 
 export function useUserRole() {
@@ -14,7 +13,7 @@ export function useUserRole() {
     error,
     refetch,
   } = useQuery(GetUserRoleSecureDocument, {
-    variables: { userId: currentUserId },
+    variables: { userId: currentUserId! },
     skip: !currentUserId || !!userLoading,
     fetchPolicy: "cache-first",
     errorPolicy: "all",

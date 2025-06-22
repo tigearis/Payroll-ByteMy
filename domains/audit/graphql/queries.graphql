@@ -331,3 +331,7 @@ query GetAuditAnalytics($startDate: timestamptz!, $endDate: timestamptz!) {
     eventTime
   }
 }
+
+# Note: Compliance report queries from app/api/audit/compliance-report/route.ts
+# need to be migrated here, but the schema fields don't match current Hasura setup.
+# Those API routes contain custom schema that may need to be implemented as Hasura views or functions.

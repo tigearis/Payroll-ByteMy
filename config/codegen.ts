@@ -388,7 +388,6 @@ const config: CodegenConfig = {
               "",
               "// Fragment masking utilities (if generated):",
               "// export * from './fragment-masking';",
-              ""
             ].join("\n"),
           },
         },
