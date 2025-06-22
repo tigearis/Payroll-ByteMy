@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useQuery } from "@apollo/client";
 import { useMemo } from "react";
 
@@ -16,43 +16,44 @@ import { GetCurrentUserDocument } from "@/domains/users/graphql/generated/graphq
  * No auth-mutex needed!
  */
 export function useCurrentUser() {
-  const { userId: clerkUserId, isLoaded, sessionClaims } = useAuth();
+  const { userId: clerkUserId, isLoaded } = useAuth();
+  const { user, isLoaded: userLoaded } = useUser();
 
-  // Extract database user ID from Clerk's native sessionClaims with enhanced debugging
+  // Extract database user ID from Clerk's user public metadata
   const databaseUserId = useMemo(() => {
-    if (!isLoaded || !clerkUserId || !sessionClaims) {
+    if (!isLoaded || !userLoaded || !clerkUserId || !user) {
       console.log("🔍 useCurrentUser: Missing basic auth data", {
         isLoaded,
+        userLoaded,
         hasClerkUserId: !!clerkUserId,
-        hasSessionClaims: !!sessionClaims,
+        hasUser: !!user,
       });
       return null;
     }
     
-    // Use Clerk's native JWT claims - no custom parsing needed
-    const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const extractedUserId = claims?.["x-hasura-user-id"] || null;
+    // Extract database ID from user's public metadata (set by user sync service)
+    const extractedUserId = user.publicMetadata?.databaseId as string;
     
-    console.log("🔍 useCurrentUser: JWT claims extraction", {
-      hasHasuraClaims: !!claims,
+    console.log("🔍 useCurrentUser: Public metadata extraction", {
       extractedUserId,
       clerkUserId,
-      defaultRole: claims?.["x-hasura-default-role"],
-      allowedRoles: claims?.["x-hasura-allowed-roles"],
-      fullClaims: claims, // Debug the full claims object
+      userRole: user.publicMetadata?.role,
+      hasPublicMetadata: !!user.publicMetadata,
+      fullPublicMetadata: user.publicMetadata,
     });
     
     // Additional validation that the extracted ID looks like a UUID
     if (extractedUserId && typeof extractedUserId === 'string' && extractedUserId.length === 36) {
-      console.log("✅ Valid database user ID extracted:", extractedUserId);
+      console.log("✅ Valid database user ID extracted from public metadata:", extractedUserId);
       return extractedUserId;
     } else if (extractedUserId) {
       console.warn("⚠️ Invalid database user ID format:", extractedUserId);
       return null;
     }
     
+    console.warn("⚠️ No database user ID found in public metadata");
     return null;
-  }, [isLoaded, clerkUserId, sessionClaims]);
+  }, [isLoaded, userLoaded, clerkUserId, user]);
 
   // Apollo automatically handles deduplication and caching
   const { data, loading, error, refetch, networkStatus } = useQuery(GetCurrentUserDocument, {
@@ -87,7 +88,7 @@ export function useCurrentUser() {
   });
 
   const currentUser = data?.user;
-  const isReady = isLoaded && !loading;
+  const isReady = isLoaded && userLoaded && !loading;
 
   return {
     // User data
@@ -96,7 +97,7 @@ export function useCurrentUser() {
     clerkUserId,
     
     // Loading states
-    loading: !isLoaded || loading,
+    loading: !isLoaded || !userLoaded || loading,
     error,
     isReady,
     
