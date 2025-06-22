@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useUserRole } from "@/hooks/use-user-role";
+import { ActorTokenManager } from "@/components/dev/actor-token-manager";
 
 const features = [
   {
@@ -1094,6 +1095,9 @@ export default function DeveloperPage() {
           </div>
         </CardContent>
       </Card> */}
+
+      {/* Actor Token Manager */}
+      <ActorTokenManager />
     </div>
   );
 }
