@@ -133,11 +133,11 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
           window.location.reload();
         }, 2000);
       } else {
-        const error = await response.text();
-        throw new Error(error);
+        const _error = await response.text();
+        throw new Error(_error);
       }
-    } catch (error) {
-      console.error("Failed to sync user:", error);
+    } catch (_error) {
+      console.error("Failed to sync user:", _error);
       toast.error("Failed to sync user", {
         description: "Please contact support if this issue persists.",
       });
@@ -150,8 +150,8 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
     try {
       // This will redirect to Clerk's sign out
       window.location.href = "/sign-out";
-    } catch (error) {
-      console.error("Sign out error:", error);
+    } catch (_error) {
+      console.error("Sign out error:", _error);
     }
   };
 
@@ -223,7 +223,7 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
 /**
  * Fallback component for database errors
  */
-function DatabaseErrorFallback({ error }: { error: any }) {
+function DatabaseErrorFallback({ _error }: { error: any }) {
   const handleRetry = () => {
     window.location.reload();
   };

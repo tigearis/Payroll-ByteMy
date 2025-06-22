@@ -45,7 +45,7 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: "*"
+      columns: '*'
     comment: Developer role has full insert access
 select_permissions:
   - role: consultant
@@ -61,7 +61,7 @@ select_permissions:
     comment: Consultants can view available roles
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -100,7 +100,7 @@ select_permissions:
 update_permissions:
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       check: {}
     comment: Developer role has full update access

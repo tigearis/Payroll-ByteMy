@@ -46,7 +46,7 @@ function getErrorMessage(error: unknown): string {
   if (typeof error === "string") {
     return error;
   }
-  return String(error);
+  return String(_error);
 }
 
 export async function commitPayrollAssignments(
@@ -216,13 +216,13 @@ export async function commitPayrollAssignments(
         affected_assignments,
       });
     }
-  } catch (error) {
+  } catch (_error) {
     await client.query("ROLLBACK");
-    console.error("Transaction error:", error);
+    console.error("Transaction error:", _error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
-      errors: [getErrorMessage(error)],
+      errors: [getErrorMessage(_error)],
     });
   } finally {
     client.release();
@@ -297,9 +297,9 @@ async function validateChange(
     }
 
     return null; // No validation errors
-  } catch (error) {
-    console.error("Validation error:", error);
-    return `Validation failed: ${getErrorMessage(error)}`;
+  } catch (_error) {
+    console.error("Validation error:", _error);
+    return `Validation failed: ${getErrorMessage(_error)}`;
   }
 }
 

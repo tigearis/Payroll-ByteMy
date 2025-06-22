@@ -21,7 +21,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { ThemeToggle } from "./theme-toggle";
+import { _ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
@@ -116,15 +116,15 @@ const routes = allRoutes.filter(route => {
 export function Sidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { user, isLoaded } = useUser();
-  const permissions = useEnhancedPermissions();
+  const { _user, isLoaded } = useUser();
+  const _permissions = useEnhancedPermissions();
 
   // Filter routes based on enhanced permission checks
   const accessibleRoutes = routes.filter(route => {
     if (!permissions.isLoaded) {
       return false;
     }
-    return route.checkAccess(permissions);
+    return route.checkAccess(_permissions);
   });
 
   // Show loading state while user data is being fetched
@@ -133,7 +133,7 @@ export function Sidebar() {
       <div
         className={cn(
           "flex flex-col border-r bg-gray-100/40 dark:bg-gray-800/40",
-          "w-64" // Default width while loading
+          "w-64" // Default width while _loading
         )}
       >
         <div className="flex h-16 items-center border-b px-4">

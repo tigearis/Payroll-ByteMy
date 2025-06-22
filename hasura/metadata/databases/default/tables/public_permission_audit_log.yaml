@@ -24,22 +24,22 @@ configuration:
     update: updatePermissionAuditLogs
     update_by_pk: updatePermissionAuditLog
 object_relationships:
-  - name: performed_by_user
+  - name: performedByUser
     using:
       foreign_key_constraint_on: user_id
-  - name: target_user
+  - name: targetUser
     using:
       foreign_key_constraint_on: target_user_id
 insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: "*"
+      columns: '*'
     comment: Developer role has full insert access
 select_permissions:
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -62,7 +62,7 @@ select_permissions:
 update_permissions:
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       check: {}
     comment: Developer role has full update access

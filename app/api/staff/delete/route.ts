@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, _NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
-import { protectAdminRoute } from "@/lib/security/auth-middleware";
-import { SecureErrorHandler } from "@/lib/security/error-responses";
+import { _protectAdminRoute } from "@/lib/security/auth-middleware";
+import { _SecureErrorHandler } from "@/lib/security/error-responses";
 
 // GraphQL mutation to deactivate user (soft delete)
 const DEACTIVATE_USER = gql`
@@ -129,7 +129,7 @@ const GET_CURRENT_USER_ROLE = gql`
 `;
 
 async function checkUserPermissions(clerkUserId: string) {
-  const { data } = await adminApolloClient.query({
+  const { _data } = await adminApolloClient.query({
     query: GET_CURRENT_USER_ROLE,
     variables: { clerkUserId },
     fetchPolicy: "no-cache",
@@ -156,11 +156,11 @@ async function checkUserPermissions(clerkUserId: string) {
 
 // Export POST with admin role protection
 export const POST = withAuth(
-  async (req: NextRequest, session) => {
+  async (req: NextRequest, _session) => {
     try {
       console.log("🔧 API called: /api/staff/delete (POST)");
 
-      const { userId } = session; // Already authenticated and role-verified
+      const { _userId } = session; // Already authenticated and role-verified
 
       const body = await req.json();
       const { staffId, forceHardDelete = false } = body;
@@ -177,7 +177,7 @@ export const POST = withAuth(
       );
 
       // Check current user permissions
-      const permissions = await checkUserPermissions(userId);
+      const _permissions = await checkUserPermissions(_userId);
 
       if (!permissions.canDeactivate) {
         return NextResponse.json(
@@ -200,8 +200,8 @@ export const POST = withAuth(
         fetchPolicy: "no-cache",
       });
 
-      const user = userData?.users_by_pk;
-      if (!user) {
+      const _user = userData?.users_by_pk;
+      if (!_user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
 
@@ -213,7 +213,7 @@ export const POST = withAuth(
       }
 
       // Prevent self-deletion
-      if (user.clerk_user_id === userId) {
+      if (user.clerk_user_id === _userId) {
         return NextResponse.json(
           { error: "Cannot delete your own account" },
           { status: 400 }
@@ -320,7 +320,7 @@ export const POST = withAuth(
           mutation: DEACTIVATE_USER,
           variables: {
             id: staffId,
-            deactivatedBy: userId,
+            deactivatedBy: _userId,
           },
         });
 
@@ -341,16 +341,16 @@ export const POST = withAuth(
           clerkDeleted,
           auditInfo: {
             deactivatedAt: result.deactivated_at,
-            deactivatedBy: userId,
-            originalRole: user.role,
+            deactivatedBy: _userId,
+            originalRole: user._role,
             hadClerkAccount: !!user.clerk_user_id,
           },
           dependenciesFound:
             blockingDependencies.length > 0 ? blockingDependencies : null,
         });
       }
-    } catch (error) {
-      console.error("❌ Error processing user deletion:", error);
+    } catch (_error) {
+      console.error("❌ Error processing user deletion:", _error);
       return NextResponse.json(
         {
           error: "Failed to process user deletion",
@@ -368,8 +368,8 @@ export const POST = withAuth(
 // GET endpoint to check deletion status and dependencies
 export async function GET(req: NextRequest) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const { _userId } = await auth();
+    if (!_userId) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
@@ -384,7 +384,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Check current user permissions
-    const permissions = await checkUserPermissions(userId);
+    const _permissions = await checkUserPermissions(_userId);
 
     if (!permissions.canDeactivate) {
       return NextResponse.json(
@@ -400,8 +400,8 @@ export async function GET(req: NextRequest) {
       fetchPolicy: "no-cache",
     });
 
-    const user = userData?.users_by_pk;
-    if (!user) {
+    const _user = userData?.users_by_pk;
+    if (!_user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -450,7 +450,7 @@ export async function GET(req: NextRequest) {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        role: user._role,
         isActive: user.is_active,
         hasClerkAccount: !!user.clerk_user_id,
         createdAt: user.created_at,
@@ -459,7 +459,7 @@ export async function GET(req: NextRequest) {
       permissions: {
         canDeactivate: permissions.canDeactivate,
         canHardDelete: permissions.canHardDelete,
-        currentUserRole: permissions.currentUser.role,
+        currentUserRole: permissions.currentUser._role,
       },
       dependencies,
       warnings,
@@ -471,8 +471,8 @@ export async function GET(req: NextRequest) {
             ? "deactivate"
             : "already_inactive",
     });
-  } catch (error) {
-    console.error("❌ Error getting deletion preview:", error);
+  } catch (_error) {
+    console.error("❌ Error getting deletion preview:", _error);
     return NextResponse.json(
       {
         error: "Failed to get deletion preview",

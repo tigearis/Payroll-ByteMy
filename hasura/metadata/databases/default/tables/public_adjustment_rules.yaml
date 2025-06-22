@@ -12,7 +12,7 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: "*"
+      columns: '*'
     comment: Developer role has full insert access
   - role: org_admin
     permission:
@@ -36,7 +36,7 @@ select_permissions:
     comment: All users can view adjustment rules as they're system-wide settings
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -77,7 +77,7 @@ select_permissions:
 update_permissions:
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       check: {}
     comment: Developer role has full update access

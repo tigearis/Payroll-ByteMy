@@ -1,5 +1,5 @@
 import { clerkClient } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, _NextResponse } from "next/server";
 
 import {
   GetUsersWithFilteringDocument,
@@ -8,7 +8,7 @@ import {
 import {
   getUserPermissions,
   canAssignRole,
-  UserRole,
+  _UserRole,
 } from "@/domains/users/services/user-sync";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
@@ -25,28 +25,28 @@ async function getCurrentUserRole(
 ): Promise<UserRole | "developer"> {
   try {
     const client = await clerkClient();
-    const user = await client.users.getUser(userId);
+    const _user = await client.users.getUser(_userId);
     return (user.publicMetadata?.role as UserRole | "developer") || "viewer";
-  } catch (error) {
-    console.error("Error getting user role:", error);
+  } catch (_error) {
+    console.error("Error getting user role:", _error);
     return "viewer";
   }
 }
 
 // GET /api/users - List users with filtering and pagination
 export const GET = withAuth(
-  async (request: NextRequest, session) => {
+  async (request: NextRequest, _session) => {
     try {
       // Extract client info once
-      const clientInfo = auditLogger.extractClientInfo(request);
+      const clientInfo = auditLogger.extractClientInfo(_request);
 
       // Log user access
       await auditLogger.logSOC2Event({
         level: LogLevel.INFO,
         category: LogCategory.SYSTEM_ACCESS,
         eventType: SOC2EventType.DATA_VIEWED,
-        userId: session.userId,
-        userRole: session.role,
+        userId: session._userId,
+        userRole: session._role,
         resourceType: "users",
         action: "LIST",
         success: true,
@@ -56,16 +56,16 @@ export const GET = withAuth(
       });
 
       // Check user permissions using the existing helper
-      const permissions = getUserPermissions(session.role as UserRole);
+      const _permissions = getUserPermissions(session.role as _UserRole);
 
       console.log(
-        `🔍 Current user role: ${session.role}, permissions:`,
-        permissions
+        `🔍 Current user role: ${session._role}, permissions:`,
+        _permissions
       );
 
       if (!permissions.canManageUsers) {
         console.log(
-          `❌ User ${session.role} denied access - insufficient permissions`
+          `❌ User ${session._role} denied access - insufficient permissions`
         );
         return NextResponse.json(
           { error: "Insufficient permissions to view users" },
@@ -77,7 +77,7 @@ export const GET = withAuth(
       const url = new URL(request.url);
       const limit = parseInt(url.searchParams.get("limit") || "50");
       const offset = parseInt(url.searchParams.get("offset") || "0");
-      const role = url.searchParams.get("role");
+      const _role = url.searchParams.get("role");
       const search = url.searchParams.get("search");
       const managerId = url.searchParams.get("managerId");
 
@@ -85,7 +85,7 @@ export const GET = withAuth(
       const where: any = {};
 
       if (role && role !== "all") {
-        where.role = { _eq: role };
+        where.role = { _eq: _role };
       }
 
       if (search) {
@@ -104,10 +104,10 @@ export const GET = withAuth(
         where.role = { _in: ["consultant", "viewer"] };
       }
 
-      console.log(`📋 Fetching users for ${session.role} with filters:`, where);
+      console.log(`📋 Fetching users for ${session._role} with filters:`, where);
 
       // Execute query
-      const { data, errors } = await adminApolloClient.query({
+      const { _data, errors } = await adminApolloClient.query({
         query: GetUsersWithFilteringDocument,
         variables: { limit, offset, where },
         fetchPolicy: "network-only",
@@ -138,19 +138,19 @@ export const GET = withAuth(
           offset,
           hasMore: (data.users?.length || 0) === limit,
         },
-        currentUserRole: session.role,
-        permissions,
+        currentUserRole: session._role,
+        _permissions,
       });
-    } catch (error) {
-      console.error("❌ Error fetching users:", error);
+    } catch (_error) {
+      console.error("❌ Error fetching users:", _error);
 
-      const errorClientInfo = auditLogger.extractClientInfo(request);
+      const errorClientInfo = auditLogger.extractClientInfo(_request);
       await auditLogger.logSOC2Event({
         level: LogLevel.ERROR,
         category: LogCategory.SYSTEM_ACCESS,
         eventType: SOC2EventType.DATA_VIEWED,
-        userId: session.userId,
-        userRole: session.role,
+        userId: session._userId,
+        userRole: session._role,
         resourceType: "users",
         action: "LIST",
         success: false,
@@ -176,13 +176,13 @@ export const GET = withAuth(
 
 // POST /api/users - Invite new user (admin/manager only)
 export const POST = withAuth(
-  async (request: NextRequest, session) => {
+  async (request: NextRequest, _session) => {
     try {
       // Extract client info once
-      const clientInfo = auditLogger.extractClientInfo(request);
+      const clientInfo = auditLogger.extractClientInfo(_request);
 
       // Check user permissions using the existing helper
-      const permissions = getUserPermissions(session.role as UserRole);
+      const _permissions = getUserPermissions(session.role as _UserRole);
 
       if (!permissions.canManageUsers) {
         return NextResponse.json(
@@ -208,15 +208,15 @@ export const POST = withAuth(
       }
 
       // Check if current user can assign the requested role
-      if (!canAssignRole(session.role as UserRole, role as UserRole)) {
+      if (!canAssignRole(session.role as _UserRole, role as _UserRole)) {
         return NextResponse.json(
-          { error: `Insufficient permissions to assign role: ${role}` },
+          { error: `Insufficient permissions to assign role: ${_role}` },
           { status: 403 }
         );
       }
 
       console.log(
-        `👤 Creating user invitation: ${firstName} ${lastName} (${email}) as ${role}`
+        `👤 Creating user invitation: ${firstName} ${lastName} (${email}) as ${_role}`
       );
 
       // Log user creation attempt
@@ -224,8 +224,8 @@ export const POST = withAuth(
         level: LogLevel.AUDIT,
         category: LogCategory.SYSTEM_ACCESS,
         eventType: SOC2EventType.USER_CREATED,
-        userId: session.userId,
-        userRole: session.role,
+        userId: session._userId,
+        userRole: session._role,
         resourceType: "user",
         action: "INVITE_INITIATE",
         success: true,
@@ -233,8 +233,8 @@ export const POST = withAuth(
         userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           targetEmail: email,
-          targetRole: role,
-          invitedBy: session.userId,
+          targetRole: _role,
+          invitedBy: session._userId,
         },
         complianceNote: "User invitation initiated",
       });
@@ -246,13 +246,13 @@ export const POST = withAuth(
         firstName,
         lastName,
         publicMetadata: {
-          role,
+          _role,
           managerId,
-          invitedBy: session.userId,
+          invitedBy: session._userId,
           invitedAt: new Date().toISOString(),
         },
         privateMetadata: {
-          hasuraRole: role,
+          hasuraRole: _role,
         },
       });
 
@@ -264,8 +264,8 @@ export const POST = withAuth(
         level: LogLevel.AUDIT,
         category: LogCategory.SYSTEM_ACCESS,
         eventType: SOC2EventType.USER_CREATED,
-        userId: session.userId,
-        userRole: session.role,
+        userId: session._userId,
+        userRole: session._role,
         resourceId: newUser.id,
         resourceType: "user",
         action: "INVITE",
@@ -274,8 +274,8 @@ export const POST = withAuth(
         userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           targetEmail: email,
-          targetRole: role,
-          invitedBy: session.userId,
+          targetRole: _role,
+          invitedBy: session._userId,
         },
         complianceNote: "User invitation created successfully",
       });
@@ -288,20 +288,20 @@ export const POST = withAuth(
           email,
           firstName,
           lastName,
-          role,
+          _role,
         },
       });
-    } catch (error) {
-      console.error("❌ Error creating user:", error);
+    } catch (_error) {
+      console.error("❌ Error creating user:", _error);
 
       // Log failed user creation
-      const inviteErrorClientInfo = auditLogger.extractClientInfo(request);
+      const inviteErrorClientInfo = auditLogger.extractClientInfo(_request);
       await auditLogger.logSOC2Event({
         level: LogLevel.ERROR,
         category: LogCategory.SYSTEM_ACCESS,
         eventType: SOC2EventType.USER_CREATED,
-        userId: session.userId,
-        userRole: session.role,
+        userId: session._userId,
+        userRole: session._role,
         resourceType: "user",
         action: "INVITE",
         success: false,

@@ -79,68 +79,96 @@ array_relationships:
         remote_table:
           name: notes
           schema: public
-  - name: payrollAssignmentAuditsAsFromConsultant
+  - name: assignmentAuditsAsFromConsultant
     using:
       foreign_key_constraint_on:
         column: from_consultant_id
         table:
           name: payroll_assignment_audit
           schema: public
-  - name: payrollAssignmentAuditsAsToConsultant
+  - name: assignmentAuditsAsToConsultant
     using:
       foreign_key_constraint_on:
         column: to_consultant_id
         table:
           name: payroll_assignment_audit
           schema: public
-  - name: payrollAssignmentAuditsCreated
+  - name: assignmentAuditsCreated
     using:
       foreign_key_constraint_on:
         column: changed_by
         table:
           name: payroll_assignment_audit
           schema: public
-  - name: payrollAssignmentsAsConsultant
+  - name: assignmentsAsConsultant
     using:
       foreign_key_constraint_on:
         column: consultant_id
         table:
           name: payroll_assignments
           schema: public
-  - name: payrollAssignmentsAsOriginalConsultant
+  - name: assignmentsAsOriginalConsultant
     using:
       foreign_key_constraint_on:
         column: original_consultant_id
         table:
           name: payroll_assignments
           schema: public
-  - name: payrollAssignmentsCreated
+  - name: assignmentsCreated
     using:
       foreign_key_constraint_on:
         column: assigned_by
         table:
           name: payroll_assignments
           schema: public
-  - name: payrollsAsBackupConsultant
+  - name: backupConsultantPayrolls
     using:
       foreign_key_constraint_on:
         column: backup_consultant_user_id
         table:
           name: payrolls
           schema: public
-  - name: payrollsAsManager
+  - name: managedPayrolls
     using:
       foreign_key_constraint_on:
         column: manager_user_id
         table:
           name: payrolls
           schema: public
-  - name: payrollsAsPrimaryConsultant
+  - name: primaryConsultantPayrolls
     using:
       foreign_key_constraint_on:
         column: primary_consultant_user_id
         table:
           name: payrolls
+          schema: public
+  - name: permissionAuditLogs
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: permission_audit_log
+          schema: public
+  - name: permissionOverrides
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: permission_overrides
+          schema: public
+  - name: permission_audit_logs
+    using:
+      foreign_key_constraint_on:
+        column: target_user_id
+        table:
+          name: permission_audit_log
+          schema: public
+  - name: permission_overrides
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: permission_overrides
           schema: public
   - name: teamMembers
     using:
@@ -169,7 +197,7 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: "*"
+      columns: '*'
     comment: Developer role has full insert access
   - role: manager
     permission:
@@ -217,16 +245,16 @@ select_permissions:
               _eq: X-Hasura-User-Id
           - manager_id:
               _eq: X-Hasura-User-Id
-          - payrollAssignmentsAsConsultant:
+          - assignmentsAsConsultant:
               consultant_id:
                 _eq: X-Hasura-User-Id
-          - payrollAssignmentsAsOriginalConsultant:
+          - assignmentsAsOriginalConsultant:
               original_consultant_id:
                 _eq: X-Hasura-User-Id
     comment: Consultants can view their own profile, their team members, and users from assigned payrolls - no email access for security
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full system access
@@ -270,6 +298,7 @@ select_permissions:
         - image
         - name
         - is_staff
+        - role
       filter: {}
     comment: Viewers can see basic user information
 update_permissions:
@@ -289,7 +318,7 @@ update_permissions:
     comment: Users can update their own profile
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       check: {}
     comment: Developer role has full update access

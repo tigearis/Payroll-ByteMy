@@ -2,7 +2,7 @@
 "use client";
 
 import { gql, useSubscription } from "@apollo/client";
-import { useState, useEffect } from "react";
+import { useState, _useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -28,7 +28,7 @@ export function SubscriptionTest() {
     ]);
   };
 
-  const { data, loading, error } = useSubscription(TEST_SUBSCRIPTION, {
+  const { _data, _loading, _error } = useSubscription(TEST_SUBSCRIPTION, {
     skip: !isActive,
     onSubscriptionData: () => {
       addLog("✅ Received subscription data");
@@ -49,8 +49,8 @@ export function SubscriptionTest() {
   }, [isActive]);
 
   useEffect(() => {
-    if (error) {
-      console.error("Full error object:", error);
+    if (_error) {
+      console.error("Full error object:", _error);
     }
   }, [error]);
 

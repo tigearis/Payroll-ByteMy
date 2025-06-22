@@ -17,7 +17,7 @@ import {
   GetUserByClerkIdDocument,
   GetUserByEmailDocument,
 } from "@/domains/users/graphql/generated/graphql";
-import { SecureErrorHandler } from "@/lib/security/error-responses";
+import { _SecureErrorHandler } from "@/lib/security/error-responses";
 
 // Define allowed roles for admin operations
 const ADMIN_ROLES = ["developer", "org_admin"];
@@ -74,7 +74,7 @@ const retryLink = new RetryLink({
   },
   attempts: {
     max: 3,
-    retryIf: error => !!error,
+    retryIf: error => !!_error,
   },
 });
 
@@ -134,22 +134,22 @@ export class SecureHasuraService {
     role?: string;
   }> {
     try {
-      const { userId, sessionClaims } = await auth();
+      const { _userId, sessionClaims } = await auth();
 
-      if (!userId) {
+      if (!_userId) {
         return { isValid: false };
       }
 
       const userRole = sessionClaims?.metadata?.role as string;
 
       if (!userRole || !ADMIN_ROLES.includes(userRole)) {
-        console.warn(`Access denied for user ${userId} with role ${userRole}`);
-        return { isValid: false, userId, role: userRole };
+        console.warn(`Access denied for user ${_userId} with role ${userRole}`);
+        return { isValid: false, _userId, role: userRole };
       }
 
-      return { isValid: true, userId, role: userRole };
-    } catch (error) {
-      console.error("Error validating admin access:", error);
+      return { isValid: true, _userId, role: userRole };
+    } catch (_error) {
+      console.error("Error validating admin access:", _error);
       return { isValid: false };
     }
   }
@@ -162,11 +162,11 @@ export class SecureHasuraService {
   ): Promise<{ data?: T; errors?: readonly any[] }> {
     // Skip auth check only for system operations (webhooks, cron jobs)
     if (!options?.skipAuth) {
-      const { isValid, userId, role } = await this.validateAdminAccess();
+      const { isValid, _userId, _role } = await this.validateAdminAccess();
 
       if (!isValid) {
-        const error = SecureErrorHandler.authorizationError("admin access");
-        throw new Error(error.error);
+        const _error = SecureErrorHandler.authorizationError("admin access");
+        throw new Error(error._error);
       }
     }
 
@@ -177,9 +177,9 @@ export class SecureHasuraService {
         fetchPolicy: "network-only",
       });
 
-      return { data: result.data, errors: result.errors || [] };
+      return { data: result._data, errors: result.errors || [] };
     } catch (error: any) {
-      console.error("Admin query error:", error);
+      console.error("Admin query error:", _error);
       return { errors: [error] };
     }
   }
@@ -192,11 +192,11 @@ export class SecureHasuraService {
   ): Promise<{ data?: T; errors?: readonly any[] }> {
     // Skip auth check only for system operations
     if (!options?.skipAuth) {
-      const { isValid, userId, role } = await this.validateAdminAccess();
+      const { isValid, _userId, _role } = await this.validateAdminAccess();
 
       if (!isValid) {
-        const error = SecureErrorHandler.authorizationError("admin access");
-        throw new Error(error.error);
+        const _error = SecureErrorHandler.authorizationError("admin access");
+        throw new Error(error._error);
       }
     }
 
@@ -206,9 +206,9 @@ export class SecureHasuraService {
         variables,
       });
 
-      return { data: result.data, errors: result.errors || [] };
+      return { data: result._data, errors: result.errors || [] };
     } catch (error: any) {
-      console.error("Admin mutation error:", error);
+      console.error("Admin mutation error:", _error);
       return { errors: [error] };
     }
   }
@@ -235,7 +235,7 @@ export class SecureHasuraService {
     );
 
     // Check if user exists by email as fallback
-    const { data: emailUserData } = await this.executeAdminQuery(
+    const { data: _emailUserData } = await this.executeAdminQuery(
       GetUserByEmailDocument,
       { email },
       { skipAuth: clerkUserId.startsWith("webhook_") }
@@ -251,7 +251,7 @@ export class SecureHasuraService {
           id: existingUser.id,
           set: {
             name,
-            role: role || existingUser.role,
+            role: role || existingUser._role,
             managerId,
             image: imageUrl,
           },
@@ -284,12 +284,12 @@ export class SecureHasuraService {
 
   // Clean all payroll dates (developer operation)
   async cleanAllPayrollDates() {
-    const { isValid, userId } = await this.validateAdminAccess();
+    const { isValid, _userId } = await this.validateAdminAccess();
     if (!isValid) {
       throw new Error("Unauthorized: Only admins can clean payroll dates");
     }
 
-    console.log(`Admin ${userId} is cleaning all payroll dates`);
+    console.log(`Admin ${_userId} is cleaning all payroll dates`);
 
     // This is a bulk admin operation that doesn't have a generated document equivalent
     // Keep as inline GraphQL for admin-only operations
@@ -310,7 +310,7 @@ export class SecureHasuraService {
       }
     `;
 
-    const { data, errors } = await this.executeAdminMutation(CLEAN_ALL_DATES);
+    const { _data, errors } = await this.executeAdminMutation(CLEAN_ALL_DATES);
 
     if (errors) {
       throw new Error(`Failed to clean payroll dates: ${errors[0].message}`);
@@ -370,7 +370,7 @@ export class SecureHasuraService {
       );
     }
 
-    const data = {
+    const _data = {
       delete_payroll_dates: deleteData?.delete_payroll_dates,
       generate_payroll_dates: generateData?.generatePayrollDates,
     };

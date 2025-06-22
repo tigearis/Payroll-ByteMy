@@ -143,6 +143,22 @@ const eslintConfig = [
       "_backup_delete/**",
     ],
   },
+
+  // Auto-fix rules for unused variables
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "caughtErrorsIgnorePattern": "^_",
+          "destructuredArrayIgnorePattern": "^_"
+        }
+      ]
+    }
+  },
 ];
 
 export default eslintConfig;

@@ -36,7 +36,7 @@ export interface DataTableColumn<T> {
   label: string;
   sortable?: boolean;
   defaultVisible?: boolean;
-  cellRenderer?: (value: any, row: T) => React.ReactNode;
+  cellRenderer?: (value: any, row: _T) => React.ReactNode;
   width?: string;
   align?: "left" | "center" | "right";
 }
@@ -44,11 +44,11 @@ export interface DataTableColumn<T> {
 export interface DataTableAction<T> {
   label: string;
   icon?: React.ComponentType<{ className?: string }>;
-  onClick: (row: T) => void;
+  onClick: (row: _T) => void;
   variant?: "default" | "destructive";
-  disabled?: (row: T) => boolean;
+  disabled?: (row: _T) => boolean;
   separator?: boolean;
-  href?: (row: T) => string;
+  href?: (row: _T) => string;
 }
 
 export interface StatusConfig {
@@ -95,12 +95,12 @@ export interface DataTableProps<T> {
   className?: string;
 
   // Row Configuration
-  getRowId: (row: T) => string;
-  getRowLink?: (row: T) => string;
+  getRowId: (row: _T) => string;
+  getRowLink?: (row: _T) => string;
 }
 
 // Built-in cell renderers
-export const createCellRenderers = <T,>(
+export const createCellRenderers = <_T,>(
   statusConfig?: Record<string, StatusConfig>
 ) => ({
   badge: (value: string) => {
@@ -177,7 +177,7 @@ export const createCellRenderers = <T,>(
 });
 
 export function UnifiedDataTable<T>({
-  data,
+  _data,
   columns,
   loading = false,
   emptyMessage = "No data found",
@@ -210,14 +210,14 @@ export function UnifiedDataTable<T>({
       data.length > 0 &&
       data.every(row => selectedItems.includes(getRowId(row)))
     );
-  }, [data, selectedItems, getRowId]);
+  }, [_data, selectedItems, getRowId]);
 
   const someSelected = useMemo(() => {
     return selectedItems.length > 0 && !allSelected;
   }, [selectedItems, allSelected]);
 
   // Cell renderers
-  const cellRenderers = useMemo(
+  const _cellRenderers = useMemo(
     () => createCellRenderers<T>(statusConfig),
     [statusConfig]
   );
@@ -245,7 +245,7 @@ export function UnifiedDataTable<T>({
   };
 
   // Render cell content
-  const renderCell = (column: DataTableColumn<T>, row: T) => {
+  const renderCell = (column: DataTableColumn<T>, row: _T) => {
     const value = row[column.key];
 
     if (column.cellRenderer) {
@@ -262,7 +262,7 @@ export function UnifiedDataTable<T>({
 
   // Render table content
   const renderTableContent = () => {
-    if (loading) {
+    if (_loading) {
       return (
         <TableRow>
           <TableCell
@@ -410,7 +410,7 @@ export function UnifiedDataTable<T>({
                 variant="outline"
                 size="sm"
                 onClick={onRefresh}
-                disabled={loading}
+                disabled={_loading}
               >
                 <RefreshCw
                   className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}

@@ -2,7 +2,7 @@ table:
   name: billing_event_log
   schema: public
 object_relationships:
-  - name: billing_invoice
+  - name: billingInvoice
     using:
       foreign_key_constraint_on: invoice_id
   - name: user
@@ -12,19 +12,19 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: "*"
+      columns: '*'
     comment: Developer role has full insert access
 select_permissions:
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
 update_permissions:
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       check: {}
     comment: Developer role has full update access

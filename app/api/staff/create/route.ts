@@ -1,10 +1,10 @@
 import { clerkClient } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, _NextResponse } from "next/server";
 import { z } from "zod";
 
 import {
-  syncUserWithDatabase,
-  UserRole,
+  _syncUserWithDatabase,
+  _UserRole,
 } from "@/domains/users/services/user-sync";
 import { withAuth } from "@/lib/auth/api-auth";
 import {
@@ -30,13 +30,13 @@ type CreateStaffInput = z.infer<typeof CreateStaffSchema>;
 
 // Secure staff creation endpoint - admin only
 export const POST = withAuth(
-  async (request: NextRequest, session) => {
+  async (request: NextRequest, _session) => {
     console.log("🔧 =========================");
     console.log("🔧 STAFF CREATION STARTING");
     console.log("🔧 =========================");
     console.log("Request method:", request.method);
     console.log("Request URL:", request.url);
-    console.log("User:", session.userId, "Role:", session.role);
+    console.log("User:", session._userId, "Role:", session._role);
     console.log(
       "Session claims:",
       JSON.stringify(
@@ -54,15 +54,15 @@ export const POST = withAuth(
 
     try {
       // Extract client info once
-      const clientInfo = auditLogger.extractClientInfo(request);
+      const clientInfo = auditLogger.extractClientInfo(_request);
 
       // Log staff creation attempt
       await auditLogger.logSOC2Event({
         level: LogLevel.AUDIT,
         category: LogCategory.SYSTEM_ACCESS,
         eventType: SOC2EventType.USER_CREATED,
-        userId: session.userId,
-        userRole: session.role,
+        userId: session._userId,
+        userRole: session._role,
         resourceType: "staff",
         action: "CREATE_INITIATE",
         success: true,
@@ -85,8 +85,8 @@ export const POST = withAuth(
           level: LogLevel.WARNING,
           category: LogCategory.SYSTEM_ACCESS,
           eventType: SOC2EventType.USER_CREATED,
-          userId: session.userId,
-          userRole: session.role,
+          userId: session._userId,
+          userRole: session._role,
           resourceType: "staff",
           action: "CREATE",
           success: false,
@@ -133,10 +133,10 @@ export const POST = withAuth(
             emailAddress: staffInput.email,
             redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/accept-invitation`,
             publicMetadata: {
-              role: staffInput.role,
+              role: staffInput._role,
               isStaff: staffInput.is_staff,
               managerId: staffInput.managerId,
-              invitedBy: session.userId,
+              invitedBy: session._userId,
               invitationType: "staff_creation",
               name: staffInput.name,
             },
@@ -167,7 +167,7 @@ export const POST = withAuth(
             console.log(
               `⚠️ Invitation may already exist for ${staffInput.email}`
             );
-            // Continue - we'll still create the database user
+            // Continue - we'll still create the database _user
           } else {
             // Log the error but continue with database-only creation
             console.log(
@@ -249,7 +249,7 @@ export const POST = withAuth(
               }
               on_conflict: {
                 constraint: users_email_key
-                update_columns: [name, role, is_staff, manager_id, updated_at]
+                update_columns: [name, _role, is_staff, manager_id, updated_at]
               }
             ) {
               id
@@ -267,17 +267,17 @@ export const POST = withAuth(
         console.log("💾 Executing GraphQL mutation with variables:", {
           name: staffInput.name,
           email: staffInput.email,
-          role: staffInput.role,
+          role: staffInput._role,
           isStaff: staffInput.is_staff,
           managerId: staffInput.managerId || null,
         });
 
-        const { data, errors } = await apolloClient.mutate({
+        const { _data, errors } = await apolloClient.mutate({
           mutation: CREATE_USER_DB,
           variables: {
             name: staffInput.name,
             email: staffInput.email,
-            role: staffInput.role,
+            role: staffInput._role,
             isStaff: staffInput.is_staff,
             managerId: staffInput.managerId || null,
             clerkUserId: null, // Will be set when user accepts invitation
@@ -288,10 +288,10 @@ export const POST = withAuth(
         });
 
         console.log("💾 GraphQL mutation result:", {
-          hasData: !!data,
+          hasData: !!_data,
           hasErrors: !!errors,
           errors,
-          data,
+          _data,
         });
 
         if (errors) {
@@ -316,8 +316,8 @@ export const POST = withAuth(
           level: LogLevel.ERROR,
           category: LogCategory.SYSTEM_ACCESS,
           eventType: SOC2EventType.USER_CREATED,
-          userId: session.userId,
-          userRole: session.role,
+          userId: session._userId,
+          userRole: session._role,
           resourceType: "staff",
           action: "CREATE",
           success: false,
@@ -348,10 +348,10 @@ export const POST = withAuth(
         invitationId,
         name: staffInput.name,
         email: staffInput.email,
-        role: staffInput.role,
+        role: staffInput._role,
         is_staff: staffInput.is_staff,
         manager_id: staffInput.managerId,
-        createdBy: session.userId,
+        createdBy: session._userId,
         createdAt: databaseUser?.created_at || new Date().toISOString(),
         invitationSent,
       };
@@ -361,8 +361,8 @@ export const POST = withAuth(
         level: LogLevel.AUDIT,
         category: LogCategory.SYSTEM_ACCESS,
         eventType: SOC2EventType.USER_CREATED,
-        userId: session.userId,
-        userRole: session.role,
+        userId: session._userId,
+        userRole: session._role,
         resourceId: staffData.id,
         resourceType: "staff",
         action: "CREATE",
@@ -371,7 +371,7 @@ export const POST = withAuth(
         userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           staffEmail: staffInput.email,
-          staffRole: staffInput.role,
+          staffRole: staffInput._role,
           invitationSent: staffData.invitationSent,
           invitationId: staffData.invitationId,
           managerId: staffInput.managerId,
@@ -388,14 +388,14 @@ export const POST = withAuth(
           id: staffData.id,
           name: staffData.name,
           email: staffData.email,
-          role: staffData.role,
+          role: staffData._role,
           invitationSent: staffData.invitationSent,
           createdAt: staffData.createdAt,
         },
       });
     } catch (error: any) {
       console.error("Staff creation error - DETAILED:", {
-        error,
+        _error,
         message: error.message,
         stack: error.stack,
         name: error.name,
@@ -409,17 +409,17 @@ export const POST = withAuth(
       });
 
       try {
-        const errorClientInfo = auditLogger.extractClientInfo(request);
+        const errorClientInfo = auditLogger.extractClientInfo(_request);
         await auditLogger.logSOC2Event({
           level: LogLevel.ERROR,
           category: LogCategory.SYSTEM_ACCESS,
           eventType: SOC2EventType.USER_CREATED,
-          userId: session.userId,
-          userRole: session.role,
+          userId: session._userId,
+          userRole: session._role,
           resourceType: "staff",
           action: "CREATE",
           success: false,
-          errorMessage: error instanceof Error ? error.message : String(error),
+          errorMessage: error instanceof Error ? error.message : String(_error),
           ipAddress: errorClientInfo.ipAddress || "unknown",
           userAgent: errorClientInfo.userAgent || "unknown",
           metadata: {

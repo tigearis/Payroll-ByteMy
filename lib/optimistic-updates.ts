@@ -35,14 +35,14 @@ export function updatePayrollInCache(
       fragmentName: "PayrollFields",
       data: {
         ...existingPayroll,
-        ...data,
+        ..._data,
         __typename: "payrolls", // Ensure typename is preserved
       },
     });
 
     return true;
-  } catch (error) {
-    console.error(`Error updating payroll ${payrollId} in cache:`, error);
+  } catch (_error) {
+    console.error(`Error updating payroll ${payrollId} in cache:`, _error);
     return false;
   }
 }
@@ -75,16 +75,16 @@ export function updatePayrollDateInCache(
       fragmentName: "PayrollDateFields",
       data: {
         ...existingDate,
-        ...data,
+        ..._data,
         __typename: "payroll_dates",
       },
     });
 
     return true;
-  } catch (error) {
+  } catch (_error) {
     console.error(
       `Error updating payroll date ${payrollDateId} in cache:`,
-      error
+      _error
     );
     return false;
   }
@@ -130,8 +130,8 @@ export function addPayrollToCache(
     });
 
     return true;
-  } catch (error) {
-    console.error("Error adding payroll to cache:", error);
+  } catch (_error) {
+    console.error("Error adding payroll to cache:", _error);
     return false;
   }
 }
@@ -151,8 +151,8 @@ export function removePayrollFromCache(
     cache.gc();
 
     return true;
-  } catch (error) {
-    console.error(`Error removing payroll ${payrollId} from cache:`, error);
+  } catch (_error) {
+    console.error(`Error removing payroll ${payrollId} from cache:`, _error);
     return false;
   }
 }
@@ -212,7 +212,7 @@ export const optimisticResponseGenerators = {
       affected_rows: 1,
       returning: [
         {
-          ...variables.user,
+          ...variables._user,
           __typename: "users",
         },
       ],
