@@ -25,8 +25,8 @@ import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
-import { DebugPermissions } from "./debug-permissions";
-
+import { DebugPermissions } from "@/components/debug-permissions";
+import { DebugPermissionInfo } from "@/components/debug-permission-info";
 
 // Local utility function
 function cn(...inputs: ClassValue[]) {
