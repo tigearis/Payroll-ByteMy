@@ -34,7 +34,6 @@ import {
   SelectContent,
 } from "@/components/ui/select";
 
-
 export default function CreateUserPage() {
   const router = useRouter();
   const { getToken } = useAuth();
@@ -50,18 +49,18 @@ export default function CreateUserPage() {
 
   // Use GraphQL mutation directly (like payrolls do)
   const [createStaff, { loading }] = useMutation(CREATE_STAFF_DIRECT, {
-    onCompleted: (data) => {
+    onCompleted: data => {
       toast.success(
         `Staff member ${form.firstName} ${form.lastName} created successfully!`
       );
       router.push("/staff");
     },
-    onError: (error) => {
-      console.error('Staff creation error:', error);
+    onError: error => {
+      console.error("Staff creation error:", error);
       const errorMessage = error.message || "Failed to create staff member";
       setError(errorMessage);
       toast.error(`Failed to create staff member: ${errorMessage}`);
-    }
+    },
   });
 
   const handleChange = (
@@ -85,12 +84,12 @@ export default function CreateUserPage() {
           name: `${form.firstName} ${form.lastName}`.trim(),
           email: form.email,
           role: form.role,
-          isStaff: true
-        }
+          isStaff: true,
+        },
       });
     } catch (err: unknown) {
       // Error handling is done in the onError callback
-      console.error('Form submission error:', err);
+      console.error("Form submission error:", err);
     }
   };
 
@@ -172,7 +171,7 @@ export default function CreateUserPage() {
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
                 <Select
-                  onValueChange={(value) => setForm({ ...form, role: value })}
+                  onValueChange={value => setForm({ ...form, role: value })}
                   defaultValue={form.role}
                 >
                   <SelectTrigger>

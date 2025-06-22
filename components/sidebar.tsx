@@ -21,11 +21,11 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
+import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
 
-import { ThemeToggle } from "./theme-toggle";
 
 // Local utility function
 function cn(...inputs: ClassValue[]) {
@@ -106,7 +106,7 @@ const allRoutes = [
 ];
 
 // Filter out dev-only routes in production
-const routes = allRoutes.filter((route) => {
+const routes = allRoutes.filter(route => {
   if (route.devOnly && process.env.NODE_ENV === "production") {
     return false;
   }
@@ -120,8 +120,10 @@ export function Sidebar() {
   const permissions = useEnhancedPermissions();
 
   // Filter routes based on enhanced permission checks
-  const accessibleRoutes = routes.filter((route) => {
-    if (!permissions.isLoaded) {return false;}
+  const accessibleRoutes = routes.filter(route => {
+    if (!permissions.isLoaded) {
+      return false;
+    }
     return route.checkAccess(permissions);
   });
 
@@ -197,7 +199,7 @@ export function Sidebar() {
       </div>
       <ScrollArea className="flex-1">
         <nav className="flex flex-col gap-2 p-2">
-          {accessibleRoutes.map((route) => (
+          {accessibleRoutes.map(route => (
             <Button
               key={route.href}
               variant={pathname === route.href ? "secondary" : "ghost"}

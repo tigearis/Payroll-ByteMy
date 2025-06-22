@@ -6,20 +6,28 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client"; // Updated import to use the unified client
 
-
-// GraphQL mutation to generate payroll dates for a single payroll
+// GraphQL query to generate payroll dates for a single payroll (database function)
 const GENERATE_PAYROLL_DATES = gql`
-  mutation GeneratePayrollDates(
+  query GeneratePayrollDates(
     $payrollId: uuid!
-    $startDate: date!
-    $endDate: date!
+    $startDate: date
+    $endDate: date
+    $maxDates: Int
   ) {
-    generate_payroll_dates(
-      p_payroll_id: $payrollId
-      p_start_date: $startDate
-      p_end_date: $endDate
+    generatePayrollDates(
+      args: {
+        p_payroll_id: $payrollId
+        p_start_date: $startDate
+        p_end_date: $endDate
+        p_max_dates: $maxDates
+      }
     ) {
       id
+      payrollId
+      originalEftDate
+      adjustedEftDate
+      processingDate
+      notes
     }
   }
 `;
@@ -44,7 +52,10 @@ export async function POST(req: NextRequest) {
           Buffer.from(tokenParts[1], "base64").toString()
         );
         const hasuraClaims = payload["https://hasura.io/jwt/claims"];
-        userRole = hasuraClaims?.["x-hasura-default-role"] || "viewer";
+        userRole =
+          hasuraClaims?.["x-hasura-role"] ||
+          hasuraClaims?.["x-hasura-default-role"] ||
+          "viewer";
       }
     }
 
@@ -88,13 +99,14 @@ export async function POST(req: NextRequest) {
         console.log(`Processing payroll: ${payrollId}`);
 
         // Generate dates using the admin Apollo client
-        const { data, errors } = await adminApolloClient.mutate({
-          mutation: GENERATE_PAYROLL_DATES,
+        const { data, errors } = await adminApolloClient.query({
+          query: GENERATE_PAYROLL_DATES,
           variables: {
             payrollId,
             startDate: formatDate(start),
             endDate: formatDate(end),
           },
+          fetchPolicy: "network-only", // Always fetch fresh data for function calls
         });
 
         if (errors) {
@@ -102,15 +114,15 @@ export async function POST(req: NextRequest) {
           results.failed++;
           results.errors.push({
             payrollId,
-            error: errors.map((e) => e.message).join(", "),
+            error: errors.map(e => e.message).join(", "),
           });
           continue;
         }
 
         // Check if dates were generated successfully
         if (
-          !data?.generate_payroll_dates ||
-          data.generate_payroll_dates.length === 0
+          !data?.generatePayrollDates ||
+          data.generatePayrollDates.length === 0
         ) {
           console.warn(`No dates generated for payroll: ${payrollId}`);
           results.failed++;

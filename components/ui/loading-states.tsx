@@ -602,7 +602,7 @@ function DefaultSpinner() {
 function DotsSpinner() {
   return (
     <div className="flex space-x-1">
-      {[0, 1, 2].map((i) => (
+      {[0, 1, 2].map(i => (
         <div
           key={i}
           className="w-3 h-3 bg-primary rounded-full animate-bounce"

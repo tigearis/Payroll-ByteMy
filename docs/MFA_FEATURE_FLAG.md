@@ -16,6 +16,7 @@ Multi-Factor Authentication (MFA) is currently implemented as an optional featur
 ### Prerequisites
 
 1. **Clerk Dashboard Configuration**:
+
    - Enable MFA in your Clerk dashboard
    - Configure TOTP (Time-based One-Time Password)
    - Set up MFA policies
@@ -28,6 +29,7 @@ Multi-Factor Authentication (MFA) is currently implemented as an optional featur
 ### Steps to Enable
 
 1. **Configure Clerk**:
+
    ```bash
    # In your Clerk Dashboard:
    # 1. Go to User & Authentication → Multi-factor
@@ -37,6 +39,7 @@ Multi-Factor Authentication (MFA) is currently implemented as an optional featur
    ```
 
 2. **Update Environment Variables**:
+
    ```bash
    # In your .env.local file
    FEATURE_MFA_ENABLED=true
@@ -54,7 +57,7 @@ Multi-Factor Authentication (MFA) is currently implemented as an optional featur
 ### Routes That Will Require MFA
 
 - `/api/staff/delete` - Staff deletion operations
-- `/api/users/update-role` - Role updates  
+- `/api/users/update-role` - Role updates
 - `/api/audit/compliance-report` - Audit data access
 - `/api/developer` - Developer tools
 - `/api/payrolls/schedule` - Payroll scheduling
@@ -93,7 +96,7 @@ Even with MFA disabled, the system maintains strong security:
 The system remains SOC2 compliant with or without MFA:
 
 - **Access Control**: Role-based permissions (CC6.1)
-- **User Management**: Secure user lifecycle (CC6.2) 
+- **User Management**: Secure user lifecycle (CC6.2)
 - **Data Access**: Comprehensive audit trails (CC6.3)
 - **System Changes**: Configuration changes logged (CC7.1)
 - **Security Events**: All security events monitored (CC7.2)
@@ -103,6 +106,7 @@ The system remains SOC2 compliant with or without MFA:
 When ready to enable MFA, test the following:
 
 1. **Admin User Setup**:
+
    ```bash
    # 1. Login as admin user
    # 2. Navigate to MFA setup
@@ -111,6 +115,7 @@ When ready to enable MFA, test the following:
    ```
 
 2. **Route Protection**:
+
    ```bash
    # Test that sensitive routes require MFA
    # when FEATURE_MFA_ENABLED=true
@@ -127,11 +132,13 @@ When ready to enable MFA, test the following:
 To enable MFA in production:
 
 1. **Development Testing**:
+
    - Enable MFA in development environment
    - Test all critical workflows
    - Verify user experience
 
 2. **Staging Deployment**:
+
    - Deploy with `FEATURE_MFA_ENABLED=true`
    - Train admin users on MFA setup
    - Test backup authentication methods
@@ -144,6 +151,7 @@ To enable MFA in production:
 ## Support
 
 When MFA is enabled, users will see:
+
 - Setup instructions in the security settings
 - Clear error messages for MFA requirements
 - Guidance on authenticator app configuration

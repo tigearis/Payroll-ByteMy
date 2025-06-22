@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { SecureHasuraService } from "@/lib/apollo/secure-hasura-service";
 
-
 // GraphQL query to get Hasura claims
 const GET_HASURA_CLAIMS = gql`
   query GetHasuraClaimsForUser($clerkUserId: String!) {
@@ -20,7 +19,7 @@ export async function GET(req: NextRequest) {
     const authResult = await auth();
     const clerkUserId = authResult.userId;
 
-    console.log("🔍 Clerk user ID:", `${clerkUserId?.substring(0, 8)  }...`);
+    console.log("🔍 Clerk user ID:", `${clerkUserId?.substring(0, 8)}...`);
 
     if (!clerkUserId) {
       console.log("🚨 No Clerk user ID found");

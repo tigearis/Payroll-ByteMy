@@ -4,7 +4,13 @@
 import { AlertTriangle } from "lucide-react";
 
 import { SyncUserButton } from "./sync-user-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface UserSyncFallbackProps {
   clerkUserId?: string;
@@ -35,15 +41,15 @@ export function UserSyncFallback({ clerkUserId }: UserSyncFallbackProps) {
               </p>
             )}
           </div>
-          
+
           <div className="pt-4">
             <SyncUserButton />
           </div>
-          
+
           <div className="text-xs text-gray-500">
             <p>
-              This should happen automatically via webhooks. If you continue
-              to see this message, please contact support.
+              This should happen automatically via webhooks. If you continue to
+              see this message, please contact support.
             </p>
           </div>
         </CardContent>

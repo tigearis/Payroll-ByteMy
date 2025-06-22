@@ -26,9 +26,10 @@ import {
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useUserRole } from "@/hooks/use-user-role";
 
-
-import { GetPayrollsMissingDatesDocument, GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
-
+import {
+  GetPayrollsMissingDatesDocument,
+  GeneratePayrollDatesDocument,
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 interface PayrollWithDateCount {
   id: string;
@@ -83,11 +84,11 @@ export function PayrollsMissingDates() {
   const payrolls = data?.payrolls || [];
 
   const payrollsMissingDates = payrolls.filter(
-    (payroll) => payroll.payrollDates_aggregate?.aggregate?.count === 0
+    payroll => payroll.payrollDates_aggregate?.aggregate?.count === 0
   );
 
   const missingDatesPayrollIds = payrollsMissingDates.map(
-    (payroll) => payroll.id
+    payroll => payroll.id
   );
 
   console.log("Missing payroll IDs:", missingDatesPayrollIds);
@@ -142,7 +143,7 @@ export function PayrollsMissingDates() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {payrollsMissingDates.map((payroll) => (
+            {payrollsMissingDates.map(payroll => (
               <TableRow key={payroll.id}>
                 <TableCell>{payroll.client?.name || "N/A"}</TableCell>
                 <TableCell>{payroll.name}</TableCell>

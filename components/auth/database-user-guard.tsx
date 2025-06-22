@@ -18,15 +18,22 @@ interface DatabaseUserGuardProps {
 
 /**
  * Security Guard: Ensures user exists in database before granting access
- * 
+ *
  * This component prevents the security issue where:
- * 1. User is authenticated with Clerk 
+ * 1. User is authenticated with Clerk
  * 2. User doesn't exist in database
  * 3. User still gets access with default permissions
  */
-export function DatabaseUserGuard({ children, fallback }: DatabaseUserGuardProps) {
+export function DatabaseUserGuard({
+  children,
+  fallback,
+}: DatabaseUserGuardProps) {
   const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
-  const { currentUser, loading: dbUserLoading, error: dbUserError } = useCurrentUser();
+  const {
+    currentUser,
+    loading: dbUserLoading,
+    error: dbUserError,
+  } = useCurrentUser();
 
   // Wait for Clerk to load
   if (!clerkLoaded) {
@@ -59,21 +66,24 @@ export function DatabaseUserGuard({ children, fallback }: DatabaseUserGuardProps
 
   // 🚨 SECURITY CHECK: User exists in Clerk but NOT in database
   if (clerkUser && !dbUserLoading && !currentUser) {
-    console.error("🚨 SECURITY ALERT: User authenticated with Clerk but not found in database", {
-      clerkUserId: clerkUser.id,
-      userEmail: clerkUser.emailAddresses?.[0]?.emailAddress,
-      timestamp: new Date().toISOString(),
-      hasDbError: !!dbUserError,
-      dbUserLoading,
-      currentUser
-    });
+    console.error(
+      "🚨 SECURITY ALERT: User authenticated with Clerk but not found in database",
+      {
+        clerkUserId: clerkUser.id,
+        userEmail: clerkUser.emailAddresses?.[0]?.emailAddress,
+        timestamp: new Date().toISOString(),
+        hasDbError: !!dbUserError,
+        dbUserLoading,
+        currentUser,
+      }
+    );
 
     // For debugging: log additional context
     console.error("🔍 Debug info:", {
       clerkUserExists: !!clerkUser,
       dbUserLoading,
       currentUserExists: !!currentUser,
-      dbUserError: dbUserError?.message
+      dbUserError: dbUserError?.message,
     });
 
     if (fallback) {
@@ -158,18 +168,24 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Your account is not properly set up in our system. This is a security measure to protect unauthorized access.
+              Your account is not properly set up in our system. This is a
+              security measure to protect unauthorized access.
             </AlertDescription>
           </Alert>
 
           <div className="text-sm text-muted-foreground space-y-2">
-            <p><strong>Account:</strong> {clerkUser.emailAddresses?.[0]?.emailAddress}</p>
-            <p><strong>Status:</strong> Authenticated but not synchronized</p>
+            <p>
+              <strong>Account:</strong>{" "}
+              {clerkUser.emailAddresses?.[0]?.emailAddress}
+            </p>
+            <p>
+              <strong>Status:</strong> Authenticated but not synchronized
+            </p>
           </div>
 
           <div className="space-y-2">
-            <Button 
-              onClick={handleSyncUser} 
+            <Button
+              onClick={handleSyncUser}
               disabled={isSyncing}
               className="w-full"
             >
@@ -185,9 +201,9 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
                 </>
               )}
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={handleSignOut}
               className="w-full"
             >
@@ -225,7 +241,8 @@ function DatabaseErrorFallback({ error }: { error: any }) {
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Unable to verify your account status. This may be a temporary connection issue.
+              Unable to verify your account status. This may be a temporary
+              connection issue.
             </AlertDescription>
           </Alert>
 
@@ -256,12 +273,13 @@ function UnexpectedStateFallback() {
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              An unexpected authentication state occurred. Please sign out and sign in again.
+              An unexpected authentication state occurred. Please sign out and
+              sign in again.
             </AlertDescription>
           </Alert>
 
-          <Button 
-            onClick={() => window.location.href = "/sign-out"} 
+          <Button
+            onClick={() => (window.location.href = "/sign-out")}
             className="w-full"
           >
             Sign Out

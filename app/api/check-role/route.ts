@@ -4,36 +4,39 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     console.log("🔍 Role check endpoint called");
-    
+
     const { userId, sessionClaims, getToken } = await auth();
-    
+
     console.log("🔍 Auth data:", {
       hasUserId: !!userId,
       hasSessionClaims: !!sessionClaims,
-      userId: `${userId?.substring(0, 8)  }...`
+      userId: `${userId?.substring(0, 8)}...`,
     });
-    
+
     if (!userId) {
-      return NextResponse.json({
-        error: "Not authenticated",
-        userId: null,
-        role: null
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: "Not authenticated",
+          userId: null,
+          role: null,
+        },
+        { status: 401 }
+      );
     }
-    
-    // Extract role from JWT (same logic as api-auth.ts)
+
+    // Extract role from JWT (same logic as api-auth.ts) - FIXED ORDER
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const userRole = (
-      (sessionClaims?.metadata as any)?.default_role ||
-      (sessionClaims?.metadata as any)?.role ||
-      hasuraClaims?.["x-hasura-default-role"] ||
-      hasuraClaims?.["x-hasura-role"] ||
-      (sessionClaims as any)?.role
-    ) as string;
-    
+    const userRole = // ACTUAL ROLE FIRST - this is what we want!
+      (hasuraClaims?.["x-hasura-role"] ||
+        (sessionClaims?.metadata as any)?.role ||
+        // Fallback to default role only if no actual role found
+        hasuraClaims?.["x-hasura-default-role"] ||
+        (sessionClaims?.metadata as any)?.default_role ||
+        (sessionClaims as any)?.role) as string;
+
     // Get Hasura token
     const token = await getToken({ template: "hasura" });
-    
+
     console.log("🔍 Role extraction result:", {
       userRole,
       hasToken: !!token,
@@ -41,9 +44,9 @@ export async function GET(request: NextRequest) {
       hasMetadata: !!sessionClaims?.metadata,
       hasHasuraClaims: !!hasuraClaims,
       v2DefaultRole: (sessionClaims?.metadata as any)?.default_role,
-      v1DefaultRole: hasuraClaims?.["x-hasura-default-role"]
+      v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
     });
-    
+
     return NextResponse.json({
       success: true,
       userId,
@@ -56,16 +59,18 @@ export async function GET(request: NextRequest) {
         v2DefaultRole: (sessionClaims?.metadata as any)?.default_role,
         v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
         v1Role: hasuraClaims?.["x-hasura-role"],
-        sessionId: sessionClaims?.sid
-      }
+        sessionId: sessionClaims?.sid,
+      },
     });
-    
   } catch (error: any) {
     console.error("🔍 Role check error:", error);
-    
-    return NextResponse.json({
-      error: "Failed to check role",
-      details: error.message
-    }, { status: 500 });
+
+    return NextResponse.json(
+      {
+        error: "Failed to check role",
+        details: error.message,
+      },
+      { status: 500 }
+    );
   }
 }

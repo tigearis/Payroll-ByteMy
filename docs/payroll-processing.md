@@ -295,7 +295,7 @@ function isHoliday(
 ): boolean {
   const holidays = getHolidaysForDate(date, country, state);
   return holidays.some(
-    (holiday) => isSameDay(holiday.date, date) && holiday.isObserved
+    holiday => isSameDay(holiday.date, date) && holiday.isObserved
   );
 }
 ```
@@ -598,7 +598,7 @@ class HolidayService {
     if (isWeekend(date)) return false;
 
     const holidays = this.getHolidaysForDate(date, country, state);
-    return !holidays.some((holiday) => holiday.isObserved);
+    return !holidays.some(holiday => holiday.isObserved);
   }
 }
 ```

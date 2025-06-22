@@ -38,9 +38,13 @@ export default function SignInPage() {
       }
     } catch (err: unknown) {
       console.error("Sign-in error:", err);
-      const errorMessage = err && typeof err === 'object' && 'errors' in err && Array.isArray((err as { errors?: Array<{ message?: string }> }).errors) 
-        ? (err as { errors: Array<{ message?: string }> }).errors[0]?.message
-        : "Sign-in failed. Please try again.";
+      const errorMessage =
+        err &&
+        typeof err === "object" &&
+        "errors" in err &&
+        Array.isArray((err as { errors?: Array<{ message?: string }> }).errors)
+          ? (err as { errors: Array<{ message?: string }> }).errors[0]?.message
+          : "Sign-in failed. Please try again.";
       setError(errorMessage || "Sign-in failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -62,9 +66,13 @@ export default function SignInPage() {
       });
     } catch (err: unknown) {
       console.error("Google sign-in error:", err);
-      const errorMessage = err && typeof err === 'object' && 'errors' in err && Array.isArray((err as { errors?: Array<{ message?: string }> }).errors) 
-        ? (err as { errors: Array<{ message?: string }> }).errors[0]?.message
-        : "Google sign-in failed. Please try again.";
+      const errorMessage =
+        err &&
+        typeof err === "object" &&
+        "errors" in err &&
+        Array.isArray((err as { errors?: Array<{ message?: string }> }).errors)
+          ? (err as { errors: Array<{ message?: string }> }).errors[0]?.message
+          : "Google sign-in failed. Please try again.";
       setError(errorMessage || "Google sign-in failed. Please try again.");
       setIsLoading(false);
     }
@@ -165,7 +173,7 @@ export default function SignInPage() {
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   disabled={isLoading}
                   className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:text-gray-500"
                   placeholder="Enter your email"
@@ -185,7 +193,7 @@ export default function SignInPage() {
                   type="password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   disabled={isLoading}
                   className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:text-gray-500"
                   placeholder="Enter your password"

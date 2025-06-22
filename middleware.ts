@@ -40,7 +40,12 @@ export default clerkMiddleware(async (auth, req) => {
       try {
         await auditLogger.logAuditEvent({
           userId: authResult.userId,
-          userRole: authResult.sessionClaims?.metadata?.role || "unknown",
+          userRole:
+            (
+              authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any
+            )?.["x-hasura-role"] ||
+            authResult.sessionClaims?.metadata?.role ||
+            "unknown",
           action: AuditAction.READ,
           entityType: isApi ? "api_route" : "page_route",
           entityId: req.nextUrl.pathname,

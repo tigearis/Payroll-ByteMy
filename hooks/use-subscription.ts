@@ -1,7 +1,12 @@
 // hooks/useSubscription.ts
-import { useEffect, useState } from 'react';
-import { useSubscription as useApolloSubscription, useApolloClient, SubscriptionHookOptions, DocumentNode } from '@apollo/client';
-import { toast } from 'sonner';
+import { useEffect, useState } from "react";
+import {
+  useSubscription as useApolloSubscription,
+  useApolloClient,
+  SubscriptionHookOptions,
+  DocumentNode,
+} from "@apollo/client";
+import { toast } from "sonner";
 
 interface UseRealTimeSubscriptionOptions {
   document: DocumentNode;
@@ -19,7 +24,7 @@ export function useRealTimeSubscription({
   variables,
   refetchQueries = [],
   shouldToast = false,
-  onData
+  onData,
 }: UseRealTimeSubscriptionOptions) {
   const client = useApolloClient();
   const [isConnected, setIsConnected] = useState(false);
@@ -32,7 +37,7 @@ export function useRealTimeSubscription({
       if (!isConnected) {
         setIsConnected(true);
         if (shouldToast) {
-          toast.success('Real-time updates connected');
+          toast.success("Real-time updates connected");
         }
       }
 
@@ -44,19 +49,19 @@ export function useRealTimeSubscription({
       // Refresh relevant queries
       if (refetchQueries.length > 0) {
         await client.refetchQueries({
-          include: refetchQueries
+          include: refetchQueries,
         });
       }
     },
-    onError: (error) => {
-      console.error('Subscription error:', error);
+    onError: error => {
+      console.error("Subscription error:", error);
       setIsConnected(false);
       setRetryCount(prev => prev + 1);
-      
+
       if (shouldToast && retryCount === 0) {
-        toast.error('Real-time connection lost. Attempting to reconnect...');
+        toast.error("Real-time connection lost. Attempting to reconnect...");
       }
-    }
+    },
   };
 
   // Set up the subscription
@@ -65,21 +70,24 @@ export function useRealTimeSubscription({
   // Handle reconnection attempts
   useEffect(() => {
     if (!isConnected && retryCount > 0 && retryCount < 5) {
-      const timeout = setTimeout(() => {
-        // Force refetch on reconnection attempt
-        client.refetchQueries({
-          include: refetchQueries
-        });
-      }, Math.min(retryCount * 1000, 5000)); // Exponential backoff
-      
+      const timeout = setTimeout(
+        () => {
+          // Force refetch on reconnection attempt
+          client.refetchQueries({
+            include: refetchQueries,
+          });
+        },
+        Math.min(retryCount * 1000, 5000)
+      ); // Exponential backoff
+
       return () => clearTimeout(timeout);
     }
-    
+
     // Show final error after too many attempts
     if (retryCount >= 5 && shouldToast) {
-      toast.error('Could not establish real-time connection');
+      toast.error("Could not establish real-time connection");
     }
-    
+
     return undefined;
   }, [retryCount, isConnected, client, refetchQueries, shouldToast]);
 
@@ -92,6 +100,6 @@ export function useRealTimeSubscription({
 
   return {
     ...result,
-    isConnected
+    isConnected,
   };
 }

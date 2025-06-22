@@ -186,14 +186,17 @@ export default function AdvancedPayrollScheduler() {
   }, [dateRange]);
 
   // Real GraphQL data fetching
-  const { data, loading, error, refetch } = useQuery(GetPayrollsByMonthDocument, {
-    variables: {
-      startDate: format(dateRange.start, "yyyy-MM-dd"),
-      endDate: format(dateRange.end, "yyyy-MM-dd"),
-    },
-    errorPolicy: "all",
-    skip: !isClient, // Skip query until client-side hydration is complete
-  });
+  const { data, loading, error, refetch } = useQuery(
+    GetPayrollsByMonthDocument,
+    {
+      variables: {
+        startDate: format(dateRange.start, "yyyy-MM-dd"),
+        endDate: format(dateRange.end, "yyyy-MM-dd"),
+      },
+      errorPolicy: "all",
+      skip: !isClient, // Skip query until client-side hydration is complete
+    }
+  );
 
   const [updatePayrollConsultants, { loading: updating, error: updateError }] =
     useMutation(UpdatePayrollDocument);
@@ -311,12 +314,12 @@ export default function AdvancedPayrollScheduler() {
 
   // Calculate consultant summaries
   const consultantSummaries = useMemo(() => {
-    const summaries: ConsultantSummary[] = consultants.map((consultant) => {
+    const summaries: ConsultantSummary[] = consultants.map(consultant => {
       const consultantAssignments = assignments.filter(
-        (a) => a.consultantId === consultant.id && !a.isGhost
+        a => a.consultantId === consultant.id && !a.isGhost
       );
 
-      const hasLeaveInPeriod = dates.some((date) =>
+      const hasLeaveInPeriod = dates.some(date =>
         isConsultantOnLeave(consultant, date)
       );
 
@@ -359,7 +362,7 @@ export default function AdvancedPayrollScheduler() {
   ) => {
     if (isGhost) return "hsl(var(--muted) / 0.3)"; // Muted gray for ghosts
 
-    const maxTime = Math.max(...assignments.map((a) => a.processingTime));
+    const maxTime = Math.max(...assignments.map(a => a.processingTime));
     const intensity = Math.min(processingTime / maxTime, 1);
     const alpha = 0.2 + intensity * 0.6;
 
@@ -374,7 +377,7 @@ export default function AdvancedPayrollScheduler() {
     if (assignment.isGhost) return false;
 
     const original = originalAssignments.find(
-      (orig) => orig.id === assignment.id
+      orig => orig.id === assignment.id
     );
     if (!original) return false;
 
@@ -391,7 +394,7 @@ export default function AdvancedPayrollScheduler() {
     if (assignment.isGhost) return null;
 
     const original = originalAssignments.find(
-      (orig) => orig.id === assignment.id
+      orig => orig.id === assignment.id
     );
     if (!original) return null;
 
@@ -410,7 +413,7 @@ export default function AdvancedPayrollScheduler() {
   const navigatePrevious = () => {
     // Clean up ghosts when navigating
     if (isPreviewMode) {
-      setAssignments((prev) => removeGhosts(prev));
+      setAssignments(prev => removeGhosts(prev));
     }
 
     switch (viewPeriod) {
@@ -429,7 +432,7 @@ export default function AdvancedPayrollScheduler() {
   const navigateNext = () => {
     // Clean up ghosts when navigating
     if (isPreviewMode) {
-      setAssignments((prev) => removeGhosts(prev));
+      setAssignments(prev => removeGhosts(prev));
     }
 
     switch (viewPeriod) {
@@ -478,7 +481,7 @@ export default function AdvancedPayrollScheduler() {
   ) => {
     if (!isPreviewMode) return;
     e.preventDefault();
-    setDragState((prev) => ({
+    setDragState(prev => ({
       ...prev,
       dragOverCell: { consultantId, date },
     }));
@@ -495,24 +498,24 @@ export default function AdvancedPayrollScheduler() {
     const { draggedPayroll } = dragState;
     if (!draggedPayroll) return;
 
-    setAssignments((prev) => {
+    setAssignments(prev => {
       const newGhosts: PayrollAssignment[] = [];
 
       if (moveAsGroup) {
         // Move all assignments for this payroll
         const updatedAssignments = prev
-          .filter((a) => {
+          .filter(a => {
             // Remove existing ghosts for this payroll only
             if (a.isGhost && a.payrollId === draggedPayroll.payrollId) {
               return false; // Remove old ghosts for this payroll
             }
             return true; // Keep everything else
           })
-          .map((a) => {
+          .map(a => {
             if (a.payrollId === draggedPayroll.payrollId) {
               // Find the original assignment to compare
               const originalAssignment = originalAssignments.find(
-                (orig) => orig.id === a.id
+                orig => orig.id === a.id
               );
 
               // Check if we're moving back to the original position
@@ -531,8 +534,8 @@ export default function AdvancedPayrollScheduler() {
                   id: `ghost-${a.id}-${Date.now()}-${Math.random()}`,
                   isGhost: true,
                   ghostFromConsultant:
-                    consultants.find((c) => c.id === targetConsultantId)
-                      ?.name || "Unknown",
+                    consultants.find(c => c.id === targetConsultantId)?.name ||
+                    "Unknown",
                   ghostFromDate: a.adjustedEftDate,
                 });
               }
@@ -542,7 +545,7 @@ export default function AdvancedPayrollScheduler() {
                 ...a,
                 consultantId: targetConsultantId,
                 consultantName:
-                  consultants.find((c) => c.id === targetConsultantId)?.name ||
+                  consultants.find(c => c.id === targetConsultantId)?.name ||
                   "Unknown",
               };
             }
@@ -553,7 +556,7 @@ export default function AdvancedPayrollScheduler() {
       } else {
         // Move only the specific assignment
         const updatedAssignments = prev
-          .filter((a) => {
+          .filter(a => {
             // Remove existing ghosts for this specific assignment
             if (
               a.isGhost &&
@@ -565,11 +568,11 @@ export default function AdvancedPayrollScheduler() {
             }
             return true; // Keep everything else
           })
-          .map((a) => {
+          .map(a => {
             if (a.id === draggedPayroll.id) {
               // Find the original assignment to compare
               const originalAssignment = originalAssignments.find(
-                (orig) => orig.id === a.id
+                orig => orig.id === a.id
               );
 
               // Check if we're moving back to the original position
@@ -589,8 +592,8 @@ export default function AdvancedPayrollScheduler() {
                   id: `ghost-${a.id}-${Date.now()}-${Math.random()}`,
                   isGhost: true,
                   ghostFromConsultant:
-                    consultants.find((c) => c.id === targetConsultantId)
-                      ?.name || "Unknown",
+                    consultants.find(c => c.id === targetConsultantId)?.name ||
+                    "Unknown",
                   ghostFromDate: a.adjustedEftDate,
                 });
               }
@@ -600,7 +603,7 @@ export default function AdvancedPayrollScheduler() {
                 ...a,
                 consultantId: targetConsultantId,
                 consultantName:
-                  consultants.find((c) => c.id === targetConsultantId)?.name ||
+                  consultants.find(c => c.id === targetConsultantId)?.name ||
                   "Unknown",
                 adjustedEftDate: targetDate,
               };
@@ -622,7 +625,7 @@ export default function AdvancedPayrollScheduler() {
   // Get assignments for a specific cell
   const getAssignmentsForCell = (consultantId: string, date: Date) => {
     const visibleAssignments = getVisibleAssignments(assignments);
-    return visibleAssignments.filter((assignment) => {
+    return visibleAssignments.filter(assignment => {
       const isSameConsultant = assignment.consultantId === consultantId;
       const isSameDate = isSameDay(new Date(assignment.adjustedEftDate), date);
       return isSameConsultant && isSameDate;
@@ -633,7 +636,7 @@ export default function AdvancedPayrollScheduler() {
   const removeGhosts = (
     assignments: PayrollAssignment[]
   ): PayrollAssignment[] => {
-    return assignments.filter((a) => !a.isGhost);
+    return assignments.filter(a => !a.isGhost);
   };
 
   // Calculate pending changes
@@ -643,10 +646,8 @@ export default function AdvancedPayrollScheduler() {
     // Only look at non-ghost assignments
     const realAssignments = removeGhosts(assignments);
 
-    realAssignments.forEach((current) => {
-      const original = originalAssignments.find(
-        (orig) => orig.id === current.id
-      );
+    realAssignments.forEach(current => {
+      const original = originalAssignments.find(orig => orig.id === current.id);
       if (
         original &&
         (current.consultantId !== original.consultantId ||
@@ -684,7 +685,7 @@ export default function AdvancedPayrollScheduler() {
       console.log("🚀 Committing payroll consultant changes:", pendingChanges);
       console.log(
         "📊 Changes details:",
-        pendingChanges.map((c) => ({
+        pendingChanges.map(c => ({
           payroll: c.payrollName,
           from: c.fromConsultantName,
           to: c.toConsultantName,
@@ -693,7 +694,7 @@ export default function AdvancedPayrollScheduler() {
       );
 
       // Create updates for each changed payroll
-      const updates = pendingChanges.map((change) => ({
+      const updates = pendingChanges.map(change => ({
         where: { id: { _eq: change.payrollId } },
         _set: {
           primaryConsultantUserId: change.toConsultantId,
@@ -717,7 +718,9 @@ export default function AdvancedPayrollScheduler() {
       console.log("✅ Update results:", results);
 
       // Check if all updates were successful
-      const successfulUpdates = results.filter(result => result.data?.updatePayroll);
+      const successfulUpdates = results.filter(
+        result => result.data?.updatePayroll
+      );
       const totalAffectedRows = successfulUpdates.length;
 
       if (totalAffectedRows > 0) {
@@ -762,7 +765,7 @@ export default function AdvancedPayrollScheduler() {
   const enterPreviewMode = () => {
     setIsPreviewMode(true);
     // Remove any existing ghosts
-    setAssignments((prev) => removeGhosts(prev));
+    setAssignments(prev => removeGhosts(prev));
     // Optional: Reset ghost visibility to true when entering preview mode
     // setShowGhosts(true); // Uncomment if you want ghosts always visible on preview start
   };
@@ -774,7 +777,7 @@ export default function AdvancedPayrollScheduler() {
     if (showGhosts || !isPreviewMode) {
       return assignments; // Show all assignments including ghosts
     }
-    return assignments.filter((a) => !a.isGhost); // Hide ghosts when toggle is off
+    return assignments.filter(a => !a.isGhost); // Hide ghosts when toggle is off
   };
 
   // Format period display
@@ -799,7 +802,7 @@ export default function AdvancedPayrollScheduler() {
   ): string => {
     if (isGhost) return "text-muted-foreground";
 
-    const maxTime = Math.max(...assignments.map((a) => a.processingTime));
+    const maxTime = Math.max(...assignments.map(a => a.processingTime));
     const intensity = Math.min(processingTime / maxTime, 1);
 
     // As intensity increases (darker background), text should get lighter but still readable
@@ -1157,9 +1160,9 @@ export default function AdvancedPayrollScheduler() {
                       : "Consultant"}
                   </TableHead>
                   {tableOrientation === "consultants-as-columns"
-                    ? consultants.map((consultant) => {
+                    ? consultants.map(consultant => {
                         const summary = consultantSummaries.find(
-                          (s) => s.id === consultant.id
+                          s => s.id === consultant.id
                         );
                         return (
                           <TableHead
@@ -1251,7 +1254,7 @@ export default function AdvancedPayrollScheduler() {
                           </TableHead>
                         );
                       })
-                    : dates.map((date) => {
+                    : dates.map(date => {
                         const holiday = getHolidayForDate(date);
                         const isWeekendDay = isWeekend(date);
                         return (
@@ -1264,8 +1267,8 @@ export default function AdvancedPayrollScheduler() {
                                 holiday
                                   ? "bg-red-200 dark:bg-red-900/80 border-red-400 dark:border-red-600"
                                   : isWeekendDay
-                                  ? "bg-blue-200 dark:bg-blue-900/80 border-blue-400 dark:border-blue-600"
-                                  : "bg-card border-gray-200"
+                                    ? "bg-blue-200 dark:bg-blue-900/80 border-blue-400 dark:border-blue-600"
+                                    : "bg-card border-gray-200"
                               } shadow-sm`}
                             >
                               <CardContent className="p-1.5">
@@ -1285,15 +1288,15 @@ export default function AdvancedPayrollScheduler() {
                                         <Calendar className="w-3 h-3 text-red-600" />
                                       </div>
                                       {renderArrayBadges(
-                                        holiday.types?.map((type) =>
+                                        holiday.types?.map(type =>
                                           type === "public"
                                             ? "Pub"
                                             : type === "bank"
-                                            ? "Bank"
-                                            : type === "regional"
-                                            ? "Reg"
-                                            : type.charAt(0).toUpperCase() +
-                                              type.slice(1)
+                                              ? "Bank"
+                                              : type === "regional"
+                                                ? "Reg"
+                                                : type.charAt(0).toUpperCase() +
+                                                  type.slice(1)
                                         ),
                                         "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
                                       )}
@@ -1302,7 +1305,7 @@ export default function AdvancedPayrollScheduler() {
                                       </div>
                                       {holiday.region &&
                                         renderArrayBadges(
-                                          holiday.region.map((r) =>
+                                          holiday.region.map(r =>
                                             r.length > 3
                                               ? r.substring(0, 3).toUpperCase()
                                               : r.toUpperCase()
@@ -1356,8 +1359,8 @@ export default function AdvancedPayrollScheduler() {
                                 holiday
                                   ? "bg-red-200 dark:bg-red-900/80 border-red-400 dark:border-red-600"
                                   : isWeekendDay
-                                  ? "bg-blue-200 dark:bg-blue-900/80 border-blue-400 dark:border-blue-600"
-                                  : "bg-card border-gray-200"
+                                    ? "bg-blue-200 dark:bg-blue-900/80 border-blue-400 dark:border-blue-600"
+                                    : "bg-card border-gray-200"
                               } shadow-sm`}
                             >
                               <CardContent className="p-2">
@@ -1376,15 +1379,17 @@ export default function AdvancedPayrollScheduler() {
                                       <div className="flex flex-wrap gap-1 justify-center">
                                         <Calendar className="w-3 h-3 text-red-600" />
                                         {renderArrayBadges(
-                                          holiday.types?.map((type) =>
+                                          holiday.types?.map(type =>
                                             type === "public"
                                               ? "Pub"
                                               : type === "bank"
-                                              ? "Bank"
-                                              : type === "regional"
-                                              ? "Reg"
-                                              : type.charAt(0).toUpperCase() +
-                                                type.slice(1)
+                                                ? "Bank"
+                                                : type === "regional"
+                                                  ? "Reg"
+                                                  : type
+                                                      .charAt(0)
+                                                      .toUpperCase() +
+                                                    type.slice(1)
                                           ),
                                           "text-xs bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
                                         )}
@@ -1395,7 +1400,7 @@ export default function AdvancedPayrollScheduler() {
                                       {holiday.region && (
                                         <div className="flex flex-wrap gap-1 justify-center">
                                           {renderArrayBadges(
-                                            holiday.region.map((r) =>
+                                            holiday.region.map(r =>
                                               r.length > 3
                                                 ? r
                                                     .substring(0, 3)
@@ -1419,7 +1424,7 @@ export default function AdvancedPayrollScheduler() {
                               </CardContent>
                             </Card>
                           </TableCell>
-                          {consultants.map((consultant) => {
+                          {consultants.map(consultant => {
                             const cellAssignments = getAssignmentsForCell(
                               consultant.id,
                               date
@@ -1442,14 +1447,14 @@ export default function AdvancedPayrollScheduler() {
                                     ? "bg-blue-200 border-2 border-blue-600"
                                     : ""
                                 } ${isOnLeave ? "bg-green-100" : ""}`}
-                                onDragOver={(e) =>
+                                onDragOver={e =>
                                   handleDragOver(
                                     e,
                                     consultant.id,
                                     format(date, "yyyy-MM-dd")
                                   )
                                 }
-                                onDrop={(e) =>
+                                onDrop={e =>
                                   handleDrop(
                                     e,
                                     consultant.id,
@@ -1465,7 +1470,7 @@ export default function AdvancedPayrollScheduler() {
                                     </div>
                                   )}
 
-                                  {cellAssignments.map((assignment) => {
+                                  {cellAssignments.map(assignment => {
                                     const isBeingDragged =
                                       dragState.isDragging &&
                                       dragState.draggedPayroll?.id ===
@@ -1511,7 +1516,7 @@ export default function AdvancedPayrollScheduler() {
                                         draggable={
                                           isPreviewMode && !assignment.isGhost
                                         }
-                                        onDragStart={(e) =>
+                                        onDragStart={e =>
                                           handleDragStart(e, assignment)
                                         }
                                         onDragEnd={handleDragEnd}
@@ -1577,7 +1582,7 @@ export default function AdvancedPayrollScheduler() {
                     })
                   : consultants.map((consultant, consultantIndex) => {
                       const summary = consultantSummaries.find(
-                        (s) => s.id === consultant.id
+                        s => s.id === consultant.id
                       );
 
                       // Alternating row colors for consultants
@@ -1672,7 +1677,7 @@ export default function AdvancedPayrollScheduler() {
                               </CardContent>
                             </Card>
                           </TableCell>
-                          {dates.map((date) => {
+                          {dates.map(date => {
                             const cellAssignments = getAssignmentsForCell(
                               consultant.id,
                               date
@@ -1708,14 +1713,14 @@ export default function AdvancedPayrollScheduler() {
                               <TableCell
                                 key={date.toISOString()}
                                 className={cellClass}
-                                onDragOver={(e) =>
+                                onDragOver={e =>
                                   handleDragOver(
                                     e,
                                     consultant.id,
                                     format(date, "yyyy-MM-dd")
                                   )
                                 }
-                                onDrop={(e) =>
+                                onDrop={e =>
                                   handleDrop(
                                     e,
                                     consultant.id,
@@ -1733,15 +1738,17 @@ export default function AdvancedPayrollScheduler() {
                                             <Calendar className="w-3 h-3 text-red-600" />
                                           </div>
                                           {renderArrayBadges(
-                                            holiday.types?.map((type) =>
+                                            holiday.types?.map(type =>
                                               type === "public"
                                                 ? "Public"
                                                 : type === "bank"
-                                                ? "Bank"
-                                                : type === "regional"
-                                                ? "Regional"
-                                                : type.charAt(0).toUpperCase() +
-                                                  type.slice(1)
+                                                  ? "Bank"
+                                                  : type === "regional"
+                                                    ? "Regional"
+                                                    : type
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                      type.slice(1)
                                             ),
                                             "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
                                           )}
@@ -1772,7 +1779,7 @@ export default function AdvancedPayrollScheduler() {
                                     </div>
                                   )}
 
-                                  {cellAssignments.map((assignment) => {
+                                  {cellAssignments.map(assignment => {
                                     const isBeingDragged =
                                       dragState.isDragging &&
                                       dragState.draggedPayroll?.id ===
@@ -1818,7 +1825,7 @@ export default function AdvancedPayrollScheduler() {
                                         draggable={
                                           isPreviewMode && !assignment.isGhost
                                         }
-                                        onDragStart={(e) =>
+                                        onDragStart={e =>
                                           handleDragStart(e, assignment)
                                         }
                                         onDragEnd={handleDragEnd}

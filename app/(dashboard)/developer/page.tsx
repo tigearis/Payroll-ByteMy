@@ -174,9 +174,9 @@ export default function DeveloperPage() {
   };
 
   const toggleFeature = (feature: string) => {
-    setEnabledFeatures((prev) =>
+    setEnabledFeatures(prev =>
       prev.includes(feature)
-        ? prev.filter((f) => f !== feature)
+        ? prev.filter(f => f !== feature)
         : [...prev, feature]
     );
   };
@@ -324,7 +324,7 @@ export default function DeveloperPage() {
                   <Input
                     id="test-user-id"
                     value={testUserId}
-                    onChange={(e) => setTestUserId(e.target.value)}
+                    onChange={e => setTestUserId(e.target.value)}
                     placeholder="Enter Clerk user ID (e.g., user_2...)"
                     className="mt-1"
                   />
@@ -338,12 +338,12 @@ export default function DeveloperPage() {
                       return;
                     }
                     fetch(`/api/user/${testUserId}`)
-                      .then((res) => res.json())
-                      .then((data) => {
+                      .then(res => res.json())
+                      .then(data => {
                         console.log("User lookup result:", data);
                         alert(JSON.stringify(data, null, 2));
                       })
-                      .catch((err) => {
+                      .catch(err => {
                         console.error("Error:", err);
                         alert(`Error: ${err.message}`);
                       });
@@ -367,8 +367,8 @@ export default function DeveloperPage() {
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ targetUserId: testUserId }),
                     })
-                      .then((res) => res.json())
-                      .then((data) => {
+                      .then(res => res.json())
+                      .then(data => {
                         console.log("Fix result:", data);
                         if (data.success) {
                           alert(
@@ -378,7 +378,7 @@ export default function DeveloperPage() {
                           alert(`❌ Error: ${data.error}`);
                         }
                       })
-                      .catch((err) => {
+                      .catch(err => {
                         console.error("Error:", err);
                         alert(`Error: ${err.message}`);
                       });
@@ -412,12 +412,12 @@ export default function DeveloperPage() {
                       newRole: "developer",
                     }),
                   })
-                    .then((res) => res.json())
-                    .then((data) => {
+                    .then(res => res.json())
+                    .then(data => {
                       console.log("Staff sync test result:", data);
                       alert("Check console for staff sync test results");
                     })
-                    .catch((err) => {
+                    .catch(err => {
                       console.error("Error:", err);
                       alert("Error testing staff sync (expected with test ID)");
                     });
@@ -451,8 +451,8 @@ export default function DeveloperPage() {
                       inviteToClerk: false, // Don't actually create in Clerk for test
                     }),
                   })
-                    .then((res) => res.json())
-                    .then((data) => {
+                    .then(res => res.json())
+                    .then(data => {
                       console.log("Staff creation test result:", data);
                       alert(
                         `Staff creation test: ${
@@ -460,7 +460,7 @@ export default function DeveloperPage() {
                         }`
                       );
                     })
-                    .catch((err) => {
+                    .catch(err => {
                       console.error("Error:", err);
                       alert(
                         "Error testing staff creation (expected with test data)"
@@ -477,14 +477,14 @@ export default function DeveloperPage() {
                 onClick={() => {
                   // Test staff deletion preview
                   fetch("/api/staff/delete?staffId=test-id")
-                    .then((res) => res.json())
-                    .then((data) => {
+                    .then(res => res.json())
+                    .then(data => {
                       console.log("Staff deletion preview:", data);
                       alert(
                         "Check console for deletion preview (expected error with test ID)"
                       );
                     })
-                    .catch((err) => {
+                    .catch(err => {
                       console.error("Error:", err);
                       alert(
                         "Error testing deletion preview (expected with test ID)"
@@ -507,14 +507,14 @@ export default function DeveloperPage() {
                       staffId: "test-id",
                     }),
                   })
-                    .then((res) => res.json())
-                    .then((data) => {
+                    .then(res => res.json())
+                    .then(data => {
                       console.log("Staff deletion test result:", data);
                       alert(
                         "Check console for deletion test results (expected error with test ID)"
                       );
                     })
-                    .catch((err) => {
+                    .catch(err => {
                       console.error("Error:", err);
                       alert(
                         "Error testing staff deletion (expected with test ID)"
@@ -751,7 +751,7 @@ export default function DeveloperPage() {
                   placeholder="Enter payroll UUID"
                   className="w-80 text-xs"
                   value={testUserId.replace("user_", "")} // Reuse the test input for now
-                  onChange={(e) => setTestUserId(`user_${e.target.value}`)}
+                  onChange={e => setTestUserId(`user_${e.target.value}`)}
                 />
               </div>
 

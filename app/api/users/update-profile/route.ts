@@ -128,7 +128,7 @@ export async function PATCH(req: NextRequest) {
       let metadataChanged = false;
 
       // Update each metadata field if provided
-      Object.keys(updateData.unsafeMetadata).forEach((key) => {
+      Object.keys(updateData.unsafeMetadata).forEach(key => {
         const newValue = updateData.unsafeMetadata![key];
         if (newValue !== currentMetadata[key]) {
           newMetadata[key] = newValue;

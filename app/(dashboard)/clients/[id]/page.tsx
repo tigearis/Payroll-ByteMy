@@ -93,7 +93,6 @@ import { useSmartPolling } from "@/hooks/use-polling";
 
 import { safeFormatDate } from "@/lib/utils/date-utils";
 
-
 // Payroll status configuration (same as payrolls page)
 const getStatusConfig = (status: string) => {
   const configs = {
@@ -352,7 +351,7 @@ export default function ClientDetailPage() {
     if (checked) {
       setSelectedPayrolls([...selectedPayrolls, payrollId]);
     } else {
-      setSelectedPayrolls(selectedPayrolls.filter((id) => id !== payrollId));
+      setSelectedPayrolls(selectedPayrolls.filter(id => id !== payrollId));
     }
   };
 
@@ -390,7 +389,7 @@ export default function ClientDetailPage() {
 
   // Handle form input changes
   const handleInputChange = (field: string, value: string | boolean) => {
-    setEditFormData((prev) => ({
+    setEditFormData(prev => ({
       ...prev,
       [field]: value,
     }));
@@ -437,7 +436,8 @@ export default function ClientDetailPage() {
 
   // Calculate client statistics
   const activePayrolls =
-    (client as any)?.payrolls?.filter((p: any) => !p.superseded_date)?.length || 0;
+    (client as any)?.payrolls?.filter((p: any) => !p.superseded_date)?.length ||
+    0;
   const totalPayrolls = (client as any)?.payrolls?.length || 0;
   const totalEmployees =
     (client as any)?.payrolls?.reduce((sum: number, p: any) => {
@@ -466,7 +466,9 @@ export default function ClientDetailPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{(client as any)?.name}</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {(client as any)?.name}
+            </h1>
             <p className="text-gray-500">Client Details & Management</p>
           </div>
         </div>
@@ -1073,9 +1075,9 @@ export default function ClientDetailPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Client</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &quot;{(client as any)?.name}&quot;? This
-              action cannot be undone and will also remove all associated
-              payrolls and data.
+              Are you sure you want to delete &quot;{(client as any)?.name}
+              &quot;? This action cannot be undone and will also remove all
+              associated payrolls and data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -11,7 +11,13 @@ import {
   XCircle,
 } from "lucide-react";
 
-import { UnifiedDataTable, DataTableColumn, DataTableAction, StatusConfig, createCellRenderers } from "@/components/ui/unified-data-table";
+import {
+  UnifiedDataTable,
+  DataTableColumn,
+  DataTableAction,
+  StatusConfig,
+  createCellRenderers,
+} from "@/components/ui/unified-data-table";
 
 // Client data type (based on existing client structure)
 interface Client {
@@ -62,7 +68,6 @@ export function ClientsTableUnified({
   sortDirection,
   onSort,
 }: ClientsTableProps) {
-  
   // Create cell renderers with status config
   const cellRenderers = createCellRenderers<Client>(clientStatusConfig);
 
@@ -83,7 +88,9 @@ export function ClientsTableUnified({
           <div>
             <div className="font-medium text-gray-900">{value}</div>
             <div className="text-sm text-gray-500">
-              {row.payrolls?.length ? `${row.payrolls.length} payroll${row.payrolls.length > 1 ? 's' : ''}` : 'No payrolls'}
+              {row.payrolls?.length
+                ? `${row.payrolls.length} payroll${row.payrolls.length > 1 ? "s" : ""}`
+                : "No payrolls"}
             </div>
           </div>
         </div>
@@ -94,21 +101,22 @@ export function ClientsTableUnified({
       label: "Status",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (active) => cellRenderers.badge(active ? "Active" : "Inactive"),
+      cellRenderer: active =>
+        cellRenderers.badge(active ? "Active" : "Inactive"),
     },
     {
       key: "contact_person",
       label: "Contact Person",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (value) => value || "—",
+      cellRenderer: value => value || "—",
     },
     {
       key: "contact_email",
       label: "Email",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (email) => 
+      cellRenderer: email =>
         email ? cellRenderers.iconText(email, Mail) : "—",
     },
     {
@@ -116,7 +124,7 @@ export function ClientsTableUnified({
       label: "Phone",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (phone) => 
+      cellRenderer: phone =>
         phone ? cellRenderers.iconText(phone, Phone) : "—",
     },
     {
@@ -125,8 +133,9 @@ export function ClientsTableUnified({
       sortable: false,
       defaultVisible: true,
       align: "center",
-      cellRenderer: (payrolls) => {
-        const activePayrolls = payrolls?.filter((p: any) => p.active !== false) || [];
+      cellRenderer: payrolls => {
+        const activePayrolls =
+          payrolls?.filter((p: any) => p.active !== false) || [];
         return cellRenderers.count(activePayrolls.length, "payroll");
       },
     },
@@ -137,14 +146,14 @@ export function ClientsTableUnified({
     {
       label: "View Details",
       icon: Eye,
-      onClick: (client) => {
+      onClick: client => {
         window.location.href = `/clients/${client.id}`;
       },
     },
     {
       label: "Edit Client",
       icon: Edit,
-      onClick: (client) => {
+      onClick: client => {
         // Handle edit action
         console.log("Edit client:", client.id);
       },
@@ -152,10 +161,10 @@ export function ClientsTableUnified({
     {
       label: "View Payrolls",
       icon: Users,
-      onClick: (client) => {
+      onClick: client => {
         window.location.href = `/payrolls?client=${client.id}`;
       },
-      disabled: (client) => !client.payrolls?.length,
+      disabled: client => !client.payrolls?.length,
     },
   ];
 
@@ -174,13 +183,10 @@ export function ClientsTableUnified({
     ...(onRefresh && { onRefresh }),
     ...(sortField && { sortField }),
     ...(sortDirection && { sortDirection }),
-    ...(visibleColumns && { visibleColumns })
+    ...(visibleColumns && { visibleColumns }),
   };
 
-  return (
-    <UnifiedDataTable {...tableProps}
-    />
-  );
+  return <UnifiedDataTable {...tableProps} />;
 }
 
 export default ClientsTableUnified;

@@ -18,9 +18,7 @@ type Mutation {
 }
 
 type Mutation {
-  logAuditEvent(
-    event: AuditEventInput!
-  ): AuditEventResponse
+  logAuditEvent(event: AuditEventInput!): AuditEventResponse
 }
 
 input PayrollAssignmentInput {
@@ -88,4 +86,3 @@ type SuspiciousEvent {
   timeframe: String!
   severity: String!
 }
-

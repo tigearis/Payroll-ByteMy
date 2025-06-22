@@ -3,6 +3,16 @@
 
 # Common timestamp fields (used as inline fragments)
 # Usage: ... on table_name { ...TimestampFields }
+fragment TimestampFields on Node {
+  created_at
+  updated_at
+}
 
 # Common audit fields (used as inline fragments)
 # Usage: ... on table_name { ...AuditFields }
+fragment AuditFields on Node {
+  created_at
+  updated_at
+  created_by
+  updated_by
+}

@@ -7,7 +7,7 @@ import { withAuth, checkRateLimit } from "@/lib/auth/api-auth";
 export const POST = withAuth(
   async (request: NextRequest, session) => {
     // Restrict to development environment only
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       return NextResponse.json({ error: "Not Found" }, { status: 404 });
     }
 
@@ -47,16 +47,24 @@ export const POST = withAuth(
         .split("T")[0];
 
       // Use secure service to regenerate dates
-      const result = await secureHasuraService.executeAdminMutation(gql`
-        mutation RegeneratePayrollDates($payrollId: uuid!, $startDate: date!, $endDate: date!) {
-          delete_payroll_dates(where: { payroll_id: { _eq: $payrollId } }) {
-            affected_rows
+      const result = await secureHasuraService.executeAdminMutation(
+        gql`
+          mutation RegeneratePayrollDates(
+            $payrollId: uuid!
+            $startDate: date!
+            $endDate: date!
+          ) {
+            delete_payroll_dates(where: { payroll_id: { _eq: $payrollId } }) {
+              affected_rows
+            }
+            # Add regeneration logic here as needed
           }
-          # Add regeneration logic here as needed
-        }
-      `, { payrollId, startDate, endDate });
+        `,
+        { payrollId, startDate, endDate }
+      );
 
-      const deletedDates = result.data?.delete_payroll_dates?.affected_rows || 0;
+      const deletedDates =
+        result.data?.delete_payroll_dates?.affected_rows || 0;
 
       console.log(
         `✅ Regeneration complete: ${deletedDates} old dates deleted`

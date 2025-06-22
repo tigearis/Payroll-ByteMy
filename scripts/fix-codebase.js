@@ -66,7 +66,7 @@ class CodebaseFixer {
         ".codebase-fixes-backup/**",
       ],
     });
-    return files.map((f) => path.join(this.rootDir, f));
+    return files.map(f => path.join(this.rootDir, f));
   }
 
   // Fix 1: Authentication System Consolidation (Critical)
@@ -271,7 +271,7 @@ export function createErrorResponse(message: string, statusCode: number = 400) {
         const content = await fs.readFile(filePath, "utf8");
         const blocks = this.extractCodeBlocks(content);
 
-        blocks.forEach((block) => {
+        blocks.forEach(block => {
           const hash = this.hashCode(block.code);
           if (!codeBlocks.has(hash)) {
             codeBlocks.set(hash, []);
@@ -393,7 +393,7 @@ export function createErrorResponse(message: string, statusCode: number = 400) {
         dup.locations.length * dup.codeLength
       }\n\n`;
       report += `**Locations:**\n`;
-      dup.locations.forEach((loc) => {
+      dup.locations.forEach(loc => {
         report += `- ${path.relative(this.rootDir, loc.file)}:${loc.line}\n`;
       });
       report += `\n**Code Preview:**\n\`\`\`typescript\n${dup.locations[0].code.substring(
@@ -614,7 +614,7 @@ function parseArgs() {
     fixes: ["auth", "errors"],
   };
 
-  args.forEach((arg) => {
+  args.forEach(arg => {
     if (arg === "--dry-run") {
       options.dryRun = true;
     } else if (arg === "--backup") {

@@ -79,7 +79,7 @@ async function testHasuraEndpoint() {
 
       // Check if holidays table exists
       const holidaysType = result.data.__schema.types.find(
-        (t) => t.name === "holidays"
+        t => t.name === "holidays"
       );
       if (holidaysType) {
         console.log("   ✅ holidays table found in schema");
@@ -185,7 +185,7 @@ async function testEnvironmentConfig() {
   const optionalEnvVars = ["CRON_SECRET"];
 
   console.log("Required environment variables:");
-  requiredEnvVars.forEach((varName) => {
+  requiredEnvVars.forEach(varName => {
     const value = process.env[varName];
     if (value) {
       const displayValue = varName.includes("SECRET") ? "***hidden***" : value;
@@ -196,7 +196,7 @@ async function testEnvironmentConfig() {
   });
 
   console.log("\nOptional environment variables:");
-  optionalEnvVars.forEach((varName) => {
+  optionalEnvVars.forEach(varName => {
     const value = process.env[varName];
     if (value) {
       console.log(`   ✅ ${varName}: ***hidden***`);
@@ -206,8 +206,8 @@ async function testEnvironmentConfig() {
   });
 
   return {
-    hasRequiredVars: requiredEnvVars.every((v) => process.env[v]),
-    hasOptionalVars: optionalEnvVars.every((v) => process.env[v]),
+    hasRequiredVars: requiredEnvVars.every(v => process.env[v]),
+    hasOptionalVars: optionalEnvVars.every(v => process.env[v]),
   };
 }
 

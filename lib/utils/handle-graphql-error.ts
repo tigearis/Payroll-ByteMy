@@ -1,6 +1,6 @@
 /**
  * Enhanced GraphQL Error Handler Utility
- * 
+ *
  * Provides comprehensive error handling for GraphQL operations with:
  * - Permission denied error detection and messaging
  * - Role-based error messages
@@ -8,10 +8,10 @@
  * - User-friendly error messages for common scenarios
  */
 
-import { ApolloError } from '@apollo/client';
+import { ApolloError } from "@apollo/client";
 
 export interface GraphQLErrorDetails {
-  type: 'permission' | 'auth' | 'validation' | 'network' | 'unknown';
+  type: "permission" | "auth" | "validation" | "network" | "unknown";
   message: string;
   userMessage: string;
   originalError?: any;
@@ -23,7 +23,9 @@ export interface GraphQLErrorDetails {
 /**
  * Parse and handle GraphQL errors with enhanced messaging
  */
-export function handleGraphQLError(error: ApolloError | Error): GraphQLErrorDetails {
+export function handleGraphQLError(
+  error: ApolloError | Error
+): GraphQLErrorDetails {
   // Handle ApolloError (GraphQL-specific errors)
   if (error instanceof ApolloError) {
     return handleApolloError(error);
@@ -31,11 +33,14 @@ export function handleGraphQLError(error: ApolloError | Error): GraphQLErrorDeta
 
   // Handle generic JavaScript errors
   return {
-    type: 'unknown',
-    message: error.message || 'An unexpected error occurred',
-    userMessage: 'Something went wrong. Please try again.',
+    type: "unknown",
+    message: error.message || "An unexpected error occurred",
+    userMessage: "Something went wrong. Please try again.",
     originalError: error,
-    suggestions: ['Refresh the page and try again', 'Contact support if the problem persists']
+    suggestions: [
+      "Refresh the page and try again",
+      "Contact support if the problem persists",
+    ],
   };
 }
 
@@ -45,10 +50,11 @@ export function handleGraphQLError(error: ApolloError | Error): GraphQLErrorDeta
 function handleApolloError(error: ApolloError): GraphQLErrorDetails {
   // Check for permission denied errors
   if (error.graphQLErrors?.length > 0) {
-    const permissionError = error.graphQLErrors.find(err => 
-      err.message.toLowerCase().includes('permission') ||
-      err.message.toLowerCase().includes('denied') ||
-      err.extensions?.code === 'permission-denied'
+    const permissionError = error.graphQLErrors.find(
+      err =>
+        err.message.toLowerCase().includes("permission") ||
+        err.message.toLowerCase().includes("denied") ||
+        err.extensions?.code === "permission-denied"
     );
 
     if (permissionError) {
@@ -56,11 +62,12 @@ function handleApolloError(error: ApolloError): GraphQLErrorDetails {
     }
 
     // Check for authentication errors
-    const authError = error.graphQLErrors.find(err =>
-      err.message.toLowerCase().includes('jwt') ||
-      err.message.toLowerCase().includes('unauthorized') ||
-      err.message.toLowerCase().includes('authentication') ||
-      err.extensions?.code === 'invalid-jwt'
+    const authError = error.graphQLErrors.find(
+      err =>
+        err.message.toLowerCase().includes("jwt") ||
+        err.message.toLowerCase().includes("unauthorized") ||
+        err.message.toLowerCase().includes("authentication") ||
+        err.extensions?.code === "invalid-jwt"
     );
 
     if (authError) {
@@ -68,9 +75,10 @@ function handleApolloError(error: ApolloError): GraphQLErrorDetails {
     }
 
     // Check for validation errors
-    const validationError = error.graphQLErrors.find(err =>
-      err.extensions?.code === 'validation-failed' ||
-      err.message.toLowerCase().includes('validation')
+    const validationError = error.graphQLErrors.find(
+      err =>
+        err.extensions?.code === "validation-failed" ||
+        err.message.toLowerCase().includes("validation")
     );
 
     if (validationError) {
@@ -80,11 +88,14 @@ function handleApolloError(error: ApolloError): GraphQLErrorDetails {
     // Return first GraphQL error with enhanced messaging
     const firstError = error.graphQLErrors[0];
     return {
-      type: 'unknown',
+      type: "unknown",
       message: firstError.message,
       userMessage: getReadableErrorMessage(firstError.message),
       originalError: error,
-      suggestions: ['Check your input and try again', 'Contact support if this issue persists']
+      suggestions: [
+        "Check your input and try again",
+        "Contact support if this issue persists",
+      ],
     };
   }
 
@@ -95,19 +106,22 @@ function handleApolloError(error: ApolloError): GraphQLErrorDetails {
 
   // Fallback for other Apollo errors
   return {
-    type: 'unknown',
-    message: error.message || 'GraphQL operation failed',
-    userMessage: 'Unable to complete the operation. Please try again.',
+    type: "unknown",
+    message: error.message || "GraphQL operation failed",
+    userMessage: "Unable to complete the operation. Please try again.",
     originalError: error,
-    suggestions: ['Check your connection and try again']
+    suggestions: ["Check your connection and try again"],
   };
 }
 
 /**
  * Handle permission denied errors with role-specific messaging
  */
-function handlePermissionError(graphQLError: any, originalError: ApolloError): GraphQLErrorDetails {
-  const message = graphQLError.message || '';
+function handlePermissionError(
+  graphQLError: any,
+  originalError: ApolloError
+): GraphQLErrorDetails {
+  const message = graphQLError.message || "";
   const _extensions = graphQLError.extensions || {};
 
   // Extract role information from error
@@ -121,122 +135,158 @@ function handlePermissionError(graphQLError: any, originalError: ApolloError): G
   }
 
   // Check for specific permission patterns
-  if (message.includes('developer')) {
-    requiredRole = 'developer';
-  } else if (message.includes('admin')) {
-    requiredRole = 'developer'; // Map old admin references to developer
-  } else if (message.includes('org_admin')) {
-    requiredRole = 'org_admin';
-  } else if (message.includes('manager')) {
-    requiredRole = 'manager';
+  if (message.includes("developer")) {
+    requiredRole = "developer";
+  } else if (message.includes("admin")) {
+    requiredRole = "developer"; // Map old admin references to developer
+  } else if (message.includes("org_admin")) {
+    requiredRole = "org_admin";
+  } else if (message.includes("manager")) {
+    requiredRole = "manager";
   }
 
-  const userMessage = getUserFriendlyPermissionMessage(currentRole, requiredRole);
+  const userMessage = getUserFriendlyPermissionMessage(
+    currentRole,
+    requiredRole
+  );
   const suggestions = getPermissionSuggestions(currentRole, requiredRole);
 
   return {
-    type: 'permission',
+    type: "permission",
     message,
     userMessage,
     originalError,
     ...(currentRole && { currentRole }),
     ...(requiredRole && { requiredRole }),
-    suggestions
+    suggestions,
   };
 }
 
 /**
  * Handle authentication/JWT errors
  */
-function handleAuthError(graphQLError: any, originalError: ApolloError): GraphQLErrorDetails {
-  const message = graphQLError.message || '';
+function handleAuthError(
+  graphQLError: any,
+  originalError: ApolloError
+): GraphQLErrorDetails {
+  const message = graphQLError.message || "";
 
-  let userMessage = 'Your session has expired. Please sign in again.';
-  let suggestions = ['Sign out and sign back in', 'Clear your browser cache and try again'];
+  let userMessage = "Your session has expired. Please sign in again.";
+  let suggestions = [
+    "Sign out and sign back in",
+    "Clear your browser cache and try again",
+  ];
 
-  if (message.includes('jwt') || message.includes('token')) {
-    userMessage = 'Authentication token is invalid. Please sign in again.';
-  } else if (message.includes('unauthorized')) {
-    userMessage = 'You are not authorized to perform this action.';
-    suggestions = ['Contact your administrator for access', 'Ensure you have the correct permissions'];
+  if (message.includes("jwt") || message.includes("token")) {
+    userMessage = "Authentication token is invalid. Please sign in again.";
+  } else if (message.includes("unauthorized")) {
+    userMessage = "You are not authorized to perform this action.";
+    suggestions = [
+      "Contact your administrator for access",
+      "Ensure you have the correct permissions",
+    ];
   }
 
   return {
-    type: 'auth',
+    type: "auth",
     message,
     userMessage,
     originalError,
-    suggestions
+    suggestions,
   };
 }
 
 /**
  * Handle validation errors
  */
-function handleValidationError(graphQLError: any, originalError: ApolloError): GraphQLErrorDetails {
-  const message = graphQLError.message || '';
+function handleValidationError(
+  graphQLError: any,
+  originalError: ApolloError
+): GraphQLErrorDetails {
+  const message = graphQLError.message || "";
 
   return {
-    type: 'validation',
+    type: "validation",
     message,
-    userMessage: 'Please check your input and try again.',
+    userMessage: "Please check your input and try again.",
     originalError,
     suggestions: [
-      'Verify all required fields are filled',
-      'Check that data formats are correct',
-      'Ensure values meet the required constraints'
-    ]
+      "Verify all required fields are filled",
+      "Check that data formats are correct",
+      "Ensure values meet the required constraints",
+    ],
   };
 }
 
 /**
  * Handle network errors
  */
-function handleNetworkError(networkError: any, originalError: ApolloError): GraphQLErrorDetails {
+function handleNetworkError(
+  networkError: any,
+  originalError: ApolloError
+): GraphQLErrorDetails {
   const isOffline = !navigator.onLine;
-  
-  let userMessage = 'Network error. Please check your connection and try again.';
-  let suggestions = ['Check your internet connection', 'Try refreshing the page'];
+
+  let userMessage =
+    "Network error. Please check your connection and try again.";
+  let suggestions = [
+    "Check your internet connection",
+    "Try refreshing the page",
+  ];
 
   if (isOffline) {
-    userMessage = 'You appear to be offline. Please check your internet connection.';
-    suggestions = ['Check your internet connection', 'Try again when you\'re back online'];
+    userMessage =
+      "You appear to be offline. Please check your internet connection.";
+    suggestions = [
+      "Check your internet connection",
+      "Try again when you're back online",
+    ];
   } else if (networkError.statusCode === 500) {
-    userMessage = 'Server error. We\'re working to fix this issue.';
-    suggestions = ['Try again in a few minutes', 'Contact support if the problem persists'];
+    userMessage = "Server error. We're working to fix this issue.";
+    suggestions = [
+      "Try again in a few minutes",
+      "Contact support if the problem persists",
+    ];
   } else if (networkError.statusCode === 403) {
-    userMessage = 'Access denied. You don\'t have permission to perform this action.';
-    suggestions = ['Contact your administrator for access', 'Verify your account permissions'];
+    userMessage =
+      "Access denied. You don't have permission to perform this action.";
+    suggestions = [
+      "Contact your administrator for access",
+      "Verify your account permissions",
+    ];
   }
 
   return {
-    type: 'network',
-    message: networkError.message || 'Network error',
+    type: "network",
+    message: networkError.message || "Network error",
     userMessage,
     originalError,
-    suggestions
+    suggestions,
   };
 }
 
 /**
  * Generate user-friendly permission messages based on roles
  */
-function getUserFriendlyPermissionMessage(currentRole?: string, requiredRole?: string): string {
+function getUserFriendlyPermissionMessage(
+  currentRole?: string,
+  requiredRole?: string
+): string {
   if (!currentRole && !requiredRole) {
-    return 'You don\'t have permission to perform this action.';
+    return "You don't have permission to perform this action.";
   }
 
   if (requiredRole) {
     const roleNames: Record<string, string> = {
-      'developer': 'Developer',
-      'org_admin': 'Organization Administrator',
-      'manager': 'Manager',
-      'consultant': 'Consultant',
-      'viewer': 'Viewer'
+      developer: "Developer",
+      org_admin: "Organization Administrator",
+      manager: "Manager",
+      consultant: "Consultant",
+      viewer: "Viewer",
     };
 
     const readableRole = roleNames[requiredRole] || requiredRole;
-    return `This action requires ${readableRole} permissions. Your current role (${currentRole || 'unknown'}) doesn't have sufficient access.`;
+    return `This action requires ${readableRole} permissions. Your current role (${currentRole || "unknown"}) doesn't have sufficient access.`;
   }
 
   return `Your current role (${currentRole}) doesn't have permission to perform this action.`;
@@ -245,19 +295,26 @@ function getUserFriendlyPermissionMessage(currentRole?: string, requiredRole?: s
 /**
  * Generate role-specific suggestions for permission errors
  */
-function getPermissionSuggestions(currentRole?: string, requiredRole?: string): string[] {
-  const suggestions = ['Contact your administrator to request access'];
+function getPermissionSuggestions(
+  currentRole?: string,
+  requiredRole?: string
+): string[] {
+  const suggestions = ["Contact your administrator to request access"];
 
-  if (requiredRole === 'developer') {
-    suggestions.push('Developer access is required for this system administration function');
-  } else if (requiredRole === 'org_admin') {
-    suggestions.push('Organization Administrator access is needed for this operation');
-  } else if (requiredRole === 'manager') {
-    suggestions.push('Manager permissions are required to manage team members');
+  if (requiredRole === "developer") {
+    suggestions.push(
+      "Developer access is required for this system administration function"
+    );
+  } else if (requiredRole === "org_admin") {
+    suggestions.push(
+      "Organization Administrator access is needed for this operation"
+    );
+  } else if (requiredRole === "manager") {
+    suggestions.push("Manager permissions are required to manage team members");
   }
 
-  suggestions.push('Verify your account has the correct role assigned');
-  
+  suggestions.push("Verify your account has the correct role assigned");
+
   return suggestions;
 }
 
@@ -267,20 +324,23 @@ function getPermissionSuggestions(currentRole?: string, requiredRole?: string): 
 function getReadableErrorMessage(technicalMessage: string): string {
   const lowerMessage = technicalMessage.toLowerCase();
 
-  if (lowerMessage.includes('unique') || lowerMessage.includes('duplicate')) {
-    return 'This item already exists. Please use a different value.';
+  if (lowerMessage.includes("unique") || lowerMessage.includes("duplicate")) {
+    return "This item already exists. Please use a different value.";
   }
 
-  if (lowerMessage.includes('foreign key') || lowerMessage.includes('violates')) {
-    return 'This action would create invalid data relationships.';
+  if (
+    lowerMessage.includes("foreign key") ||
+    lowerMessage.includes("violates")
+  ) {
+    return "This action would create invalid data relationships.";
   }
 
-  if (lowerMessage.includes('not null') || lowerMessage.includes('required')) {
-    return 'Please fill in all required fields.';
+  if (lowerMessage.includes("not null") || lowerMessage.includes("required")) {
+    return "Please fill in all required fields.";
   }
 
-  if (lowerMessage.includes('timeout')) {
-    return 'The operation took too long. Please try again.';
+  if (lowerMessage.includes("timeout")) {
+    return "The operation took too long. Please try again.";
   }
 
   // Return the original message if no pattern matches
@@ -292,11 +352,14 @@ function getReadableErrorMessage(technicalMessage: string): string {
  */
 export function isPermissionError(error: ApolloError | Error): boolean {
   if (error instanceof ApolloError) {
-    return error.graphQLErrors?.some(err => 
-      err.message.toLowerCase().includes('permission') ||
-      err.message.toLowerCase().includes('denied') ||
-      err.extensions?.code === 'permission-denied'
-    ) || false;
+    return (
+      error.graphQLErrors?.some(
+        err =>
+          err.message.toLowerCase().includes("permission") ||
+          err.message.toLowerCase().includes("denied") ||
+          err.extensions?.code === "permission-denied"
+      ) || false
+    );
   }
   return false;
 }
@@ -306,12 +369,15 @@ export function isPermissionError(error: ApolloError | Error): boolean {
  */
 export function isAuthError(error: ApolloError | Error): boolean {
   if (error instanceof ApolloError) {
-    return error.graphQLErrors?.some(err =>
-      err.message.toLowerCase().includes('jwt') ||
-      err.message.toLowerCase().includes('unauthorized') ||
-      err.message.toLowerCase().includes('authentication') ||
-      err.extensions?.code === 'invalid-jwt'
-    ) || false;
+    return (
+      error.graphQLErrors?.some(
+        err =>
+          err.message.toLowerCase().includes("jwt") ||
+          err.message.toLowerCase().includes("unauthorized") ||
+          err.message.toLowerCase().includes("authentication") ||
+          err.extensions?.code === "invalid-jwt"
+      ) || false
+    );
   }
   return false;
 }
@@ -327,17 +393,20 @@ export function getSimpleErrorMessage(error: ApolloError | Error): string {
 /**
  * Log error details for debugging while showing user-friendly message
  */
-export function logAndShowError(error: ApolloError | Error, context?: string): GraphQLErrorDetails {
+export function logAndShowError(
+  error: ApolloError | Error,
+  context?: string
+): GraphQLErrorDetails {
   const details = handleGraphQLError(error);
-  
+
   // Log technical details for debugging
-  console.error(`GraphQL Error${context ? ` in ${context}` : ''}:`, {
+  console.error(`GraphQL Error${context ? ` in ${context}` : ""}:`, {
     type: details.type,
     originalMessage: details.message,
     userMessage: details.userMessage,
     currentRole: details.currentRole,
     requiredRole: details.requiredRole,
-    originalError: details.originalError
+    originalError: details.originalError,
   });
 
   return details;

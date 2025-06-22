@@ -15,6 +15,7 @@ The `/app/api` directory implements a comprehensive RESTful API layer with enter
 ## Authentication & Authorization
 
 ### Security Layers
+
 1. **Clerk Authentication**: JWT token validation for all protected routes
 2. **Role Validation**: Minimum role requirements enforced per endpoint
 3. **Permission Checking**: Granular permission validation for sensitive operations
@@ -22,7 +23,9 @@ The `/app/api` directory implements a comprehensive RESTful API layer with enter
 5. **Audit Logging**: Complete audit trail for compliance
 
 ### Security Headers
+
 All API responses include security headers:
+
 - CORS policies for allowed origins
 - Content-Type validation
 - CSRF protection tokens
@@ -33,6 +36,7 @@ All API responses include security headers:
 ### Authentication Endpoints (`/app/api/auth/`)
 
 #### `/app/api/auth/hasura-claims/route.ts`
+
 - **Purpose**: JWT claims extraction and validation for Hasura integration
 - **Authentication**: Requires valid Clerk session
 - **Business Logic**:
@@ -49,6 +53,7 @@ All API responses include security headers:
 - **Related Components**: Authentication context, GraphQL client
 
 #### `/app/api/auth/token/route.ts`
+
 - **Purpose**: Token management and refresh utilities
 - **Authentication**: Requires valid Clerk session
 - **Business Logic**:
@@ -66,6 +71,7 @@ All API responses include security headers:
 ### Staff Management (`/app/api/staff/`)
 
 #### `/app/api/staff/create/route.ts`
+
 - **Purpose**: Staff member creation with Clerk invitation integration
 - **Authentication**: Manager+ role required
 - **Business Logic**:
@@ -84,6 +90,7 @@ All API responses include security headers:
 - **Related Components**: Staff management interface, user creation modal
 
 #### `/app/api/staff/update-role/route.ts`
+
 - **Purpose**: Employee role modification with immediate permission updates
 - **Authentication**: Org Admin+ role required
 - **Business Logic**:
@@ -102,6 +109,7 @@ All API responses include security headers:
 - **Related Components**: User management interface, role assignment
 
 #### `/app/api/staff/delete/route.ts`
+
 - **Purpose**: Employee deactivation and offboarding workflow
 - **Authentication**: Org Admin+ role required
 - **Business Logic**:
@@ -122,6 +130,7 @@ All API responses include security headers:
 ### Payroll Operations (`/app/api/payrolls/`)
 
 #### `/app/api/payrolls/route.ts`
+
 - **Purpose**: Payroll CRUD operations with business rule enforcement
 - **Authentication**: Manager+ role required
 - **Business Logic**:
@@ -139,6 +148,7 @@ All API responses include security headers:
 - **Related Components**: Payroll management interface
 
 #### `/app/api/payrolls/[id]/route.ts`
+
 - **Purpose**: Individual payroll management with detailed operations
 - **Authentication**: Manager+ role, must have access to specific payroll
 - **Business Logic**:
@@ -156,6 +166,7 @@ All API responses include security headers:
 - **Related Components**: Payroll detail interface, calculation components
 
 #### `/app/api/payrolls/schedule/route.ts`
+
 - **Purpose**: Payroll scheduling and deadline management
 - **Authentication**: Manager+ role required
 - **Business Logic**:
@@ -175,6 +186,7 @@ All API responses include security headers:
 ### Webhook Handlers (`/app/api/webhooks/`)
 
 #### `/app/api/webhooks/clerk/route.ts`
+
 - **Purpose**: Clerk webhook processing for user synchronization
 - **Authentication**: Webhook signature validation (no user auth)
 - **Business Logic**:
@@ -194,6 +206,7 @@ All API responses include security headers:
 ### Developer and Administrative (`/app/api/developer/`)
 
 #### `/app/api/developer/route.ts`
+
 - **Purpose**: Development and debugging utilities
 - **Authentication**: Developer role required
 - **Business Logic**:
@@ -212,6 +225,7 @@ All API responses include security headers:
 ### Audit and Compliance (`/app/api/audit/`)
 
 #### `/app/api/audit/log/route.ts`
+
 - **Purpose**: Audit log management for SOC2 compliance
 - **Authentication**: Org Admin+ role required
 - **Business Logic**:
@@ -228,6 +242,7 @@ All API responses include security headers:
 - **Related Components**: Security dashboard, compliance reporting
 
 #### `/app/api/audit/compliance-report/route.ts`
+
 - **Purpose**: SOC2 compliance report generation
 - **Authentication**: Org Admin+ role required
 - **Business Logic**:
@@ -247,13 +262,16 @@ All API responses include security headers:
 ## Security Implementation
 
 ### Input Validation
+
 All endpoints implement comprehensive input validation:
+
 - **Zod Schemas**: Type-safe validation for all request bodies
 - **Parameter Validation**: URL parameters and query strings validated
 - **File Upload Security**: Content type and size validation
 - **SQL Injection Prevention**: Parameterized queries only
 
 ### Authentication Flow
+
 1. **JWT Extraction**: Bearer token extracted from Authorization header
 2. **Token Validation**: Clerk validates JWT signature and expiry
 3. **Claims Extraction**: Hasura claims extracted from token
@@ -261,14 +279,18 @@ All endpoints implement comprehensive input validation:
 5. **Permission Validation**: Granular permissions verified if required
 
 ### Audit Logging
+
 All API operations are logged for SOC2 compliance:
+
 - **Request Logging**: Method, path, user, timestamp
 - **Response Logging**: Status codes, error messages (sanitized)
 - **Business Operation Logging**: Entity changes, state transitions
 - **Security Event Logging**: Authentication failures, permission denials
 
 ### Error Handling
+
 Consistent error response format:
+
 ```typescript
 {
   error: string;           // User-friendly error message
@@ -282,12 +304,14 @@ Consistent error response format:
 ## Rate Limiting
 
 ### Strategy
+
 - **Endpoint-Specific Limits**: Different limits for different operations
 - **User-Based Limiting**: Per-user rate limits with role considerations
 - **IP-Based Limiting**: Additional protection against abuse
 - **Sliding Window**: Sophisticated rate limiting algorithm
 
 ### Limits
+
 - **Authentication**: 10 requests/minute per IP
 - **Data Retrieval**: 60 requests/minute per user
 - **Data Modification**: 30 requests/minute per user
@@ -296,12 +320,14 @@ Consistent error response format:
 ## Performance Considerations
 
 ### Optimization Strategies
+
 - **Response Caching**: Appropriate cache headers for static data
 - **Database Connection Pooling**: Efficient database resource usage
 - **Async Operations**: Non-blocking operations where possible
 - **Response Compression**: Gzip compression for large responses
 
 ### Monitoring
+
 - **Response Time Tracking**: Performance metrics for all endpoints
 - **Error Rate Monitoring**: Error frequency and pattern analysis
 - **Resource Usage**: CPU, memory, and database utilization
@@ -310,18 +336,21 @@ Consistent error response format:
 ## Testing Strategy
 
 ### Automated Testing
+
 - **Unit Tests**: Individual endpoint logic testing
 - **Integration Tests**: End-to-end API workflow testing
 - **Security Tests**: Authentication and authorization testing
 - **Performance Tests**: Load and stress testing
 
 ### Manual Testing
+
 - **Security Audits**: Penetration testing and vulnerability assessment
 - **Compliance Testing**: SOC2 requirement validation
 - **User Acceptance**: Business workflow validation
 - **Error Scenario Testing**: Edge case and failure mode testing
 
 ## Related Documentation
+
 - [Authentication Guide](../../lib/README.md) - Authentication implementation
 - [Components Documentation](../../components/README.md) - Frontend integration
 - [Security Report](../../SECURITY_IMPROVEMENT_REPORT.md) - Security analysis

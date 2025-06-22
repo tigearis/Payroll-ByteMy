@@ -74,7 +74,7 @@ const retryLink = new RetryLink({
   },
   attempts: {
     max: 3,
-    retryIf: (error) => !!error,
+    retryIf: error => !!error,
   },
 });
 
@@ -242,7 +242,7 @@ export class SecureHasuraService {
     );
 
     const existingUser = clerkUserData?.users?.[0];
-    
+
     if (existingUser) {
       // Update existing user
       const { data: updateData } = await this.executeAdminMutation(
@@ -344,31 +344,37 @@ export class SecureHasuraService {
       }
     `;
 
-    const { data: deleteData, errors: deleteErrors } = await this.executeAdminMutation(DELETE_DATES, {
-      payrollId,
-    });
+    const { data: deleteData, errors: deleteErrors } =
+      await this.executeAdminMutation(DELETE_DATES, {
+        payrollId,
+      });
 
     if (deleteErrors) {
-      throw new Error(`Failed to delete existing dates: ${deleteErrors[0].message}`);
+      throw new Error(
+        `Failed to delete existing dates: ${deleteErrors[0].message}`
+      );
     }
 
     // Then generate new dates using the generated document
-    const { data: generateData, errors: generateErrors } = await this.executeAdminQuery(GeneratePayrollDatesDocument, {
-      payrollId,
-      startDate,
-      endDate,
-      maxDates: null,
-    });
+    const { data: generateData, errors: generateErrors } =
+      await this.executeAdminQuery(GeneratePayrollDatesDocument, {
+        payrollId,
+        startDate,
+        endDate,
+        maxDates: null,
+      });
 
     if (generateErrors) {
-      throw new Error(`Failed to generate new dates: ${generateErrors[0].message}`);
+      throw new Error(
+        `Failed to generate new dates: ${generateErrors[0].message}`
+      );
     }
 
     const data = {
       delete_payroll_dates: deleteData?.delete_payroll_dates,
       generate_payroll_dates: generateData?.generatePayrollDates,
     };
-    
+
     // Check for errors in the operation
     // This will be populated if there are actual errors from the operations
 

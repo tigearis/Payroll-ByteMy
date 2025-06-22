@@ -1,19 +1,19 @@
 "use client";
 
-import { useAuth } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { toast } from 'sonner';
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 /**
  * Simple Session Monitor
- * 
+ *
  * Uses Clerk's native session management and only provides
  * user-friendly notifications when sessions end naturally.
- * 
+ *
  * Clerk handles all the heavy lifting:
  * - Automatic token refresh
- * - Session expiry detection  
+ * - Session expiry detection
  * - JWT validation
  * - Authentication state management
  */
@@ -30,8 +30,8 @@ export function SessionMonitor() {
         duration: 8000,
         action: {
           label: "Sign In",
-          onClick: () => router.push("/sign-in")
-        }
+          onClick: () => router.push("/sign-in"),
+        },
       });
     }
   }, [isSignedIn, isLoaded, router]);

@@ -109,7 +109,6 @@ query GetAppSettings {
   }
 }
 
-
 # Analytics
 query GetPermissionAnalytics {
   roles_count: rolesAggregate {

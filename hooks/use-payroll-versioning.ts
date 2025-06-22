@@ -259,9 +259,7 @@ export function usePayrollVersioning() {
         throw new Error("Failed to insert new payroll version");
       }
 
-      console.log(
-        `✅ New payroll version created: ${newPayroll.id}`
-      );
+      console.log(`✅ New payroll version created: ${newPayroll.id}`);
       console.log(
         "✅ Database triggers handled date deletion and generation automatically"
       );
@@ -272,9 +270,7 @@ export function usePayrollVersioning() {
           ? "Dates regenerated from today (go-live date was in past)"
           : `Dates will be generated from ${goLiveDate}`;
 
-      toast.success(
-        `Created payroll version (go-live: ${goLiveDate})`
-      );
+      toast.success(`Created payroll version (go-live: ${goLiveDate})`);
 
       toast.info(dateRegenerationMessage);
 
@@ -393,7 +389,7 @@ export function requiresVersioning(
     "client_id",
   ];
 
-  return versioningFields.some((field) => {
+  return versioningFields.some(field => {
     const originalValue = originalPayroll[field];
     const newValue = changes[field];
     return newValue !== undefined && newValue !== originalValue;

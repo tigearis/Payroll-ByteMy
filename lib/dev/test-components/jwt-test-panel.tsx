@@ -8,7 +8,13 @@ import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface JWTTestResult {
   test: {
@@ -63,10 +69,10 @@ export function JWTTestPanel() {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await fetch("/api/debug/jwt-test");
       const data = await response.json();
-      
+
       if (response.ok) {
         setTestResult(data);
         if (data.systemAnalysis.expectedToWork) {
@@ -98,13 +104,13 @@ export function JWTTestPanel() {
   const syncUser = async () => {
     try {
       setIsLoading(true);
-      
+
       const response = await fetch("/api/sync-current-user", {
         method: "POST",
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
         toast.success("User Synced", {
           description: "User synchronized successfully!",
@@ -135,7 +141,10 @@ export function JWTTestPanel() {
 
   const getStatusBadge = (success: boolean, label: string) => {
     return (
-      <Badge variant={success ? "default" : "destructive"} className="flex items-center gap-1">
+      <Badge
+        variant={success ? "default" : "destructive"}
+        className="flex items-center gap-1"
+      >
         {getStatusIcon(success)}
         {label}
       </Badge>
@@ -154,7 +163,9 @@ export function JWTTestPanel() {
             <AlertTriangle className="h-5 w-5 text-yellow-600" />
             JWT Test Panel
           </CardTitle>
-          <CardDescription>Please sign in to test JWT configuration</CardDescription>
+          <CardDescription>
+            Please sign in to test JWT configuration
+          </CardDescription>
         </CardHeader>
       </Card>
     );
@@ -165,7 +176,9 @@ export function JWTTestPanel() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <RefreshCw className={`h-5 w-5 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`h-5 w-5 ${isLoading ? "animate-spin" : ""}`}
+            />
             JWT Test Panel
           </CardTitle>
           <CardDescription>
@@ -209,18 +222,38 @@ export function JWTTestPanel() {
               <div className="p-4 rounded-lg border">
                 <p className="font-medium mb-2">{testResult.verdict}</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {getStatusBadge(testResult.systemAnalysis.userExistsInClerk, "Clerk User")}
-                  {getStatusBadge(testResult.systemAnalysis.userExistsInDatabase, "Database User")}
-                  {getStatusBadge(testResult.systemAnalysis.jwtTemplateWorking, "JWT Template")}
-                  {getStatusBadge(testResult.systemAnalysis.hasuraClaimsPresent, "Hasura Claims")}
-                  {getStatusBadge(testResult.systemAnalysis.userIdMappingCorrect, "ID Mapping")}
-                  {getStatusBadge(testResult.systemAnalysis.metadataSyncComplete, "Metadata Sync")}
+                  {getStatusBadge(
+                    testResult.systemAnalysis.userExistsInClerk,
+                    "Clerk User"
+                  )}
+                  {getStatusBadge(
+                    testResult.systemAnalysis.userExistsInDatabase,
+                    "Database User"
+                  )}
+                  {getStatusBadge(
+                    testResult.systemAnalysis.jwtTemplateWorking,
+                    "JWT Template"
+                  )}
+                  {getStatusBadge(
+                    testResult.systemAnalysis.hasuraClaimsPresent,
+                    "Hasura Claims"
+                  )}
+                  {getStatusBadge(
+                    testResult.systemAnalysis.userIdMappingCorrect,
+                    "ID Mapping"
+                  )}
+                  {getStatusBadge(
+                    testResult.systemAnalysis.metadataSyncComplete,
+                    "Metadata Sync"
+                  )}
                 </div>
               </div>
 
               {testResult.issues.length > 0 && (
                 <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="font-medium text-yellow-800 mb-2">Issues Found:</p>
+                  <p className="font-medium text-yellow-800 mb-2">
+                    Issues Found:
+                  </p>
                   <ul className="text-yellow-700 space-y-1">
                     {testResult.issues.map((issue, index) => (
                       <li key={index}>• {issue}</li>
@@ -231,7 +264,9 @@ export function JWTTestPanel() {
 
               {testResult.recommendations.length > 0 && (
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="font-medium text-blue-800 mb-2">Recommendations:</p>
+                  <p className="font-medium text-blue-800 mb-2">
+                    Recommendations:
+                  </p>
                   <ul className="text-blue-700 space-y-1">
                     {testResult.recommendations.map((rec, index) => (
                       <li key={index}>• {rec}</li>
@@ -252,18 +287,30 @@ export function JWTTestPanel() {
                 <div>
                   <p className="font-medium mb-2">Token Info:</p>
                   <div className="text-sm space-y-1">
-                    <p>Has Token: {testResult.jwt.hasToken ? "✅ Yes" : "❌ No"}</p>
-                    <p>Has Claims: {testResult.jwt.analysis.hasHasuraClaims ? "✅ Yes" : "❌ No"}</p>
-                    <p>User ID Type: {testResult.jwt.analysis.userIdType || "N/A"}</p>
+                    <p>
+                      Has Token: {testResult.jwt.hasToken ? "✅ Yes" : "❌ No"}
+                    </p>
+                    <p>
+                      Has Claims:{" "}
+                      {testResult.jwt.analysis.hasHasuraClaims
+                        ? "✅ Yes"
+                        : "❌ No"}
+                    </p>
+                    <p>
+                      User ID Type:{" "}
+                      {testResult.jwt.analysis.userIdType || "N/A"}
+                    </p>
                     <p>Role: {testResult.jwt.analysis.roleValue || "N/A"}</p>
                   </div>
                 </div>
-                
+
                 <div>
                   <p className="font-medium mb-2">Hasura Claims:</p>
                   <div className="text-sm bg-gray-50 p-2 rounded font-mono">
                     {testResult.jwt.hasuraClaims ? (
-                      <pre>{JSON.stringify(testResult.jwt.hasuraClaims, null, 2)}</pre>
+                      <pre>
+                        {JSON.stringify(testResult.jwt.hasuraClaims, null, 2)}
+                      </pre>
                     ) : (
                       "No Hasura claims found"
                     )}
@@ -286,11 +333,16 @@ export function JWTTestPanel() {
                     <p>ID: {testResult.test.clerkUserId}</p>
                     <p>Email: {testResult.test.userEmail}</p>
                     <p>Name: {testResult.test.userName}</p>
-                    <p>Has DB ID: {testResult.clerkMetadata.hasDatabaseId ? "✅" : "❌"}</p>
-                    <p>Has Role: {testResult.clerkMetadata.hasRole ? "✅" : "❌"}</p>
+                    <p>
+                      Has DB ID:{" "}
+                      {testResult.clerkMetadata.hasDatabaseId ? "✅" : "❌"}
+                    </p>
+                    <p>
+                      Has Role: {testResult.clerkMetadata.hasRole ? "✅" : "❌"}
+                    </p>
                   </div>
                 </div>
-                
+
                 <div>
                   <p className="font-medium mb-2">Database User:</p>
                   {testResult.databaseUser ? (
@@ -305,7 +357,9 @@ export function JWTTestPanel() {
                     <p className="text-red-600">User not found in database</p>
                   )}
                   {testResult.databaseError && (
-                    <p className="text-red-600 text-sm mt-2">Error: {testResult.databaseError}</p>
+                    <p className="text-red-600 text-sm mt-2">
+                      Error: {testResult.databaseError}
+                    </p>
                   )}
                 </div>
               </div>

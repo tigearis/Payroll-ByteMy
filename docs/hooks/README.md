@@ -15,6 +15,7 @@ The `/hooks` directory contains custom React hooks that encapsulate business log
 ## Naming Convention
 
 All hooks follow the established kebab-case naming pattern:
+
 - File names: `use-hook-name.ts`
 - Hook functions: `useHookName()`
 - Related types: `HookNameOptions`, `HookNameResult`
@@ -24,6 +25,7 @@ All hooks follow the established kebab-case naming pattern:
 ### Authentication & User Management
 
 #### `/hooks/use-current-user.ts`
+
 - **Purpose**: Current user state management with database synchronization
 - **Authentication**: Requires valid Clerk session and database user record
 - **Business Logic**:
@@ -54,6 +56,7 @@ All hooks follow the established kebab-case naming pattern:
   ```
 
 #### `/hooks/use-user-role.ts`
+
 - **Purpose**: User role management and validation
 - **Authentication**: Integrates with authentication context for role information
 - **Business Logic**:
@@ -79,6 +82,7 @@ All hooks follow the established kebab-case naming pattern:
   ```
 
 #### `/hooks/use-user-role-management.ts`
+
 - **Purpose**: Administrative user role management operations
 - **Authentication**: Org Admin+ role required for role management operations
 - **Business Logic**:
@@ -103,6 +107,7 @@ All hooks follow the established kebab-case naming pattern:
   ```
 
 #### `/hooks/use-enhanced-permissions.tsx`
+
 - **Purpose**: Advanced permission checking with real-time updates
 - **Authentication**: Requires authenticated user with permission context
 - **Business Logic**:
@@ -130,6 +135,7 @@ All hooks follow the established kebab-case naming pattern:
 ### Data Management & Operations
 
 #### `/hooks/use-graceful-query.ts`
+
 - **Purpose**: GraphQL query execution with error handling and permission awareness
 - **Authentication**: Handles authentication errors gracefully
 - **Business Logic**:
@@ -156,6 +162,7 @@ All hooks follow the established kebab-case naming pattern:
   ```
 
 #### `/hooks/use-cache-invalidation.ts`
+
 - **Purpose**: Apollo GraphQL cache management and invalidation
 - **Authentication**: No authentication required (utility hook)
 - **Business Logic**:
@@ -181,6 +188,7 @@ All hooks follow the established kebab-case naming pattern:
 ### Business Logic Hooks
 
 #### `/hooks/use-payroll-creation.ts`
+
 - **Purpose**: Payroll creation workflow with validation and processing
 - **Authentication**: Manager+ role required for payroll operations
 - **Business Logic**:
@@ -206,6 +214,7 @@ All hooks follow the established kebab-case naming pattern:
   ```
 
 #### `/hooks/use-payroll-versioning.ts`
+
 - **Purpose**: Payroll version control and audit trail management
 - **Authentication**: Manager+ role required, with audit logging
 - **Business Logic**:
@@ -222,7 +231,10 @@ All hooks follow the established kebab-case naming pattern:
 - **Return Type**:
   ```typescript
   interface PayrollVersioningResult {
-    createVersion: (payrollId: string, changes: PayrollChanges) => Promise<PayrollVersion>;
+    createVersion: (
+      payrollId: string,
+      changes: PayrollChanges
+    ) => Promise<PayrollVersion>;
     getVersionHistory: (payrollId: string) => PayrollVersion[];
     compareVersions: (version1: string, version2: string) => VersionComparison;
     rollbackToVersion: (payrollId: string, versionId: string) => Promise<void>;
@@ -230,6 +242,7 @@ All hooks follow the established kebab-case naming pattern:
   ```
 
 #### `/hooks/use-user-management.ts`
+
 - **Purpose**: User lifecycle management operations
 - **Authentication**: Manager+ role required for user management
 - **Business Logic**:
@@ -257,6 +270,7 @@ All hooks follow the established kebab-case naming pattern:
 ### Real-time & Synchronization
 
 #### `/hooks/use-subscription.ts`
+
 - **Purpose**: GraphQL subscription management with authentication
 - **Authentication**: Requires authenticated user for subscription access
 - **Business Logic**:
@@ -282,6 +296,7 @@ All hooks follow the established kebab-case naming pattern:
   ```
 
 #### `/hooks/use-polling.ts`
+
 - **Purpose**: Polling strategy for data freshness
 - **Authentication**: Uses authenticated queries for data polling
 - **Business Logic**:
@@ -307,6 +322,7 @@ All hooks follow the established kebab-case naming pattern:
   ```
 
 #### `/hooks/use-user-role-secure.ts`
+
 - **Purpose**: Secure role management with enhanced validation
 - **Authentication**: Enhanced security validation for role operations
 - **Business Logic**:
@@ -324,7 +340,9 @@ All hooks follow the established kebab-case naming pattern:
   ```typescript
   interface SecureUserRoleResult {
     requireMFA: boolean;
-    initiateRoleChange: (params: SecureRoleChangeParams) => Promise<RoleChangeToken>;
+    initiateRoleChange: (
+      params: SecureRoleChangeParams
+    ) => Promise<RoleChangeToken>;
     confirmRoleChange: (token: string, mfaCode: string) => Promise<void>;
     validateSecureOperation: (operation: string) => SecurityValidationResult;
   }
@@ -333,24 +351,28 @@ All hooks follow the established kebab-case naming pattern:
 ## Hook Integration Patterns
 
 ### Authentication Context Integration
+
 All hooks integrate with the authentication system:
+
 ```typescript
 // Standard authentication integration pattern
 export function useCustomHook() {
   const { user, isLoaded } = useUser(); // Clerk integration
   const { permissions } = useCurrentUser(); // Database integration
-  
+
   // Hook logic only executes with valid authentication
   if (!isLoaded || !user) {
     return { loading: true, data: null };
   }
-  
+
   // Business logic with authentication context
 }
 ```
 
 ### Error Handling Pattern
+
 Consistent error handling across all hooks:
+
 ```typescript
 interface HookErrorHandling {
   try {
@@ -360,12 +382,12 @@ interface HookErrorHandling {
       // Handle permission errors gracefully
       return { error: 'insufficient_permissions', data: fallbackData };
     }
-    
+
     if (isNetworkError(error)) {
       // Handle network errors with retry
       return { error: 'network_error', canRetry: true };
     }
-    
+
     // Handle unexpected errors
     logError(error);
     return { error: 'unexpected_error' };
@@ -374,7 +396,9 @@ interface HookErrorHandling {
 ```
 
 ### Performance Optimization
+
 Hooks implement performance optimizations:
+
 ```typescript
 // Memoization for expensive calculations
 const expensiveCalculation = useMemo(() => {
@@ -382,9 +406,12 @@ const expensiveCalculation = useMemo(() => {
 }, [data]);
 
 // Callback memoization for stable references
-const handleAction = useCallback((params) => {
-  return performAction(params);
-}, [dependencies]);
+const handleAction = useCallback(
+  params => {
+    return performAction(params);
+  },
+  [dependencies]
+);
 
 // Efficient re-rendering with dependency arrays
 useEffect(() => {
@@ -395,13 +422,16 @@ useEffect(() => {
 ## Testing Strategy
 
 ### Hook Testing
+
 Each hook includes comprehensive testing:
+
 - **Unit Tests**: Hook logic validation and edge cases
 - **Integration Tests**: Authentication and external service integration
 - **Error Handling Tests**: Error scenarios and recovery
 - **Performance Tests**: Hook performance and memory usage
 
 ### Testing Utilities
+
 ```typescript
 // Custom hook testing utilities
 const renderHookWithAuth = (hook, userRole = 'viewer') => {
@@ -412,7 +442,7 @@ const renderHookWithAuth = (hook, userRole = 'viewer') => {
       </ApolloProvider>
     </AuthProvider>
   );
-  
+
   return renderHook(hook, { wrapper });
 };
 ```
@@ -420,12 +450,14 @@ const renderHookWithAuth = (hook, userRole = 'viewer') => {
 ## Security Considerations
 
 ### Data Protection
+
 - **Permission Validation**: All hooks validate user permissions
 - **Data Sanitization**: Sensitive data filtered based on user role
 - **Audit Integration**: All business operations logged for compliance
 - **Error Security**: No sensitive information exposed in error messages
 
 ### Authentication Security
+
 - **Session Validation**: Continuous session health checking
 - **Token Refresh**: Automatic token refresh for expired sessions
 - **Permission Caching**: Secure permission caching with invalidation
@@ -434,18 +466,21 @@ const renderHookWithAuth = (hook, userRole = 'viewer') => {
 ## Performance Monitoring
 
 ### Hook Performance
+
 - **Render Tracking**: Hook re-render frequency monitoring
 - **Memory Usage**: Hook memory consumption tracking
 - **Network Efficiency**: API call optimization and batching
 - **Cache Effectiveness**: Cache hit rates and optimization
 
 ### Optimization Strategies
+
 - **Lazy Loading**: Hooks load data only when needed
 - **Batching**: Related operations batched for efficiency
 - **Caching**: Intelligent caching with appropriate invalidation
 - **Debouncing**: User input debouncing for search and filters
 
 ## Related Documentation
+
 - [Components Documentation](../components/README.md) - Hook usage in components
 - [Authentication Guide](../lib/README.md) - Authentication integration details
 - [API Documentation](../pages/api/README.md) - Backend integration patterns

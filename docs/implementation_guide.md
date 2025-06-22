@@ -63,26 +63,26 @@ Based on your JSON files, here's what your database structure should look like:
 
 ```sql
 -- Verify your tables exist with correct structure
-SELECT table_name, column_name, data_type 
-FROM information_schema.columns 
-WHERE table_schema = 'public' 
+SELECT table_name, column_name, data_type
+FROM information_schema.columns
+WHERE table_schema = 'public'
   AND table_name IN ('payrolls', 'payroll_dates', 'users', 'leaves', 'holidays')
 ORDER BY table_name, ordinal_position;
 
 -- Check for foreign key relationships
-SELECT 
-  tc.table_name, 
+SELECT
+  tc.table_name,
   kcu.column_name,
   ccu.table_name AS foreign_table_name,
-  ccu.column_name AS foreign_column_name 
-FROM information_schema.table_constraints AS tc 
+  ccu.column_name AS foreign_column_name
+FROM information_schema.table_constraints AS tc
 JOIN information_schema.key_column_usage AS kcu
   ON tc.constraint_name = kcu.constraint_name
   AND tc.table_schema = kcu.table_schema
 JOIN information_schema.constraint_column_usage AS ccu
   ON ccu.constraint_name = tc.constraint_name
   AND ccu.table_schema = tc.table_schema
-WHERE tc.constraint_type = 'FOREIGN KEY' 
+WHERE tc.constraint_type = 'FOREIGN KEY'
   AND tc.table_name IN ('payrolls', 'payroll_dates', 'users', 'leaves');
 ```
 
@@ -102,7 +102,7 @@ Ensure your Hasura relationships are set up correctly:
 }
 
 {
-  "name": "userByBackupConsultantUserId", 
+  "name": "userByBackupConsultantUserId",
   "using": {
     "foreign_key_constraint_on": "backup_consultant_user_id"
   }
@@ -111,7 +111,7 @@ Ensure your Hasura relationships are set up correctly:
 {
   "name": "client",
   "using": {
-    "foreign_key_constraint_on": "client_id"  
+    "foreign_key_constraint_on": "client_id"
   }
 }
 
@@ -138,7 +138,7 @@ Ensure your Hasura relationships are set up correctly:
   "name": "leaves",
   "using": {
     "foreign_key_constraint_on": {
-      "column": "user_id", 
+      "column": "user_id",
       "table": "leaves"
     }
   }
@@ -153,15 +153,15 @@ Based on your JSON files, here's a migration script to populate your database:
 -- Insert sample data based on your JSON files
 
 -- Users (Consultants)
-INSERT INTO users (id, name, email, role) VALUES 
+INSERT INTO users (id, name, email, role) VALUES
 ('22a368d4-5d3f-4026-840c-55af6fb16972', 'Jim Consultant', 'consultant@example.com', 'consultant'),
 ('7898704c-ee5c-4ade-81f3-80a4388413fb', 'Test User', 'nathan.harris@invenco.net', 'consultant')
 ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
 -- Clients
-INSERT INTO clients (id, name) VALUES 
+INSERT INTO clients (id, name) VALUES
 (gen_random_uuid(), 'Bluewave Consulting'),
-(gen_random_uuid(), 'Zenith Solutions'), 
+(gen_random_uuid(), 'Zenith Solutions'),
 (gen_random_uuid(), 'Acme Pty Ltd'),
 (gen_random_uuid(), 'Greenfields Group'),
 (gen_random_uuid(), 'Redstone Holdings')
@@ -169,10 +169,10 @@ ON CONFLICT (name) DO NOTHING;
 
 -- Payrolls (using your JSON data structure)
 INSERT INTO payrolls (
-  id, name, employee_count, processing_time, status, 
+  id, name, employee_count, processing_time, status,
   client_id, primary_consultant_user_id, backup_consultant_user_id
-) 
-SELECT 
+)
+SELECT
   '2b70eb57-bd0f-4b4c-9341-870fb9df1f60'::uuid,
   'Quarterly Payroll - 1st',
   89,
@@ -187,7 +187,7 @@ WHERE NOT EXISTS (SELECT 1 FROM payrolls WHERE id = '2b70eb57-bd0f-4b4c-9341-870
 
 -- Payroll Dates (from your console data)
 INSERT INTO payroll_dates (id, payroll_id, original_eft_date, adjusted_eft_date, processing_date)
-VALUES 
+VALUES
 ('bcf6c6f4-46f0-47a1-b8f8-94c1630de202', '2b70eb57-bd0f-4b4c-9341-870fb9df1f60', '2025-06-01', '2025-05-30', '2025-05-23'),
 ('9434cc1e-8925-4857-807e-3284e8243f16', 'd619e823-c753-425c-88e4-5e797d2bff48', '2025-06-01', '2025-05-30', '2025-05-27')
 -- Continue for other dates...
@@ -202,10 +202,10 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Holidays (from your CSV)
 INSERT INTO holidays (id, date, local_name, name, country_code, region, is_fixed, is_global)
-SELECT 
+SELECT
   gen_random_uuid(),
   '2025-06-02'::date,
-  'Western Australia Day', 
+  'Western Australia Day',
   'Western Australia Day',
   'AU',
   'WA',
@@ -235,11 +235,13 @@ const GET_PAYROLL_DATA_FIXED = gql`
       userByPrimaryConsultantUserId {
         id
         name
-        leaves(where: { 
-          status: { _eq: "approved" }
-          start_date: { _lte: $end_date }
-          end_date: { _gte: $start_date }
-        }) {
+        leaves(
+          where: {
+            status: { _eq: "approved" }
+            start_date: { _lte: $end_date }
+            end_date: { _gte: $start_date }
+          }
+        ) {
           id
           start_date
           end_date
@@ -250,11 +252,13 @@ const GET_PAYROLL_DATA_FIXED = gql`
       userByBackupConsultantUserId {
         id
         name
-        leaves(where: { 
-          status: { _eq: "approved" }
-          start_date: { _lte: $end_date }
-          end_date: { _gte: $start_date }
-        }) {
+        leaves(
+          where: {
+            status: { _eq: "approved" }
+            start_date: { _lte: $end_date }
+            end_date: { _gte: $start_date }
+          }
+        ) {
           id
           start_date
           end_date
@@ -263,10 +267,10 @@ const GET_PAYROLL_DATA_FIXED = gql`
         }
       }
     }
-    
-    payroll_dates(where: {
-      adjusted_eft_date: { _gte: $start_date, _lte: $end_date }
-    }) {
+
+    payroll_dates(
+      where: { adjusted_eft_date: { _gte: $start_date, _lte: $end_date } }
+    ) {
       id
       payroll_id
       original_eft_date
@@ -290,10 +294,8 @@ const GET_PAYROLL_DATA_FIXED = gql`
         }
       }
     }
-    
-    holidays(where: {
-      date: { _gte: $start_date, _lte: $end_date }
-    }) {
+
+    holidays(where: { date: { _gte: $start_date, _lte: $end_date } }) {
       id
       date
       local_name
@@ -308,6 +310,7 @@ const GET_PAYROLL_DATA_FIXED = gql`
 ## Debugging Checklist
 
 ### 1. GraphQL Endpoint Issues
+
 ```bash
 # Test your GraphQL endpoint directly
 curl -X POST \
@@ -320,20 +323,22 @@ curl -X POST \
 ```
 
 ### 2. Date Format Issues
+
 ```typescript
 // Ensure consistent date formatting
 const formatDateForGraphQL = (date: Date): string => {
-  return format(date, 'yyyy-MM-dd');
+  return format(date, "yyyy-MM-dd");
 };
 
 // Test with explicit dates first
 const testVariables = {
-  start_date: '2025-05-01',
-  end_date: '2025-06-30'
+  start_date: "2025-05-01",
+  end_date: "2025-06-30",
 };
 ```
 
 ### 3. Hasura Permissions
+
 ```sql
 -- Check if your user role has proper permissions
 -- In Hasura Console -> Data -> [table] -> Permissions
@@ -341,41 +346,47 @@ const testVariables = {
 ```
 
 ### 4. Console Logging
+
 ```typescript
 // Add extensive logging to understand data flow
 useEffect(() => {
-  console.log('🔍 Query Variables:', {
-    start_date: format(dateRange.start, 'yyyy-MM-dd'),
-    end_date: format(dateRange.end, 'yyyy-MM-dd')
+  console.log("🔍 Query Variables:", {
+    start_date: format(dateRange.start, "yyyy-MM-dd"),
+    end_date: format(dateRange.end, "yyyy-MM-dd"),
   });
 }, [dateRange]);
 
 // In the onCompleted callback:
-onCompleted: (data) => {
-  console.log('📊 Raw GraphQL Response:', data);
-  console.log('📊 Payrolls:', data?.payrolls?.length || 0);
-  console.log('📊 Payroll Dates:', data?.payroll_dates?.length || 0);
-  console.log('📊 Holidays:', data?.holidays?.length || 0);
-  
+onCompleted: data => {
+  console.log("📊 Raw GraphQL Response:", data);
+  console.log("📊 Payrolls:", data?.payrolls?.length || 0);
+  console.log("📊 Payroll Dates:", data?.payroll_dates?.length || 0);
+  console.log("📊 Holidays:", data?.holidays?.length || 0);
+
   // Log first few items for structure verification
   if (data?.payrolls?.length > 0) {
-    console.log('📊 First Payroll:', data.payrolls[0]);
+    console.log("📊 First Payroll:", data.payrolls[0]);
   }
   if (data?.payroll_dates?.length > 0) {
-    console.log('📊 First Payroll Date:', data.payroll_dates[0]);
+    console.log("📊 First Payroll Date:", data.payroll_dates[0]);
   }
-}
+};
 ```
 
 ## Testing Strategy
 
 ### 1. Start with Static Data
+
 ```typescript
 // Test with hardcoded data first
 const TEST_DATA = {
-  payrolls: [/* your JSON data */],
-  payroll_dates: [/* your JSON data */],
-  holidays: []
+  payrolls: [
+    /* your JSON data */
+  ],
+  payroll_dates: [
+    /* your JSON data */
+  ],
+  holidays: [],
 };
 
 // Use this in your component temporarily
@@ -383,13 +394,15 @@ const TEST_DATA = {
 ```
 
 ### 2. Progressive Enhancement
+
 1. Get static data rendering ✅
-2. Get GraphQL query working ✅  
+2. Get GraphQL query working ✅
 3. Add drag-and-drop functionality ✅
 4. Add ghost assignments ✅
 5. Add commit functionality ✅
 
 ### 3. Error Boundaries
+
 ```typescript
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -411,7 +424,7 @@ function ErrorFallback({error}: {error: Error}) {
 ## Next Steps
 
 1. **Start with the DebugDataViewer** to verify your data structure
-2. **Check Hasura relationships** using the GraphiQL explorer  
+2. **Check Hasura relationships** using the GraphiQL explorer
 3. **Test the simplified query** with known date ranges
 4. **Add progressive logging** to understand where data breaks
 5. **Implement the mutation** once data loading works

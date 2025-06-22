@@ -46,9 +46,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { NotesModal } from "./notes-modal";
-import { 
+import {
   GetPayrollFamilyDatesDocument,
-  GetPayrollDatesDocument
+  GetPayrollDatesDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { useFragment } from "@/domains/payrolls/graphql/generated/fragment-masking";
 import { PayrollDateFragmentDoc } from "@/domains/payrolls/graphql/generated/graphql";
@@ -80,7 +80,7 @@ interface PayrollDatesViewProps {
 const categorizeDatesByTime = (dates: PayrollDate[]) => {
   const today = startOfDay(new Date());
 
-  const futureDates = dates.filter((date) => {
+  const futureDates = dates.filter(date => {
     if (!date.adjusted_eft_date) {
       return false;
     }
@@ -95,7 +95,7 @@ const categorizeDatesByTime = (dates: PayrollDate[]) => {
     }
   });
 
-  const pastDates = dates.filter((date) => {
+  const pastDates = dates.filter(date => {
     if (!date.adjusted_eft_date) {
       return false;
     }
@@ -320,16 +320,14 @@ function PayrollDatesTable({
           <DropdownMenuContent align="end">
             {table
               .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
+              .filter(column => column.getCanHide())
+              .map(column => {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
+                    onCheckedChange={value => column.toggleVisibility(!!value)}
                   >
                     {column.id.replace("_", " ")}
                   </DropdownMenuCheckboxItem>
@@ -342,9 +340,9 @@ function PayrollDatesTable({
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map(header => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
@@ -359,9 +357,9 @@ function PayrollDatesTable({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map(row => (
                 <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -487,36 +485,39 @@ export function PayrollDatesView({
       original_eft_date: date.originalEftDate,
       adjusted_eft_date: date.adjustedEftDate,
       processing_date: date.processingDate,
-      payroll_id: date.payrollId
+      payroll_id: date.payrollId,
     }));
     const currentDate = startOfDay(new Date());
-    pastDates = allDates.filter((date) => {
+    pastDates = allDates.filter(date => {
       const adjustedDate = startOfDay(parseISO(date.adjusted_eft_date));
       return adjustedDate < currentDate;
     });
-    futureDates = allDates.filter((date) => {
+    futureDates = allDates.filter(date => {
       const adjustedDate = startOfDay(parseISO(date.adjusted_eft_date));
       return adjustedDate >= currentDate;
     });
   } else if (showFamilyDates && familyData) {
     // Fallback to client-side filtering - this query uses fragments so we need useFragment
-    const familyDates = familyData.payrolls.flatMap(payroll => 
-      payroll.payrollDates.map(date => useFragment(PayrollDateFragmentDoc, date))
-    ) || [];
+    const familyDates =
+      familyData.payrolls.flatMap(payroll =>
+        payroll.payrollDates.map(date =>
+          useFragment(PayrollDateFragmentDoc, date)
+        )
+      ) || [];
     // Convert to the expected format
     allDates = familyDates.map(date => ({
       id: date.id,
       original_eft_date: date.originalEftDate,
       adjusted_eft_date: date.adjustedEftDate,
       processing_date: date.processingDate,
-      payroll_id: date.payrollId
+      payroll_id: date.payrollId,
     }));
     const currentDate = startOfDay(new Date());
-    pastDates = allDates.filter((date) => {
+    pastDates = allDates.filter(date => {
       const adjustedDate = startOfDay(parseISO(date.adjusted_eft_date));
       return adjustedDate < currentDate;
     });
-    futureDates = allDates.filter((date) => {
+    futureDates = allDates.filter(date => {
       const adjustedDate = startOfDay(parseISO(date.adjusted_eft_date));
       return adjustedDate >= currentDate;
     });
@@ -528,14 +529,14 @@ export function PayrollDatesView({
       original_eft_date: date.originalEftDate,
       adjusted_eft_date: date.adjustedEftDate,
       processing_date: date.processingDate,
-      payroll_id: date.payrollId
+      payroll_id: date.payrollId,
     }));
     const currentDate = startOfDay(new Date());
-    pastDates = allDates.filter((date) => {
+    pastDates = allDates.filter(date => {
       const adjustedDate = startOfDay(parseISO(date.adjusted_eft_date));
       return adjustedDate < currentDate;
     });
-    futureDates = allDates.filter((date) => {
+    futureDates = allDates.filter(date => {
       const adjustedDate = startOfDay(parseISO(date.adjusted_eft_date));
       return adjustedDate >= currentDate;
     });

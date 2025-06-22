@@ -3,3 +3,16 @@
 
 # Placeholder for shared mutations
 # Domain-specific mutations should be in their respective domain files
+
+# Example shared mutation for audit logging
+# mutation LogAuditEvent($input: AuditLogInput!) {
+#   insertAuditLog(object: $input) {
+#     id
+#     timestamp
+#   }
+# }
+
+# Placeholder mutation to make file valid
+mutation Placeholder {
+  __typename
+}

@@ -4,7 +4,12 @@
 
 // Extracted from inline TypeScript interfaces and types
 
-export type UserRole = "developer" | "org_admin" | "manager" | "consultant" | "viewer";
+export type UserRole =
+  | "developer"
+  | "org_admin"
+  | "manager"
+  | "consultant"
+  | "viewer";
 
 export interface User {
   id: string;

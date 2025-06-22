@@ -2,11 +2,15 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "./audit/logger";
+import {
+  auditLogger,
+  LogLevel,
+  LogCategory,
+  SOC2EventType,
+} from "./audit/logger";
 
 import { securityConfig } from "./config";
 import { SecureErrorHandler } from "./error-responses";
-
 
 // Feature flag check - MFA is disabled if not explicitly enabled
 const MFA_FEATURE_ENABLED = securityConfig.auth.mfaEnabled;
@@ -17,10 +21,10 @@ const MFA_REQUIRED_ROLES = ["developer", "org_admin"];
 // Routes that require MFA regardless of role
 const MFA_REQUIRED_ROUTES = [
   "/api/staff/delete",
-  "/api/users/update-role", 
+  "/api/users/update-role",
   "/api/audit/compliance-report",
   "/api/developer",
-  "/api/payrolls/schedule"
+  "/api/payrolls/schedule",
 ];
 
 export interface MFAValidationResult {
@@ -40,25 +44,28 @@ export async function validateMFARequirement(
 ): Promise<MFAValidationResult> {
   try {
     const { userId, sessionClaims } = await auth();
-    
+
     if (!userId) {
       return {
         isValid: false,
         requiresMFA: false,
         mfaVerified: false,
-        error: SecureErrorHandler.authenticationError()
+        error: SecureErrorHandler.authenticationError(),
       };
     }
 
-    // Extract user role
-    const userRole = (
-      (sessionClaims?.metadata as any)?.default_role ||
+    // Extract user role - FIXED: Use actual role first
+    const userRole = (sessionClaims?.["https://hasura.io/jwt/claims"]?.[
+      "x-hasura-role"
+    ] ||
       sessionClaims?.metadata?.role ||
-      sessionClaims?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"]
-    ) as string;
+      sessionClaims?.["https://hasura.io/jwt/claims"]?.[
+        "x-hasura-default-role"
+      ] ||
+      (sessionClaims?.metadata as any)?.default_role) as string;
 
     const pathname = request.nextUrl.pathname;
-    
+
     // Skip MFA validation if feature is disabled
     if (!MFA_FEATURE_ENABLED) {
       return {
@@ -66,16 +73,15 @@ export async function validateMFARequirement(
         requiresMFA: false,
         mfaVerified: true,
         userId,
-        userRole
+        userRole,
       };
     }
-    
+
     // Check if MFA is required
-    const requiresMFA = 
-      securityConfig.auth.mfaRequired && (
-        MFA_REQUIRED_ROLES.includes(userRole) ||
-        MFA_REQUIRED_ROUTES.some(route => pathname.startsWith(route))
-      );
+    const requiresMFA =
+      securityConfig.auth.mfaRequired &&
+      (MFA_REQUIRED_ROLES.includes(userRole) ||
+        MFA_REQUIRED_ROUTES.some(route => pathname.startsWith(route)));
 
     if (!requiresMFA) {
       return {
@@ -83,13 +89,14 @@ export async function validateMFARequirement(
         requiresMFA: false,
         mfaVerified: true,
         userId,
-        userRole
+        userRole,
       };
     }
 
     // Check MFA verification status from session claims
-    const mfaVerified = sessionClaims?.two_factor_verified === true ||
-                       sessionClaims?.mfa_verified === true;
+    const mfaVerified =
+      sessionClaims?.two_factor_verified === true ||
+      sessionClaims?.mfa_verified === true;
 
     if (!mfaVerified) {
       // Log MFA requirement
@@ -107,9 +114,9 @@ export async function validateMFARequirement(
         userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           route: pathname,
-          reason: "admin_role_or_sensitive_route"
+          reason: "admin_role_or_sensitive_route",
         },
-        complianceNote: "MFA required but not verified"
+        complianceNote: "MFA required but not verified",
       });
 
       return {
@@ -121,11 +128,11 @@ export async function validateMFARequirement(
           code: "MFA_REQUIRED",
           details: {
             message: "This action requires MFA verification",
-            redirectUrl: "/mfa-setup"
-          }
+            redirectUrl: "/mfa-setup",
+          },
         },
         userId,
-        userRole
+        userRole,
       };
     }
 
@@ -143,9 +150,9 @@ export async function validateMFARequirement(
       ipAddress: clientInfo.ipAddress || "unknown",
       userAgent: clientInfo.userAgent || "unknown",
       metadata: {
-        route: pathname
+        route: pathname,
       },
-      complianceNote: "MFA verification successful"
+      complianceNote: "MFA verification successful",
     });
 
     return {
@@ -153,16 +160,15 @@ export async function validateMFARequirement(
       requiresMFA: true,
       mfaVerified: true,
       userId,
-      userRole
+      userRole,
     };
-
   } catch (error) {
     console.error("MFA validation error:", error);
     return {
       isValid: false,
       requiresMFA: false,
       mfaVerified: false,
-      error: SecureErrorHandler.sanitizeError(error, "mfa_validation")
+      error: SecureErrorHandler.sanitizeError(error, "mfa_validation"),
     };
   }
 }
@@ -171,11 +177,14 @@ export async function validateMFARequirement(
  * Middleware wrapper that enforces MFA for protected routes
  */
 export function withMFA(
-  handler: (req: NextRequest, mfaContext: { userId: string; userRole: string }) => Promise<NextResponse>
+  handler: (
+    req: NextRequest,
+    mfaContext: { userId: string; userRole: string }
+  ) => Promise<NextResponse>
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
     const mfaResult = await validateMFARequirement(request);
-    
+
     if (!mfaResult.isValid) {
       const status = mfaResult.error?.code === "MFA_REQUIRED" ? 403 : 401;
       return NextResponse.json(mfaResult.error, { status });
@@ -183,7 +192,7 @@ export function withMFA(
 
     return handler(request, {
       userId: mfaResult.userId!,
-      userRole: mfaResult.userRole!
+      userRole: mfaResult.userRole!,
     });
   };
 }
@@ -192,7 +201,10 @@ export function withMFA(
  * Enhanced auth wrapper that includes MFA validation
  */
 export function withAuthAndMFA(
-  handler: (req: NextRequest, context: { userId: string; userRole: string }) => Promise<NextResponse>,
+  handler: (
+    req: NextRequest,
+    context: { userId: string; userRole: string }
+  ) => Promise<NextResponse>,
   options?: {
     requiredRole?: string;
     allowedRoles?: string[];
@@ -203,19 +215,21 @@ export function withAuthAndMFA(
     try {
       // First, validate basic authentication
       const { userId, sessionClaims } = await auth();
-      
+
       if (!userId) {
-        return NextResponse.json(
-          SecureErrorHandler.authenticationError(),
-          { status: 401 }
-        );
+        return NextResponse.json(SecureErrorHandler.authenticationError(), {
+          status: 401,
+        });
       }
 
-      const userRole = (
-        (sessionClaims?.metadata as any)?.default_role ||
+      const userRole = (sessionClaims?.["https://hasura.io/jwt/claims"]?.[
+        "x-hasura-role"
+      ] ||
         sessionClaims?.metadata?.role ||
-        sessionClaims?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"]
-      ) as string;
+        sessionClaims?.["https://hasura.io/jwt/claims"]?.[
+          "x-hasura-default-role"
+        ] ||
+        (sessionClaims?.metadata as any)?.default_role) as string;
 
       // Check role requirements
       if (options?.requiredRole && userRole !== options.requiredRole) {
@@ -227,7 +241,9 @@ export function withAuthAndMFA(
 
       if (options?.allowedRoles && !options.allowedRoles.includes(userRole)) {
         return NextResponse.json(
-          SecureErrorHandler.authorizationError(`One of: ${options.allowedRoles.join(', ')}`),
+          SecureErrorHandler.authorizationError(
+            `One of: ${options.allowedRoles.join(", ")}`
+          ),
           { status: 403 }
         );
       }
@@ -235,7 +251,7 @@ export function withAuthAndMFA(
       // Validate MFA if required and feature is enabled
       if (MFA_FEATURE_ENABLED) {
         const mfaResult = await validateMFARequirement(request);
-        
+
         if (options?.forceMFA || mfaResult.requiresMFA) {
           if (!mfaResult.mfaVerified) {
             return NextResponse.json(mfaResult.error, { status: 403 });
@@ -244,7 +260,6 @@ export function withAuthAndMFA(
       }
 
       return handler(request, { userId, userRole });
-      
     } catch (error) {
       console.error("Auth + MFA validation error:", error);
       return NextResponse.json(
@@ -269,28 +284,28 @@ export async function getUserMFAStatus(_userId: string): Promise<{
       return {
         enabled: false,
         methods: [],
-        verified: true // Consider verified when feature is disabled
+        verified: true, // Consider verified when feature is disabled
       };
     }
 
     // This would typically call Clerk's API to get MFA status
     // For now, we'll check the session claims
     const { sessionClaims } = await auth();
-    
+
     const mfaEnabled = sessionClaims?.two_factor_enabled === true;
     const mfaVerified = sessionClaims?.two_factor_verified === true;
-    
+
     return {
       enabled: mfaEnabled,
       methods: mfaEnabled ? ["totp"] : [],
-      verified: mfaVerified
+      verified: mfaVerified,
     };
   } catch (error) {
     console.error("Error getting MFA status:", error);
     return {
       enabled: false,
       methods: [],
-      verified: !MFA_FEATURE_ENABLED // Consider verified when feature is disabled
+      verified: !MFA_FEATURE_ENABLED, // Consider verified when feature is disabled
     };
   }
 }

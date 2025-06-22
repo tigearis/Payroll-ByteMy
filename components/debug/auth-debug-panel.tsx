@@ -23,7 +23,7 @@ export function AuthDebugPanel() {
   return (
     <div className="fixed top-0 right-0 bg-red-100 border border-red-300 p-4 m-4 rounded max-w-md text-xs z-50">
       <h3 className="font-bold text-red-800 mb-2">🔍 Auth Debug Panel</h3>
-      
+
       <div className="space-y-2">
         <div>
           <strong>Clerk Auth:</strong>
@@ -42,7 +42,12 @@ export function AuthDebugPanel() {
             <li>Has Hasura Claims: {hasuraClaims ? "✅" : "❌"}</li>
             <li>Extracted DB ID: {extractedUserId || "❌ None"}</li>
             <li>Expected DB ID: d9ac8a7b-f679-49a1-8c99-837eb977578b</li>
-            <li>IDs Match: {extractedUserId === "d9ac8a7b-f679-49a1-8c99-837eb977578b" ? "✅" : "❌"}</li>
+            <li>
+              IDs Match:{" "}
+              {extractedUserId === "d9ac8a7b-f679-49a1-8c99-837eb977578b"
+                ? "✅"
+                : "❌"}
+            </li>
           </ul>
         </div>
 
@@ -61,8 +66,14 @@ export function AuthDebugPanel() {
           <strong>Debug Info:</strong>
           <ul className="ml-2">
             <li>Hook DB ID: {databaseUserId || "None"}</li>
-            <li>JWT Default Role: {hasuraClaims?.["x-hasura-default-role"] || "None"}</li>
-            <li>JWT Allowed Roles: {hasuraClaims?.["x-hasura-allowed-roles"]?.join(", ") || "None"}</li>
+            <li>
+              JWT Default Role:{" "}
+              {hasuraClaims?.["x-hasura-default-role"] || "None"}
+            </li>
+            <li>
+              JWT Allowed Roles:{" "}
+              {hasuraClaims?.["x-hasura-allowed-roles"]?.join(", ") || "None"}
+            </li>
           </ul>
         </div>
 
@@ -99,7 +110,7 @@ export function AuthDebugPanel() {
           >
             🔄 Try Manual Sync
           </button>
-          
+
           <button
             onClick={() => {
               console.log("Full debug info:", {
@@ -109,7 +120,7 @@ export function AuthDebugPanel() {
                 hasuraClaims,
                 currentUser,
                 error,
-                loading
+                loading,
               });
             }}
             className="block w-full bg-gray-600 text-white px-2 py-1 rounded text-xs hover:bg-gray-700"

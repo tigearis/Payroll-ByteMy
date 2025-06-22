@@ -274,7 +274,7 @@ export function MFASetup() {
           <div className="space-y-3">
             <h4 className="font-medium">Active MFA Methods</h4>
             <div className="space-y-2">
-              {mfaStatus.methods.map((method) => (
+              {mfaStatus.methods.map(method => (
                 <div
                   key={method}
                   className="flex items-center gap-3 p-3 border rounded-lg"

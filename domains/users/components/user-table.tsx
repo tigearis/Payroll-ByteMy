@@ -151,7 +151,7 @@ export function UserTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user) => (
+          {users.map(user => (
             <TableRow key={user.id}>
               <TableCell>
                 <div className="flex items-center space-x-3">
@@ -165,7 +165,7 @@ export function UserTable({
                     <AvatarFallback>
                       {user.name
                         .split(" ")
-                        .map((n) => n[0])
+                        .map(n => n[0])
                         .join("")
                         .toUpperCase()}
                     </AvatarFallback>
@@ -294,7 +294,7 @@ export function UserTable({
                   <AvatarFallback className="text-lg">
                     {selectedUser.name
                       .split(" ")
-                      .map((n) => n[0])
+                      .map(n => n[0])
                       .join("")
                       .toUpperCase()}
                   </AvatarFallback>
@@ -382,7 +382,7 @@ export function UserTable({
                       <AvatarFallback className="text-xs">
                         {selectedUser.manager.name
                           .split(" ")
-                          .map((n) => n[0])
+                          .map(n => n[0])
                           .join("")
                           .toUpperCase()}
                       </AvatarFallback>
@@ -404,7 +404,7 @@ export function UserTable({
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Direct Reports</h4>
                     <div className="space-y-2">
-                      {selectedUser.subordinates.map((subordinate) => (
+                      {selectedUser.subordinates.map(subordinate => (
                         <div
                           key={subordinate.id}
                           className="flex items-center space-x-2"
@@ -413,7 +413,7 @@ export function UserTable({
                             <AvatarFallback className="text-xs">
                               {subordinate.name
                                 .split(" ")
-                                .map((n) => n[0])
+                                .map(n => n[0])
                                 .join("")
                                 .toUpperCase()}
                             </AvatarFallback>

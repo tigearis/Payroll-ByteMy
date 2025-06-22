@@ -1,7 +1,6 @@
 // app/(dashboard)/settings/page.tsx
 "use client";
 
-
 import { Loader2, Save } from "lucide-react";
 import { useState } from "react";
 import type React from "react";
@@ -50,7 +49,7 @@ export default function SettingsPage() {
   });
 
   const handleToggle = (role: string, feature: string) => {
-    setRoleAccess((prev) => ({
+    setRoleAccess(prev => ({
       ...prev,
       [role]: {
         ...prev[role as keyof typeof prev],
@@ -93,7 +92,9 @@ export default function SettingsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Settings
+          </h1>
           <p className="text-muted-foreground">
             Manage your account settings and preferences.
           </p>
@@ -508,11 +509,11 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {roles.map((role) => (
+            {roles.map(role => (
               <div key={role} className="space-y-2">
                 <h3 className="text-lg font-medium capitalize">{role}</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {features.map((feature) => (
+                  {features.map(feature => (
                     <div
                       key={feature.id}
                       className="flex items-center space-x-2"

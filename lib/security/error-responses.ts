@@ -8,37 +8,46 @@ export interface SecureErrorResponse {
 }
 
 export class SecureErrorHandler {
-  private static isProduction = process.env.NODE_ENV === 'production';
+  private static isProduction = process.env.NODE_ENV === "production";
 
   // Sanitize error messages for production
   static sanitizeError(error: any, context?: string): SecureErrorResponse {
     if (this.isProduction) {
       // In production, return generic messages
-      if (error?.message?.includes('permission') || error?.message?.includes('unauthorized')) {
+      if (
+        error?.message?.includes("permission") ||
+        error?.message?.includes("unauthorized")
+      ) {
         return {
           error: "Access denied",
-          code: "PERMISSION_DENIED"
+          code: "PERMISSION_DENIED",
         };
       }
-      
-      if (error?.message?.includes('not found') || error?.message?.includes('does not exist')) {
+
+      if (
+        error?.message?.includes("not found") ||
+        error?.message?.includes("does not exist")
+      ) {
         return {
           error: "Resource not found",
-          code: "RESOURCE_NOT_FOUND"
+          code: "RESOURCE_NOT_FOUND",
         };
       }
-      
-      if (error?.message?.includes('validation') || error?.message?.includes('invalid')) {
+
+      if (
+        error?.message?.includes("validation") ||
+        error?.message?.includes("invalid")
+      ) {
         return {
           error: "Invalid request",
-          code: "VALIDATION_ERROR"
+          code: "VALIDATION_ERROR",
         };
       }
-      
+
       // Generic server error for everything else
       return {
         error: "Internal server error",
-        code: "INTERNAL_ERROR"
+        code: "INTERNAL_ERROR",
       };
     } else {
       // In development, return detailed errors
@@ -48,8 +57,8 @@ export class SecureErrorHandler {
         details: {
           context,
           stack: error?.stack,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
     }
   }
@@ -58,7 +67,7 @@ export class SecureErrorHandler {
   static authenticationError(): SecureErrorResponse {
     return {
       error: "Authentication required",
-      code: "AUTHENTICATION_REQUIRED"
+      code: "AUTHENTICATION_REQUIRED",
     };
   }
 
@@ -67,7 +76,7 @@ export class SecureErrorHandler {
     if (this.isProduction) {
       return {
         error: "Insufficient permissions",
-        code: "AUTHORIZATION_FAILED"
+        code: "AUTHORIZATION_FAILED",
       };
     } else {
       return {
@@ -75,8 +84,8 @@ export class SecureErrorHandler {
         code: "AUTHORIZATION_FAILED",
         details: {
           requiredPermission,
-          message: `You need '${requiredPermission}' permission to access this resource`
-        }
+          message: `You need '${requiredPermission}' permission to access this resource`,
+        },
       };
     }
   }
@@ -86,7 +95,7 @@ export class SecureErrorHandler {
     if (this.isProduction) {
       return {
         error: "Invalid request data",
-        code: "VALIDATION_ERROR"
+        code: "VALIDATION_ERROR",
       };
     } else {
       return {
@@ -94,8 +103,10 @@ export class SecureErrorHandler {
         code: "VALIDATION_ERROR",
         details: {
           field,
-          message: field ? `Invalid value for field: ${field}` : "Request validation failed"
-        }
+          message: field
+            ? `Invalid value for field: ${field}`
+            : "Request validation failed",
+        },
       };
     }
   }
@@ -104,7 +115,7 @@ export class SecureErrorHandler {
   static rateLimitError(): SecureErrorResponse {
     return {
       error: "Too many requests",
-      code: "RATE_LIMIT_EXCEEDED"
+      code: "RATE_LIMIT_EXCEEDED",
     };
   }
 
@@ -113,12 +124,12 @@ export class SecureErrorHandler {
     if (this.isProduction) {
       return {
         error: "Service temporarily unavailable",
-        code: "SERVICE_UNAVAILABLE"
+        code: "SERVICE_UNAVAILABLE",
       };
     } else {
       return {
         error: "Database connection failed",
-        code: "DATABASE_ERROR"
+        code: "DATABASE_ERROR",
       };
     }
   }
@@ -137,10 +148,10 @@ export class PermissionValidator {
     if (!userId) {
       return {
         isValid: false,
-        error: SecureErrorHandler.authenticationError()
+        error: SecureErrorHandler.authenticationError(),
       };
     }
-    
+
     return { isValid: true, userId };
   }
 
@@ -151,10 +162,12 @@ export class PermissionValidator {
     if (!userRole || !requiredRoles.includes(userRole)) {
       return {
         isValid: false,
-        error: SecureErrorHandler.authorizationError(`One of: ${requiredRoles.join(', ')}`)
+        error: SecureErrorHandler.authorizationError(
+          `One of: ${requiredRoles.join(", ")}`
+        ),
       };
     }
-    
+
     return { isValid: true, role: userRole };
   }
 
@@ -165,10 +178,10 @@ export class PermissionValidator {
     if (!hasPermission) {
       return {
         isValid: false,
-        error: SecureErrorHandler.authorizationError(permissionName)
+        error: SecureErrorHandler.authorizationError(permissionName),
       };
     }
-    
+
     return { isValid: true };
   }
 }

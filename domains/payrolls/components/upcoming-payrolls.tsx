@@ -17,13 +17,13 @@ import {
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { GET_USER_UPCOMING_PAYROLLS } from "@/graphql/queries/dashboard/getAlerts";
-import { 
-  PayrollDate, 
-  Client, 
-  Consultant, 
-  UserUpcomingPayroll as UpcomingPayroll, 
-  UserUpcomingPayrollsData as UpcomingPayrollsData, 
-  StatusVariant 
+import {
+  PayrollDate,
+  Client,
+  Consultant,
+  UserUpcomingPayroll as UpcomingPayroll,
+  UserUpcomingPayrollsData as UpcomingPayrollsData,
+  StatusVariant,
 } from "@/shared/types/dashboard";
 
 function getStatusVariant(status: string): StatusVariant {
@@ -141,7 +141,7 @@ export function UpcomingPayrolls() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {payrolls.map((payroll) => {
+        {payrolls.map(payroll => {
           const nextDate = payroll.payrollDates?.[0];
           return (
             <TableRow key={payroll.id}>

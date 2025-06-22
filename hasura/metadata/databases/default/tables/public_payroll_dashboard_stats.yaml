@@ -26,7 +26,7 @@ select_permissions:
     comment: Consultants can view dashboard stats for their assigned payrolls
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access

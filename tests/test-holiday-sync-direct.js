@@ -36,13 +36,13 @@ async function testGraphQLMutation(sampleHolidays) {
   }
 
   // Transform external API data to match our schema
-  const holidaysToInsert = sampleHolidays.map((holiday) => ({
+  const holidaysToInsert = sampleHolidays.map(holiday => ({
     date: holiday.date,
     local_name: holiday.localName,
     name: holiday.name,
     country_code: holiday.countryCode,
     region: holiday.counties
-      ? holiday.counties.map((c) => c.replace(`${holiday.countryCode}-`, ""))
+      ? holiday.counties.map(c => c.replace(`${holiday.countryCode}-`, ""))
       : ["National"],
     is_fixed: holiday.fixed,
     is_global: holiday.global,

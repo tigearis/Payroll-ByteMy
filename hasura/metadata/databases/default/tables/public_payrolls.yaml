@@ -119,7 +119,7 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: '*'
+      columns: "*"
     comment: Developer role has full insert access
   - role: manager
     permission:
@@ -194,7 +194,7 @@ select_permissions:
     comment: Consultants can view payrolls they're assigned to
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -287,7 +287,7 @@ update_permissions:
     comment: Consultants can update status of payrolls they're assigned to
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

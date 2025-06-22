@@ -20,6 +20,7 @@
 ### Prerequisites
 
 #### Required Software
+
 ```bash
 # Node.js (LTS version recommended)
 node --version  # Should be >= 18.17.0
@@ -38,6 +39,7 @@ docker-compose --version
 ```
 
 #### Development Tools (Recommended)
+
 - **VS Code** with extensions:
   - GraphQL: Language Feature Support
   - TypeScript and JavaScript Language Features
@@ -50,6 +52,7 @@ docker-compose --version
 ### Project Setup
 
 #### 1. Clone Repository
+
 ```bash
 # Clone the repository
 git clone https://github.com/yourorg/payroll-matrix.git
@@ -60,6 +63,7 @@ ls -la
 ```
 
 #### 2. Install Dependencies
+
 ```bash
 # Install all dependencies
 pnpm install
@@ -69,6 +73,7 @@ pnpm list --depth=0
 ```
 
 #### 3. Environment Configuration
+
 ```bash
 # Copy environment template
 cp .env.example .env.local
@@ -202,6 +207,7 @@ NEXT_PUBLIC_DEV_MODE="false"
 ### Option 1: Neon PostgreSQL (Recommended)
 
 #### 1. Create Neon Project
+
 ```bash
 # Go to https://neon.tech
 # Create new project
@@ -209,6 +215,7 @@ NEXT_PUBLIC_DEV_MODE="false"
 ```
 
 #### 2. Database Schema Setup
+
 ```bash
 # Connect to database and run initial schema
 psql $DATABASE_URL
@@ -227,6 +234,7 @@ CREATE TYPE leave_status_enum AS ENUM ('Pending', 'Approved', 'Rejected', 'Cance
 ```
 
 #### 3. Apply Database Migrations
+
 ```bash
 # If using Hasura migrations
 hasura migrate apply --project hasura --endpoint $HASURA_GRAPHQL_URL --admin-secret $HASURA_ADMIN_SECRET
@@ -239,6 +247,7 @@ psql $DATABASE_URL < database/seed-data.sql
 ### Option 2: Local PostgreSQL
 
 #### 1. Install PostgreSQL
+
 ```bash
 # macOS with Homebrew
 brew install postgresql@15
@@ -254,6 +263,7 @@ sudo systemctl enable postgresql
 ```
 
 #### 2. Create Database
+
 ```bash
 # Create user and database
 sudo -u postgres psql
@@ -273,6 +283,7 @@ DATABASE_URL="postgresql://payroll_user:your_password@localhost:5432/payroll_mat
 ### Clerk Setup
 
 #### 1. Create Clerk Application
+
 ```bash
 # Go to https://clerk.com
 # Sign up/Login
@@ -284,6 +295,7 @@ DATABASE_URL="postgresql://payroll_user:your_password@localhost:5432/payroll_mat
 ```
 
 #### 2. Configure JWT Template
+
 ```bash
 # In Clerk Dashboard:
 # Go to: Configure → JWT Templates
@@ -291,6 +303,7 @@ DATABASE_URL="postgresql://payroll_user:your_password@localhost:5432/payroll_mat
 ```
 
 **JWT Template Configuration:**
+
 ```json
 {
   "aud": "hasura",
@@ -314,6 +327,7 @@ DATABASE_URL="postgresql://payroll_user:your_password@localhost:5432/payroll_mat
 ```
 
 #### 3. Configure Webhooks
+
 ```bash
 # In Clerk Dashboard:
 # Go to: Configure → Webhooks
@@ -327,6 +341,7 @@ DATABASE_URL="postgresql://payroll_user:your_password@localhost:5432/payroll_mat
 ```
 
 #### 4. Set Public Metadata Schema
+
 ```bash
 # In Clerk Dashboard:
 # Go to: Configure → User & Authentication → Metadata
@@ -360,6 +375,7 @@ DATABASE_URL="postgresql://payroll_user:your_password@localhost:5432/payroll_mat
 ### Hasura Cloud Setup
 
 #### 1. Create Hasura Project
+
 ```bash
 # Go to https://cloud.hasura.io
 # Create new project
@@ -368,6 +384,7 @@ DATABASE_URL="postgresql://payroll_user:your_password@localhost:5432/payroll_mat
 ```
 
 #### 2. Configure Environment Variables
+
 ```bash
 # In Hasura Console:
 # Go to: Settings → Env vars
@@ -379,6 +396,7 @@ DATABASE_URL="your-database-url"
 ```
 
 #### 3. Apply Hasura Metadata
+
 ```bash
 # Install Hasura CLI
 npm install -g hasura-cli
@@ -392,6 +410,7 @@ hasura metadata apply --endpoint $HASURA_GRAPHQL_URL --admin-secret $HASURA_ADMI
 ```
 
 #### 4. Configure JWT Authentication
+
 ```bash
 # In Hasura Console:
 # Go to: Settings → JWT
@@ -410,9 +429,10 @@ hasura metadata apply --endpoint $HASURA_GRAPHQL_URL --admin-secret $HASURA_ADMI
 ### Local Hasura Setup (Optional)
 
 #### 1. Docker Compose Setup
+
 ```yaml
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 services:
   postgres:
     image: postgres:15
@@ -445,6 +465,7 @@ volumes:
 ```
 
 #### 2. Start Local Services
+
 ```bash
 # Start services
 docker-compose up -d
@@ -465,53 +486,51 @@ DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/payroll_matr
 ### GraphQL Code Generator Configuration
 
 #### 1. Verify Configuration
+
 ```typescript
 // codegen.ts
-import type { CodegenConfig } from '@graphql-codegen/cli';
+import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   schema: [
     {
       [process.env.HASURA_GRAPHQL_URL!]: {
         headers: {
-          'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET!,
+          "x-hasura-admin-secret": process.env.HASURA_ADMIN_SECRET!,
         },
       },
     },
   ],
   documents: [
-    'domains/**/*.graphql',
-    'domains/**/*.ts',
-    'domains/**/*.tsx',
-    '!domains/**/generated/**',
+    "domains/**/*.graphql",
+    "domains/**/*.ts",
+    "domains/**/*.tsx",
+    "!domains/**/generated/**",
   ],
   generates: {
     // Global types
-    'shared/generated/graphql.ts': {
+    "shared/generated/graphql.ts": {
       plugins: [
-        'typescript',
-        'typescript-operations',
-        'typescript-react-apollo',
+        "typescript",
+        "typescript-operations",
+        "typescript-react-apollo",
       ],
       config: {
         withHooks: true,
         withComponent: false,
         withHOC: false,
-        apolloReactHooksImportFrom: '@apollo/client',
+        apolloReactHooksImportFrom: "@apollo/client",
       },
     },
     // Domain-specific generation
-    'domains/': {
-      preset: 'near-operation-file',
+    "domains/": {
+      preset: "near-operation-file",
       presetConfig: {
-        baseTypesPath: '../shared/generated/graphql.ts',
-        folder: 'generated',
-        extension: '.generated.ts',
+        baseTypesPath: "../shared/generated/graphql.ts",
+        folder: "generated",
+        extension: ".generated.ts",
       },
-      plugins: [
-        'typescript-operations',
-        'typescript-react-apollo',
-      ],
+      plugins: ["typescript-operations", "typescript-react-apollo"],
       config: {
         withHooks: true,
         withComponent: false,
@@ -525,6 +544,7 @@ export default config;
 ```
 
 #### 2. Run Code Generation
+
 ```bash
 # Generate types for all domains
 pnpm codegen
@@ -537,6 +557,7 @@ pnpm codegen:domain auth
 ```
 
 #### 3. Verify Generated Files
+
 ```bash
 # Check generated files
 ls -la shared/generated/
@@ -551,6 +572,7 @@ ls -la domains/payrolls/generated/
 ### Vercel Deployment
 
 #### 1. Vercel Configuration
+
 ```json
 // vercel.json
 {
@@ -592,6 +614,7 @@ ls -la domains/payrolls/generated/
 ```
 
 #### 2. Deploy to Vercel
+
 ```bash
 # Install Vercel CLI
 npm install -g vercel
@@ -607,6 +630,7 @@ vercel --prod
 ```
 
 ### Environment Variables for Vercel
+
 ```bash
 # Production environment variables
 DATABASE_URL="production-database-url"
@@ -625,6 +649,7 @@ NEXT_PUBLIC_SITE_URL="https://payroll-matrix.vercel.app"
 ### Daily Development Routine
 
 #### 1. Start Development Environment
+
 ```bash
 # Pull latest changes
 git pull origin main
@@ -640,6 +665,7 @@ pnpm dev
 ```
 
 #### 2. GraphQL Development
+
 ```bash
 # Watch GraphQL changes
 pnpm codegen:watch
@@ -652,6 +678,7 @@ open $HASURA_GRAPHQL_URL
 ```
 
 #### 3. Database Changes
+
 ```bash
 # Create new migration
 hasura migrate create "migration_name" --sql-file
@@ -664,6 +691,7 @@ hasura metadata export
 ```
 
 #### 4. Code Quality
+
 ```bash
 # Type checking
 pnpm type-check
@@ -681,6 +709,7 @@ pnpm test
 ### Git Workflow
 
 #### 1. Feature Development
+
 ```bash
 # Create feature branch
 git checkout -b feature/new-feature
@@ -694,6 +723,7 @@ git push origin feature/new-feature
 ```
 
 #### 2. Pre-commit Hooks
+
 ```bash
 # Install husky (if not already installed)
 pnpm prepare
@@ -712,6 +742,7 @@ pnpm prepare
 ### Common Issues
 
 #### 1. Authentication Issues
+
 ```bash
 # Problem: Clerk authentication not working
 # Solution: Check environment variables
@@ -723,6 +754,7 @@ echo $CLERK_SECRET_KEY
 ```
 
 #### 2. GraphQL Connection Issues
+
 ```bash
 # Problem: Cannot connect to Hasura
 # Solution: Check network and credentials
@@ -733,6 +765,7 @@ ping your-hasura-url.hasura.app
 ```
 
 #### 3. Database Connection Issues
+
 ```bash
 # Problem: Database connection failed
 # Solution: Test database connectivity
@@ -743,6 +776,7 @@ psql $DATABASE_URL -c "SELECT current_user, current_database();"
 ```
 
 #### 4. Code Generation Issues
+
 ```bash
 # Problem: CodeGen fails
 # Solution: Check GraphQL schema accessibility
@@ -754,6 +788,7 @@ pnpm codegen
 ```
 
 #### 5. Development Server Issues
+
 ```bash
 # Problem: Next.js won't start
 # Solution: Clear cache and restart
@@ -770,6 +805,7 @@ pnpm dev -p 3001
 ### Debugging Tools
 
 #### 1. Environment Verification
+
 ```bash
 # Check all environment variables
 node -e "console.log(process.env)" | grep -E "(CLERK|HASURA|DATABASE)"
@@ -779,6 +815,7 @@ curl http://localhost:3000/api/auth/token
 ```
 
 #### 2. GraphQL Debugging
+
 ```bash
 # Enable GraphQL debug mode
 NEXT_PUBLIC_APOLLO_DEBUG=true pnpm dev
@@ -788,6 +825,7 @@ open http://localhost:3000/api/graphql
 ```
 
 #### 3. Log Analysis
+
 ```bash
 # Check application logs
 pnpm dev 2>&1 | grep -i error
@@ -803,6 +841,7 @@ pnpm dev 2>&1 | grep -i error
 ### Pre-deployment Checklist
 
 #### 1. Security Verification
+
 - [ ] All environment variables use production values
 - [ ] JWT secrets are secure and unique
 - [ ] Database credentials are production-ready
@@ -811,6 +850,7 @@ pnpm dev 2>&1 | grep -i error
 - [ ] Rate limiting is enabled
 
 #### 2. Performance Optimization
+
 - [ ] Code is minified and optimized
 - [ ] Images are optimized
 - [ ] GraphQL queries are optimized
@@ -818,12 +858,14 @@ pnpm dev 2>&1 | grep -i error
 - [ ] CDN is configured (if applicable)
 
 #### 3. Monitoring Setup
+
 - [ ] Error tracking is configured (Sentry, etc.)
 - [ ] Performance monitoring is enabled
 - [ ] Database monitoring is active
 - [ ] Uptime monitoring is configured
 
 #### 4. Backup & Recovery
+
 - [ ] Database backups are scheduled
 - [ ] Environment variables are backed up
 - [ ] Deployment rollback plan is ready
@@ -859,6 +901,7 @@ NEXT_PUBLIC_SITE_URL="https://payroll-matrix.com"
 ### Post-deployment Verification
 
 #### 1. Functionality Testing
+
 ```bash
 # Test critical user flows
 curl https://payroll-matrix.com/api/auth/token
@@ -867,6 +910,7 @@ curl https://payroll-matrix.com/api/payrolls
 ```
 
 #### 2. Performance Testing
+
 ```bash
 # Use tools like:
 # - Lighthouse (web performance)
@@ -875,6 +919,7 @@ curl https://payroll-matrix.com/api/payrolls
 ```
 
 #### 3. Security Testing
+
 ```bash
 # Verify HTTPS
 curl -I https://payroll-matrix.com

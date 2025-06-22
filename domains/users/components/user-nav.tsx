@@ -22,16 +22,16 @@ import {
 
 /**
  * UserNav Component
- * 
+ *
  * A navigation component that displays the current user's avatar and name,
  * with a dropdown menu for accessing profile settings and signing out.
- * 
+ *
  * Features:
  * - Shows user avatar with fallback to initials
  * - Displays full name and email
  * - Provides quick navigation to profile and settings
  * - Handles secure sign-out with redirect
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -47,11 +47,13 @@ export function UserNav() {
   /**
    * Determines the best avatar image to display for the user
    * Priority: Custom uploaded image > External account image > fallback
-   * 
+   *
    * @returns The avatar image URL or empty string for fallback
    */
   const getAvatarImage = () => {
-    if (!user) {return "";}
+    if (!user) {
+      return "";
+    }
 
     // If user has uploaded a custom image, use that
     if (user.hasImage && user.imageUrl) {
@@ -73,15 +75,19 @@ export function UserNav() {
   /**
    * Generates user initials for avatar fallback
    * Takes first letter of first name and first letter of last name
-   * 
+   *
    * @returns User initials (1-2 characters) or "U" as final fallback
    */
   const getUserInitials = () => {
-    if (!isLoaded || !user?.fullName) {return "U";}
+    if (!isLoaded || !user?.fullName) {
+      return "U";
+    }
 
     // Split the name and get initials (up to 2 characters)
     const nameParts = user.fullName.split(" ");
-    if (nameParts.length === 1) {return nameParts[0].charAt(0).toUpperCase();}
+    if (nameParts.length === 1) {
+      return nameParts[0].charAt(0).toUpperCase();
+    }
     return (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase();
   };
 

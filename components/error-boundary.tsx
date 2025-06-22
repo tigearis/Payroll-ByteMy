@@ -122,7 +122,7 @@ export class ErrorBoundary extends React.Component<
         const fallbackProps = {
           error: this.state.error!,
           reset: this.handleReset,
-          ...(this.state.errorId && { errorId: this.state.errorId })
+          ...(this.state.errorId && { errorId: this.state.errorId }),
         };
         return <FallbackComponent {...fallbackProps} />;
       }
@@ -202,14 +202,10 @@ export function ErrorBoundaryWrapper({
   const errorBoundaryProps = {
     isolate,
     ...(fallback && { fallback }),
-    ...(onError && { onError })
+    ...(onError && { onError }),
   };
-  
-  return (
-    <ErrorBoundary {...errorBoundaryProps}>
-      {children}
-    </ErrorBoundary>
-  );
+
+  return <ErrorBoundary {...errorBoundaryProps}>{children}</ErrorBoundary>;
 }
 
 // Specific error components for different scenarios

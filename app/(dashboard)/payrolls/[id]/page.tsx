@@ -18,7 +18,6 @@ const GET_ALL_USERS_LIST = gql`
 
 // Import role enums
 
-
 import {
   ArrowLeft,
   Pencil,
@@ -80,11 +79,11 @@ import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import { PayrollDatesView } from "@/domains/payrolls/components/payroll-dates-view";
 import { PayrollVersionHistory } from "@/domains/payrolls/components/payroll-version-history";
 
-import { 
-  GetPayrollByIdDocument, 
-  GetPayrollDatesDocument, 
+import {
+  GetPayrollByIdDocument,
+  GetPayrollDatesDocument,
   GetPayrollFamilyDatesDocument,
-  UpdatePayrollDocument 
+  UpdatePayrollDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import type { UserRole } from "@/domains/users/types";
 import {
@@ -92,10 +91,7 @@ import {
   usePayrollStatusUpdate,
   getVersionReason,
 } from "@/hooks/use-payroll-versioning";
-import {
-  payroll_cycle_type,
-  payroll_date_type,
-} from "@/types/enums";
+import { payroll_cycle_type, payroll_date_type } from "@/types/enums";
 
 // Add error boundary component for debugging
 function ErrorBoundary({ children }: { children: React.ReactNode }) {
@@ -221,9 +217,15 @@ const WEEKDAYS = [
 function getOrdinalSuffix(num: number): string {
   const j = num % 10;
   const k = num % 100;
-  if (j === 1 && k !== 11) {return "st";}
-  if (j === 2 && k !== 12) {return "nd";}
-  if (j === 3 && k !== 13) {return "rd";}
+  if (j === 1 && k !== 11) {
+    return "st";
+  }
+  if (j === 2 && k !== 12) {
+    return "nd";
+  }
+  if (j === 3 && k !== 13) {
+    return "rd";
+  }
   return "th";
 }
 
@@ -231,8 +233,12 @@ function getOrdinalSuffix(num: number): string {
 function getBusinessWeekday(jsDay: number): number {
   // JavaScript: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
   // Business: 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday
-  if (jsDay === 0) {return 0;} // Sunday - not a business day
-  if (jsDay === 6) {return 0;} // Saturday - not a business day
+  if (jsDay === 0) {
+    return 0;
+  } // Sunday - not a business day
+  if (jsDay === 6) {
+    return 0;
+  } // Saturday - not a business day
   return jsDay; // Monday=1, Tuesday=2, etc.
 }
 
@@ -384,7 +390,7 @@ function EnhancedCalendar({
     }
     weeks.push(days);
 
-    if (days.some((d) => d.date.getMonth() > currentMonth)) {
+    if (days.some(d => d.date.getMonth() > currentMonth)) {
       break;
     }
   }
@@ -439,7 +445,7 @@ function EnhancedCalendar({
       )}
 
       <div className="grid grid-cols-7 gap-1 text-center text-sm">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((dayName) => (
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(dayName => (
           <div key={dayName} className="p-2 font-medium text-gray-500">
             {dayName}
           </div>
@@ -477,8 +483,8 @@ function EnhancedCalendar({
                     ? "bg-blue-300 border-blue-500 border-2 ring-2 ring-blue-200"
                     : "bg-blue-100 border border-blue-300 hover:bg-blue-150"
                   : isSelected
-                  ? "bg-green-300 border-green-500 border-2 ring-2 ring-green-200"
-                  : "bg-green-100 border border-green-300 hover:bg-green-150";
+                    ? "bg-green-300 border-green-500 border-2 ring-2 ring-green-200"
+                    : "bg-green-100 border border-green-300 hover:bg-green-150";
               }
             } else {
               isSelected = selectedDay === dayInfo.day.toString();
@@ -525,7 +531,7 @@ function EnhancedCalendar({
                 </div>
                 <div>
                   <span className="text-gray-600">
-                    {WEEKDAYS.find((w) => w.value === selectedDay)?.label}s
+                    {WEEKDAYS.find(w => w.value === selectedDay)?.label}s
                   </span>
                 </div>
               </div>
@@ -558,13 +564,13 @@ const getCycleName = (payroll: any) => {
   const cycleEnum = payroll?.payroll_cycle?.name;
   if (cycleEnum) {
     // Look up the display name in our constants
-    const cycle = PAYROLL_CYCLES.find((c) => c.id === cycleEnum);
+    const cycle = PAYROLL_CYCLES.find(c => c.id === cycleEnum);
     return cycle ? cycle.name : cycleEnum; // Return display name like 'Weekly' or fallback to enum
   }
 
   // Fallback to cycle_id lookup if nested object not available
   if (payroll?.cycle_id) {
-    const cycle = PAYROLL_CYCLES.find((c) => c.id === payroll.cycle_id);
+    const cycle = PAYROLL_CYCLES.find(c => c.id === payroll.cycle_id);
     return cycle ? cycle.name : `${payroll.cycle_id} (Unknown)`;
   }
 
@@ -617,17 +623,26 @@ const getDateValueDisplay = (payroll: any) => {
 
   // If no date value is set, show appropriate message based on cycle
   if (!dateValue && dateValue !== 0) {
-    if (cycleId === "weekly") {return "Day not selected";}
-    if (cycleId === "fortnightly") {return "Day not selected";}
-    if (cycleId === "bi_monthly") {return "Based on date type";}
+    if (cycleId === "weekly") {
+      return "Day not selected";
+    }
+    if (cycleId === "fortnightly") {
+      return "Day not selected";
+    }
+    if (cycleId === "bi_monthly") {
+      return "Based on date type";
+    }
     if (cycleId === "monthly" || cycleId === "quarterly") {
       const dateTypeId = payroll.payroll_date_type?.id || payroll.date_type_id;
-      if (dateTypeId === "SOM" || dateTypeId === "som")
-        {return "Start of the Month (1st)";}
-      if (dateTypeId === "EOM" || dateTypeId === "eom")
-        {return "End of the Month (last day)";}
-      if (dateTypeId === "fixed" || dateTypeId === "fixed_date")
-        {return "Day not selected";}
+      if (dateTypeId === "SOM" || dateTypeId === "som") {
+        return "Start of the Month (1st)";
+      }
+      if (dateTypeId === "EOM" || dateTypeId === "eom") {
+        return "End of the Month (last day)";
+      }
+      if (dateTypeId === "fixed" || dateTypeId === "fixed_date") {
+        return "Day not selected";
+      }
       return "Based on date type";
     }
     return "Not configured";
@@ -635,13 +650,13 @@ const getDateValueDisplay = (payroll: any) => {
 
   // For weekly - show weekday name
   if (cycleId === "weekly") {
-    const weekday = WEEKDAYS.find((w) => w.value === dateValue.toString());
+    const weekday = WEEKDAYS.find(w => w.value === dateValue.toString());
     return weekday ? weekday.label : `Day ${dateValue}`;
   }
 
   // For fortnightly - show weekday name (Week A/B is calculated dynamically by the database)
   if (cycleId === "fortnightly") {
-    const weekday = WEEKDAYS.find((w) => w.value === dateValue.toString());
+    const weekday = WEEKDAYS.find(w => w.value === dateValue.toString());
     return weekday
       ? `Every fortnight on ${weekday.label}`
       : `Every fortnight on day ${dateValue}`;
@@ -650,10 +665,12 @@ const getDateValueDisplay = (payroll: any) => {
   // For bi-monthly - show based on date type
   if (cycleId === "bi_monthly") {
     const dateTypeId = payroll.payroll_date_type?.id || payroll.date_type_id;
-    if (dateTypeId === "SOM" || dateTypeId === "som")
-      {return "1st and 15th of month";}
-    if (dateTypeId === "EOM" || dateTypeId === "eom")
-      {return "15th and last day of month";}
+    if (dateTypeId === "SOM" || dateTypeId === "som") {
+      return "1st and 15th of month";
+    }
+    if (dateTypeId === "EOM" || dateTypeId === "eom") {
+      return "15th and last day of month";
+    }
     return "Based on date type";
   }
 
@@ -663,10 +680,12 @@ const getDateValueDisplay = (payroll: any) => {
     if (dateTypeId === "fixed" || dateTypeId === "fixed_date") {
       return `${dateValue}${getOrdinalSuffix(dateValue)} of the Month`;
     }
-    if (dateTypeId === "SOM" || dateTypeId === "som")
-      {return "Start of the Month (1st)";}
-    if (dateTypeId === "EOM" || dateTypeId === "eom")
-      {return "End of the Month (last day)";}
+    if (dateTypeId === "SOM" || dateTypeId === "som") {
+      return "Start of the Month (1st)";
+    }
+    if (dateTypeId === "EOM" || dateTypeId === "eom") {
+      return "End of the Month (last day)";
+    }
   }
 
   // For other cases, just show the number
@@ -688,7 +707,7 @@ const getEnhancedScheduleSummary = (payroll: any) => {
     if (!dateValue && dateValue !== 0) {
       return `${cycleName} - Day not selected`;
     }
-    const weekday = WEEKDAYS.find((w) => w.value === dateValue.toString());
+    const weekday = WEEKDAYS.find(w => w.value === dateValue.toString());
     return `${cycleName} - ${weekday ? weekday.label : `Day ${dateValue}`}`;
   }
 
@@ -696,7 +715,7 @@ const getEnhancedScheduleSummary = (payroll: any) => {
     if (!dateValue && dateValue !== 0) {
       return `${cycleName} - Day not selected`;
     }
-    const weekday = WEEKDAYS.find((w) => w.value === dateValue.toString());
+    const weekday = WEEKDAYS.find(w => w.value === dateValue.toString());
 
     // Calculate current week type (A or B) based on current date
     const now = new Date();
@@ -772,7 +791,7 @@ const getScheduleSummary = (payroll: any) => {
     if (!dateValue && dateValue !== 0) {
       return `${cycleName} - Day not selected`;
     }
-    const weekday = WEEKDAYS.find((w) => w.value === dateValue.toString());
+    const weekday = WEEKDAYS.find(w => w.value === dateValue.toString());
     return `${cycleName} - ${weekday ? weekday.label : `Day ${dateValue}`}`;
   }
 
@@ -780,7 +799,7 @@ const getScheduleSummary = (payroll: any) => {
     if (!dateValue && dateValue !== 0) {
       return `${cycleName} - Day not selected`;
     }
-    const weekday = WEEKDAYS.find((w) => w.value === dateValue.toString());
+    const weekday = WEEKDAYS.find(w => w.value === dateValue.toString());
     return `${cycleName} - ${weekday ? weekday.label : `Day ${dateValue}`}`;
   }
 
@@ -835,7 +854,9 @@ const formatCurrency = (amount: number) => {
 
 // Format date function
 const formatDate = (date: string | Date) => {
-  if (!date) {return "Not set";}
+  if (!date) {
+    return "Not set";
+  }
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     weekday: "short",
@@ -847,7 +868,9 @@ const formatDate = (date: string | Date) => {
 
 // Format date with time
 const formatDateTime = (date: string | Date) => {
-  if (!date) {return "Not set";}
+  if (!date) {
+    return "Not set";
+  }
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     weekday: "short",
@@ -1112,7 +1135,7 @@ export default function PayrollPage() {
         window.location.reload();
       }, 1000); // Small delay to let the toast show
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to update payroll: ${error.message}`);
     },
   });
@@ -1222,13 +1245,13 @@ export default function PayrollPage() {
           <Label htmlFor="weekday">Day of Week</Label>
           <Select
             value={editedPayroll.date_value}
-            onValueChange={(value) => handleInputChange("date_value", value)}
+            onValueChange={value => handleInputChange("date_value", value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select day of week..." />
             </SelectTrigger>
             <SelectContent>
-              {WEEKDAYS.map((weekday) => (
+              {WEEKDAYS.map(weekday => (
                 <SelectItem key={weekday.value} value={weekday.value}>
                   {weekday.label}
                 </SelectItem>
@@ -1248,8 +1271,8 @@ export default function PayrollPage() {
             mode="fortnightly"
             selectedWeek={editedPayroll.fortnightlyWeek}
             selectedDay={editedPayroll.date_value}
-            onWeekSelect={(week) => handleInputChange("fortnightlyWeek", week)}
-            onDaySelect={(day) => handleInputChange("date_value", day)}
+            onWeekSelect={week => handleInputChange("fortnightlyWeek", week)}
+            onDaySelect={day => handleInputChange("date_value", day)}
           />
         </div>
       );
@@ -1304,7 +1327,7 @@ export default function PayrollPage() {
             <EnhancedCalendar
               mode="fixed"
               selectedDay={editedPayroll.date_value}
-              onDaySelect={(day) => handleInputChange("date_value", day)}
+              onDaySelect={day => handleInputChange("date_value", day)}
             />
           </div>
         );
@@ -1366,7 +1389,9 @@ export default function PayrollPage() {
 
   const payroll = data.payroll;
   const client = payroll.client;
-  const statusConfig = getStatusConfig((payroll as any).status || "Implementation");
+  const statusConfig = getStatusConfig(
+    (payroll as any).status || "Implementation"
+  );
   const StatusIcon = statusConfig.icon;
 
   // Calculate totals from payroll dates if available
@@ -1561,7 +1586,9 @@ export default function PayrollPage() {
   };
 
   const handleStatusChange = async () => {
-    if (!newStatus || !payroll?.id) {return;}
+    if (!newStatus || !payroll?.id) {
+      return;
+    }
 
     try {
       console.log(
@@ -1874,7 +1901,9 @@ export default function PayrollPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div className="text-center p-4 bg-blue-50 rounded-lg">
                         <div className="text-2xl font-bold text-blue-700">
-                          {(payroll as any).employeeCount || totalEmployees || 0}
+                          {(payroll as any).employeeCount ||
+                            totalEmployees ||
+                            0}
                         </div>
                         <div className="text-sm text-blue-600">Employees</div>
                       </div>
@@ -1930,7 +1959,7 @@ export default function PayrollPage() {
                               <Input
                                 id="name"
                                 value={editedPayroll.name || ""}
-                                onChange={(e) =>
+                                onChange={e =>
                                   handleInputChange("name", e.target.value)
                                 }
                                 placeholder="Enter payroll name..."
@@ -1942,7 +1971,7 @@ export default function PayrollPage() {
                                 id="go_live_date"
                                 type="date"
                                 value={editedPayroll.go_live_date || ""}
-                                onChange={(e) =>
+                                onChange={e =>
                                   handleInputChange(
                                     "go_live_date",
                                     e.target.value
@@ -1993,7 +2022,7 @@ export default function PayrollPage() {
                               <Label htmlFor="cycle-id">Payroll Cycle *</Label>
                               <Select
                                 value={editedPayroll.cycle_id || ""}
-                                onValueChange={(value) =>
+                                onValueChange={value =>
                                   handleCycleChange(value)
                                 }
                               >
@@ -2001,7 +2030,7 @@ export default function PayrollPage() {
                                   <SelectValue placeholder="Select cycle..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {PAYROLL_CYCLES.map((cycle) => (
+                                  {PAYROLL_CYCLES.map(cycle => (
                                     <SelectItem key={cycle.id} value={cycle.id}>
                                       {cycle.name}
                                     </SelectItem>
@@ -2020,7 +2049,7 @@ export default function PayrollPage() {
                                 </Label>
                                 <Select
                                   value={editedPayroll.date_type_id || ""}
-                                  onValueChange={(value) =>
+                                  onValueChange={value =>
                                     handleDateTypeChange(value)
                                   }
                                 >
@@ -2028,7 +2057,7 @@ export default function PayrollPage() {
                                     <SelectValue placeholder="Select date type..." />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    {availableDateTypes.map((dateType) => (
+                                    {availableDateTypes.map(dateType => (
                                       <SelectItem
                                         key={dateType.id}
                                         value={dateType.id}
@@ -2056,7 +2085,7 @@ export default function PayrollPage() {
                                     editedPayroll.processing_days_before_eft ||
                                     ""
                                   }
-                                  onChange={(e) =>
+                                  onChange={e =>
                                     handleInputChange(
                                       "processing_days_before_eft",
                                       e.target.value
@@ -2091,7 +2120,7 @@ export default function PayrollPage() {
                                 value={
                                   editedPayroll.processing_days_before_eft || ""
                                 }
-                                onChange={(e) =>
+                                onChange={e =>
                                   handleInputChange(
                                     "processing_days_before_eft",
                                     e.target.value
@@ -2128,7 +2157,7 @@ export default function PayrollPage() {
                                 value={
                                   editedPayroll.primary_consultant_user_id || ""
                                 }
-                                onValueChange={(value) =>
+                                onValueChange={value =>
                                   handleInputChange(
                                     "primary_consultant_user_id",
                                     value === "none" ? "" : value
@@ -2168,7 +2197,7 @@ export default function PayrollPage() {
                                   editedPayroll.backup_consultant_user_id ||
                                   "none"
                                 }
-                                onValueChange={(value) =>
+                                onValueChange={value =>
                                   handleInputChange(
                                     "backup_consultant_user_id",
                                     value === "none" ? "" : value
@@ -2219,7 +2248,7 @@ export default function PayrollPage() {
                               <Label htmlFor="manager">Manager</Label>
                               <Select
                                 value={editedPayroll.manager_user_id || ""}
-                                onValueChange={(value) =>
+                                onValueChange={value =>
                                   handleInputChange(
                                     "manager_user_id",
                                     value === "none" ? "" : value
@@ -2352,8 +2381,8 @@ export default function PayrollPage() {
                                 Primary Consultant
                               </Label>
                               <p className="mt-1">
-                                {(payroll as any).userByPrimaryConsultantUserId?.name ||
-                                  "Not assigned"}
+                                {(payroll as any).userByPrimaryConsultantUserId
+                                  ?.name || "Not assigned"}
                               </p>
                             </div>
                             <div>
@@ -2361,8 +2390,8 @@ export default function PayrollPage() {
                                 Backup Consultant
                               </Label>
                               <p className="mt-1">
-                                {(payroll as any).userByBackupConsultantUserId?.name ||
-                                  "Not assigned"}
+                                {(payroll as any).userByBackupConsultantUserId
+                                  ?.name || "Not assigned"}
                               </p>
                             </div>
                             <div>
@@ -2463,7 +2492,7 @@ export default function PayrollPage() {
                     <SelectValue placeholder="Select new status..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {possibleStatuses.map((status) => {
+                    {possibleStatuses.map(status => {
                       const config = getStatusConfig(status);
                       const Icon = config.icon;
                       return (
@@ -2484,7 +2513,7 @@ export default function PayrollPage() {
                   id="note"
                   placeholder="Add a note about this status change..."
                   value={statusNote}
-                  onChange={(e) => setStatusNote(e.target.value)}
+                  onChange={e => setStatusNote(e.target.value)}
                 />
               </div>
             </div>
@@ -2524,7 +2553,7 @@ export default function PayrollPage() {
                   id="go-live-date"
                   type="date"
                   value={versioningGoLiveDate}
-                  onChange={(e) => setVersioningGoLiveDate(e.target.value)}
+                  onChange={e => setVersioningGoLiveDate(e.target.value)}
                   min={new Date().toISOString().split("T")[0]}
                   className="mt-1"
                 />
@@ -2540,7 +2569,7 @@ export default function PayrollPage() {
                 <Textarea
                   id="version-note"
                   value={versioningNote}
-                  onChange={(e) => setVersioningNote(e.target.value)}
+                  onChange={e => setVersioningNote(e.target.value)}
                   placeholder="Add a note about this version change..."
                   className="mt-1"
                 />

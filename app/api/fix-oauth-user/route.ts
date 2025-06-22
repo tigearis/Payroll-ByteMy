@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
       [user.firstName, user.lastName].filter(Boolean).join(" ") ||
       "Unknown User";
     const primaryEmail = user.emailAddresses.find(
-      (email) => email.id === user.primaryEmailAddressId
+      email => email.id === user.primaryEmailAddressId
     );
 
     if (primaryEmail) {
@@ -109,10 +109,10 @@ export async function POST(req: NextRequest) {
       finalRole === "org_admin"
         ? "Developer"
         : finalRole === "manager"
-        ? "Manager"
-        : finalRole === "consultant"
-        ? "Consultant"
-        : "Viewer";
+          ? "Manager"
+          : finalRole === "consultant"
+            ? "Consultant"
+            : "Viewer";
 
     console.log(`✅ OAuth user fix completed:`, {
       userId: targetUserId,
@@ -174,10 +174,10 @@ export async function GET(req: NextRequest) {
       currentRole === "org_admin"
         ? "Developer"
         : currentRole === "manager"
-        ? "Manager"
-        : currentRole === "consultant"
-        ? "Consultant"
-        : "Viewer";
+          ? "Manager"
+          : currentRole === "consultant"
+            ? "Consultant"
+            : "Viewer";
     const needsFix =
       !user.publicMetadata?.role ||
       (hasOAuthProvider && currentRole === "viewer");

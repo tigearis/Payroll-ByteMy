@@ -21,10 +21,10 @@ export const GET = withAuth(
       const hasuraClaims = sessionClaims?.[
         "https://hasura.io/jwt/claims"
       ] as any;
-      const userRole = ((sessionClaims?.metadata as any)?.default_role ||
+      const userRole = (hasuraClaims?.["x-hasura-role"] ||
         (sessionClaims?.metadata as any)?.role ||
         hasuraClaims?.["x-hasura-default-role"] ||
-        hasuraClaims?.["x-hasura-role"] ||
+        (sessionClaims?.metadata as any)?.default_role ||
         (sessionClaims as any)?.role) as string;
 
       console.log("🔍 PAYROLL ROUTE - User role debug:", {

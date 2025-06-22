@@ -1,10 +1,16 @@
 // components/user-role-management.tsx
-"use client"
+"use client";
 
-import { Edit, MoreHorizontal, PlusCircle, Trash2, UserPlus } from "lucide-react"
-import { useState } from "react"
+import {
+  Edit,
+  MoreHorizontal,
+  PlusCircle,
+  Trash2,
+  UserPlus,
+} from "lucide-react";
+import { useState } from "react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,11 +27,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Sample user data
 const users = [
@@ -57,7 +76,7 @@ const users = [
     role: "Viewer",
     status: "Inactive",
   },
-]
+];
 
 // Sample roles
 const roles = [
@@ -65,7 +84,13 @@ const roles = [
     id: 1,
     name: "Administrator",
     description: "Full access to all features",
-    permissions: ["manage_users", "manage_clients", "manage_payrolls", "view_reports", "manage_settings"],
+    permissions: [
+      "manage_users",
+      "manage_clients",
+      "manage_payrolls",
+      "view_reports",
+      "manage_settings",
+    ],
   },
   {
     id: 2,
@@ -85,21 +110,27 @@ const roles = [
     description: "Can only view information",
     permissions: ["view_reports"],
   },
-]
+];
 
 export function UserRoleManagement() {
-  const [isAddUserOpen, setIsAddUserOpen] = useState(false)
-  const [isAddRoleOpen, setIsAddRoleOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<"users" | "roles">("users")
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [isAddRoleOpen, setIsAddRoleOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"users" | "roles">("users");
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex space-x-4">
-          <Button variant={activeTab === "users" ? "default" : "outline"} onClick={() => setActiveTab("users")}>
+          <Button
+            variant={activeTab === "users" ? "default" : "outline"}
+            onClick={() => setActiveTab("users")}
+          >
             Users
           </Button>
-          <Button variant={activeTab === "roles" ? "default" : "outline"} onClick={() => setActiveTab("roles")}>
+          <Button
+            variant={activeTab === "roles" ? "default" : "outline"}
+            onClick={() => setActiveTab("roles")}
+          >
             Roles
           </Button>
         </div>
@@ -115,7 +146,9 @@ export function UserRoleManagement() {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Add New User</DialogTitle>
-                  <DialogDescription>Create a new user account and assign a role.</DialogDescription>
+                  <DialogDescription>
+                    Create a new user account and assign a role.
+                  </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
@@ -139,7 +172,7 @@ export function UserRoleManagement() {
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
-                        {roles.map((role) => (
+                        {roles.map(role => (
                           <SelectItem key={role.id} value={role.name}>
                             {role.name}
                           </SelectItem>
@@ -164,7 +197,9 @@ export function UserRoleManagement() {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Add New Role</DialogTitle>
-                  <DialogDescription>Create a new role with specific permissions.</DialogDescription>
+                  <DialogDescription>
+                    Create a new role with specific permissions.
+                  </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
@@ -226,7 +261,7 @@ export function UserRoleManagement() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
+            {users.map(user => (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
@@ -269,13 +304,13 @@ export function UserRoleManagement() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {roles.map((role) => (
+            {roles.map(role => (
               <TableRow key={role.id}>
                 <TableCell className="font-medium">{role.name}</TableCell>
                 <TableCell>{role.description}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {role.permissions.map((permission) => (
+                    {role.permissions.map(permission => (
                       <span
                         key={permission}
                         className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold"
@@ -313,5 +348,5 @@ export function UserRoleManagement() {
         </Table>
       )}
     </div>
-  )
+  );
 }

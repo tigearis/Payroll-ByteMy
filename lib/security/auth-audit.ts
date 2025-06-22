@@ -1,7 +1,12 @@
 // lib/security/auth-audit.ts - Authentication audit logging functions
 import { NextRequest } from "next/server";
 
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "./audit/logger";
+import {
+  auditLogger,
+  LogLevel,
+  LogCategory,
+  SOC2EventType,
+} from "./audit/logger";
 
 /**
  * Log successful authentication events
@@ -28,16 +33,16 @@ export async function logSuccessfulLogin(
       userAgent,
       metadata: {
         timestamp: new Date().toISOString(),
-        authenticationMethod: 'clerk_jwt',
-        sessionType: 'web',
-        ...metadata
+        authenticationMethod: "clerk_jwt",
+        sessionType: "web",
+        ...metadata,
       },
-      complianceNote: `Successful authentication for user ${userEmail}`
+      complianceNote: `Successful authentication for user ${userEmail}`,
     });
 
     console.log(`✅ [AUTH AUDIT] Successful login logged for user: ${userId}`);
   } catch (error) {
-    console.error('Failed to log successful authentication:', error);
+    console.error("Failed to log successful authentication:", error);
     // Don't throw - logging failures shouldn't break auth flow
   }
 }
@@ -67,16 +72,18 @@ export async function logFailedLogin(
       errorMessage,
       metadata: {
         timestamp: new Date().toISOString(),
-        authenticationMethod: 'clerk_jwt',
+        authenticationMethod: "clerk_jwt",
         failureReason: categorizeAuthFailure(errorMessage),
-        ...metadata
+        ...metadata,
       },
-      complianceNote: `Failed authentication attempt for ${attemptedEmail}: ${errorMessage}`
+      complianceNote: `Failed authentication attempt for ${attemptedEmail}: ${errorMessage}`,
     });
 
-    console.log(`🚨 [AUTH AUDIT] Failed login logged for email: ${attemptedEmail}`);
+    console.log(
+      `🚨 [AUTH AUDIT] Failed login logged for email: ${attemptedEmail}`
+    );
   } catch (error) {
-    console.error('Failed to log failed authentication:', error);
+    console.error("Failed to log failed authentication:", error);
     // Don't throw - logging failures shouldn't break auth flow
   }
 }
@@ -106,16 +113,16 @@ export async function logTokenRefresh(
       userAgent,
       metadata: {
         timestamp: new Date().toISOString(),
-        authenticationMethod: 'token_refresh',
-        operation: 'token_refresh',
-        ...metadata
+        authenticationMethod: "token_refresh",
+        operation: "token_refresh",
+        ...metadata,
       },
-      complianceNote: `Token refresh for user ${userEmail}`
+      complianceNote: `Token refresh for user ${userEmail}`,
     });
 
     console.log(`🔄 [AUTH AUDIT] Token refresh logged for user: ${userId}`);
   } catch (error) {
-    console.error('Failed to log token refresh:', error);
+    console.error("Failed to log token refresh:", error);
   }
 }
 
@@ -144,15 +151,15 @@ export async function logLogout(
       userAgent,
       metadata: {
         timestamp: new Date().toISOString(),
-        logoutType: metadata?.logoutType || 'user_initiated',
-        ...metadata
+        logoutType: metadata?.logoutType || "user_initiated",
+        ...metadata,
       },
-      complianceNote: `User logout: ${userEmail}`
+      complianceNote: `User logout: ${userEmail}`,
     });
 
     console.log(`👋 [AUTH AUDIT] Logout logged for user: ${userId}`);
   } catch (error) {
-    console.error('Failed to log logout:', error);
+    console.error("Failed to log logout:", error);
   }
 }
 
@@ -181,16 +188,16 @@ export async function logSessionTimeout(
       userAgent,
       metadata: {
         timestamp: new Date().toISOString(),
-        timeoutReason: metadata?.timeoutReason || 'idle_timeout',
+        timeoutReason: metadata?.timeoutReason || "idle_timeout",
         sessionDuration: metadata?.sessionDuration,
-        ...metadata
+        ...metadata,
       },
-      complianceNote: `Session timeout for user ${userEmail}`
+      complianceNote: `Session timeout for user ${userEmail}`,
     });
 
     console.log(`⏰ [AUTH AUDIT] Session timeout logged for user: ${userId}`);
   } catch (error) {
-    console.error('Failed to log session timeout:', error);
+    console.error("Failed to log session timeout:", error);
   }
 }
 
@@ -230,15 +237,17 @@ export async function logRoleChange(
         adminUserId,
         adminUserEmail,
         timestamp: new Date().toISOString(),
-        changeReason: metadata?.reason || 'administrative_action',
-        ...metadata
+        changeReason: metadata?.reason || "administrative_action",
+        ...metadata,
       },
-      complianceNote: `Role change: ${targetUserEmail} from ${oldRole} to ${newRole} by ${adminUserEmail}`
+      complianceNote: `Role change: ${targetUserEmail} from ${oldRole} to ${newRole} by ${adminUserEmail}`,
     });
 
-    console.log(`🔄 [AUTH AUDIT] Role change logged: ${targetUserEmail} ${oldRole} -> ${newRole}`);
+    console.log(
+      `🔄 [AUTH AUDIT] Role change logged: ${targetUserEmail} ${oldRole} -> ${newRole}`
+    );
   } catch (error) {
-    console.error('Failed to log role change:', error);
+    console.error("Failed to log role change:", error);
   }
 }
 
@@ -269,17 +278,19 @@ export async function logUnauthorizedAccess(
       metadata: {
         attemptedResource,
         timestamp: new Date().toISOString(),
-        accessMethod: metadata?.accessMethod || 'api',
+        accessMethod: metadata?.accessMethod || "api",
         userRole: metadata?.userRole,
         requiredRole: metadata?.requiredRole,
-        ...metadata
+        ...metadata,
       },
-      complianceNote: `Unauthorized access attempt to ${attemptedResource}`
+      complianceNote: `Unauthorized access attempt to ${attemptedResource}`,
     });
 
-    console.log(`🚨 [AUTH AUDIT] Unauthorized access logged: ${attemptedResource}`);
+    console.log(
+      `🚨 [AUTH AUDIT] Unauthorized access logged: ${attemptedResource}`
+    );
   } catch (error) {
-    console.error('Failed to log unauthorized access:', error);
+    console.error("Failed to log unauthorized access:", error);
   }
 }
 
@@ -287,7 +298,7 @@ export async function logUnauthorizedAccess(
  * Log MFA events
  */
 export async function logMFAEvent(
-  eventType: 'setup' | 'challenge' | 'success' | 'failure' | 'disabled',
+  eventType: "setup" | "challenge" | "success" | "failure" | "disabled",
   userId: string,
   userEmail: string,
   ipAddress: string,
@@ -297,14 +308,15 @@ export async function logMFAEvent(
 ): Promise<void> {
   try {
     const soc2EventType = {
-      'setup': SOC2EventType.MFA_ENABLED,
-      'challenge': SOC2EventType.MFA_CHALLENGE,
-      'success': SOC2EventType.MFA_SUCCESS,
-      'failure': SOC2EventType.MFA_CHALLENGE,
-      'disabled': SOC2EventType.MFA_DISABLED
+      setup: SOC2EventType.MFA_ENABLED,
+      challenge: SOC2EventType.MFA_CHALLENGE,
+      success: SOC2EventType.MFA_SUCCESS,
+      failure: SOC2EventType.MFA_CHALLENGE,
+      disabled: SOC2EventType.MFA_DISABLED,
     }[eventType];
 
-    const logLevel = eventType === 'failure' ? LogLevel.WARNING : LogLevel.AUDIT;
+    const logLevel =
+      eventType === "failure" ? LogLevel.WARNING : LogLevel.AUDIT;
 
     await auditLogger.logSOC2Event({
       level: logLevel,
@@ -314,21 +326,21 @@ export async function logMFAEvent(
       userEmail,
       resourceType: "mfa",
       action: eventType.toUpperCase(),
-      success: eventType !== 'failure',
+      success: eventType !== "failure",
       ipAddress,
       userAgent,
       metadata: {
         timestamp: new Date().toISOString(),
-        mfaMethod: metadata?.mfaMethod || 'totp',
+        mfaMethod: metadata?.mfaMethod || "totp",
         mfaEventType: eventType,
-        ...metadata
+        ...metadata,
       },
-      complianceNote: `MFA ${eventType} for user ${userEmail}`
+      complianceNote: `MFA ${eventType} for user ${userEmail}`,
     });
 
     console.log(`🔐 [AUTH AUDIT] MFA ${eventType} logged for user: ${userId}`);
   } catch (error) {
-    console.error('Failed to log MFA event:', error);
+    console.error("Failed to log MFA event:", error);
   }
 }
 
@@ -337,24 +349,27 @@ export async function logMFAEvent(
  */
 function categorizeAuthFailure(errorMessage: string): string {
   const lowerError = errorMessage.toLowerCase();
-  
-  if (lowerError.includes('unauthorized') || lowerError.includes('no active session')) {
-    return 'invalid_credentials';
+
+  if (
+    lowerError.includes("unauthorized") ||
+    lowerError.includes("no active session")
+  ) {
+    return "invalid_credentials";
   }
-  if (lowerError.includes('forbidden') || lowerError.includes('insufficient')) {
-    return 'insufficient_permissions';
+  if (lowerError.includes("forbidden") || lowerError.includes("insufficient")) {
+    return "insufficient_permissions";
   }
-  if (lowerError.includes('token')) {
-    return 'invalid_token';
+  if (lowerError.includes("token")) {
+    return "invalid_token";
   }
-  if (lowerError.includes('expired')) {
-    return 'expired_session';
+  if (lowerError.includes("expired")) {
+    return "expired_session";
   }
-  if (lowerError.includes('rate limit')) {
-    return 'rate_limited';
+  if (lowerError.includes("rate limit")) {
+    return "rate_limited";
   }
-  
-  return 'unknown_error';
+
+  return "unknown_error";
 }
 
 /**
@@ -364,13 +379,13 @@ export function extractClientInfo(request: NextRequest): {
   ipAddress: string;
   userAgent: string;
 } {
-  const ipAddress = 
-    request.headers.get('x-forwarded-for')?.split(',')[0] ||
-    request.headers.get('x-real-ip') ||
-    request.headers.get('cf-connecting-ip') ||
-    'unknown';
-    
-  const userAgent = request.headers.get('user-agent') || 'unknown';
-  
+  const ipAddress =
+    request.headers.get("x-forwarded-for")?.split(",")[0] ||
+    request.headers.get("x-real-ip") ||
+    request.headers.get("cf-connecting-ip") ||
+    "unknown";
+
+  const userAgent = request.headers.get("user-agent") || "unknown";
+
   return { ipAddress, userAgent };
 }

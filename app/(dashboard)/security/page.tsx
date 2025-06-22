@@ -31,7 +31,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SecurityOverviewDocument } from "@/domains/audit/graphql/generated/graphql";
 import { useUserRole } from "@/hooks/use-user-role";
 
-
 export default function SecurityDashboard() {
   const {
     data,
@@ -203,8 +202,8 @@ export default function SecurityDashboard() {
                   complianceStatus === "passed"
                     ? "default"
                     : complianceStatus === "warning"
-                    ? "secondary"
-                    : "destructive"
+                      ? "secondary"
+                      : "destructive"
                 }
                 className="text-sm"
               >
@@ -269,7 +268,9 @@ export default function SecurityDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data?.auth_events_summary?.length || 0}</div>
+            <div className="text-2xl font-bold">
+              {data?.auth_events_summary?.length || 0}
+            </div>
             <p className="text-xs text-muted-foreground">With access</p>
           </CardContent>
         </Card>

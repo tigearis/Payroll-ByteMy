@@ -9,12 +9,21 @@ interface ModalFormProps {
   fetchEntityData: (id: string) => Promise<any>; // Function to fetch data dynamically
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, title, entityId, fetchEntityData }) => {
+const ModalForm: React.FC<ModalFormProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  title,
+  entityId,
+  fetchEntityData,
+}) => {
   const [formData, setFormData] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!isOpen) {return;}
+    if (!isOpen) {
+      return;
+    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -31,7 +40,9 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, title,
     fetchData();
   }, [isOpen, entityId, fetchEntityData]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
@@ -42,14 +53,18 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, title,
     onClose();
   };
 
-  if (!isOpen) {return null;}
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-header">
           <h2>{title}</h2>
-          <button onClick={onClose} className="modal-close-btn">×</button>
+          <button onClick={onClose} className="modal-close-btn">
+            ×
+          </button>
         </div>
         {loading ? (
           <p>Loading...</p>
@@ -57,9 +72,12 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, title,
           <form onSubmit={handleSubmit} className="modal-body space-y-4">
             {/* Dynamically render fields */}
             {formData &&
-              Object.keys(formData).map((key) => (
+              Object.keys(formData).map(key => (
                 <div key={key}>
-                  <label htmlFor={key} className="block text-sm font-medium capitalize">
+                  <label
+                    htmlFor={key}
+                    className="block text-sm font-medium capitalize"
+                  >
                     {key.replace(/_/g, " ")} {/* Format key names */}
                   </label>
                   <input
@@ -73,8 +91,16 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, title,
                 </div>
               ))}
             <div className="modal-footer">
-              <button type="submit" className="btn btn-primary">Save</button>
-              <button type="button" onClick={onClose} className="btn btn-secondary">Cancel</button>
+              <button type="submit" className="btn btn-primary">
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="btn btn-secondary"
+              >
+                Cancel
+              </button>
             </div>
           </form>
         )}

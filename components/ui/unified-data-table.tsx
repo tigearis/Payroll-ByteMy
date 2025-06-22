@@ -38,21 +38,21 @@ export interface DataTableColumn<T> {
   defaultVisible?: boolean;
   cellRenderer?: (value: any, row: T) => React.ReactNode;
   width?: string;
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
 }
 
 export interface DataTableAction<T> {
   label: string;
   icon?: React.ComponentType<{ className?: string }>;
   onClick: (row: T) => void;
-  variant?: 'default' | 'destructive';
+  variant?: "default" | "destructive";
   disabled?: (row: T) => boolean;
   separator?: boolean;
   href?: (row: T) => string;
 }
 
 export interface StatusConfig {
-  variant: 'default' | 'secondary' | 'destructive' | 'outline';
+  variant: "default" | "secondary" | "destructive" | "outline";
   icon?: React.ComponentType<{ className?: string }>;
   className?: string;
 }
@@ -61,50 +61,52 @@ export interface DataTableProps<T> {
   // Data
   data: T[];
   columns: DataTableColumn<T>[];
-  
+
   // Loading & States
   loading?: boolean;
   emptyMessage?: string;
-  
+
   // Selection
   selectable?: boolean;
   selectedItems?: string[];
   onSelectItem?: (id: string, checked: boolean) => void;
   onSelectAll?: (checked: boolean) => void;
-  
+
   // Sorting
   sortField?: string;
-  sortDirection?: 'asc' | 'desc';
+  sortDirection?: "asc" | "desc";
   onSort?: (field: string) => void;
-  
+
   // Visibility
   visibleColumns?: string[];
-  
+
   // Actions
   actions?: DataTableAction<T>[];
-  
+
   // Status Mapping
   statusConfig?: Record<string, StatusConfig>;
-  
+
   // Header
   title?: string;
   onRefresh?: () => void;
   headerActions?: React.ReactNode;
-  
+
   // Styling
   className?: string;
-  
+
   // Row Configuration
   getRowId: (row: T) => string;
   getRowLink?: (row: T) => string;
 }
 
 // Built-in cell renderers
-export const createCellRenderers = <T,>(statusConfig?: Record<string, StatusConfig>) => ({
+export const createCellRenderers = <T,>(
+  statusConfig?: Record<string, StatusConfig>
+) => ({
   badge: (value: string) => {
-    const config = statusConfig?.[value] || { variant: 'default' as const };
+    const config = statusConfig?.[value] || { variant: "default" as const };
     const IconComponent = config.icon;
-    
+
     return (
       <Badge variant={config.variant} className={config.className}>
         {IconComponent && <IconComponent className="w-3 h-3 mr-1" />}
@@ -112,37 +114,46 @@ export const createCellRenderers = <T,>(statusConfig?: Record<string, StatusConf
       </Badge>
     );
   },
-  
+
   link: (value: string, href: string) => (
     <Link href={href} className="text-blue-600 hover:underline font-medium">
       {value}
     </Link>
   ),
-  
-  iconText: (value: string, IconComponent: React.ComponentType<{ className?: string }>) => (
+
+  iconText: (
+    value: string,
+    IconComponent: React.ComponentType<{ className?: string }>
+  ) => (
     <div className="flex items-center gap-2">
       <IconComponent className="w-4 h-4 text-gray-500" />
       <span>{value}</span>
     </div>
   ),
-  
+
   avatar: (user: { name: string; imageUrl?: string; email?: string }) => (
     <div className="flex items-center space-x-3">
       <Avatar className="h-8 w-8">
         <AvatarImage src={user.imageUrl} alt={user.name} />
         <AvatarFallback>
-          {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+          {user.name
+            .split(" ")
+            .map(n => n[0])
+            .join("")
+            .toUpperCase()}
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
         <div className="font-medium truncate">{user.name}</div>
         {user.email && (
-          <div className="text-sm text-muted-foreground truncate">{user.email}</div>
+          <div className="text-sm text-muted-foreground truncate">
+            {user.email}
+          </div>
         )}
       </div>
     </div>
   ),
-  
+
   date: (value: string | Date) => {
     const date = new Date(value);
     return (
@@ -152,15 +163,15 @@ export const createCellRenderers = <T,>(statusConfig?: Record<string, StatusConf
       </div>
     );
   },
-  
+
   simpleDate: (value: string | Date) => {
     return new Date(value).toLocaleDateString();
   },
-  
+
   count: (value: number, singular: string, plural?: string) => (
     <div className="flex items-center gap-1 text-sm text-muted-foreground">
       <span className="font-medium text-foreground">{value}</span>
-      {value === 1 ? singular : (plural || `${singular}s`)}
+      {value === 1 ? singular : plural || `${singular}s`}
     </div>
   ),
 });
@@ -187,7 +198,6 @@ export function UnifiedDataTable<T>({
   getRowId,
   getRowLink,
 }: DataTableProps<T>) {
-  
   // Filter visible columns
   const displayColumns = useMemo(() => {
     if (!visibleColumns) return columns;
@@ -196,7 +206,10 @@ export function UnifiedDataTable<T>({
 
   // Selection logic
   const allSelected = useMemo(() => {
-    return data.length > 0 && data.every(row => selectedItems.includes(getRowId(row)));
+    return (
+      data.length > 0 &&
+      data.every(row => selectedItems.includes(getRowId(row)))
+    );
   }, [data, selectedItems, getRowId]);
 
   const someSelected = useMemo(() => {
@@ -204,14 +217,17 @@ export function UnifiedDataTable<T>({
   }, [selectedItems, allSelected]);
 
   // Cell renderers
-  const cellRenderers = useMemo(() => createCellRenderers<T>(statusConfig), [statusConfig]);
+  const cellRenderers = useMemo(
+    () => createCellRenderers<T>(statusConfig),
+    [statusConfig]
+  );
 
   // Handle sorting
   const handleSort = (columnKey: string) => {
     if (!onSort) return;
-    
+
     if (sortField === columnKey) {
-      onSort(sortDirection === 'asc' ? 'desc' : 'asc');
+      onSort(sortDirection === "asc" ? "desc" : "asc");
     } else {
       onSort(columnKey);
     }
@@ -220,8 +236,8 @@ export function UnifiedDataTable<T>({
   // Render sorting icon
   const renderSortIcon = (columnKey: string) => {
     if (sortField !== String(columnKey)) return null;
-    
-    return sortDirection === 'asc' ? (
+
+    return sortDirection === "asc" ? (
       <ChevronUp className="w-4 h-4" />
     ) : (
       <ChevronDown className="w-4 h-4" />
@@ -231,16 +247,16 @@ export function UnifiedDataTable<T>({
   // Render cell content
   const renderCell = (column: DataTableColumn<T>, row: T) => {
     const value = row[column.key];
-    
+
     if (column.cellRenderer) {
       return column.cellRenderer(value, row);
     }
-    
+
     // Default rendering based on value type
     if (value === null || value === undefined) {
       return <span className="text-muted-foreground">—</span>;
     }
-    
+
     return String(value);
   };
 
@@ -249,8 +265,12 @@ export function UnifiedDataTable<T>({
     if (loading) {
       return (
         <TableRow>
-          <TableCell 
-            colSpan={displayColumns.length + (selectable ? 1 : 0) + (actions.length > 0 ? 1 : 0)}
+          <TableCell
+            colSpan={
+              displayColumns.length +
+              (selectable ? 1 : 0) +
+              (actions.length > 0 ? 1 : 0)
+            }
             className="h-32 text-center"
           >
             <div className="flex items-center justify-center gap-2">
@@ -265,8 +285,12 @@ export function UnifiedDataTable<T>({
     if (data.length === 0) {
       return (
         <TableRow>
-          <TableCell 
-            colSpan={displayColumns.length + (selectable ? 1 : 0) + (actions.length > 0 ? 1 : 0)}
+          <TableCell
+            colSpan={
+              displayColumns.length +
+              (selectable ? 1 : 0) +
+              (actions.length > 0 ? 1 : 0)
+            }
             className="h-32 text-center text-muted-foreground"
           >
             {emptyMessage}
@@ -275,30 +299,32 @@ export function UnifiedDataTable<T>({
       );
     }
 
-    return data.map((row) => {
+    return data.map(row => {
       const rowId = getRowId(row);
       const isSelected = selectedItems.includes(rowId);
       const rowLink = getRowLink?.(row);
-      
+
       return (
         <TableRow
           key={rowId}
-          className={`hover:bg-muted/50 ${isSelected ? 'bg-muted/25' : ''}`}
+          className={`hover:bg-muted/50 ${isSelected ? "bg-muted/25" : ""}`}
         >
           {selectable && (
             <TableCell className="w-12">
               <Checkbox
                 checked={isSelected}
-                onCheckedChange={(checked) => onSelectItem?.(rowId, checked as boolean)}
+                onCheckedChange={checked =>
+                  onSelectItem?.(rowId, checked as boolean)
+                }
                 aria-label={`Select row ${rowId}`}
               />
             </TableCell>
           )}
-          
-          {displayColumns.map((column) => (
+
+          {displayColumns.map(column => (
             <TableCell
               key={String(column.key)}
-              className={column.align ? `text-${column.align}` : ''}
+              className={column.align ? `text-${column.align}` : ""}
               style={{ width: column.width }}
             >
               {column.key === displayColumns[0].key && rowLink ? (
@@ -310,7 +336,7 @@ export function UnifiedDataTable<T>({
               )}
             </TableCell>
           ))}
-          
+
           {actions.length > 0 && (
             <TableCell className="w-12">
               <DropdownMenu>
@@ -324,7 +350,7 @@ export function UnifiedDataTable<T>({
                   {actions.map((action, index) => {
                     const isDisabled = action.disabled?.(row) || false;
                     const IconComponent = action.icon;
-                    
+
                     if (action.separator && index > 0) {
                       return (
                         <React.Fragment key={`separator-${index}`}>
@@ -332,23 +358,33 @@ export function UnifiedDataTable<T>({
                           <DropdownMenuItem
                             onClick={() => !isDisabled && action.onClick(row)}
                             disabled={isDisabled}
-                            className={action.variant === 'destructive' ? 'text-red-600' : ''}
+                            className={
+                              action.variant === "destructive"
+                                ? "text-red-600"
+                                : ""
+                            }
                           >
-                            {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
+                            {IconComponent && (
+                              <IconComponent className="mr-2 h-4 w-4" />
+                            )}
                             {action.label}
                           </DropdownMenuItem>
                         </React.Fragment>
                       );
                     }
-                    
+
                     return (
                       <DropdownMenuItem
                         key={action.label}
                         onClick={() => !isDisabled && action.onClick(row)}
                         disabled={isDisabled}
-                        className={action.variant === 'destructive' ? 'text-red-600' : ''}
+                        className={
+                          action.variant === "destructive" ? "text-red-600" : ""
+                        }
                       >
-                        {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
+                        {IconComponent && (
+                          <IconComponent className="mr-2 h-4 w-4" />
+                        )}
                         {action.label}
                       </DropdownMenuItem>
                     );
@@ -376,14 +412,16 @@ export function UnifiedDataTable<T>({
                 onClick={onRefresh}
                 disabled={loading}
               >
-                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+                />
                 Refresh
               </Button>
             )}
           </div>
         </CardHeader>
       )}
-      
+
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
@@ -393,20 +431,24 @@ export function UnifiedDataTable<T>({
                   <TableHead className="w-12">
                     <Checkbox
                       checked={someSelected ? "indeterminate" : allSelected}
-                      onCheckedChange={(checked) => onSelectAll?.(checked as boolean)}
+                      onCheckedChange={checked =>
+                        onSelectAll?.(checked as boolean)
+                      }
                       aria-label="Select all rows"
                     />
                   </TableHead>
                 )}
-                
-                {displayColumns.map((column) => (
+
+                {displayColumns.map(column => (
                   <TableHead
                     key={String(column.key)}
-                    className={`${column.sortable ? 'cursor-pointer select-none hover:bg-muted/50' : ''} ${
-                      column.align ? `text-${column.align}` : ''
+                    className={`${column.sortable ? "cursor-pointer select-none hover:bg-muted/50" : ""} ${
+                      column.align ? `text-${column.align}` : ""
                     }`}
                     style={{ width: column.width }}
-                    onClick={() => column.sortable && handleSort(String(column.key))}
+                    onClick={() =>
+                      column.sortable && handleSort(String(column.key))
+                    }
                   >
                     <div className="flex items-center gap-2">
                       {column.label}
@@ -414,7 +456,7 @@ export function UnifiedDataTable<T>({
                     </div>
                   </TableHead>
                 ))}
-                
+
                 {actions.length > 0 && (
                   <TableHead className="w-12">
                     <span className="sr-only">Actions</span>
@@ -422,9 +464,7 @@ export function UnifiedDataTable<T>({
                 )}
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {renderTableContent()}
-            </TableBody>
+            <TableBody>{renderTableContent()}</TableBody>
           </Table>
         </div>
       </CardContent>

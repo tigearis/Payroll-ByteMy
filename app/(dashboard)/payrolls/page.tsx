@@ -60,7 +60,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PayrollsTable } from "@/domains/payrolls/components/payrolls-table";
-import { GetPayrollsDocument, GetPayrollsFallbackDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import {
+  GetPayrollsDocument,
+  GetPayrollsFallbackDocument,
+} from "@/domains/payrolls/graphql/generated/graphql";
 import { useUserRole } from "@/hooks/use-user-role";
 
 type ViewMode = "cards" | "table" | "list";
@@ -342,14 +345,14 @@ function MultiSelect({
 
   const handleToggle = (value: string) => {
     const newSelected = selected.includes(value)
-      ? selected.filter((item) => item !== value)
+      ? selected.filter(item => item !== value)
       : [...selected, value];
     onSelectionChange(newSelected);
   };
 
   const selectedLabels = options
-    .filter((option) => selected.includes(option.value))
-    .map((option) => option.label);
+    .filter(option => selected.includes(option.value))
+    .map(option => option.label);
 
   const displayText =
     selectedLabels.length > 0
@@ -373,7 +376,7 @@ function MultiSelect({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <div className="max-h-60 overflow-auto">
-          {options.map((option) => (
+          {options.map(option => (
             <div
               key={option.value}
               className="flex items-center space-x-2 p-2 hover:bg-accent cursor-pointer"
@@ -409,7 +412,7 @@ export default function PayrollsPage() {
 
   // Column visibility state
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
-    COLUMN_DEFINITIONS.filter((col) => col.defaultVisible).map((col) => col.key)
+    COLUMN_DEFINITIONS.filter(col => col.defaultVisible).map(col => col.key)
   );
 
   const {
@@ -511,7 +514,7 @@ export default function PayrollsPage() {
       const today = new Date();
       const futureDates = payrollDates
         .filter(
-          (date) =>
+          date =>
             date.adjusted_eft_date && new Date(date.adjusted_eft_date) >= today
         )
         .sort(
@@ -682,7 +685,7 @@ export default function PayrollsPage() {
     if (checked) {
       setSelectedPayrolls([...selectedPayrolls, payrollId]);
     } else {
-      setSelectedPayrolls(selectedPayrolls.filter((id) => id !== payrollId));
+      setSelectedPayrolls(selectedPayrolls.filter(id => id !== payrollId));
     }
   };
 
@@ -698,9 +701,9 @@ export default function PayrollsPage() {
 
   // Handle column visibility
   const toggleColumnVisibility = (columnKey: string) => {
-    setVisibleColumns((prev) =>
+    setVisibleColumns(prev =>
       prev.includes(columnKey)
-        ? prev.filter((key) => key !== columnKey)
+        ? prev.filter(key => key !== columnKey)
         : [...prev, columnKey]
     );
   };
@@ -944,7 +947,7 @@ export default function PayrollsPage() {
   );
 
   const renderSortableHeader = (label: string, field: string) => {
-    const column = COLUMN_DEFINITIONS.find((col) => col.key === field);
+    const column = COLUMN_DEFINITIONS.find(col => col.key === field);
     if (!column?.sortable) {
       return label;
     }
@@ -1063,7 +1066,7 @@ export default function PayrollsPage() {
                   <Input
                     placeholder="Search payrolls, clients, consultants..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="pl-10 w-[300px]"
                   />
                 </div>
@@ -1100,7 +1103,7 @@ export default function PayrollsPage() {
 
                 <Select
                   value={`${sortField}-${sortDirection}`}
-                  onValueChange={(value) => {
+                  onValueChange={value => {
                     const [field, direction] = value.split("-");
                     setSortField(field);
                     setSortDirection(direction as "asc" | "desc");
@@ -1172,7 +1175,7 @@ export default function PayrollsPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {COLUMN_DEFINITIONS.map((column) => (
+                      {COLUMN_DEFINITIONS.map(column => (
                         <DropdownMenuCheckboxItem
                           key={column.key}
                           checked={visibleColumns.includes(column.key)}

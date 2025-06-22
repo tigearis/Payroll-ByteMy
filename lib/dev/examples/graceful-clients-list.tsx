@@ -15,7 +15,6 @@ import {
 import { GetClientsDocument } from "@/domains/clients/graphql/generated/graphql";
 import { useGracefulQuery } from "@/hooks/use-graceful-query";
 
-
 // Example fallback data for when permissions fail
 const FALLBACK_CLIENTS = [
   {
@@ -114,7 +113,7 @@ function ClientsListContent() {
   if (loading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3].map(i => (
           <Card key={i} className="animate-pulse">
             <CardHeader>
               <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -162,7 +161,7 @@ function ClientsListContent() {
 
       {/* Clients Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {clients.map((client) => (
+        {clients.map(client => (
           <ClientCard key={client.id} client={client} />
         ))}
       </div>

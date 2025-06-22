@@ -87,10 +87,7 @@ export const UPDATE_CLIENT = graphql(`
 
 export const DELETE_CLIENT = graphql(`
   mutation DeleteClient($id: uuid!) {
-    update_clients_by_pk(
-      pk_columns: { id: $id }
-      _set: { active: false }
-    ) {
+    update_clients_by_pk(pk_columns: { id: $id }, _set: { active: false }) {
       id
       name
       active

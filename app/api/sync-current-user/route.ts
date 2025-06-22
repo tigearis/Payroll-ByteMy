@@ -17,14 +17,21 @@ async function handleSync(req: NextRequest) {
     // Get user details from Clerk
     const user = await currentUser();
     if (!user) {
-      return NextResponse.json({ error: "User not found in Clerk" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User not found in Clerk" },
+        { status: 404 }
+      );
     }
 
     const userEmail = user.emailAddresses?.[0]?.emailAddress;
-    const userName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User";
+    const userName =
+      `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User";
 
     if (!userEmail) {
-      return NextResponse.json({ error: "User email not found" }, { status: 400 });
+      return NextResponse.json(
+        { error: "User email not found" },
+        { status: 400 }
+      );
     }
 
     console.log(`🔄 Manual sync requested for user: ${userId} (${userEmail})`);
@@ -59,12 +66,15 @@ async function handleSync(req: NextRequest) {
     }
   } catch (error) {
     console.error("❌ Error in manual user sync:", error);
-    console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
+    console.error(
+      "Error stack:",
+      error instanceof Error ? error.stack : "No stack trace"
+    );
     return NextResponse.json(
-      { 
+      {
         error: "Internal server error",
         details: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined
+        stack: error instanceof Error ? error.stack : undefined,
       },
       { status: 500 }
     );

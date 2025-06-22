@@ -25,11 +25,11 @@ export default function LoadingDemoPage() {
   };
 
   const increaseProgress = () => {
-    setProgress((prev) => Math.min(100, prev + 10));
+    setProgress(prev => Math.min(100, prev + 10));
   };
 
   const decreaseProgress = () => {
-    setProgress((prev) => Math.max(0, prev - 10));
+    setProgress(prev => Math.max(0, prev - 10));
   };
 
   return (

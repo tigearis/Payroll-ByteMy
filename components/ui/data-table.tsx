@@ -66,7 +66,7 @@ export default function DataTable<TData, TValue>({
           <input
             placeholder="Search..."
             value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            onChange={e => setSearchValue(e.target.value)}
             className="px-4 py-2 border rounded-md w-full max-w-sm"
           />
         </div>
@@ -76,9 +76,9 @@ export default function DataTable<TData, TValue>({
       <div className="rounded-md border overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-neutral-100 dark:bg-neutral-800">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map(header => (
                   <th
                     key={header.id}
                     className="px-4 py-3 text-left font-medium"
@@ -107,12 +107,12 @@ export default function DataTable<TData, TValue>({
           </thead>
           <tbody>
             {table.getRowModel().rows.length > 0 ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map(row => (
                 <tr
                   key={row.id}
                   className="border-t hover:bg-neutral-50 dark:hover:bg-neutral-900"
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map(cell => (
                     <td key={cell.id} className="px-4 py-3">
                       {flexRender(
                         cell.column.columnDef.cell,

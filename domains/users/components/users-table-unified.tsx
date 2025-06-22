@@ -10,7 +10,13 @@ import {
   Calendar,
 } from "lucide-react";
 
-import { UnifiedDataTable, DataTableColumn, DataTableAction, StatusConfig, createCellRenderers } from "@/components/ui/unified-data-table";
+import {
+  UnifiedDataTable,
+  DataTableColumn,
+  DataTableAction,
+  StatusConfig,
+  createCellRenderers,
+} from "@/components/ui/unified-data-table";
 
 // User data type (based on existing user structure)
 interface User {
@@ -96,7 +102,6 @@ export function UsersTableUnified({
   onEditUser,
   onViewUser,
 }: UsersTableProps) {
-  
   // Create cell renderers with combined status configs
   const cellRenderers = createCellRenderers<User>({
     ...userStatusConfig,
@@ -110,19 +115,21 @@ export function UsersTableUnified({
       label: "User",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (value, row) => cellRenderers.avatar({
-        name: value,
-        email: row.email,
-        imageUrl: row.imageUrl || "",
-      }),
+      cellRenderer: (value, row) =>
+        cellRenderers.avatar({
+          name: value,
+          email: row.email,
+          imageUrl: row.imageUrl || "",
+        }),
     },
     {
       key: "role",
       label: "Role",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (role) => {
-        const displayRole = role.charAt(0).toUpperCase() + role.slice(1).replace('_', ' ');
+      cellRenderer: role => {
+        const displayRole =
+          role.charAt(0).toUpperCase() + role.slice(1).replace("_", " ");
         return cellRenderers.badge(role);
       },
     },
@@ -131,7 +138,8 @@ export function UsersTableUnified({
       label: "Status",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (active) => cellRenderers.badge(active ? "Active" : "Inactive"),
+      cellRenderer: active =>
+        cellRenderers.badge(active ? "Active" : "Inactive"),
     },
     {
       key: "is_staff",
@@ -139,7 +147,7 @@ export function UsersTableUnified({
       sortable: true,
       defaultVisible: true,
       align: "center",
-      cellRenderer: (isStaff) => (
+      cellRenderer: isStaff => (
         <div className="flex justify-center">
           {isStaff ? (
             <UserCheck className="w-4 h-4 text-green-600" />
@@ -154,34 +162,36 @@ export function UsersTableUnified({
       label: "Manager",
       sortable: false,
       defaultVisible: true,
-      cellRenderer: (manager) => 
+      cellRenderer: manager =>
         manager ? (
           <div className="text-sm">
             <div className="font-medium">{manager.name}</div>
             <div className="text-muted-foreground">{manager.email}</div>
           </div>
-        ) : "—",
+        ) : (
+          "—"
+        ),
     },
     {
       key: "email",
       label: "Email",
       sortable: true,
       defaultVisible: false,
-      cellRenderer: (email) => cellRenderers.iconText(email, Mail),
+      cellRenderer: email => cellRenderers.iconText(email, Mail),
     },
     {
       key: "created_at",
       label: "Created",
       sortable: true,
       defaultVisible: false,
-      cellRenderer: (date) => cellRenderers.simpleDate(date),
+      cellRenderer: date => cellRenderers.simpleDate(date),
     },
     {
       key: "updated_at",
       label: "Last Updated",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (date) => cellRenderers.date(date),
+      cellRenderer: date => cellRenderers.date(date),
     },
   ];
 
@@ -190,7 +200,7 @@ export function UsersTableUnified({
     {
       label: "View Details",
       icon: Eye,
-      onClick: (user) => {
+      onClick: user => {
         if (onViewUser) {
           onViewUser(user);
         } else {
@@ -201,7 +211,7 @@ export function UsersTableUnified({
     {
       label: "Edit User",
       icon: Edit,
-      onClick: (user) => {
+      onClick: user => {
         if (onEditUser) {
           onEditUser(user);
         } else {
@@ -212,14 +222,14 @@ export function UsersTableUnified({
     {
       label: "Send Email",
       icon: Mail,
-      onClick: (user) => {
-        window.open(`mailto:${user.email}`, '_blank');
+      onClick: user => {
+        window.open(`mailto:${user.email}`, "_blank");
       },
     },
     {
       label: "View Profile",
       icon: UserCheck,
-      onClick: (user) => {
+      onClick: user => {
         window.location.href = `/staff/${user.id}`;
       },
       separator: true,
@@ -241,8 +251,8 @@ export function UsersTableUnified({
       statusConfig={{ ...userStatusConfig, ...roleStatusConfig }}
       title="Team Members"
       onRefresh={onRefresh || (() => {})}
-      getRowId={(user) => user.id}
-      getRowLink={(user) => `/staff/${user.id}`}
+      getRowId={user => user.id}
+      getRowLink={user => `/staff/${user.id}`}
     />
   );
 }

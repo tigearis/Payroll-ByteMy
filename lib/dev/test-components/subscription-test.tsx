@@ -22,7 +22,10 @@ export function SubscriptionTest() {
   const [logs, setLogs] = useState<string[]>([]);
 
   const addLog = (message: string) => {
-    setLogs((prev) => [...prev, `${new Date().toISOString().slice(11, 19)}: ${message}`]);
+    setLogs(prev => [
+      ...prev,
+      `${new Date().toISOString().slice(11, 19)}: ${message}`,
+    ]);
   };
 
   const { data, loading, error } = useSubscription(TEST_SUBSCRIPTION, {
@@ -33,7 +36,7 @@ export function SubscriptionTest() {
     onSubscriptionComplete: () => {
       addLog("✅ Subscription completed");
     },
-    onError: (err) => {
+    onError: err => {
       addLog(`❌ Error: ${err.message}`);
       console.error("Subscription error details:", err);
     },
@@ -62,10 +65,12 @@ export function SubscriptionTest() {
           Clear Logs
         </Button>
       </div>
-      
+
       <div className="h-48 overflow-auto border rounded-md p-2 bg-gray-50 text-sm font-mono">
         {logs.length === 0 ? (
-          <p className="text-gray-400">No logs yet. Start the subscription test.</p>
+          <p className="text-gray-400">
+            No logs yet. Start the subscription test.
+          </p>
         ) : (
           logs.map((log, i) => <div key={i}>{log}</div>)
         )}

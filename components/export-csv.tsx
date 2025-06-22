@@ -5,9 +5,12 @@ import { format, parseISO } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 
-import { GetPayrollDatesDocument, GetPayrollDatesQuery } from "@/domains/payrolls/graphql/generated/graphql";
+import {
+  GetPayrollDatesDocument,
+  GetPayrollDatesQuery,
+} from "@/domains/payrolls/graphql/generated/graphql";
 
-type PayrollDate = GetPayrollDatesQuery['payrollDates'][0];
+type PayrollDate = GetPayrollDatesQuery["payrollDates"][0];
 
 interface ExportCsvProps {
   payrollId: string;
@@ -19,13 +22,19 @@ export function ExportCsv({ payrollId }: ExportCsvProps) {
     skip: !payrollId,
   });
 
-  if (loading) {return <div>Loading...</div>;}
-  if (error) {return <div>Error: {error.message}</div>;}
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   const dates: PayrollDate[] = data?.payrollDates || [];
 
   const downloadCsv = () => {
-    if (dates.length === 0) {return;}
+    if (dates.length === 0) {
+      return;
+    }
 
     const headers = [
       "Period",
@@ -44,7 +53,7 @@ export function ExportCsv({ payrollId }: ExportCsvProps) {
 
     const csvContent = [
       headers.join(","),
-      ...rows.map((row) => row.join(",")),
+      ...rows.map(row => row.join(",")),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });

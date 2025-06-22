@@ -30,11 +30,13 @@ export function ClientPayrollsTable({
 
   // Function to format name (removes underscores, capitalizes, and keeps DOW/EOM/SOM uppercase)
   const formatName = (name?: string) => {
-    if (!name) {return "N/A";}
+    if (!name) {
+      return "N/A";
+    }
     return name
       .replace(/_/g, " ") // Remove underscores
       .split(" ")
-      .map((word) => {
+      .map(word => {
         const specialCases = ["DOW", "EOM", "SOM"];
         return specialCases.includes(word.toUpperCase())
           ? word.toUpperCase() // Keep these fully capitalized
@@ -45,7 +47,9 @@ export function ClientPayrollsTable({
 
   // Function to format the day of week
   const formatDayOfWeek = (dayValue?: number) => {
-    if (dayValue === undefined || dayValue === null) {return "N/A";}
+    if (dayValue === undefined || dayValue === null) {
+      return "N/A";
+    }
 
     const days = [
       "Sunday",
@@ -61,10 +65,14 @@ export function ClientPayrollsTable({
 
   // Function to format fixed date with ordinal suffix
   const formatFixedDate = (dateValue?: number) => {
-    if (dateValue === undefined || dateValue === null) {return "N/A";}
+    if (dateValue === undefined || dateValue === null) {
+      return "N/A";
+    }
 
     const suffix = (num: number) => {
-      if (num >= 11 && num <= 13) {return "th";}
+      if (num >= 11 && num <= 13) {
+        return "th";
+      }
 
       switch (num % 10) {
         case 1:
@@ -83,7 +91,9 @@ export function ClientPayrollsTable({
 
   // Function to display the appropriate date value based on date type
   const displayDateValue = (payroll: Payroll) => {
-    if (!payroll.payrollDateType || !payroll.payrollDateType.name) {return "N/A";}
+    if (!payroll.payrollDateType || !payroll.payrollDateType.name) {
+      return "N/A";
+    }
 
     const dateTypeName = payroll.payrollDateType.name.toUpperCase();
 
@@ -117,7 +127,7 @@ export function ClientPayrollsTable({
             </TableCell>
           </TableRow>
         ) : payrolls.length > 0 ? (
-          payrolls.map((payroll) => (
+          payrolls.map(payroll => (
             <TableRow key={payroll.id}>
               <TableCell>
                 <Link

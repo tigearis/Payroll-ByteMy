@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-import { auditLogger, SOC2EventType, LogLevel, LogCategory } from "@/lib/security/audit/logger";
+import {
+  auditLogger,
+  SOC2EventType,
+  LogLevel,
+  LogCategory,
+} from "@/lib/security/audit/logger";
 
 // Input validation schema
 const auditEventSchema = z.object({
@@ -28,7 +33,7 @@ export async function POST(request: NextRequest) {
     // Parse and validate input
     const body = await request.json();
     const { input } = body;
-    
+
     const validatedInput = auditEventSchema.parse(input.event);
 
     // Map action to SOC2 event type
@@ -41,7 +46,8 @@ export async function POST(request: NextRequest) {
       BULK_OPERATION: SOC2EventType.BULK_DATA_ACCESS,
     };
 
-    const eventType = eventTypeMap[validatedInput.action] || SOC2EventType.DATA_VIEWED;
+    const eventType =
+      eventTypeMap[validatedInput.action] || SOC2EventType.DATA_VIEWED;
 
     // Log the audit event
     const logEntry: any = {
@@ -55,7 +61,7 @@ export async function POST(request: NextRequest) {
       metadata: validatedInput.metadata,
       ipAddress: validatedInput.ipAddress || "unknown",
       userAgent: validatedInput.userAgent || "unknown",
-      complianceNote: `${validatedInput.action} operation on ${validatedInput.resourceType}`
+      complianceNote: `${validatedInput.action} operation on ${validatedInput.resourceType}`,
     };
 
     if (validatedInput.resourceId) {
@@ -71,7 +77,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error("[Audit API] Error logging event:", error);
-    
+
     return NextResponse.json(
       {
         success: false,

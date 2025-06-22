@@ -3,12 +3,24 @@
 import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { format } from "date-fns";
-import { Download, Filter, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Download,
+  Filter,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -71,14 +83,15 @@ export default function AuditLogPage() {
   const [page, setPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterAction, setFilterAction] = useState<string>("all");
-  const [filterClassification, setFilterClassification] = useState<string>("all");
+  const [filterClassification, setFilterClassification] =
+    useState<string>("all");
   const [filterSuccess, setFilterSuccess] = useState<string>("all");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
   // Build where clause
   const where: any = {};
-  
+
   if (searchTerm) {
     where._or = [
       { user: { email: { _ilike: `%${searchTerm}%` } } },
@@ -86,23 +99,23 @@ export default function AuditLogPage() {
       { entity_id: { _eq: searchTerm } },
     ];
   }
-  
+
   if (filterAction !== "all") {
     where.action = { _eq: filterAction };
   }
-  
+
   if (filterClassification !== "all") {
     where.data_classification = { _eq: filterClassification };
   }
-  
+
   if (filterSuccess !== "all") {
     where.success = { _eq: filterSuccess === "success" };
   }
-  
+
   if (dateFrom) {
     where.created_at = { ...where.created_at, _gte: dateFrom };
   }
-  
+
   if (dateTo) {
     where.created_at = { ...where.created_at, _lte: dateTo };
   }
@@ -121,7 +134,9 @@ export default function AuditLogPage() {
 
   const handleExport = () => {
     // In production, this would call an API endpoint to generate a secure export
-    alert("Export functionality would be implemented with proper security controls");
+    alert(
+      "Export functionality would be implemented with proper security controls"
+    );
   };
 
   const getActionColor = (action: string) => {
@@ -186,7 +201,7 @@ export default function AuditLogPage() {
                 <Input
                   placeholder="Email, entity type, or ID"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="pl-8"
                 />
               </div>
@@ -212,7 +227,10 @@ export default function AuditLogPage() {
 
             <div className="space-y-2">
               <Label>Classification</Label>
-              <Select value={filterClassification} onValueChange={setFilterClassification}>
+              <Select
+                value={filterClassification}
+                onValueChange={setFilterClassification}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -245,7 +263,7 @@ export default function AuditLogPage() {
               <Input
                 type="datetime-local"
                 value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
+                onChange={e => setDateFrom(e.target.value)}
               />
             </div>
 
@@ -254,7 +272,7 @@ export default function AuditLogPage() {
               <Input
                 type="datetime-local"
                 value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
+                onChange={e => setDateTo(e.target.value)}
               />
             </div>
           </div>
@@ -269,7 +287,8 @@ export default function AuditLogPage() {
               <CardTitle>Audit Entries</CardTitle>
               <CardDescription>
                 Showing {page * ITEMS_PER_PAGE + 1} to{" "}
-                {Math.min((page + 1) * ITEMS_PER_PAGE, totalCount)} of {totalCount} entries
+                {Math.min((page + 1) * ITEMS_PER_PAGE, totalCount)} of{" "}
+                {totalCount} entries
               </CardDescription>
             </div>
           </div>
@@ -300,7 +319,10 @@ export default function AuditLogPage() {
                     {data?.audit_log?.map((entry: any) => (
                       <TableRow key={entry.id}>
                         <TableCell className="font-mono text-sm">
-                          {format(new Date(entry.created_at), "yyyy-MM-dd HH:mm:ss")}
+                          {format(
+                            new Date(entry.created_at),
+                            "yyyy-MM-dd HH:mm:ss"
+                          )}
                         </TableCell>
                         <TableCell>
                           <div>
@@ -326,7 +348,11 @@ export default function AuditLogPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={getClassificationColor(entry.data_classification)}>
+                          <Badge
+                            variant={getClassificationColor(
+                              entry.data_classification
+                            )}
+                          >
                             {entry.data_classification}
                           </Badge>
                         </TableCell>

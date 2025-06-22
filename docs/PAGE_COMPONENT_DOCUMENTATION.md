@@ -19,13 +19,16 @@
 ## Authentication Pages
 
 ### Sign In Page
+
 **Route:** `/sign-in/[[...sign-in]]`  
 **File:** `app/(auth)/sign-in/[[...sign-in]]/page.tsx`
 
 #### Purpose
+
 Provides secure user authentication using Clerk's authentication system with support for email/password and OAuth providers.
 
 #### User Interface Elements
+
 - **Email/Password Form**: Primary authentication method
 - **Google OAuth Button**: Social login integration
 - **Remember Me Checkbox**: Persistent session option
@@ -33,32 +36,38 @@ Provides secure user authentication using Clerk's authentication system with sup
 - **Sign Up Redirect**: Link to registration page
 
 #### User Interactions
+
 1. **Email Login**: User enters email and password
 2. **OAuth Login**: Single-click Google authentication
 3. **Password Recovery**: Forgot password flow with email verification
 4. **Registration Redirect**: Navigate to sign-up page
 
 #### Data Sources
+
 - **Clerk Authentication Service**: User credentials and session management
 - **Public Metadata**: Role and organization information
 
 #### State Management
+
 - **Clerk Session State**: Managed by Clerk provider
 - **Form Validation**: Real-time input validation
 - **Error Handling**: Authentication error display
 
 #### API Calls
+
 - `clerk.signIn()` - Authentication request
 - `clerk.signUp()` - Registration redirect
 - Webhook: User creation/update to database
 
 #### Error Handling
+
 - **Invalid Credentials**: Clear error messaging
 - **Account Locked**: Security lockout notification
 - **Network Issues**: Retry mechanism with user feedback
 - **OAuth Failures**: Fallback to email authentication
 
 #### Loading States
+
 - **Spinner Animation**: During authentication process
 - **Button Disabled State**: Prevent multiple submissions
 - **OAuth Loading**: Provider-specific loading indicators
@@ -66,25 +75,30 @@ Provides secure user authentication using Clerk's authentication system with sup
 ---
 
 ### Sign Up Page
+
 **Route:** `/sign-up/[[...sign-up]]`  
 **File:** `app/(auth)/sign-up/[[...sign-up]]/page.tsx`
 
 #### Purpose
+
 New user registration with role assignment and organization setup.
 
 #### User Interface Elements
+
 - **Registration Form**: Name, email, password fields
 - **Role Selection**: Pre-populated from invitation
 - **Terms & Conditions**: Legal agreement checkbox
 - **Organization Code**: Company identification
 
 #### User Interactions
+
 1. **Form Completion**: Multi-step registration process
 2. **Role Confirmation**: Verify assigned role and permissions
 3. **Email Verification**: Mandatory email confirmation
 4. **Initial Setup**: Basic profile configuration
 
 #### Data Flow
+
 ```
 User Input → Clerk Registration → Email Verification → Database User Creation → Role Assignment → Welcome Dashboard
 ```
@@ -92,19 +106,23 @@ User Input → Clerk Registration → Email Verification → Database User Creat
 ---
 
 ### Accept Invitation Page
+
 **Route:** `/accept-invitation`  
 **File:** `app/(auth)/accept-invitation/page.tsx`
 
 #### Purpose
+
 Staff invitation acceptance workflow with role pre-assignment.
 
 #### User Interface Elements
+
 - **Invitation Details**: Organization, role, and permissions overview
 - **Accept/Decline Buttons**: Clear action choices
 - **Manager Information**: Reporting structure display
 - **Getting Started Guide**: Next steps after acceptance
 
 #### Business Logic
+
 - **Invitation Validation**: Token expiry and authenticity checks
 - **Role Assignment**: Automatic role provisioning
 - **Manager Linking**: Hierarchical relationship establishment
@@ -115,13 +133,16 @@ Staff invitation acceptance workflow with role pre-assignment.
 ## Dashboard & Overview
 
 ### Main Dashboard
+
 **Route:** `/dashboard`  
 **File:** `app/(dashboard)/dashboard/page.tsx`
 
 #### Purpose
+
 Central hub providing personalized overview of user's work, responsibilities, and system status.
 
 #### User Interface Elements
+
 - **Welcome Header**: Personalized greeting with current date/time
 - **Quick Stats Cards**: Key metrics based on user role
 - **Recent Activity Feed**: Latest actions and updates
@@ -130,44 +151,68 @@ Central hub providing personalized overview of user's work, responsibilities, an
 - **Notification Center**: System alerts and messages
 
 #### Role-Based Content
+
 ```typescript
 // Different dashboard widgets based on user role
 const dashboardConfig = {
   developer: {
-    widgets: ['system_health', 'error_logs', 'performance_metrics', 'database_stats'],
-    permissions: ['full_system_access']
+    widgets: [
+      "system_health",
+      "error_logs",
+      "performance_metrics",
+      "database_stats",
+    ],
+    permissions: ["full_system_access"],
   },
   org_admin: {
-    widgets: ['user_management', 'compliance_overview', 'billing_summary', 'audit_alerts'],
-    permissions: ['user_management', 'system_settings']
+    widgets: [
+      "user_management",
+      "compliance_overview",
+      "billing_summary",
+      "audit_alerts",
+    ],
+    permissions: ["user_management", "system_settings"],
   },
   manager: {
-    widgets: ['team_overview', 'payroll_schedule', 'client_status', 'staff_assignments'],
-    permissions: ['team_management', 'payroll_oversight']
+    widgets: [
+      "team_overview",
+      "payroll_schedule",
+      "client_status",
+      "staff_assignments",
+    ],
+    permissions: ["team_management", "payroll_oversight"],
   },
   consultant: {
-    widgets: ['my_assignments', 'upcoming_deadlines', 'client_tasks', 'time_tracking'],
-    permissions: ['payroll_processing', 'client_interaction']
+    widgets: [
+      "my_assignments",
+      "upcoming_deadlines",
+      "client_tasks",
+      "time_tracking",
+    ],
+    permissions: ["payroll_processing", "client_interaction"],
   },
   viewer: {
-    widgets: ['dashboard_overview', 'reports_summary', 'notifications'],
-    permissions: ['read_only_access']
-  }
+    widgets: ["dashboard_overview", "reports_summary", "notifications"],
+    permissions: ["read_only_access"],
+  },
 };
 ```
 
 #### Data Sources
+
 - **GraphQL Subscriptions**: Real-time updates for assigned payrolls
 - **Dashboard Stats Query**: Personalized metrics based on role
 - **Recent Activity Query**: User and team activity feed
 - **Notification Query**: System alerts and messages
 
 #### State Management
+
 - **Dashboard Context**: Widget visibility and preferences
 - **Real-time Updates**: WebSocket connections for live data
 - **User Preferences**: Customizable widget layout and settings
 
 #### User Interactions
+
 1. **Widget Customization**: Drag-and-drop widget arrangement
 2. **Quick Actions**: One-click access to common tasks
 3. **Filter Controls**: Date ranges and data filtering
@@ -178,13 +223,16 @@ const dashboardConfig = {
 ## Client Management
 
 ### Client List Page
+
 **Route:** `/clients`  
 **File:** `app/(dashboard)/clients/page.tsx`
 
 #### Purpose
+
 Comprehensive client portfolio management with search, filtering, and bulk operations.
 
 #### User Interface Elements
+
 - **Search & Filter Bar**: Multi-criteria client search
 - **Client Cards/Table**: Switchable view modes
 - **Bulk Action Toolbar**: Multi-select operations
@@ -193,17 +241,20 @@ Comprehensive client portfolio management with search, filtering, and bulk opera
 - **Pagination Controls**: Large dataset navigation
 
 #### Advanced Features
+
 - **Smart Search**: Full-text search across all client data
 - **Filter Combinations**: Status, consultant, billing plan filters
 - **Bulk Operations**: Mass updates and assignments
 - **Quick Actions**: Inline edit and status changes
 
 #### Data Flow
+
 ```
 User Input → Search/Filter → GraphQL Query → Results Display → User Selection → Action Execution
 ```
 
 #### User Interactions
+
 1. **Search**: Real-time client search with auto-suggestions
 2. **Filter**: Multi-dimensional filtering with saved filters
 3. **Sort**: Column-based sorting with custom criteria
@@ -211,6 +262,7 @@ User Input → Search/Filter → GraphQL Query → Results Display → User Sele
 5. **Actions**: Bulk operations and individual client actions
 
 #### State Management
+
 - **Search State**: Query persistence and history
 - **Filter State**: Active filters and presets
 - **Selection State**: Multi-select client management
@@ -219,13 +271,16 @@ User Input → Search/Filter → GraphQL Query → Results Display → User Sele
 ---
 
 ### Client Details Page
+
 **Route:** `/clients/[id]`  
 **File:** `app/(dashboard)/clients/[id]/page.tsx`
 
 #### Purpose
+
 Complete client profile with payroll management, staff assignments, and billing information.
 
 #### User Interface Elements
+
 - **Client Header**: Company information and status
 - **Tabbed Navigation**: Organized information sections
   - **Overview**: Basic client information and quick stats
@@ -236,6 +291,7 @@ Complete client profile with payroll management, staff assignments, and billing 
   - **Activity**: Audit trail and history
 
 #### Tab: Overview
+
 - **Company Information**: Address, ABN, industry details
 - **Primary Contacts**: Key client personnel
 - **Account Manager**: Assigned consultant and manager
@@ -243,24 +299,28 @@ Complete client profile with payroll management, staff assignments, and billing 
 - **Status Indicators**: Active payrolls, next processing dates
 
 #### Tab: Payrolls
+
 - **Payroll List**: All client payrolls with status
 - **Quick Actions**: Add new payroll, edit existing
 - **Assignment Management**: Consultant and manager assignments
 - **Processing Schedule**: Upcoming EFT dates and deadlines
 
 #### Tab: Billing
+
 - **Current Plan**: Active billing plan details
 - **Invoice History**: Past invoices and payment status
 - **Usage Metrics**: Processing volume and fees
 - **Billing Contacts**: Accounts payable information
 
 #### Data Sources
+
 - **Client Detail Query**: Complete client profile
 - **Payroll List Query**: Client's payroll configurations
 - **Billing Query**: Billing plan and invoice data
 - **Activity Log Query**: Client activity history
 
 #### Real-time Features
+
 - **Live Status Updates**: Payroll processing status changes
 - **Activity Stream**: Real-time client activity feed
 - **Notification Integration**: Client-specific alerts
@@ -268,13 +328,16 @@ Complete client profile with payroll management, staff assignments, and billing 
 ---
 
 ### Create Client Page
+
 **Route:** `/clients/new`  
 **File:** `app/(dashboard)/clients/new/page.tsx`
 
 #### Purpose
+
 Guided client onboarding with validation, duplicate detection, and automated setup.
 
 #### User Interface Elements
+
 - **Multi-step Wizard**: Progressive disclosure of form sections
 - **Progress Indicator**: Visual completion status
 - **Validation Feedback**: Real-time form validation
@@ -283,6 +346,7 @@ Guided client onboarding with validation, duplicate detection, and automated set
 - **Template Selection**: Pre-configured client types
 
 #### Form Sections
+
 1. **Basic Information**: Company name, ABN, industry
 2. **Contact Details**: Primary and billing contacts
 3. **Billing Setup**: Plan selection and payment terms
@@ -291,20 +355,22 @@ Guided client onboarding with validation, duplicate detection, and automated set
 6. **Review & Confirm**: Final validation and submission
 
 #### Validation Rules
+
 - **Required Fields**: Essential client information
 - **Business Rules**: ABN validation, unique company names
 - **Format Validation**: Email, phone, postal codes
 - **Duplicate Detection**: Fuzzy matching on company names
 
 #### Business Logic
+
 ```typescript
 // Client creation workflow
 const createClientWorkflow = {
-  1: { validation: 'basic_info', next: 2 },
-  2: { validation: 'contacts', next: 3 },
-  3: { validation: 'billing', next: 4, optional: true },
-  4: { validation: 'payroll_setup', next: 5, optional: true },
-  5: { validation: 'staff_assignment', next: 'submit' }
+  1: { validation: "basic_info", next: 2 },
+  2: { validation: "contacts", next: 3 },
+  3: { validation: "billing", next: 4, optional: true },
+  4: { validation: "payroll_setup", next: 5, optional: true },
+  5: { validation: "staff_assignment", next: "submit" },
 };
 ```
 
@@ -313,18 +379,22 @@ const createClientWorkflow = {
 ## Staff Management
 
 ### Staff List Page
+
 **Route:** `/staff`  
 **File:** `app/(dashboard)/staff/page.tsx`
 
 #### Purpose
+
 Complete staff directory with role management, work assignments, and performance tracking.
 
 #### Access Control
+
 - **Admin Only**: Full staff management capabilities
 - **Manager**: Limited to direct reports and consultants
 - **Others**: Read-only access to basic staff directory
 
 #### User Interface Elements
+
 - **Staff Directory**: Comprehensive staff listing
 - **Role Filter**: Filter by organizational role
 - **Status Filter**: Active, inactive, on-leave filters
@@ -333,12 +403,14 @@ Complete staff directory with role management, work assignments, and performance
 - **Work Schedule View**: Staff availability and assignments
 
 #### Advanced Features
+
 - **Hierarchical View**: Organizational chart display
 - **Workload Analysis**: Assignment distribution and capacity
 - **Performance Metrics**: Individual and team performance
 - **Leave Calendar**: Staff leave schedule integration
 
 #### Data Sources
+
 - **Staff Directory Query**: Complete staff listing with roles
 - **Assignment Query**: Current payroll assignments
 - **Performance Query**: Staff performance metrics
@@ -347,13 +419,16 @@ Complete staff directory with role management, work assignments, and performance
 ---
 
 ### Staff Details Page
+
 **Route:** `/staff/[id]`  
 **File:** `app/(dashboard)/staff/[id]/page.tsx`
 
 #### Purpose
+
 Individual staff member profile with complete work history, assignments, and performance data.
 
 #### User Interface Elements
+
 - **Staff Profile Header**: Photo, name, role, status
 - **Tabbed Interface**: Organized information sections
   - **Profile**: Personal and professional information
@@ -364,33 +439,41 @@ Individual staff member profile with complete work history, assignments, and per
   - **Activity**: System activity and audit trail
 
 #### Role-Based Access
+
 ```typescript
 // Access control for staff details
 const staffAccessControl = {
   canViewProfile: (viewer: User, target: User) => {
-    return viewer.role === 'admin' || 
-           viewer.role === 'org_admin' ||
-           viewer.id === target.managerId ||
-           viewer.id === target.id;
+    return (
+      viewer.role === "admin" ||
+      viewer.role === "org_admin" ||
+      viewer.id === target.managerId ||
+      viewer.id === target.id
+    );
   },
   canEditProfile: (viewer: User, target: User) => {
-    return viewer.role === 'admin' || 
-           (viewer.role === 'org_admin' && target.role !== 'admin') ||
-           viewer.id === target.id;
-  }
+    return (
+      viewer.role === "admin" ||
+      (viewer.role === "org_admin" && target.role !== "admin") ||
+      viewer.id === target.id
+    );
+  },
 };
 ```
 
 ---
 
 ### Create Staff Page
+
 **Route:** `/staff/new`  
 **File:** `app/(dashboard)/staff/new/page.tsx`
 
 #### Purpose
+
 New staff member onboarding with role assignment, manager linking, and invitation management.
 
 #### User Interface Elements
+
 - **Staff Creation Form**: Personal and professional details
 - **Role Assignment**: Hierarchical role selection
 - **Manager Assignment**: Reporting structure setup
@@ -399,6 +482,7 @@ New staff member onboarding with role assignment, manager linking, and invitatio
 - **Permission Preview**: Role-based permission display
 
 #### Validation & Business Logic
+
 - **Email Uniqueness**: Prevent duplicate staff accounts
 - **Role Hierarchy**: Ensure proper reporting structure
 - **Manager Validation**: Verify manager eligibility
@@ -409,13 +493,16 @@ New staff member onboarding with role assignment, manager linking, and invitatio
 ## Payroll Management
 
 ### Payroll List Page
+
 **Route:** `/payrolls`  
 **File:** `app/(dashboard)/payrolls/page.tsx`
 
 #### Purpose
+
 Central payroll management hub with comprehensive filtering, scheduling overview, and bulk operations.
 
 #### User Interface Elements
+
 - **Payroll Grid**: Detailed payroll listing with key metrics
 - **Advanced Filters**: Multi-criteria payroll filtering
 - **View Modes**: List, calendar, timeline views
@@ -424,6 +511,7 @@ Central payroll management hub with comprehensive filtering, scheduling overview
 - **Export Tools**: Data export and reporting
 
 #### Filter Options
+
 - **Status**: Active, Implementation, Inactive
 - **Frequency**: Weekly, fortnightly, monthly, etc.
 - **Client**: Multi-client selection
@@ -432,12 +520,14 @@ Central payroll management hub with comprehensive filtering, scheduling overview
 - **System**: Payroll system filtering (MYOB, Xero, etc.)
 
 #### View Modes
+
 1. **List View**: Tabular data with sorting and filtering
 2. **Calendar View**: EFT dates and processing schedule
 3. **Timeline View**: Payroll lifecycle and version history
 4. **Card View**: Visual payroll cards with key metrics
 
 #### Data Sources
+
 - **Payroll List Query**: Comprehensive payroll data
 - **Assignment Query**: Consultant assignments
 - **Schedule Query**: Upcoming processing dates
@@ -446,13 +536,16 @@ Central payroll management hub with comprehensive filtering, scheduling overview
 ---
 
 ### Payroll Details Page
+
 **Route:** `/payrolls/[id]`  
 **File:** `app/(dashboard)/payrolls/[id]/page.tsx`
 
 #### Purpose
+
 Complete payroll profile with configuration management, processing history, and staff assignments.
 
 #### User Interface Elements
+
 - **Payroll Header**: Key information and status indicators
 - **Action Buttons**: Context-sensitive actions based on role
 - **Tabbed Interface**: Organized payroll information
@@ -464,44 +557,51 @@ Complete payroll profile with configuration management, processing history, and 
   - **Notes**: Important payroll notes and communications
 
 #### Tab: Configuration
+
 - **Basic Setup**: Name, client, frequency, dates
 - **Processing Rules**: EFT lead times, business day adjustments
 - **System Integration**: Payroll system and processing details
 - **Staff Assignments**: Primary and backup consultants
 
 #### Tab: Dates
+
 - **Generated Dates**: Complete EFT date schedule
 - **Processing Calendar**: Interactive calendar view
 - **Assignment Overview**: Consultant assignments per date
 - **Holiday Adjustments**: Business day adjustment log
 
 #### Tab: History
+
 - **Version Timeline**: Complete payroll version history
 - **Change Log**: Detailed change tracking
 - **User Activity**: Staff actions and modifications
 - **System Events**: Automated system changes
 
 #### Business Logic
+
 ```typescript
 // Payroll date generation logic
 const generatePayrollDates = (config: PayrollConfig) => {
   const dates = [];
   let currentDate = config.startDate;
-  
+
   while (currentDate <= config.endDate) {
     const eftDate = calculateEftDate(currentDate, config);
-    const processingDate = calculateProcessingDate(eftDate, config.processingDays);
-    
+    const processingDate = calculateProcessingDate(
+      eftDate,
+      config.processingDays
+    );
+
     dates.push({
       originalEftDate: eftDate,
       adjustedEftDate: adjustForBusinessDays(eftDate),
       processingDate: adjustForBusinessDays(processingDate),
-      consultant: assignConsultant(eftDate, config.assignments)
+      consultant: assignConsultant(eftDate, config.assignments),
     });
-    
+
     currentDate = getNextPayrollDate(currentDate, config.frequency);
   }
-  
+
   return dates;
 };
 ```
@@ -509,13 +609,16 @@ const generatePayrollDates = (config: PayrollConfig) => {
 ---
 
 ### Create Payroll Page
+
 **Route:** `/payrolls/new`  
 **File:** `app/(dashboard)/payrolls/new/page.tsx`
 
 #### Purpose
+
 Guided payroll setup with configuration validation, date generation preview, and assignment management.
 
 #### User Interface Elements
+
 - **Multi-step Wizard**: Progressive payroll configuration
 - **Configuration Preview**: Real-time preview of settings
 - **Date Generation**: Preview of generated EFT dates
@@ -523,6 +626,7 @@ Guided payroll setup with configuration validation, date generation preview, and
 - **Template Selection**: Pre-configured payroll templates
 
 #### Configuration Steps
+
 1. **Basic Information**: Name, client, description
 2. **Frequency Setup**: Cycle type and date configuration
 3. **Processing Rules**: Lead times and adjustments
@@ -531,6 +635,7 @@ Guided payroll setup with configuration validation, date generation preview, and
 6. **Final Review**: Complete configuration validation
 
 #### Validation Rules
+
 - **Unique Names**: Per-client payroll name uniqueness
 - **Date Logic**: Valid date configuration for frequency
 - **Staff Assignments**: Role-appropriate assignments
@@ -541,13 +646,16 @@ Guided payroll setup with configuration validation, date generation preview, and
 ## Calendar & Scheduling
 
 ### Calendar Page
+
 **Route:** `/calendar`  
 **File:** `app/(dashboard)/calendar/page.tsx`
 
 #### Purpose
+
 Unified calendar view of all payroll processing dates, staff schedules, and important deadlines.
 
 #### User Interface Elements
+
 - **Calendar Grid**: Monthly/weekly/daily views
 - **Event Types**: Different colors for payroll types
 - **Quick Filters**: Filter by consultant, client, status
@@ -556,6 +664,7 @@ Unified calendar view of all payroll processing dates, staff schedules, and impo
 - **Legend**: Event type and status legend
 
 #### Calendar Features
+
 - **Multi-view Support**: Month, week, day, agenda views
 - **Event Layering**: Multiple events per date handling
 - **Drag & Drop**: Assignment changes via drag-and-drop
@@ -563,6 +672,7 @@ Unified calendar view of all payroll processing dates, staff schedules, and impo
 - **Export Options**: Calendar export to external systems
 
 #### Event Types
+
 - **EFT Dates**: Payroll processing deadlines
 - **Staff Leave**: Employee time off
 - **Holidays**: Public and company holidays
@@ -572,13 +682,16 @@ Unified calendar view of all payroll processing dates, staff schedules, and impo
 ---
 
 ### Payroll Schedule Page
+
 **Route:** `/payroll-schedule`  
 **File:** `app/(dashboard)/payroll-schedule/page.tsx`
 
 #### Purpose
+
 Comprehensive payroll processing schedule with workload analysis and assignment optimization.
 
 #### User Interface Elements
+
 - **Schedule Grid**: Detailed processing schedule
 - **Workload Analysis**: Consultant capacity planning
 - **Assignment Tools**: Bulk assignment and optimization
@@ -586,6 +699,7 @@ Comprehensive payroll processing schedule with workload analysis and assignment 
 - **Performance Metrics**: Processing time and efficiency
 
 #### Advanced Features
+
 - **Capacity Planning**: Optimal consultant assignment
 - **Conflict Resolution**: Automatic conflict detection
 - **Load Balancing**: Even workload distribution
@@ -596,18 +710,22 @@ Comprehensive payroll processing schedule with workload analysis and assignment 
 ## Security & Audit
 
 ### Security Dashboard
+
 **Route:** `/security`  
 **File:** `app/(dashboard)/security/page.tsx`
 
 #### Purpose
+
 Comprehensive security monitoring and compliance dashboard for administrators.
 
 #### Access Control
+
 - **Admin Only**: Full security dashboard access
 - **Manager**: Limited security metrics view
 - **Others**: No access
 
 #### User Interface Elements
+
 - **Security Metrics**: Key security indicators
 - **Risk Assessment**: Current security risk levels
 - **Recent Alerts**: Security event notifications
@@ -616,6 +734,7 @@ Comprehensive security monitoring and compliance dashboard for administrators.
 - **System Health**: Security system status
 
 #### Security Metrics
+
 - **Authentication Events**: Login successes/failures
 - **Permission Changes**: Role and access modifications
 - **Data Access**: Sensitive data access patterns
@@ -625,13 +744,16 @@ Comprehensive security monitoring and compliance dashboard for administrators.
 ---
 
 ### Audit Logs Page
+
 **Route:** `/security/audit`  
 **File:** `app/(dashboard)/security/audit/page.tsx`
 
 #### Purpose
+
 Detailed audit log viewer with advanced filtering and compliance reporting.
 
 #### User Interface Elements
+
 - **Audit Log Table**: Comprehensive activity listing
 - **Advanced Filters**: Multi-criteria log filtering
 - **Export Tools**: Compliance report generation
@@ -639,6 +761,7 @@ Detailed audit log viewer with advanced filtering and compliance reporting.
 - **Timeline View**: Chronological activity visualization
 
 #### Filter Options
+
 - **Date Range**: Flexible date filtering
 - **User**: Specific user activity
 - **Action Type**: Event type filtering
@@ -648,13 +771,16 @@ Detailed audit log viewer with advanced filtering and compliance reporting.
 ---
 
 ### Security Reports Page
+
 **Route:** `/security/reports`  
 **File:** `app/(dashboard)/security/reports/page.tsx`
 
 #### Purpose
+
 Automated security and compliance report generation for SOC2 requirements.
 
 #### Report Types
+
 - **Access Review**: User access and permissions audit
 - **Data Access Report**: Sensitive data access patterns
 - **Permission Changes**: Role and access modifications
@@ -666,13 +792,16 @@ Automated security and compliance report generation for SOC2 requirements.
 ## Settings & Profile
 
 ### Profile Page
+
 **Route:** `/profile`  
 **File:** `app/(dashboard)/profile/page.tsx`
 
 #### Purpose
+
 Personal profile management with preferences, security settings, and work configuration.
 
 #### User Interface Elements
+
 - **Profile Header**: User photo and basic information
 - **Tabbed Interface**: Organized profile sections
   - **Personal**: Name, contact information, photo
@@ -682,6 +811,7 @@ Personal profile management with preferences, security settings, and work config
   - **Activity**: Personal activity history
 
 #### Profile Sections
+
 1. **Personal Information**: Editable personal details
 2. **Work Information**: Role-based work configuration
 3. **Notification Preferences**: Email and system notifications
@@ -691,13 +821,16 @@ Personal profile management with preferences, security settings, and work config
 ---
 
 ### Settings Page
+
 **Route:** `/settings`  
 **File:** `app/(dashboard)/settings/page.tsx`
 
 #### Purpose
+
 System-wide settings and configuration management.
 
 #### Settings Categories
+
 - **General**: System-wide preferences
 - **Notifications**: Global notification settings
 - **Integrations**: Third-party system connections
@@ -707,10 +840,12 @@ System-wide settings and configuration management.
 ---
 
 ### Account Settings Page
+
 **Route:** `/settings/account`  
 **File:** `app/(dashboard)/settings/account/page.tsx`
 
 #### Purpose
+
 Account-specific settings and subscription management.
 
 ---
@@ -718,16 +853,20 @@ Account-specific settings and subscription management.
 ## Developer Tools
 
 ### Developer Dashboard
+
 **Route:** `/developer`  
 **File:** `app/(dashboard)/developer/page.tsx`
 
 #### Purpose
+
 Developer tools and system administration interface.
 
 #### Access Control
+
 - **Developer Role Only**: Exclusive access to developer tools
 
 #### User Interface Elements
+
 - **System Status**: Health monitoring dashboard
 - **Database Tools**: Database management utilities
 - **API Testing**: GraphQL and REST API testing
@@ -738,19 +877,23 @@ Developer tools and system administration interface.
 ---
 
 ### Loading Demo Page
+
 **Route:** `/developer/loading-demo`  
 **File:** `app/(dashboard)/developer/loading-demo/page.tsx`
 
 #### Purpose
+
 UI component testing and loading state demonstration.
 
 ---
 
 ### JWT Test Page
+
 **Route:** `/jwt-test`  
 **File:** `app/(dashboard)/jwt-test/page.tsx`
 
 #### Purpose
+
 JWT token debugging and authentication testing.
 
 ---
@@ -758,13 +901,16 @@ JWT token debugging and authentication testing.
 ## Utility Pages
 
 ### Onboarding Page
+
 **Route:** `/onboarding`  
 **File:** `app/(dashboard)/onboarding/page.tsx`
 
 #### Purpose
+
 New user onboarding workflow with system introduction and initial setup.
 
 #### Onboarding Steps
+
 1. **Welcome**: System introduction and overview
 2. **Role Explanation**: Role-specific capabilities
 3. **Initial Setup**: Basic configuration
@@ -774,13 +920,16 @@ New user onboarding workflow with system introduction and initial setup.
 ---
 
 ### Unauthorized Page
+
 **Route:** `/unauthorized`  
 **File:** `app/(dashboard)/unauthorized/page.tsx`
 
 #### Purpose
+
 Access denied page with clear messaging and navigation options.
 
 #### User Interface Elements
+
 - **Error Message**: Clear explanation of access restriction
 - **Reason Code**: Specific reason for access denial
 - **Navigation Options**: Links to accessible areas
@@ -789,13 +938,16 @@ Access denied page with clear messaging and navigation options.
 ---
 
 ### AI Assistant Page
+
 **Route:** `/ai-assistant`  
 **File:** `app/(dashboard)/ai-assistant/page.tsx`
 
 #### Purpose
+
 AI-powered assistant for payroll and system guidance.
 
 #### Features
+
 - **Chat Interface**: Natural language interaction
 - **Context Awareness**: Role and task-specific assistance
 - **Knowledge Base**: Comprehensive system knowledge
@@ -804,13 +956,16 @@ AI-powered assistant for payroll and system guidance.
 ---
 
 ### Tax Calculator Page
+
 **Route:** `/tax-calculator`  
 **File:** `app/(dashboard)/tax-calculator/page.tsx`
 
 #### Purpose
+
 Australian tax calculation tool with real-time calculations and compliance validation.
 
 #### Features
+
 - **Income Tax Calculator**: Progressive tax calculation
 - **Superannuation Calculator**: SG and additional contributions
 - **Payroll Tax Calculator**: State-specific calculations
@@ -823,6 +978,7 @@ Australian tax calculation tool with real-time calculations and compliance valid
 ### Layout Components
 
 #### Dashboard Layout
+
 **File:** `app/(dashboard)/layout.tsx`
 
 The dashboard layout provides the core structure for all authenticated pages:
@@ -849,6 +1005,7 @@ The dashboard layout provides the core structure for all authenticated pages:
 ```
 
 #### Authentication Layout
+
 **File:** `app/(auth)/layout.tsx`
 
 Simple centered layout for authentication flows:
@@ -864,24 +1021,28 @@ Simple centered layout for authentication flows:
 ### Shared Components
 
 #### Navigation Components
+
 - **Sidebar**: Main navigation with role-based menu items
 - **Header**: User navigation and quick actions
 - **Breadcrumbs**: Page hierarchy navigation
 - **UserNav**: User profile dropdown and actions
 
 #### Data Display Components
+
 - **DataTable**: Advanced table with sorting, filtering, pagination
 - **StatCard**: Metric display with trend indicators
 - **ActivityFeed**: Real-time activity stream
 - **Calendar**: Interactive calendar with event management
 
 #### Form Components
+
 - **FormWizard**: Multi-step form management
 - **DatePicker**: Business day-aware date selection
 - **UserSelect**: Staff member selection with role filtering
 - **ClientSelect**: Client selection with search
 
 #### Utility Components
+
 - **LoadingSpinner**: Consistent loading indicators
 - **ErrorBoundary**: Error handling and recovery
 - **PermissionGate**: Role-based component rendering
@@ -890,26 +1051,27 @@ Simple centered layout for authentication flows:
 ### State Management Patterns
 
 #### Apollo Client Integration
+
 ```typescript
 // GraphQL state management
 const usePayrollData = (payrollId: string) => {
   const { data, loading, error, refetch } = useQuery(GET_PAYROLL_DETAILS, {
     variables: { payrollId },
-    errorPolicy: 'all',
-    notifyOnNetworkStatusChange: true
+    errorPolicy: "all",
+    notifyOnNetworkStatusChange: true,
   });
 
   const [updatePayroll] = useMutation(UPDATE_PAYROLL, {
-    optimisticResponse: (variables) => ({
+    optimisticResponse: variables => ({
       updatePayroll: {
-        __typename: 'Payroll',
+        __typename: "Payroll",
         id: payrollId,
-        ...variables.input
-      }
+        ...variables.input,
+      },
     }),
     update: (cache, { data }) => {
       // Update cache with new data
-    }
+    },
   });
 
   return { data, loading, error, refetch, updatePayroll };
@@ -917,6 +1079,7 @@ const usePayrollData = (payrollId: string) => {
 ```
 
 #### Authentication Context
+
 ```typescript
 // Authentication state management
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -952,6 +1115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 ### Performance Optimizations
 
 #### Component Memoization
+
 ```typescript
 // Memoized components for performance
 const PayrollCard = React.memo(({ payroll }: { payroll: Payroll }) => {
@@ -976,6 +1140,7 @@ const PayrollList = ({ payrolls }: { payrolls: Payroll[] }) => {
 ```
 
 #### Lazy Loading
+
 ```typescript
 // Route-based code splitting
 const PayrollDetails = lazy(() => import('./PayrollDetails'));

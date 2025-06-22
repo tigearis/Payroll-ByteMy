@@ -3,10 +3,10 @@ table:
   schema: audit
 configuration:
   column_config:
-    accessed_at:
-      custom_name: accessedAt
     access_type:
       custom_name: accessType
+    accessed_at:
+      custom_name: accessedAt
     data_classification:
       custom_name: dataClassification
     fields_accessed:
@@ -26,8 +26,8 @@ configuration:
     user_id:
       custom_name: userId
   custom_column_names:
-    accessed_at: accessedAt
     access_type: accessType
+    accessed_at: accessedAt
     data_classification: dataClassification
     fields_accessed: fieldsAccessed
     ip_address: ipAddress

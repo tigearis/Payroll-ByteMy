@@ -19,7 +19,7 @@ export function DirectWebSocketTest() {
   }, []);
 
   const addLog = (message: string) => {
-    setLogs((prev) => [
+    setLogs(prev => [
       ...prev,
       `${new Date().toISOString().slice(11, 19)}: ${message}`,
     ]);
@@ -96,7 +96,7 @@ export function DirectWebSocketTest() {
       };
 
       // Listen for messages
-      ws.onmessage = (event) => {
+      ws.onmessage = event => {
         try {
           const data = JSON.parse(event.data);
           addLog(`📥 Received: ${data.type || "unknown type"}`);
@@ -115,14 +115,14 @@ export function DirectWebSocketTest() {
       };
 
       // Connection closed
-      ws.onclose = (event) => {
+      ws.onclose = event => {
         addLog(`❌ Connection closed: ${event.code} ${event.reason}`);
         setIsConnected(false);
         wsRef.current = null;
       };
 
       // Connection error
-      ws.onerror = (error) => {
+      ws.onerror = error => {
         addLog(`❌ WebSocket error`);
         console.error("WebSocket error:", error);
       };

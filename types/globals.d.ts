@@ -24,7 +24,7 @@ declare global {
         "org_admin",
         "manager",
         "consultant",
-        "viewer"
+        "viewer",
       ];
       "x-hasura-clerk-user-id": string;
     };

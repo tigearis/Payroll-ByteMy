@@ -4,10 +4,23 @@
 import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+  CardDescription,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectContent,
+  SelectValue,
+} from "@/components/ui/select";
 
 // State Payroll Tax Data
 const statePayrollTaxRates: Record<string, number> = {
@@ -55,7 +68,9 @@ export function AustralianTaxCalculator() {
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>Australian Tax & State Payroll Calculator</CardTitle>
-        <CardDescription>Calculate your estimated payroll tax based on your annual payroll.</CardDescription>
+        <CardDescription>
+          Calculate your estimated payroll tax based on your annual payroll.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -67,7 +82,7 @@ export function AustralianTaxCalculator() {
                   <SelectValue placeholder="Select State" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.keys(statePayrollTaxRates).map((st) => (
+                  {Object.keys(statePayrollTaxRates).map(st => (
                     <SelectItem key={st} value={st}>
                       {st}
                     </SelectItem>
@@ -82,7 +97,11 @@ export function AustralianTaxCalculator() {
                 type="number"
                 placeholder="Enter annual payroll"
                 value={annualPayroll}
-                onChange={(e) => setAnnualPayroll(e.target.value === "" ? "" : Number(e.target.value))}
+                onChange={e =>
+                  setAnnualPayroll(
+                    e.target.value === "" ? "" : Number(e.target.value)
+                  )
+                }
               />
             </div>
           </div>
@@ -94,7 +113,9 @@ export function AustralianTaxCalculator() {
       <CardFooter>
         <div className="w-full text-center">
           <h3 className="text-lg font-semibold">Results</h3>
-          <p><strong>Payroll Tax:</strong> ${payrollTax}</p>
+          <p>
+            <strong>Payroll Tax:</strong> ${payrollTax}
+          </p>
         </div>
       </CardFooter>
     </Card>

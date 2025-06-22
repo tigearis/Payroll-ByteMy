@@ -27,6 +27,7 @@ The `/components` directory implements a layered component architecture followin
 ## Security Components (`/components/auth/`)
 
 ### `/components/auth/strict-database-guard.tsx`
+
 - **Purpose**: Ensures authenticated user exists in database before allowing access
 - **Authentication**: Requires valid Clerk session + database user record
 - **Business Logic**:
@@ -44,6 +45,7 @@ The `/components` directory implements a layered component architecture followin
 - **Related Components**: `database-user-guard.tsx`, `route-guard.tsx`
 
 ### `/components/auth/permission-guard.tsx`
+
 - **Purpose**: Role and permission-based component access control
 - **Authentication**: Validates specific permissions for component access
 - **Business Logic**:
@@ -61,6 +63,7 @@ The `/components` directory implements a layered component architecture followin
 - **Related Components**: `role-guard.tsx`, `enhanced-permission-guard.tsx`
 
 ### `/components/auth/role-guard.tsx`
+
 - **Purpose**: Role-based access control for components
 - **Authentication**: Validates user role meets minimum requirements
 - **Business Logic**:
@@ -78,6 +81,7 @@ The `/components` directory implements a layered component architecture followin
 - **Related Components**: All permission-based guards
 
 ### `/components/auth/route-guard.tsx`
+
 - **Purpose**: Page-level authentication and authorization guard
 - **Authentication**: Comprehensive route protection with multiple validation layers
 - **Business Logic**:
@@ -99,6 +103,7 @@ The `/components` directory implements a layered component architecture followin
 Built on shadcn/ui with enterprise extensions:
 
 ### Base Components
+
 - **Button**: Multiple variants (primary, secondary, destructive) with loading states
 - **Input**: Form controls with validation, accessibility, and security features
 - **Card**: Layout containers with consistent spacing and elevation
@@ -106,12 +111,14 @@ Built on shadcn/ui with enterprise extensions:
 - **Modal/Dialog**: Overlay components with focus management and escape handling
 
 ### Form Components
+
 - **Form**: Comprehensive form handling with validation and error management
 - **Select**: Dropdown components with search, multi-select, and accessibility
 - **Calendar**: Date/time selection with business rule integration
 - **Checkbox/Switch**: Boolean controls with indeterminate states
 
 ### Feedback Components
+
 - **Alert**: Status messaging with severity levels and actions
 - **Toast**: Non-intrusive notifications with queue management
 - **Progress**: Loading and completion indicators
@@ -122,6 +129,7 @@ Built on shadcn/ui with enterprise extensions:
 ### User Management (`/components/users/`)
 
 #### `/components/users/user-table.tsx`
+
 - **Purpose**: Comprehensive user directory with management capabilities
 - **Authentication**: Manager+ role required for user management actions
 - **Business Logic**:
@@ -139,6 +147,7 @@ Built on shadcn/ui with enterprise extensions:
 - **Related Components**: `create-user-modal.tsx`, `edit-user-modal.tsx`
 
 #### `/components/users/create-user-modal.tsx`
+
 - **Purpose**: New user creation with Clerk invitation integration
 - **Authentication**: Manager+ role required
 - **Business Logic**:
@@ -156,6 +165,7 @@ Built on shadcn/ui with enterprise extensions:
 - **Related Components**: User management interface
 
 #### `/components/users/edit-user-modal.tsx`
+
 - **Purpose**: User profile and permission management interface
 - **Authentication**: Manager+ role, or self-editing with restrictions
 - **Business Logic**:
@@ -175,6 +185,7 @@ Built on shadcn/ui with enterprise extensions:
 ### Error Handling (`/components/error-boundary/`)
 
 #### `/components/error-boundary/graphql-error-boundary.tsx`
+
 - **Purpose**: GraphQL-specific error handling with user-friendly recovery
 - **Authentication**: Handles auth errors gracefully without exposing sensitive data
 - **Business Logic**:
@@ -194,6 +205,7 @@ Built on shadcn/ui with enterprise extensions:
 ## Examples and Patterns (`/components/examples/`)
 
 ### `/components/examples/graceful-clients-list.tsx`
+
 - **Purpose**: Reference implementation for permission-aware data loading
 - **Authentication**: Demonstrates graceful degradation for insufficient permissions
 - **Business Logic**:
@@ -211,6 +223,7 @@ Built on shadcn/ui with enterprise extensions:
 - **Related Components**: Error boundaries, permission guards
 
 ### `/components/examples/enhanced-users-list.tsx`
+
 - **Purpose**: Advanced user list with real-time features and security
 - **Authentication**: Role-based data access with real-time permission updates
 - **Business Logic**:
@@ -230,6 +243,7 @@ Built on shadcn/ui with enterprise extensions:
 ## Business Logic Components (Inline)
 
 ### Payroll Management
+
 - **`payroll-list-card.tsx`**: Payroll summary with quick actions
 - **`payroll-version-history.tsx`**: Audit trail and version management
 - **`payroll-dates-view.tsx`**: Schedule and deadline management
@@ -237,32 +251,40 @@ Built on shadcn/ui with enterprise extensions:
 - **`export-csv.tsx`**: CSV export with data classification handling
 
 ### Navigation and Layout
+
 - **`sidebar.tsx`**: Main navigation with role-based menu items
 - **`upcoming-payrolls.tsx`**: Dashboard widget for payroll deadlines
 - **`urgent-alerts.tsx`**: Critical notifications and alerts
 
 ### Notes and Communication
+
 - **`notes-list-with-add.tsx`**: Communication interface with audit trail
 - **`real-time-updates.tsx`**: Live data synchronization component
 
 ## Component Security Patterns
 
 ### Authentication Integration
+
 All components integrate with the authentication system:
+
 - Clerk session validation
 - Database user verification
 - Permission-based rendering
 - Graceful fallbacks for auth failures
 
 ### Data Protection
+
 Components implement data protection measures:
+
 - Role-based data masking
 - PII handling compliance
 - Secure data transmission
 - Audit logging for sensitive operations
 
 ### Error Handling
+
 Comprehensive error handling strategies:
+
 - Security-aware error messages
 - Graceful degradation patterns
 - Recovery action guidance
@@ -271,12 +293,14 @@ Comprehensive error handling strategies:
 ## Performance Considerations
 
 ### Optimization Strategies
+
 - Lazy loading for non-critical components
 - Memoization for expensive calculations
 - Virtual scrolling for large datasets
 - Optimistic updates for better UX
 
 ### Real-time Features
+
 - WebSocket subscriptions for live data
 - Efficient update strategies
 - Conflict resolution for concurrent edits
@@ -285,18 +309,21 @@ Comprehensive error handling strategies:
 ## Testing Strategy
 
 ### Component Testing
+
 - Unit tests for all business logic
 - Integration tests for data flows
 - Accessibility testing compliance
 - Security testing for auth flows
 
 ### Visual Testing
+
 - Storybook for component documentation
 - Visual regression testing
 - Cross-browser compatibility
 - Mobile responsiveness validation
 
 ## Related Documentation
+
 - [Authentication Guide](../lib/README.md) - Auth implementation details
 - [API Documentation](../pages/api/README.md) - Backend integration
 - [Security Report](../SECURITY_IMPROVEMENT_REPORT.md) - Security analysis

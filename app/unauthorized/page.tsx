@@ -14,7 +14,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-
 function UnauthorizedContent() {
   const searchParams = useSearchParams();
   const reason = searchParams.get("reason");

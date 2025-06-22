@@ -34,8 +34,7 @@ function AcceptInvitationContent() {
   const [lastName, setLastName] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
-  const [, setInvitationData] =
-    React.useState<InvitationData | null>(null);
+  const [, setInvitationData] = React.useState<InvitationData | null>(null);
 
   // Handle signed-in users visiting this page
   React.useEffect(() => {
@@ -207,7 +206,7 @@ function AcceptInvitationContent() {
                 id="firstName"
                 type="text"
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={e => setFirstName(e.target.value)}
                 required
                 disabled={!!prefilledFirstName}
                 placeholder={prefilledFirstName ? "" : "Enter your first name"}
@@ -223,7 +222,7 @@ function AcceptInvitationContent() {
                 id="lastName"
                 type="text"
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={e => setLastName(e.target.value)}
                 required
                 disabled={!!prefilledLastName}
                 placeholder={prefilledLastName ? "" : "Enter your last name"}
@@ -237,7 +236,7 @@ function AcceptInvitationContent() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
                 required
                 placeholder="Create a secure password"
               />

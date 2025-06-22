@@ -45,7 +45,7 @@ try {
 
     console.log(`✅ Database connected! Found ${count} holidays`);
     console.log("📋 Sample holidays:");
-    samples.forEach((h) => {
+    samples.forEach(h => {
       console.log(`   ${h.date}: ${h.name} (${h.country_code})`);
     });
   } else {

@@ -17,6 +17,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ### Authentication System (`/lib/auth-context.tsx`, `/lib/session-expiry-handler.tsx`)
 
 #### `/lib/auth-context.tsx`
+
 - **Purpose**: Central authentication context and state management
 - **Authentication**: Bridges Clerk session with database user verification
 - **Business Logic**:
@@ -34,6 +35,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 - **Related Components**: All authenticated components, session guards
 
 #### `/lib/session-expiry-handler.tsx`
+
 - **Purpose**: Automatic session refresh and expiry management
 - **Authentication**: Handles JWT token refresh and session validation
 - **Business Logic**:
@@ -53,6 +55,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ### GraphQL Integration (`/lib/apollo/`)
 
 #### `/lib/apollo/unified-client.ts`
+
 - **Purpose**: Unified Apollo GraphQL client factory with native Clerk integration
 - **Authentication**: Automatic JWT token injection with Hasura claims
 - **Business Logic**:
@@ -70,6 +73,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 - **Related Components**: All GraphQL-consuming components
 
 #### `/lib/apollo-provider.tsx`
+
 - **Purpose**: Apollo GraphQL provider with authentication integration
 - **Authentication**: Provides authenticated GraphQL client to component tree
 - **Business Logic**:
@@ -88,6 +92,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ### Security Infrastructure (`/lib/auth/permissions.ts`)
 
 #### `/lib/auth/permissions.ts`
+
 - **Purpose**: Central permission system and role hierarchy management
 - **Authentication**: Single source of truth for all authorization decisions
 - **Business Logic**:
@@ -106,6 +111,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ### Utility Functions (`/lib/utils/`)
 
 #### `/lib/utils/date-utils.ts`
+
 - **Purpose**: Date and time handling utilities for payroll operations
 - **Authentication**: No authentication required (pure utility functions)
 - **Business Logic**:
@@ -122,6 +128,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 - **Related Components**: Payroll management, calendar components
 
 #### `/lib/utils/handle-graphql-error.ts`
+
 - **Purpose**: Centralized GraphQL error handling with security awareness
 - **Authentication**: Handles authentication and authorization errors
 - **Business Logic**:
@@ -138,6 +145,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 - **Related Components**: All GraphQL error boundaries
 
 #### `/lib/utils/auth-error-utils.ts`
+
 - **Purpose**: Authentication-specific error handling and recovery
 - **Authentication**: Specialized handling for auth failures and edge cases
 - **Business Logic**:
@@ -156,6 +164,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ### Development and Testing (`/lib/dev/`)
 
 #### `/lib/dev/debug-auth.ts`
+
 - **Purpose**: Development utilities for authentication debugging
 - **Authentication**: Developer-only tools for auth system inspection
 - **Business Logic**:
@@ -174,6 +183,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ### Logging Infrastructure (`/lib/logging/`)
 
 #### `/lib/logging/index.ts`
+
 - **Purpose**: Centralized logging system with SOC2 compliance
 - **Authentication**: Audit logging for all authenticated operations
 - **Business Logic**:
@@ -192,6 +202,7 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ## Design System (`/lib/design-tokens/`)
 
 ### `/lib/design-tokens/index.ts`
+
 - **Purpose**: Centralized design system with consistent theming
 - **Authentication**: No authentication required (presentation layer)
 - **Business Logic**:
@@ -210,11 +221,13 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ## Configuration Management
 
 ### Environment Configuration
+
 - **Development**: Full debugging, relaxed security for development speed
 - **Staging**: Production-like security with enhanced logging
 - **Production**: Maximum security, minimal logging, performance optimized
 
 ### Security Configuration
+
 - **JWT Configuration**: Hasura-specific JWT template with custom claims
 - **CORS Settings**: Strict origin policies for production
 - **Rate Limiting**: Endpoint-specific limits with role considerations
@@ -223,12 +236,14 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ## Performance Optimization
 
 ### Caching Strategies
+
 - **Authentication State**: User session and permission caching
 - **GraphQL Data**: Apollo cache with type policies
 - **Static Assets**: CDN caching with proper headers
 - **API Responses**: Conditional caching based on data sensitivity
 
 ### Memory Management
+
 - **Connection Pooling**: Database and GraphQL connection management
 - **Cache Eviction**: Intelligent cache invalidation strategies
 - **Memory Monitoring**: Proactive memory usage tracking
@@ -237,12 +252,14 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ## Security Implementation
 
 ### Authentication Security
+
 - **Token Security**: Secure token storage and transmission
 - **Session Management**: Secure session handling with expiry
 - **Permission Caching**: Secure permission caching with invalidation
 - **Audit Trail**: Complete authentication audit logging
 
 ### Data Protection
+
 - **Encryption**: Data encryption in transit and at rest
 - **PII Handling**: Compliant personally identifiable information management
 - **Data Classification**: Role-based data access and masking
@@ -251,12 +268,14 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ## Testing Infrastructure
 
 ### Test Utilities
+
 - **Mock Services**: Comprehensive mocking for external services
 - **Test Data**: Realistic test data generation with privacy compliance
 - **Authentication Mocking**: Secure authentication state mocking
 - **Performance Testing**: Load and stress testing utilities
 
 ### Continuous Integration
+
 - **Automated Testing**: Unit, integration, and security testing
 - **Code Quality**: Static analysis and linting enforcement
 - **Security Scanning**: Automated vulnerability detection
@@ -265,12 +284,14 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ## Error Handling Strategy
 
 ### Error Classification
+
 - **User Errors**: Input validation and user guidance
 - **System Errors**: Infrastructure and service failures
 - **Security Errors**: Authentication and authorization failures
 - **Business Errors**: Business rule violations and process failures
 
 ### Recovery Mechanisms
+
 - **Automatic Recovery**: Self-healing for transient failures
 - **User-Guided Recovery**: Clear instructions for user actions
 - **Administrative Recovery**: Escalation for complex issues
@@ -279,18 +300,21 @@ The `/lib` directory contains the core infrastructure and utilities that power t
 ## Monitoring and Observability
 
 ### Application Monitoring
+
 - **Performance Metrics**: Response times, throughput, error rates
 - **Business Metrics**: User engagement, feature usage, conversion rates
 - **Security Metrics**: Authentication failures, permission denials
 - **Infrastructure Metrics**: Resource usage, service health
 
 ### Alerting
+
 - **Real-time Alerts**: Immediate notification for critical issues
 - **Trend Analysis**: Proactive alerts for developing problems
 - **Escalation Procedures**: Automated escalation for unresolved issues
 - **On-call Integration**: Seamless integration with on-call procedures
 
 ## Related Documentation
+
 - [App Routes](../app/README.md) - Application route documentation
 - [Components](../components/README.md) - UI component documentation
 - [API Documentation](../pages/api/README.md) - Backend API documentation

@@ -117,7 +117,9 @@ export function CreateUserModal({
   };
 
   const handleClose = () => {
-    if (isSubmitting) {return;}
+    if (isSubmitting) {
+      return;
+    }
     form.reset();
     onClose();
   };
@@ -126,7 +128,7 @@ export function CreateUserModal({
     { value: "viewer", label: "Viewer", description: "Read-only access" },
     {
       value: "consultant",
-      label: "Consultant", 
+      label: "Consultant",
       description: "Can manage clients and payrolls",
     },
     {
@@ -144,7 +146,7 @@ export function CreateUserModal({
       label: "Developer",
       description: "Full system access and development",
     },
-  ].filter((role) => canAssignRole(role.value));
+  ].filter(role => canAssignRole(role.value));
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -246,7 +248,7 @@ export function CreateUserModal({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {roleOptions.map((role) => (
+                        {roleOptions.map(role => (
                           <SelectItem key={role.value} value={role.value}>
                             <div className="flex flex-col">
                               <span className="font-medium">{role.label}</span>
@@ -285,7 +287,7 @@ export function CreateUserModal({
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="">No manager assigned</SelectItem>
-                          {managers.map((manager) => (
+                          {managers.map(manager => (
                             <SelectItem key={manager.id} value={manager.id}>
                               <div className="flex flex-col">
                                 <span className="font-medium">
