@@ -1,11 +1,11 @@
 // app/api/clerk-webhooks/route.ts
-import { gql } from "@apollo/client";
 import { headers } from "next/headers";
 import { NextRequest } from "next/server";
 import { Webhook } from "svix";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
+import { UpdateUserRoleFromClerkDocument } from "@/domains/users/graphql/generated/graphql";
 
 
 // Verify webhook signature for security
@@ -49,25 +49,6 @@ async function verifyWebhook(
 }
 
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
-
-// GraphQL mutation to update user role when syncing from Clerk
-const UPDATE_USER_ROLE_FROM_CLERK = gql`
-  mutation UpdateUserRoleFromClerk($clerkId: String!, $role: user_role!) {
-    update_users(
-      where: { clerk_user_id: { _eq: $clerkId } }
-      _set: { role: $role, updated_at: "now()" }
-    ) {
-      affected_rows
-      returning {
-        id
-        name
-        email
-        role
-        clerk_user_id
-      }
-    }
-  }
-`;
 
 type WebhookEvent = {
   data: any;
@@ -157,14 +138,14 @@ export async function POST(req: NextRequest) {
           try {
             // Update the database to match Clerk's role
             const { data: updateResult } = await adminApolloClient.mutate({
-              mutation: UPDATE_USER_ROLE_FROM_CLERK,
+              mutation: UpdateUserRoleFromClerkDocument,
               variables: {
                 clerkId: id,
                 role: updatedRole,
               },
             });
 
-            if (updateResult?.update_users?.affected_rows > 0) {
+            if (updateResult?.updateUsers?.affected_rows > 0) {
               console.log(`✅ Database role synced from Clerk: ${updatedRole}`);
             } else {
               console.log(`ℹ️ No database user found for Clerk ID: ${id}`);

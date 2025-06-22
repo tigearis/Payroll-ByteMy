@@ -3,6 +3,7 @@ import { gql } from "@apollo/client";
 import { clerkClient } from "@clerk/nextjs/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { getPermissionsForRole } from "@/lib/auth/permissions";
 
 // Define user role hierarchy for permission checking
 // These must match the Hasura database enum values exactly
@@ -333,13 +334,15 @@ export async function syncUserWithDatabase(
         // Get current metadata to preserve other fields
         const currentUser = await client.users.getUser(clerkId);
 
-        // ✅ ENSURE databaseId is ALWAYS set correctly
+        // ✅ ENSURE databaseId is ALWAYS set correctly  
+        const userPermissions = getPermissionsForRole(databaseUser.role);
         const updatedMetadata = {
           ...currentUser.publicMetadata,
           role: databaseUser.role,
           databaseId: databaseUser.id, // ✅ CRITICAL: Database UUID for JWT
           isStaff: databaseUser.is_staff,
           managerId: databaseUser.manager_id,
+          permissions: userPermissions, // ✅ CRITICAL: Permissions for JWT custom claims
           lastSyncAt: new Date().toISOString(),
         };
 
@@ -436,12 +439,14 @@ export async function updateUserRole(
     // Update Clerk metadata
     if (updatedUser) {
       const client = await clerkClient();
+      const userPermissions = getPermissionsForRole(updatedUser.role);
       await client.users.updateUser(userId, {
         publicMetadata: {
           role: updatedUser.role,
           databaseId: updatedUser.id,
           isStaff: updatedUser.is_staff,
           managerId: updatedUser.manager_id,
+          permissions: userPermissions,
         },
         privateMetadata: {
           hasuraRole: updatedUser.role,

@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,50 +5,10 @@ import { withAuth } from "@/lib/auth/api-auth";
 import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { getUserPermissions, canAssignRole, UserRole } from "@/domains/users/services/user-sync";
-
-// GraphQL query to get users with filtering and pagination
-const GET_USERS_QUERY = gql`
-  query GetUsers($limit: Int = 50, $offset: Int = 0, $where: users_bool_exp) {
-    users(
-      limit: $limit
-      offset: $offset
-      where: $where
-      order_by: { created_at: desc }
-    ) {
-      id
-      name
-      email
-      role
-      created_at
-      updated_at
-      is_staff
-      manager_id
-      clerk_user_id
-      manager {
-        id
-        name
-        email
-      }
-    }
-    users_aggregate(where: $where) {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
-
-// Get all managers for assignment dropdown
-const GET_MANAGERS_QUERY = gql`
-  query GetManagers {
-    users(where: { role: { _in: [developer, manager] } }, order_by: { name: asc }) {
-      id
-      name
-      email
-      role
-    }
-  }
-`;
+import { 
+  GetUsersWithFilteringDocument, 
+  GetManagersDocument 
+} from "@/domains/users/graphql/generated/graphql";
 
 // Helper function to get current user's role from Clerk
 async function getCurrentUserRole(userId: string): Promise<UserRole | "developer"> {
@@ -140,7 +99,7 @@ export const GET = withAuth(async (request: NextRequest, session) => {
 
     // Execute query
     const { data, errors } = await adminApolloClient.query({
-      query: GET_USERS_QUERY,
+      query: GetUsersWithFilteringDocument,
       variables: { limit, offset, where },
       fetchPolicy: "network-only",
       errorPolicy: "all",
@@ -156,14 +115,14 @@ export const GET = withAuth(async (request: NextRequest, session) => {
 
     // Also fetch managers for frontend dropdown
     const { data: managersData } = await adminApolloClient.query({
-      query: GET_MANAGERS_QUERY,
+      query: GetManagersDocument,
       fetchPolicy: "cache-first",
     });
 
     return NextResponse.json({
       success: true,
       users: data.users || [],
-      totalCount: data.users_aggregate?.aggregate?.count || 0,
+      totalCount: data.usersAggregate?.aggregate?.count || 0,
       managers: managersData?.users || [],
       pagination: {
         limit,
