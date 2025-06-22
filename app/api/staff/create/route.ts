@@ -2,9 +2,9 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { syncUserWithDatabase, UserRole } from "@/domains/users/services/user-sync";
 import { withAuth } from "@/lib/auth/api-auth";
 import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
-import { syncUserWithDatabase, UserRole } from "@/domains/users/services/user-sync";
 
 
 // Input validation schema

@@ -18,25 +18,6 @@ const GET_ALL_USERS_LIST = gql`
 
 // Import role enums
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 import {
   ArrowLeft,
@@ -64,11 +45,9 @@ import { toast } from "sonner";
 
 import { ExportCsv } from "@/components/export-csv";
 import { ExportPdf } from "@/components/export-pdf";
-import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
-import { PayrollDatesView } from "@/domains/payrolls/components/payroll-dates-view";
-import { PayrollVersionHistory } from "@/domains/payrolls/components/payroll-version-history";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -77,8 +56,37 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { PayrollDetailsLoading } from "@/components/ui/loading-states";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
+import { PayrollDatesView } from "@/domains/payrolls/components/payroll-dates-view";
+import { PayrollVersionHistory } from "@/domains/payrolls/components/payroll-version-history";
+
+import { 
+  GetPayrollByIdDocument, 
+  GetPayrollDatesDocument, 
+  GetPayrollFamilyDatesDocument,
+  UpdatePayrollDocument 
+} from "@/domains/payrolls/graphql/generated/graphql";
+import type { UserRole } from "@/domains/users/types";
 import {
   usePayrollVersioning,
   usePayrollStatusUpdate,
@@ -88,14 +96,6 @@ import {
   payroll_cycle_type,
   payroll_date_type,
 } from "@/types/enums";
-import type { UserRole } from "@/domains/users/types";
-
-import { 
-  GetPayrollByIdDocument, 
-  GetPayrollDatesDocument, 
-  GetPayrollFamilyDatesDocument,
-  UpdatePayrollDocument 
-} from "@/domains/payrolls/graphql/generated/graphql";
 
 // Add error boundary component for debugging
 function ErrorBoundary({ children }: { children: React.ReactNode }) {

@@ -1,14 +1,14 @@
 import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuth } from "@/lib/auth/api-auth";
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { getUserPermissions, canAssignRole, UserRole } from "@/domains/users/services/user-sync";
 import { 
   GetUsersWithFilteringDocument, 
   GetManagersDocument 
 } from "@/domains/users/graphql/generated/graphql";
+import { getUserPermissions, canAssignRole, UserRole } from "@/domains/users/services/user-sync";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { withAuth } from "@/lib/auth/api-auth";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 
 // Helper function to get current user's role from Clerk
 async function getCurrentUserRole(userId: string): Promise<UserRole | "developer"> {

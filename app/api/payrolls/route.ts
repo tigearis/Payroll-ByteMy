@@ -2,9 +2,9 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuth } from "@/lib/auth/api-auth";
-import { serverApolloClient } from "@/lib/apollo/unified-client";
 import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated";
+import { serverApolloClient } from "@/lib/apollo/unified-client";
+import { withAuth } from "@/lib/auth/api-auth";
 
 export const GET = withAuth(
   async (_req: NextRequest) => {

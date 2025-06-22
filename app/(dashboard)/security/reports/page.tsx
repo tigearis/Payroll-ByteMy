@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
-import { ComplianceReportDocument } from "@/domains/audit/graphql/generated/graphql";
 import { format, subDays, startOfMonth } from "date-fns";
 import {
   Download,
@@ -37,6 +36,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ComplianceReportDocument } from "@/domains/audit/graphql/generated/graphql";
 
 const COLORS = {
   CRITICAL: "#ef4444",

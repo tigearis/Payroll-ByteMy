@@ -10,14 +10,14 @@ import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
 import { auth } from "@clerk/nextjs/server";
 
-import { SecureErrorHandler } from "@/lib/security/error-responses";
+import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
   CreateUserDocument,
   UpdateUserDocument,
   GetUserByClerkIdDocument,
   GetUserByEmailDocument,
 } from "@/domains/users/graphql/generated/graphql";
-import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { SecureErrorHandler } from "@/lib/security/error-responses";
 
 // Define allowed roles for admin operations
 const ADMIN_ROLES = ["developer", "org_admin"];

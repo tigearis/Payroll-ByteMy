@@ -3,9 +3,9 @@ import { headers } from "next/headers";
 import { NextRequest } from "next/server";
 import { Webhook } from "svix";
 
-import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 import { UpdateUserRoleFromClerkDocument } from "@/domains/users/graphql/generated/graphql";
+import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 
 
 // Verify webhook signature for security

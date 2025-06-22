@@ -108,7 +108,7 @@ function handleApolloError(error: ApolloError): GraphQLErrorDetails {
  */
 function handlePermissionError(graphQLError: any, originalError: ApolloError): GraphQLErrorDetails {
   const message = graphQLError.message || '';
-  const extensions = graphQLError.extensions || {};
+  const _extensions = graphQLError.extensions || {};
 
   // Extract role information from error
   let currentRole: string | undefined;

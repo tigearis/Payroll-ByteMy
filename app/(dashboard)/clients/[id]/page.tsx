@@ -33,7 +33,6 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -71,19 +70,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PayrollsTabLoading } from "@/components/ui/loading-states";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  GetClientByIdDocument,
-  UpdateClientDocument,
-  UpdateClientStatusDocument,
-  ArchiveClientDocument,
-} from "@/domains/clients/graphql/generated/graphql";
-import { useSmartPolling } from "@/hooks/use-polling";
-
-import { safeFormatDate } from "@/lib/utils/date-utils";
-
 import {
   Table,
   TableBody,
@@ -92,7 +81,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PayrollsTabLoading } from "@/components/ui/loading-states";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  GetClientByIdDocument,
+  UpdateClientDocument,
+  UpdateClientStatusDocument,
+  ArchiveClientDocument,
+} from "@/domains/clients/graphql/generated/graphql";
+import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
+import { useSmartPolling } from "@/hooks/use-polling";
+
+import { safeFormatDate } from "@/lib/utils/date-utils";
+
 
 // Payroll status configuration (same as payrolls page)
 const getStatusConfig = (status: string) => {

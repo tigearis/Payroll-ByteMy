@@ -3,8 +3,8 @@ import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 
 import { gql } from "@apollo/client";
 
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "./audit/logger";
 import { adminApolloClient } from "../apollo/unified-client";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "./audit/logger";
 
 // API Key configuration
 export interface APIKeyConfig {

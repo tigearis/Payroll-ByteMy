@@ -2,8 +2,8 @@
 import { DocumentNode } from '@apollo/client';
 import { ReactNode } from 'react';
 
-import { useRealTimeSubscription } from '@/hooks/use-subscription';
 import { PayrollSubscriptionDocument } from '@/domains/payrolls/graphql/generated/graphql';
+import { useRealTimeSubscription } from '@/hooks/use-subscription';
 
 interface RealTimeUpdatesProps {
   subscription: DocumentNode;

@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { withAuth } from "@/lib/auth/api-auth";
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 import { apiKeyManager } from "@/lib/security/api-signing";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 
 // List API keys (admin only)
 export const GET = withAuth(async (request: NextRequest, session) => {

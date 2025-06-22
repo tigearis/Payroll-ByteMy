@@ -3,11 +3,11 @@ import { auth } from "@clerk/nextjs/server";
 import { format, addMonths } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
+import { UpdatePayrollStatusDocument as UPDATE_PAYROLL_STATUS } from "@/domains/payrolls";
+import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
 import { serverApolloClient } from "@/lib/apollo/unified-client";
 
 
-import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
-import { UpdatePayrollStatusDocument as UPDATE_PAYROLL_STATUS } from "@/domains/payrolls";
 
 export async function POST(req: NextRequest) {
   try {

@@ -2,15 +2,15 @@ import { gql } from "@apollo/client";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { withAuthParams } from "@/lib/auth/api-auth";
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
 import {
   getUserPermissions,
   canAssignRole,
   UserRole,
   updateUserRole,
 } from "@/domains/users/services/user-sync";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { withAuthParams } from "@/lib/auth/api-auth";
+import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
 
 // Get user by ID (either database ID or Clerk ID)
 const GET_USER_BY_ID = gql`
