@@ -72,3 +72,58 @@ mutation DeleteStaff($id: uuid!) {
     deactivatedAt
   }
 }
+
+# API Route Mutations - Migrated from inline GraphQL
+
+mutation UpdateUserRoleFromClerk($clerkId: String!, $role: user_role!) {
+  updateUsers(
+    where: { clerkUserId: { _eq: $clerkId } }
+    _set: { role: $role, updatedAt: "now()" }
+  ) {
+    affected_rows
+    returning {
+      id
+      name
+      email
+      role
+      clerkUserId
+    }
+  }
+}
+
+mutation CreateUserInDatabase(
+  $clerkId: String!
+  $name: String!
+  $email: String!
+  $role: user_role = viewer
+  $isStaff: Boolean = false
+  $managerId: uuid
+  $image: String
+) {
+  insertUser(
+    object: {
+      clerkUserId: $clerkId
+      name: $name
+      email: $email
+      role: $role
+      isStaff: $isStaff
+      managerId: $managerId
+      image: $image
+    }
+    on_conflict: {
+      constraint: users_clerk_user_id_key
+      update_columns: [name, email, image, updatedAt]
+    }
+  ) {
+    id
+    name
+    email
+    role
+    clerkUserId
+    isStaff
+    managerId
+    image
+    createdAt
+    updatedAt
+  }
+}

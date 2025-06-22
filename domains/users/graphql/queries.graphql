@@ -269,3 +269,62 @@ query GetUserProfileSettings($id: uuid!) {
     }
   }
 }
+
+# API Route Queries - Migrated from inline GraphQL
+
+query GetUsersWithFiltering($limit: Int = 50, $offset: Int = 0, $where: users_bool_exp) {
+  users(
+    limit: $limit
+    offset: $offset
+    where: $where
+    order_by: { createdAt: desc }
+  ) {
+    id
+    name
+    email
+    role
+    createdAt
+    updatedAt
+    isStaff
+    managerId
+    clerkUserId
+    manager {
+      id
+      name
+      email
+    }
+  }
+  usersAggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetManagers {
+  users(where: { role: { _in: [developer, manager] } }, order_by: { name: asc }) {
+    id
+    name
+    email
+    role
+  }
+}
+
+query GetUserRoleSecure($userId: uuid!) {
+  user(id: $userId) {
+    id
+    role
+    isStaff
+    isActive
+  }
+}
+
+query GetUserRoleFallbackSecure($userId: uuid!) {
+  user(id: $userId) {
+    id
+    role
+    isStaff
+    isActive
+    clerkUserId
+  }
+}
