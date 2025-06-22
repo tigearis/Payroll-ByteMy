@@ -57,7 +57,8 @@
     "config/**/*",
     "scripts/**/*",
     "tests/**/*",
-    "database/**/*"
+    "database/**/*",
+    "eslint.config.js"
   ],
   "exclude": ["node_modules", "backups/**/*", "_backup_delete/**/*"]
 }
