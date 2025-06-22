@@ -53,9 +53,7 @@ export function Providers({ children }: ProvidersProps) {
       >
         <AuthenticatedApolloProvider>
           <AuthProvider>
-            {/* Temporarily disabled StrictDatabaseGuard for debugging */}
-            {/* <StrictDatabaseGuard>{children}</StrictDatabaseGuard> */}
-            {children}
+            <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
           </AuthProvider>
         </AuthenticatedApolloProvider>
       </ClerkProvider>
