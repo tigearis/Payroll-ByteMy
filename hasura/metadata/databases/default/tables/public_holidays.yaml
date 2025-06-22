@@ -25,12 +25,18 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
+        - country_code
+        - created_at
         - date
+        - id
+        - is_fixed
+        - is_global
+        - launch_year
         - local_name
         - name
-        - country_code
         - region
+        - types
+        - updated_at
       filter: {}
     comment: Consultants can see holidays relevant to payroll processing
   - role: developer
@@ -42,14 +48,18 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - id
-        - date
-        - local_name
-        - name
         - country_code
-        - region
+        - created_at
+        - date
+        - id
         - is_fixed
         - is_global
+        - launch_year
+        - local_name
+        - name
+        - region
+        - types
+        - updated_at
       filter: {}
     comment: Managers can view global and regional holidays
   - role: org_admin
@@ -72,12 +82,18 @@ select_permissions:
   - role: viewer
     permission:
       columns:
-        - id
+        - country_code
+        - created_at
         - date
+        - id
+        - is_fixed
+        - is_global
+        - launch_year
         - local_name
         - name
-        - country_code
         - region
+        - types
+        - updated_at
       filter: {}
     comment: All users can see holidays for payroll processing
 update_permissions:

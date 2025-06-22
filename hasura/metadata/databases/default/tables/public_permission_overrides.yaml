@@ -61,27 +61,77 @@ insert_permissions:
         - expires_at
     comment: Only org admins can create permission overrides
 select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - conditions
+        - created_at
+        - created_by
+        - expires_at
+        - granted
+        - id
+        - operation
+        - resource
+        - role
+        - updated_at
+        - user_id
+      filter: {}
+    comment: Consultants can view relevant data
   - role: developer
     permission:
       columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
-  - role: org_admin
+  - role: manager
     permission:
       columns:
-        - id
-        - user_id
-        - role
-        - resource
-        - operation
-        - granted
         - conditions
         - created_at
         - created_by
         - expires_at
+        - granted
+        - id
+        - operation
+        - resource
+        - role
+        - updated_at
+        - user_id
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all data
+  - role: org_admin
+    permission:
+      columns:
+        - conditions
+        - created_at
+        - created_by
+        - expires_at
+        - granted
+        - id
+        - operation
+        - resource
+        - role
+        - updated_at
+        - user_id
       filter: {}
     comment: Only org admins can view permission overrides
+  - role: viewer
+    permission:
+      columns:
+        - conditions
+        - created_at
+        - created_by
+        - expires_at
+        - granted
+        - id
+        - operation
+        - resource
+        - role
+        - updated_at
+        - user_id
+      filter: {}
+    comment: Viewers can see basic information
 update_permissions:
   - role: developer
     permission:

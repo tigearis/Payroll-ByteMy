@@ -51,14 +51,14 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
         - assignment_id
-        - payroll_date_id
-        - from_consultant_id
-        - to_consultant_id
-        - changed_by
         - change_reason
+        - changed_by
         - created_at
+        - from_consultant_id
+        - id
+        - payroll_date_id
+        - to_consultant_id
       filter:
         _or:
           - from_consultant_id:
@@ -75,31 +75,44 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - id
         - assignment_id
-        - payroll_date_id
-        - from_consultant_id
-        - to_consultant_id
-        - changed_by
         - change_reason
+        - changed_by
         - created_at
+        - from_consultant_id
+        - id
+        - payroll_date_id
+        - to_consultant_id
       filter: {}
       allow_aggregations: true
     comment: Managers can view all assignment audit records
   - role: org_admin
     permission:
       columns:
-        - id
         - assignment_id
-        - payroll_date_id
-        - from_consultant_id
-        - to_consultant_id
-        - changed_by
         - change_reason
+        - changed_by
         - created_at
+        - from_consultant_id
+        - id
+        - payroll_date_id
+        - to_consultant_id
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all assignment audit records
+  - role: viewer
+    permission:
+      columns:
+        - assignment_id
+        - change_reason
+        - changed_by
+        - created_at
+        - from_consultant_id
+        - id
+        - payroll_date_id
+        - to_consultant_id
+      filter: {}
+    comment: Viewers can see basic information
 update_permissions:
   - role: developer
     permission:

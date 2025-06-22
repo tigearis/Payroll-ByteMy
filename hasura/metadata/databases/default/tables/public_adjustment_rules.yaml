@@ -27,11 +27,13 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
+        - created_at
         - cycle_id
         - date_type_id
+        - id
         - rule_code
         - rule_description
+        - updated_at
       filter: {}
     comment: All users can view adjustment rules as they're system-wide settings
   - role: developer
@@ -69,9 +71,13 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - created_at
+        - cycle_id
+        - date_type_id
         - id
         - rule_code
         - rule_description
+        - updated_at
       filter: {}
     comment: Viewers can view basic adjustment rule information
 update_permissions:

@@ -3,49 +3,36 @@
 # SOC2 Compliance: Aggregate data with no PII exposure
 
 query GetDashboardStats {
-  # Recent payrolls (using supersededDate as in database schema)
-  recent_payrolls: payrolls(
-    limit: 5
-    order_by: { updatedAt: desc }
-    where: { supersededDate: { _is_null: true } }
-  ) {
-    id
-    name
-    client {
-      id
-      name
-    }
-  }
-
-  # Active users count (using isActive field from database schema)
-  active_users_count: usersAggregate(where: { isActive: { _eq: true } }) {
+  # Total clients count
+  clients_aggregate: clientsAggregate {
     aggregate {
       count
     }
   }
 
-  # Active clients count (using active field from database schema)
-  active_clients_count: clientsAggregate(where: { active: { _eq: true } }) {
+  # Total payrolls count
+  payrolls_aggregate: payrollsAggregate {
     aggregate {
       count
     }
   }
 
-  # Recent payroll dates (using correct field names from database schema)
-  recent_payroll_dates: payrollDates(
-    limit: 10
-    order_by: { adjustedEftDate: desc }
-    where: { adjustedEftDate: { _gte: "now()" } }
+  # Active payrolls (non-superseded)
+  active_payrolls: payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
+    aggregate {
+      count
+    }
+  }
+
+  # Processing queue (payrolls needing attention - can be refined later)
+  processing_queue: payrollsAggregate(
+    where: { 
+      supersededDate: { _is_null: true }
+      status: { _in: ["processing", "pending", "review"] }
+    }
   ) {
-    id
-    adjustedEftDate
-    processingDate
-    payroll {
-      id
-      name
-      client {
-        name
-      }
+    aggregate {
+      count
     }
   }
 }
@@ -71,17 +58,30 @@ query GetSystemStats {
   }
 }
 
-query GetUpcomingPayrolls {
+query GetUpcomingPayrolls($from_date: date!, $limit: Int = 10) {
   payrolls(
-    where: { supersededDate: { _is_null: true } }
-    order_by: { updatedAt: desc }
-    limit: 10
+    where: { 
+      supersededDate: { _is_null: true }
+      payrollDates: { adjustedEftDate: { _gte: $from_date } }
+    }
+    order_by: { payrollDates_aggregate: { min: { adjustedEftDate: asc } } }
+    limit: $limit
   ) {
     id
     name
+    status
     client {
       id
       name
+    }
+    payrollDates(
+      where: { adjustedEftDate: { _gte: $from_date } }
+      order_by: { adjustedEftDate: asc }
+      limit: 1
+    ) {
+      id
+      adjustedEftDate
+      processingDate
     }
   }
 }

@@ -33,9 +33,11 @@ select_permissions:
   - role: consultant
     permission:
       columns:
+        - created_at
+        - description
         - id
         - name
-        - description
+        - updated_at
       filter: {}
     comment: Consultants can view payroll date types
   - role: developer
@@ -69,9 +71,11 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - created_at
+        - description
         - id
         - name
-        - description
+        - updated_at
       filter: {}
     comment: All users need to see payroll date types
 update_permissions:

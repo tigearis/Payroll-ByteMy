@@ -51,11 +51,13 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
-        - name
-        - description
-        - priority
         - created_at
+        - description
+        - display_name
+        - id
+        - is_system_role
+        - name
+        - priority
         - updated_at
       filter: {}
     comment: Consultants can view available roles
@@ -68,11 +70,13 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - id
-        - name
-        - description
-        - priority
         - created_at
+        - description
+        - display_name
+        - id
+        - is_system_role
+        - name
+        - priority
         - updated_at
       filter: {}
       allow_aggregations: true
@@ -80,11 +84,13 @@ select_permissions:
   - role: org_admin
     permission:
       columns:
-        - id
-        - name
-        - description
-        - priority
         - created_at
+        - description
+        - display_name
+        - id
+        - is_system_role
+        - name
+        - priority
         - updated_at
       filter: {}
       allow_aggregations: true
@@ -92,9 +98,14 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - created_at
+        - description
+        - display_name
         - id
+        - is_system_role
         - name
         - priority
+        - updated_at
       filter: {}
     comment: Viewers can see basic role information
 update_permissions:

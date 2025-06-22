@@ -26,9 +26,11 @@ select_permissions:
   - role: consultant
     permission:
       columns:
+        - created_at
+        - description
         - id
         - name
-        - description
+        - updated_at
       filter: {}
     comment: All users need to see payroll cycles
   - role: developer
@@ -60,9 +62,11 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - created_at
+        - description
         - id
         - name
-        - description
+        - updated_at
       filter: {}
     comment: All users need to see payroll cycles
 update_permissions:

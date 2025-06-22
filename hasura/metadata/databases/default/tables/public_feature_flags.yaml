@@ -11,9 +11,11 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
+        - allowed_roles
         - feature_name
+        - id
         - is_enabled
+        - updated_at
       filter: {}
     comment: Consultants can view enabled features
   - role: developer
@@ -25,28 +27,31 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - id
-        - feature_name
-        - is_enabled
         - allowed_roles
+        - feature_name
+        - id
+        - is_enabled
+        - updated_at
       filter: {}
     comment: Managers can view all feature flags
   - role: org_admin
     permission:
       columns:
-        - id
-        - feature_name
-        - is_enabled
         - allowed_roles
+        - feature_name
+        - id
+        - is_enabled
         - updated_at
       filter: {}
     comment: Org admins have full view of feature flags
   - role: viewer
     permission:
       columns:
-        - id
+        - allowed_roles
         - feature_name
+        - id
         - is_enabled
+        - updated_at
       filter: {}
     comment: All users can view enabled features
 update_permissions:

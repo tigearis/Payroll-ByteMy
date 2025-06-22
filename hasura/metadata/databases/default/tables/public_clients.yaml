@@ -69,7 +69,7 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: "*"
+      columns: '*'
     comment: Developer role has full insert access
   - role: manager
     permission:
@@ -110,10 +110,11 @@ select_permissions:
                 _eq: X-Hasura-User-Id
             - backup_consultant_user_id:
                 _eq: X-Hasura-User-Id
+      allow_aggregations: true
     comment: Consultants can only view clients where they are assigned to payrolls
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -148,10 +149,16 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - active
+        - contact_email
+        - contact_person
+        - contact_phone
+        - created_at
         - id
         - name
-        - active
+        - updated_at
       filter: {}
+      allow_aggregations: true
     comment: Viewers can see basic client information
 update_permissions:
   - role: consultant
@@ -170,7 +177,7 @@ update_permissions:
     comment: Consultants can update contact info for clients they're assigned to
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       check: {}
     comment: Developer role has full update access

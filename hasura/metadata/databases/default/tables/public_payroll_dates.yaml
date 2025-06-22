@@ -141,10 +141,14 @@ select_permissions:
   - role: viewer
     permission:
       columns:
-        - id
-        - payroll_id
         - adjusted_eft_date
+        - created_at
+        - id
+        - notes
+        - original_eft_date
+        - payroll_id
         - processing_date
+        - updated_at
       filter: {}
     comment: Viewers can view basic payroll date information
 update_permissions:

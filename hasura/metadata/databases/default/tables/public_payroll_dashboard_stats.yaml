@@ -5,18 +5,18 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
-        - name
-        - status
+        - backup_consultant_user_id
         - client_name
         - cycle_name
-        - total_dates
         - future_dates
-        - past_dates
-        - next_eft_date
-        - primary_consultant_user_id
-        - backup_consultant_user_id
+        - id
         - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
       filter:
         _or:
           - primary_consultant_user_id:
@@ -33,36 +33,53 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - id
-        - name
-        - status
+        - backup_consultant_user_id
         - client_name
         - cycle_name
-        - total_dates
         - future_dates
-        - past_dates
-        - next_eft_date
-        - primary_consultant_user_id
-        - backup_consultant_user_id
+        - id
         - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
       filter: {}
       allow_aggregations: true
     comment: Managers can view all dashboard statistics
   - role: org_admin
     permission:
       columns:
-        - id
-        - name
-        - status
+        - backup_consultant_user_id
         - client_name
         - cycle_name
-        - total_dates
         - future_dates
-        - past_dates
-        - next_eft_date
-        - primary_consultant_user_id
-        - backup_consultant_user_id
+        - id
         - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all dashboard statistics including system health
+  - role: viewer
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_name
+        - cycle_name
+        - future_dates
+        - id
+        - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
+      filter: {}
+    comment: Viewers can see basic information

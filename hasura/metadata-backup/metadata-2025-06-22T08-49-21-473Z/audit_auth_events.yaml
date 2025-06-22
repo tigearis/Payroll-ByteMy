@@ -1,0 +1,98 @@
+table:
+  name: auth_events
+  schema: audit
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    event_time:
+      custom_name: eventTime
+    event_type:
+      custom_name: eventType
+    failure_reason:
+      custom_name: failureReason
+    ip_address:
+      custom_name: ipAddress
+    user_agent:
+      custom_name: userAgent
+    user_email:
+      custom_name: userEmail
+    user_id:
+      custom_name: userId
+  custom_column_names:
+    created_at: createdAt
+    event_time: eventTime
+    event_type: eventType
+    failure_reason: failureReason
+    ip_address: ipAddress
+    user_agent: userAgent
+    user_email: userEmail
+    user_id: userId
+  custom_root_fields:
+    delete: deleteAuthEvents
+    delete_by_pk: deleteAuthEvent
+    insert: insertAuthEvents
+    insert_one: insertAuthEvent
+    select: authEvents
+    select_aggregate: authEventsAggregate
+    select_by_pk: authEvent
+    update: updateAuthEvents
+    update_by_pk: updateAuthEvent
+insert_permissions:
+  - role: system
+    permission:
+      check: {}
+      columns:
+        - event_type
+        - user_id
+        - user_email
+        - ip_address
+        - user_agent
+        - success
+        - failure_reason
+        - metadata
+select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - event_time
+        - event_type
+        - user_id
+        - success
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - event_time
+        - event_type
+        - user_id
+        - user_email
+        - ip_address
+        - user_agent
+        - success
+        - failure_reason
+        - metadata
+        - created_at
+      filter: {}
+      allow_aggregations: true
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

@@ -78,10 +78,20 @@ select_permissions:
   - role: viewer
     permission:
       columns:
-        - id
-        - name
+        - backup_consultant_user_id
         - client_id
-        - version_number
+        - created_at
+        - cycle_id
+        - date_type_id
+        - date_value
         - go_live_date
+        - id
+        - manager_user_id
+        - name
+        - parent_payroll_id
+        - primary_consultant_user_id
+        - superseded_date
+        - updated_at
+        - version_number
       filter: {}
     comment: Viewers can see basic current payroll information
