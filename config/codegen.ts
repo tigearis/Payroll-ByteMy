@@ -238,12 +238,17 @@ const generatePerDomain = domains
     if (validFiles.length === 0) return acc;
 
     // Add security classification header based on domain level
-    const securityHeader = `${SOC2_HEADER}/* 
- * DOMAIN: ${domain.name.toUpperCase()}
- * SECURITY LEVEL: ${domain.securityLevel}
- * ACCESS CONTROLS: ${getAccessControlDescription(domain.securityLevel)}
- * AUTO-EXPORTED: This file is automatically exported from domain index
- */\n\n`;
+    const securityHeader = [
+      SOC2_HEADER,
+      "/* ",
+      ` * DOMAIN: ${domain.name.toUpperCase()}`,
+      ` * SECURITY LEVEL: ${domain.securityLevel}`,
+      ` * ACCESS CONTROLS: ${getAccessControlDescription(domain.securityLevel)}`,
+      " * AUTO-EXPORTED: This file is automatically exported from domain index",
+      " */",
+      "",
+      ""
+    ].join("\n");
 
     // Generate TypeScript files with hooks for each domain
     acc[outputDir] = {
@@ -269,7 +274,14 @@ const generatePerDomain = domains
       plugins: [
         {
           add: {
-            content: `${securityHeader}// Auto-generated domain exports\n\n// Re-export all GraphQL operations\nexport * from './graphql/generated';\n`,
+            content: [
+              securityHeader,
+              "// Auto-generated domain exports",
+              "",
+              "// Re-export all GraphQL operations",
+              "export * from './graphql/generated';",
+              ""
+            ].join("\n"),
           },
         },
       ],
@@ -317,12 +329,17 @@ const config: CodegenConfig = {
       plugins: [
         {
           add: {
-            content: `${SOC2_HEADER}/* 
- * DOMAIN: SHARED
- * SECURITY LEVEL: LOW
- * ACCESS CONTROLS: Basic Authentication
- * AUTO-EXPORTED: This file is automatically exported from domain index
- */\n\n`,
+            content: [
+              SOC2_HEADER,
+              "/* ",
+              " * DOMAIN: SHARED",
+              " * SECURITY LEVEL: LOW", 
+              " * ACCESS CONTROLS: Basic Authentication",
+              " * AUTO-EXPORTED: This file is automatically exported from domain index",
+              " */",
+              "",
+              ""
+            ].join("\n"),
           },
         },
       ],
@@ -340,19 +357,34 @@ const config: CodegenConfig = {
     // Generate for each valid domain with security classification and auto-exports
     ...generatePerDomain,
 
-    // Root exports aggregator for clean imports (ensure this overwrites client preset index)
+    // Root exports aggregator for clean imports (avoid conflicts)
     "./shared/types/generated/index.ts": {
       plugins: [
         {
           add: {
-            content: `${SOC2_HEADER}// Central export aggregator for all GraphQL operations\n\n// Re-export fragment masking utilities\nexport * from './fragment-masking';\n\n// Re-export gql utilities\nexport * from './gql';\n\n// Re-export base types and generated operations\nexport * from './graphql';\n\n// Auto-aggregate domain exports\n${domains
-              .filter((d) => domainHasValidOperations(d.name))
-              .map((d) =>
-                d.name === "shared"
-                  ? "// Shared operations exported directly above"
-                  : `export * from '../../../domains/${d.name}/graphql/generated';`
-              )
-              .join("\n")}\n`,
+            content: [
+              SOC2_HEADER,
+              "// Central export aggregator for all GraphQL operations",
+              "",
+              "// Re-export fragment masking utilities",
+              "export * from './fragment-masking';",
+              "",
+              "// Re-export gql utilities", 
+              "export * from './gql';",
+              "",
+              "// Re-export base types and generated operations",
+              "export * from './graphql';",
+              "",
+              "// Auto-aggregate domain exports (GraphQL documents only, not utilities to avoid conflicts)",
+              ...domains
+                .filter((d) => domainHasValidOperations(d.name))
+                .map((d) =>
+                  d.name === "shared"
+                    ? "// Shared operations exported directly above"
+                    : `export * from '../../../domains/${d.name}/graphql/generated/graphql';`
+                ),
+              ""
+            ].join("\n"),
           },
         },
       ],

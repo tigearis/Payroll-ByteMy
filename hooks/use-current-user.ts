@@ -1,24 +1,8 @@
 import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
 import { useMemo } from "react";
 
-// Import extracted GraphQL operations
-const GET_CURRENT_USER = gql`
-  query GetCurrentUser($currentUserId: uuid!) {
-    user(id: $currentUserId) {
-      id
-      name
-      role
-      is_staff
-      is_active
-      manager_id
-      clerk_user_id
-      created_at
-      updated_at
-    }
-  }
-`;
+import { GetCurrentUserDocument } from "@/domains/users/graphql/generated/graphql";
 
 /**
  * Simplified useCurrentUser hook using Apollo's built-in deduplication
@@ -55,14 +39,24 @@ export function useCurrentUser() {
       clerkUserId,
       defaultRole: claims?.["x-hasura-default-role"],
       allowedRoles: claims?.["x-hasura-allowed-roles"],
+      fullClaims: claims, // Debug the full claims object
     });
     
-    return extractedUserId;
+    // Additional validation that the extracted ID looks like a UUID
+    if (extractedUserId && typeof extractedUserId === 'string' && extractedUserId.length === 36) {
+      console.log("✅ Valid database user ID extracted:", extractedUserId);
+      return extractedUserId;
+    } else if (extractedUserId) {
+      console.warn("⚠️ Invalid database user ID format:", extractedUserId);
+      return null;
+    }
+    
+    return null;
   }, [isLoaded, clerkUserId, sessionClaims]);
 
   // Apollo automatically handles deduplication and caching
-  const { data, loading, error, refetch, networkStatus } = useQuery(GET_CURRENT_USER, {
-    variables: { currentUserId: databaseUserId },
+  const { data, loading, error, refetch, networkStatus } = useQuery(GetCurrentUserDocument, {
+    variables: { currentUserId: databaseUserId! },
     skip: !databaseUserId, // Don't query if no database user ID
     
     // Apollo's built-in optimizations (replaces auth-mutex functionality)

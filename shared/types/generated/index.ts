@@ -15,16 +15,22 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-22T01:20:21.163Z
+ * Generated: 2025-06-22T01:58:02.245Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v2.0
  */
 
 // Central export aggregator for all GraphQL operations
 
+// Re-export fragment masking utilities
+export * from './fragment-masking';
+
 // Re-export gql utilities
 export * from './gql';
 
 // Re-export base types and generated operations
 export * from './graphql';
-// Shared operations exported directly above
+
+// Domain exports temporarily disabled to resolve conflicts
+// Import directly from domains when needed:
+// import { GetCurrentUserDocument } from '@/domains/users/graphql/generated/graphql';

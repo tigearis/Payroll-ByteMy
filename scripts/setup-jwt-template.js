@@ -16,7 +16,8 @@ const templatePayload = {
         "developer",
       ],
       "x-hasura-default-role": "{{user.public_metadata.role}}",
-      "x-hasura-user-id": "{{user.id}}",
+      "x-hasura-user-id": "{{user.public_metadata.databaseId}}",
+      "x-hasura-clerk-user-id": "{{user.id}}",
       "x-hasura-permissions":
         "{{JSON.stringify(user.public_metadata.permissions)}}",
     },

@@ -212,11 +212,14 @@ query GetCurrentUser($currentUserId: uuid!) {
   user(id: $currentUserId) {
     id
     name
+    email
     role
     isStaff
     isActive
     managerId
     clerkUserId
+    createdAt
+    updatedAt
   }
 }
 

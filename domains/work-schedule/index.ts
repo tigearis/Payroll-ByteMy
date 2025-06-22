@@ -15,10 +15,11 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-22T01:20:21.163Z
+ * Generated: 2025-06-22T01:58:02.245Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v2.0
  */
+
 
 /* 
  * DOMAIN: WORK-SCHEDULE
@@ -26,6 +27,7 @@
  * ACCESS CONTROLS: Authentication + Basic Audit
  * AUTO-EXPORTED: This file is automatically exported from domain index
  */
+
 
 // Auto-generated domain exports
 
