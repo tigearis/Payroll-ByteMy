@@ -52,13 +52,39 @@ cp .env.test.example .env.test
 # Edit .env.test with your test credentials
 ```
 
-### 3. Set Up Test Users
-Create test users in your Clerk test environment with the following roles:
-- developer@test.payroll.com (Developer role)
-- orgadmin@test.payroll.com (Org Admin role)
-- manager@test.payroll.com (Manager role)
-- consultant@test.payroll.com (Consultant role)
-- viewer@test.payroll.com (Viewer role)
+### 3. Configure Clerk JWT Template
+In Clerk Dashboard → JWT Templates → Create/Edit "hasura" template:
+```json
+{
+  "https://hasura.io/jwt/claims": {
+    "metadata": "{{user.public_metadata}}",
+    "x-hasura-role": "{{user.public_metadata.role}}",
+    "x-hasura-user-id": "{{user.public_metadata.databaseId}}",
+    "x-hasura-default-role": "viewer",
+    "x-hasura-allowed-roles": ["developer", "org_admin", "manager", "consultant", "viewer"],
+    "x-hasura-clerk-user-id": "{{user.id}}"
+  }
+}
+```
+
+### 4. Set Up Test Users
+```bash
+# Create test users in Clerk
+pnpm test:users:create
+
+# Sync users to database with proper JWT metadata
+pnpm test:users:sync:enhanced
+
+# Or use the one-command setup
+pnpm test:setup
+```
+
+Test users created:
+- developer@test.payroll.com (Developer role, UUID: 550e8400-e29b-41d4-a716-446655440001)
+- orgadmin@test.payroll.com (Org Admin role, UUID: 550e8400-e29b-41d4-a716-446655440002)
+- manager@test.payroll.com (Manager role, UUID: 550e8400-e29b-41d4-a716-446655440003)
+- consultant@test.payroll.com (Consultant role, UUID: 550e8400-e29b-41d4-a716-446655440004)
+- viewer@test.payroll.com (Viewer role, UUID: 550e8400-e29b-41d4-a716-446655440005)
 
 ## Running Tests
 

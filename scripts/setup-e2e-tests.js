@@ -75,8 +75,8 @@ async function main() {
       description: 'Creating test users in Clerk'
     },
     {
-      command: serverRunning ? 'pnpm test:users:sync' : 'echo "⚠️ Server not running - skipping user sync"', 
-      description: serverRunning ? 'Syncing test users to database' : 'Skipping user sync (server not running)'
+      command: 'pnpm test:users:sync:enhanced', 
+      description: 'Syncing test users to database with JWT metadata'
     },
     {
       command: 'pnpm test:data:reseed',

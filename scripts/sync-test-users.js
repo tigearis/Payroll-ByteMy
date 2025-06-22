@@ -106,33 +106,34 @@ async function syncUsersDirect() {
   }
 
   // Test users data for direct insertion with proper UUIDs
+  // Note: clerkUserId will be updated from actual Clerk users if available
   const testUsers = [
     {
       id: '550e8400-e29b-41d4-a716-446655440001',
       name: 'Test Developer',
       email: 'developer@test.payroll.com',
-      clerkUserId: 'user_test_developer_001',
+      clerkUserId: 'placeholder_developer',
       role: 'developer'
     },
     {
       id: '550e8400-e29b-41d4-a716-446655440002', 
       name: 'Test Org Admin',
       email: 'orgadmin@test.payroll.com',
-      clerkUserId: 'user_test_orgadmin_002',
+      clerkUserId: 'placeholder_orgadmin',
       role: 'org_admin'
     },
     {
       id: '550e8400-e29b-41d4-a716-446655440003',
       name: 'Test Manager', 
       email: 'manager@test.payroll.com',
-      clerkUserId: 'user_test_manager_003',
+      clerkUserId: 'placeholder_manager',
       role: 'manager'
     },
     {
       id: '550e8400-e29b-41d4-a716-446655440004',
       name: 'Test Consultant',
       email: 'consultant@test.payroll.com',
-      clerkUserId: 'user_test_consultant_004',
+      clerkUserId: 'placeholder_consultant',
       role: 'consultant',
       managerId: '550e8400-e29b-41d4-a716-446655440003'
     },
@@ -140,7 +141,7 @@ async function syncUsersDirect() {
       id: '550e8400-e29b-41d4-a716-446655440005',
       name: 'Test Viewer',
       email: 'viewer@test.payroll.com', 
-      clerkUserId: 'user_test_viewer_005',
+      clerkUserId: 'placeholder_viewer',
       role: 'viewer',
       managerId: '550e8400-e29b-41d4-a716-446655440003'
     }
