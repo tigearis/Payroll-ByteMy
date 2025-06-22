@@ -123,11 +123,25 @@ const nextConfig = {
       bodySizeLimit: "2mb",
     },
     disableOptimizedLoading: true,
-    // App directory support is enabled by default in Next.js 15, no need to specify
+  },
+
+  // Exclude e2e and other test folders from build output tracing
+  outputFileTracingExcludes: {
+    "*": [
+      "./e2e/**/*",
+      "./tests/**/*",
+      "./**/*.test.*",
+      "./**/*.spec.*",
+      "./cypress/**/*",
+      "./playwright.config.*",
+      "./jest.config.*",
+      "./.git/**/*",
+      "./node_modules/@types/**/*",
+    ],
   },
 
   // Webpack configuration
-  webpack: (config, { isServer, dev }) => {
+  webpack: (config, { isServer, dev, webpack }) => {
     // Preserve existing aliases and add our path alias
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -140,6 +154,73 @@ const nextConfig = {
       ".mjs": [".mts", ".mjs"],
       ".cjs": [".cts", ".cjs"],
     };
+
+    // PRODUCTION BUILD EXCLUSIONS
+    // Exclude e2e and test folders from production builds
+    if (process.env.NODE_ENV === "production") {
+      // Use IgnorePlugin to exclude e2e and test patterns
+      config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /\/(e2e|tests|cypress|__tests__|playwright\.config|jest\.config|.*\.(test|spec)\.(js|jsx|ts|tsx))$/,
+        })
+      );
+
+      // Note: Dev API routes are handled via runtime checks and rewrites
+      // Do not use IgnorePlugin for API routes as it breaks module resolution
+
+      // Add module rules to exclude e2e and test files
+      config.module.rules.push({
+        test: /\/(e2e|tests|cypress|__tests__)\/.*$/,
+        loader: "null-loader",
+      });
+
+      config.module.rules.push({
+        test: /\.(test|spec)\.(js|jsx|ts|tsx)$/,
+        loader: "null-loader",
+      });
+
+      config.module.rules.push({
+        test: /(playwright|jest|vitest)\.config\.(js|ts|mjs|cjs)$/,
+        loader: "null-loader",
+      });
+
+      // Exclude entire e2e directory and other test directories
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "@/e2e": false,
+        "./e2e": false,
+        "e2e": false,
+        "@/tests": false,
+        "./tests": false,
+        "tests": false,
+        "@/cypress": false,
+        "./cypress": false,
+        "cypress": false,
+        "@/__tests__": false,
+        "./__tests__": false,
+        "__tests__": false,
+      };
+
+      // Add externals to prevent bundling e2e files
+      if (!config.externals) {
+        config.externals = [];
+      }
+      if (typeof config.externals === 'object' && !Array.isArray(config.externals)) {
+        config.externals = [config.externals];
+      }
+      if (Array.isArray(config.externals)) {
+        config.externals.push(({ request }, callback) => {
+          if (typeof request === 'string' && 
+              (request.includes('/e2e/') || 
+               request.includes('\\e2e\\') ||
+               request.includes('playwright.config') ||
+               request.includes('jest.config'))) {
+            return callback(null, 'commonjs ' + request);
+          }
+          callback();
+        });
+      }
+    }
 
     return config;
   },
@@ -168,6 +249,11 @@ const nextConfig = {
             source: "/tax-calculator",
             destination: "/404",
           },
+          // Redirect dev API routes to 404 in production
+          {
+            source: "/api/dev/:path*",
+            destination: "/api/404",
+          },
         ],
       };
     }
@@ -175,6 +261,23 @@ const nextConfig = {
     return {
       beforeFiles: [],
     };
+  },
+
+  // Redirects for development-only routes
+  async redirects() {
+    const isProduction = process.env.NODE_ENV === "production";
+
+    if (isProduction) {
+      return [
+        {
+          source: "/api/dev/:path*",
+          destination: "/api/404",
+          permanent: false,
+        },
+      ];
+    }
+
+    return [];
   },
 };
 

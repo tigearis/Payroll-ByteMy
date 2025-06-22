@@ -26,7 +26,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useUserRole } from "@/hooks/use-user-role";
-import { ActorTokenManager } from "@/components/dev/actor-token-manager";
+
+// Conditionally import ActorTokenManager only in development
+let ActorTokenManager: React.ComponentType | null = null;
+if (process.env.NODE_ENV === "development") {
+  try {
+    const {
+      ActorTokenManager: ATM,
+    } = require("@/components/dev/actor-token-manager");
+    ActorTokenManager = ATM;
+  } catch (error) {
+    console.warn("ActorTokenManager not available in production build");
+  }
+}
 
 const features = [
   {
@@ -1097,7 +1109,7 @@ export default function DeveloperPage() {
       </Card> */}
 
       {/* Actor Token Manager */}
-      <ActorTokenManager />
+      {ActorTokenManager && <ActorTokenManager />}
     </div>
   );
 }
