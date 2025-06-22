@@ -27,6 +27,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
 import { DebugPermissions } from "@/components/debug-permissions";
 import { DebugPermissionInfo } from "@/components/debug-permission-info";
+import { useAuthContext } from "@/lib/auth/auth-context";
 
 // Local utility function
 function cn(...inputs: ClassValue[]) {
@@ -46,63 +47,57 @@ const allRoutes = [
     href: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.dashboard,
+    checkAccess: (auth: any) => true, // Dashboard always accessible
   },
   {
     href: "/clients",
     label: "Clients",
     icon: Users,
-    checkAccess: (permissions: any) => permissions.navigation.canAccess.clients,
+    checkAccess: (auth: any) => auth.canManageClients || auth.hasPermission("view_clients"),
   },
   {
     href: "/payrolls",
     label: "Payrolls",
     icon: Calculator,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.payrolls,
+    checkAccess: (auth: any) => auth.canProcessPayrolls || auth.hasPermission("view_payrolls"),
   },
   {
     href: "/payroll-schedule",
     label: "Schedule",
     icon: CalendarDays,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.payrolls,
+    checkAccess: (auth: any) => auth.canProcessPayrolls || auth.hasPermission("view_payrolls"),
   },
   {
     href: "/staff",
     label: "Staff",
     icon: UserCog,
-    checkAccess: (permissions: any) => permissions.navigation.canAccess.staff,
+    checkAccess: (auth: any) => auth.canManageUsers || auth.hasPermission("view_staff"),
   },
   {
     href: "/tax-calculator",
     label: "Tax Calculator",
     icon: DollarSign,
-    checkAccess: (permissions: any) => permissions.canAccessDashboard,
+    checkAccess: (auth: any) => true,
     devOnly: true, // Only show in development
   },
   {
     href: "/settings",
     label: "Settings",
     icon: Settings,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.settings,
+    checkAccess: (auth: any) => auth.hasPermission("manage_settings") || auth.hasAdminAccess,
   },
   {
     href: "/developer",
     label: "Developer",
     icon: Code,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.developer,
+    checkAccess: (auth: any) => auth.userRole === "developer",
     devOnly: true, // Only show in development
   },
   {
     href: "/security",
     label: "Security",
     icon: Shield,
-    checkAccess: (permissions: any) =>
-      permissions.navigation.canAccess.security,
+    checkAccess: (auth: any) => auth.hasAdminAccess || auth.userRole === "developer",
   },
 ];
 
@@ -119,9 +114,14 @@ export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { user, isLoaded } = useUser();
   const permissions = useEnhancedPermissions();
+  const authContext = useAuthContext();
 
-  // Filter routes based on enhanced permission checks
+  // Filter routes based on auth context (fallback to enhanced permissions)
   const accessibleRoutes = routes.filter(route => {
+    if (!authContext.isLoading && authContext.isAuthenticated) {
+      return route.checkAccess(authContext);
+    }
+    // Fallback to enhanced permissions
     if (!permissions.isLoaded) {
       return false;
     }
