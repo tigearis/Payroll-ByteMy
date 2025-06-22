@@ -93,9 +93,9 @@ async function syncTestUsers() {
   console.log('   2. Run: pnpm test:e2e (to run E2E tests)');
 }
 
-// Alternative: Direct database sync (if API is not available)
+// Alternative: Direct database sync using admin secret
 async function syncUsersDirect() {
-  console.log('🔄 Attempting direct database sync...');
+  console.log('🔄 Attempting direct database sync with admin secret...');
   
   const HASURA_ENDPOINT = process.env.E2E_HASURA_GRAPHQL_URL;
   const HASURA_ADMIN_SECRET = process.env.HASURA_ADMIN_SECRET;
@@ -105,58 +105,65 @@ async function syncUsersDirect() {
     return;
   }
 
-  // Test users data for direct insertion
+  // Test users data for direct insertion with proper UUIDs
   const testUsers = [
     {
-      id: 'test-developer-uuid-001',
+      id: '550e8400-e29b-41d4-a716-446655440001',
       name: 'Test Developer',
       email: 'developer@test.payroll.com',
-      clerkUserId: 'user_test_developer_001'
+      clerkUserId: 'user_test_developer_001',
+      role: 'developer'
     },
     {
-      id: 'test-orgadmin-uuid-002', 
+      id: '550e8400-e29b-41d4-a716-446655440002', 
       name: 'Test Org Admin',
       email: 'orgadmin@test.payroll.com',
-      clerkUserId: 'user_test_orgadmin_002'
+      clerkUserId: 'user_test_orgadmin_002',
+      role: 'org_admin'
     },
     {
-      id: 'test-manager-uuid-003',
+      id: '550e8400-e29b-41d4-a716-446655440003',
       name: 'Test Manager', 
       email: 'manager@test.payroll.com',
-      clerkUserId: 'user_test_manager_003'
+      clerkUserId: 'user_test_manager_003',
+      role: 'manager'
     },
     {
-      id: 'test-consultant-uuid-004',
+      id: '550e8400-e29b-41d4-a716-446655440004',
       name: 'Test Consultant',
       email: 'consultant@test.payroll.com',
       clerkUserId: 'user_test_consultant_004',
-      managerId: 'test-manager-uuid-003'
+      role: 'consultant',
+      managerId: '550e8400-e29b-41d4-a716-446655440003'
     },
     {
-      id: 'test-viewer-uuid-005',
+      id: '550e8400-e29b-41d4-a716-446655440005',
       name: 'Test Viewer',
       email: 'viewer@test.payroll.com', 
       clerkUserId: 'user_test_viewer_005',
-      managerId: 'test-manager-uuid-003'
+      role: 'viewer',
+      managerId: '550e8400-e29b-41d4-a716-446655440003'
     }
   ];
 
   for (const user of testUsers) {
     console.log(`\n👤 Inserting ${user.email}...`);
     
+    // Use the custom root field name from metadata
     const mutation = {
       query: `
         mutation CreateUserInDatabase($user: users_insert_input!) {
-          insert_users_one(
+          insertUser(
             object: $user
             on_conflict: {
               constraint: users_email_key
-              update_columns: [name, clerkUserId, managerId]
+              update_columns: [name, clerkUserId, managerId, role]
             }
           ) {
             id
             email
             name
+            role
           }
         }
       `,
@@ -178,7 +185,7 @@ async function syncUsersDirect() {
       if (result.errors) {
         console.warn(`⚠️  ${user.email}: ${result.errors[0].message}`);
       } else {
-        console.log(`✅ ${user.email}: Created in database`);
+        console.log(`✅ ${user.email}: Created in database with role ${result.data.insertUser.role}`);
       }
     } catch (error) {
       console.error(`❌ ${user.email}: ${error.message}`);

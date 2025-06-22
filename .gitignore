@@ -11,7 +11,14 @@
 !.yarn/versions
 
 # testing
-/coverage
+/e2e
+/playwright-report
+/playwright-test-results
+/playwright.config.ts
+/playwright.config.tsx
+/tests
+/test-results
+
 
 # next.js
 /.next/
