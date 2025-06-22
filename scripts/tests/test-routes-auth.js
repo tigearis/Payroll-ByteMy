@@ -92,13 +92,13 @@ async function testAllRoutesWithAuth() {
   console.log("\n📄 Testing Main Routes...\n");
   for (const route of routes) {
     await testAuthenticatedRoute(route);
-    await new Promise((resolve) => setTimeout(resolve, 100)); // Small delay
+    await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
   }
 
   console.log("\n🔍 Testing Detail Routes...\n");
   for (const route of detailRoutes) {
     await testAuthenticatedRoute(route);
-    await new Promise((resolve) => setTimeout(resolve, 100)); // Small delay
+    await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
   }
 
   console.log("\n📊 Test Summary:");

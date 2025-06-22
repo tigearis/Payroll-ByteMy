@@ -7,7 +7,7 @@ import { withAuth, checkRateLimit } from "@/lib/auth/api-auth";
 export const POST = withAuth(
   async (request: NextRequest, session) => {
     // Restrict to development environment only
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       return NextResponse.json({ error: "Not Found" }, { status: 404 });
     }
 
@@ -42,8 +42,10 @@ export const POST = withAuth(
         }
       `);
 
-      const deletedDates = result.data?.delete_payroll_dates?.affected_rows || 0;
-      const deletedVersions = result.data?.delete_payroll_versions?.affected_rows || 0;
+      const deletedDates =
+        result.data?.delete_payroll_dates?.affected_rows || 0;
+      const deletedVersions =
+        result.data?.delete_payroll_versions?.affected_rows || 0;
       const resetPayrolls = result.data?.update_payrolls?.affected_rows || 0;
 
       console.log(

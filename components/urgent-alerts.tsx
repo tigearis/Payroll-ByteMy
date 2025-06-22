@@ -10,13 +10,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { GetUserUpcomingPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { 
-  PayrollDate, 
-  Client, 
-  Consultant, 
-  UserUpcomingPayroll, 
-  UserUpcomingPayrollsData, 
-  StatusVariant 
+import {
+  PayrollDate,
+  Client,
+  Consultant,
+  UserUpcomingPayroll,
+  UserUpcomingPayrollsData,
+  StatusVariant,
 } from "@/shared/types/dashboard";
 
 function getStatusVariant(status: string): StatusVariant {
@@ -135,7 +135,7 @@ export function UrgentAlerts() {
 
   return (
     <div className="space-y-4">
-      {payrolls.map((payroll) => {
+      {payrolls.map(payroll => {
         const nextDate = payroll.payrollDates?.[0];
         const userRole = getUserRole(payroll, currentUserId);
         const daysUntil = nextDate?.adjustedEftDate
@@ -182,15 +182,15 @@ export function UrgentAlerts() {
                           daysUntil <= 1
                             ? "bg-red-100 text-red-700"
                             : daysUntil <= 3
-                            ? "bg-orange-100 text-orange-700"
-                            : "bg-green-100 text-green-700"
+                              ? "bg-orange-100 text-orange-700"
+                              : "bg-green-100 text-green-700"
                         }`}
                       >
                         {daysUntil === 0
                           ? "Today"
                           : daysUntil === 1
-                          ? "Tomorrow"
-                          : `${daysUntil} days`}
+                            ? "Tomorrow"
+                            : `${daysUntil} days`}
                       </span>
                     )}
                   </div>

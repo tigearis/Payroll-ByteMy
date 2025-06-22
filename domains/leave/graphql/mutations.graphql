@@ -13,21 +13,13 @@ mutation UpdateLeaveRequest($id: uuid!, $set: leave_set_input!) {
 }
 
 mutation ApproveLeaveRequest($id: uuid!) {
-  updateLeave(
-    pk_columns: { id: $id }
-    _set: { status: "Approved" }
-  ) {
+  updateLeave(pk_columns: { id: $id }, _set: { status: "Approved" }) {
     ...LeaveCore
   }
 }
 
 mutation RejectLeaveRequest($id: uuid!, $reason: String) {
-  updateLeave(
-    pk_columns: { id: $id }
-    _set: { 
-      reason: $reason
-    }
-  ) {
+  updateLeave(pk_columns: { id: $id }, _set: { reason: $reason }) {
     ...LeaveCore
   }
 }
@@ -39,10 +31,7 @@ mutation DeleteLeaveRequest($id: uuid!) {
 }
 
 mutation BulkApproveLeaveRequests($ids: [uuid!]!) {
-  updateLeaves(
-    where: { id: { _in: $ids } }
-    _set: { status: "Approved" }
-  ) {
+  updateLeaves(where: { id: { _in: $ids } }, _set: { status: "Approved" }) {
     affected_rows
     returning {
       ...LeaveCore
@@ -51,12 +40,7 @@ mutation BulkApproveLeaveRequests($ids: [uuid!]!) {
 }
 
 mutation BulkRejectLeaveRequests($ids: [uuid!]!, $reason: String) {
-  updateLeaves(
-    where: { id: { _in: $ids } }
-    _set: { 
-      reason: $reason
-    }
-  ) {
+  updateLeaves(where: { id: { _in: $ids } }, _set: { reason: $reason }) {
     affected_rows
     returning {
       ...LeaveCore

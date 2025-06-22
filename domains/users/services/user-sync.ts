@@ -254,7 +254,7 @@ export async function syncUserWithDatabase(
           console.error("Clerk ID update errors:", updateErrors);
           throw new Error(
             `Failed to update user with Clerk ID: ${updateErrors
-              .map((e) => e.message)
+              .map(e => e.message)
               .join(", ")}`
           );
         }
@@ -289,7 +289,7 @@ export async function syncUserWithDatabase(
         console.error("User creation errors:", mutationErrors);
         throw new Error(
           `Failed to create user: ${mutationErrors
-            .map((e) => e.message)
+            .map(e => e.message)
             .join(", ")}`
         );
       }
@@ -334,7 +334,7 @@ export async function syncUserWithDatabase(
         // Get current metadata to preserve other fields
         const currentUser = await client.users.getUser(clerkId);
 
-        // ✅ ENSURE databaseId is ALWAYS set correctly  
+        // ✅ ENSURE databaseId is ALWAYS set correctly
         const userPermissions = getPermissionsForRole(databaseUser.role);
         const updatedMetadata = {
           ...currentUser.publicMetadata,
@@ -430,7 +430,7 @@ export async function updateUserRole(
     if (errors) {
       console.error("Role update errors:", errors);
       throw new Error(
-        `Failed to update role: ${errors.map((e) => e.message).join(", ")}`
+        `Failed to update role: ${errors.map(e => e.message).join(", ")}`
       );
     }
 
@@ -495,7 +495,7 @@ export async function deleteUserFromDatabase(clerkId: string) {
     if (errors) {
       console.error("User deletion errors:", errors);
       throw new Error(
-        `Failed to delete user: ${errors.map((e) => e.message).join(", ")}`
+        `Failed to delete user: ${errors.map(e => e.message).join(", ")}`
       );
     }
 
@@ -521,7 +521,12 @@ export function canAssignRole(
   const targetLevel = USER_ROLES[targetRole];
 
   // Developers (developer) and Standard Admins (org_admin) can assign any role
-  if (normalizedCurrentRole === "developer" || normalizedCurrentRole === "org_admin") {return true;}
+  if (
+    normalizedCurrentRole === "developer" ||
+    normalizedCurrentRole === "org_admin"
+  ) {
+    return true;
+  }
 
   // Managers can assign consultant and viewer roles
   if (

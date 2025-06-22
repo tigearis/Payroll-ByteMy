@@ -13,7 +13,7 @@ export function SyncUserButton() {
   const handleSync = async () => {
     try {
       setIsLoading(true);
-      
+
       const response = await fetch("/api/sync-current-user", {
         method: "POST",
         headers: {
@@ -27,7 +27,7 @@ export function SyncUserButton() {
         toast.success("User synced successfully!", {
           description: `Welcome, ${data.user.name}!`,
         });
-        
+
         // Refresh the page after successful sync
         setTimeout(() => {
           window.location.reload();

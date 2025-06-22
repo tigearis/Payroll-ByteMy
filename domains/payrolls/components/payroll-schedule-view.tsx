@@ -80,7 +80,7 @@ export function PayrollScheduleView({ payrollId }: PayrollScheduleProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {scheduleData.map((period) => (
+            {scheduleData.map(period => (
               <TableRow key={period.periodNumber}>
                 <TableCell>{period.periodNumber}</TableCell>
                 <TableCell>

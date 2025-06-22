@@ -5,12 +5,12 @@ configuration:
   column_config:
     approved_by_user_id:
       custom_name: approvedByUserId
+    change_type:
+      custom_name: changeType
     changed_at:
       custom_name: changedAt
     changed_by_user_id:
       custom_name: changedByUserId
-    change_type:
-      custom_name: changeType
     new_permissions:
       custom_name: newPermissions
     old_permissions:
@@ -23,9 +23,9 @@ configuration:
       custom_name: targetUserId
   custom_column_names:
     approved_by_user_id: approvedByUserId
+    change_type: changeType
     changed_at: changedAt
     changed_by_user_id: changedByUserId
-    change_type: changeType
     new_permissions: newPermissions
     old_permissions: oldPermissions
     permission_type: permissionType

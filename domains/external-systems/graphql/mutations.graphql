@@ -20,13 +20,18 @@ mutation DeleteExternalSystem($id: uuid!) {
 }
 
 # Client External Systems
-mutation LinkClientToExternalSystem($object: client_external_systems_insert_input!) {
+mutation LinkClientToExternalSystem(
+  $object: client_external_systems_insert_input!
+) {
   insert_client_external_systems_one(object: $object) {
     ...ClientExternalSystemWithRelations
   }
 }
 
-mutation UpdateClientExternalSystem($id: uuid!, $set: client_external_systems_set_input!) {
+mutation UpdateClientExternalSystem(
+  $id: uuid!
+  $set: client_external_systems_set_input!
+) {
   update_client_external_systems_by_pk(pk_columns: { id: $id }, _set: $set) {
     ...ClientExternalSystemWithRelations
   }
@@ -38,7 +43,9 @@ mutation UnlinkClientFromExternalSystem($id: uuid!) {
   }
 }
 
-mutation BulkLinkClientsToExternalSystem($objects: [client_external_systems_insert_input!]!) {
+mutation BulkLinkClientsToExternalSystem(
+  $objects: [client_external_systems_insert_input!]!
+) {
   insert_client_external_systems(objects: $objects) {
     returning {
       ...ClientExternalSystemWithRelations

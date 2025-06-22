@@ -73,12 +73,14 @@ The application will be available at `http://localhost:3000`.
 ## 📋 Core Features
 
 ### 🔐 Enterprise Authentication
+
 - **Clerk Integration**: Modern authentication with social logins
 - **Role-Based Access Control**: 5-tier role hierarchy (Developer → Org Admin → Manager → Consultant → Viewer)
 - **Multi-Factor Authentication**: Enhanced security for sensitive operations
 - **JWT with Hasura Claims**: Seamless GraphQL authorization
 
 ### 💼 Payroll Management
+
 - **Multiple Frequencies**: Weekly, fortnightly, bi-monthly, monthly, quarterly
 - **Australian Tax Compliance**: ATO-compliant calculations with automatic updates
 - **Business Day Logic**: Intelligent holiday and weekend adjustments
@@ -86,18 +88,21 @@ The application will be available at `http://localhost:3000`.
 - **Version Control**: Complete payroll versioning with audit trails
 
 ### 👥 Staff & Client Management
+
 - **Hierarchical User Management**: Manager-staff relationships
 - **Client Onboarding**: Comprehensive client setup workflows
 - **Staff Assignments**: Flexible consultant and backup assignment
 - **Leave Management**: Integrated leave tracking and approval
 
 ### 🛡️ Security & Compliance
+
 - **SOC2 Type II Compliance**: 95%+ compliance score with comprehensive audit logging
 - **Data Classification**: 4-tier security levels (CRITICAL, HIGH, MEDIUM, LOW)
 - **Row Level Security**: Database-level access controls
 - **Comprehensive Audit Trail**: All user actions logged for compliance
 
 ### 📊 Real-Time Operations
+
 - **GraphQL Subscriptions**: Live updates across all clients
 - **Optimistic Updates**: Immediate UI feedback with conflict resolution
 - **Intelligent Caching**: Apollo Client with smart cache management
@@ -105,17 +110,18 @@ The application will be available at `http://localhost:3000`.
 
 ## 🏢 User Roles & Permissions
 
-| Role | Access Level | Key Permissions |
-|------|-------------|-----------------|
-| **Developer** | Full System | System administration, debugging tools, database access |
-| **Org Admin** | Administrative | User management, system settings, compliance reports |
-| **Manager** | Team Management | Payroll oversight, staff assignments, client management |
-| **Consultant** | Operational | Payroll processing, client interaction, task completion |
-| **Viewer** | Read-Only | Dashboard access, report viewing, limited data access |
+| Role           | Access Level    | Key Permissions                                         |
+| -------------- | --------------- | ------------------------------------------------------- |
+| **Developer**  | Full System     | System administration, debugging tools, database access |
+| **Org Admin**  | Administrative  | User management, system settings, compliance reports    |
+| **Manager**    | Team Management | Payroll oversight, staff assignments, client management |
+| **Consultant** | Operational     | Payroll processing, client interaction, task completion |
+| **Viewer**     | Read-Only       | Dashboard access, report viewing, limited data access   |
 
 ## 📚 Documentation Structure
 
 ### Core Documentation
+
 - **[Architecture Guide](docs/COMPLETE_SYSTEM_ARCHITECTURE.md)** - System design and technical architecture
 - **[Authentication System](docs/AUTHENTICATION_SYSTEM_DOCUMENTATION.md)** - Clerk integration and security model
 - **[Security Analysis](docs/SECURITY_IMPROVEMENT_REPORT.md)** - Security implementation and SOC2 compliance
@@ -123,17 +129,20 @@ The application will be available at `http://localhost:3000`.
 - **[Payroll System](docs/PAYROLL_SYSTEM_DOCUMENTATION.md)** - Core payroll processing logic
 
 ### Development Guides
+
 - **[Setup & Configuration](docs/DEPLOYMENT_GUIDE.md)** - Development environment setup
 - **[GraphQL Development](docs/hasura/GRAPHQL_DEVELOPMENT_WORKFLOW.md)** - GraphQL schema and operations
 - **[Code Generation](docs/CODEGEN_SYSTEM.md)** - TypeScript code generation workflow
 - **[Component Architecture](docs/components/README.md)** - UI component patterns and usage
 
 ### Business Logic
+
 - **[Payroll Calculations](docs/business-logic/paycalculator-logic.md)** - Australian tax calculation engine
 - **[Payroll Processing](docs/business-logic/payroll-processing.md)** - Complete payroll workflows
 - **[Validation Rules](docs/business-logic/payroll-restrictions-and-validation.md)** - Business rule enforcement
 
 ### API Documentation
+
 - **[API Routes](docs/pages/api/README.md)** - Complete API endpoint documentation
 - **[GraphQL Schema](docs/hasura/README.md)** - GraphQL operations and relationships
 - **[Authentication API](docs/app/README.md)** - Authentication and authorization endpoints
@@ -141,6 +150,7 @@ The application will be available at `http://localhost:3000`.
 ## 🎯 Application Flow
 
 ### User Journey
+
 1. **Authentication** → Clerk-managed login with role assignment
 2. **Dashboard** → Personalized dashboard with role-based widgets
 3. **Client Management** → Create and manage client relationships
@@ -150,6 +160,7 @@ The application will be available at `http://localhost:3000`.
 7. **Compliance** → Generate reports and maintain audit trails
 
 ### Data Flow Architecture
+
 ```
 Frontend (Next.js) → Apollo Client → Hasura GraphQL → PostgreSQL
                   ↓
@@ -161,6 +172,7 @@ Frontend (Next.js) → Apollo Client → Hasura GraphQL → PostgreSQL
 ## 🔧 Development Workflow
 
 ### Code Generation
+
 ```bash
 # Generate GraphQL types and operations
 pnpm codegen
@@ -170,6 +182,7 @@ pnpm codegen:watch
 ```
 
 ### Testing
+
 ```bash
 # Run all tests
 pnpm test
@@ -182,6 +195,7 @@ pnpm type-check
 ```
 
 ### Database Operations
+
 ```bash
 # Apply Hasura migrations
 pnpm hasura:migrate
@@ -193,6 +207,7 @@ pnpm hasura:metadata
 ## 🌍 Deployment
 
 ### Environment Variables
+
 Essential environment variables for deployment:
 
 ```bash
@@ -215,6 +230,7 @@ NEXT_PUBLIC_SITE_URL=
 ```
 
 ### Deployment Platforms
+
 - **Primary**: Vercel (recommended)
 - **Database**: Neon PostgreSQL
 - **GraphQL**: Hasura Cloud
@@ -229,6 +245,7 @@ NEXT_PUBLIC_SITE_URL=
 5. Open a Pull Request
 
 ### Development Standards
+
 - **TypeScript**: Strict mode enabled
 - **ESLint**: Configured for Next.js and TypeScript
 - **Prettier**: Code formatting

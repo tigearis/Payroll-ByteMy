@@ -1,15 +1,15 @@
 "use client";
 
-import { 
-  Key, 
-  Plus, 
-  Trash2, 
-  Copy, 
-  Eye, 
-  EyeOff, 
+import {
+  Key,
+  Plus,
+  Trash2,
+  Copy,
+  Eye,
+  EyeOff,
   Shield,
   AlertTriangle,
-  Check
+  Check,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -17,7 +17,13 @@ import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,12 +44,12 @@ interface NewKey {
 
 const AVAILABLE_PERMISSIONS = [
   "payroll:process",
-  "payroll:approve", 
+  "payroll:approve",
   "payroll:export",
   "staff:create",
   "staff:delete",
   "audit:read",
-  "admin:manage"
+  "admin:manage",
 ];
 
 export function APIKeyManager() {
@@ -66,7 +72,7 @@ export function APIKeyManager() {
     try {
       setIsLoading(true);
       const response = await fetch("/api/admin/api-keys");
-      
+
       if (!response.ok) {
         throw new Error("Failed to load API keys");
       }
@@ -84,15 +90,15 @@ export function APIKeyManager() {
   const createAPIKey = async () => {
     try {
       setIsCreating(true);
-      
+
       const response = await fetch("/api/admin/api-keys", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          permissions: selectedPermissions
-        })
+          permissions: selectedPermissions,
+        }),
       });
 
       if (!response.ok) {
@@ -103,10 +109,10 @@ export function APIKeyManager() {
       setNewKey(data);
       setShowCreateForm(false);
       setSelectedPermissions([]);
-      
+
       // Reload the keys list
       await loadAPIKeys();
-      
+
       toast.success("API key created successfully");
     } catch (error) {
       console.error("Error creating API key:", error);
@@ -117,14 +123,21 @@ export function APIKeyManager() {
   };
 
   const revokeAPIKey = async (apiKey: string) => {
-    if (!confirm("Are you sure you want to revoke this API key? This action cannot be undone.")) {
+    if (
+      !confirm(
+        "Are you sure you want to revoke this API key? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
     try {
-      const response = await fetch(`/api/admin/api-keys?apiKey=${encodeURIComponent(apiKey)}`, {
-        method: "DELETE"
-      });
+      const response = await fetch(
+        `/api/admin/api-keys?apiKey=${encodeURIComponent(apiKey)}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to revoke API key");
@@ -148,8 +161,8 @@ export function APIKeyManager() {
   };
 
   const togglePermission = (permission: string) => {
-    setSelectedPermissions(prev => 
-      prev.includes(permission) 
+    setSelectedPermissions(prev =>
+      prev.includes(permission)
         ? prev.filter(p => p !== permission)
         : [...prev, permission]
     );
@@ -227,7 +240,7 @@ export function APIKeyManager() {
                 </Button>
               </div>
             </div>
-            
+
             <div>
               <Label htmlFor="new-api-secret">API Secret</Label>
               <div className="flex gap-2">
@@ -243,12 +256,18 @@ export function APIKeyManager() {
                   variant="outline"
                   onClick={() => setShowSecret(!showSecret)}
                 >
-                  {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showSecret ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => copyToClipboard(newKey.apiSecret, "API Secret")}
+                  onClick={() =>
+                    copyToClipboard(newKey.apiSecret, "API Secret")
+                  }
                 >
                   <Copy className="h-4 w-4" />
                 </Button>
@@ -266,8 +285,8 @@ export function APIKeyManager() {
               </div>
             </div>
 
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setNewKey(null)}
               className="w-full"
             >
@@ -290,7 +309,7 @@ export function APIKeyManager() {
                 Manage API keys for signed requests to sensitive endpoints
               </CardDescription>
             </div>
-            <Button 
+            <Button
               onClick={() => setShowCreateForm(true)}
               className="flex items-center gap-2"
             >
@@ -317,14 +336,20 @@ export function APIKeyManager() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => copyToClipboard(key.fullKey, "API Key")}
+                          onClick={() =>
+                            copyToClipboard(key.fullKey, "API Key")
+                          }
                         >
                           <Copy className="h-3 w-3" />
                         </Button>
                       </div>
                       <div className="flex flex-wrap gap-1">
                         {key.permissions.map(permission => (
-                          <Badge key={permission} variant="secondary" className="text-xs">
+                          <Badge
+                            key={permission}
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {permission}
                           </Badge>
                         ))}
@@ -376,14 +401,14 @@ export function APIKeyManager() {
             </div>
 
             <div className="flex gap-2">
-              <Button 
+              <Button
                 onClick={createAPIKey}
                 disabled={isCreating || selectedPermissions.length === 0}
                 className="flex items-center gap-2"
               >
                 {isCreating ? "Creating..." : "Create API Key"}
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 onClick={() => {
                   setShowCreateForm(false);
@@ -422,12 +447,13 @@ const response = await client.post('/api/signed/payroll-operations', {
               className="font-mono text-xs"
             />
           </div>
-          
+
           <Alert>
             <Shield className="h-4 w-4" />
             <AlertDescription>
-              <strong>Security Note:</strong> API secrets should be stored securely and never exposed in client-side code. 
-              Use environment variables or secure secret management systems.
+              <strong>Security Note:</strong> API secrets should be stored
+              securely and never exposed in client-side code. Use environment
+              variables or secure secret management systems.
             </AlertDescription>
           </Alert>
         </CardContent>

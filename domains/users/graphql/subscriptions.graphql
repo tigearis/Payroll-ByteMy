@@ -20,9 +20,7 @@ subscription UserUpdates($id: uuid!) {
 
 subscription StaffListUpdates {
   users(
-    where: {
-      role: { _in: ["consultant", "manager", "org_admin"] }
-    }
+    where: { role: { _in: ["consultant", "manager", "org_admin"] } }
     order_by: { name: asc }
   ) {
     ...UserBasicInfo

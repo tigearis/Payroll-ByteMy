@@ -4,7 +4,12 @@ import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 import { gql } from "@apollo/client";
 
 import { adminApolloClient } from "../apollo/unified-client";
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "./audit/logger";
+import {
+  auditLogger,
+  LogLevel,
+  LogCategory,
+  SOC2EventType,
+} from "./audit/logger";
 
 // API Key configuration
 export interface APIKeyConfig {
@@ -18,7 +23,7 @@ export interface APIKeyConfig {
   createdAt: string;
   lastUsed?: string;
   expiresAt?: string;
-  rateLimitTier: 'basic' | 'standard' | 'premium';
+  rateLimitTier: "basic" | "standard" | "premium";
 }
 
 // GraphQL mutations for API key management
@@ -102,17 +107,17 @@ const LIST_API_KEYS_QUERY = gql`
  */
 export class PersistentAPIKeyManager {
   private static readonly SALT_ROUNDS = 12;
-  private static readonly KEY_PREFIX = 'pak_'; // Persistent API Key
+  private static readonly KEY_PREFIX = "pak_"; // Persistent API Key
   private static readonly SECRET_LENGTH = 64;
 
   /**
    * Generate a new API key pair
    */
   static generateKeyPair(): { apiKey: string; apiSecret: string } {
-    const keyId = randomBytes(16).toString('hex');
+    const keyId = randomBytes(16).toString("hex");
     const apiKey = `${this.KEY_PREFIX}${keyId}`;
-    const apiSecret = randomBytes(this.SECRET_LENGTH).toString('hex');
-    
+    const apiSecret = randomBytes(this.SECRET_LENGTH).toString("hex");
+
     return { apiKey, apiSecret };
   }
 
@@ -120,10 +125,8 @@ export class PersistentAPIKeyManager {
    * Hash API secret for secure storage
    */
   private static hashSecret(secret: string): string {
-    const salt = randomBytes(16).toString('hex');
-    const hash = createHmac('sha256', salt)
-      .update(secret)
-      .digest('hex');
+    const salt = randomBytes(16).toString("hex");
+    const hash = createHmac("sha256", salt).update(secret).digest("hex");
     return `${salt}:${hash}`;
   }
 
@@ -132,19 +135,21 @@ export class PersistentAPIKeyManager {
    */
   private static verifySecret(secret: string, storedHash: string): boolean {
     try {
-      const [salt, hash] = storedHash.split(':');
-      if (!salt || !hash) {return false;}
-      
-      const expectedHash = createHmac('sha256', salt)
+      const [salt, hash] = storedHash.split(":");
+      if (!salt || !hash) {
+        return false;
+      }
+
+      const expectedHash = createHmac("sha256", salt)
         .update(secret)
-        .digest('hex');
-      
+        .digest("hex");
+
       return timingSafeEqual(
-        Buffer.from(hash, 'hex'),
-        Buffer.from(expectedHash, 'hex')
+        Buffer.from(hash, "hex"),
+        Buffer.from(expectedHash, "hex")
       );
     } catch (error) {
-      console.error('Error verifying API secret:', error);
+      console.error("Error verifying API secret:", error);
       return false;
     }
   }
@@ -157,13 +162,13 @@ export class PersistentAPIKeyManager {
     permissions = [],
     createdBy,
     expiresAt,
-    rateLimitTier = 'standard'
+    rateLimitTier = "standard",
   }: {
     name: string;
     permissions?: string[];
     createdBy: string;
     expiresAt?: Date;
-    rateLimitTier?: 'basic' | 'standard' | 'premium';
+    rateLimitTier?: "basic" | "standard" | "premium";
   }): Promise<{ apiKey: string; apiSecret: string; config: APIKeyConfig }> {
     try {
       const { apiKey, apiSecret } = this.generateKeyPair();
@@ -180,9 +185,9 @@ export class PersistentAPIKeyManager {
             is_active: true,
             created_by: createdBy,
             expires_at: expiresAt?.toISOString(),
-            rate_limit_tier: rateLimitTier
-          }
-        }
+            rate_limit_tier: rateLimitTier,
+          },
+        },
       });
 
       const config: APIKeyConfig = {
@@ -195,7 +200,7 @@ export class PersistentAPIKeyManager {
         createdBy: data.insert_api_keys_one.created_by,
         createdAt: data.insert_api_keys_one.created_at,
         expiresAt: data.insert_api_keys_one.expires_at,
-        rateLimitTier: data.insert_api_keys_one.rate_limit_tier
+        rateLimitTier: data.insert_api_keys_one.rate_limit_tier,
       };
 
       // Log API key creation
@@ -213,15 +218,15 @@ export class PersistentAPIKeyManager {
           apiKeyId: config.id,
           permissions,
           rateLimitTier,
-          expiresAt: expiresAt?.toISOString()
+          expiresAt: expiresAt?.toISOString(),
         },
-        complianceNote: `API key created: ${name}`
+        complianceNote: `API key created: ${name}`,
       });
 
       return { apiKey, apiSecret, config };
     } catch (error) {
-      console.error('Failed to create API key:', error);
-      throw new Error('Failed to create API key');
+      console.error("Failed to create API key:", error);
+      throw new Error("Failed to create API key");
     }
   }
 
@@ -229,33 +234,33 @@ export class PersistentAPIKeyManager {
    * Validate API key and secret
    */
   static async validateAPIKey(
-    apiKey: string, 
+    apiKey: string,
     apiSecret: string
   ): Promise<{ valid: boolean; config?: APIKeyConfig; reason?: string }> {
     try {
       const { data } = await adminApolloClient.query({
         query: GET_API_KEY_QUERY,
         variables: { key: apiKey },
-        fetchPolicy: 'network-only'
+        fetchPolicy: "network-only",
       });
 
       const keyData = data.api_keys[0];
       if (!keyData) {
-        return { valid: false, reason: 'API key not found' };
+        return { valid: false, reason: "API key not found" };
       }
 
       if (!keyData.is_active) {
-        return { valid: false, reason: 'API key is deactivated' };
+        return { valid: false, reason: "API key is deactivated" };
       }
 
       // Check expiration
       if (keyData.expires_at && new Date(keyData.expires_at) < new Date()) {
-        return { valid: false, reason: 'API key has expired' };
+        return { valid: false, reason: "API key has expired" };
       }
 
       // Verify secret
       if (!this.verifySecret(apiSecret, keyData.secret_hash)) {
-        return { valid: false, reason: 'Invalid API secret' };
+        return { valid: false, reason: "Invalid API secret" };
       }
 
       const config: APIKeyConfig = {
@@ -269,18 +274,18 @@ export class PersistentAPIKeyManager {
         createdAt: keyData.created_at,
         lastUsed: keyData.last_used,
         expiresAt: keyData.expires_at,
-        rateLimitTier: keyData.rate_limit_tier
+        rateLimitTier: keyData.rate_limit_tier,
       };
 
       // Update last used timestamp (don't await to avoid blocking)
-      this.updateLastUsed(apiKey).catch(error => 
-        console.error('Failed to update API key last used:', error)
+      this.updateLastUsed(apiKey).catch(error =>
+        console.error("Failed to update API key last used:", error)
       );
 
       return { valid: true, config };
     } catch (error) {
-      console.error('Failed to validate API key:', error);
-      return { valid: false, reason: 'Validation error' };
+      console.error("Failed to validate API key:", error);
+      return { valid: false, reason: "Validation error" };
     }
   }
 
@@ -293,11 +298,11 @@ export class PersistentAPIKeyManager {
         mutation: UPDATE_API_KEY_LAST_USED,
         variables: {
           key: apiKey,
-          lastUsed: new Date().toISOString()
-        }
+          lastUsed: new Date().toISOString(),
+        },
       });
     } catch (error) {
-      console.error('Failed to update last used timestamp:', error);
+      console.error("Failed to update last used timestamp:", error);
     }
   }
 
@@ -305,14 +310,14 @@ export class PersistentAPIKeyManager {
    * Check if API key has specific permission
    */
   static async hasPermission(
-    apiKey: string, 
+    apiKey: string,
     permission: string
   ): Promise<boolean> {
     try {
       const { data } = await adminApolloClient.query({
         query: GET_API_KEY_QUERY,
         variables: { key: apiKey },
-        fetchPolicy: 'cache-first'
+        fetchPolicy: "cache-first",
       });
 
       const keyData = data.api_keys[0];
@@ -320,10 +325,12 @@ export class PersistentAPIKeyManager {
         return false;
       }
 
-      return keyData.permissions.includes(permission) || 
-             keyData.permissions.includes('*'); // Wildcard permission
+      return (
+        keyData.permissions.includes(permission) ||
+        keyData.permissions.includes("*")
+      ); // Wildcard permission
     } catch (error) {
-      console.error('Failed to check API key permission:', error);
+      console.error("Failed to check API key permission:", error);
       return false;
     }
   }
@@ -332,13 +339,13 @@ export class PersistentAPIKeyManager {
    * Deactivate API key
    */
   static async deactivateAPIKey(
-    apiKey: string, 
+    apiKey: string,
     deactivatedBy: string
   ): Promise<boolean> {
     try {
       const { data } = await adminApolloClient.mutate({
         mutation: DEACTIVATE_API_KEY_MUTATION,
-        variables: { key: apiKey }
+        variables: { key: apiKey },
       });
 
       if (data.update_api_keys.affected_rows > 0) {
@@ -354,9 +361,9 @@ export class PersistentAPIKeyManager {
           success: true,
           metadata: {
             apiKey,
-            action: 'deactivate'
+            action: "deactivate",
           },
-          complianceNote: `API key deactivated: ${apiKey}`
+          complianceNote: `API key deactivated: ${apiKey}`,
         });
 
         return true;
@@ -364,7 +371,7 @@ export class PersistentAPIKeyManager {
 
       return false;
     } catch (error) {
-      console.error('Failed to deactivate API key:', error);
+      console.error("Failed to deactivate API key:", error);
       return false;
     }
   }
@@ -377,24 +384,24 @@ export class PersistentAPIKeyManager {
       const { data } = await adminApolloClient.query({
         query: LIST_API_KEYS_QUERY,
         variables: { createdBy },
-        fetchPolicy: 'network-only'
+        fetchPolicy: "network-only",
       });
 
       return data.api_keys.map((key: any) => ({
         id: key.id,
         name: key.name,
         key: key.key,
-        secretHash: '', // Don't return secret hash
+        secretHash: "", // Don't return secret hash
         permissions: key.permissions,
         isActive: key.is_active,
         createdBy: key.created_by,
         createdAt: key.created_at,
         lastUsed: key.last_used,
         expiresAt: key.expires_at,
-        rateLimitTier: key.rate_limit_tier
+        rateLimitTier: key.rate_limit_tier,
       }));
     } catch (error) {
-      console.error('Failed to list API keys:', error);
+      console.error("Failed to list API keys:", error);
       return [];
     }
   }
@@ -402,11 +409,14 @@ export class PersistentAPIKeyManager {
   /**
    * Get rate limit configuration for API key
    */
-  static getRateLimitConfig(tier: string): { requests: number; window: number } {
+  static getRateLimitConfig(tier: string): {
+    requests: number;
+    window: number;
+  } {
     const configs = {
       basic: { requests: 100, window: 60000 }, // 100 per minute
       standard: { requests: 1000, window: 60000 }, // 1000 per minute
-      premium: { requests: 10000, window: 60000 } // 10000 per minute
+      premium: { requests: 10000, window: 60000 }, // 10000 per minute
     };
 
     return configs[tier as keyof typeof configs] || configs.standard;
@@ -421,20 +431,17 @@ export class PersistentAPIKeyManager {
         mutation: gql`
           mutation CleanupExpiredKeys {
             update_api_keys(
-              where: { 
-                expires_at: { _lt: "now()" },
-                is_active: { _eq: true }
-              }
+              where: { expires_at: { _lt: "now()" }, is_active: { _eq: true } }
               _set: { is_active: false }
             ) {
               affected_rows
             }
           }
-        `
+        `,
       });
 
       const affectedRows = data.update_api_keys.affected_rows;
-      
+
       if (affectedRows > 0) {
         await auditLogger.logSOC2Event({
           level: LogLevel.INFO,
@@ -445,15 +452,15 @@ export class PersistentAPIKeyManager {
           success: true,
           metadata: {
             affectedKeys: affectedRows,
-            cleanupType: 'expired_keys'
+            cleanupType: "expired_keys",
           },
-          complianceNote: `Cleaned up ${affectedRows} expired API keys`
+          complianceNote: `Cleaned up ${affectedRows} expired API keys`,
         });
       }
 
       return affectedRows;
     } catch (error) {
-      console.error('Failed to cleanup expired API keys:', error);
+      console.error("Failed to cleanup expired API keys:", error);
       return 0;
     }
   }

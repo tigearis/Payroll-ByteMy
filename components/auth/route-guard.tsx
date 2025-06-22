@@ -71,9 +71,7 @@ export function RouteGuard({
   let hasRequiredPermissions = true;
   if (requiredPermissions.length > 0) {
     if (requireAll) {
-      hasRequiredPermissions = requiredPermissions.every((p) =>
-        hasPermission(p)
-      );
+      hasRequiredPermissions = requiredPermissions.every(p => hasPermission(p));
     } else {
       hasRequiredPermissions = hasAnyPermission(requiredPermissions);
     }

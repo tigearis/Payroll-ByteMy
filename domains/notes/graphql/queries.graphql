@@ -4,7 +4,10 @@
 
 query GetNotes($entity_id: uuid!, $entity_type: String!) {
   notes(
-    where: { entity_id: { _eq: $entity_id }, entity_type: { _eq: $entity_type } }
+    where: {
+      entity_id: { _eq: $entity_id }
+      entity_type: { _eq: $entity_type }
+    }
     order_by: { created_at: desc }
   ) {
     ...NoteWithUser
@@ -13,7 +16,10 @@ query GetNotes($entity_id: uuid!, $entity_type: String!) {
 
 query GetNotesBasic($entity_id: uuid!, $entity_type: String!) {
   notes(
-    where: { entity_id: { _eq: $entity_id }, entity_type: { _eq: $entity_type } }
+    where: {
+      entity_id: { _eq: $entity_id }
+      entity_type: { _eq: $entity_type }
+    }
     order_by: { created_at: desc }
   ) {
     ...NoteBasicInfo
@@ -22,9 +28,7 @@ query GetNotesBasic($entity_id: uuid!, $entity_type: String!) {
 
 query GetImportantNotes($entity_id: uuid!, $entity_type: String!) {
   notes(
-    where: {
-      is_important: { _eq: true }
-    }
+    where: { is_important: { _eq: true } }
     order_by: { created_at: desc }
   ) {
     ...NoteWithUser
@@ -40,7 +44,10 @@ query GetNoteById($id: uuid!) {
 # Audit query - limited fields for compliance logging
 query GetNotesForAudit($entity_id: uuid!, $entity_type: String!) {
   notes(
-    where: { entity_id: { _eq: $entity_id }, entity_type: { _eq: $entity_type } }
+    where: {
+      entity_id: { _eq: $entity_id }
+      entity_type: { _eq: $entity_type }
+    }
     order_by: { created_at: desc }
   ) {
     ...NoteForAudit
@@ -56,11 +63,7 @@ query GetNotesSimple {
 
 # Extracted from inline GraphQL operations
 query GetNotesExtracted($entity_type: String!, $entity_id: uuid!) {
-  notes(
-    where: {
-    },
-    order_by: {created_at: desc}
-  ) {
+  notes(where: {}, order_by: { created_at: desc }) {
     id
     content
     is_important

@@ -248,7 +248,7 @@ export function PayrollSchedule() {
 
   // Filter events based on selected filters
   const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
+    return events.filter(event => {
       if (clientFilter !== "all" && event.client.id !== clientFilter)
         return false;
       if (payrollFilter !== "all" && event.type !== payrollFilter) return false;
@@ -276,19 +276,19 @@ export function PayrollSchedule() {
   };
 
   const navigatePrevious = () => {
-    setCurrentDate((prev) =>
+    setCurrentDate(prev =>
       currentView === "month" ? subMonths(prev, 1) : subWeeks(prev, 1)
     );
   };
 
   const navigateNext = () => {
-    setCurrentDate((prev) =>
+    setCurrentDate(prev =>
       currentView === "month" ? addMonths(prev, 1) : addWeeks(prev, 1)
     );
   };
 
   const getEventsForDate = (date: Date) => {
-    return filteredEvents.filter((event) => isSameDay(event.date, date));
+    return filteredEvents.filter(event => isSameDay(event.date, date));
   };
 
   const getHolidayForDate = (date: Date) => {
@@ -370,14 +370,14 @@ export function PayrollSchedule() {
     return (
       <div className="grid grid-cols-7 gap-2">
         {/* Header row */}
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
           <div key={day} className="text-center font-medium text-gray-600 p-2">
             {day}
           </div>
         ))}
 
         {/* Calendar days */}
-        {days.map((day) => {
+        {days.map(day => {
           const dayEvents = getEventsForDate(day);
           const holiday = getHolidayForDate(day);
 
@@ -397,14 +397,14 @@ export function PayrollSchedule() {
               )}
 
               <div className="space-y-1">
-                {dayEvents.map((event) => (
+                {dayEvents.map(event => (
                   <div
                     key={event.id}
                     className={`text-xs p-1 rounded border ${getEventTypeColor(
                       event.type
                     )} cursor-pointer`}
                     draggable
-                    onDragStart={(e) => handleDragStart(e, event)}
+                    onDragStart={e => handleDragStart(e, event)}
                     onDragEnd={handleDragEnd}
                     title={`${event.client.name} - ${event.type}`}
                   >
@@ -434,7 +434,7 @@ export function PayrollSchedule() {
 
     return (
       <div className="grid grid-cols-7 gap-4">
-        {days.map((day) => {
+        {days.map(day => {
           const dayEvents = getEventsForDate(day);
           const holiday = getHolidayForDate(day);
 
@@ -457,14 +457,14 @@ export function PayrollSchedule() {
                 )}
 
                 <div className="space-y-2">
-                  {dayEvents.map((event) => (
+                  {dayEvents.map(event => (
                     <div
                       key={event.id}
                       className={`text-xs p-2 rounded border ${getEventTypeColor(
                         event.type
                       )} cursor-pointer`}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, event)}
+                      onDragStart={e => handleDragStart(e, event)}
                       onDragEnd={handleDragEnd}
                     >
                       <div className="flex items-center gap-1 mb-1">
@@ -552,7 +552,7 @@ export function PayrollSchedule() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {clients.map((client) => (
+                    {clients.map(client => (
                       <SelectItem key={client.id} value={client.id}>
                         {client.name}
                       </SelectItem>
@@ -565,7 +565,7 @@ export function PayrollSchedule() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {consultants.map((consultant) => (
+                    {consultants.map(consultant => (
                       <SelectItem key={consultant.id} value={consultant.id}>
                         {consultant.name}
                       </SelectItem>

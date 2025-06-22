@@ -3,3 +3,17 @@
 
 # Placeholder for shared subscriptions
 # Domain-specific subscriptions should be in their respective domain files
+
+# Example shared subscription for real-time updates
+# subscription OnAuditLogAdded {
+#   auditLog(order_by: {timestamp: desc}, limit: 1) {
+#     id
+#     timestamp
+#     event_type
+#   }
+# }
+
+# Placeholder subscription to make file valid
+subscription Placeholder {
+  __typename
+}

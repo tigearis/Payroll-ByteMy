@@ -5,6 +5,7 @@
 The Payroll Matrix API provides a comprehensive RESTful interface for payroll management operations. All API endpoints are secured with Clerk authentication and implement role-based access control (RBAC) with comprehensive audit logging for SOC2 compliance.
 
 ## Base URL
+
 ```
 Production: https://payroll-matrix.vercel.app/api
 Development: http://localhost:3000/api
@@ -15,18 +16,20 @@ Development: http://localhost:3000/api
 All API endpoints (except public routes) require authentication via Clerk JWT tokens.
 
 ### Authentication Headers
+
 ```http
 Authorization: Bearer <clerk_jwt_token>
 Content-Type: application/json
 ```
 
 ### Getting Authentication Token
+
 ```javascript
 // Client-side with Clerk
 const token = await window.Clerk.session.getToken({ template: "hasura" });
 
 // Server-side with Clerk
-import { auth } from '@clerk/nextjs/server';
+import { auth } from "@clerk/nextjs/server";
 const { getToken } = auth();
 const token = await getToken({ template: "hasura" });
 ```
@@ -48,6 +51,7 @@ All API endpoints return standardized error responses:
 ```
 
 ### Error Codes
+
 - `UNAUTHORIZED` - Authentication required or invalid token
 - `FORBIDDEN` - Insufficient permissions for operation
 - `NOT_FOUND` - Requested resource not found
@@ -57,17 +61,18 @@ All API endpoints return standardized error responses:
 
 ## Rate Limiting
 
-| Endpoint Category | Limit | Window |
-|------------------|-------|--------|
-| Authentication | 10 requests | 1 minute |
-| User Management | 50 requests | 1 minute |
-| Staff Operations | 5 requests | 5 minutes |
-| Payroll Operations | 20 requests | 1 minute |
-| Compliance Reports | 3 requests | 5 minutes |
+| Endpoint Category  | Limit       | Window    |
+| ------------------ | ----------- | --------- |
+| Authentication     | 10 requests | 1 minute  |
+| User Management    | 50 requests | 1 minute  |
+| Staff Operations   | 5 requests  | 5 minutes |
+| Payroll Operations | 20 requests | 1 minute  |
+| Compliance Reports | 3 requests  | 5 minutes |
 
 ## Authentication & Authorization Endpoints
 
 ### Get Hasura JWT Token
+
 Get a JWT token for Hasura GraphQL operations.
 
 ```http
@@ -75,6 +80,7 @@ GET /api/auth/token
 ```
 
 **Response:**
+
 ```json
 {
   "token": "eyJhbGciOiJSUzI1NiIs...",
@@ -89,6 +95,7 @@ GET /api/auth/token
 ---
 
 ### Debug JWT Token
+
 Debug and validate JWT token claims (Developer only).
 
 ```http
@@ -96,6 +103,7 @@ GET /api/auth/debug-token
 ```
 
 **Response:**
+
 ```json
 {
   "valid": true,
@@ -117,6 +125,7 @@ GET /api/auth/debug-token
 ---
 
 ### Get Hasura Claims
+
 Extract Hasura claims from current session.
 
 ```http
@@ -124,6 +133,7 @@ GET /api/auth/hasura-claims
 ```
 
 **Response:**
+
 ```json
 {
   "userId": "uuid-here",
@@ -140,6 +150,7 @@ GET /api/auth/hasura-claims
 ---
 
 ### Check User Role
+
 Verify current user's role and permissions.
 
 ```http
@@ -147,6 +158,7 @@ GET /api/check-role
 ```
 
 **Response:**
+
 ```json
 {
   "userId": "user_abc123",
@@ -166,6 +178,7 @@ GET /api/check-role
 ## User & Staff Management Endpoints
 
 ### List Users
+
 Get paginated list of users with filtering.
 
 ```http
@@ -173,6 +186,7 @@ GET /api/users?page=1&limit=50&role=manager&isActive=true
 ```
 
 **Query Parameters:**
+
 - `page` (optional): Page number (default: 1)
 - `limit` (optional): Items per page (default: 50, max: 100)
 - `role` (optional): Filter by role
@@ -180,6 +194,7 @@ GET /api/users?page=1&limit=50&role=manager&isActive=true
 - `search` (optional): Search by name or email
 
 **Response:**
+
 ```json
 {
   "users": [
@@ -211,6 +226,7 @@ GET /api/users?page=1&limit=50&role=manager&isActive=true
 ---
 
 ### Create User Invitation
+
 Create a new user invitation with role assignment.
 
 ```http
@@ -218,6 +234,7 @@ POST /api/users
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "newuser@company.com",
@@ -230,6 +247,7 @@ POST /api/users
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -251,6 +269,7 @@ POST /api/users
 ---
 
 ### Get User Details
+
 Get detailed information about a specific user.
 
 ```http
@@ -258,6 +277,7 @@ GET /api/users/[id]
 ```
 
 **Response:**
+
 ```json
 {
   "user": {
@@ -304,6 +324,7 @@ GET /api/users/[id]
 ---
 
 ### Update User Profile
+
 Update user profile information.
 
 ```http
@@ -311,6 +332,7 @@ POST /api/users/update-profile
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Updated Name",
@@ -327,6 +349,7 @@ POST /api/users/update-profile
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -353,6 +376,7 @@ POST /api/users/update-profile
 ---
 
 ### Create Staff Member
+
 Create a new staff member with full profile.
 
 ```http
@@ -360,6 +384,7 @@ POST /api/staff/create
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "staff@company.com",
@@ -372,7 +397,7 @@ POST /api/staff/create
       "hours": 8.0
     },
     {
-      "day": "Tuesday", 
+      "day": "Tuesday",
       "hours": 8.0
     }
   ],
@@ -382,6 +407,7 @@ POST /api/staff/create
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -410,6 +436,7 @@ POST /api/staff/create
 ---
 
 ### Update Staff Role
+
 Update a staff member's role.
 
 ```http
@@ -417,6 +444,7 @@ POST /api/staff/update-role
 ```
 
 **Request Body:**
+
 ```json
 {
   "staffId": "uuid-staff",
@@ -426,6 +454,7 @@ POST /api/staff/update-role
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -446,6 +475,7 @@ POST /api/staff/update-role
 ---
 
 ### Deactivate Staff
+
 Deactivate a staff member (soft delete).
 
 ```http
@@ -453,6 +483,7 @@ POST /api/staff/delete
 ```
 
 **Request Body:**
+
 ```json
 {
   "staffId": "uuid-staff",
@@ -464,6 +495,7 @@ POST /api/staff/delete
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -492,6 +524,7 @@ POST /api/staff/delete
 ---
 
 ### Check Invitation Status
+
 Check the status of a user invitation.
 
 ```http
@@ -499,6 +532,7 @@ GET /api/staff/invitation-status?email=user@company.com
 ```
 
 **Response:**
+
 ```json
 {
   "email": "user@company.com",
@@ -518,6 +552,7 @@ GET /api/staff/invitation-status?email=user@company.com
 ## Payroll Management Endpoints
 
 ### List Payrolls
+
 Get paginated list of payrolls with filtering.
 
 ```http
@@ -525,6 +560,7 @@ GET /api/payrolls?page=1&limit=50&status=Active&clientId=uuid-client
 ```
 
 **Query Parameters:**
+
 - `page` (optional): Page number
 - `limit` (optional): Items per page
 - `status` (optional): Filter by status (Active, Implementation, Inactive)
@@ -533,6 +569,7 @@ GET /api/payrolls?page=1&limit=50&status=Active&clientId=uuid-client
 - `search` (optional): Search by name
 
 **Response:**
+
 ```json
 {
   "payrolls": [
@@ -577,6 +614,7 @@ GET /api/payrolls?page=1&limit=50&status=Active&clientId=uuid-client
 ---
 
 ### Create Payroll
+
 Create a new payroll configuration.
 
 ```http
@@ -584,6 +622,7 @@ POST /api/payrolls
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "New Client Weekly Payroll",
@@ -604,6 +643,7 @@ POST /api/payrolls
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -635,6 +675,7 @@ POST /api/payrolls
 ---
 
 ### Get Payroll Details
+
 Get detailed information about a specific payroll.
 
 ```http
@@ -642,6 +683,7 @@ GET /api/payrolls/[id]
 ```
 
 **Response:**
+
 ```json
 {
   "payroll": {
@@ -712,6 +754,7 @@ GET /api/payrolls/[id]
 ---
 
 ### Update Payroll
+
 Update payroll configuration (creates new version).
 
 ```http
@@ -719,6 +762,7 @@ PUT /api/payrolls/[id]
 ```
 
 **Request Body:**
+
 ```json
 {
   "primaryConsultantId": "uuid-new-consultant",
@@ -730,6 +774,7 @@ PUT /api/payrolls/[id]
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -764,6 +809,7 @@ PUT /api/payrolls/[id]
 ---
 
 ### Get Payroll Schedule
+
 Get payroll processing schedule overview.
 
 ```http
@@ -771,11 +817,13 @@ GET /api/payrolls/schedule?startDate=2024-01-15&endDate=2024-01-31
 ```
 
 **Query Parameters:**
+
 - `startDate` (optional): Filter from date
 - `endDate` (optional): Filter to date
 - `consultantId` (optional): Filter by consultant
 
 **Response:**
+
 ```json
 {
   "schedule": [
@@ -819,6 +867,7 @@ GET /api/payrolls/schedule?startDate=2024-01-15&endDate=2024-01-31
 ---
 
 ### Get Payroll Dates
+
 Get payroll dates for a specific payroll.
 
 ```http
@@ -826,6 +875,7 @@ GET /api/payroll-dates/[payrollId]?limit=50&offset=0&future=true
 ```
 
 **Query Parameters:**
+
 - `limit` (optional): Number of dates to return
 - `offset` (optional): Pagination offset
 - `future` (optional): Only future dates
@@ -833,6 +883,7 @@ GET /api/payroll-dates/[payrollId]?limit=50&offset=0&future=true
 - `endDate` (optional): Filter to date
 
 **Response:**
+
 ```json
 {
   "payrollDates": [
@@ -868,6 +919,7 @@ GET /api/payroll-dates/[payrollId]?limit=50&offset=0&future=true
 ---
 
 ### Get Generated Dates
+
 Get system-generated payroll dates across all payrolls.
 
 ```http
@@ -875,6 +927,7 @@ GET /api/payroll-dates/generated?startDate=2024-01-15&endDate=2024-01-31&consult
 ```
 
 **Response:**
+
 ```json
 {
   "generatedDates": [
@@ -911,6 +964,7 @@ GET /api/payroll-dates/generated?startDate=2024-01-15&endDate=2024-01-31&consult
 ---
 
 ### Commit Payroll Assignments
+
 Commit consultant assignments for payroll dates.
 
 ```http
@@ -918,6 +972,7 @@ POST /api/commit-payroll-assignments
 ```
 
 **Request Body:**
+
 ```json
 {
   "assignments": [
@@ -941,6 +996,7 @@ POST /api/commit-payroll-assignments
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -966,6 +1022,7 @@ POST /api/commit-payroll-assignments
 ## CRON & Background Job Endpoints
 
 ### Generate Batch Payroll Dates
+
 Generate payroll dates for multiple payrolls.
 
 ```http
@@ -973,12 +1030,10 @@ POST /api/cron/generate-batch
 ```
 
 **Request Body:**
+
 ```json
 {
-  "payrollIds": [
-    "uuid-payroll-1",
-    "uuid-payroll-2"
-  ],
+  "payrollIds": ["uuid-payroll-1", "uuid-payroll-2"],
   "fromDate": "2024-01-15",
   "toDate": "2024-12-31",
   "regenerate": false
@@ -986,6 +1041,7 @@ POST /api/cron/generate-batch
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1014,6 +1070,7 @@ POST /api/cron/generate-batch
 ---
 
 ### Cleanup Old Dates
+
 Remove old payroll dates beyond retention period.
 
 ```http
@@ -1021,6 +1078,7 @@ POST /api/cron/cleanup-old-dates
 ```
 
 **Request Body:**
+
 ```json
 {
   "cutoffDate": "2023-01-01",
@@ -1029,6 +1087,7 @@ POST /api/cron/cleanup-old-dates
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1051,6 +1110,7 @@ POST /api/cron/cleanup-old-dates
 ---
 
 ### Sync Holiday Data
+
 Synchronize holiday data from external sources.
 
 ```http
@@ -1058,6 +1118,7 @@ POST /api/cron/sync-holidays
 ```
 
 **Request Body:**
+
 ```json
 {
   "year": 2024,
@@ -1067,6 +1128,7 @@ POST /api/cron/sync-holidays
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1086,6 +1148,7 @@ POST /api/cron/sync-holidays
 ## Audit & Compliance Endpoints
 
 ### Create Audit Log
+
 Manually create audit log entry.
 
 ```http
@@ -1093,6 +1156,7 @@ POST /api/audit/log
 ```
 
 **Request Body:**
+
 ```json
 {
   "action": "payroll_created",
@@ -1112,6 +1176,7 @@ POST /api/audit/log
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1134,6 +1199,7 @@ POST /api/audit/log
 ---
 
 ### Generate Compliance Report
+
 Generate SOC2 compliance reports.
 
 ```http
@@ -1141,12 +1207,14 @@ GET /api/audit/compliance-report?startDate=2024-01-01&endDate=2024-01-31&type=ac
 ```
 
 **Query Parameters:**
+
 - `startDate`: Report start date
-- `endDate`: Report end date  
+- `endDate`: Report end date
 - `type`: Report type (access_review, data_access, permission_changes, security_events)
 - `format`: Response format (json, csv)
 
 **Response:**
+
 ```json
 {
   "report": {
@@ -1186,6 +1254,7 @@ GET /api/audit/compliance-report?startDate=2024-01-01&endDate=2024-01-31&type=ac
 ## Developer Tools Endpoints
 
 ### Developer Dashboard
+
 Get developer system overview.
 
 ```http
@@ -1193,6 +1262,7 @@ GET /api/developer
 ```
 
 **Response:**
+
 ```json
 {
   "system": {
@@ -1234,6 +1304,7 @@ GET /api/developer
 ---
 
 ### Clean All Dates
+
 Remove all generated payroll dates (development only).
 
 ```http
@@ -1241,6 +1312,7 @@ POST /api/developer/clean-all-dates
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1257,6 +1329,7 @@ POST /api/developer/clean-all-dates
 ---
 
 ### Regenerate All Dates
+
 Regenerate all payroll dates for all active payrolls.
 
 ```http
@@ -1264,6 +1337,7 @@ POST /api/developer/regenerate-all-dates
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -1281,6 +1355,7 @@ POST /api/developer/regenerate-all-dates
 ## External Integration Endpoints
 
 ### Clerk Webhook Handler
+
 Handle Clerk authentication webhooks.
 
 ```http
@@ -1288,6 +1363,7 @@ POST /api/webhooks/clerk
 ```
 
 **Headers:**
+
 ```http
 svix-id: msg_abc123
 svix-timestamp: 1642637737
@@ -1295,6 +1371,7 @@ svix-signature: v1,signature_here
 ```
 
 **Request Body (example - user.created):**
+
 ```json
 {
   "type": "user.created",
@@ -1319,6 +1396,7 @@ svix-signature: v1,signature_here
 ```
 
 **Response:**
+
 ```json
 {
   "received": true,
@@ -1333,6 +1411,7 @@ svix-signature: v1,signature_here
 ## Response Schemas
 
 ### User Object
+
 ```json
 {
   "id": "uuid",
@@ -1350,6 +1429,7 @@ svix-signature: v1,signature_here
 ```
 
 ### Payroll Object
+
 ```json
 {
   "id": "uuid",
@@ -1360,7 +1440,7 @@ svix-signature: v1,signature_here
   "dateValue": "integer|null",
   "status": "Active|Implementation|Inactive",
   "primaryConsultantId": "uuid|null",
-  "backupConsultantId": "uuid|null", 
+  "backupConsultantId": "uuid|null",
   "managerId": "uuid|null",
   "processingDaysBeforeEft": "integer",
   "payrollSystem": "string|null",
@@ -1378,6 +1458,7 @@ svix-signature: v1,signature_here
 ```
 
 ### Audit Log Object
+
 ```json
 {
   "id": "uuid",
@@ -1403,6 +1484,7 @@ svix-signature: v1,signature_here
 ## SDKs and Code Examples
 
 ### JavaScript/TypeScript Client
+
 ```typescript
 class PayrollMatrixAPI {
   private baseUrl: string;
@@ -1414,16 +1496,16 @@ class PayrollMatrixAPI {
   }
 
   private async request<T>(
-    endpoint: string, 
+    endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
     const token = await this.getAuthToken();
-    
+
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...options,
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
         ...options.headers,
       },
     });
@@ -1442,8 +1524,8 @@ class PayrollMatrixAPI {
   }
 
   async createUser(userData: CreateUserRequest) {
-    return this.request<CreateUserResponse>('/users', {
-      method: 'POST',
+    return this.request<CreateUserResponse>("/users", {
+      method: "POST",
       body: JSON.stringify(userData),
     });
   }
@@ -1455,8 +1537,8 @@ class PayrollMatrixAPI {
   }
 
   async createPayroll(payrollData: CreatePayrollRequest) {
-    return this.request<CreatePayrollResponse>('/payrolls', {
-      method: 'POST',
+    return this.request<CreatePayrollResponse>("/payrolls", {
+      method: "POST",
       body: JSON.stringify(payrollData),
     });
   }
@@ -1464,38 +1546,42 @@ class PayrollMatrixAPI {
 
 // Usage with Clerk
 const api = new PayrollMatrixAPI(
-  'https://payroll-matrix.vercel.app/api',
+  "https://payroll-matrix.vercel.app/api",
   async () => {
     const token = await window.Clerk.session?.getToken({ template: "hasura" });
-    if (!token) throw new Error('No authentication token');
+    if (!token) throw new Error("No authentication token");
     return token;
   }
 );
 ```
 
 ### React Hook
+
 ```typescript
-import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useState, useEffect } from "react";
+import { useAuth } from "@clerk/nextjs";
 
 export function usePayrollMatrixAPI() {
   const { getToken } = useAuth();
-  
-  const apiRequest = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
+
+  const apiRequest = async <T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> => {
     const token = await getToken({ template: "hasura" });
-    
+
     const response = await fetch(`/api${endpoint}`, {
       ...options,
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
         ...options.headers,
       },
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'API request failed');
+      throw new Error(error.message || "API request failed");
     }
 
     return response.json();
@@ -1513,10 +1599,10 @@ function PayrollList() {
   useEffect(() => {
     const fetchPayrolls = async () => {
       try {
-        const data = await apiRequest<GetPayrollsResponse>('/payrolls');
+        const data = await apiRequest<GetPayrollsResponse>("/payrolls");
         setPayrolls(data.payrolls);
       } catch (error) {
-        console.error('Failed to fetch payrolls:', error);
+        console.error("Failed to fetch payrolls:", error);
       } finally {
         setLoading(false);
       }

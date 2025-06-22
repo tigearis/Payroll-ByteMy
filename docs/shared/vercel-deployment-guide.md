@@ -5,6 +5,7 @@
 ### 1. Vercel Project Configuration
 
 Create these environments in your Vercel dashboard:
+
 - **Production**: `payroll.app.bytemy.com.au`
 - **Preview**: For pull requests and feature branches
 
@@ -69,11 +70,13 @@ RATE_LIMIT_MAX_REQUESTS=100
 ### 3. Domain Configuration
 
 #### Production Domain
+
 1. Go to Vercel project → Settings → Domains
 2. Add domain: `payroll.app.bytemy.com.au`
 3. Configure DNS records as instructed by Vercel
 
 #### Preview Domains
+
 - Vercel will automatically generate preview URLs for pull requests
 - Format: `https://your-project-git-branch-name-username.vercel.app`
 
@@ -97,6 +100,7 @@ Your `vercel.json` already has good configuration:
 ### 5. Deployment Commands
 
 #### Deploy to Production
+
 ```bash
 # Option 1: Via Git (Recommended)
 git push origin main  # Triggers automatic production deployment
@@ -106,6 +110,7 @@ vercel --prod
 ```
 
 #### Deploy Preview
+
 ```bash
 # Option 1: Via Git (Recommended)
 git push origin feature-branch  # Triggers automatic preview deployment
@@ -122,15 +127,15 @@ vercel  # Deploys to preview environment
 // next.config.js - Add production optimizations
 const nextConfig = {
   // ... existing config
-  
+
   // Production optimizations
-  ...(process.env.NODE_ENV === 'production' && {
+  ...(process.env.NODE_ENV === "production" && {
     // Disable source maps in production for security
     productionBrowserSourceMaps: false,
-    
+
     // Enable compression
     compress: true,
-    
+
     // Optimize images
     images: {
       domains: ["img.clerk.com", "images.clerk.dev"],
@@ -144,6 +149,7 @@ const nextConfig = {
 ### 7. Monitoring and Analytics
 
 #### Add performance monitoring:
+
 ```bash
 # Optional: Vercel Analytics
 VERCEL_ANALYTICS=true
@@ -165,16 +171,20 @@ headers: [
       // ... existing headers
       {
         key: "X-Robots-Tag",
-        value: process.env.NODE_ENV === "production" ? "index, follow" : "noindex, nofollow",
+        value:
+          process.env.NODE_ENV === "production"
+            ? "index, follow"
+            : "noindex, nofollow",
       },
     ],
   },
-]
+];
 ```
 
 ### 9. Deployment Checklist
 
 #### Before Production Deployment:
+
 - [ ] Test all authentication flows with production Clerk keys
 - [ ] Verify Hasura JWT configuration works
 - [ ] Test API routes and GraphQL queries
@@ -185,6 +195,7 @@ headers: [
 - [ ] Validate SSL certificate on custom domain
 
 #### After Production Deployment:
+
 - [ ] Test full user flows (signup, login, logout)
 - [ ] Verify data loading and mutations work
 - [ ] Check performance and load times
@@ -195,6 +206,7 @@ headers: [
 ### 10. Rollback Plan
 
 #### If issues occur in production:
+
 ```bash
 # Option 1: Revert via Vercel dashboard
 # Go to Deployments → Find last good deployment → Promote to Production
@@ -210,12 +222,14 @@ vercel --prod --yes # Deploy current state to production
 ### 11. Environment Variable Management
 
 #### Secrets Management:
+
 - Use Vercel's environment variables for sensitive data
 - Never commit `.env.production` or `.env.preview` to git
 - Use different secrets for production vs preview
 - Rotate secrets regularly
 
 #### Required Secrets to Generate:
+
 ```bash
 # Generate these with: openssl rand -base64 32
 CRON_SECRET=[generate-new]

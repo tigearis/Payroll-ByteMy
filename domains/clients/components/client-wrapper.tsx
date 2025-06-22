@@ -1,5 +1,5 @@
 // components/client-wrapper.tsx
-'use client';
+"use client";
 
 import { ReactNode } from "react";
 
@@ -8,9 +8,5 @@ interface ClientWrapperProps {
 }
 
 export function ClientWrapper({ children }: ClientWrapperProps) {
-  return (
-    <div>
-      {children}
-    </div>
-  );
+  return <div>{children}</div>;
 }

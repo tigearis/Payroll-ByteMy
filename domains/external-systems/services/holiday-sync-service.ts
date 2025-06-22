@@ -256,13 +256,13 @@ export async function syncHolidaysForCountry(
     );
 
     // Transform data for database insertion
-    const holidaysToInsert = publicHolidays.map((holiday) => ({
+    const holidaysToInsert = publicHolidays.map(holiday => ({
       date: holiday.date,
       local_name: holiday.localName,
       name: holiday.name,
       country_code: holiday.countryCode,
       region: holiday.counties
-        ? holiday.counties.map((c) => c.replace(`${holiday.countryCode}-`, ""))
+        ? holiday.counties.map(c => c.replace(`${holiday.countryCode}-`, ""))
         : ["National"],
       is_fixed: holiday.fixed,
       is_global: holiday.global,

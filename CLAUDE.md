@@ -89,7 +89,7 @@ The authentication system uses a specific JWT template configured in Clerk Dashb
     "x-hasura-allowed-roles": [
       "developer",
       "org_admin",
-      "manager", 
+      "manager",
       "consultant",
       "viewer"
     ],
@@ -140,7 +140,7 @@ GraphQL-first approach using Hasura over PostgreSQL:
 
 ### Critical Security Files
 
-``` tree
+```tree
 ├── middleware.ts                    # Primary auth middleware
 ├── app/api/webhooks/clerk/          # Clerk webhook handlers
 ├── lib/
@@ -289,7 +289,8 @@ When performing security audits, focus on these integration points:
 - **GraphQL**: Domain-based organization with unified Apollo client, see `GRAPHQL_CLEANUP_PLAN.md` for ongoing improvements
 
 # important-instruction-reminders
+
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.

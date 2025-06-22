@@ -1,14 +1,14 @@
 // components/dashboard-shell.tsx
-import type React from "react"
+import type React from "react";
 
-import { MainNav } from "@/components/main-nav"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { UserNav } from "@/domains/users/components/user-nav"
+import { Sidebar } from "./sidebar";
+import { MainNav } from "@/components/main-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { UserNav } from "@/domains/users/components/user-nav";
 
-import { Sidebar } from "./sidebar"
 
 interface DashboardShellProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function DashboardShell({ children }: DashboardShellProps) {
@@ -28,5 +28,5 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <div className="container py-6">{children}</div>
       </main>
     </div>
-  )
+  );
 }

@@ -2,21 +2,31 @@
 import { NextResponse } from "next/server";
 
 import { syncAustralianHolidays } from "@/domains/external-systems/services/holiday-sync-service";
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
+import {
+  auditLogger,
+  LogLevel,
+  LogCategory,
+  SOC2EventType,
+} from "@/lib/security/audit/logger";
 
 export async function GET(request: Request) {
   try {
     // SECURITY: Verify request is from authorized source
     const cronSecret = request.headers.get("x-cron-secret");
-    
+
     // Check for cron secret (for Vercel cron jobs)
     if (cronSecret !== process.env.CRON_SECRET) {
-      console.error("🚨 Unauthorized cron request - invalid secret for sync-holidays");
+      console.error(
+        "🚨 Unauthorized cron request - invalid secret for sync-holidays"
+      );
       // Need to convert Request to NextRequest for extractClientInfo
       const nextRequest = request as any;
       const clientInfo = {
-        ipAddress: request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown",
-        userAgent: request.headers.get("user-agent") || "unknown"
+        ipAddress:
+          request.headers.get("x-forwarded-for") ||
+          request.headers.get("x-real-ip") ||
+          "unknown",
+        userAgent: request.headers.get("user-agent") || "unknown",
       };
       await auditLogger.logSOC2Event({
         level: LogLevel.ERROR,
@@ -26,7 +36,7 @@ export async function GET(request: Request) {
         errorMessage: "Unauthorized cron request - invalid secret",
         ipAddress: clientInfo.ipAddress,
         userAgent: clientInfo.userAgent,
-        metadata: { source: "sync-holidays" }
+        metadata: { source: "sync-holidays" },
       });
       return NextResponse.json(
         { success: false, message: "Unauthorized" },

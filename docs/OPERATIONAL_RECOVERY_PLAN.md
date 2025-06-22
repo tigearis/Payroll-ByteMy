@@ -486,7 +486,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 ```typescript
 // ✅ WORKING: Real GraphQL mutation
 const [createClient] = useCreateClientMutation({
-  onCompleted: (data) => {
+  onCompleted: data => {
     toast.success("Client created successfully");
     router.push(`/clients/${data.insert_clients_one.id}`);
   },
@@ -599,7 +599,7 @@ setTimeout(() => {
 ```typescript
 // ✅ WORKING: Real implementation
 const [createClient] = useMutation(CREATE_CLIENT, {
-  onCompleted: (data) => {
+  onCompleted: data => {
     toast.success("Client created successfully");
     router.push(`/clients/${data.insert_clients_one.id}`);
   },

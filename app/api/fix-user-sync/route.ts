@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
     // Get current Clerk user
     const user = await currentUser();
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "No authenticated user found" },
@@ -28,8 +28,9 @@ export async function POST(request: NextRequest) {
 
     // Extract user information
     const email = user.emailAddresses[0]?.emailAddress;
-    const name = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User";
-    
+    const name =
+      `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User";
+
     if (!email) {
       return NextResponse.json(
         { error: "User email not found" },
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     if (databaseUser) {
       console.log("✅ User sync successful:", databaseUser);
-      
+
       return NextResponse.json({
         success: true,
         message: "User successfully synced with database",
@@ -71,15 +72,14 @@ export async function POST(request: NextRequest) {
           email: databaseUser.email,
           role: databaseUser.role,
           clerkId: user.id,
-        }
+        },
       });
     } else {
       throw new Error("Failed to create or find database user");
     }
-
   } catch (error: any) {
     console.error("❌ Manual user sync failed:", error);
-    
+
     return NextResponse.json(
       {
         error: "Failed to sync user",
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const user = await currentUser();
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "No authenticated user found" },
@@ -116,10 +116,9 @@ export async function GET(request: NextRequest) {
       },
       syncNeeded: !user.publicMetadata?.databaseId,
     });
-
   } catch (error: any) {
     console.error("❌ Error checking user sync status:", error);
-    
+
     return NextResponse.json(
       {
         error: "Failed to check user status",

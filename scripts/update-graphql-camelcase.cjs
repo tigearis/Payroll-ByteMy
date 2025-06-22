@@ -152,7 +152,7 @@ function getAllGraphQLFiles() {
   return result
     .trim()
     .split("\n")
-    .filter((file) => file.length > 0);
+    .filter(file => file.length > 0);
 }
 
 // Update a single file

@@ -69,7 +69,6 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-
 import {
   Table,
   TableBody,
@@ -78,11 +77,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { 
-  GetStaffListDocument, 
+import {
+  GetStaffListDocument,
   GetAllUsersListDocument,
   UpdateStaffDocument,
-  DeleteStaffDocument 
+  DeleteStaffDocument,
 } from "@/domains/users/graphql/generated/graphql";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUserRole } from "@/hooks/use-user-role";
@@ -177,7 +176,7 @@ function MultiSelect({
 
   const handleToggle = (value: string) => {
     const newSelected = selected.includes(value)
-      ? selected.filter((item) => item !== value)
+      ? selected.filter(item => item !== value)
       : [...selected, value];
     onSelectionChange(newSelected);
   };
@@ -186,8 +185,8 @@ function MultiSelect({
     selected.length === 0
       ? placeholder
       : selected.length === 1
-      ? options.find((opt) => opt.value === selected[0])?.label || placeholder
-      : `${selected.length} selected`;
+        ? options.find(opt => opt.value === selected[0])?.label || placeholder
+        : `${selected.length} selected`;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -204,7 +203,7 @@ function MultiSelect({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <div className="max-h-60 overflow-auto">
-          {options.map((option) => (
+          {options.map(option => (
             <div
               key={option.value}
               className="flex items-center space-x-2 p-2 hover:bg-accent cursor-pointer"
@@ -294,7 +293,7 @@ export default function StaffManagementPage() {
       errorPolicy: "all", // Return partial data even if there are errors
       fetchPolicy: "cache-and-network", // Use cache but also fetch from network
       notifyOnNetworkStatusChange: true, // Update loading state on network changes
-      onError: (err) => {
+      onError: err => {
         console.error("❌ Staff query error:", err);
         console.error("Query variables would be:", {
           /* no variables in this query */
@@ -332,7 +331,7 @@ export default function StaffManagementPage() {
   const [updateStaffMutation, { loading: isUpdating }] = useMutation(
     UpdateStaffDocument,
     {
-      onCompleted: (data) => {
+      onCompleted: data => {
         if (data?.updateUser) {
           const updatedUser = data.updateUser;
           toast.success(
@@ -346,7 +345,7 @@ export default function StaffManagementPage() {
           toast.error("Update completed but returned unexpected data");
         }
       },
-      onError: (error) => {
+      onError: error => {
         console.error("GraphQL mutation error:", error);
         toast.error(`Failed to update role: ${error.message}`);
       },
@@ -357,7 +356,7 @@ export default function StaffManagementPage() {
   const [deleteStaffMutation, { loading: isDeleting }] = useMutation(
     DeleteStaffDocument,
     {
-      onCompleted: (data) => {
+      onCompleted: data => {
         if (data?.updateUser) {
           toast.success(`Staff member removed successfully`);
           refetch(); // Refresh the staff list
@@ -366,7 +365,7 @@ export default function StaffManagementPage() {
           toast.error("Deletion completed but returned unexpected data");
         }
       },
-      onError: (error) => {
+      onError: error => {
         console.error("GraphQL deletion error:", error);
         toast.error(`Failed to delete staff member: ${error.message}`);
       },
@@ -428,7 +427,7 @@ export default function StaffManagementPage() {
     // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(
-        (staff) =>
+        staff =>
           staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           staff.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
           (staff.username &&
@@ -438,12 +437,12 @@ export default function StaffManagementPage() {
 
     // Apply role filter
     if (selectedRole.length > 0) {
-      filtered = filtered.filter((staff) => selectedRole.includes(staff.role));
+      filtered = filtered.filter(staff => selectedRole.includes(staff.role));
     }
 
     // Apply status filter
     if (selectedStatus.length > 0) {
-      filtered = filtered.filter((staff) => {
+      filtered = filtered.filter(staff => {
         const status = staff.isStaff ? "active" : "inactive";
         return selectedStatus.includes(status);
       });
@@ -452,7 +451,7 @@ export default function StaffManagementPage() {
     // Apply manager filter
     if (selectedManager.length > 0) {
       console.log("🔍 Manager filter selected:", selectedManager);
-      filtered = filtered.filter((staff) => {
+      filtered = filtered.filter(staff => {
         return staff.managerId && selectedManager.includes(staff.managerId);
       });
     }
@@ -473,15 +472,15 @@ export default function StaffManagementPage() {
     const allStaff = staffList || [];
     return {
       total: allStaff.length,
-      admins: allStaff.filter((s) => s.role === "developer").length,
-      orgAdmins: allStaff.filter((s) => s.role === "org_admin").length,
-      managers: allStaff.filter((s) => s.role === "manager").length,
-      consultants: allStaff.filter((s) => s.role === "consultant").length,
-      viewers: allStaff.filter((s) => s.role === "viewer").length,
-      active: allStaff.filter((s) => s.isStaff).length,
-      inactive: allStaff.filter((s) => !s.isStaff).length,
-      withAuth: allStaff.filter((s) => s.clerkUserId).length,
-      withoutAuth: allStaff.filter((s) => !s.clerkUserId).length,
+      admins: allStaff.filter(s => s.role === "developer").length,
+      orgAdmins: allStaff.filter(s => s.role === "org_admin").length,
+      managers: allStaff.filter(s => s.role === "manager").length,
+      consultants: allStaff.filter(s => s.role === "consultant").length,
+      viewers: allStaff.filter(s => s.role === "viewer").length,
+      active: allStaff.filter(s => s.isStaff).length,
+      inactive: allStaff.filter(s => !s.isStaff).length,
+      withAuth: allStaff.filter(s => s.clerkUserId).length,
+      withoutAuth: allStaff.filter(s => !s.clerkUserId).length,
     };
   }, [staffList]);
 
@@ -492,12 +491,12 @@ export default function StaffManagementPage() {
     }
     return staffList
       .filter(
-        (staff) =>
+        staff =>
           staff.role === "manager" ||
           staff.role === "developer" ||
           staff.role === "org_admin"
       )
-      .map((manager) => ({
+      .map(manager => ({
         id: manager.id,
         name: manager.name,
       }));
@@ -533,7 +532,7 @@ export default function StaffManagementPage() {
                   <AvatarFallback>
                     {staff.name
                       .split(" ")
-                      .map((n) => n[0])
+                      .map(n => n[0])
                       .join("")
                       .toUpperCase()}
                   </AvatarFallback>
@@ -774,7 +773,7 @@ export default function StaffManagementPage() {
         sessionStorage.clear();
 
         // Also clear any Apollo-specific cache in storage
-        Object.keys(localStorage).forEach((key) => {
+        Object.keys(localStorage).forEach(key => {
           if (
             key.startsWith("apollo-cache-persist") ||
             key.startsWith("apollo")
@@ -834,7 +833,7 @@ export default function StaffManagementPage() {
     field: keyof StaffEditForm,
     value: string | boolean
   ) => {
-    setEditForm((prev) => ({
+    setEditForm(prev => ({
       ...prev,
       [field]: value,
     }));
@@ -1314,7 +1313,7 @@ Do you want to proceed with HARD DELETE?`
                       <Input
                         placeholder="Search staff..."
                         value={searchTerm}
-                        onChange={(e) => handleSearch(e.target.value)}
+                        onChange={e => handleSearch(e.target.value)}
                         className="pl-10 w-[300px]"
                       />
                     </div>
@@ -1416,7 +1415,7 @@ Do you want to proceed with HARD DELETE?`
                         Manager
                       </label>
                       <MultiSelect
-                        options={managers.map((manager) => ({
+                        options={managers.map(manager => ({
                           value: manager.id,
                           label: manager.name,
                         }))}
@@ -1444,9 +1443,9 @@ Do you want to proceed with HARD DELETE?`
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
+                    {table.getHeaderGroups().map(headerGroup => (
                       <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
+                        {headerGroup.headers.map(header => (
                           <TableHead key={header.id}>
                             {header.isPlaceholder
                               ? null
@@ -1461,12 +1460,12 @@ Do you want to proceed with HARD DELETE?`
                   </TableHeader>
                   <TableBody>
                     {table.getRowModel().rows?.length ? (
-                      table.getRowModel().rows.map((row) => (
+                      table.getRowModel().rows.map(row => (
                         <TableRow
                           key={row.id}
                           data-state={row.getIsSelected() && "selected"}
                         >
-                          {row.getVisibleCells().map((cell) => (
+                          {row.getVisibleCells().map(cell => (
                             <TableCell key={cell.id}>
                               {flexRender(
                                 cell.column.columnDef.cell,
@@ -1549,7 +1548,7 @@ Do you want to proceed with HARD DELETE?`
                   <Input
                     id="edit-name"
                     value={editForm.name}
-                    onChange={(e) => handleFormChange("name", e.target.value)}
+                    onChange={e => handleFormChange("name", e.target.value)}
                     placeholder="Enter full name"
                   />
                 </div>
@@ -1560,7 +1559,7 @@ Do you want to proceed with HARD DELETE?`
                     id="edit-email"
                     type="email"
                     value={editForm.email}
-                    onChange={(e) => handleFormChange("email", e.target.value)}
+                    onChange={e => handleFormChange("email", e.target.value)}
                     placeholder="Enter email address"
                   />
                 </div>
@@ -1570,9 +1569,7 @@ Do you want to proceed with HARD DELETE?`
                   <Input
                     id="edit-username"
                     value={editForm.username}
-                    onChange={(e) =>
-                      handleFormChange("username", e.target.value)
-                    }
+                    onChange={e => handleFormChange("username", e.target.value)}
                     placeholder="Enter username (optional)"
                   />
                 </div>
@@ -1581,13 +1578,13 @@ Do you want to proceed with HARD DELETE?`
                   <Label htmlFor="edit-role">Role</Label>
                   <Select
                     value={editForm.role}
-                    onValueChange={(value) => handleFormChange("role", value)}
+                    onValueChange={value => handleFormChange("role", value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
-                      {roleOptions.map((option) => (
+                      {roleOptions.map(option => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -1600,7 +1597,7 @@ Do you want to proceed with HARD DELETE?`
                   <Label htmlFor="edit-manager">Manager</Label>
                   <Select
                     value={editForm.managerId}
-                    onValueChange={(value) =>
+                    onValueChange={value =>
                       handleFormChange(
                         "managerId",
                         value === "no-manager" ? "" : value
@@ -1614,13 +1611,13 @@ Do you want to proceed with HARD DELETE?`
                       <SelectItem value="no-manager">No Manager</SelectItem>
                       {staffList
                         .filter(
-                          (staff) =>
+                          staff =>
                             staff.id !== editingStaff?.id &&
                             (staff.role === "manager" ||
                               staff.role === "developer" ||
                               staff.role === "org_admin")
                         )
-                        .map((manager) => (
+                        .map(manager => (
                           <SelectItem key={manager.id} value={manager.id}>
                             {manager.name} ({roleMapping[manager.role]})
                           </SelectItem>
@@ -1635,7 +1632,7 @@ Do you want to proceed with HARD DELETE?`
                     <Checkbox
                       id="edit-is-staff"
                       checked={editForm.isStaff}
-                      onCheckedChange={(checked) =>
+                      onCheckedChange={checked =>
                         handleFormChange("isStaff", !!checked)
                       }
                     />
@@ -1691,10 +1688,10 @@ Do you want to proceed with HARD DELETE?`
                           viewingStaff.role === "developer"
                             ? "destructive"
                             : viewingStaff.role === "manager"
-                            ? "default"
-                            : viewingStaff.role === "consultant"
-                            ? "secondary"
-                            : "outline"
+                              ? "default"
+                              : viewingStaff.role === "consultant"
+                                ? "secondary"
+                                : "outline"
                         }
                       >
                         {roleMapping[viewingStaff.role] || viewingStaff.role}
@@ -1806,7 +1803,7 @@ Do you want to proceed with HARD DELETE?`
           {/* Delete Confirmation Dialog */}
           <AlertDialog
             open={!!staffToDelete}
-            onOpenChange={(open) => !open && setStaffToDelete(null)}
+            onOpenChange={open => !open && setStaffToDelete(null)}
           >
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -1956,7 +1953,7 @@ Do you want to proceed with HARD DELETE?`
                       <Checkbox
                         id="isStaff"
                         checked={createForm.isStaff}
-                        onCheckedChange={(checked) =>
+                        onCheckedChange={checked =>
                           setCreateForm({ ...createForm, isStaff: !!checked })
                         }
                       />

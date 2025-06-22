@@ -117,7 +117,9 @@ const getStatusConfig = (status: string) => {
 
 // Helper functions
 const formatDate = (date: string | Date) => {
-  if (!date) {return "Not set";}
+  if (!date) {
+    return "Not set";
+  }
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     day: "numeric",
@@ -213,16 +215,18 @@ export function PayrollsTable({
   selectedPayrolls = [],
   onSelectPayroll,
   onSelectAll,
-  visibleColumns = COLUMN_DEFINITIONS.filter((col) => col.defaultVisible).map(
-    (col) => col.key
+  visibleColumns = COLUMN_DEFINITIONS.filter(col => col.defaultVisible).map(
+    col => col.key
   ),
   sortField = "name",
   sortDirection = "asc",
   onSort,
 }: PayrollsTableProps) {
   const renderSortableHeader = (label: string, field: string) => {
-    const column = COLUMN_DEFINITIONS.find((col) => col.key === field);
-    if (!column?.sortable || !onSort) {return label;}
+    const column = COLUMN_DEFINITIONS.find(col => col.key === field);
+    if (!column?.sortable || !onSort) {
+      return label;
+    }
 
     const isSorted = sortField === field;
 
@@ -348,7 +352,7 @@ export function PayrollsTable({
                         <TableCell>
                           <Checkbox
                             checked={selectedPayrolls.includes(payroll.id)}
-                            onCheckedChange={(checked) =>
+                            onCheckedChange={checked =>
                               onSelectPayroll(payroll.id, checked as boolean)
                             }
                           />

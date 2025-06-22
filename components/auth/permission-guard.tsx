@@ -49,7 +49,7 @@ export function PermissionGuard({
   let hasRequiredPermissions = true;
   if (allPermissions.length > 0) {
     if (requireAll) {
-      hasRequiredPermissions = allPermissions.every((p) => hasPermission(p));
+      hasRequiredPermissions = allPermissions.every(p => hasPermission(p));
     } else {
       hasRequiredPermissions = hasAnyPermission(allPermissions);
     }

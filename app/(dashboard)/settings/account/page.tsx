@@ -76,11 +76,7 @@ const UPDATE_USER_PROFILE = gql`
   ) {
     update_users_by_pk(
       pk_columns: { id: $id }
-      _set: {
-        name: $name
-        avatar_url: $image
-        updated_at: "now()"
-      }
+      _set: { name: $name, avatar_url: $image, updated_at: "now()" }
     ) {
       id
       name
@@ -181,7 +177,7 @@ export default function AccountSettings() {
   }, [isLoaded, clerkUser, userData, getAvatarImage]);
 
   const handleInputChange = (field: keyof ProfileForm, value: string) => {
-    setProfileForm((prev) => ({
+    setProfileForm(prev => ({
       ...prev,
       [field]: value,
     }));
@@ -203,7 +199,7 @@ export default function AccountSettings() {
       // Update local state with new image URL
       const updatedUser = await clerkUser?.reload();
       if (updatedUser?.imageUrl) {
-        setProfileForm((prev) => ({
+        setProfileForm(prev => ({
           ...prev,
           image: updatedUser.imageUrl,
         }));
@@ -421,7 +417,7 @@ export default function AccountSettings() {
                   <Input
                     id="firstName"
                     value={profileForm.firstName}
-                    onChange={(e) =>
+                    onChange={e =>
                       handleInputChange("firstName", e.target.value)
                     }
                   />
@@ -431,7 +427,7 @@ export default function AccountSettings() {
                   <Input
                     id="lastName"
                     value={profileForm.lastName}
-                    onChange={(e) =>
+                    onChange={e =>
                       handleInputChange("lastName", e.target.value)
                     }
                   />
@@ -443,9 +439,7 @@ export default function AccountSettings() {
                 <Input
                   id="username"
                   value={profileForm.username}
-                  onChange={(e) =>
-                    handleInputChange("username", e.target.value)
-                  }
+                  onChange={e => handleInputChange("username", e.target.value)}
                   placeholder="Enter a unique username (optional)"
                 />
                 <p className="text-xs text-muted-foreground">
@@ -458,7 +452,7 @@ export default function AccountSettings() {
                 <Textarea
                   id="bio"
                   value={profileForm.bio}
-                  onChange={(e) => handleInputChange("bio", e.target.value)}
+                  onChange={e => handleInputChange("bio", e.target.value)}
                   placeholder="Tell us about yourself..."
                   rows={3}
                 />
@@ -494,7 +488,7 @@ export default function AccountSettings() {
                 <Input
                   id="phone"
                   value={profileForm.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  onChange={e => handleInputChange("phone", e.target.value)}
                   placeholder="+1 (555) 123-4567"
                 />
               </div>
@@ -504,9 +498,7 @@ export default function AccountSettings() {
                 <Input
                   id="location"
                   value={profileForm.location}
-                  onChange={(e) =>
-                    handleInputChange("location", e.target.value)
-                  }
+                  onChange={e => handleInputChange("location", e.target.value)}
                   placeholder="City, Country"
                 />
               </div>
@@ -528,7 +520,7 @@ export default function AccountSettings() {
                 <Input
                   id="company"
                   value={profileForm.company}
-                  onChange={(e) => handleInputChange("company", e.target.value)}
+                  onChange={e => handleInputChange("company", e.target.value)}
                   placeholder="Your company name"
                 />
               </div>
@@ -538,7 +530,7 @@ export default function AccountSettings() {
                 <Input
                   id="website"
                   value={profileForm.website}
-                  onChange={(e) => handleInputChange("website", e.target.value)}
+                  onChange={e => handleInputChange("website", e.target.value)}
                   placeholder="https://yourwebsite.com"
                 />
               </div>
@@ -550,12 +542,12 @@ export default function AccountSettings() {
                     {dbUser?.role === "developer"
                       ? "Developer"
                       : dbUser?.role === "org_admin"
-                      ? "Admin"
-                      : dbUser?.role === "manager"
-                      ? "Manager"
-                      : dbUser?.role === "consultant"
-                      ? "Consultant"
-                      : "Viewer"}
+                        ? "Admin"
+                        : dbUser?.role === "manager"
+                          ? "Manager"
+                          : dbUser?.role === "consultant"
+                            ? "Consultant"
+                            : "Viewer"}
                   </Badge>
                   <Badge variant={dbUser?.is_staff ? "default" : "secondary"}>
                     {dbUser?.is_staff ? "Staff Member" : "External User"}

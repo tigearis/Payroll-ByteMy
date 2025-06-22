@@ -31,7 +31,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUserRole } from "@/hooks/use-user-role";
 
-
 // GraphQL query for user profile data
 const GET_USER_PROFILE = gql`
   query GetUserProfile($id: uuid!) {

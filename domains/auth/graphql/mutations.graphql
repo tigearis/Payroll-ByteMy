@@ -5,9 +5,7 @@
 
 # Assign role to user
 mutation AssignRoleToUser($userId: uuid!, $roleId: uuid!) {
-  insertUserRole(object: {
-    roleId: $roleId
-  }) {
+  insertUserRole(object: { roleId: $roleId }) {
     id
     roleId
     role {
@@ -32,7 +30,7 @@ mutation SetUserRoles($userId: uuid!, $roleIds: [user_roles_insert_input!]!) {
   deleteUserRoles(where: { userId: { _eq: $userId } }) {
     affected_rows
   }
-  
+
   # Then insert new roles
   insertUserRoles(objects: $roleIds) {
     affected_rows
@@ -49,22 +47,24 @@ mutation SetUserRoles($userId: uuid!, $roleIds: [user_roles_insert_input!]!) {
 
 # Create permission override for user
 mutation CreateUserPermissionOverride(
-  $userId: uuid!,
-  $resource: String!,
-  $operation: String!,
-  $granted: Boolean!,
-  $conditions: jsonb = null,
-  $expiresAt: timestamptz = null,
+  $userId: uuid!
+  $resource: String!
+  $operation: String!
+  $granted: Boolean!
+  $conditions: jsonb = null
+  $expiresAt: timestamptz = null
   $reason: String = null
 ) {
-  insertPermissionOverride(object: {
-    resource: $resource,
-    operation: $operation,
-    granted: $granted,
-    conditions: $conditions,
-    expiresAt: $expiresAt,
-    reason: $reason
-  }) {
+  insertPermissionOverride(
+    object: {
+      resource: $resource
+      operation: $operation
+      granted: $granted
+      conditions: $conditions
+      expiresAt: $expiresAt
+      reason: $reason
+    }
+  ) {
     id
     resource
     operation
@@ -77,23 +77,25 @@ mutation CreateUserPermissionOverride(
 
 # Create role-based permission override
 mutation CreateRolePermissionOverride(
-  $role: String!,
-  $resource: String!,
-  $operation: String!,
-  $granted: Boolean!,
-  $conditions: jsonb = null,
-  $expiresAt: timestamptz = null,
+  $role: String!
+  $resource: String!
+  $operation: String!
+  $granted: Boolean!
+  $conditions: jsonb = null
+  $expiresAt: timestamptz = null
   $reason: String = null
 ) {
-  insertPermissionOverride(object: {
-    role: $role,
-    resource: $resource,
-    operation: $operation,
-    granted: $granted,
-    conditions: $conditions,
-    expiresAt: $expiresAt,
-    reason: $reason
-  }) {
+  insertPermissionOverride(
+    object: {
+      role: $role
+      resource: $resource
+      operation: $operation
+      granted: $granted
+      conditions: $conditions
+      expiresAt: $expiresAt
+      reason: $reason
+    }
+  ) {
     id
     role
     resource
@@ -107,19 +109,19 @@ mutation CreateRolePermissionOverride(
 
 # Update permission override
 mutation UpdatePermissionOverride(
-  $id: uuid!,
-  $granted: Boolean = null,
-  $conditions: jsonb = null,
-  $expiresAt: timestamptz = null,
+  $id: uuid!
+  $granted: Boolean = null
+  $conditions: jsonb = null
+  $expiresAt: timestamptz = null
   $reason: String = null
 ) {
   updatePermissionOverride(
-    pk_columns: { id: $id },
+    pk_columns: { id: $id }
     _set: {
-      granted: $granted,
-      conditions: $conditions,
-      expiresAt: $expiresAt,
-      reason: $reason,
+      granted: $granted
+      conditions: $conditions
+      expiresAt: $expiresAt
+      reason: $reason
     }
   ) {
     id
@@ -145,18 +147,20 @@ mutation DeletePermissionOverride($id: uuid!) {
 
 # Create custom role
 mutation CreateCustomRole(
-  $name: String!,
-  $displayName: String!,
-  $description: String!,
+  $name: String!
+  $displayName: String!
+  $description: String!
   $priority: Int!
 ) {
-  insertRole(object: {
-    name: $name,
-    displayName: $displayName,
-    description: $description,
-    priority: $priority,
-    isSystemRole: false
-  }) {
+  insertRole(
+    object: {
+      name: $name
+      displayName: $displayName
+      description: $description
+      priority: $priority
+      isSystemRole: false
+    }
+  ) {
     id
     name
     displayName
@@ -168,17 +172,17 @@ mutation CreateCustomRole(
 
 # Update role
 mutation UpdateRole(
-  $id: uuid!,
-  $displayName: String = null,
-  $description: String = null,
+  $id: uuid!
+  $displayName: String = null
+  $description: String = null
   $priority: Int = null
 ) {
   updateRole(
-    pk_columns: { id: $id },
+    pk_columns: { id: $id }
     _set: {
-      displayName: $displayName,
-      description: $description,
-      priority: $priority,
+      displayName: $displayName
+      description: $description
+      priority: $priority
     }
   ) {
     id
@@ -200,15 +204,17 @@ mutation DeleteCustomRole($id: uuid!) {
 
 # Assign permission to role
 mutation AssignPermissionToRole(
-  $roleId: uuid!,
-  $permissionId: uuid!,
+  $roleId: uuid!
+  $permissionId: uuid!
   $conditions: jsonb = null
 ) {
-  insertRolePermission(object: {
-    roleId: $roleId,
-    permissionId: $permissionId,
-    conditions: $conditions
-  }) {
+  insertRolePermission(
+    object: {
+      roleId: $roleId
+      permissionId: $permissionId
+      conditions: $conditions
+    }
+  ) {
     id
     roleId
     permissionId
@@ -238,14 +244,12 @@ mutation RemovePermissionFromRole($rolePermissionId: uuid!) {
 
 # Update role permission conditions
 mutation UpdateRolePermissionConditions(
-  $rolePermissionId: uuid!,
+  $rolePermissionId: uuid!
   $conditions: jsonb = null
 ) {
   updateRolePermission(
-    pk_columns: { id: $rolePermissionId },
-    _set: {
-      conditions: $conditions,
-    }
+    pk_columns: { id: $rolePermissionId }
+    _set: { conditions: $conditions }
   ) {
     id
     conditions
@@ -261,23 +265,21 @@ mutation UpdateRolePermissionConditions(
 
 # Bulk update user roles with audit logging
 mutation BulkUpdateUserRoles(
-  $userId: uuid!,
-  $newRoleIds: [uuid!]!,
+  $userId: uuid!
+  $newRoleIds: [uuid!]!
   $reason: String = null
 ) {
   # This would typically be a custom function that handles:
   # 1. Audit logging of the change
   # 2. Atomic role replacement
   # 3. Notification of the change
-  
+
   # For now, we'll do the basic operation
   deleteUserRoles(where: { userId: { _eq: $userId } }) {
     affected_rows
   }
-  
-  insertUserRoles(objects: [
-    # This would be dynamically generated based on newRoleIds
-  ]) {
+
+  insertUserRoles(objects: $newRoleIds) {
     affected_rows
     returning {
       id
@@ -296,28 +298,30 @@ mutation EmergencyRevokeUserAccess($userId: uuid!, $reason: String!) {
   deleteUserRoles(where: { userId: { _eq: $userId } }) {
     affected_rows
   }
-  
+
   # Add explicit deny overrides for critical resources
-  insertPermissionOverrides(objects: [
-    {
-      resource: "system_settings",
-      operation: "read",
-      granted: false,
-      reason: $reason
-    },
-    {
-      resource: "user_management",
-      operation: "read",
-      granted: false,
-      reason: $reason
-    },
-    {
-      resource: "billing",
-      operation: "read",
-      granted: false,
-      reason: $reason
-    }
-  ]) {
+  insertPermissionOverrides(
+    objects: [
+      {
+        resource: "system_settings"
+        operation: "read"
+        granted: false
+        reason: $reason
+      }
+      {
+        resource: "user_management"
+        operation: "read"
+        granted: false
+        reason: $reason
+      }
+      {
+        resource: "billing"
+        operation: "read"
+        granted: false
+        reason: $reason
+      }
+    ]
+  ) {
     affected_rows
   }
 }
@@ -325,18 +329,12 @@ mutation EmergencyRevokeUserAccess($userId: uuid!, $reason: String!) {
 # Restore user access (remove emergency restrictions)
 mutation RestoreUserAccess($userId: uuid!, $viewerRoleId: uuid!) {
   # Remove deny overrides
-  deletePermissionOverrides(
-    where: { 
-      granted: { _eq: false }
-    }
-  ) {
+  deletePermissionOverrides(where: { granted: { _eq: false } }) {
     affected_rows
   }
-  
+
   # Assign default viewer role
-  insertUserRole(object: {
-    roleId: $viewerRoleId
-  }) {
+  insertUserRole(object: { roleId: $viewerRoleId }) {
     id
     role {
       name
@@ -373,7 +371,10 @@ mutation CreatePermissionOverride($object: permission_overrides_insert_input!) {
   }
 }
 
-mutation UpdatePermissionOverrideById($id: uuid!, $set: permission_overrides_set_input!) {
+mutation UpdatePermissionOverrideById(
+  $id: uuid!
+  $set: permission_overrides_set_input!
+) {
   updatePermissionOverride(pk_columns: { id: $id }, _set: $set) {
     ...PermissionOverrideCore
   }
@@ -421,4 +422,4 @@ mutation UpdateRolePermission($id: uuid!, $set: role_permissions_set_input!) {
   updateRolePermission(pk_columns: { id: $id }, _set: $set) {
     ...RolePermissionCore
   }
-} 
+}

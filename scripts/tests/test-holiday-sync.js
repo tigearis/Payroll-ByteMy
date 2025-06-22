@@ -264,7 +264,7 @@ async function testHolidayDataStructure() {
       "types",
     ];
 
-    fields.forEach((field) => {
+    fields.forEach(field => {
       const value = holiday[field];
       const status = value !== null && value !== undefined ? "✅" : "❌";
       console.log(`   ${status} ${field}: ${JSON.stringify(value)}`);
@@ -296,7 +296,7 @@ async function runHolidaySyncTests() {
   for (const test of tests) {
     try {
       results[test.name] = await test.fn();
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Small delay between tests
+      await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between tests
     } catch (error) {
       console.log(`❌ Test "${test.name}" failed with error:`, error.message);
       results[test.name] = { error: error.message };

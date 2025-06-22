@@ -28,8 +28,8 @@ import { Button } from "@/components/ui/button";
 
 // Use domain GraphQL operations
 import { NoteFromGraphQL, NotesListWithAddProps } from "@/domains/notes/types";
-import { 
-  GetNotesExtractedQuery, 
+import {
+  GetNotesExtractedQuery,
   GetNotesExtractedDocument,
   UpdateNoteExtractedDocument,
   AddNoteExtractedDocument,
@@ -73,7 +73,7 @@ export function NotesList({
       toast.success("Note updated successfully");
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       console.error("Error updating note:", error);
       setIsUpdating(false);
       toast.error(`Failed to update note: ${error.message}`);
@@ -89,7 +89,7 @@ export function NotesList({
       toast.success("Note added successfully");
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       console.error("Error adding note:", error);
       setIsAdding(false);
       toast.error(`Failed to add note: ${error.message}`);
@@ -233,7 +233,7 @@ export function NotesList({
                       id="add-note-content"
                       placeholder="Enter your note here..."
                       value={addContent}
-                      onChange={(e) => setAddContent(e.target.value)}
+                      onChange={e => setAddContent(e.target.value)}
                       className="min-h-[100px] mt-1"
                       disabled={isAdding}
                     />
@@ -332,7 +332,7 @@ export function NotesList({
                 id="edit-note-content"
                 placeholder="Enter your note..."
                 value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
+                onChange={e => setEditContent(e.target.value)}
                 className="min-h-[100px] mt-1"
                 disabled={isUpdating}
               />

@@ -13,13 +13,13 @@ const ROOT_DIR = path.resolve(__dirname);
 const EXCLUDED_DIRS = new Set(["node_modules", ".next", ".vercel"]);
 
 // Function to get the relative path comment
-const getRelativePathComment = (filePath) => {
+const getRelativePathComment = filePath => {
   let relativePath = path.relative(ROOT_DIR, filePath);
   return `// ${relativePath.replace(/\\/g, "/")}`;
 };
 
 // Function to process a file
-const processFile = (filePath) => {
+const processFile = filePath => {
   if (!filePath.endsWith(".ts") && !filePath.endsWith(".tsx")) return;
 
   const content = fs.readFileSync(filePath, "utf8").trim();
@@ -41,8 +41,8 @@ const processFile = (filePath) => {
 };
 
 // Function to scan directories recursively (excluding certain folders)
-const scanDirectory = (dir) => {
-  fs.readdirSync(dir).forEach((file) => {
+const scanDirectory = dir => {
+  fs.readdirSync(dir).forEach(file => {
     const fullPath = path.join(dir, file);
 
     if (fs.statSync(fullPath).isDirectory()) {
@@ -56,6 +56,8 @@ const scanDirectory = (dir) => {
 };
 
 // Start processing
-console.log("Updating relative path comments for all files (excluding node_modules, .next, .vercel)...");
+console.log(
+  "Updating relative path comments for all files (excluding node_modules, .next, .vercel)..."
+);
 scanDirectory(ROOT_DIR);
 console.log("✅ All files updated!");

@@ -103,7 +103,7 @@ async function checkHasuraConnection() {
 
       if (samples.length > 0) {
         colorLog("blue", "📋 Sample holidays:");
-        samples.forEach((h) => {
+        samples.forEach(h => {
           console.log(`   ${h.date}: ${h.name} (${h.country_code})`);
         });
       }
@@ -209,7 +209,7 @@ async function testExternalAPI() {
     );
 
     colorLog("blue", "📋 Sample holidays from API:");
-    response.data.slice(0, 3).forEach((holiday) => {
+    response.data.slice(0, 3).forEach(holiday => {
       console.log(`   ${holiday.date}: ${holiday.name} (${holiday.localName})`);
     });
   } else {
@@ -299,13 +299,13 @@ async function runAllTests() {
       },
     ];
 
-    tests.forEach((test) => {
+    tests.forEach(test => {
       const status = test.result ? "✅ PASS" : "❌ FAIL";
       const color = test.result ? "green" : "red";
       colorLog(color, `${status} ${test.name}`);
     });
 
-    const passCount = tests.filter((t) => t.result).length;
+    const passCount = tests.filter(t => t.result).length;
     const totalCount = tests.length;
 
     console.log("\n" + "=".repeat(80));

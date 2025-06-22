@@ -434,12 +434,14 @@ class UnifiedAuditLogger {
         userEmail?: string;
         sessionId?: string;
       } = {};
-      
+
       if (userId) result.userId = userId;
-      if (hasuraClaims?.["x-hasura-role"]) result.userRole = hasuraClaims["x-hasura-role"];
-      if (sessionClaims?.email) result.userEmail = sessionClaims.email as string;
+      if (hasuraClaims?.["x-hasura-role"])
+        result.userRole = hasuraClaims["x-hasura-role"];
+      if (sessionClaims?.email)
+        result.userEmail = sessionClaims.email as string;
       if (sessionClaims?.sid) result.sessionId = sessionClaims.sid;
-      
+
       return result;
     } catch (error) {
       console.error("Failed to get user context:", error);

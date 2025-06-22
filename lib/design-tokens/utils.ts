@@ -3,8 +3,8 @@
  * Helper functions for using design tokens in components
  */
 
-import { cn } from '@/lib/utils';
-import { tokens } from './tokens';
+import { tokens } from "./tokens";
+import { cn } from "@/lib/utils";
 
 // Re-export cn for convenience
 export { cn };
@@ -13,17 +13,17 @@ export { cn };
  * Get a colour value from the design tokens
  */
 export function getColour(path: string): string {
-  const keys = path.split('.');
+  const keys = path.split(".");
   let value: any = tokens.colours;
-  
+
   for (const key of keys) {
     value = value[key];
     if (!value) {
       console.warn(`Colour token not found: ${path}`);
-      return '';
+      return "";
     }
   }
-  
+
   return value;
 }
 
@@ -34,7 +34,7 @@ export function getSpacing(key: string | number): string {
   const value = tokens.spacing[key as keyof typeof tokens.spacing];
   if (!value) {
     console.warn(`Spacing token not found: ${key}`);
-    return '0';
+    return "0";
   }
   return value;
 }
@@ -43,7 +43,8 @@ export function getSpacing(key: string | number): string {
  * Get a font size from the design tokens
  */
 export function getFontSize(key: string): string {
-  const value = tokens.typography.fontSize[key as keyof typeof tokens.typography.fontSize];
+  const value =
+    tokens.typography.fontSize[key as keyof typeof tokens.typography.fontSize];
   if (!value) {
     console.warn(`Font size token not found: ${key}`);
     return tokens.typography.fontSize.base;
@@ -85,7 +86,7 @@ export function getBorderRadius(key: string): string {
 export function meetsContrastRequirements(
   foreground: string,
   background: string,
-  level: 'AA' | 'AAA' = 'AA'
+  level: "AA" | "AAA" = "AA"
 ): boolean {
   // This is a simplified check - in production, use a proper contrast calculation library
   // For now, we trust our predefined colour combinations meet WCAG standards
@@ -104,20 +105,30 @@ export function responsive(
   xxl?: string
 ): string {
   const classes = [base];
-  
-  if (sm) {classes.push(`sm:${sm}`);}
-  if (md) {classes.push(`md:${md}`);}
-  if (lg) {classes.push(`lg:${lg}`);}
-  if (xl) {classes.push(`xl:${xl}`);}
-  if (xxl) {classes.push(`2xl:${xxl}`);}
-  
-  return classes.join(' ');
+
+  if (sm) {
+    classes.push(`sm:${sm}`);
+  }
+  if (md) {
+    classes.push(`md:${md}`);
+  }
+  if (lg) {
+    classes.push(`lg:${lg}`);
+  }
+  if (xl) {
+    classes.push(`xl:${xl}`);
+  }
+  if (xxl) {
+    classes.push(`2xl:${xxl}`);
+  }
+
+  return classes.join(" ");
 }
 
 /**
  * Generate focus-visible classes for accessibility
  */
-export function focusRing(colour: string = 'primary'): string {
+export function focusRing(colour: string = "primary"): string {
   return `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-${colour} focus-visible:ring-offset-2 focus-visible:ring-offset-background`;
 }
 
@@ -125,10 +136,10 @@ export function focusRing(colour: string = 'primary'): string {
  * Generate transition classes with reduced motion support
  */
 export function transition(
-  properties: string[] = ['all'],
+  properties: string[] = ["all"],
   duration: keyof typeof tokens.transitions.duration = 200,
-  timing: keyof typeof tokens.transitions.timing = 'inOut'
+  timing: keyof typeof tokens.transitions.timing = "inOut"
 ): string {
-  const transitionProps = properties.join(', ');
+  const transitionProps = properties.join(", ");
   return `transition-[${transitionProps}] duration-${duration} ${timing} motion-reduce:transition-none`;
 }

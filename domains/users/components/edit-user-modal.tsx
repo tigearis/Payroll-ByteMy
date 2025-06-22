@@ -100,7 +100,9 @@ export function EditUserModal({
   const selectedRole = form.watch("role");
 
   const handleSubmit = async (data: EditUserFormData) => {
-    if (!user) {return;}
+    if (!user) {
+      return;
+    }
 
     if (!permissions?.canManageUsers) {
       toast.error("You don't have permission to edit users");
@@ -136,7 +138,9 @@ export function EditUserModal({
   };
 
   const handleClose = () => {
-    if (isSubmitting) {return;}
+    if (isSubmitting) {
+      return;
+    }
     onClose();
   };
 
@@ -162,9 +166,11 @@ export function EditUserModal({
       label: "Developer",
       description: "Full system access and development",
     },
-  ].filter((role) => canAssignRole(role.value));
+  ].filter(role => canAssignRole(role.value));
 
-  if (!user) {return null;}
+  if (!user) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -245,7 +251,7 @@ export function EditUserModal({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {roleOptions.map((role) => (
+                        {roleOptions.map(role => (
                           <SelectItem key={role.value} value={role.value}>
                             <div className="flex flex-col">
                               <span className="font-medium">{role.label}</span>
@@ -284,7 +290,7 @@ export function EditUserModal({
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="">No manager assigned</SelectItem>
-                          {managers.map((manager) => (
+                          {managers.map(manager => (
                             <SelectItem key={manager.id} value={manager.id}>
                               <div className="flex flex-col">
                                 <span className="font-medium">

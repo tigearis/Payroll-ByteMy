@@ -41,7 +41,7 @@ function searchFiles(dir, pattern) {
     return result
       .trim()
       .split("\n")
-      .filter((line) => line.length > 0);
+      .filter(line => line.length > 0);
   } catch (error) {
     // grep returns exit code 1 if no matches found
     if (error.status === 1) {
@@ -60,7 +60,7 @@ function generateReplacementGuidance(matches, pattern) {
   }
 
   const fileMatches = {};
-  matches.forEach((match) => {
+  matches.forEach(match => {
     const [filePath, ...rest] = match.split(":");
     if (!fileMatches[filePath]) {
       fileMatches[filePath] = [];
@@ -72,7 +72,7 @@ function generateReplacementGuidance(matches, pattern) {
   for (const [filePath, lines] of Object.entries(fileMatches)) {
     guidance += `\n\nFile: ${filePath}\n`;
     guidance += `Replace "${pattern}" with "${replacement}"\n`;
-    guidance += `Lines:\n${lines.map((line) => `  ${line.trim()}`).join("\n")}`;
+    guidance += `Lines:\n${lines.map(line => `  ${line.trim()}`).join("\n")}`;
   }
 
   return guidance;
@@ -126,9 +126,9 @@ let totalMatches = 0;
 const matchesByPattern = {};
 
 // Search for each legacy pattern
-LEGACY_PATTERNS.forEach((pattern) => {
+LEGACY_PATTERNS.forEach(pattern => {
   let patternMatches = [];
-  SEARCH_DIRS.forEach((dir) => {
+  SEARCH_DIRS.forEach(dir => {
     const matches = searchFiles(dir, pattern);
     patternMatches = [...patternMatches, ...matches];
   });
@@ -160,7 +160,7 @@ if (totalMatches === 0) {
   console.log("\n⚠️  Would you like to perform automatic replacements? (y/n)");
   process.stdout.write("> ");
 
-  process.stdin.once("data", (data) => {
+  process.stdin.once("data", data => {
     const input = data.toString().trim().toLowerCase();
     if (input === "y" || input === "yes") {
       console.log("\n🔄 Performing automatic replacements...");

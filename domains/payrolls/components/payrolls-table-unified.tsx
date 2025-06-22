@@ -15,7 +15,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { UnifiedDataTable, DataTableColumn, DataTableAction, StatusConfig, createCellRenderers } from "@/components/ui/unified-data-table";
+import {
+  UnifiedDataTable,
+  DataTableColumn,
+  DataTableAction,
+  StatusConfig,
+  createCellRenderers,
+} from "@/components/ui/unified-data-table";
 
 // Payroll data type (based on existing payroll structure)
 interface Payroll {
@@ -92,7 +98,6 @@ export function PayrollsTableUnified({
   sortDirection,
   onSort,
 }: PayrollsTableProps) {
-  
   // Create cell renderers with status config
   const cellRenderers = createCellRenderers<Payroll>(payrollStatusConfig);
 
@@ -104,7 +109,10 @@ export function PayrollsTableUnified({
       sortable: true,
       defaultVisible: true,
       cellRenderer: (value, row) => (
-        <Link href={`/payrolls/${row.id}`} className="font-medium text-blue-600 hover:underline">
+        <Link
+          href={`/payrolls/${row.id}`}
+          className="font-medium text-blue-600 hover:underline"
+        >
           {value}
         </Link>
       ),
@@ -114,36 +122,40 @@ export function PayrollsTableUnified({
       label: "Status",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (value) => cellRenderers.badge(value),
+      cellRenderer: value => cellRenderers.badge(value),
     },
     {
       key: "client",
       label: "Client",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (client) => client?.name || "—",
+      cellRenderer: client => client?.name || "—",
     },
     {
       key: "primary_consultant_user",
       label: "Primary Consultant",
       sortable: false,
       defaultVisible: true,
-      cellRenderer: (consultant) => 
-        consultant ? cellRenderers.avatar({
-          name: consultant.name,
-          email: consultant.email,
-        }) : "—",
+      cellRenderer: consultant =>
+        consultant
+          ? cellRenderers.avatar({
+              name: consultant.name,
+              email: consultant.email,
+            })
+          : "—",
     },
     {
       key: "manager_user",
       label: "Manager",
       sortable: false,
       defaultVisible: true,
-      cellRenderer: (manager) => 
-        manager ? cellRenderers.avatar({
-          name: manager.name,
-          email: manager.email,
-        }) : "—",
+      cellRenderer: manager =>
+        manager
+          ? cellRenderers.avatar({
+              name: manager.name,
+              email: manager.email,
+            })
+          : "—",
     },
     {
       key: "employee_count",
@@ -151,7 +163,8 @@ export function PayrollsTableUnified({
       sortable: true,
       defaultVisible: true,
       align: "center",
-      cellRenderer: (count) => count ? cellRenderers.count(count, "employee") : "—",
+      cellRenderer: count =>
+        count ? cellRenderers.count(count, "employee") : "—",
     },
     {
       key: "processing_days_before_eft",
@@ -159,28 +172,29 @@ export function PayrollsTableUnified({
       sortable: true,
       defaultVisible: false,
       align: "center",
-      cellRenderer: (days) => days ? cellRenderers.count(days, "day") : "—",
+      cellRenderer: days => (days ? cellRenderers.count(days, "day") : "—"),
     },
     {
       key: "payroll_system",
       label: "System",
       sortable: true,
       defaultVisible: false,
-      cellRenderer: (system) => cellRenderers.iconText(system || "Not Set", Calculator),
+      cellRenderer: system =>
+        cellRenderers.iconText(system || "Not Set", Calculator),
     },
     {
       key: "go_live_date",
       label: "Go Live Date",
       sortable: true,
       defaultVisible: false,
-      cellRenderer: (date) => date ? cellRenderers.simpleDate(date) : "—",
+      cellRenderer: date => (date ? cellRenderers.simpleDate(date) : "—"),
     },
     {
       key: "updated_at",
       label: "Last Updated",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: (date) => cellRenderers.date(date),
+      cellRenderer: date => cellRenderers.date(date),
     },
   ];
 
@@ -189,14 +203,14 @@ export function PayrollsTableUnified({
     {
       label: "View Details",
       icon: Eye,
-      onClick: (payroll) => {
+      onClick: payroll => {
         window.location.href = `/payrolls/${payroll.id}`;
       },
     },
     {
       label: "Edit Payroll",
       icon: Edit,
-      onClick: (payroll) => {
+      onClick: payroll => {
         // Handle edit action
         console.log("Edit payroll:", payroll.id);
       },
@@ -204,14 +218,14 @@ export function PayrollsTableUnified({
     {
       label: "View Dates",
       icon: CalendarDays,
-      onClick: (payroll) => {
+      onClick: payroll => {
         window.location.href = `/payroll-dates/${payroll.id}`;
       },
     },
     {
       label: "Assign Consultant",
       icon: UserCheck,
-      onClick: (payroll) => {
+      onClick: payroll => {
         // Handle assign consultant
         console.log("Assign consultant to:", payroll.id);
       },
@@ -220,7 +234,7 @@ export function PayrollsTableUnified({
     {
       label: "Duplicate Payroll",
       icon: Copy,
-      onClick: (payroll) => {
+      onClick: payroll => {
         // Handle duplicate
         console.log("Duplicate payroll:", payroll.id);
       },
@@ -245,8 +259,8 @@ export function PayrollsTableUnified({
       statusConfig={payrollStatusConfig}
       title="Payrolls"
       onRefresh={onRefresh || (() => {})}
-      getRowId={(payroll) => payroll.id}
-      getRowLink={(payroll) => `/payrolls/${payroll.id}`}
+      getRowId={payroll => payroll.id}
+      getRowLink={payroll => `/payrolls/${payroll.id}`}
     />
   );
 }

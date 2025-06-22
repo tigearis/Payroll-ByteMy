@@ -231,82 +231,84 @@ function getAccessControlDescription(level: string): string {
 // Generate security-classified domain configurations with automatic export management
 const generatePerDomain = domains
   .filter(
-    (domain) =>
-      domainHasValidOperations(domain.name) && domain.name !== "shared"
+    domain => domainHasValidOperations(domain.name) && domain.name !== "shared"
   )
-  .reduce((acc, domain) => {
-    const base = `./domains/${domain.name}/graphql`;
-    const outputDir = `./domains/${domain.name}/graphql/generated/`;
+  .reduce(
+    (acc, domain) => {
+      const base = `./domains/${domain.name}/graphql`;
+      const outputDir = `./domains/${domain.name}/graphql/generated/`;
 
-    // Check which GraphQL files actually have content
-    const graphqlFiles = [
-      `${base}/fragments.graphql`,
-      `${base}/queries.graphql`,
-      `${base}/mutations.graphql`,
-      `${base}/subscriptions.graphql`,
-    ];
+      // Check which GraphQL files actually have content
+      const graphqlFiles = [
+        `${base}/fragments.graphql`,
+        `${base}/queries.graphql`,
+        `${base}/mutations.graphql`,
+        `${base}/subscriptions.graphql`,
+      ];
 
-    const validFiles = graphqlFiles.filter(hasGraphQLContent);
+      const validFiles = graphqlFiles.filter(hasGraphQLContent);
 
-    if (validFiles.length === 0) return acc;
+      if (validFiles.length === 0) return acc;
 
-    // Add security classification header based on domain level
-    const securityHeader = [
-      generateSOC2Header(),
-      "/* ",
-      ` * DOMAIN: ${domain.name.toUpperCase()}`,
-      ` * SECURITY LEVEL: ${domain.securityLevel}`,
-      ` * ACCESS CONTROLS: ${getAccessControlDescription(
-        domain.securityLevel
-      )}`,
-      " * AUTO-EXPORTED: This file is automatically exported from domain index",
-      " */",
-      "",
-      "",
-    ].join("\n");
+      // Add security classification header based on domain level
+      const securityHeader = [
+        generateSOC2Header(),
+        "/* ",
+        ` * DOMAIN: ${domain.name.toUpperCase()}`,
+        ` * SECURITY LEVEL: ${domain.securityLevel}`,
+        ` * ACCESS CONTROLS: ${getAccessControlDescription(
+          domain.securityLevel
+        )}`,
+        " * AUTO-EXPORTED: This file is automatically exported from domain index",
+        " */",
+        "",
+        "",
+      ].join("\n");
 
-    // Generate TypeScript files with hooks for each domain
-    acc[outputDir] = {
-      documents: validFiles,
-      preset: "client",
-      plugins: [
-        {
-          add: {
-            content: securityHeader,
+      // Generate TypeScript files with hooks for each domain
+      acc[outputDir] = {
+        documents: validFiles,
+        preset: "client",
+        plugins: [
+          {
+            add: {
+              content: securityHeader,
+            },
           },
+        ],
+        config: {
+          ...sharedConfig,
+          // Domain-specific metadata for runtime security
+          domainName: domain.name,
+          securityLevel: domain.securityLevel,
         },
-      ],
-      config: {
-        ...sharedConfig,
-        // Domain-specific metadata for runtime security
-        domainName: domain.name,
-        securityLevel: domain.securityLevel,
-      },
-    };
+      };
 
-    // Generate domain index file for clean exports
-    acc[`./domains/${domain.name}/index.ts`] = {
-      plugins: [
-        {
-          add: {
-            content: [
-              securityHeader,
-              "// Auto-generated domain exports - isolated to prevent conflicts",
-              "",
-              "// Export domain-specific GraphQL operations and types",
-              "export * from './graphql/generated/graphql';",
-              "",
-              "// Note: Fragment masking and gql utilities are exported from shared/types/generated",
-              "// Import those directly when needed to avoid conflicts",
-              "",
-            ].join("\n"),
+      // Generate domain index file for clean exports
+      acc[`./domains/${domain.name}/index.ts`] = {
+        plugins: [
+          {
+            add: {
+              content: [
+                securityHeader,
+                "// Auto-generated domain exports - isolated to prevent conflicts",
+                "",
+                "// Export domain-specific GraphQL operations and types",
+                "export * from './graphql/generated/graphql';",
+                "",
+                "// Note: Fragment masking and gql utilities are exported from shared/types/generated",
+                "// Import those directly when needed to avoid conflicts",
+                "",
+              ].join("\n"),
+            },
           },
-        },
-      ],
-    };
+        ],
+      };
 
-    return acc;
-  }, {} as CodegenConfig["generates"]);
+      return acc;
+    },
+    {} as CodegenConfig["generates"]
+  );
 
 const config: CodegenConfig = {
   overwrite: true,
@@ -432,7 +434,7 @@ const config: CodegenConfig = {
               {
                 generatedAt: new Date().toISOString(),
                 codegenVersion: "unified-v2.0",
-                domains: domains.map((d) => ({
+                domains: domains.map(d => ({
                   name: d.name,
                   securityLevel: d.securityLevel,
                   hasOperations: domainHasValidOperations(d.name),

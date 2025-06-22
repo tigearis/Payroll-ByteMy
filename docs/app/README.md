@@ -15,11 +15,13 @@ The `/app` directory implements Next.js 15 App Router architecture with enterpri
 ## Authentication & Authorization
 
 ### Route Protection
+
 - All routes under `(dashboard)` require authentication via `middleware.ts`
 - JWT tokens automatically injected via Clerk's Hasura template
 - Role-based access control enforced at route and component levels
 
 ### Security Headers
+
 - CSP (Content Security Policy) configured in `next.config.js`
 - HSTS, X-Frame-Options, and other security headers enabled
 - CSRF protection on all state-changing operations
@@ -52,10 +54,11 @@ The `/app` directory implements Next.js 15 App Router architecture with enterpri
 ## Key Files Analysis
 
 ### `/app/layout.tsx`
+
 - **Purpose**: Root application layout with provider composition
 - **Authentication**: No auth required (handles both authenticated and unauthenticated states)
 - **Business Logic**: Provider setup, font loading, metadata configuration
-- **Data Flow**: 
+- **Data Flow**:
   1. Loads Inter font family
   2. Sets up ClerkProvider with appearance customization
   3. Initializes Apollo GraphQL provider
@@ -64,9 +67,10 @@ The `/app` directory implements Next.js 15 App Router architecture with enterpri
 - **Related Components**: `providers.tsx`, `middleware.ts`
 
 ### `/app/providers.tsx`
+
 - **Purpose**: Provider composition with security guards and global state management
 - **Authentication**: Integrates ClerkProvider with custom authentication context
-- **Business Logic**: 
+- **Business Logic**:
   - User synchronization between Clerk and database
   - Session expiry handling with automatic refresh
   - Global error boundary setup
@@ -79,6 +83,7 @@ The `/app` directory implements Next.js 15 App Router architecture with enterpri
 - **Related Components**: `lib/auth-context.tsx`, `lib/session-expiry-handler.tsx`
 
 ### `/app/middleware.ts`
+
 - **Purpose**: Primary authentication and security middleware
 - **Authentication**: Validates JWT tokens and enforces route protection
 - **Business Logic**:
@@ -99,21 +104,25 @@ The `/app` directory implements Next.js 15 App Router architecture with enterpri
 All API routes follow RESTful conventions with role-based access control:
 
 ### Authentication Endpoints (`/api/auth/`)
+
 - **Purpose**: Authentication utilities and token management
 - **Security**: Public access with rate limiting
 - **Operations**: Token validation, claims extraction, debug endpoints
 
 ### Staff Management (`/api/staff/`)
+
 - **Purpose**: Employee lifecycle management
 - **Security**: Role-based access (manager+ required)
 - **Operations**: Create, update, delete staff members with Clerk integration
 
 ### Payroll Operations (`/api/payrolls/`)
+
 - **Purpose**: Payroll processing and calculation
 - **Security**: Manager+ required, audit logging enabled
 - **Operations**: Payroll creation, calculation, approval workflows
 
 ### Webhook Handlers (`/api/webhooks/`)
+
 - **Purpose**: External system integration
 - **Security**: Signature validation, IP allowlisting
 - **Operations**: Clerk user sync, external payment processing
@@ -121,18 +130,21 @@ All API routes follow RESTful conventions with role-based access control:
 ## Security Implementation
 
 ### Route Protection Strategy
+
 1. **Middleware Layer**: `middleware.ts` validates authentication
 2. **Layout Guards**: Dashboard layout ensures database user exists
 3. **Component Guards**: Individual components enforce specific permissions
 4. **API Guards**: All API routes validate role requirements
 
 ### Audit Logging
+
 - All protected route access logged
 - Failed authentication attempts tracked
 - Business operation audit trail maintained
 - SOC2 compliance logging implemented
 
 ### Error Handling
+
 - Global error boundaries for graceful degradation
 - Security-aware error messages (no sensitive data exposure)
 - Rate limiting on authentication endpoints
@@ -141,6 +153,7 @@ All API routes follow RESTful conventions with role-based access control:
 ## Data Flow Patterns
 
 ### Authentication Flow
+
 1. User accesses protected route
 2. Middleware validates Clerk session
 3. JWT token extracted with Hasura claims
@@ -149,6 +162,7 @@ All API routes follow RESTful conventions with role-based access control:
 6. Audit log entry created
 
 ### Business Operation Flow
+
 1. User interaction in dashboard component
 2. Apollo GraphQL mutation called
 3. JWT token automatically injected
@@ -157,6 +171,7 @@ All API routes follow RESTful conventions with role-based access control:
 6. Real-time UI update via subscriptions
 
 ## Related Documentation
+
 - [Components README](../components/README.md) - UI component architecture
 - [API Documentation](../pages/api/README.md) - Detailed API endpoint docs
 - [Authentication Guide](../lib/README.md) - Authentication implementation details

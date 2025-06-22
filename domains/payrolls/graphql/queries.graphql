@@ -147,9 +147,7 @@ query GetPayrollFamilyDates($payrollId: uuid!) {
 }
 
 query GetPayrollsMissingDates {
-  payrolls(
-    where: { supersededDate: { _is_null: true } }
-  ) {
+  payrolls(where: { supersededDate: { _is_null: true } }) {
     id
     name
     status

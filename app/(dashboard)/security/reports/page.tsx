@@ -104,9 +104,8 @@ export default function ComplianceReportsPage() {
 
   // Process data for charts
   const totalOperations = data?.audit_metrics?.aggregate?.count || 0;
-  const failedOperations = data?.audit_metrics?.nodes?.filter(
-    (n: any) => !n.success
-  ).length || 0;
+  const failedOperations =
+    data?.audit_metrics?.nodes?.filter((n: any) => !n.success).length || 0;
   const successRate = (
     ((totalOperations - failedOperations) / totalOperations) *
     100
@@ -121,14 +120,12 @@ export default function ComplianceReportsPage() {
   ).map(([name, value]) => ({ name, value }));
 
   // Daily activity trend
-  const dailyActivity = data?.audit_metrics?.nodes?.reduce(
-    (acc: any, node: any) => {
+  const dailyActivity =
+    data?.audit_metrics?.nodes?.reduce((acc: any, node: any) => {
       const date = format(new Date(node.created_at), "MMM dd");
       acc[date] = (acc[date] || 0) + 1;
       return acc;
-    },
-    {}
-  ) || {};
+    }, {}) || {};
 
   const activityTrend = Object.entries(dailyActivity).map(([date, count]) => ({
     date,
@@ -136,13 +133,11 @@ export default function ComplianceReportsPage() {
   }));
 
   // Security events by severity
-  const securityEventsBySeverity = data?.failed_by_type?.reduce(
-    (acc: any, event: any) => {
+  const securityEventsBySeverity =
+    data?.failed_by_type?.reduce((acc: any, event: any) => {
       acc[event.action] = (acc[event.action] || 0) + 1;
       return acc;
-    },
-    {}
-  ) || {};
+    }, {}) || {};
 
   const handleExport = (format: string) => {
     // In production, this would call an API endpoint to generate the report
@@ -230,24 +225,23 @@ export default function ComplianceReportsPage() {
                 <span className="text-3xl font-bold">
                   {data?.failed_by_type?.length || 0}
                 </span>
-                {(data?.failed_by_type?.length || 0) > 0 && (data?.failed_by_type?.filter(
-                  (e: any) => !e.resolved
-                ).length || 0) > 0 && (
-                  <Badge variant="destructive">
-                    {
-                      data?.failed_by_type?.filter(
-                        (e: any) => !e.resolved
-                      ).length || 0
-                    }{" "}
-                    Open
-                  </Badge>
-                )}
+                {(data?.failed_by_type?.length || 0) > 0 &&
+                  (data?.failed_by_type?.filter((e: any) => !e.resolved)
+                    .length || 0) > 0 && (
+                    <Badge variant="destructive">
+                      {data?.failed_by_type?.filter((e: any) => !e.resolved)
+                        .length || 0}{" "}
+                      Open
+                    </Badge>
+                  )}
               </div>
             </div>
 
             <div className="space-y-2">
               <p className="text-sm font-medium">Active Users</p>
-              <p className="text-3xl font-bold">{data?.user_activity?.length || 0}</p>
+              <p className="text-3xl font-bold">
+                {data?.user_activity?.length || 0}
+              </p>
             </div>
           </div>
         </CardContent>
@@ -343,8 +337,8 @@ export default function ComplianceReportsPage() {
                           check.success === true
                             ? "default"
                             : check.success === false
-                            ? "destructive"
-                            : "secondary"
+                              ? "destructive"
+                              : "secondary"
                         }
                       >
                         {check.success ? "PASSED" : "FAILED"}
@@ -406,8 +400,8 @@ export default function ComplianceReportsPage() {
                 <div className="space-y-1">
                   <p className="font-medium">Security Events</p>
                   <p className="text-sm text-muted-foreground">
-                    {data?.failed_by_type?.length || 0} security events
-                    were logged.
+                    {data?.failed_by_type?.length || 0} security events were
+                    logged.
                     {Object.entries(securityEventsBySeverity).map(
                       ([severity, count]) => (
                         <span key={severity}>
@@ -430,9 +424,9 @@ export default function ComplianceReportsPage() {
               <div className="space-y-1">
                 <p className="font-medium">Data Access Controls</p>
                 <p className="text-sm text-muted-foreground">
-                  {data?.data_access_stats?.nodes?.length || 0}{" "}
-                  records were accessed. All access was logged and classified
-                  according to sensitivity levels.
+                  {data?.data_access_stats?.nodes?.length || 0} records were
+                  accessed. All access was logged and classified according to
+                  sensitivity levels.
                 </p>
               </div>
             </div>

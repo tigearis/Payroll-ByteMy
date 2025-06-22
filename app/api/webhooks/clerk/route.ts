@@ -7,7 +7,6 @@ import { UpdateUserRoleFromClerkDocument } from "@/domains/users/graphql/generat
 import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 
-
 // Verify webhook signature for security
 async function verifyWebhook(
   request: NextRequest
@@ -106,13 +105,14 @@ export async function POST(req: NextRequest) {
       case "user.created":
         console.log("👤 New user created:", id);
 
-        // For OAuth users, assign Admin role automatically  
+        // For OAuth users, assign Admin role automatically
         const hasOAuthProvider =
           external_accounts && external_accounts.length > 0;
-        
+
         // Check if role is in invitation metadata first, then default
         const invitationRole = evt.data.public_metadata?.role;
-        const defaultRole = invitationRole || (hasOAuthProvider ? "org_admin" : "viewer");
+        const defaultRole =
+          invitationRole || (hasOAuthProvider ? "org_admin" : "viewer");
 
         await syncUserWithDatabase(
           id,
@@ -145,7 +145,10 @@ export async function POST(req: NextRequest) {
               },
             });
 
-            if (updateResult?.updateUsers?.affected_rows && updateResult.updateUsers.affected_rows > 0) {
+            if (
+              updateResult?.updateUsers?.affected_rows &&
+              updateResult.updateUsers.affected_rows > 0
+            ) {
               console.log(`✅ Database role synced from Clerk: ${updatedRole}`);
             } else {
               console.log(`ℹ️ No database user found for Clerk ID: ${id}`);
@@ -191,7 +194,7 @@ export async function POST(req: NextRequest) {
       status: error.status,
       statusText: error.statusText,
       webhookEventType: eventType,
-      clerkUserId: id
+      clerkUserId: id,
     });
     return new Response("Error processing webhook", { status: 500 });
   }

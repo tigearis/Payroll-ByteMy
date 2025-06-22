@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { toast } from "sonner";
 
-// Import extracted GraphQL operations 
+// Import extracted GraphQL operations
 const CREATE_PAYROLL_MUTATION = gql`
   mutation CreatePayrollExtracted(
     $name: String!
@@ -33,10 +33,14 @@ const CREATE_PAYROLL_MUTATION = gql`
 
 // Import extracted GraphQL operations - simplified version that works with current schema
 const GENERATE_TWO_YEARS_DATES_QUERY = gql`
-  mutation GeneratePayrollDatesExtracted($payrollId: uuid!, $startDate: date!, $endDate: date!) {
+  mutation GeneratePayrollDatesExtracted(
+    $payrollId: uuid!
+    $startDate: date!
+    $endDate: date!
+  ) {
     generate_payroll_dates(
-      p_payroll_id: $payrollId, 
-      p_start_date: $startDate, 
+      p_payroll_id: $payrollId
+      p_start_date: $startDate
       p_end_date: $endDate
     ) {
       id

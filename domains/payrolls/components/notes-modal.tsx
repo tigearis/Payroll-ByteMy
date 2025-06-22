@@ -31,11 +31,7 @@ interface NotesModalProps {
   trigger?: React.ReactNode;
 }
 
-export function NotesModal({
-  note,
-  refetchNotes,
-  trigger,
-}: NotesModalProps) {
+export function NotesModal({ note, refetchNotes, trigger }: NotesModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [notes, setNotes] = useState(note.content || "");
   const [isUpdating, setIsUpdating] = useState(false);
@@ -47,7 +43,7 @@ export function NotesModal({
       toast.success("Notes updated successfully");
       refetchNotes();
     },
-    onError: (error) => {
+    onError: error => {
       console.error("Error updating notes:", error);
       setIsUpdating(false);
       toast.error(`Failed to update notes: ${error.message}`);
@@ -98,7 +94,7 @@ export function NotesModal({
               id="notes"
               placeholder="Enter notes about this payroll date..."
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={e => setNotes(e.target.value)}
               rows={4}
               className="resize-none"
             />

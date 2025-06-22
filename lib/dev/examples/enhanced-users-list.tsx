@@ -5,12 +5,7 @@ import { RefreshCcw, User } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isAuthError } from "@/lib/utils/handle-graphql-error";
 
 // Import extracted GraphQL operations
@@ -40,7 +35,7 @@ export function EnhancedUsersList() {
   const { loading, error, data, refetch } = useQuery(GET_USERS, {
     variables: { limit: 10 },
     notifyOnNetworkStatusChange: true,
-    onError: (err) => {
+    onError: err => {
       console.error("Query error:", err);
 
       // Check if it's an auth error using the helper
@@ -126,7 +121,7 @@ export function EnhancedUsersList() {
           </p>
         ) : (
           <div className="space-y-2">
-            {users.map((user) => (
+            {users.map(user => (
               <div
                 key={user.id}
                 className="flex items-center justify-between p-3 border rounded-lg"

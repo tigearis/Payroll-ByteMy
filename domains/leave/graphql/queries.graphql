@@ -22,11 +22,7 @@ query GetLeaveRequestById($id: uuid!) {
   }
 }
 
-query GetLeaveRequestsByUser(
-  $userId: uuid!
-  $startDate: date
-  $endDate: date
-) {
+query GetLeaveRequestsByUser($userId: uuid!, $startDate: date, $endDate: date) {
   leaves(
     where: {
       _and: [
@@ -55,11 +51,7 @@ query GetPendingLeaveRequests($managerId: uuid) {
   }
 }
 
-query GetLeaveOverlaps(
-  $startDate: date!
-  $endDate: date!
-  $excludeId: uuid
-) {
+query GetLeaveOverlaps($startDate: date!, $endDate: date!, $excludeId: uuid) {
   leaves(
     where: {
       _and: [
@@ -74,11 +66,7 @@ query GetLeaveOverlaps(
   }
 }
 
-query GetLeaveCalendar(
-  $startDate: date!
-  $endDate: date!
-  $userIds: [uuid!]
-) {
+query GetLeaveCalendar($startDate: date!, $endDate: date!, $userIds: [uuid!]) {
   leaves(
     where: {
       _and: [

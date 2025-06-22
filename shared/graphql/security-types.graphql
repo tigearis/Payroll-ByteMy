@@ -10,19 +10,19 @@ enum DataClassification {
   Requires: Admin role + MFA + Full audit trail
   """
   CRITICAL
-  
+
   """
   High security - PII, employee data, financial information
   Requires: Audit trail + Encryption at rest
   """
   HIGH
-  
+
   """
   Medium security - Work schedules, general notes
   Requires: Role-based access control
   """
   MEDIUM
-  
+
   """
   Low security - Public holidays, system configurations
   Standard access controls

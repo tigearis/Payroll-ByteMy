@@ -57,6 +57,7 @@ interface DomainExtension extends SystemExtension {
 ### Creating Custom Domains
 
 #### 1. Domain Structure
+
 ```
 domains/
 └── custom-domain/
@@ -78,33 +79,34 @@ domains/
 ```
 
 #### 2. Domain Registration
+
 ```typescript
 // domains/custom-domain/index.ts
-import { DomainExtension } from '@/shared/types/extensions';
+import { DomainExtension } from "@/shared/types/extensions";
 
 export const CustomDomainExtension: DomainExtension = {
-  name: 'custom-domain',
-  version: '1.0.0',
-  domain: 'custom',
-  
+  name: "custom-domain",
+  version: "1.0.0",
+  domain: "custom",
+
   async install() {
     // Register GraphQL operations
-    await registerGraphQLOperations('./graphql/**/*.graphql');
-    
+    await registerGraphQLOperations("./graphql/**/*.graphql");
+
     // Register API routes
-    await registerApiRoutes('./api/**/*.ts');
-    
+    await registerApiRoutes("./api/**/*.ts");
+
     // Register components
     await registerComponents({
-      'CustomList': () => import('./components/custom-list'),
-      'CustomForm': () => import('./components/custom-form'),
+      CustomList: () => import("./components/custom-list"),
+      CustomForm: () => import("./components/custom-form"),
     });
   },
-  
+
   configure(config) {
     // Domain-specific configuration
     this.config = config;
-  }
+  },
 };
 
 // Register domain
@@ -112,6 +114,7 @@ registerDomain(CustomDomainExtension);
 ```
 
 #### 3. GraphQL Schema Extension
+
 ```graphql
 # domains/custom-domain/graphql/schema.graphql
 extend type Query {
@@ -153,12 +156,13 @@ input CreateCustomEntityInput {
 ### Custom Role Types
 
 #### 1. Extending Role System
+
 ```typescript
 // types/auth-extensions.ts
 export enum CustomRole {
-  CUSTOM_ADMIN = 'custom_admin',
-  CUSTOM_USER = 'custom_user',
-  EXTERNAL_AUDITOR = 'external_auditor',
+  CUSTOM_ADMIN = "custom_admin",
+  CUSTOM_USER = "custom_user",
+  EXTERNAL_AUDITOR = "external_auditor",
 }
 
 // Extend base role hierarchy
@@ -171,19 +175,20 @@ export const EXTENDED_ROLE_HIERARCHY = {
 ```
 
 #### 2. Custom Permission System
+
 ```typescript
 // lib/auth/custom-permissions.ts
 export const CUSTOM_PERMISSIONS = {
   CUSTOM_ENTITY: {
-    CREATE: 'custom_entity:create',
-    READ: 'custom_entity:read',
-    UPDATE: 'custom_entity:update',
-    DELETE: 'custom_entity:delete',
-    AUDIT: 'custom_entity:audit',
+    CREATE: "custom_entity:create",
+    READ: "custom_entity:read",
+    UPDATE: "custom_entity:update",
+    DELETE: "custom_entity:delete",
+    AUDIT: "custom_entity:audit",
   },
   EXTERNAL_AUDIT: {
-    READ_ALL: 'external_audit:read_all',
-    EXPORT_DATA: 'external_audit:export_data',
+    READ_ALL: "external_audit:read_all",
+    EXPORT_DATA: "external_audit:export_data",
   },
 } as const;
 
@@ -193,27 +198,28 @@ export class CustomPermissionChecker extends BasePermissionChecker {
     if (!this.hasPermission(CUSTOM_PERMISSIONS.CUSTOM_ENTITY[action])) {
       return false;
     }
-    
+
     // Additional business logic
-    if (entityId && action === 'DELETE') {
+    if (entityId && action === "DELETE") {
       return this.hasRole(CustomRole.CUSTOM_ADMIN);
     }
-    
+
     return true;
   }
 }
 ```
 
 #### 3. Custom Authentication Flow
+
 ```typescript
 // lib/auth/custom-auth-flow.ts
 export class CustomAuthFlow {
   async authenticateExternalUser(token: string): Promise<User | null> {
     // Custom authentication logic for external systems
     const externalUser = await validateExternalToken(token);
-    
+
     if (!externalUser) return null;
-    
+
     // Map external user to internal user
     return {
       id: `ext_${externalUser.id}`,
@@ -235,6 +241,7 @@ export class CustomAuthFlow {
 ### Component Extension System
 
 #### 1. Base Component Extension
+
 ```typescript
 // components/extensions/base-extension.tsx
 export interface ComponentExtension<T = any> {
@@ -250,20 +257,21 @@ export function createComponentExtension<T>(
   extension: ComponentExtension<T>
 ): React.FC<T> {
   return function ExtendedComponent(props: T) {
-    const baseComponent = extension.extends 
+    const baseComponent = extension.extends
       ? getBaseComponent(extension.extends)
       : null;
-    
+
     if (baseComponent && extension.render) {
       return extension.render(props);
     }
-    
+
     return baseComponent ? baseComponent(props) : null;
   };
 }
 ```
 
 #### 2. Custom Dashboard Widget
+
 ```typescript
 // components/dashboard/custom-widget.tsx
 import { DashboardWidget } from '@/components/dashboard/base-widget';
@@ -280,16 +288,16 @@ export const CustomWidget: React.FC<CustomWidgetProps> = ({
   refreshInterval = 30000,
 }) => {
   const [customData, setCustomData] = useState(data);
-  
+
   useEffect(() => {
     const interval = setInterval(async () => {
       const freshData = await fetchCustomData();
       setCustomData(freshData);
     }, refreshInterval);
-    
+
     return () => clearInterval(interval);
   }, [refreshInterval]);
-  
+
   return (
     <DashboardWidget title={title}>
       <div className="custom-widget">
@@ -309,6 +317,7 @@ registerDashboardWidget('custom-widget', CustomWidget, {
 ```
 
 #### 3. Custom Form Components
+
 ```typescript
 // components/forms/custom-form-fields.tsx
 export const CustomFormFields = {
@@ -321,11 +330,11 @@ export const CustomFormFields = {
       {...props}
     />
   ),
-  
+
   // Custom consultant selector with workload indication
   ConsultantSelector: ({ value, onChange, showWorkload = true }) => {
     const { consultants, workload } = useConsultantsWithWorkload();
-    
+
     return (
       <Select value={value} onValueChange={onChange}>
         {consultants.map(consultant => (
@@ -343,18 +352,18 @@ export const CustomFormFields = {
       </Select>
     );
   },
-  
+
   // Custom frequency selector with preview
   FrequencySelector: ({ value, onChange, previewDates = true }) => {
     const [preview, setPreview] = useState<Date[]>([]);
-    
+
     useEffect(() => {
       if (previewDates && value) {
         const dates = generatePreviewDates(value);
         setPreview(dates.slice(0, 5)); // Show first 5 dates
       }
     }, [value, previewDates]);
-    
+
     return (
       <div>
         <Select value={value} onValueChange={onChange}>
@@ -362,7 +371,7 @@ export const CustomFormFields = {
           <SelectItem value="fortnightly">Fortnightly</SelectItem>
           <SelectItem value="monthly">Monthly</SelectItem>
         </Select>
-        
+
         {previewDates && preview.length > 0 && (
           <div className="mt-2 text-sm text-gray-600">
             <strong>Preview dates:</strong>
@@ -387,6 +396,7 @@ export const CustomFormFields = {
 ### Custom Schema Development
 
 #### 1. Schema Extension Pattern
+
 ```typescript
 // graphql/extensions/custom-schema.ts
 export const CustomSchemaExtension = gql`
@@ -394,23 +404,23 @@ export const CustomSchemaExtension = gql`
     customProfile: CustomProfile
     customSettings: CustomSettings
   }
-  
+
   extend type Client {
     customFields: CustomClientFields
     integrations: [Integration!]!
   }
-  
+
   extend type Payroll {
     customConfiguration: CustomPayrollConfig
     complianceSettings: ComplianceSettings
   }
-  
+
   type CustomProfile {
     department: String
     costCenter: String
     customAttributes: JSON
   }
-  
+
   type Integration {
     id: UUID!
     type: IntegrationType!
@@ -418,7 +428,7 @@ export const CustomSchemaExtension = gql`
     config: JSON!
     lastSync: DateTime
   }
-  
+
   enum IntegrationType {
     PAYROLL_SYSTEM
     TIME_TRACKING
@@ -429,6 +439,7 @@ export const CustomSchemaExtension = gql`
 ```
 
 #### 2. Custom Resolvers
+
 ```typescript
 // graphql/resolvers/custom-resolvers.ts
 export const CustomResolvers: Resolvers = {
@@ -437,42 +448,45 @@ export const CustomResolvers: Resolvers = {
       return await context.dataSources.customProfileAPI.getByUserId(user.id);
     },
   },
-  
+
   Client: {
     integrations: async (client, args, context) => {
       return await context.dataSources.integrationAPI.getByClientId(client.id);
     },
   },
-  
+
   Mutation: {
     createCustomEntity: async (_, { input }, context) => {
       // Validate permissions
-      await context.auth.requirePermission(CUSTOM_PERMISSIONS.CUSTOM_ENTITY.CREATE);
-      
+      await context.auth.requirePermission(
+        CUSTOM_PERMISSIONS.CUSTOM_ENTITY.CREATE
+      );
+
       // Business logic
       const entity = await context.dataSources.customEntityAPI.create(input);
-      
+
       // Audit logging
       await context.audit.log({
-        action: 'create_custom_entity',
-        resourceType: 'custom_entity',
+        action: "create_custom_entity",
+        resourceType: "custom_entity",
         resourceId: entity.id,
         newValues: input,
       });
-      
+
       return entity;
     },
-    
+
     syncIntegration: async (_, { integrationId }, context) => {
-      const integration = await context.dataSources.integrationAPI.getById(integrationId);
-      
+      const integration =
+        await context.dataSources.integrationAPI.getById(integrationId);
+
       if (!integration) {
-        throw new Error('Integration not found');
+        throw new Error("Integration not found");
       }
-      
+
       // Custom sync logic based on integration type
       const syncResult = await performIntegrationSync(integration);
-      
+
       return {
         success: syncResult.success,
         message: syncResult.message,
@@ -480,11 +494,13 @@ export const CustomResolvers: Resolvers = {
       };
     },
   },
-  
+
   Subscription: {
     customEntityUpdated: {
       subscribe: (_, args, context) => {
-        return context.pubsub.subscribe(`CUSTOM_ENTITY_UPDATED:${args.entityId}`);
+        return context.pubsub.subscribe(
+          `CUSTOM_ENTITY_UPDATED:${args.entityId}`
+        );
       },
     },
   },
@@ -492,20 +508,21 @@ export const CustomResolvers: Resolvers = {
 ```
 
 #### 3. Custom Data Sources
+
 ```typescript
 // graphql/datasources/custom-entity-api.ts
 export class CustomEntityAPI extends DataSource {
   constructor(private db: DatabaseConnection) {
     super();
   }
-  
+
   async getByUserId(userId: string): Promise<CustomEntity[]> {
     return this.db.customEntity.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
-  
+
   async create(input: CreateCustomEntityInput): Promise<CustomEntity> {
     return this.db.customEntity.create({
       data: {
@@ -516,8 +533,11 @@ export class CustomEntityAPI extends DataSource {
       },
     });
   }
-  
-  async update(id: string, input: UpdateCustomEntityInput): Promise<CustomEntity> {
+
+  async update(
+    id: string,
+    input: UpdateCustomEntityInput
+  ): Promise<CustomEntity> {
     return this.db.customEntity.update({
       where: { id },
       data: {
@@ -536,15 +556,16 @@ export class CustomEntityAPI extends DataSource {
 ### Custom Calculation Engines
 
 #### 1. Tax Calculation Extension
+
 ```typescript
 // lib/calculations/custom-tax-calculator.ts
 export class CustomTaxCalculator extends BaseTaxCalculator {
   calculateCustomTax(income: number, jurisdiction: string): TaxResult {
     const baseResult = super.calculateIncomeTax(income);
-    
+
     // Add custom tax calculations
     const customTax = this.calculateCustomJurisdictionTax(income, jurisdiction);
-    
+
     return {
       ...baseResult,
       customTax: customTax.amount,
@@ -559,26 +580,29 @@ export class CustomTaxCalculator extends BaseTaxCalculator {
       ],
     };
   }
-  
+
   private calculateCustomJurisdictionTax(income: number, jurisdiction: string) {
     const config = this.getCustomTaxConfig(jurisdiction);
-    
+
     if (!config) {
       return { amount: 0, rate: 0 };
     }
-    
+
     // Progressive tax calculation
     let tax = 0;
     let remainingIncome = income;
-    
+
     for (const bracket of config.brackets) {
       if (remainingIncome <= 0) break;
-      
-      const taxableAmount = Math.min(remainingIncome, bracket.limit - bracket.threshold);
+
+      const taxableAmount = Math.min(
+        remainingIncome,
+        bracket.limit - bracket.threshold
+      );
       tax += taxableAmount * bracket.rate;
       remainingIncome -= taxableAmount;
     }
-    
+
     return {
       amount: Math.round(tax * 100) / 100,
       rate: tax / income,
@@ -588,27 +612,28 @@ export class CustomTaxCalculator extends BaseTaxCalculator {
 ```
 
 #### 2. Custom Payroll Rules Engine
+
 ```typescript
 // lib/payroll/custom-rules-engine.ts
 export class CustomPayrollRulesEngine {
   private rules: PayrollRule[] = [];
-  
+
   addRule(rule: PayrollRule): void {
     this.rules.push(rule);
   }
-  
+
   async processPayroll(payroll: Payroll): Promise<PayrollResult> {
     const context = new PayrollContext(payroll);
-    
+
     // Apply all rules in priority order
     const sortedRules = this.rules.sort((a, b) => a.priority - b.priority);
-    
+
     for (const rule of sortedRules) {
       if (await rule.condition(context)) {
         await rule.action(context);
       }
     }
-    
+
     return context.getResult();
   }
 }
@@ -617,31 +642,33 @@ export class CustomPayrollRulesEngine {
 export const CustomPayrollRules = {
   // Rule: Auto-assign backup consultant when primary is on leave
   autoBackupAssignment: {
-    name: 'Auto Backup Assignment',
+    name: "Auto Backup Assignment",
     priority: 100,
-    condition: async (context) => {
+    condition: async context => {
       const consultant = await context.getPrimaryConsultant();
       return await consultant.isOnLeave(context.payroll.processingDate);
     },
-    action: async (context) => {
+    action: async context => {
       const backupConsultant = await context.getBackupConsultant();
       if (backupConsultant) {
         context.assignConsultant(backupConsultant.id, true);
-        context.addNote(`Primary consultant on leave, assigned backup: ${backupConsultant.name}`);
+        context.addNote(
+          `Primary consultant on leave, assigned backup: ${backupConsultant.name}`
+        );
       }
     },
   },
-  
+
   // Rule: Require manager approval for high-value payrolls
   managerApprovalRequired: {
-    name: 'Manager Approval Required',
+    name: "Manager Approval Required",
     priority: 200,
-    condition: async (context) => {
+    condition: async context => {
       return context.payroll.employeeCount > 100;
     },
-    action: async (context) => {
+    action: async context => {
       context.requireApproval(context.payroll.managerId);
-      context.addNote('Manager approval required for large payroll');
+      context.addNote("Manager approval required for large payroll");
     },
   },
 };
@@ -654,53 +681,61 @@ export const CustomPayrollRules = {
 ### Custom API Routes
 
 #### 1. REST API Extension
+
 ```typescript
 // app/api/custom/entities/route.ts
-import { NextRequest } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
-import { CustomEntityService } from '@/services/custom-entity.service';
+import { NextRequest } from "next/server";
+import { withAuth } from "@/lib/auth/api-auth";
+import { CustomEntityService } from "@/services/custom-entity.service";
 
-export const GET = withAuth(async (request: NextRequest, session) => {
-  const url = new URL(request.url);
-  const filters = {
-    search: url.searchParams.get('search'),
-    category: url.searchParams.get('category'),
-    status: url.searchParams.get('status'),
-  };
-  
-  const service = new CustomEntityService();
-  const entities = await service.getEntities(filters, session.userId);
-  
-  return Response.json({
-    entities,
-    pagination: service.getPaginationInfo(),
-  });
-}, {
-  allowedRoles: ['custom_admin', 'admin'],
-  permissions: [CUSTOM_PERMISSIONS.CUSTOM_ENTITY.READ],
-});
+export const GET = withAuth(
+  async (request: NextRequest, session) => {
+    const url = new URL(request.url);
+    const filters = {
+      search: url.searchParams.get("search"),
+      category: url.searchParams.get("category"),
+      status: url.searchParams.get("status"),
+    };
 
-export const POST = withAuth(async (request: NextRequest, session) => {
-  const body = await request.json();
-  
-  // Validate input
-  const validatedInput = await validateCustomEntityInput(body);
-  
-  const service = new CustomEntityService();
-  const entity = await service.createEntity(validatedInput, session.userId);
-  
-  return Response.json({ entity }, { status: 201 });
-}, {
-  allowedRoles: ['custom_admin', 'admin'],
-  permissions: [CUSTOM_PERMISSIONS.CUSTOM_ENTITY.CREATE],
-});
+    const service = new CustomEntityService();
+    const entities = await service.getEntities(filters, session.userId);
+
+    return Response.json({
+      entities,
+      pagination: service.getPaginationInfo(),
+    });
+  },
+  {
+    allowedRoles: ["custom_admin", "admin"],
+    permissions: [CUSTOM_PERMISSIONS.CUSTOM_ENTITY.READ],
+  }
+);
+
+export const POST = withAuth(
+  async (request: NextRequest, session) => {
+    const body = await request.json();
+
+    // Validate input
+    const validatedInput = await validateCustomEntityInput(body);
+
+    const service = new CustomEntityService();
+    const entity = await service.createEntity(validatedInput, session.userId);
+
+    return Response.json({ entity }, { status: 201 });
+  },
+  {
+    allowedRoles: ["custom_admin", "admin"],
+    permissions: [CUSTOM_PERMISSIONS.CUSTOM_ENTITY.CREATE],
+  }
+);
 ```
 
 #### 2. GraphQL API Extension
+
 ```typescript
 // app/api/graphql/custom-schema.ts
-import { GraphQLSchema, GraphQLObjectType, GraphQLString } from 'graphql';
-import { makeExecutableSchema } from '@graphql-tools/schema';
+import { GraphQLSchema, GraphQLObjectType, GraphQLString } from "graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 
 const customTypeDefs = `
   extend type Query {
@@ -728,16 +763,16 @@ const customResolvers = {
       return stats;
     },
   },
-  
+
   Mutation: {
     generateCustomReport: async (_, { input }, context) => {
       // Validate permissions
-      await context.auth.requirePermission('custom_reports:generate');
-      
+      await context.auth.requirePermission("custom_reports:generate");
+
       // Generate report
       const reportService = new CustomReportService();
       const report = await reportService.generate(input);
-      
+
       return {
         success: true,
         reportId: report.id,
@@ -760,6 +795,7 @@ export const customSchema = makeExecutableSchema({
 ### Custom Tables and Relationships
 
 #### 1. Database Migration for Custom Tables
+
 ```sql
 -- migrations/001_add_custom_entities.sql
 CREATE TABLE custom_entities (
@@ -812,14 +848,15 @@ CREATE POLICY custom_entities_owner_policy ON custom_entities
     FOR ALL USING (
         owner_id = current_setting('hasura.user_id')::UUID OR
         EXISTS (
-            SELECT 1 FROM users 
-            WHERE id = current_setting('hasura.user_id')::UUID 
+            SELECT 1 FROM users
+            WHERE id = current_setting('hasura.user_id')::UUID
             AND role IN ('admin', 'custom_admin')
         )
     );
 ```
 
 #### 2. Hasura Metadata for Custom Tables
+
 ```yaml
 # hasura/metadata/tables.yaml
 - table:
@@ -851,11 +888,11 @@ CREATE POLICY custom_entities_owner_policy ON custom_entities
   select_permissions:
     - role: custom_admin
       permission:
-        columns: '*'
+        columns: "*"
         filter: {}
     - role: custom_user
       permission:
-        columns: '*'
+        columns: "*"
         filter:
           owner_id:
             _eq: X-Hasura-User-Id
@@ -868,28 +905,31 @@ CREATE POLICY custom_entities_owner_policy ON custom_entities
 ### Third-Party System Integration
 
 #### 1. Payroll System Integration
+
 ```typescript
 // integrations/payroll-systems/custom-payroll-system.ts
-export class CustomPayrollSystemIntegration implements PayrollSystemIntegration {
+export class CustomPayrollSystemIntegration
+  implements PayrollSystemIntegration
+{
   private config: PayrollSystemConfig;
   private client: CustomPayrollAPIClient;
-  
+
   constructor(config: PayrollSystemConfig) {
     this.config = config;
     this.client = new CustomPayrollAPIClient(config.credentials);
   }
-  
+
   async syncEmployees(clientId: string): Promise<SyncResult> {
     try {
       const employees = await this.client.getEmployees();
       const syncResults = [];
-      
+
       for (const employee of employees) {
         const mappedEmployee = this.mapEmployeeData(employee);
         const result = await this.upsertEmployee(clientId, mappedEmployee);
         syncResults.push(result);
       }
-      
+
       return {
         success: true,
         recordsProcessed: employees.length,
@@ -904,14 +944,14 @@ export class CustomPayrollSystemIntegration implements PayrollSystemIntegration 
       };
     }
   }
-  
+
   async exportPayrollData(payrollId: string): Promise<ExportResult> {
     const payroll = await this.getPayrollData(payrollId);
     const formattedData = this.formatForCustomSystem(payroll);
-    
+
     try {
       const result = await this.client.createPayrollRun(formattedData);
-      
+
       return {
         success: true,
         externalId: result.payrollRunId,
@@ -924,7 +964,7 @@ export class CustomPayrollSystemIntegration implements PayrollSystemIntegration 
       };
     }
   }
-  
+
   private mapEmployeeData(externalEmployee: any): Employee {
     return {
       externalId: externalEmployee.id,
@@ -942,15 +982,16 @@ export class CustomPayrollSystemIntegration implements PayrollSystemIntegration 
 ```
 
 #### 2. HR System Integration
+
 ```typescript
 // integrations/hr-systems/custom-hr-integration.ts
 export class CustomHRIntegration {
   async syncUserData(): Promise<void> {
     const hrUsers = await this.fetchHRUsers();
-    
+
     for (const hrUser of hrUsers) {
       const existingUser = await this.findUserByEmail(hrUser.email);
-      
+
       if (existingUser) {
         await this.updateUserFromHR(existingUser, hrUser);
       } else {
@@ -958,15 +999,15 @@ export class CustomHRIntegration {
       }
     }
   }
-  
+
   async syncOrganizationalStructure(): Promise<void> {
     const departments = await this.fetchDepartments();
     const positions = await this.fetchPositions();
-    
+
     await this.updateDepartmentStructure(departments);
     await this.updatePositionHierarchy(positions);
   }
-  
+
   private async createUserFromHR(hrUser: HRUser): Promise<void> {
     // Create invitation in Clerk
     const invitation = await clerk.users.createUser({
@@ -979,7 +1020,7 @@ export class CustomHRIntegration {
         employeeNumber: hrUser.employeeNumber,
       },
     });
-    
+
     // Create database user
     await this.createDatabaseUser({
       clerkUserId: invitation.id,
@@ -999,6 +1040,7 @@ export class CustomHRIntegration {
 ### Custom Theme System
 
 #### 1. Theme Configuration
+
 ```typescript
 // lib/theme/custom-theme.ts
 export interface CustomTheme extends BaseTheme {
@@ -1020,7 +1062,9 @@ export interface CustomTheme extends BaseTheme {
   };
 }
 
-export const createCustomTheme = (overrides: Partial<CustomTheme>): CustomTheme => {
+export const createCustomTheme = (
+  overrides: Partial<CustomTheme>
+): CustomTheme => {
   return {
     ...defaultTheme,
     ...overrides,
@@ -1038,28 +1082,28 @@ export const createCustomTheme = (overrides: Partial<CustomTheme>): CustomTheme 
 // Example custom theme
 export const corporateTheme = createCustomTheme({
   brand: {
-    primary: '#1e40af', // Blue
-    secondary: '#64748b', // Slate
-    accent: '#059669', // Emerald
-    logo: '/logos/corporate-logo.svg',
+    primary: "#1e40af", // Blue
+    secondary: "#64748b", // Slate
+    accent: "#059669", // Emerald
+    logo: "/logos/corporate-logo.svg",
   },
   components: {
     card: {
-      background: 'white',
-      border: '1px solid #e5e7eb',
-      borderRadius: '8px',
-      shadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+      background: "white",
+      border: "1px solid #e5e7eb",
+      borderRadius: "8px",
+      shadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
     },
     button: {
       primary: {
-        background: '#1e40af',
-        color: 'white',
-        borderRadius: '6px',
+        background: "#1e40af",
+        color: "white",
+        borderRadius: "6px",
       },
       secondary: {
-        background: '#f8fafc',
-        color: '#475569',
-        borderRadius: '6px',
+        background: "#f8fafc",
+        color: "#475569",
+        borderRadius: "6px",
       },
     },
   },
@@ -1067,6 +1111,7 @@ export const corporateTheme = createCustomTheme({
 ```
 
 #### 2. Dynamic Theme Provider
+
 ```typescript
 // components/theme/theme-provider.tsx
 interface ThemeContextType {
@@ -1077,7 +1122,7 @@ interface ThemeContextType {
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState<CustomTheme>(defaultTheme);
-  
+
   const applyTheme = useCallback((themeName: string) => {
     const theme = getThemeByName(themeName);
     if (theme) {
@@ -1086,22 +1131,22 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       localStorage.setItem('selectedTheme', themeName);
     }
   }, []);
-  
+
   useEffect(() => {
     const savedTheme = localStorage.getItem('selectedTheme');
     if (savedTheme) {
       applyTheme(savedTheme);
     }
   }, [applyTheme]);
-  
+
   return (
     <ThemeContext.Provider value={{
       theme: currentTheme,
       setTheme: setCurrentTheme,
       applyTheme,
     }}>
-      <div 
-        className="theme-root" 
+      <div
+        className="theme-root"
         style={{
           '--primary-color': currentTheme.brand.primary,
           '--secondary-color': currentTheme.brand.secondary,
@@ -1116,6 +1161,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 ```
 
 #### 3. Custom CSS Variables
+
 ```css
 /* styles/themes/custom-theme.css */
 :root {
@@ -1123,21 +1169,21 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   --brand-primary: #1e40af;
   --brand-secondary: #64748b;
   --brand-accent: #059669;
-  
+
   /* Layout */
   --sidebar-width: 280px;
   --header-height: 64px;
   --content-padding: 24px;
-  
+
   /* Component styling */
   --card-background: white;
   --card-border: 1px solid #e5e7eb;
   --card-border-radius: 8px;
   --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  
+
   /* Typography */
-  --font-family-primary: 'Inter', sans-serif;
-  --font-family-mono: 'Roboto Mono', monospace;
+  --font-family-primary: "Inter", sans-serif;
+  --font-family-mono: "Roboto Mono", monospace;
 }
 
 /* Dark theme overrides */
@@ -1178,6 +1224,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 ### Plugin System Implementation
 
 #### 1. Plugin Interface
+
 ```typescript
 // lib/plugins/plugin-system.ts
 export interface Plugin {
@@ -1186,13 +1233,13 @@ export interface Plugin {
   description: string;
   author: string;
   dependencies?: string[];
-  
+
   // Lifecycle hooks
   onInstall?(): Promise<void>;
   onUninstall?(): Promise<void>;
   onActivate?(): Promise<void>;
   onDeactivate?(): Promise<void>;
-  
+
   // Extension points
   extendRoutes?(): RouteExtension[];
   extendComponents?(): ComponentExtension[];
@@ -1203,49 +1250,49 @@ export interface Plugin {
 export class PluginManager {
   private plugins = new Map<string, Plugin>();
   private activePlugins = new Set<string>();
-  
+
   async installPlugin(plugin: Plugin): Promise<void> {
     // Validate dependencies
     await this.validateDependencies(plugin);
-    
+
     // Install plugin
     this.plugins.set(plugin.name, plugin);
-    
+
     // Run installation hook
     if (plugin.onInstall) {
       await plugin.onInstall();
     }
-    
+
     // Apply extensions
     await this.applyPluginExtensions(plugin);
   }
-  
+
   async activatePlugin(pluginName: string): Promise<void> {
     const plugin = this.plugins.get(pluginName);
     if (!plugin) {
       throw new Error(`Plugin ${pluginName} not found`);
     }
-    
+
     this.activePlugins.add(pluginName);
-    
+
     if (plugin.onActivate) {
       await plugin.onActivate();
     }
   }
-  
+
   private async applyPluginExtensions(plugin: Plugin): Promise<void> {
     // Apply route extensions
     if (plugin.extendRoutes) {
       const routes = plugin.extendRoutes();
       routes.forEach(route => this.registerRoute(route));
     }
-    
+
     // Apply component extensions
     if (plugin.extendComponents) {
       const components = plugin.extendComponents();
       components.forEach(comp => this.registerComponent(comp));
     }
-    
+
     // Apply schema extensions
     if (plugin.extendSchema) {
       const schemas = plugin.extendSchema();
@@ -1256,48 +1303,49 @@ export class PluginManager {
 ```
 
 #### 2. Example Plugin Implementation
+
 ```typescript
 // plugins/custom-reporting-plugin.ts
 export const CustomReportingPlugin: Plugin = {
-  name: 'custom-reporting',
-  version: '1.0.0',
-  description: 'Advanced reporting and analytics',
-  author: 'Custom Development Team',
-  
+  name: "custom-reporting",
+  version: "1.0.0",
+  description: "Advanced reporting and analytics",
+  author: "Custom Development Team",
+
   async onInstall() {
     // Create custom database tables
     await this.createReportingTables();
-    
+
     // Set up background jobs
     await this.scheduleReportingJobs();
   },
-  
+
   extendRoutes() {
     return [
       {
-        path: '/custom-reports',
-        component: () => import('./components/custom-reports-page'),
-        permissions: ['custom_reports:read'],
+        path: "/custom-reports",
+        component: () => import("./components/custom-reports-page"),
+        permissions: ["custom_reports:read"],
       },
       {
-        path: '/api/custom-reports',
+        path: "/api/custom-reports",
         handler: customReportsHandler,
-        methods: ['GET', 'POST'],
+        methods: ["GET", "POST"],
       },
     ];
   },
-  
+
   extendComponents() {
     return [
       {
-        name: 'CustomReportWidget',
+        name: "CustomReportWidget",
         component: CustomReportWidget,
-        placement: 'dashboard-widgets',
+        placement: "dashboard-widgets",
         priority: 100,
       },
     ];
   },
-  
+
   extendSchema() {
     return [
       {
@@ -1306,13 +1354,13 @@ export const CustomReportingPlugin: Plugin = {
       },
     ];
   },
-  
+
   extendPermissions() {
     return [
       {
-        resource: 'custom_reports',
-        actions: ['read', 'create', 'export', 'schedule'],
-        roles: ['admin', 'manager'],
+        resource: "custom_reports",
+        actions: ["read", "create", "export", "schedule"],
+        roles: ["admin", "manager"],
       },
     ];
   },
@@ -1326,49 +1374,50 @@ export const CustomReportingPlugin: Plugin = {
 ### Environment-Based Configuration
 
 #### 1. Configuration Schema
+
 ```typescript
 // lib/config/configuration.ts
 export interface ApplicationConfig {
   app: {
     name: string;
     version: string;
-    environment: 'development' | 'staging' | 'production';
+    environment: "development" | "staging" | "production";
     debug: boolean;
   };
-  
+
   database: {
     url: string;
     poolSize: number;
     timeout: number;
   };
-  
+
   auth: {
     clerkPublishableKey: string;
     clerkSecretKey: string;
     jwtSecret: string;
     sessionTimeout: number;
   };
-  
+
   graphql: {
     endpoint: string;
     adminSecret: string;
     introspection: boolean;
     playground: boolean;
   };
-  
+
   features: {
     aiAssistant: boolean;
     customReporting: boolean;
     advancedAudit: boolean;
     multiTenant: boolean;
   };
-  
+
   integrations: {
     openai: {
       apiKey: string;
       model: string;
     };
-    
+
     payrollSystems: {
       [key: string]: {
         enabled: boolean;
@@ -1376,7 +1425,7 @@ export interface ApplicationConfig {
       };
     };
   };
-  
+
   customization: {
     theme: string;
     branding: {
@@ -1384,7 +1433,7 @@ export interface ApplicationConfig {
       primaryColor: string;
       companyName: string;
     };
-    
+
     modules: {
       [moduleName: string]: {
         enabled: boolean;
@@ -1396,37 +1445,38 @@ export interface ApplicationConfig {
 ```
 
 #### 2. Configuration Provider
+
 ```typescript
 // lib/config/config-provider.ts
 export class ConfigurationProvider {
   private config: ApplicationConfig;
-  
+
   constructor() {
     this.config = this.loadConfiguration();
   }
-  
+
   private loadConfiguration(): ApplicationConfig {
     const baseConfig = this.getBaseConfiguration();
     const envOverrides = this.getEnvironmentOverrides();
     const userOverrides = this.getUserConfiguration();
-    
+
     return deepMerge(baseConfig, envOverrides, userOverrides);
   }
-  
+
   get<T = any>(path: string): T {
     return this.getValueByPath(this.config, path);
   }
-  
+
   async updateConfiguration(path: string, value: any): Promise<void> {
     this.setValueByPath(this.config, path, value);
     await this.persistConfiguration();
     this.notifyConfigurationChange(path, value);
   }
-  
+
   isFeatureEnabled(featureName: string): boolean {
     return this.get(`features.${featureName}`) === true;
   }
-  
+
   getModuleConfig(moduleName: string): Record<string, any> {
     return this.get(`customization.modules.${moduleName}.config`) || {};
   }
@@ -1437,35 +1487,46 @@ export const config = new ConfigurationProvider();
 ```
 
 #### 3. Feature Flags
+
 ```typescript
 // lib/config/feature-flags.ts
 export class FeatureFlagManager {
   private flags = new Map<string, FeatureFlag>();
-  
+
   defineFlag(name: string, flag: FeatureFlag): void {
     this.flags.set(name, flag);
   }
-  
-  async isEnabled(flagName: string, context?: FeatureFlagContext): Promise<boolean> {
+
+  async isEnabled(
+    flagName: string,
+    context?: FeatureFlagContext
+  ): Promise<boolean> {
     const flag = this.flags.get(flagName);
     if (!flag) return false;
-    
+
     // Check environment-based enablement
-    if (flag.environments && !flag.environments.includes(config.get('app.environment'))) {
+    if (
+      flag.environments &&
+      !flag.environments.includes(config.get("app.environment"))
+    ) {
       return false;
     }
-    
+
     // Check role-based enablement
-    if (flag.roles && context?.userRole && !flag.roles.includes(context.userRole)) {
+    if (
+      flag.roles &&
+      context?.userRole &&
+      !flag.roles.includes(context.userRole)
+    ) {
       return false;
     }
-    
+
     // Check percentage rollout
     if (flag.percentage !== undefined) {
-      const hash = this.hashUser(context?.userId || 'anonymous');
+      const hash = this.hashUser(context?.userId || "anonymous");
       return hash < flag.percentage;
     }
-    
+
     return flag.enabled;
   }
 }
@@ -1474,21 +1535,21 @@ export class FeatureFlagManager {
 export const FeatureFlags = {
   ADVANCED_REPORTING: {
     enabled: true,
-    environments: ['staging', 'production'],
-    roles: ['admin', 'manager'],
-    description: 'Advanced reporting and analytics features',
+    environments: ["staging", "production"],
+    roles: ["admin", "manager"],
+    description: "Advanced reporting and analytics features",
   },
-  
+
   AI_ASSISTANT: {
     enabled: true,
     percentage: 50, // 50% rollout
-    description: 'AI-powered assistant features',
+    description: "AI-powered assistant features",
   },
-  
+
   MULTI_TENANT: {
     enabled: false,
-    environments: ['development'],
-    description: 'Multi-tenant architecture support',
+    environments: ["development"],
+    description: "Multi-tenant architecture support",
   },
 };
 ```

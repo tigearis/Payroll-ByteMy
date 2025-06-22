@@ -6,9 +6,12 @@ import { autoTable } from "jspdf-autotable";
 
 import { Button } from "@/components/ui/button";
 
-import { GetPayrollDatesDocument, GetPayrollDatesQuery } from "@/domains/payrolls/graphql/generated/graphql";
+import {
+  GetPayrollDatesDocument,
+  GetPayrollDatesQuery,
+} from "@/domains/payrolls/graphql/generated/graphql";
 
-type PayrollDate = GetPayrollDatesQuery['payrollDates'][0];
+type PayrollDate = GetPayrollDatesQuery["payrollDates"][0];
 
 interface ExportPdfProps {
   payrollId: string;
@@ -23,7 +26,9 @@ export function ExportPdf({ payrollId }: ExportPdfProps) {
   const dates = data?.payrollDates || [];
 
   const downloadPdf = () => {
-    if (dates.length === 0) {return;}
+    if (dates.length === 0) {
+      return;
+    }
 
     const doc = new jsPDF();
     const tableData = dates.map((date: PayrollDate, index: number) => [

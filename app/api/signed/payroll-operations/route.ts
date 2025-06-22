@@ -3,8 +3,16 @@ import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { withSignatureValidation, apiKeyManager } from "@/lib/security/api-signing";
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
+import {
+  withSignatureValidation,
+  apiKeyManager,
+} from "@/lib/security/api-signing";
+import {
+  auditLogger,
+  LogLevel,
+  LogCategory,
+  SOC2EventType,
+} from "@/lib/security/audit/logger";
 
 // GraphQL mutations for payroll operations
 const PROCESS_PAYROLL_BATCH = gql`
@@ -106,15 +114,15 @@ const handlePayrollOperations = withSignatureValidation(
           operation,
           apiKey: context.apiKey,
           payloadSize: JSON.stringify(payload).length,
-          timestamp: context.timestamp
+          timestamp: context.timestamp,
         },
-        complianceNote: `Signed payroll operation: ${operation}`
+        complianceNote: `Signed payroll operation: ${operation}`,
       });
 
       switch (operation) {
         case "process_batch": {
           const { payrollIds, processedBy } = payload;
-          
+
           if (!Array.isArray(payrollIds) || payrollIds.length === 0) {
             return NextResponse.json(
               { error: "Invalid payroll IDs provided" },
@@ -124,20 +132,20 @@ const handlePayrollOperations = withSignatureValidation(
 
           const result = await adminApolloClient.mutate({
             mutation: PROCESS_PAYROLL_BATCH,
-            variables: { payrollIds, processedBy }
+            variables: { payrollIds, processedBy },
           });
 
           return NextResponse.json({
             success: true,
             operation: "process_batch",
             affected_rows: result.data?.update_payrolls?.affected_rows || 0,
-            payrolls: result.data?.update_payrolls?.returning || []
+            payrolls: result.data?.update_payrolls?.returning || [],
           });
         }
 
         case "approve_batch": {
           const { payrollIds, approvedBy } = payload;
-          
+
           if (!Array.isArray(payrollIds) || payrollIds.length === 0) {
             return NextResponse.json(
               { error: "Invalid payroll IDs provided" },
@@ -147,20 +155,20 @@ const handlePayrollOperations = withSignatureValidation(
 
           const result = await adminApolloClient.mutate({
             mutation: APPROVE_PAYROLL_BATCH,
-            variables: { payrollIds, approvedBy }
+            variables: { payrollIds, approvedBy },
           });
 
           return NextResponse.json({
             success: true,
             operation: "approve_batch",
             affected_rows: result.data?.update_payrolls?.affected_rows || 0,
-            payrolls: result.data?.update_payrolls?.returning || []
+            payrolls: result.data?.update_payrolls?.returning || [],
           });
         }
 
         case "generate_report": {
           const { startDate, endDate } = payload;
-          
+
           if (!startDate || !endDate) {
             return NextResponse.json(
               { error: "Start date and end date are required" },
@@ -171,7 +179,7 @@ const handlePayrollOperations = withSignatureValidation(
           const result = await adminApolloClient.query({
             query: GENERATE_PAYROLL_REPORT,
             variables: { startDate, endDate },
-            fetchPolicy: "no-cache"
+            fetchPolicy: "no-cache",
           });
 
           // Log data access for compliance
@@ -191,7 +199,7 @@ const handlePayrollOperations = withSignatureValidation(
               recordCount: result.data?.payrolls?.length || 0,
               exportFormat: "json",
             },
-            complianceNote: "Payroll report generated via signed API"
+            complianceNote: "Payroll report generated via signed API",
           });
 
           return NextResponse.json({
@@ -202,8 +210,8 @@ const handlePayrollOperations = withSignatureValidation(
               startDate,
               endDate,
               recordCount: result.data?.payrolls?.length || 0,
-              generatedAt: new Date().toISOString()
-            }
+              generatedAt: new Date().toISOString(),
+            },
           });
         }
 
@@ -213,10 +221,9 @@ const handlePayrollOperations = withSignatureValidation(
             { status: 400 }
           );
       }
-
     } catch (error) {
       console.error("Signed payroll operation error:", error);
-      
+
       const clientInfo = auditLogger.extractClientInfo(request);
       await auditLogger.logSOC2Event({
         level: LogLevel.ERROR,
@@ -229,13 +236,13 @@ const handlePayrollOperations = withSignatureValidation(
         ipAddress: clientInfo.ipAddress || "unknown",
         userAgent: clientInfo.userAgent || "unknown",
         metadata: { apiKey: context.apiKey },
-        complianceNote: "Signed payroll operation failed"
+        complianceNote: "Signed payroll operation failed",
       });
 
       return NextResponse.json(
-        { 
+        {
           error: "Operation failed",
-          details: error instanceof Error ? error.message : "Unknown error"
+          details: error instanceof Error ? error.message : "Unknown error",
         },
         { status: 500 }
       );

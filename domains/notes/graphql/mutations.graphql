@@ -9,12 +9,7 @@ mutation AddNote(
   $user_id: uuid!
   $isImportant: Boolean = false
 ) {
-  insert_notes_one(
-    object: {
-      content: $content
-      is_important: $isImportant
-    }
-  ) {
+  insert_notes_one(object: { content: $content, is_important: $isImportant }) {
     ...NoteWithUser
   }
 }
@@ -56,7 +51,10 @@ mutation MarkNoteImportant($id: uuid!, $isImportant: Boolean!) {
 # Bulk operations for efficiency
 mutation BulkDeleteNotes($entity_id: uuid!, $entity_type: String!) {
   delete_notes(
-    where: { entity_id: { _eq: $entity_id }, entity_type: { _eq: $entity_type } }
+    where: {
+      entity_id: { _eq: $entity_id }
+      entity_type: { _eq: $entity_type }
+    }
   ) {
     affected_rows
     returning {
@@ -73,11 +71,12 @@ mutation UpdateNoteWithSetInput($id: uuid!, $input: notes_set_input!) {
 }
 
 # Extracted from inline GraphQL operations
-mutation AddNoteExtracted($entity_type: String!, $entity_id: uuid!, $content: String!) {
-  insert_notes_one(object: {
-    content: $content,
-    is_important: false
-  }) {
+mutation AddNoteExtracted(
+  $entity_type: String!
+  $entity_id: uuid!
+  $content: String!
+) {
+  insert_notes_one(object: { content: $content, is_important: false }) {
     id
     content
     is_important
@@ -86,7 +85,7 @@ mutation AddNoteExtracted($entity_type: String!, $entity_id: uuid!, $content: St
 
 mutation UpdateNoteExtracted($id: uuid!, $content: String!) {
   update_notes_by_pk(
-    pk_columns: { id: $id },
+    pk_columns: { id: $id }
     _set: { content: $content, updated_at: "now()" }
   ) {
     id

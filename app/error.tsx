@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-
 interface ErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
@@ -21,10 +20,11 @@ export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
     // Log the error for debugging
     console.error("App Error:", error);
-    
+
     // Show a toast notification
     toast.error("Application Error", {
-      description: "An unexpected error occurred. Please try refreshing the page.",
+      description:
+        "An unexpected error occurred. Please try refreshing the page.",
       duration: 8000,
       action: {
         label: "Retry",
@@ -44,9 +44,10 @@ export default function Error({ error, reset }: ErrorProps) {
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-muted-foreground">
-            An unexpected error has occurred. This has been automatically reported to our team.
+            An unexpected error has occurred. This has been automatically
+            reported to our team.
           </p>
-          
+
           {process.env.NODE_ENV === "development" && (
             <details className="text-left">
               <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
@@ -63,14 +64,14 @@ export default function Error({ error, reset }: ErrorProps) {
               </pre>
             </details>
           )}
-          
+
           <div className="flex flex-col sm:flex-row gap-2">
             <Button onClick={reset} className="flex-1">
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => router.push("/dashboard")}
               className="flex-1"
             >

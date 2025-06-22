@@ -1,11 +1,7 @@
 "use client";
 
 import { useAuth, useUser } from "@clerk/nextjs";
-import React, {
-  createContext,
-  useContext,
-  useMemo,
-} from "react";
+import React, { createContext, useContext, useMemo } from "react";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Role } from "@/lib/auth/permissions";
@@ -188,11 +184,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (databaseUser?.role) {
       return databaseUser.role as UserRole;
     }
-    
+
     // Fallback to session claims
     const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
     const claimsRole = claims?.["x-hasura-role"] as UserRole;
-    
+
     return claimsRole || "viewer";
   }, [databaseUser?.role, sessionClaims]);
 
@@ -220,7 +216,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const hasAnyPermission = (requiredPermissions: string[]): boolean => {
-    return requiredPermissions.some((permission) => hasPermission(permission));
+    return requiredPermissions.some(permission => hasPermission(permission));
   };
 
   const hasRole = (roles: UserRole[]): boolean => {

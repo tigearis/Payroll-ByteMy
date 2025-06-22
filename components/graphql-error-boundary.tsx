@@ -81,7 +81,9 @@ export class GraphQLErrorBoundary extends Component<Props, State> {
   }
 
   private renderPermissionError() {
-    const permissionError = this.state.error ? handleGraphQLError(this.state.error) : null;
+    const permissionError = this.state.error
+      ? handleGraphQLError(this.state.error)
+      : null;
 
     return (
       <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
@@ -99,11 +101,15 @@ export class GraphQLErrorBoundary extends Component<Props, State> {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <p className="text-sm text-amber-800 dark:text-amber-200">
-              {permissionError?.userMessage || "You may need additional permissions to view this data."}
+              {permissionError?.userMessage ||
+                "You may need additional permissions to view this data."}
             </p>
             {permissionError?.requiredRole && (
               <p className="text-xs text-amber-600 dark:text-amber-400">
-                Required role: <Badge variant="outline" className="mx-1">{permissionError.requiredRole}</Badge>
+                Required role:{" "}
+                <Badge variant="outline" className="mx-1">
+                  {permissionError.requiredRole}
+                </Badge>
               </p>
             )}
             <p className="text-xs text-amber-600 dark:text-amber-400">

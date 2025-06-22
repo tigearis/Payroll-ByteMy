@@ -80,7 +80,7 @@ export function MainNav() {
 
   // Filter out dev-only routes in production
   const routes = allRoutes.filter(route => {
-    if (route.devOnly && process.env.NODE_ENV === 'production') {
+    if (route.devOnly && process.env.NODE_ENV === "production") {
       return false;
     }
     return true;
@@ -88,7 +88,7 @@ export function MainNav() {
 
   return (
     <nav className="flex items-center space-x-4 lg:space-x-6">
-      {routes.map((route) => (
+      {routes.map(route => (
         <Button
           key={route.href}
           variant={route.active ? "default" : "ghost"}
@@ -98,9 +98,7 @@ export function MainNav() {
             href={route.href}
             className={cn(
               "flex items-center space-x-2",
-              route.active
-                ? "text-white"
-                : "text-gray-600 hover:text-blue-600"
+              route.active ? "text-white" : "text-gray-600 hover:text-blue-600"
             )}
           >
             <route.icon className="h-4 w-4" />

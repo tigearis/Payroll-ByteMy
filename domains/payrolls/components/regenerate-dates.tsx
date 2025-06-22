@@ -19,33 +19,41 @@ interface RegenerateDatesProps {
   onSuccess?: () => void;
 }
 
-export function RegenerateDates({ payrollId, onSuccess }: RegenerateDatesProps) {
+export function RegenerateDates({
+  payrollId,
+  onSuccess,
+}: RegenerateDatesProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [months, setMonths] = useState(12);
 
   // Set up the mutation with proper refetching
-  const [generateDates, { loading, error }] = useMutation(GeneratePayrollDatesDocument, {
-    refetchQueries: [
-      { query: GetPayrollDatesDocument, variables: { payrollId: payrollId } },
-      'GET_PAYROLLS', // Refetch the main payrolls list if you have this query
-      'GET_PAYROLLS_BY_MONTH' // Refetch the schedule view if it's open
-    ],
-    awaitRefetchQueries: true,
-    onCompleted: (data) => {
-      const count = data?.generatePayrollDates?.length || 0;
-      toast.success(`Successfully generated ${count} payroll dates`);
-      setIsDialogOpen(false);
-      if (onSuccess) {onSuccess();}
-    },
-    onError: (err) => {
-      toast.error(`Failed to generate dates: ${err.message}`);
-    },
-    update: (cache) => {
-      // Invalidate cache to trigger refetch
-      cache.evict({ fieldName: "payrolls" });
-      cache.gc();
+  const [generateDates, { loading, error }] = useMutation(
+    GeneratePayrollDatesDocument,
+    {
+      refetchQueries: [
+        { query: GetPayrollDatesDocument, variables: { payrollId: payrollId } },
+        "GET_PAYROLLS", // Refetch the main payrolls list if you have this query
+        "GET_PAYROLLS_BY_MONTH", // Refetch the schedule view if it's open
+      ],
+      awaitRefetchQueries: true,
+      onCompleted: data => {
+        const count = data?.generatePayrollDates?.length || 0;
+        toast.success(`Successfully generated ${count} payroll dates`);
+        setIsDialogOpen(false);
+        if (onSuccess) {
+          onSuccess();
+        }
+      },
+      onError: err => {
+        toast.error(`Failed to generate dates: ${err.message}`);
+      },
+      update: cache => {
+        // Invalidate cache to trigger refetch
+        cache.evict({ fieldName: "payrolls" });
+        cache.gc();
+      },
     }
-  });
+  );
 
   const handleRegenerate = async () => {
     if (!payrollId) {
@@ -60,8 +68,8 @@ export function RegenerateDates({ payrollId, onSuccess }: RegenerateDatesProps) 
       await generateDates({
         variables: {
           payrollId,
-          startDate: format(today, 'yyyy-MM-dd'),
-          endDate: format(endDate, 'yyyy-MM-dd'),
+          startDate: format(today, "yyyy-MM-dd"),
+          endDate: format(endDate, "yyyy-MM-dd"),
           maxDates: null, // Optional parameter
         },
       });
@@ -74,16 +82,13 @@ export function RegenerateDates({ payrollId, onSuccess }: RegenerateDatesProps) 
   return (
     <div>
       {!isDialogOpen ? (
-        <Button
-          variant="outline"
-          onClick={() => setIsDialogOpen(true)}
-        >
+        <Button variant="outline" onClick={() => setIsDialogOpen(true)}>
           Regenerate Dates
         </Button>
       ) : (
         <div className="border p-4 rounded-md shadow-sm space-y-4">
           <h3 className="font-medium">Regenerate Payroll Dates</h3>
-          
+
           <div className="space-y-2">
             <Label htmlFor="months">Months to Generate:</Label>
             <div className="flex items-center gap-2">
@@ -93,13 +98,13 @@ export function RegenerateDates({ payrollId, onSuccess }: RegenerateDatesProps) 
                 min="1"
                 max="36"
                 value={months}
-                onChange={(e) => setMonths(parseInt(e.target.value) || 12)}
+                onChange={e => setMonths(parseInt(e.target.value) || 12)}
                 className="w-20"
               />
               <span className="text-sm text-gray-500">months</span>
             </div>
           </div>
-          
+
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -108,18 +113,13 @@ export function RegenerateDates({ payrollId, onSuccess }: RegenerateDatesProps) 
             >
               Cancel
             </Button>
-            <Button
-              onClick={handleRegenerate}
-              disabled={loading}
-            >
+            <Button onClick={handleRegenerate} disabled={loading}>
               {loading ? "Regenerating..." : "Regenerate"}
             </Button>
           </div>
-          
+
           {error && (
-            <div className="text-red-500 text-sm mt-2">
-              {error.message}
-            </div>
+            <div className="text-red-500 text-sm mt-2">{error.message}</div>
           )}
         </div>
       )}

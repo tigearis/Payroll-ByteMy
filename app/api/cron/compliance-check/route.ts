@@ -3,7 +3,12 @@ import { subDays } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
 import { secureHasuraService } from "@/lib/apollo/secure-hasura-service";
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
+import {
+  auditLogger,
+  LogLevel,
+  LogCategory,
+  SOC2EventType,
+} from "@/lib/security/audit/logger";
 
 const COMPLIANCE_CHECKS = gql`
   query RunComplianceChecks(
@@ -88,7 +93,7 @@ export async function POST(request: NextRequest) {
     // SECURITY: Verify request is from authorized source
     const authHeader = request.headers.get("authorization");
     const cronSecret = request.headers.get("x-cron-secret");
-    
+
     // Check for cron secret (for Vercel cron jobs)
     if (cronSecret !== process.env.CRON_SECRET) {
       console.error("🚨 Unauthorized cron request - invalid secret");
@@ -101,7 +106,7 @@ export async function POST(request: NextRequest) {
         errorMessage: "Unauthorized cron request - invalid secret",
         ipAddress: clientInfo.ipAddress || "unknown",
         userAgent: clientInfo.userAgent || "unknown",
-        metadata: { source: "compliance-check" }
+        metadata: { source: "compliance-check" },
       });
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
@@ -137,7 +142,7 @@ export async function POST(request: NextRequest) {
         errorMessage: "Compliance check query failed",
         ipAddress: errorClientInfo.ipAddress || "unknown",
         userAgent: errorClientInfo.userAgent || "unknown",
-        metadata: { errors }
+        metadata: { errors },
       });
       return NextResponse.json(
         { success: false, message: "Failed to run compliance checks" },
@@ -221,7 +226,7 @@ export async function POST(request: NextRequest) {
         errorMessage: "Failed to record compliance check",
         ipAddress: recordErrorClientInfo.ipAddress || "unknown",
         userAgent: recordErrorClientInfo.userAgent || "unknown",
-        metadata: { errors: checkErrors }
+        metadata: { errors: checkErrors },
       });
       return NextResponse.json(
         { success: false, message: "Failed to record compliance check" },
@@ -232,9 +237,17 @@ export async function POST(request: NextRequest) {
     // Log compliance check
     const successClientInfo = auditLogger.extractClientInfo(request);
     await auditLogger.logSOC2Event({
-      level: status === "failed" ? LogLevel.ERROR : status === "warning" ? LogLevel.WARNING : LogLevel.INFO,
+      level:
+        status === "failed"
+          ? LogLevel.ERROR
+          : status === "warning"
+            ? LogLevel.WARNING
+            : LogLevel.INFO,
       category: LogCategory.COMPLIANCE,
-      eventType: status === "failed" ? SOC2EventType.SECURITY_VIOLATION : SOC2EventType.DATA_VIEWED,
+      eventType:
+        status === "failed"
+          ? SOC2EventType.SECURITY_VIOLATION
+          : SOC2EventType.DATA_VIEWED,
       success: status !== "failed",
       ipAddress: successClientInfo.ipAddress || "unknown",
       userAgent: successClientInfo.userAgent || "unknown",
@@ -242,8 +255,8 @@ export async function POST(request: NextRequest) {
         findings,
         issues,
         status,
-        message: "compliance_check_completed"
-      }
+        message: "compliance_check_completed",
+      },
     });
 
     return NextResponse.json({
@@ -270,8 +283,8 @@ export async function POST(request: NextRequest) {
       userAgent: catchErrorClientInfo.userAgent || "unknown",
       metadata: {
         message: "compliance_check_error",
-        error: error instanceof Error ? error.message : String(error)
-      }
+        error: error instanceof Error ? error.message : String(error),
+      },
     });
     return NextResponse.json(
       { success: false, message: "Internal server error" },

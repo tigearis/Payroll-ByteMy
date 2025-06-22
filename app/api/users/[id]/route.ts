@@ -10,7 +10,12 @@ import {
 } from "@/domains/users/services/user-sync";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuthParams } from "@/lib/auth/api-auth";
-import { auditLogger, LogLevel, LogCategory, SOC2EventType } from "@/lib/security/audit/logger";
+import {
+  auditLogger,
+  LogLevel,
+  LogCategory,
+  SOC2EventType,
+} from "@/lib/security/audit/logger";
 
 // Get user by ID (either database ID or Clerk ID)
 const GET_USER_BY_ID = gql`
@@ -70,7 +75,9 @@ const GET_USER_BY_CLERK_ID = gql`
 `;
 
 // Helper function to get current user's role
-async function getCurrentUserRole(userId: string): Promise<UserRole | "developer"> {
+async function getCurrentUserRole(
+  userId: string
+): Promise<UserRole | "developer"> {
   try {
     const client = await clerkClient();
     const user = await client.users.getUser(userId);
@@ -126,12 +133,12 @@ export async function GET(
       success: true,
       ipAddress: clientInfo.ipAddress || "unknown",
       userAgent: clientInfo.userAgent || "unknown",
-      metadata: { 
+      metadata: {
         isSelf,
         viewerRole: currentUserRole,
-        accessType: isSelf ? "self_view" : "admin_view"
+        accessType: isSelf ? "self_view" : "admin_view",
       },
-      complianceNote: `User profile accessed for: ${targetId}`
+      complianceNote: `User profile accessed for: ${targetId}`,
     });
 
     console.log(`👤 Fetching user details for: ${targetId}`);
@@ -197,7 +204,9 @@ export async function GET(
         canEdit: permissions.canManageUsers || isSelf,
         canChangeRole: permissions.canManageUsers && !isSelf,
         canDelete:
-          permissions.canManageUsers && !isSelf && userData.role !== "developer",
+          permissions.canManageUsers &&
+          !isSelf &&
+          userData.role !== "developer",
         currentUserRole,
       },
     });
@@ -227,124 +236,124 @@ export const PUT = withAuthParams(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
-    const { id: targetId } = await params;
-    const currentUserRole = await getCurrentUserRole(userId);
-    const permissions = getUserPermissions(currentUserRole);
+      const { id: targetId } = await params;
+      const currentUserRole = await getCurrentUserRole(userId);
+      const permissions = getUserPermissions(currentUserRole);
 
-    // Parse request body
-    const { name, email, role, managerId, isStaff } = await request.json();
+      // Parse request body
+      const { name, email, role, managerId, isStaff } = await request.json();
 
-    // Check permissions
-    const isSelf = targetId === userId;
-    const canEditProfile = permissions.canManageUsers || isSelf;
-    const canChangeRole = permissions.canManageUsers && !isSelf;
+      // Check permissions
+      const isSelf = targetId === userId;
+      const canEditProfile = permissions.canManageUsers || isSelf;
+      const canChangeRole = permissions.canManageUsers && !isSelf;
 
-    if (!canEditProfile) {
-      return NextResponse.json(
-        { error: "Insufficient permissions to update user" },
-        { status: 403 }
-      );
-    }
+      if (!canEditProfile) {
+        return NextResponse.json(
+          { error: "Insufficient permissions to update user" },
+          { status: 403 }
+        );
+      }
 
-    // If changing role, validate permissions
-    if (role && role !== undefined && !canChangeRole) {
-      return NextResponse.json(
-        { error: "Insufficient permissions to change user role" },
-        { status: 403 }
-      );
-    }
+      // If changing role, validate permissions
+      if (role && role !== undefined && !canChangeRole) {
+        return NextResponse.json(
+          { error: "Insufficient permissions to change user role" },
+          { status: 403 }
+        );
+      }
 
-    if (role && !canAssignRole(currentUserRole, role as UserRole)) {
-      return NextResponse.json(
-        { error: `Insufficient permissions to assign role: ${role}` },
-        { status: 403 }
-      );
-    }
+      if (role && !canAssignRole(currentUserRole, role as UserRole)) {
+        return NextResponse.json(
+          { error: `Insufficient permissions to assign role: ${role}` },
+          { status: 403 }
+        );
+      }
 
-    console.log(`🔄 Updating user: ${targetId}`);
+      console.log(`🔄 Updating user: ${targetId}`);
 
-    // Get the target user first
-    let targetUser;
-    if (isUUID(targetId)) {
-      const result = await adminApolloClient.query({
-        query: GET_USER_BY_ID,
-        variables: { id: targetId },
-        fetchPolicy: "network-only",
+      // Get the target user first
+      let targetUser;
+      if (isUUID(targetId)) {
+        const result = await adminApolloClient.query({
+          query: GET_USER_BY_ID,
+          variables: { id: targetId },
+          fetchPolicy: "network-only",
+        });
+        targetUser = result.data?.users_by_pk;
+      } else {
+        const result = await adminApolloClient.query({
+          query: GET_USER_BY_CLERK_ID,
+          variables: { clerkId: targetId },
+          fetchPolicy: "network-only",
+        });
+        targetUser = result.data?.users?.[0];
+      }
+
+      if (!targetUser) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      // Update user in Clerk first
+      const client = await clerkClient();
+      const updateData: any = {};
+
+      if (name) {
+        const nameParts = name.split(" ");
+        updateData.firstName = nameParts[0];
+        updateData.lastName = nameParts.slice(1).join(" ");
+      }
+
+      if (role) {
+        updateData.publicMetadata = {
+          ...targetUser.publicMetadata,
+          role,
+          managerId,
+          isStaff: role === "developer" || role === "manager",
+          lastUpdatedBy: userId,
+          lastUpdatedAt: new Date().toISOString(),
+        };
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        await client.users.updateUser(targetUser.clerk_user_id, updateData);
+        console.log(`✅ Updated Clerk user: ${targetUser.clerk_user_id}`);
+      }
+
+      // If role changed, update via our enhanced role update function
+      if (role && role !== targetUser.role) {
+        await updateUserRole(
+          targetUser.clerk_user_id,
+          role as UserRole,
+          userId,
+          managerId
+        );
+      } else if (name || email) {
+        // Update basic info in database via webhook will be triggered
+        // For immediate response, we could also update database directly here
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: "User updated successfully",
+        user: {
+          id: targetUser.id,
+          clerkId: targetUser.clerk_user_id,
+          name: name || targetUser.name,
+          email: email || targetUser.email,
+          role: role || targetUser.role,
+        },
       });
-      targetUser = result.data?.users_by_pk;
-    } else {
-      const result = await adminApolloClient.query({
-        query: GET_USER_BY_CLERK_ID,
-        variables: { clerkId: targetId },
-        fetchPolicy: "network-only",
-      });
-      targetUser = result.data?.users?.[0];
-    }
-
-    if (!targetUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Update user in Clerk first
-    const client = await clerkClient();
-    const updateData: any = {};
-
-    if (name) {
-      const nameParts = name.split(" ");
-      updateData.firstName = nameParts[0];
-      updateData.lastName = nameParts.slice(1).join(" ");
-    }
-
-    if (role) {
-      updateData.publicMetadata = {
-        ...targetUser.publicMetadata,
-        role,
-        managerId,
-        isStaff: role === "developer" || role === "manager",
-        lastUpdatedBy: userId,
-        lastUpdatedAt: new Date().toISOString(),
-      };
-    }
-
-    if (Object.keys(updateData).length > 0) {
-      await client.users.updateUser(targetUser.clerk_user_id, updateData);
-      console.log(`✅ Updated Clerk user: ${targetUser.clerk_user_id}`);
-    }
-
-    // If role changed, update via our enhanced role update function
-    if (role && role !== targetUser.role) {
-      await updateUserRole(
-        targetUser.clerk_user_id,
-        role as UserRole,
-        userId,
-        managerId
+    } catch (error) {
+      console.error("❌ Error updating user:", error);
+      return NextResponse.json(
+        {
+          error: "Failed to update user",
+          details: error instanceof Error ? error.message : "Unknown error",
+        },
+        { status: 500 }
       );
-    } else if (name || email) {
-      // Update basic info in database via webhook will be triggered
-      // For immediate response, we could also update database directly here
     }
-
-    return NextResponse.json({
-      success: true,
-      message: "User updated successfully",
-      user: {
-        id: targetUser.id,
-        clerkId: targetUser.clerk_user_id,
-        name: name || targetUser.name,
-        email: email || targetUser.email,
-        role: role || targetUser.role,
-      },
-    });
-  } catch (error) {
-    console.error("❌ Error updating user:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to update user",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
-  }
   },
   {
     requiredRole: "viewer",
@@ -365,75 +374,75 @@ export const DELETE = withAuthParams(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
-    const { id: targetId } = await params;
-    const currentUserRole = await getCurrentUserRole(userId);
-    const permissions = getUserPermissions(currentUserRole);
+      const { id: targetId } = await params;
+      const currentUserRole = await getCurrentUserRole(userId);
+      const permissions = getUserPermissions(currentUserRole);
 
-    // Only org_admin can delete users
-    if (currentUserRole !== "org_admin" && currentUserRole !== "developer") {
+      // Only org_admin can delete users
+      if (currentUserRole !== "org_admin" && currentUserRole !== "developer") {
+        return NextResponse.json(
+          { error: "Only administrators can delete users" },
+          { status: 403 }
+        );
+      }
+
+      // Prevent self-deletion
+      if (targetId === userId) {
+        return NextResponse.json(
+          { error: "Cannot delete your own account" },
+          { status: 400 }
+        );
+      }
+
+      console.log(`🗑️ Deleting user: ${targetId}`);
+
+      // Get the target user
+      let targetUser;
+      if (isUUID(targetId)) {
+        const result = await adminApolloClient.query({
+          query: GET_USER_BY_ID,
+          variables: { id: targetId },
+          fetchPolicy: "network-only",
+        });
+        targetUser = result.data?.users_by_pk;
+      } else {
+        const result = await adminApolloClient.query({
+          query: GET_USER_BY_CLERK_ID,
+          variables: { clerkId: targetId },
+          fetchPolicy: "network-only",
+        });
+        targetUser = result.data?.users?.[0];
+      }
+
+      if (!targetUser) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      // Delete from Clerk (this will trigger webhook to delete from database)
+      const client = await clerkClient();
+      await client.users.deleteUser(targetUser.clerk_user_id);
+
+      console.log(`✅ User deleted: ${targetUser.clerk_user_id}`);
+
+      return NextResponse.json({
+        success: true,
+        message: "User deleted successfully",
+        deletedUser: {
+          id: targetUser.id,
+          name: targetUser.name,
+          email: targetUser.email,
+        },
+      });
+    } catch (error) {
+      console.error("❌ Error deleting user:", error);
       return NextResponse.json(
-        { error: "Only administrators can delete users" },
-        { status: 403 }
+        {
+          error: "Failed to delete user",
+          details: error instanceof Error ? error.message : "Unknown error",
+        },
+        { status: 500 }
       );
     }
-
-    // Prevent self-deletion
-    if (targetId === userId) {
-      return NextResponse.json(
-        { error: "Cannot delete your own account" },
-        { status: 400 }
-      );
-    }
-
-    console.log(`🗑️ Deleting user: ${targetId}`);
-
-    // Get the target user
-    let targetUser;
-    if (isUUID(targetId)) {
-      const result = await adminApolloClient.query({
-        query: GET_USER_BY_ID,
-        variables: { id: targetId },
-        fetchPolicy: "network-only",
-      });
-      targetUser = result.data?.users_by_pk;
-    } else {
-      const result = await adminApolloClient.query({
-        query: GET_USER_BY_CLERK_ID,
-        variables: { clerkId: targetId },
-        fetchPolicy: "network-only",
-      });
-      targetUser = result.data?.users?.[0];
-    }
-
-    if (!targetUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Delete from Clerk (this will trigger webhook to delete from database)
-    const client = await clerkClient();
-    await client.users.deleteUser(targetUser.clerk_user_id);
-
-    console.log(`✅ User deleted: ${targetUser.clerk_user_id}`);
-
-    return NextResponse.json({
-      success: true,
-      message: "User deleted successfully",
-      deletedUser: {
-        id: targetUser.id,
-        name: targetUser.name,
-        email: targetUser.email,
-      },
-    });
-  } catch (error) {
-    console.error("❌ Error deleting user:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to delete user",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
-  }
   },
   {
     requiredRole: "org_admin",

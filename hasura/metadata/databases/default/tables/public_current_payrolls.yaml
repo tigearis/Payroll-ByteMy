@@ -29,7 +29,7 @@ select_permissions:
     comment: Consultants can view current payrolls where they are assigned
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access

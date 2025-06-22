@@ -31,7 +31,7 @@ export interface NotesModalProps {
 }
 
 export interface AddNoteProps {
-  entityType: 'payroll' | 'client';
+  entityType: "payroll" | "client";
   entityId: string;
   onSuccess?: () => void;
 }

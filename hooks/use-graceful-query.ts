@@ -6,14 +6,12 @@ import {
   OperationVariables,
 } from "@apollo/client";
 import { useState, useEffect } from "react";
-import {
-  isPermissionError,
-} from "@/lib/apollo";
+import { isPermissionError } from "@/lib/apollo";
 import { handleGraphQLError } from "@/lib/utils/handle-graphql-error";
 
 export interface GracefulQueryOptions<
   TData,
-  TVariables extends OperationVariables
+  TVariables extends OperationVariables,
 > extends Omit<QueryHookOptions<TData, TVariables>, "context"> {
   /**
    * Fallback data to use when permission errors occur
@@ -48,7 +46,7 @@ export interface GracefulQueryResult<TData> {
 
 export function useGracefulQuery<
   TData = any,
-  TVariables extends OperationVariables = OperationVariables
+  TVariables extends OperationVariables = OperationVariables,
 >(
   query: DocumentNode,
   options: GracefulQueryOptions<TData, TVariables> = {}
@@ -74,10 +72,11 @@ export function useGracefulQuery<
 
   useEffect(() => {
     if (error?.graphQLErrors) {
-      const permissionErrors = error.graphQLErrors.filter((err) => 
-        err.message.toLowerCase().includes('permission') ||
-        err.message.toLowerCase().includes('denied') ||
-        err.extensions?.code === 'permission-denied'
+      const permissionErrors = error.graphQLErrors.filter(
+        err =>
+          err.message.toLowerCase().includes("permission") ||
+          err.message.toLowerCase().includes("denied") ||
+          err.extensions?.code === "permission-denied"
       );
 
       if (permissionErrors.length > 0) {
@@ -85,7 +84,10 @@ export function useGracefulQuery<
         setPermissionError(permissionErrors[0]);
 
         if (showPermissionErrors) {
-          console.warn(`Permission error in ${contextName}:`, permissionErrors[0].message);
+          console.warn(
+            `Permission error in ${contextName}:`,
+            permissionErrors[0].message
+          );
         }
       } else {
         setHasPermissionError(false);
@@ -122,7 +124,7 @@ export function useGracefulQuery<
  */
 export function useGracefulMutation<
   TData = any,
-  TVariables extends OperationVariables = OperationVariables
+  TVariables extends OperationVariables = OperationVariables,
 >(mutation: DocumentNode, options: any = {}) {
   const [mutationFn, result] = useMutation<TData, TVariables>(
     mutation,
@@ -134,14 +136,18 @@ export function useGracefulMutation<
       const response = await mutationFn(mutationOptions);
 
       if (response.errors) {
-        const permissionErrors = response.errors.filter((err) => 
-          err.message.toLowerCase().includes('permission') ||
-          err.message.toLowerCase().includes('denied') ||
-          err.extensions?.code === 'permission-denied'
+        const permissionErrors = response.errors.filter(
+          err =>
+            err.message.toLowerCase().includes("permission") ||
+            err.message.toLowerCase().includes("denied") ||
+            err.extensions?.code === "permission-denied"
         );
 
         if (permissionErrors.length > 0) {
-          console.warn(`Permission error in ${options.contextName}:`, permissionErrors[0].message);
+          console.warn(
+            `Permission error in ${options.contextName}:`,
+            permissionErrors[0].message
+          );
           throw new Error(permissionErrors[0].message);
         }
       }
@@ -150,7 +156,10 @@ export function useGracefulMutation<
     } catch (error: any) {
       if (isPermissionError(error)) {
         const parsedError = handleGraphQLError(error);
-        console.warn(`Permission error in ${options.contextName}:`, parsedError.userMessage);
+        console.warn(
+          `Permission error in ${options.contextName}:`,
+          parsedError.userMessage
+        );
       }
       throw error;
     }

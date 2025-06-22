@@ -3,7 +3,6 @@
 # Note: Audit logs are typically created automatically by the system
 # These mutations are for administrative purposes only
 
-
 # Audit Log Management
 mutation CreateAuditLog($object: audit_audit_log_insert_input!) {
   insertAuditLog(object: $object) {
@@ -43,7 +42,6 @@ mutation BulkCreateAuditLogs($objects: [audit_audit_log_insert_input!]!) {
     affected_rows
   }
 }
-
 
 mutation UpdateAuditLog($id: uuid!, $set: audit_audit_log_set_input!) {
   updateAuditLog(pk_columns: { id: $id }, _set: $set) {

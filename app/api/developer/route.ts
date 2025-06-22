@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 
 // SECURITY: Check if in production and return 404
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 export async function GET() {
   // SECURITY: Block in production
@@ -23,7 +23,10 @@ export async function GET() {
 
     const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
     if (claims?.["x-hasura-default-role"] !== "developer") {
-      return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Insufficient permissions" },
+        { status: 403 }
+      );
     }
 
     const GET_ALL_CLIENTS = gql`
@@ -41,7 +44,10 @@ export async function GET() {
     const { data } = await adminApolloClient.query({ query: GET_ALL_CLIENTS });
     return NextResponse.json({ clients: data.clients, success: true });
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -61,8 +67,11 @@ export async function POST(req: NextRequest) {
     // Check for admin role
     const token = await getToken({ template: "hasura" });
     if (token) {
-      const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
-      const role = payload["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"];
+      const payload = JSON.parse(
+        Buffer.from(token.split(".")[1], "base64").toString()
+      );
+      const role =
+        payload["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"];
       if (role !== "developer") {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
@@ -71,7 +80,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { operation } = await req.json();
-    
+
     const GET_ALL_CLIENTS = gql`
       query GetAllClients {
         clients {
@@ -83,7 +92,7 @@ export async function POST(req: NextRequest) {
         }
       }
     `;
-    
+
     if (operation === "get_all_clients") {
       const result = await adminApolloClient.query({ query: GET_ALL_CLIENTS });
       return NextResponse.json({ success: true, clients: result.data.clients });

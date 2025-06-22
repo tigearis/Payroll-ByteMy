@@ -21,16 +21,21 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { createClient } from "graphql-ws";
 
 // Import comprehensive error handling from consolidated utility
-import { 
-  handleGraphQLError, 
-  isPermissionError, 
-  isAuthError, 
+import {
+  handleGraphQLError,
+  isPermissionError,
+  isAuthError,
   getSimpleErrorMessage,
-  type GraphQLErrorDetails 
+  type GraphQLErrorDetails,
 } from "@/lib/utils/handle-graphql-error";
 
 // Re-export for backward compatibility
-export { isPermissionError, isAuthError, getSimpleErrorMessage, type GraphQLErrorDetails };
+export {
+  isPermissionError,
+  isAuthError,
+  getSimpleErrorMessage,
+  type GraphQLErrorDetails,
+};
 
 // Client configuration options
 export interface UnifiedClientOptions {
@@ -111,8 +116,12 @@ function createUnifiedCache(): InMemoryCache {
       User: { keyFields: ["id"] },
       Client: {
         keyFields: (object: any) => {
-          if (object.id) {return ["id"];}
-          if (object.name) {return ["name"];}
+          if (object.id) {
+            return ["id"];
+          }
+          if (object.name) {
+            return ["name"];
+          }
           return false;
         },
       },
@@ -127,8 +136,12 @@ function createUnifiedCache(): InMemoryCache {
     },
     dataIdFromObject: (object: any) => {
       if (object.__typename === "clients") {
-        if (object.id) {return `clients:${object.id}`;}
-        if (object.name) {return `clients:name:${object.name}`;}
+        if (object.id) {
+          return `clients:${object.id}`;
+        }
+        if (object.name) {
+          return `clients:name:${object.name}`;
+        }
         return undefined;
       }
       return object.id ? `${object.__typename}:${object.id}` : undefined;
@@ -144,7 +157,7 @@ function createUnifiedHttpLink(): ApolloLink {
   if (!uri) {
     throw new Error("NEXT_PUBLIC_HASURA_GRAPHQL_URL is not defined");
   }
-  
+
   return createHttpLink({
     uri,
     credentials: "include",
@@ -202,19 +215,23 @@ function createErrorLink(options: UnifiedClientOptions): ApolloLink {
     const apolloError = {
       graphQLErrors: graphQLErrors || [],
       networkError,
-      message: graphQLErrors?.[0]?.message || networkError?.message || "Unknown error"
+      message:
+        graphQLErrors?.[0]?.message || networkError?.message || "Unknown error",
     } as any;
 
     // Use comprehensive error handler for logging and user messaging
     const errorDetails = handleGraphQLError(apolloError);
-    
+
     // Log with operation context
-    console.error(`[Apollo Error in ${operation.operationName || 'operation'}]:`, {
-      type: errorDetails.type,
-      message: errorDetails.message,
-      userMessage: errorDetails.userMessage,
-      suggestions: errorDetails.suggestions
-    });
+    console.error(
+      `[Apollo Error in ${operation.operationName || "operation"}]:`,
+      {
+        type: errorDetails.type,
+        message: errorDetails.message,
+        userMessage: errorDetails.userMessage,
+        suggestions: errorDetails.suggestions,
+      }
+    );
 
     // Handle JWT errors with automatic token refresh for client context
     if (graphQLErrors) {
@@ -234,7 +251,7 @@ function createErrorLink(options: UnifiedClientOptions): ApolloLink {
         }
       }
     }
-    
+
     // Return void to satisfy TypeScript
     return;
   });
@@ -283,7 +300,7 @@ function createWebSocketLink(
         }
       },
       retryAttempts: 5,
-      shouldRetry: (error) => {
+      shouldRetry: error => {
         console.warn(
           "WebSocket connection error, attempting to reconnect:",
           error
@@ -293,7 +310,7 @@ function createWebSocketLink(
       connectionAckWaitTimeout: 10000,
       on: {
         connected: () => console.log("WebSocket connected"),
-        error: (error) => console.error("WebSocket error:", error),
+        error: error => console.error("WebSocket error:", error),
         closed: () => console.log("WebSocket connection closed"),
       },
     })
@@ -316,7 +333,7 @@ function createRetryLink(options: UnifiedClientOptions): ApolloLink {
     },
     attempts: {
       max: 3,
-      retryIf: (error) => {
+      retryIf: error => {
         // Don't retry auth errors - they need token refresh instead
         if (
           error.graphQLErrors?.some(

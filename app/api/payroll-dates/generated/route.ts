@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 
-
 // GraphQL mutation for generating payroll dates
 const GENERATE_PAYROLL_DATES = gql`
   mutation GeneratePayrollDates(
@@ -45,7 +44,7 @@ export async function POST(req: NextRequest) {
         Buffer.from(tokenParts[1], "base64").toString()
       );
       const hasuraClaims = payload["https://hasura.io/jwt/claims"];
-      userRole = hasuraClaims?.["x-hasura-default-role"] || "viewer";
+      userRole = hasuraClaims?.["x-hasura-role"] || "viewer";
     }
 
     // Only allow certain roles to generate dates

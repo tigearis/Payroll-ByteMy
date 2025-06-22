@@ -1,6 +1,6 @@
 /**
  * Shared Common Types
- * 
+ *
  * Cross-domain types and interfaces used throughout the application
  */
 
@@ -68,7 +68,7 @@ export interface CalendarDayInfo {
   weekType?: "A" | "B"; // For fortnightly payrolls
 }
 
-// System configuration types  
+// System configuration types
 export interface FeatureFlag {
   id: string;
   feature_name: string;

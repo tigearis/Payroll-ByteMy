@@ -115,7 +115,7 @@ export function useUserManagement(): UseUserManagementReturn {
         console.log("🔑 Making API request to:", url);
         console.log("🔑 Token present:", !!token);
         console.log("🔑 Token length:", token?.length || 0);
-        
+
         const response = await fetch(url, {
           ...options,
           headers: {
@@ -286,8 +286,8 @@ export function useUserManagement(): UseUserManagementReturn {
 
         if (data.success) {
           // Update the user in local state
-          setUsers((prevUsers) =>
-            prevUsers.map((user) =>
+          setUsers(prevUsers =>
+            prevUsers.map(user =>
               user.id === id || user.clerk_user_id === id
                 ? { ...user, ...userData, updated_at: new Date().toISOString() }
                 : user
@@ -299,7 +299,7 @@ export function useUserManagement(): UseUserManagementReturn {
             currentUser &&
             (currentUser.id === id || currentUser.clerk_user_id === id)
           ) {
-            setCurrentUser((prev) => (prev ? { ...prev, ...userData } : null));
+            setCurrentUser(prev => (prev ? { ...prev, ...userData } : null));
           }
 
           return true;
@@ -332,12 +332,12 @@ export function useUserManagement(): UseUserManagementReturn {
 
         if (data.success) {
           // Remove user from local state
-          setUsers((prevUsers) =>
+          setUsers(prevUsers =>
             prevUsers.filter(
-              (user) => user.id !== id && user.clerk_user_id !== id
+              user => user.id !== id && user.clerk_user_id !== id
             )
           );
-          setTotalCount((prev) => Math.max(0, prev - 1));
+          setTotalCount(prev => Math.max(0, prev - 1));
 
           return true;
         } else {

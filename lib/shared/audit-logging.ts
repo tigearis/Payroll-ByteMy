@@ -9,22 +9,36 @@ export interface AuditLogEntry {
 }
 
 export const auditLogger = {
-  logDataAccess(userId: string, userRole: string, entityType: string, entityId?: string) {
+  logDataAccess(
+    userId: string,
+    userRole: string,
+    entityType: string,
+    entityId?: string
+  ) {
     const entry: AuditLogEntry = {
       userId,
       userRole,
-      action: 'READ',
+      action: "READ",
       entityType,
       timestamp: new Date(),
-      ...(entityId !== undefined && { entityId })
+      ...(entityId !== undefined && { entityId }),
     };
-    
-    console.log(`📊 [AUDIT] Data Access: ${userRole} (${userId}) accessed ${entityType}${entityId ? ` (${entityId})` : ''}`);
+
+    console.log(
+      `📊 [AUDIT] Data Access: ${userRole} (${userId}) accessed ${entityType}${entityId ? ` (${entityId})` : ""}`
+    );
     // TODO: Send to audit logging service
     return entry;
   },
 
-  logDataModification(userId: string, userRole: string, operation: string, entityType: string, entityId?: string, metadata?: Record<string, any>) {
+  logDataModification(
+    userId: string,
+    userRole: string,
+    operation: string,
+    entityType: string,
+    entityId?: string,
+    metadata?: Record<string, any>
+  ) {
     const entry: AuditLogEntry = {
       userId,
       userRole,
@@ -32,11 +46,13 @@ export const auditLogger = {
       entityType,
       timestamp: new Date(),
       ...(entityId !== undefined && { entityId }),
-      ...(metadata !== undefined && { metadata })
+      ...(metadata !== undefined && { metadata }),
     };
-    
-    console.log(`✏️ [AUDIT] Data Modification: ${userRole} (${userId}) ${operation} ${entityType}${entityId ? ` (${entityId})` : ''}`);
+
+    console.log(
+      `✏️ [AUDIT] Data Modification: ${userRole} (${userId}) ${operation} ${entityType}${entityId ? ` (${entityId})` : ""}`
+    );
     // TODO: Send to audit logging service
     return entry;
-  }
+  },
 };

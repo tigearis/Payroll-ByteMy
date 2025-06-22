@@ -23,16 +23,16 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             <div className="mx-auto mb-6 w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
               <AlertTriangle className="w-8 h-8 text-red-600" />
             </div>
-            
+
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
               Application Error
             </h1>
-            
+
             <p className="text-gray-600 mb-6">
-              A critical error occurred that prevented the application from loading.
-              This has been automatically reported to our team.
+              A critical error occurred that prevented the application from
+              loading. This has been automatically reported to our team.
             </p>
-            
+
             {process.env.NODE_ENV === "development" && (
               <details className="text-left mb-6">
                 <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700 mb-2">
@@ -49,7 +49,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                 </pre>
               </details>
             )}
-            
+
             <button
               onClick={reset}
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

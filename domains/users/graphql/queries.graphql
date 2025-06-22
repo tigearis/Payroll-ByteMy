@@ -271,7 +271,11 @@ query GetUserProfileSettings($id: uuid!) {
 
 # API Route Queries - Migrated from inline GraphQL
 
-query GetUsersWithFiltering($limit: Int = 50, $offset: Int = 0, $where: users_bool_exp) {
+query GetUsersWithFiltering(
+  $limit: Int = 50
+  $offset: Int = 0
+  $where: users_bool_exp
+) {
   users(
     limit: $limit
     offset: $offset
@@ -301,7 +305,10 @@ query GetUsersWithFiltering($limit: Int = 50, $offset: Int = 0, $where: users_bo
 }
 
 query GetManagers {
-  users(where: { role: { _in: [developer, manager] } }, order_by: { name: asc }) {
+  users(
+    where: { role: { _in: [developer, manager] } }
+    order_by: { name: asc }
+  ) {
     id
     name
     email

@@ -77,10 +77,14 @@ interface UserFormModalProps {
 
 // Role descriptions
 const ROLE_DESCRIPTIONS = {
-  developer: "Full system access including developer tools and system administration",
-  org_admin: "Organization-wide administration with user and system management capabilities",
-  manager: "Team management with staff oversight and payroll processing authority",
-  consultant: "Payroll processing and client management with limited administrative access",
+  developer:
+    "Full system access including developer tools and system administration",
+  org_admin:
+    "Organization-wide administration with user and system management capabilities",
+  manager:
+    "Team management with staff oversight and payroll processing authority",
+  consultant:
+    "Payroll processing and client management with limited administrative access",
   viewer: "Read-only access to view data and reports",
 };
 
@@ -102,7 +106,7 @@ export function UserFormModal({
   onSuccess,
 }: UserFormModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const {
     managers,
     permissions,
@@ -113,27 +117,28 @@ export function UserFormModal({
 
   // Use appropriate schema based on mode
   const schema = mode === "create" ? createUserSchema : editUserSchema;
-  
+
   const form = useForm({
     // @ts-ignore - Complex union type issue with zodResolver
     resolver: zodResolver(schema),
     // @ts-ignore
-    defaultValues: mode === "create" 
-      ? {
-          firstName: "",
-          lastName: "",
-          email: "",
-          role: "viewer",
-          managerId: "",
-        }
-      : {
-          name: user?.name || "",
-          email: user?.email || "",
-          role: user?.role || "viewer",
-          managerId: user?.manager?.id || "",
-          isStaff: user?.is_staff || false,
-          isActive: user?.lastSignIn ? true : false,
-        },
+    defaultValues:
+      mode === "create"
+        ? {
+            firstName: "",
+            lastName: "",
+            email: "",
+            role: "viewer",
+            managerId: "",
+          }
+        : {
+            name: user?.name || "",
+            email: user?.email || "",
+            role: user?.role || "viewer",
+            managerId: user?.manager?.id || "",
+            isStaff: user?.is_staff || false,
+            isActive: user?.lastSignIn ? true : false,
+          },
   });
 
   // Reset form when user changes (for edit mode)
@@ -238,10 +243,9 @@ export function UserFormModal({
             {mode === "create" ? "Add New Team Member" : `Edit ${user?.name}`}
           </DialogTitle>
           <DialogDescription>
-            {mode === "create" 
+            {mode === "create"
               ? "Add a new team member to your organization. They will receive an invitation email to join."
-              : "Update the team member's information and permissions."
-            }
+              : "Update the team member's information and permissions."}
           </DialogDescription>
         </DialogHeader>
 
@@ -322,7 +326,10 @@ export function UserFormModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <div className="flex items-center gap-2">
@@ -332,28 +339,35 @@ export function UserFormModal({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.entries(ROLE_DESCRIPTIONS).map(([role, description]) => {
-                        const Icon = ROLE_ICONS[role as keyof typeof ROLE_ICONS];
-                        return (
-                          <SelectItem key={role} value={role}>
-                            <div className="flex items-start gap-3">
-                              <Icon className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
-                              <div>
-                                <div className="font-medium capitalize">
-                                  {role.replace('_', ' ')}
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  {description}
+                      {Object.entries(ROLE_DESCRIPTIONS).map(
+                        ([role, description]) => {
+                          const Icon =
+                            ROLE_ICONS[role as keyof typeof ROLE_ICONS];
+                          return (
+                            <SelectItem key={role} value={role}>
+                              <div className="flex items-start gap-3">
+                                <Icon className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
+                                <div>
+                                  <div className="font-medium capitalize">
+                                    {role.replace("_", " ")}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {description}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </SelectItem>
-                        );
-                      })}
+                            </SelectItem>
+                          );
+                        }
+                      )}
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    {ROLE_DESCRIPTIONS[selectedRole as keyof typeof ROLE_DESCRIPTIONS]}
+                    {
+                      ROLE_DESCRIPTIONS[
+                        selectedRole as keyof typeof ROLE_DESCRIPTIONS
+                      ]
+                    }
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -411,7 +425,8 @@ export function UserFormModal({
                       <div className="space-y-0.5">
                         <FormLabel>Staff Member</FormLabel>
                         <FormDescription>
-                          Staff members have access to internal systems and workflows.
+                          Staff members have access to internal systems and
+                          workflows.
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -457,7 +472,9 @@ export function UserFormModal({
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 {mode === "create" ? "Add Team Member" : "Update User"}
               </Button>
             </DialogFooter>

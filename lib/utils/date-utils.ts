@@ -3,18 +3,18 @@
  * Combines payroll date calculations and safe date parsing/formatting
  */
 
-import { 
-  addDays, 
-  isWeekend, 
-  isSameDay, 
-  endOfMonth, 
-  startOfMonth, 
-  addMonths, 
-  addWeeks, 
+import {
+  addDays,
+  isWeekend,
+  isSameDay,
+  endOfMonth,
+  startOfMonth,
+  addMonths,
+  addWeeks,
   setDate,
-  format, 
-  parseISO, 
-  isValid 
+  format,
+  parseISO,
+  isValid,
 } from "date-fns";
 
 // =============================================================================
@@ -22,10 +22,21 @@ import {
 // =============================================================================
 
 // Types that match PostgreSQL ENUM types
-export type PayrollCycleType = 'weekly' | 'fortnightly' | 'bi_monthly' | 'monthly' | 'quarterly';
-export type PayrollDateType = 'fixed_date' | 'eom' | 'som' | 'week_a' | 'week_b' | 'dow';
-export type AdjustmentRule = 'previous' | 'next' | 'nearest';
-export type PayrollStatus = 'Active' | 'Implementation' | 'Inactive';
+export type PayrollCycleType =
+  | "weekly"
+  | "fortnightly"
+  | "bi_monthly"
+  | "monthly"
+  | "quarterly";
+export type PayrollDateType =
+  | "fixed_date"
+  | "eom"
+  | "som"
+  | "week_a"
+  | "week_b"
+  | "dow";
+export type AdjustmentRule = "previous" | "next" | "nearest";
+export type PayrollStatus = "Active" | "Implementation" | "Inactive";
 
 // Interfaces
 export interface Holiday {
@@ -278,11 +289,11 @@ export function isHoliday(date: Date, holidays: Holiday[]): boolean {
     if (!holiday.recurring) {
       return isSameDay(new Date(holiday.date), date);
     }
-    
+
     // For recurring holidays, only check month and day
     const holidayDate = new Date(holiday.date);
     return (
-      holidayDate.getMonth() === date.getMonth() && 
+      holidayDate.getMonth() === date.getMonth() &&
       holidayDate.getDate() === date.getDate()
     );
   });
@@ -293,52 +304,52 @@ export function isHoliday(date: Date, holidays: Holiday[]): boolean {
  */
 export function adjustDate(
   date: Date,
-  rule: AdjustmentRule = 'previous',
+  rule: AdjustmentRule = "previous",
   holidays: Holiday[] = []
 ): Date {
   // If date is already a business day, return as is
   if (!isWeekend(date) && !isHoliday(date, holidays)) {
     return date;
   }
-  
+
   let adjustedDate = new Date(date);
-  
+
   switch (rule) {
-    case 'previous':
+    case "previous":
       // Keep moving backwards until we find a valid business day
       while (isWeekend(adjustedDate) || isHoliday(adjustedDate, holidays)) {
         adjustedDate = addDays(adjustedDate, -1);
       }
       break;
-      
-    case 'next':
+
+    case "next":
       // Keep moving forward until we find a valid business day
       while (isWeekend(adjustedDate) || isHoliday(adjustedDate, holidays)) {
         adjustedDate = addDays(adjustedDate, 1);
       }
       break;
-      
-    case 'nearest':
+
+    case "nearest":
       // Try both directions and take the closest
       let prevDate = new Date(date);
       let nextDate = new Date(date);
-      
+
       while (isWeekend(prevDate) || isHoliday(prevDate, holidays)) {
         prevDate = addDays(prevDate, -1);
       }
-      
+
       while (isWeekend(nextDate) || isHoliday(nextDate, holidays)) {
         nextDate = addDays(nextDate, 1);
       }
-      
+
       // Compare the difference and take the closest
       const diffPrev = date.getTime() - prevDate.getTime();
       const diffNext = nextDate.getTime() - date.getTime();
-      
+
       adjustedDate = diffPrev <= diffNext ? prevDate : nextDate;
       break;
   }
-  
+
   return adjustedDate;
 }
 
@@ -357,18 +368,18 @@ export function calculateNextEftDate(
   dateValue?: number
 ): Date {
   let nextDate = new Date(baseDate);
-  
+
   // First calculate based on cycle type
   switch (cycleType) {
-    case 'weekly':
+    case "weekly":
       nextDate = addWeeks(nextDate, 1);
       break;
-      
-    case 'fortnightly':
+
+    case "fortnightly":
       nextDate = addWeeks(nextDate, 2);
       break;
-      
-    case 'bi_monthly':
+
+    case "bi_monthly":
       // Twice a month - typically on the 15th and last day
       if (nextDate.getDate() < 15) {
         nextDate = setDate(nextDate, 15);
@@ -378,19 +389,19 @@ export function calculateNextEftDate(
         nextDate = setDate(addMonths(nextDate, 1), 15);
       }
       break;
-      
-    case 'monthly':
+
+    case "monthly":
       nextDate = addMonths(nextDate, 1);
       break;
-      
-    case 'quarterly':
+
+    case "quarterly":
       nextDate = addMonths(nextDate, 3);
       break;
   }
-  
+
   // Then adjust based on date type
   switch (dateType) {
-    case 'fixed_date':
+    case "fixed_date":
       if (dateValue && dateValue > 0 && dateValue <= 31) {
         // Adjust to the specified day of month, or the last day if it exceeds
         const lastDayOfMonth = new Date(
@@ -402,23 +413,23 @@ export function calculateNextEftDate(
         nextDate = setDate(nextDate, day);
       }
       break;
-      
-    case 'eom':
+
+    case "eom":
       // End of month
       nextDate = endOfMonth(nextDate);
       break;
-      
-    case 'som':
+
+    case "som":
       // Start of month
       nextDate = startOfMonth(nextDate);
       break;
-      
-    case 'week_a':
-    case 'week_b':
+
+    case "week_a":
+    case "week_b":
       // These would depend on your specific business rules
       // For now, assuming week_a is the first week of the month
       // and week_b is the third week
-      if (dateType === 'week_a') {
+      if (dateType === "week_a") {
         nextDate = startOfMonth(nextDate);
         // Find the first specific weekday of the month
         if (dateValue && dateValue >= 0 && dateValue <= 6) {
@@ -438,8 +449,8 @@ export function calculateNextEftDate(
         }
       }
       break;
-      
-    case 'dow':
+
+    case "dow":
       // Specific day of week
       // If dateValue is provided (0-6, where 0 is Sunday)
       if (dateValue !== undefined && dateValue >= 0 && dateValue <= 6) {
@@ -450,7 +461,7 @@ export function calculateNextEftDate(
       }
       break;
   }
-  
+
   return nextDate;
 }
 
@@ -463,7 +474,7 @@ export function calculatePayrollDates(
   dateType: PayrollDateType,
   dateValue: number | undefined,
   processingDaysBeforeEft: number,
-  adjustmentRule: AdjustmentRule = 'previous',
+  adjustmentRule: AdjustmentRule = "previous",
   holidays: Holiday[] = []
 ): PayrollDate {
   // Calculate the original EFT date
@@ -473,20 +484,24 @@ export function calculatePayrollDates(
     dateType,
     dateValue
   );
-  
+
   // Adjust EFT date if it falls on weekend or holiday
   const adjustedEftDate = adjustDate(originalEftDate, adjustmentRule, holidays);
-  
+
   // Calculate processing date by subtracting days from adjusted EFT date
   const rawProcessingDate = addDays(adjustedEftDate, -processingDaysBeforeEft);
-  
+
   // Adjust processing date if it falls on weekend or holiday
-  const processingDate = adjustDate(rawProcessingDate, adjustmentRule, holidays);
-  
+  const processingDate = adjustDate(
+    rawProcessingDate,
+    adjustmentRule,
+    holidays
+  );
+
   return {
     originalEftDate,
     adjustedEftDate,
-    processingDate
+    processingDate,
   };
 }
 
@@ -499,13 +514,13 @@ export function generatePayrollSchedule(
   dateType: PayrollDateType,
   dateValue: number | undefined,
   processingDaysBeforeEft: number,
-  adjustmentRule: AdjustmentRule = 'previous',
+  adjustmentRule: AdjustmentRule = "previous",
   holidays: Holiday[] = [],
   periodsToGenerate: number = 12
 ): PayrollDate[] {
   const schedule: PayrollDate[] = [];
   let currentDate = new Date(startDate);
-  
+
   for (let i = 0; i < periodsToGenerate; i++) {
     const dates = calculatePayrollDates(
       currentDate,
@@ -516,13 +531,13 @@ export function generatePayrollSchedule(
       adjustmentRule,
       holidays
     );
-    
+
     schedule.push(dates);
-    
+
     // Use adjusted EFT date as the base for the next calculation
     currentDate = dates.adjustedEftDate;
   }
-  
+
   return schedule;
 }
 

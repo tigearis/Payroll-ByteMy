@@ -49,7 +49,7 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: '*'
+      columns: "*"
     comment: Developer role has full insert access
   - role: manager
     permission:
@@ -102,7 +102,7 @@ select_permissions:
     comment: Consultants can view their own leave records
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -171,7 +171,7 @@ update_permissions:
     comment: Users can update their own pending leave requests
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

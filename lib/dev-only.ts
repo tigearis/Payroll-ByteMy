@@ -5,8 +5,11 @@ import { NextResponse } from "next/server";
  * Returns 404 in production
  */
 export function restrictToDevOnly() {
-  if (process.env.NODE_ENV === 'production') {
-    const notFoundResponse = NextResponse.json({ error: "Not Found" }, { status: 404 });
+  if (process.env.NODE_ENV === "production") {
+    const notFoundResponse = NextResponse.json(
+      { error: "Not Found" },
+      { status: 404 }
+    );
     return {
       isDev: false,
       response: notFoundResponse,

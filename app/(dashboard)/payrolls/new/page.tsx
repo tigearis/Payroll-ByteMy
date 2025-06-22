@@ -113,9 +113,15 @@ const MONTH_DAYS = Array.from({ length: 31 }, (_, i) => ({
 function getOrdinalSuffix(num: number): string {
   const j = num % 10;
   const k = num % 100;
-  if (j === 1 && k !== 11) {return "st";}
-  if (j === 2 && k !== 12) {return "nd";}
-  if (j === 3 && k !== 13) {return "rd";}
+  if (j === 1 && k !== 11) {
+    return "st";
+  }
+  if (j === 2 && k !== 12) {
+    return "nd";
+  }
+  if (j === 3 && k !== 13) {
+    return "rd";
+  }
   return "th";
 }
 
@@ -123,8 +129,12 @@ function getOrdinalSuffix(num: number): string {
 function getBusinessWeekday(jsDay: number): number {
   // JavaScript: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
   // Business: 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday
-  if (jsDay === 0) {return 0;} // Sunday - not a business day
-  if (jsDay === 6) {return 0;} // Saturday - not a business day
+  if (jsDay === 0) {
+    return 0;
+  } // Sunday - not a business day
+  if (jsDay === 6) {
+    return 0;
+  } // Saturday - not a business day
   return jsDay; // Monday=1, Tuesday=2, etc.
 }
 
@@ -284,7 +294,7 @@ function EnhancedCalendar({
     weeks.push(days);
 
     // Stop if we've covered all days of the month and some of next
-    if (days.some((d) => d.date.getMonth() > currentMonth)) {
+    if (days.some(d => d.date.getMonth() > currentMonth)) {
       break;
     }
   }
@@ -346,7 +356,7 @@ function EnhancedCalendar({
       {/* Calendar grid */}
       <div className="grid grid-cols-7 gap-1 text-center text-sm">
         {/* Header */}
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((dayName) => (
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(dayName => (
           <div key={dayName} className="p-2 font-medium text-gray-500">
             {dayName}
           </div>
@@ -385,8 +395,8 @@ function EnhancedCalendar({
                     ? "bg-blue-300 border-blue-500 border-2 ring-2 ring-blue-200"
                     : "bg-blue-100 border border-blue-300 hover:bg-blue-150"
                   : isSelected
-                  ? "bg-green-300 border-green-500 border-2 ring-2 ring-green-200"
-                  : "bg-green-100 border border-green-300 hover:bg-green-150";
+                    ? "bg-green-300 border-green-500 border-2 ring-2 ring-green-200"
+                    : "bg-green-100 border border-green-300 hover:bg-green-150";
               }
             } else {
               // Fixed date mode
@@ -430,8 +440,8 @@ function EnhancedCalendar({
                         ][dayInfo.businessWeekday - 1]
                       }`
                     : mode === "fortnightly" && isDisabled
-                    ? "Weekends not allowed for payroll"
-                    : undefined
+                      ? "Weekends not allowed for payroll"
+                      : undefined
                 }
               >
                 {dayInfo.day}
@@ -450,7 +460,7 @@ function EnhancedCalendar({
                 <div>
                   <span className="font-medium">Week {selectedWeek}</span>
                   {calculateFortnightlyWeeks()
-                    .find((w) => w.value === selectedWeek)
+                    .find(w => w.value === selectedWeek)
                     ?.label.includes("Current") && (
                     <span className="ml-2 text-green-600">(This week)</span>
                   )}
@@ -528,12 +538,12 @@ export default function NewPayrollPage() {
 
   // Mutation for generating payroll dates after creation
   const [generatePayrollDates] = useMutation(GENERATE_PAYROLL_DATES_MUTATION, {
-    onCompleted: (data) => {
+    onCompleted: data => {
       const count = data?.generate_payroll_dates?.length || 0;
       toast.success(`Successfully generated ${count} payroll dates`);
       setIsLoading(false);
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to generate dates: ${error.message}`);
       setIsLoading(false);
     },
@@ -541,7 +551,7 @@ export default function NewPayrollPage() {
 
   // Handle input changes
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [field]: value,
     }));
@@ -574,7 +584,7 @@ export default function NewPayrollPage() {
 
   // Reset date type and value when cycle changes
   const handleCycleChange = (value: string) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       cycleId: value,
       dateTypeId: value === "weekly" || value === "fortnightly" ? "DOW" : "",
@@ -611,14 +621,14 @@ export default function NewPayrollPage() {
           <Label htmlFor="weekday">Day of Week</Label>
           <Select
             value={formData.dateValue}
-            onValueChange={(value) => handleInputChange("dateValue", value)}
+            onValueChange={value => handleInputChange("dateValue", value)}
             disabled={isLoading}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select day of week..." />
             </SelectTrigger>
             <SelectContent>
-              {WEEKDAYS.map((weekday) => (
+              {WEEKDAYS.map(weekday => (
                 <SelectItem key={weekday.value} value={weekday.value}>
                   {weekday.label}
                 </SelectItem>
@@ -638,8 +648,8 @@ export default function NewPayrollPage() {
             mode="fortnightly"
             selectedWeek={formData.fortnightlyWeek}
             selectedDay={formData.dateValue}
-            onWeekSelect={(week) => handleInputChange("fortnightlyWeek", week)}
-            onDaySelect={(day) => handleInputChange("dateValue", day)}
+            onWeekSelect={week => handleInputChange("fortnightlyWeek", week)}
+            onDaySelect={day => handleInputChange("dateValue", day)}
           />
         </div>
       );
@@ -691,7 +701,7 @@ export default function NewPayrollPage() {
             <EnhancedCalendar
               mode="fixed"
               selectedDay={formData.dateValue}
-              onDaySelect={(day) => handleInputChange("dateValue", day)}
+              onDaySelect={day => handleInputChange("dateValue", day)}
             />
           </div>
         );
@@ -812,7 +822,9 @@ export default function NewPayrollPage() {
 
     // Bi-monthly, monthly, quarterly: need date type
     if (["bi_monthly", "monthly", "quarterly"].includes(formData.cycleId)) {
-      if (!formData.dateTypeId) {return false;}
+      if (!formData.dateTypeId) {
+        return false;
+      }
 
       // If fixed date type selected, need day value
       if (formData.dateTypeId === "fixed") {
@@ -865,9 +877,7 @@ export default function NewPayrollPage() {
                 <Label htmlFor="client">Client *</Label>
                 <Select
                   value={formData.clientId}
-                  onValueChange={(value) =>
-                    handleInputChange("clientId", value)
-                  }
+                  onValueChange={value => handleInputChange("clientId", value)}
                   disabled={isLoading}
                 >
                   <SelectTrigger className="mt-1">
@@ -908,14 +918,14 @@ export default function NewPayrollPage() {
                   <Label htmlFor="cycle-id">Payroll Cycle *</Label>
                   <Select
                     value={formData.cycleId}
-                    onValueChange={(value) => handleCycleChange(value)}
+                    onValueChange={value => handleCycleChange(value)}
                     disabled={isLoading}
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select cycle..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {PAYROLL_CYCLES.map((cycle) => (
+                      {PAYROLL_CYCLES.map(cycle => (
                         <SelectItem key={cycle.id} value={cycle.id}>
                           {cycle.name}
                         </SelectItem>
@@ -932,14 +942,14 @@ export default function NewPayrollPage() {
                     <Label htmlFor="date-type-id">Date Type *</Label>
                     <Select
                       value={formData.dateTypeId}
-                      onValueChange={(value) => handleDateTypeChange(value)}
+                      onValueChange={value => handleDateTypeChange(value)}
                       disabled={isLoading}
                     >
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="Select date type..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableDateTypes.map((dateType) => (
+                        {availableDateTypes.map(dateType => (
                           <SelectItem key={dateType.id} value={dateType.id}>
                             {dateType.name}
                           </SelectItem>
@@ -1016,7 +1026,7 @@ export default function NewPayrollPage() {
                 <Label htmlFor="primary-consultant">Primary Consultant</Label>
                 <Select
                   value={formData.primaryConsultantId}
-                  onValueChange={(value) =>
+                  onValueChange={value =>
                     handleInputChange("primaryConsultantId", value)
                   }
                   disabled={isLoading}
@@ -1042,7 +1052,7 @@ export default function NewPayrollPage() {
                 <Label htmlFor="backup-consultant">Backup Consultant</Label>
                 <Select
                   value={formData.backupConsultantId || "none"}
-                  onValueChange={(value) =>
+                  onValueChange={value =>
                     handleInputChange(
                       "backupConsultantId",
                       value === "none" ? "" : value
@@ -1088,9 +1098,7 @@ export default function NewPayrollPage() {
                 <Label htmlFor="manager">Manager</Label>
                 <Select
                   value={formData.managerId}
-                  onValueChange={(value) =>
-                    handleInputChange("managerId", value)
-                  }
+                  onValueChange={value => handleInputChange("managerId", value)}
                   disabled={isLoading}
                 >
                   <SelectTrigger className="mt-1">

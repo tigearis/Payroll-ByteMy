@@ -4,10 +4,8 @@ import { format, addMonths } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
 import { UpdatePayrollStatusDocument as UPDATE_PAYROLL_STATUS } from "@/domains/payrolls";
-import { GENERATE_PAYROLL_DATES } from "@/graphql/mutations/payrolls/generatePayrollDates";
+import { GeneratePayrollDatesDocument as GENERATE_PAYROLL_DATES } from "@/domains/payrolls/graphql/generated";
 import { serverApolloClient } from "@/lib/apollo/unified-client";
-
-
 
 export async function POST(req: NextRequest) {
   try {
@@ -68,9 +66,9 @@ export async function POST(req: NextRequest) {
       try {
         console.log(`Processing payroll: ${payrollId}`);
 
-        // Generate dates using Apollo mutation
-        const { data: dateData, errors: dateErrors } = await client.mutate({
-          mutation: GENERATE_PAYROLL_DATES,
+        // Generate dates using Apollo query
+        const { data: dateData, errors: dateErrors } = await client.query({
+          query: GENERATE_PAYROLL_DATES,
           variables: {
             payrollId,
             startDate: formattedStart,
@@ -81,6 +79,7 @@ export async function POST(req: NextRequest) {
               authorization: `Bearer ${token}`,
             },
           },
+          fetchPolicy: "network-only",
         });
 
         if (dateErrors) {
@@ -91,7 +90,7 @@ export async function POST(req: NextRequest) {
           results.failed++;
           results.errors.push({
             payrollId,
-            error: dateErrors.map((e) => e.message).join(", "),
+            error: dateErrors.map(e => e.message).join(", "),
           });
           continue;
         }

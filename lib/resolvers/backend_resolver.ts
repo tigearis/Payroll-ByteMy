@@ -40,8 +40,12 @@ const pool = new Pool({
 
 // Helper function for error message extraction
 function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {return error.message;}
-  if (typeof error === "string") {return error;}
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
   return String(error);
 }
 
@@ -380,16 +384,16 @@ export const hasuraActionHandler = {
       })
     );
 
-    const successful = results.filter((r) => r.status === "fulfilled");
-    const failed = results.filter((r) => r.status === "rejected");
+    const successful = results.filter(r => r.status === "fulfilled");
+    const failed = results.filter(r => r.status === "rejected");
 
     return {
       success: failed.length === 0,
       message: `${successful.length} changes processed successfully${
         failed.length > 0 ? `, ${failed.length} failed` : ""
       }`,
-      errors: failed.map((f) => f.reason?.message || "Unknown error"),
-      affected_assignments: successful.map((s) => s.value),
+      errors: failed.map(f => f.reason?.message || "Unknown error"),
+      affected_assignments: successful.map(s => s.value),
     };
   },
 };

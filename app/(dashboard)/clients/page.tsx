@@ -74,14 +74,14 @@ function MultiSelect({
 
   const handleToggle = (value: string) => {
     const newSelected = selected.includes(value)
-      ? selected.filter((item) => item !== value)
+      ? selected.filter(item => item !== value)
       : [...selected, value];
     onSelectionChange(newSelected);
   };
 
   const selectedLabels = options
-    .filter((option) => selected.includes(option.value))
-    .map((option) => option.label);
+    .filter(option => selected.includes(option.value))
+    .map(option => option.label);
 
   const displayText =
     selectedLabels.length > 0
@@ -105,7 +105,7 @@ function MultiSelect({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <div className="max-h-60 overflow-auto">
-          {options.map((option) => (
+          {options.map(option => (
             <div
               key={option.value}
               className="flex items-center space-x-2 p-2 hover:bg-accent cursor-pointer"
@@ -602,7 +602,7 @@ export default function ClientsPage() {
                 <Input
                   placeholder="Search clients, contacts, emails, phone..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="pl-10 w-[300px]"
                 />
               </div>
@@ -638,7 +638,7 @@ export default function ClientsPage() {
               {/* Sort Dropdown */}
               <Select
                 value={`${sortField}-${sortDirection}`}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   const [field, direction] = value.split("-");
                   setSortField(field);
                   setSortDirection(direction as "asc" | "desc");

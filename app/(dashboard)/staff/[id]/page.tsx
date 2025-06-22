@@ -42,24 +42,36 @@ export default function UserInfoPage() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
-  const { hasAdminAccess, isManager, isDeveloper, isConsultant } = useUserRole();
+  const { hasAdminAccess, isManager, isDeveloper, isConsultant } =
+    useUserRole();
   const { loading, error, data } = useQuery(GET_STAFF_BY_ID, {
     variables: { id },
     skip: !id, // Skip query if id is not available
   });
 
-  if (!id) {return <p>Loading...</p>;}
-  if (loading) {return <p>Loading...</p>;}
-  if (error) {return <p>Error loading user data.</p>;}
+  if (!id) {
+    return <p>Loading...</p>;
+  }
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+  if (error) {
+    return <p>Error loading user data.</p>;
+  }
 
   const user = data.users.find((u: UserDetails) => u.id === id);
-  if (!user) {return <p>User not found.</p>;}
+  if (!user) {
+    return <p>User not found.</p>;
+  }
 
-  const canEditLeave = hasAdminAccess || isManager || isDeveloper || isConsultant;
+  const canEditLeave =
+    hasAdminAccess || isManager || isDeveloper || isConsultant;
 
   return (
     <div className="max-w-3xl mx-auto mt-10">
-      <h2 className="text-2xl font-semibold mb-4">{user.name}&apos;s Profile</h2>
+      <h2 className="text-2xl font-semibold mb-4">
+        {user.name}&apos;s Profile
+      </h2>
 
       <Table>
         <TableHead>

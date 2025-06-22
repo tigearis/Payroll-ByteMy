@@ -33,7 +33,10 @@ import {
 } from "@/components/ui/table";
 import { useSmartPolling } from "@/hooks/use-polling";
 
-import { GetPayrollsDocument, GetPayrollsQuery } from "@/domains/payrolls/graphql/generated/graphql";
+import {
+  GetPayrollsDocument,
+  GetPayrollsQuery,
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 interface PayrollListCardProps {
   searchQuery: string;
@@ -57,7 +60,7 @@ export function PayrollListCard({
       nextFetchPolicy: "cache-first",
       pollInterval: 45000, // Poll every 45 seconds
       errorPolicy: "all", // Return partial data even if there are errors
-      onError: (error) => {
+      onError: error => {
         console.error("GraphQL Error in PayrollListCard:", error);
         // Log specific details about the error
         if (error.graphQLErrors) {
@@ -82,7 +85,9 @@ export function PayrollListCard({
     }
   );
 
-  if (loading) {return <div>Loading payrolls...</div>;}
+  if (loading) {
+    return <div>Loading payrolls...</div>;
+  }
   if (error && !data) {
     console.error("PayrollListCard Error:", error.message);
     return (
@@ -95,8 +100,10 @@ export function PayrollListCard({
   const payrolls = data?.payrolls || [];
 
   // Add safety check for incomplete data
-  const safePayrolls = payrolls.filter((payroll) => {
-    if (!payroll) {return false;}
+  const safePayrolls = payrolls.filter(payroll => {
+    if (!payroll) {
+      return false;
+    }
     // Ensure client has at least an id
     if (payroll.client && !payroll.client.id) {
       console.warn("Skipping payroll with incomplete client data:", payroll);
@@ -106,16 +113,14 @@ export function PayrollListCard({
   });
 
   // Get payrolls filtered by search term (used as base for other filters)
-  const searchFilteredPayrolls = safePayrolls.filter((payroll) => {
+  const searchFilteredPayrolls = safePayrolls.filter(payroll => {
     const searchTermLower = localSearchQuery.toLowerCase();
     return (
       payroll.name?.toLowerCase().includes(searchTermLower) ||
       (payroll.client?.name &&
         payroll.client.name.toLowerCase().includes(searchTermLower)) ||
       (payroll.primaryConsultant?.name &&
-        payroll.primaryConsultant.name
-          .toLowerCase()
-          .includes(searchTermLower))
+        payroll.primaryConsultant.name.toLowerCase().includes(searchTermLower))
     );
   });
 
@@ -123,7 +128,7 @@ export function PayrollListCard({
   const availableClients = Array.from(
     new Map(
       searchFilteredPayrolls
-        .filter((p) => {
+        .filter(p => {
           // Include if payroll matches the selected consultant
           const isConsultantMatch =
             selectedConsultant === "all" ||
@@ -136,7 +141,7 @@ export function PayrollListCard({
 
           return isConsultantMatch && isPayrollMatch && p.client;
         })
-        .map((p) => [p.client?.id, { id: p.client?.id, name: p.client?.name }])
+        .map(p => [p.client?.id, { id: p.client?.id, name: p.client?.name }])
     ).values()
   );
 
@@ -144,7 +149,7 @@ export function PayrollListCard({
   const availableConsultants = Array.from(
     new Map(
       searchFilteredPayrolls
-        .filter((p) => {
+        .filter(p => {
           // Include if payroll matches the selected client
           const isClientMatch =
             selectedClient === "all" ||
@@ -156,7 +161,7 @@ export function PayrollListCard({
 
           return isClientMatch && isPayrollMatch && p.primaryConsultant;
         })
-        .map((p) => [
+        .map(p => [
           p.primaryConsultant?.id,
           {
             id: p.primaryConsultant?.id,
@@ -167,7 +172,7 @@ export function PayrollListCard({
   );
 
   // Extract unique payrolls based on current filters (excluding payroll filter itself)
-  const availablePayrolls = searchFilteredPayrolls.filter((p) => {
+  const availablePayrolls = searchFilteredPayrolls.filter(p => {
     // Include if payroll matches the selected client
     const isClientMatch =
       selectedClient === "all" ||
@@ -183,7 +188,7 @@ export function PayrollListCard({
   });
 
   // Filter payrolls based on criteria
-  const filteredPayrolls = safePayrolls.filter((payroll) => {
+  const filteredPayrolls = safePayrolls.filter(payroll => {
     // Text search filter - case insensitive
     const searchTermLower = localSearchQuery.toLowerCase();
     const textMatch =
@@ -191,9 +196,7 @@ export function PayrollListCard({
       (payroll.client?.name &&
         payroll.client.name.toLowerCase().includes(searchTermLower)) ||
       (payroll.primaryConsultant?.name &&
-        payroll.primaryConsultant.name
-          .toLowerCase()
-          .includes(searchTermLower));
+        payroll.primaryConsultant.name.toLowerCase().includes(searchTermLower));
 
     // Client filter
     const isClientMatch =
@@ -215,12 +218,14 @@ export function PayrollListCard({
 
   // Function to format name (removes underscores, capitalizes, and keeps DOW/EOM/SOM uppercase)
   const formatName = (name?: string) => {
-    if (!name) {return "N/A";}
+    if (!name) {
+      return "N/A";
+    }
 
     return name
       .replace(/_/g, " ") // Remove underscores
       .split(" ")
-      .map((word) => {
+      .map(word => {
         const specialCases = ["DOW", "EOM", "SOM"];
         return specialCases.includes(word.toUpperCase())
           ? word.toUpperCase() // Keep these fully capitalized
@@ -231,7 +236,9 @@ export function PayrollListCard({
 
   // Function to format the day of week
   const formatDayOfWeek = (dayValue?: number) => {
-    if (dayValue === undefined || dayValue === null) {return "N/A";}
+    if (dayValue === undefined || dayValue === null) {
+      return "N/A";
+    }
 
     const days = [
       "Sunday",
@@ -247,10 +254,14 @@ export function PayrollListCard({
 
   // Function to format fixed date with ordinal suffix
   const formatFixedDate = (dateValue?: number) => {
-    if (dateValue === undefined || dateValue === null) {return "N/A";}
+    if (dateValue === undefined || dateValue === null) {
+      return "N/A";
+    }
 
     const suffix = (num: number) => {
-      if (num >= 11 && num <= 13) {return "th";}
+      if (num >= 11 && num <= 13) {
+        return "th";
+      }
 
       switch (num % 10) {
         case 1:
@@ -269,7 +280,9 @@ export function PayrollListCard({
 
   // Function to display the appropriate date value based on date type
   const displayDateValue = (payroll: any) => {
-    if (!payroll.payrollDateType?.name) {return "N/A";}
+    if (!payroll.payrollDateType?.name) {
+      return "N/A";
+    }
 
     const dateTypeName = payroll.payrollDateType.name.toUpperCase();
 
@@ -301,7 +314,7 @@ export function PayrollListCard({
               placeholder="Search payrolls..."
               className="max-w-sm"
               value={localSearchQuery}
-              onChange={(e) => {
+              onChange={e => {
                 setLocalSearchQuery(e.target.value);
                 onSearchChange(e.target.value);
               }}
@@ -311,12 +324,12 @@ export function PayrollListCard({
           <div className="flex flex-wrap items-center gap-2 ml-auto">
             <Select
               value={selectedClient}
-              onValueChange={(value) => {
+              onValueChange={value => {
                 setSelectedClient(value);
                 // Reset payroll filter if the selected client doesn't have the currently selected payroll
                 if (value !== "all" && selectedPayroll !== "all") {
                   const payrollBelongsToClient = payrolls.some(
-                    (p) =>
+                    p =>
                       p.id.toString() === selectedPayroll &&
                       p.client?.id.toString() === value
                   );
@@ -331,7 +344,7 @@ export function PayrollListCard({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Clients</SelectItem>
-                {availableClients.map((client) => (
+                {availableClients.map(client => (
                   <SelectItem key={client.id} value={client.id.toString()}>
                     {client.name}
                   </SelectItem>
@@ -345,7 +358,7 @@ export function PayrollListCard({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Payrolls</SelectItem>
-                {availablePayrolls.map((payroll) => (
+                {availablePayrolls.map(payroll => (
                   <SelectItem key={payroll.id} value={payroll.id.toString()}>
                     {payroll.name}
                   </SelectItem>
@@ -355,12 +368,12 @@ export function PayrollListCard({
 
             <Select
               value={selectedConsultant}
-              onValueChange={(value) => {
+              onValueChange={value => {
                 setSelectedConsultant(value);
                 // Reset payroll filter if the selected consultant doesn't work with the currently selected payroll
                 if (value !== "all" && selectedPayroll !== "all") {
                   const consultantWorksWithPayroll = payrolls.some(
-                    (p) =>
+                    p =>
                       p.id.toString() === selectedPayroll &&
                       p.primaryConsultant?.id.toString() === value
                   );
@@ -375,7 +388,7 @@ export function PayrollListCard({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Consultants</SelectItem>
-                {availableConsultants.map((consultant) => (
+                {availableConsultants.map(consultant => (
                   <SelectItem
                     key={consultant.id}
                     value={consultant.id?.toString() || ""}
@@ -408,7 +421,7 @@ export function PayrollListCard({
           </TableHeader>
           <TableBody>
             {filteredPayrolls.length > 0 ? (
-              filteredPayrolls.map((payroll) => (
+              filteredPayrolls.map(payroll => (
                 <TableRow key={payroll.id}>
                   <TableCell>
                     <Link

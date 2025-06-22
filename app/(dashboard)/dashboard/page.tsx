@@ -46,7 +46,9 @@ export default function DashboardPage() {
     data: statsData,
     loading: statsLoading,
     error: statsError,
-  } = useQuery<DashboardStatsData>(GetDashboardStatsDocument, { errorPolicy: "all" });
+  } = useQuery<DashboardStatsData>(GetDashboardStatsDocument, {
+    errorPolicy: "all",
+  });
 
   // Fetch upcoming payrolls for the count and next payroll date
   const { data: upcomingData, loading: upcomingLoading } =
@@ -69,7 +71,9 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+            Dashboard
+          </h1>
           <p className="text-gray-600">
             Welcome back! Here&apos;s an overview of your payroll operations.
           </p>
