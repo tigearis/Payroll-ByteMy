@@ -277,7 +277,6 @@ Key environment variables (see `.env.example` for full list):
 - **Configuration**: Shared scalars defined in `config/codegen.ts`
 - **Apollo Integration**: Generated hooks include authentication context
 
-
 ## Security Audit Guidelines
 
 When performing security audits, focus on these integration points:
