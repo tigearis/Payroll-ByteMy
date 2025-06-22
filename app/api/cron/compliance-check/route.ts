@@ -151,10 +151,10 @@ export async function POST(request: NextRequest) {
     }
 
     const findings: any = {
-      inactive_users: data.inactive_users.aggregate.count,
-      admin_count: data.admin_users.aggregate.count,
-      unresolved_security_events: data.unresolved_events.aggregate.count,
-      old_audit_logs: data.old_audit_logs.aggregate.count,
+      inactive_users: data.inactiveusers.aggregate.count,
+      admin_count: data.adminusers.aggregate.count,
+      unresolved_security_events: data.unresolvedevents.aggregate.count,
+      old_audit_logs: data.oldaudit_logs.aggregate.count,
     };
 
     // Determine overall status
@@ -282,7 +282,7 @@ export async function POST(request: NextRequest) {
       ipAddress: catchErrorClientInfo.ipAddress || "unknown",
       userAgent: catchErrorClientInfo.userAgent || "unknown",
       metadata: {
-        message: "compliance_check_error",
+        message: "compliance_checkerror",
         error: error instanceof Error ? error.message : String(error),
       },
     });

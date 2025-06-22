@@ -35,14 +35,14 @@ export function updatePayrollInCache(
       fragmentName: "PayrollFields",
       data: {
         ...existingPayroll,
-        ..._data,
+        ...data,
         __typename: "payrolls", // Ensure typename is preserved
       },
     });
 
     return true;
-  } catch (_error) {
-    console.error(`Error updating payroll ${payrollId} in cache:`, _error);
+  } catch (error) {
+    console.error(`Error updating payroll ${payrollId} in cache:`, error);
     return false;
   }
 }
@@ -75,16 +75,16 @@ export function updatePayrollDateInCache(
       fragmentName: "PayrollDateFields",
       data: {
         ...existingDate,
-        ..._data,
+        ...data,
         __typename: "payroll_dates",
       },
     });
 
     return true;
-  } catch (_error) {
+  } catch (error) {
     console.error(
       `Error updating payroll date ${payrollDateId} in cache:`,
-      _error
+      error
     );
     return false;
   }
@@ -130,8 +130,8 @@ export function addPayrollToCache(
     });
 
     return true;
-  } catch (_error) {
-    console.error("Error adding payroll to cache:", _error);
+  } catch (error) {
+    console.error("Error adding payroll to cache:", error);
     return false;
   }
 }
@@ -151,8 +151,8 @@ export function removePayrollFromCache(
     cache.gc();
 
     return true;
-  } catch (_error) {
-    console.error(`Error removing payroll ${payrollId} from cache:`, _error);
+  } catch (error) {
+    console.error(`Error removing payroll ${payrollId} from cache:`, error);
     return false;
   }
 }

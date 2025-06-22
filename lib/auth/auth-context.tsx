@@ -65,7 +65,7 @@ const PERMISSIONS = {
   // System administration
   SYSTEM_ADMIN: "system_admin",
   MANAGE_SETTINGS: "manage_settings",
-  MANAGE_ROLES: "manage_roles",
+  MANAGE_ROLES: "manageroles",
 
   // User management
   MANAGE_USERS: "manage_users",

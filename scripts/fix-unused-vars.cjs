@@ -75,12 +75,12 @@ const PROBLEMATIC_FILES = [
 const SPECIFIC_FIXES = {
   // Unused function parameters
   request: "_request",
-  error: "_error",
+  error: "error",
   req: "_req",
   session: "_session",
   node: "_node",
   existing: "_existing",
-  userId: "_userId",
+  userId: "userId",
   role: "_role",
   userError: "_userError",
   isStaff: "_isStaff",
@@ -95,9 +95,9 @@ const SPECIFIC_FIXES = {
   permissionError: "_permissionError",
   useEffect: "_useEffect",
   data: "_data",
-  loading: "_loading",
+  loading: "loading",
   queryName: "_queryName",
-  ipAddress: "_ipAddress",
+  ipAddress: "ipAddress",
   CommitPayrollAssignmentsResponse: "_CommitPayrollAssignmentsResponse",
 
   // Unused imports
@@ -107,7 +107,7 @@ const SPECIFIC_FIXES = {
   protectAdminRoute: "_protectAdminRoute",
   SecureErrorHandler: "_SecureErrorHandler",
   getCurrentUserRole: "_getCurrentUserRole",
-  NextResponse: "_NextResponse",
+  NextResponse: "NextResponse",
   validateRequiredFields: "_validateRequiredFields",
   verifyWebhook: "_verifyWebhook",
   Sidebar: "_Sidebar",

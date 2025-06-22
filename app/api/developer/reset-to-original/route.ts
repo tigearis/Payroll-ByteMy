@@ -1,4 +1,4 @@
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Pool } from "pg";
 
 import { withAuth } from "@/lib/auth/api-auth";
@@ -51,14 +51,14 @@ export const POST = withAuth(
           deletedVersions: deletedVersions || 0,
           resetPayrolls: resetPayrolls || 0,
         });
-      } catch (_error) {
+      } catch (error) {
         await client.query("ROLLBACK");
         throw error;
       } finally {
         client.release();
       }
     } catch (error: any) {
-      console.error("❌ Error resetting to original state:", _error);
+      console.error("❌ Error resetting to original state:", error);
       return NextResponse.json(
         {
           success: false,

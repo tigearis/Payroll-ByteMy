@@ -227,7 +227,7 @@ export class CustomAuthFlow {
       role: CustomRole.EXTERNAL_AUDITOR,
       permissions: [
         CUSTOM_PERMISSIONS.EXTERNAL_AUDIT.READ_ALL,
-        CUSTOM_PERMISSIONS.EXTERNAL_AUDIT.EXPORT_DATA,
+        CUSTOM_PERMISSIONS.EXTERNAL_AUDIT.EXPORTdata,
       ],
     };
   }

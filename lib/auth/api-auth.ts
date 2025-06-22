@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { auth } from "@clerk/nextjs/server";
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { rateLimiter } from "../middleware/rate-limiter";
 import {
@@ -9,7 +9,7 @@ import {
 } from "../security/auth-audit";
 import { monitorRequest } from "../security/enhanced-route-monitor";
 // Import comprehensive permission system
-import { _roleHasPermission, Role, ROLE_HIERARCHY } from "./permissions";
+import { Role, ROLE_HIERARCHY } from "./permissions";
 
 /**
  * Represents an authenticated user session with role and permission information
@@ -59,10 +59,10 @@ export function hasPermission(userRole: string, requiredRole: string): boolean {
  * @example
  * ```typescript
  * // Require minimum manager role
- * const _session = await requireAuth(_request, { requiredRole: 'manager' });
+ * const session = await requireAuth(request, { requiredRole: 'manager' });
  *
  * // Allow only specific roles
- * const _session = await requireAuth(_request, { allowedRoles: ['admin', 'developer'] });
+ * const session = await requireAuth(request, { allowedRoles: ['admin', 'developer'] });
  * ```
  */
 export async function requireAuth(
@@ -73,9 +73,9 @@ export async function requireAuth(
   }
 ): Promise<AuthSession> {
   try {
-    const { _userId, sessionClaims } = await auth();
+    const { userId, sessionClaims } = await auth();
 
-    if (!_userId) {
+    if (!userId) {
       throw new Error("Unauthorized: No active session");
     }
 
@@ -87,8 +87,8 @@ export async function requireAuth(
         (sessionClaims?.metadata as any)?.role ||
         // Fallback to default role only if no actual role found
         hasuraClaims?.["x-hasura-default-role"] ||
-        (sessionClaims?.metadata as any)?.default_role ||
-        (sessionClaims as any)?._role) as string;
+        (sessionClaims?.metadata as any)?.defaultrole ||
+        (sessionClaims as any)?.role) as string;
 
     // Debug logging for role extraction
     console.log("🔍 Auth Debug (V1/V2 compatible):", {
@@ -100,7 +100,7 @@ export async function requireAuth(
           : "unknown",
       hasMetadata: !!sessionClaims?.metadata,
       hasHasuraClaims: !!hasuraClaims,
-      v2DefaultRole: (sessionClaims?.metadata as any)?.default_role,
+      v2DefaultRole: (sessionClaims?.metadata as any)?.defaultrole,
       v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
       v1Role: hasuraClaims?.["x-hasura-role"],
       finalUserRole: userRole,
@@ -130,7 +130,7 @@ export async function requireAuth(
     }
 
     return {
-      _userId,
+      userId,
       role: userRole,
       email: userEmail,
       sessionClaims,
@@ -189,7 +189,7 @@ export function forbiddenResponse(message: string = "Forbidden"): NextResponse {
  * @example
  * ```typescript
  * // Protect route requiring manager role or higher
- * export const POST = withAuth(async (_request, _session) => {
+ * export const POST = withAuth(async (request, session) => {
  *   // Handler logic here
  *   return NextResponse.json({ success: true });
  * }, {
@@ -197,7 +197,7 @@ export function forbiddenResponse(message: string = "Forbidden"): NextResponse {
  * });
  *
  * // Protect route for specific roles only
- * export const GET = withAuth(async (_request, _session) => {
+ * export const GET = withAuth(async (request, session) => {
  *   // Handler logic here
  *   return NextResponse.json({ data: [] });
  * }, {
@@ -223,57 +223,57 @@ export function withAuth(
     try {
       // Apply rate limiting first (before auth to prevent auth bypass attempts)
       if (!options?.skipRateLimit) {
-        const rateLimitResponse = await rateLimiter.applyRateLimit(_request);
+        const rateLimitResponse = await rateLimiter.applyRateLimit(request);
         if (rateLimitResponse) {
           console.log("⚡ Rate limit exceeded for:", request.url);
-          await monitorRequest(_request, undefined, startTime, false);
+          await monitorRequest(request, undefined, startTime, false);
           return rateLimitResponse;
         }
       }
 
-      const _session = await requireAuth(_request, options);
+      const session = await requireAuth(request, options);
       console.log("✅ Auth successful, calling handler");
 
       // Apply user-specific rate limiting after auth
       if (!options?.skipRateLimit) {
         const userRateLimitResponse = await rateLimiter.applyRateLimit(
-          _request,
-          session._userId
+          request,
+          session.userId
         );
         if (userRateLimitResponse) {
           console.log(
             "⚡ User rate limit exceeded for:",
-            session._userId,
+            session.userId,
             request.url
           );
-          await monitorRequest(_request, session._userId, startTime, false);
+          await monitorRequest(request, session.userId, startTime, false);
           return userRateLimitResponse;
         }
       }
 
-      const response = await handler(_request, _session);
+      const response = await handler(request, session);
 
       // Add rate limit headers to successful responses
       if (!options?.skipRateLimit) {
         const rateLimitResult = await rateLimiter.checkRateLimit(
-          _request,
-          session._userId
+          request,
+          session.userId
         );
         rateLimiter.addRateLimitHeaders(response, rateLimitResult);
       }
 
       // Monitor successful request
-      await monitorRequest(_request, session._userId, startTime, true);
+      await monitorRequest(request, session.userId, startTime, true);
 
       return response;
     } catch (error: any) {
       console.log("❌ Auth failed:", error.message);
 
       // Extract client info for audit logging
-      const { _ipAddress, userAgent } = extractClientInfo(_request);
+      const { ipAddress, userAgent } = extractClientInfo(request);
 
       // Monitor failed request
-      await monitorRequest(_request, undefined, startTime, false);
+      await monitorRequest(request, undefined, startTime, false);
 
       if (error.message.includes("Unauthorized")) {
         // Log unauthorized access attempt
@@ -281,9 +281,9 @@ export function withAuth(
           request.nextUrl.pathname,
           undefined,
           undefined,
-          _ipAddress,
+          ipAddress,
           userAgent,
-          _request,
+          request,
           {
             requiredRole: options?.requiredRole,
             allowedRoles: options?.allowedRoles,
@@ -300,9 +300,9 @@ export function withAuth(
           request.nextUrl.pathname,
           undefined,
           undefined,
-          _ipAddress,
+          ipAddress,
           userAgent,
-          _request,
+          request,
           {
             requiredRole: options?.requiredRole,
             allowedRoles: options?.allowedRoles,
@@ -349,57 +349,57 @@ export function withAuthParams<T = any>(
     try {
       // Apply rate limiting first (before auth to prevent auth bypass attempts)
       if (!options?.skipRateLimit) {
-        const rateLimitResponse = await rateLimiter.applyRateLimit(_request);
+        const rateLimitResponse = await rateLimiter.applyRateLimit(request);
         if (rateLimitResponse) {
           console.log("⚡ Rate limit exceeded for:", request.url);
-          await monitorRequest(_request, undefined, startTime, false);
+          await monitorRequest(request, undefined, startTime, false);
           return rateLimitResponse;
         }
       }
 
-      const _session = await requireAuth(_request, options);
+      const session = await requireAuth(request, options);
       console.log("✅ Auth successful, calling handler");
 
       // Apply user-specific rate limiting after auth
       if (!options?.skipRateLimit) {
         const userRateLimitResponse = await rateLimiter.applyRateLimit(
-          _request,
-          session._userId
+          request,
+          session.userId
         );
         if (userRateLimitResponse) {
           console.log(
             "⚡ User rate limit exceeded for:",
-            session._userId,
+            session.userId,
             request.url
           );
-          await monitorRequest(_request, session._userId, startTime, false);
+          await monitorRequest(request, session.userId, startTime, false);
           return userRateLimitResponse;
         }
       }
 
-      const response = await handler(_request, context, _session);
+      const response = await handler(request, context, session);
 
       // Add rate limit headers to successful responses
       if (!options?.skipRateLimit) {
         const rateLimitResult = await rateLimiter.checkRateLimit(
-          _request,
-          session._userId
+          request,
+          session.userId
         );
         rateLimiter.addRateLimitHeaders(response, rateLimitResult);
       }
 
       // Monitor successful request
-      await monitorRequest(_request, session._userId, startTime, true);
+      await monitorRequest(request, session.userId, startTime, true);
 
       return response;
     } catch (error: any) {
       console.log("❌ Auth failed:", error.message);
 
       // Extract client info for audit logging
-      const { _ipAddress, userAgent } = extractClientInfo(_request);
+      const { ipAddress, userAgent } = extractClientInfo(request);
 
       // Monitor failed request
-      await monitorRequest(_request, undefined, startTime, false);
+      await monitorRequest(request, undefined, startTime, false);
 
       if (error.message.includes("Unauthorized")) {
         // Log unauthorized access attempt
@@ -407,9 +407,9 @@ export function withAuthParams<T = any>(
           request.nextUrl.pathname,
           undefined,
           undefined,
-          _ipAddress,
+          ipAddress,
           userAgent,
-          _request,
+          request,
           {
             requiredRole: options?.requiredRole,
             allowedRoles: options?.allowedRoles,
@@ -426,9 +426,9 @@ export function withAuthParams<T = any>(
           request.nextUrl.pathname,
           undefined,
           undefined,
-          _ipAddress,
+          ipAddress,
           userAgent,
-          _request,
+          request,
           {
             requiredRole: options?.requiredRole,
             allowedRoles: options?.allowedRoles,
@@ -470,8 +470,8 @@ export async function validateWebhookSignature(
       .digest("hex");
 
     return signature === expectedSignature;
-  } catch (_error) {
-    console.error("Webhook signature validation error:", _error);
+  } catch (error) {
+    console.error("Webhook signature validation error:", error);
     return false;
   }
 }

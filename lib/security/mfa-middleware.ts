@@ -62,7 +62,7 @@ export async function validateMFARequirement(
       sessionClaims?.["https://hasura.io/jwt/claims"]?.[
         "x-hasura-default-role"
       ] ||
-      (sessionClaims?.metadata as any)?.default_role) as string;
+      (sessionClaims?.metadata as any)?.defaultrole) as string;
 
     const pathname = request.nextUrl.pathname;
 
@@ -114,7 +114,7 @@ export async function validateMFARequirement(
         userAgent: clientInfo.userAgent || "unknown",
         metadata: {
           route: pathname,
-          reason: "admin_role_or_sensitive_route",
+          reason: "adminrole_or_sensitive_route",
         },
         complianceNote: "MFA required but not verified",
       });
@@ -229,7 +229,7 @@ export function withAuthAndMFA(
         sessionClaims?.["https://hasura.io/jwt/claims"]?.[
           "x-hasura-default-role"
         ] ||
-        (sessionClaims?.metadata as any)?.default_role) as string;
+        (sessionClaims?.metadata as any)?.defaultrole) as string;
 
       // Check role requirements
       if (options?.requiredRole && userRole !== options.requiredRole) {
@@ -273,7 +273,7 @@ export function withAuthAndMFA(
 /**
  * Check if user has MFA enabled
  */
-export async function getUserMFAStatus(_userId: string): Promise<{
+export async function getUserMFAStatus(userId: string): Promise<{
   enabled: boolean;
   methods: string[];
   verified: boolean;

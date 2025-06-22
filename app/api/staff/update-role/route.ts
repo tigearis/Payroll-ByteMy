@@ -7,7 +7,7 @@ import { withAuth } from "@/lib/auth/api-auth";
 
 // GraphQL mutation to update user role in database
 const UPDATE_STAFF_ROLE = gql`
-  mutation UpdateStaffRole($id: uuid!, $role: user_role!) {
+  mutation UpdateStaffRole($id: uuid!, $role: userrole!) {
     update_users_by_pk(
       pk_columns: { id: $id }
       _set: { role: $role, updated_at: "now()" }

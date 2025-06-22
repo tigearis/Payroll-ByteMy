@@ -85,7 +85,6 @@ import {
   GetPayrollFamilyDatesDocument,
   UpdatePayrollDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import type { UserRole } from "@/domains/users/types";
 import {
   usePayrollVersioning,
   usePayrollStatusUpdate,
@@ -884,7 +883,7 @@ const formatDateTime = (date: string | Date) => {
 
 // Add GraphQL queries for lookup tables
 const GET_PAYROLL_CYCLES = gql`
-  query GetPayrollCycles {
+  query GetPAYROLL_CYCLES {
     payroll_cycles {
       id
       name

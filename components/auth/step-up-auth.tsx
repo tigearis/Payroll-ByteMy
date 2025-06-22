@@ -39,12 +39,12 @@ export function StepUpAuth({
   actionDescription,
   children,
 }: StepUpAuthProps) {
-  const { _user } = useUser();
+  const { user } = useUser();
   const [isVerifying, setIsVerifying] = useState(false);
-  const [_error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleStepUpVerification = async () => {
-    if (!_user) {
+    if (!user) {
       setError("User not found. Please sign in again.");
       return;
     }
@@ -123,7 +123,7 @@ export function StepUpAuth({
           {error && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>{_error}</AlertDescription>
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
@@ -184,8 +184,8 @@ export function useStepUpAuth() {
       try {
         await pendingAction.action();
         toast.success("Action completed successfully");
-      } catch (_error) {
-        console.error("Action failed after step-up:", _error);
+      } catch (error) {
+        console.error("Action failed after step-up:", error);
         toast.error("Action failed", {
           description: "Please try again or contact support.",
         });
@@ -217,7 +217,7 @@ export function withStepUpAuth<T extends object>(
   WrappedComponent: React.ComponentType<T>,
   sensitiveActions: string[] = []
 ) {
-  return function StepUpWrapper(props: _T) {
+  return function StepUpWrapper(props: T) {
     const {
       isStepUpOpen,
       requireStepUp,

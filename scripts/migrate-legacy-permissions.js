@@ -126,9 +126,9 @@ let totalMatches = 0;
 const matchesByPattern = {};
 
 // Search for each legacy pattern
-LEGACY_PATTERNS.forEach(pattern => {
+LEGACYPATTERNS.forEach(pattern => {
   let patternMatches = [];
-  SEARCH_DIRS.forEach(dir => {
+  SEARCHDIRS.forEach(dir => {
     const matches = searchFiles(dir, pattern);
     patternMatches = [...patternMatches, ...matches];
   });

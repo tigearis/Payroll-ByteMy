@@ -49,14 +49,14 @@ export class ErrorBoundary extends React.Component<
 
     return {
       hasError: true,
-      _error,
+      error,
       errorId,
     };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log the error
-    console.error("ErrorBoundary caught an error:", _error, errorInfo);
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
 
     // Update state with error info
     this.setState({
@@ -65,7 +65,7 @@ export class ErrorBoundary extends React.Component<
 
     // Call custom error handler if provided
     if (this.props.onError) {
-      this.props.onError(_error, errorInfo);
+      this.props.onError(error, errorInfo);
     }
 
     // Show error toast notification
@@ -78,7 +78,7 @@ export class ErrorBoundary extends React.Component<
     });
 
     // Report error to monitoring service (if available)
-    this.reportError(_error, errorInfo);
+    this.reportError(error, errorInfo);
   }
 
   private reportError = (error: Error, errorInfo: React.ErrorInfo) => {
@@ -210,7 +210,7 @@ export function ErrorBoundaryWrapper({
 
 // Specific error components for different scenarios
 export function ApiErrorFallback({
-  _error,
+  error,
   reset,
   errorId,
 }: {
@@ -241,7 +241,7 @@ export function ApiErrorFallback({
 }
 
 export function ComponentErrorFallback({
-  _error,
+  error,
   reset,
   componentName,
 }: {
@@ -271,7 +271,7 @@ export function ComponentErrorFallback({
 // Hook for programmatic error handling
 export function useErrorHandler() {
   return React.useCallback((error: Error, context?: string) => {
-    console.error(`Error in ${context || "component"}:`, _error);
+    console.error(`Error in ${context || "component"}:`, error);
 
     toast.error("Something went wrong", {
       description: error.message,

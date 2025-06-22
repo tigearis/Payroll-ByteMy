@@ -214,7 +214,7 @@ BEGIN
         ) VALUES (
             v_user_id, v_user_email, v_user_role, 'UPDATE',
             TG_TABLE_NAME, NEW.id::text,
-            v_old_data, v_new_data,
+            v_olddata, v_newdata,
             current_setting('hasura.session_id', true),
             current_setting('hasura.request_id', true)
         );
@@ -231,7 +231,7 @@ BEGIN
         ) VALUES (
             v_user_id, v_user_email, v_user_role, 'DELETE',
             TG_TABLE_NAME, OLD.id::text,
-            v_old_data,
+            v_olddata,
             current_setting('hasura.session_id', true),
             current_setting('hasura.request_id', true)
         );
@@ -248,7 +248,7 @@ BEGIN
         ) VALUES (
             v_user_id, v_user_email, v_user_role, 'INSERT',
             TG_TABLE_NAME, NEW.id::text,
-            v_new_data,
+            v_newdata,
             current_setting('hasura.session_id', true),
             current_setting('hasura.request_id', true)
         );
@@ -372,7 +372,7 @@ CREATE OR REPLACE FUNCTION decrypt_sensitive(encrypted_data text) RETURNS text A
 BEGIN
     RETURN convert_from(
         decrypt(
-            decode(encrypted_data, 'base64'),
+            decode(encrypteddata, 'base64'),
             current_setting('app.encryption_key')::bytea,
             'aes'
         ),

@@ -24,7 +24,7 @@ export const GET = withAuth(
       const userRole = (hasuraClaims?.["x-hasura-role"] ||
         (sessionClaims?.metadata as any)?.role ||
         hasuraClaims?.["x-hasura-default-role"] ||
-        (sessionClaims?.metadata as any)?.default_role ||
+        (sessionClaims?.metadata as any)?.defaultrole ||
         (sessionClaims as any)?.role) as string;
 
       console.log("🔍 PAYROLL ROUTE - User role debug:", {
@@ -32,7 +32,7 @@ export const GET = withAuth(
         userRole,
         hasMetadata: !!sessionClaims?.metadata,
         hasHasuraClaims: !!hasuraClaims,
-        v2DefaultRole: (sessionClaims?.metadata as any)?.default_role,
+        v2DefaultRole: (sessionClaims?.metadata as any)?.defaultrole,
         v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
       });
 

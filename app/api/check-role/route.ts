@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
         (sessionClaims?.metadata as any)?.role ||
         // Fallback to default role only if no actual role found
         hasuraClaims?.["x-hasura-default-role"] ||
-        (sessionClaims?.metadata as any)?.default_role ||
+        (sessionClaims?.metadata as any)?.defaultrole ||
         (sessionClaims as any)?.role) as string;
 
     // Get Hasura token
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       tokenLength: token?.length,
       hasMetadata: !!sessionClaims?.metadata,
       hasHasuraClaims: !!hasuraClaims,
-      v2DefaultRole: (sessionClaims?.metadata as any)?.default_role,
+      v2DefaultRole: (sessionClaims?.metadata as any)?.defaultrole,
       v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
     });
 
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       debug: {
         hasMetadata: !!sessionClaims?.metadata,
         hasHasuraClaims: !!hasuraClaims,
-        v2DefaultRole: (sessionClaims?.metadata as any)?.default_role,
+        v2DefaultRole: (sessionClaims?.metadata as any)?.defaultrole,
         v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
         v1Role: hasuraClaims?.["x-hasura-role"],
         sessionId: sessionClaims?.sid,

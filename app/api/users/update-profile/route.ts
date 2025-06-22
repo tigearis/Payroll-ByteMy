@@ -1,11 +1,7 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
-import {
-  ApiResponses,
-  _validateRequiredFields,
-  handleApiError,
-} from "@/lib/api-responses";
+import { ApiResponses, handleApiError } from "@/lib/api-responses";
 
 interface UpdateProfileRequest {
   firstName?: string;
@@ -25,10 +21,10 @@ export async function PATCH(req: NextRequest) {
   console.log("API: Starting profile update request");
 
   try {
-    const { _userId } = await auth();
-    console.log("API: User ID:", _userId);
+    const { userId } = await auth();
+    console.log("API: User ID:", userId);
 
-    if (!_userId) {
+    if (!userId) {
       console.log("API: No user ID found, returning 401");
       return ApiResponses.authenticationRequired();
     }
@@ -61,7 +57,7 @@ export async function PATCH(req: NextRequest) {
     // Get current user to compare changes
     let currentUser;
     try {
-      currentUser = await client.users.getUser(_userId);
+      currentUser = await client.users.getUser(userId);
       console.log("API: Current user fetched:", {
         id: currentUser.id,
         username: currentUser.username,
@@ -158,7 +154,7 @@ export async function PATCH(req: NextRequest) {
     try {
       // Update user using Clerk Backend API
       const updatedUser = await client.users.updateUser(
-        _userId,
+        userId,
         clerkUpdatePayload
       );
 
@@ -201,7 +197,7 @@ export async function PATCH(req: NextRequest) {
           errorMessages.map((err: { field: string; message: string }) => ({
             field: err.field,
             message: err.message,
-            code: "CLERK_VALIDATION_ERROR",
+            code: "CLERK_VALIDATIONerror",
           }))
         );
       }
@@ -211,22 +207,22 @@ export async function PATCH(req: NextRequest) {
         message: clerkError.message || "Unknown Clerk error",
       });
     }
-  } catch (_error) {
-    return handleApiError(_error, "update-profile");
+  } catch (error) {
+    return handleApiError(error, "update-profile");
   }
 }
 
 // GET endpoint to fetch current user profile
 export async function GET() {
   try {
-    const { _userId } = await auth();
+    const { userId } = await auth();
 
-    if (!_userId) {
+    if (!userId) {
       return ApiResponses.authenticationRequired();
     }
 
     const client = await clerkClient();
-    const _user = await client.users.getUser(_userId);
+    const user = await client.users.getUser(userId);
 
     return ApiResponses.success({
       id: user.id,
@@ -239,7 +235,7 @@ export async function GET() {
       createdAt: user.createdAt,
       lastSignInAt: user.lastSignInAt,
     });
-  } catch (_error) {
-    return handleApiError(_error, "get-user-profile");
+  } catch (error) {
+    return handleApiError(error, "get-user-profile");
   }
 }

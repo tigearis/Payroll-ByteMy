@@ -22353,6 +22353,32 @@ type users {
     """filter the rows returned"""
     where: permission_audit_log_bool_exp
   ): [permission_audit_log!]!
+  """An array relationship"""
+  permissionAuditLogsAsTarget(
+    """distinct select on columns"""
+    distinct_on: [permission_audit_log_select_column!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    order_by: [permission_audit_log_order_by!]
+    """filter the rows returned"""
+    where: permission_audit_log_bool_exp
+  ): [permission_audit_log!]!
+  """An aggregate relationship"""
+  permissionAuditLogsAsTarget_aggregate(
+    """distinct select on columns"""
+    distinct_on: [permission_audit_log_select_column!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    order_by: [permission_audit_log_order_by!]
+    """filter the rows returned"""
+    where: permission_audit_log_bool_exp
+  ): permission_audit_log_aggregate!
   """An aggregate relationship"""
   permissionAuditLogs_aggregate(
     """distinct select on columns"""
@@ -22379,47 +22405,8 @@ type users {
     """filter the rows returned"""
     where: permission_overrides_bool_exp
   ): [permission_overrides!]!
-  """An aggregate relationship"""
-  permissionOverrides_aggregate(
-    """distinct select on columns"""
-    distinct_on: [permission_overrides_select_column!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    order_by: [permission_overrides_order_by!]
-    """filter the rows returned"""
-    where: permission_overrides_bool_exp
-  ): permission_overrides_aggregate!
   """An array relationship"""
-  permission_audit_logs(
-    """distinct select on columns"""
-    distinct_on: [permission_audit_log_select_column!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    order_by: [permission_audit_log_order_by!]
-    """filter the rows returned"""
-    where: permission_audit_log_bool_exp
-  ): [permission_audit_log!]!
-  """An aggregate relationship"""
-  permission_audit_logs_aggregate(
-    """distinct select on columns"""
-    distinct_on: [permission_audit_log_select_column!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    order_by: [permission_audit_log_order_by!]
-    """filter the rows returned"""
-    where: permission_audit_log_bool_exp
-  ): permission_audit_log_aggregate!
-  """An array relationship"""
-  permission_overrides(
+  permissionOverridesCreated(
     """distinct select on columns"""
     distinct_on: [permission_overrides_select_column!]
     """limit the number of rows returned"""
@@ -22432,7 +22419,20 @@ type users {
     where: permission_overrides_bool_exp
   ): [permission_overrides!]!
   """An aggregate relationship"""
-  permission_overrides_aggregate(
+  permissionOverridesCreated_aggregate(
+    """distinct select on columns"""
+    distinct_on: [permission_overrides_select_column!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    order_by: [permission_overrides_order_by!]
+    """filter the rows returned"""
+    where: permission_overrides_bool_exp
+  ): permission_overrides_aggregate!
+  """An aggregate relationship"""
+  permissionOverrides_aggregate(
     """distinct select on columns"""
     distinct_on: [permission_overrides_select_column!]
     """limit the number of rows returned"""
@@ -22662,13 +22662,13 @@ input users_bool_exp {
   notesWritten: notes_bool_exp
   notesWritten_aggregate: notes_aggregate_bool_exp
   permissionAuditLogs: permission_audit_log_bool_exp
+  permissionAuditLogsAsTarget: permission_audit_log_bool_exp
+  permissionAuditLogsAsTarget_aggregate: permission_audit_log_aggregate_bool_exp
   permissionAuditLogs_aggregate: permission_audit_log_aggregate_bool_exp
   permissionOverrides: permission_overrides_bool_exp
+  permissionOverridesCreated: permission_overrides_bool_exp
+  permissionOverridesCreated_aggregate: permission_overrides_aggregate_bool_exp
   permissionOverrides_aggregate: permission_overrides_aggregate_bool_exp
-  permission_audit_logs: permission_audit_log_bool_exp
-  permission_audit_logs_aggregate: permission_audit_log_aggregate_bool_exp
-  permission_overrides: permission_overrides_bool_exp
-  permission_overrides_aggregate: permission_overrides_aggregate_bool_exp
   primaryConsultantPayrolls: payrolls_bool_exp
   primaryConsultantPayrolls_aggregate: payrolls_aggregate_bool_exp
   role: user_role_comparison_exp
@@ -22741,9 +22741,9 @@ input users_insert_input {
   name: String
   notesWritten: notes_arr_rel_insert_input
   permissionAuditLogs: permission_audit_log_arr_rel_insert_input
+  permissionAuditLogsAsTarget: permission_audit_log_arr_rel_insert_input
   permissionOverrides: permission_overrides_arr_rel_insert_input
-  permission_audit_logs: permission_audit_log_arr_rel_insert_input
-  permission_overrides: permission_overrides_arr_rel_insert_input
+  permissionOverridesCreated: permission_overrides_arr_rel_insert_input
   primaryConsultantPayrolls: payrolls_arr_rel_insert_input
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
@@ -22918,10 +22918,10 @@ input users_order_by {
   managerId: order_by
   name: order_by
   notesWritten_aggregate: notes_aggregate_order_by
+  permissionAuditLogsAsTarget_aggregate: permission_audit_log_aggregate_order_by
   permissionAuditLogs_aggregate: permission_audit_log_aggregate_order_by
+  permissionOverridesCreated_aggregate: permission_overrides_aggregate_order_by
   permissionOverrides_aggregate: permission_overrides_aggregate_order_by
-  permission_audit_logs_aggregate: permission_audit_log_aggregate_order_by
-  permission_overrides_aggregate: permission_overrides_aggregate_order_by
   primaryConsultantPayrolls_aggregate: payrolls_aggregate_order_by
   role: order_by
   teamMembers_aggregate: users_aggregate_order_by

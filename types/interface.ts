@@ -28,7 +28,7 @@ export interface Client {
   id: string;
   name: string;
   contactPerson?: string;
-  contactEmail?: string;
+  contact_email?: string;
   contactPhone?: string;
   active: boolean;
   createdAt: string;
@@ -244,7 +244,7 @@ export interface FeatureFlag {
   id: string;
   feature_name: string;
   is_enabled: boolean;
-  allowed_roles: string[]; // Using string[] to avoid circular dependency
+  allowedroles: string[]; // Using string[] to avoid circular dependency
   updated_at: string;
 }
 

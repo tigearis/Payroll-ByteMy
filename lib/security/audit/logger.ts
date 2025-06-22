@@ -177,7 +177,7 @@ export interface AuthLogEntry {
 const LOG_AUDIT_EVENT = gql`
   mutation LogAuditEvent(
     $user_id: String!
-    $user_role: String
+    $userrole: String
     $action: String!
     $entity_type: String!
     $entity_id: String
@@ -196,7 +196,7 @@ const LOG_AUDIT_EVENT = gql`
     insert_audit_audit_log_one(
       object: {
         user_id: $user_id
-        user_role: $user_role
+        userrole: $userrole
         action: $action
         entity_type: $entity_type
         entity_id: $entity_id
@@ -226,7 +226,7 @@ const LOG_SOC2_EVENT = gql`
     $event_type: String!
     $user_id: String
     $user_email: String
-    $user_role: String
+    $userrole: String
     $resource_id: String
     $resource_type: String
     $action: String
@@ -246,7 +246,7 @@ const LOG_SOC2_EVENT = gql`
         event_type: $event_type
         user_id: $user_id
         user_email: $user_email
-        user_role: $user_role
+        userrole: $userrole
         resource_id: $resource_id
         resource_type: $resource_type
         action: $action
@@ -320,7 +320,7 @@ class UnifiedAuditLogger {
         mutation: LOG_AUDIT_EVENT,
         variables: {
           user_id: entry.userId,
-          user_role: entry.userRole,
+          userrole: entry.userRole,
           action: entry.action,
           entity_type: entry.entityType,
           entity_id: entry.entityId,
@@ -355,7 +355,7 @@ class UnifiedAuditLogger {
           event_type: entry.eventType,
           user_id: entry.userId,
           user_email: entry.userEmail,
-          user_role: entry.userRole,
+          userrole: entry.userRole,
           resource_id: entry.resourceId,
           resource_type: entry.resourceType,
           action: entry.action,

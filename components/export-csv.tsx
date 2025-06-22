@@ -60,7 +60,7 @@ export function ExportCsv({ payrollId }: ExportCsvProps) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `payroll_schedule.csv`);
+    link.setAttribute("download", `payrollschedule.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

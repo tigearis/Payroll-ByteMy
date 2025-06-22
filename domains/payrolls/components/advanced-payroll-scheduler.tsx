@@ -227,7 +227,7 @@ export default function AdvancedPayrollScheduler() {
       payrollsMap.set(payroll.id, payroll);
     });
 
-    data.payroll_dates.forEach((dateInfo: any) => {
+    data.payrolldates.forEach((dateInfo: any) => {
       const payroll = dateInfo.payroll || payrollsMap.get(dateInfo.payroll_id);
       if (!payroll) return;
 

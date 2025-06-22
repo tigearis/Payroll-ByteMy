@@ -40,20 +40,20 @@ export class SecureErrorHandler {
       ) {
         return {
           error: "Invalid request",
-          code: "VALIDATION_ERROR",
+          code: "VALIDATIONerror",
         };
       }
 
       // Generic server error for everything else
       return {
         error: "Internal server error",
-        code: "INTERNAL_ERROR",
+        code: "INTERNALerror",
       };
     } else {
       // In development, return detailed errors
       return {
         error: error instanceof Error ? error.message : String(error),
-        code: error?.code || "UNKNOWN_ERROR",
+        code: error?.code || "UNKNOWNerror",
         details: {
           context,
           stack: error?.stack,
@@ -95,12 +95,12 @@ export class SecureErrorHandler {
     if (this.isProduction) {
       return {
         error: "Invalid request data",
-        code: "VALIDATION_ERROR",
+        code: "VALIDATIONerror",
       };
     } else {
       return {
         error: "Validation failed",
-        code: "VALIDATION_ERROR",
+        code: "VALIDATIONerror",
         details: {
           field,
           message: field
@@ -129,7 +129,7 @@ export class SecureErrorHandler {
     } else {
       return {
         error: "Database connection failed",
-        code: "DATABASE_ERROR",
+        code: "DATABASEerror",
       };
     }
   }

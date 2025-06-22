@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     }
 
     const eligibleCount =
-      statsData.data.payroll_dates_aggregate.aggregate.count;
+      statsData.data.payrolldates_aggregate.aggregate.count;
     console.log(`📈 Found ${eligibleCount} dates eligible for cleanup`);
 
     // Perform cleanup

@@ -4,7 +4,6 @@ import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 import {
-  logSuccessfulLogin,
   logFailedLogin,
   logTokenRefresh,
   extractClientInfo,
@@ -108,7 +107,7 @@ export async function GET(req: NextRequest) {
           payload.metadata?.roles ||
           payload["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"],
         defaultRole:
-          payload.metadata?.default_role ||
+          payload.metadata?.defaultrole ||
           payload["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"],
       });
     } catch (parseError) {
@@ -155,7 +154,7 @@ export async function GET(req: NextRequest) {
         method: "GET",
         errorType:
           error instanceof Error ? error.constructor.name : "UnknownError",
-        failureStage: "general_error",
+        failureStage: "generalerror",
       }
     );
 

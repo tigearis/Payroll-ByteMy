@@ -156,14 +156,14 @@ array_relationships:
         table:
           name: permission_overrides
           schema: public
-  - name: permission_audit_logs
+  - name: permissionAuditLogsAsTarget
     using:
       foreign_key_constraint_on:
         column: target_user_id
         table:
           name: permission_audit_log
           schema: public
-  - name: permission_overrides
+  - name: permissionOverridesCreated
     using:
       foreign_key_constraint_on:
         column: created_by

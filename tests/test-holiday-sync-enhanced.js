@@ -8,8 +8,8 @@
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = dirname(_filename);
 
 // Configuration
 const BASE_URL = "http://localhost:3000";
@@ -93,7 +93,7 @@ async function checkHasuraConnection() {
     });
 
     if (response.ok && response.data.data) {
-      const count = response.data.data.holidays_aggregate.aggregate.count;
+      const count = response.data.data.holidaysaggregate.aggregate.count;
       const samples = response.data.data.holidays;
 
       colorLog(

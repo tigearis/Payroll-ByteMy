@@ -105,11 +105,11 @@ async function testGraphQLMutation(sampleHolidays) {
     if (response.ok && result.data) {
       console.log("✅ GraphQL mutation successful!");
       console.log(
-        `   Affected rows: ${result.data.insert_holidays.affected_rows}`
+        `   Affected rows: ${result.data.insertholidays.affected_rows}`
       );
       console.log(
         "   Sample inserted holiday:",
-        result.data.insert_holidays.returning[0]
+        result.data.insertholidays.returning[0]
       );
 
       return { success: true, data: result.data };

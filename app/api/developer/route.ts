@@ -2,7 +2,7 @@
 // SECURITY: Developer routes are disabled in production
 import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 
@@ -16,8 +16,8 @@ export async function GET() {
   }
 
   try {
-    const { _userId, sessionClaims } = await auth();
-    if (!_userId) {
+    const { userId, sessionClaims } = await auth();
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -41,9 +41,9 @@ export async function GET() {
       }
     `;
 
-    const { _data } = await adminApolloClient.query({ query: GET_ALL_CLIENTS });
+    const { data } = await adminApolloClient.query({ query: GET_ALL_CLIENTS });
     return NextResponse.json({ clients: data.clients, success: true });
-  } catch (_error) {
+  } catch (error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
 
   try {
     // Check authentication
-    const { _userId, getToken } = await auth();
-    if (!_userId) {
+    const { userId, getToken } = await auth();
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
       const payload = JSON.parse(
         Buffer.from(token.split(".")[1], "base64").toString()
       );
-      const _role =
+      const role =
         payload["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"];
       if (role !== "developer") {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ error: "Invalid operation" }, { status: 400 });
-  } catch (_error) {
+  } catch (error) {
     return NextResponse.json({ error: "Operation failed" }, { status: 500 });
   }
 }

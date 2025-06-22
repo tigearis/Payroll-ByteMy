@@ -73,7 +73,7 @@ export interface FeatureFlag {
   id: string;
   feature_name: string;
   is_enabled: boolean;
-  allowed_roles: string[]; // Using string[] to avoid circular dependency
+  allowedroles: string[]; // Using string[] to avoid circular dependency
   updated_at: string;
 }
 
