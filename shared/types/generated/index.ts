@@ -22,25 +22,9 @@
 
 // Central export aggregator for all GraphQL operations
 
-// Re-export fragment masking utilities
-export * from './fragment-masking';
-
 // Re-export gql utilities
 export * from './gql';
 
 // Re-export base types and generated operations
 export * from './graphql';
-
-// Auto-aggregate domain exports
-export * from '../../../domains/auth/graphql/generated';
-export * from '../../../domains/audit/graphql/generated';
-export * from '../../../domains/permissions/graphql/generated';
-export * from '../../../domains/users/graphql/generated';
-export * from '../../../domains/clients/graphql/generated';
-export * from '../../../domains/billing/graphql/generated';
-export * from '../../../domains/payrolls/graphql/generated';
-export * from '../../../domains/notes/graphql/generated';
-export * from '../../../domains/leave/graphql/generated';
-export * from '../../../domains/work-schedule/graphql/generated';
-export * from '../../../domains/external-systems/graphql/generated';
 // Shared operations exported directly above
