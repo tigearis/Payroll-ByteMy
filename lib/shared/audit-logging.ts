@@ -15,8 +15,8 @@ export const auditLogger = {
       userRole,
       action: 'READ',
       entityType,
-      entityId,
-      timestamp: new Date()
+      timestamp: new Date(),
+      ...(entityId !== undefined && { entityId })
     };
     
     console.log(`📊 [AUDIT] Data Access: ${userRole} (${userId}) accessed ${entityType}${entityId ? ` (${entityId})` : ''}`);
@@ -30,9 +30,9 @@ export const auditLogger = {
       userRole,
       action: operation,
       entityType,
-      entityId,
       timestamp: new Date(),
-      metadata
+      ...(entityId !== undefined && { entityId }),
+      ...(metadata !== undefined && { metadata })
     };
     
     console.log(`✏️ [AUDIT] Data Modification: ${userRole} (${userId}) ${operation} ${entityType}${entityId ? ` (${entityId})` : ''}`);
