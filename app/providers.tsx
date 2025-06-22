@@ -48,10 +48,16 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <ErrorBoundary>
       <ClerkProvider
+        publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
         signInUrl="/sign-in"
         signUpUrl="/sign-up"
         signInFallbackRedirectUrl="/dashboard"
         signUpFallbackRedirectUrl="/dashboard"
+        allowedRedirectOrigins={[
+          'https://payroll.app.bytemy.com.au',
+          process.env.NEXT_PUBLIC_VERCEL_URL,
+          'http://localhost:3000'
+        ].filter(Boolean)}
       >
         <AuthenticatedApolloProvider>
           <AuthProvider>
