@@ -31,7 +31,7 @@ export function MarkdownViewer({
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          a: ({ node, ...props }) => (
+          a: ({ _node, ...props }) => (
             <a
               {...props}
               target="_blank"
@@ -39,7 +39,7 @@ export function MarkdownViewer({
               className="text-primary hover:underline"
             />
           ),
-          code: ({ node, ...props }) => (
+          code: ({ _node, ...props }) => (
             <code {...props} className="bg-muted px-1 py-0.5 rounded text-sm" />
           ),
         }}

@@ -22,7 +22,7 @@ fragment BillingInvoiceCore on billing_invoice {
 
 fragment BillingInvoiceWithItems on billing_invoice {
   ...BillingInvoiceCore
-  billing_invoice_items {
+  billingInvoiceItems {
     ...BillingInvoiceItemCore
   }
   client {
@@ -69,7 +69,7 @@ fragment BillingEventLogCore on billing_event_log {
 
 fragment BillingEventLogWithRelations on billing_event_log {
   ...BillingEventLogCore
-  billing_invoice {
+  billingInvoice {
     id
   }
   user {

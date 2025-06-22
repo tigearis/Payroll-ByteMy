@@ -2,17 +2,17 @@
 # Common fragments used across domains
 
 # Common timestamp fields (used as inline fragments)
-# Usage: ... on table_name { ...TimestampFields }
-fragment TimestampFields on Node {
-  created_at
-  updated_at
-}
+# Note: These are commented out as they would need to be defined per-type
+# or use a proper union/interface type that exists in the schema
 
-# Common audit fields (used as inline fragments)
-# Usage: ... on table_name { ...AuditFields }
-fragment AuditFields on Node {
-  created_at
-  updated_at
-  created_by
-  updated_by
-}
+# fragment TimestampFields on SomeSpecificType {
+#   created_at
+#   updated_at
+# }
+
+# fragment AuditFields on SomeSpecificType {
+#   created_at
+#   updated_at
+#   created_by
+#   updated_by
+# }

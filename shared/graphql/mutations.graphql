@@ -13,6 +13,6 @@
 # }
 
 # Placeholder mutation to make file valid
-mutation Placeholder {
+mutation PlaceholderMutation {
   __typename
 }

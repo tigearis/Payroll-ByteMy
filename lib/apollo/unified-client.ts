@@ -66,7 +66,7 @@ interface OperationSecurityMetadata {
 }
 
 // Default security map for operations (enterprise mode)
-const DEFAULT_SECURITY_MAP: Record<string, OperationSecurityMetadata> = {
+const _DEFAULT_SECURITY_MAP: Record<string, OperationSecurityMetadata> = {
   GetPublicUsers: {
     securityLevel: SecurityLevel.LOW,
     requiredRole: "viewer",
@@ -184,7 +184,7 @@ function createAuthLink(options: UnifiedClientOptions): ApolloLink {
       }
 
       // Client context uses native Clerk Hasura template
-      if (typeof window !== "undefined" && (window as any).Clerk?.session) {
+      if (typeof window !== "undefined" && (window as any).Clerk?._session) {
         const token = await (window as any).Clerk.session.getToken({
           template: "hasura",
         });
@@ -199,8 +199,8 @@ function createAuthLink(options: UnifiedClientOptions): ApolloLink {
       }
 
       return { headers };
-    } catch (error) {
-      console.error("Failed to get auth token:", error);
+    } catch (_error) {
+      console.error("Failed to get auth token:", _error);
       return { headers };
     }
   });
@@ -235,7 +235,7 @@ function createErrorLink(options: UnifiedClientOptions): ApolloLink {
 
     // Handle JWT errors with automatic token refresh for client context
     if (graphQLErrors) {
-      for (const error of graphQLErrors) {
+      for (const _error of graphQLErrors) {
         const isJWTError =
           error.extensions?.code === "invalid-jwt" ||
           error.message.includes("JWTExpired") ||
@@ -283,7 +283,7 @@ function createWebSocketLink(
       url: wsUrl,
       connectionParams: async () => {
         try {
-          if ((window as any).Clerk?.session) {
+          if ((window as any).Clerk?._session) {
             const token = await (window as any).Clerk.session.getToken({
               template: "hasura",
             });
@@ -294,23 +294,23 @@ function createWebSocketLink(
             };
           }
           return {};
-        } catch (error) {
-          console.error("WebSocket auth error:", error);
+        } catch (_error) {
+          console.error("WebSocket auth error:", _error);
           return {};
         }
       },
       retryAttempts: 5,
       shouldRetry: error => {
         console.warn(
-          "WebSocket connection error, attempting to reconnect:",
-          error
+          "WebSocket connection _error, attempting to reconnect:",
+          _error
         );
         return true;
       },
       connectionAckWaitTimeout: 10000,
       on: {
         connected: () => console.log("WebSocket connected"),
-        error: error => console.error("WebSocket error:", error),
+        error: error => console.error("WebSocket error:", _error),
         closed: () => console.log("WebSocket connection closed"),
       },
     })

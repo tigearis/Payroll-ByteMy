@@ -1,7 +1,7 @@
 // app/api/payroll-dates/[payrollId]/route.ts
 import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, _NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuthParams } from "@/lib/auth/api-auth";
@@ -27,13 +27,13 @@ export const GET = withAuthParams(
   async (
     req: NextRequest,
     { params }: { params: Promise<{ payrollId: string }> },
-    session
+    _session
   ) => {
     try {
       // Check authentication
-      const { userId } = await auth();
+      const { _userId } = await auth();
 
-      if (!userId) {
+      if (!_userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
@@ -48,7 +48,7 @@ export const GET = withAuthParams(
       const limit = Math.max(12, Math.ceil(months * 2.5));
 
       // Fetch payroll dates
-      const { data } = await adminApolloClient.query({
+      const { _data } = await adminApolloClient.query({
         query: GET_PAYROLL_DATES,
         variables: {
           payrollId,
@@ -59,8 +59,8 @@ export const GET = withAuthParams(
       return NextResponse.json({
         dates: data.payroll_dates,
       });
-    } catch (error) {
-      console.error("Error fetching payroll dates:", error);
+    } catch (_error) {
+      console.error("Error fetching payroll dates:", _error);
       return NextResponse.json(
         {
           error: "Failed to fetch payroll dates",

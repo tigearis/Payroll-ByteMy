@@ -1,5 +1,5 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, _NextResponse } from "next/server";
 
 import { withAuth } from "@/lib/auth/api-auth";
 
@@ -8,8 +8,8 @@ export const GET = withAuth(
     try {
       console.log("📋 API called: /api/staff/invitation-status");
 
-      const { userId } = await auth();
-      if (!userId) {
+      const { _userId } = await auth();
+      if (!_userId) {
         return NextResponse.json(
           { error: "Not authenticated" },
           { status: 401 }
@@ -45,7 +45,7 @@ export const GET = withAuth(
           });
         }
 
-        const user = users.data[0];
+        const _user = users.data[0];
         const metadata = user.publicMetadata || {};
 
         return NextResponse.json({
@@ -58,7 +58,7 @@ export const GET = withAuth(
           needsResend: metadata.needsResend || false,
           metadata,
         });
-      } catch (userError) {
+      } catch (_userError) {
         console.log("ℹ️ User not found in Clerk");
         return NextResponse.json({
           exists: false,
@@ -67,8 +67,8 @@ export const GET = withAuth(
           message: "User not found in Clerk",
         });
       }
-    } catch (error) {
-      console.error("❌ Error checking invitation status:", error);
+    } catch (_error) {
+      console.error("❌ Error checking invitation status:", _error);
       return NextResponse.json(
         {
           error: "Failed to check invitation status",
@@ -88,8 +88,8 @@ export const POST = withAuth(
     try {
       console.log("📧 API called: /api/staff/invitation-status (resend)");
 
-      const { userId } = await auth();
-      if (!userId) {
+      const { _userId } = await auth();
+      if (!_userId) {
         return NextResponse.json(
           { error: "Not authenticated" },
           { status: 401 }
@@ -97,9 +97,9 @@ export const POST = withAuth(
       }
 
       const body = await req.json();
-      const { email, name, role } = body;
+      const { email, name, _role } = body;
 
-      if (!email || !name || !role) {
+      if (!email || !name || !_role) {
         return NextResponse.json(
           { error: "Email, name, and role are required" },
           { status: 400 }
@@ -127,7 +127,7 @@ export const POST = withAuth(
           resendCount: 1, // Could be incremented if tracking multiple resends
 
           // User role and permissions
-          role,
+          _role,
           isStaff: true,
 
           // User information for prefilling
@@ -136,7 +136,7 @@ export const POST = withAuth(
           fullName: name,
 
           // Audit trail
-          resentBy: userId,
+          resentBy: _userId,
           resentAt: new Date().toISOString(),
           source: "invitation_resend",
 
@@ -153,8 +153,8 @@ export const POST = withAuth(
         message: "Invitation resent successfully",
         invitationId: invitation.id,
       });
-    } catch (error) {
-      console.error("❌ Error resending invitation:", error);
+    } catch (_error) {
+      console.error("❌ Error resending invitation:", _error);
       return NextResponse.json(
         {
           error: "Failed to resend invitation",

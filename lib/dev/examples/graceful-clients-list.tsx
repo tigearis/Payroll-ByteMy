@@ -48,7 +48,7 @@ interface Client {
   }>;
 }
 
-function ClientCard({ client }: { client: Client }) {
+function ClientCard({ client }: { client: _Client }) {
   return (
     <Card key={client.id} className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
@@ -95,12 +95,12 @@ function ClientCard({ client }: { client: Client }) {
 
 function ClientsListContent() {
   const {
-    data,
-    loading,
-    error,
+    _data,
+    _loading,
+    _error,
     refetch,
     hasPermissionError,
-    permissionError,
+    _permissionError,
     canRetry,
   } = useGracefulQuery<{ clients: Client[] }>(GetClientsDocument, {
     fallbackData: { clients: FALLBACK_CLIENTS },
@@ -110,7 +110,7 @@ function ClientsListContent() {
 
   const clients = data?.clients || [];
 
-  if (loading) {
+  if (_loading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map(i => (
@@ -191,9 +191,9 @@ export function GracefulClientsList() {
   return (
     <GraphQLErrorBoundary
       showErrorDetails={process.env.NODE_ENV === "development"}
-      onError={(error, errorInfo) => {
+      onError={(_error, errorInfo) => {
         // Could send to error reporting service
-        console.error("Clients list error:", error, errorInfo);
+        console.error("Clients list error:", _error, errorInfo);
       }}
     >
       <div className="container mx-auto p-6">

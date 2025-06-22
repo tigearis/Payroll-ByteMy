@@ -3,7 +3,7 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { RefreshCw, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, _useEffect } from "react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -60,10 +60,10 @@ interface JWTTestResult {
 }
 
 export function JWTTestPanel() {
-  const { isLoaded, userId } = useAuth();
+  const { isLoaded, _userId } = useAuth();
   const [testResult, setTestResult] = useState<JWTTestResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
 
   const runJWTTest = async () => {
     try {
@@ -71,10 +71,10 @@ export function JWTTestPanel() {
       setError(null);
 
       const response = await fetch("/api/debug/jwt-test");
-      const data = await response.json();
+      const _data = await response.json();
 
       if (response.ok) {
-        setTestResult(data);
+        setTestResult(_data);
         if (data.systemAnalysis.expectedToWork) {
           toast.success("JWT Test Complete", {
             description: "System is configured correctly!",
@@ -109,7 +109,7 @@ export function JWTTestPanel() {
         method: "POST",
       });
 
-      const data = await response.json();
+      const _data = await response.json();
 
       if (response.ok) {
         toast.success("User Synced", {
@@ -155,7 +155,7 @@ export function JWTTestPanel() {
     return <div>Loading...</div>;
   }
 
-  if (!userId) {
+  if (!_userId) {
     return (
       <Card>
         <CardHeader>
@@ -198,7 +198,7 @@ export function JWTTestPanel() {
           {error && (
             <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-800 font-medium">Error:</p>
-              <p className="text-red-600">{error}</p>
+              <p className="text-red-600">{_error}</p>
             </div>
           )}
         </CardContent>
@@ -350,7 +350,7 @@ export function JWTTestPanel() {
                       <p>ID: {testResult.databaseUser.id}</p>
                       <p>Email: {testResult.databaseUser.email}</p>
                       <p>Name: {testResult.databaseUser.name}</p>
-                      <p>Role: {testResult.databaseUser.role}</p>
+                      <p>Role: {testResult.databaseUser._role}</p>
                       <p>Clerk ID: {testResult.databaseUser.clerkId}</p>
                     </div>
                   ) : (

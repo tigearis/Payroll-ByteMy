@@ -12,7 +12,7 @@ subscription SubscribeToBillingInvoices($client_id: uuid) {
 subscription SubscribeToInvoiceStatus($invoice_id: uuid!) {
   billing_invoice_by_pk(id: $invoice_id) {
     id
-    billing_event_logs(order_by: { created_at: desc }, limit: 5) {
+    billingEventLogs(order_by: { created_at: desc }, limit: 5) {
       ...BillingEventLogWithRelations
     }
   }

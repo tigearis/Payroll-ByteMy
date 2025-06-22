@@ -69,7 +69,7 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: "*"
+      columns: '*'
     comment: Developer role has full insert access
   - role: manager
     permission:
@@ -113,7 +113,7 @@ select_permissions:
     comment: Consultants can only view clients where they are assigned to payrolls
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -170,7 +170,7 @@ update_permissions:
     comment: Consultants can update contact info for clients they're assigned to
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       check: {}
     comment: Developer role has full update access

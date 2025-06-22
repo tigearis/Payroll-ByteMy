@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, _NextResponse } from "next/server";
 
 import {
   getUserPermissions,
   canAssignRole,
-  UserRole,
+  _UserRole,
   updateUserRole,
 } from "@/domains/users/services/user-sync";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
@@ -34,13 +34,13 @@ const GET_USER_BY_ID = gql`
         id
         name
         email
-        role
+        _role
       }
       subordinates: users(where: { manager_id: { _eq: $id } }) {
         id
         name
         email
-        role
+        _role
       }
     }
   }
@@ -62,13 +62,13 @@ const GET_USER_BY_CLERK_ID = gql`
         id
         name
         email
-        role
+        _role
       }
       subordinates: users(where: { manager_id: { _eq: $id } }) {
         id
         name
         email
-        role
+        _role
       }
     }
   }
@@ -80,10 +80,10 @@ async function getCurrentUserRole(
 ): Promise<UserRole | "developer"> {
   try {
     const client = await clerkClient();
-    const user = await client.users.getUser(userId);
+    const _user = await client.users.getUser(_userId);
     return (user.publicMetadata?.role as UserRole | "developer") || "viewer";
-  } catch (error) {
-    console.error("Error getting user role:", error);
+  } catch (_error) {
+    console.error("Error getting user role:", _error);
     return "viewer";
   }
 }
@@ -101,15 +101,15 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const { _userId } = await auth();
 
-    if (!userId) {
+    if (!_userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id: targetId } = await params;
-    const currentUserRole = await getCurrentUserRole(userId);
-    const permissions = getUserPermissions(currentUserRole);
+    const currentUserRole = await getCurrentUserRole(_userId);
+    const _permissions = getUserPermissions(currentUserRole);
 
     // Users can view their own profile, admins/managers can view others
     const isSelf = targetId === userId;
@@ -121,12 +121,12 @@ export async function GET(
     }
 
     // Log SOC2 audit event
-    const clientInfo = auditLogger.extractClientInfo(request);
+    const clientInfo = auditLogger.extractClientInfo(_request);
     await auditLogger.logSOC2Event({
       level: LogLevel.AUDIT,
       category: LogCategory.SYSTEM_ACCESS,
       eventType: SOC2EventType.DATA_VIEWED,
-      userId,
+      _userId,
       resourceId: targetId,
       resourceType: "user",
       action: "VIEW",
@@ -186,8 +186,8 @@ export async function GET(
     let clerkUser;
     try {
       clerkUser = await client.users.getUser(userData.clerk_user_id);
-    } catch (error) {
-      console.warn("Could not fetch Clerk user details:", error);
+    } catch (_error) {
+      console.warn("Could not fetch Clerk user details:", _error);
     }
 
     return NextResponse.json({
@@ -210,8 +210,8 @@ export async function GET(
         currentUserRole,
       },
     });
-  } catch (error) {
-    console.error("❌ Error fetching user:", error);
+  } catch (_error) {
+    console.error("❌ Error fetching user:", _error);
     return NextResponse.json(
       {
         error: "Failed to fetch user",
@@ -227,21 +227,21 @@ export const PUT = withAuthParams(
   async (
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> },
-    session
+    _session
   ) => {
     try {
-      const { userId } = await auth();
+      const { _userId } = await auth();
 
-      if (!userId) {
+      if (!_userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
       const { id: targetId } = await params;
-      const currentUserRole = await getCurrentUserRole(userId);
-      const permissions = getUserPermissions(currentUserRole);
+      const currentUserRole = await getCurrentUserRole(_userId);
+      const _permissions = getUserPermissions(currentUserRole);
 
       // Parse request body
-      const { name, email, role, managerId, isStaff } = await request.json();
+      const { name, email, _role, managerId, _isStaff } = await request.json();
 
       // Check permissions
       const isSelf = targetId === userId;
@@ -255,7 +255,7 @@ export const PUT = withAuthParams(
         );
       }
 
-      // If changing role, validate permissions
+      // If changing _role, validate permissions
       if (role && role !== undefined && !canChangeRole) {
         return NextResponse.json(
           { error: "Insufficient permissions to change user role" },
@@ -263,9 +263,9 @@ export const PUT = withAuthParams(
         );
       }
 
-      if (role && !canAssignRole(currentUserRole, role as UserRole)) {
+      if (role && !canAssignRole(currentUserRole, role as _UserRole)) {
         return NextResponse.json(
-          { error: `Insufficient permissions to assign role: ${role}` },
+          { error: `Insufficient permissions to assign role: ${_role}` },
           { status: 403 }
         );
       }
@@ -304,13 +304,13 @@ export const PUT = withAuthParams(
         updateData.lastName = nameParts.slice(1).join(" ");
       }
 
-      if (role) {
+      if (_role) {
         updateData.publicMetadata = {
           ...targetUser.publicMetadata,
-          role,
+          _role,
           managerId,
           isStaff: role === "developer" || role === "manager",
-          lastUpdatedBy: userId,
+          lastUpdatedBy: _userId,
           lastUpdatedAt: new Date().toISOString(),
         };
       }
@@ -321,11 +321,11 @@ export const PUT = withAuthParams(
       }
 
       // If role changed, update via our enhanced role update function
-      if (role && role !== targetUser.role) {
+      if (role && role !== targetUser._role) {
         await updateUserRole(
           targetUser.clerk_user_id,
-          role as UserRole,
-          userId,
+          role as _UserRole,
+          _userId,
           managerId
         );
       } else if (name || email) {
@@ -341,11 +341,11 @@ export const PUT = withAuthParams(
           clerkId: targetUser.clerk_user_id,
           name: name || targetUser.name,
           email: email || targetUser.email,
-          role: role || targetUser.role,
+          role: role || targetUser._role,
         },
       });
-    } catch (error) {
-      console.error("❌ Error updating user:", error);
+    } catch (_error) {
+      console.error("❌ Error updating user:", _error);
       return NextResponse.json(
         {
           error: "Failed to update user",
@@ -365,18 +365,18 @@ export const DELETE = withAuthParams(
   async (
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> },
-    session
+    _session
   ) => {
     try {
-      const { userId } = await auth();
+      const { _userId } = await auth();
 
-      if (!userId) {
+      if (!_userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
       const { id: targetId } = await params;
-      const currentUserRole = await getCurrentUserRole(userId);
-      const permissions = getUserPermissions(currentUserRole);
+      const currentUserRole = await getCurrentUserRole(_userId);
+      const _permissions = getUserPermissions(currentUserRole);
 
       // Only org_admin can delete users
       if (currentUserRole !== "org_admin" && currentUserRole !== "developer") {
@@ -387,7 +387,7 @@ export const DELETE = withAuthParams(
       }
 
       // Prevent self-deletion
-      if (targetId === userId) {
+      if (targetId === _userId) {
         return NextResponse.json(
           { error: "Cannot delete your own account" },
           { status: 400 }
@@ -433,8 +433,8 @@ export const DELETE = withAuthParams(
           email: targetUser.email,
         },
       });
-    } catch (error) {
-      console.error("❌ Error deleting user:", error);
+    } catch (_error) {
+      console.error("❌ Error deleting user:", _error);
       return NextResponse.json(
         {
           error: "Failed to delete user",

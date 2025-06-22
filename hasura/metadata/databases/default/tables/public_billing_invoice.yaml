@@ -6,14 +6,14 @@ object_relationships:
     using:
       foreign_key_constraint_on: client_id
 array_relationships:
-  - name: billing_event_logs
+  - name: billingEventLogs
     using:
       foreign_key_constraint_on:
         column: invoice_id
         table:
           name: billing_event_log
           schema: public
-  - name: billing_invoice_items
+  - name: billingInvoiceItems
     using:
       foreign_key_constraint_on:
         column: invoice_id
@@ -24,19 +24,19 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: "*"
+      columns: '*'
     comment: Developer role has full insert access
 select_permissions:
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
 update_permissions:
   - role: developer
     permission:
-      columns: "*"
+      columns: '*'
       filter: {}
       check: {}
     comment: Developer role has full update access

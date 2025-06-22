@@ -86,24 +86,24 @@ class EnhancedRouteMonitor {
     responseData?: any
   ): Promise<void> {
     const route = this.normalizeRoute(request.nextUrl.pathname);
-    const ipAddress = this.getClientIP(request);
+    const _ipAddress = this.getClientIP(_request);
     const now = Date.now();
     const duration = startTime ? now - startTime : 0;
 
     // Update route metrics
-    this.updateRouteMetrics(route, userId, duration, success);
+    this.updateRouteMetrics(route, _userId, duration, success);
 
     // Check for rate limiting
-    if (userId && this.isRateLimited(route, userId)) {
-      await this.handleRateLimit(request, userId, route);
+    if (userId && this.isRateLimited(route, _userId)) {
+      await this.handleRateLimit(_request, _userId, route);
     }
 
     // Monitor for suspicious patterns
-    await this.checkSuspiciousPatterns(request, userId, route, responseData);
+    await this.checkSuspiciousPatterns(_request, _userId, route, responseData);
 
     // Log significant events
     if (this.isSignificantRoute(route)) {
-      const clientInfo = auditLogger.extractClientInfo(request);
+      const clientInfo = auditLogger.extractClientInfo(_request);
       await auditLogger.logSOC2Event({
         level: success ? LogLevel.INFO : LogLevel.WARNING,
         category: LogCategory.SYSTEM_ACCESS,
@@ -134,15 +134,15 @@ class EnhancedRouteMonitor {
     userId?: string,
     metadata?: any
   ): Promise<void> {
-    const ipAddress = this.getClientIP(request);
+    const _ipAddress = this.getClientIP(_request);
 
     // Check for auth failure patterns
     if (eventType === "auth_failure") {
-      await this.handleAuthFailure(request, ipAddress, metadata);
+      await this.handleAuthFailure(_request, _ipAddress, metadata);
     }
 
     // Log auth events
-    const clientInfo = auditLogger.extractClientInfo(request);
+    const clientInfo = auditLogger.extractClientInfo(_request);
     await auditLogger.logSOC2Event({
       level: eventType === "auth_failure" ? LogLevel.WARNING : LogLevel.INFO,
       category: LogCategory.AUTHENTICATION,
@@ -256,8 +256,8 @@ class EnhancedRouteMonitor {
       metrics.failedRequests++;
     }
 
-    if (userId) {
-      metrics.uniqueUsers.add(userId);
+    if (_userId) {
+      metrics.uniqueUsers.add(_userId);
     }
 
     // Update average response time
@@ -272,10 +272,10 @@ class EnhancedRouteMonitor {
 
   private isRateLimited(route: string, userId: string): boolean {
     const limits = this.RATE_LIMITS[route] || this.RATE_LIMITS.default;
-    const userActivity = this.userActivityCache.get(userId);
+    const userActivity = this.userActivityCache.get(_userId);
 
     if (!userActivity) {
-      this.userActivityCache.set(userId, {
+      this.userActivityCache.set(_userId, {
         lastActivity: Date.now(),
         requestCount: 1,
       });
@@ -314,23 +314,23 @@ class EnhancedRouteMonitor {
       type: "rate_limit_exceeded",
       severity: "medium",
       route,
-      userId,
-      ipAddress: this.getClientIP(request),
+      _userId,
+      ipAddress: this.getClientIP(_request),
       timestamp: Date.now(),
       details: {
-        userActivity: this.userActivityCache.get(userId),
+        userActivity: this.userActivityCache.get(_userId),
         limits: this.RATE_LIMITS[route] || this.RATE_LIMITS.default,
       },
     };
 
     this.alerts.push(alert);
 
-    const clientInfo = auditLogger.extractClientInfo(request);
+    const clientInfo = auditLogger.extractClientInfo(_request);
     await auditLogger.logSOC2Event({
       level: LogLevel.WARNING,
       category: LogCategory.SECURITY_EVENT,
       eventType: SOC2EventType.RATE_LIMIT_EXCEEDED,
-      userId,
+      _userId,
       resourceType: "route",
       action: "RATE_LIMIT_EXCEEDED",
       success: false,
@@ -349,7 +349,7 @@ class EnhancedRouteMonitor {
   ): Promise<void> {
     const now = Date.now();
     const hour = new Date(now).getHours();
-    const ipAddress = this.getClientIP(request);
+    const _ipAddress = this.getClientIP(_request);
 
     // Check for unusual access times
     if (
@@ -360,13 +360,13 @@ class EnhancedRouteMonitor {
         "unusual_access",
         "low",
         route,
-        userId,
-        ipAddress,
+        _userId,
+        _ipAddress,
         {
           accessTime: hour,
           reason: "Access during unusual hours",
         },
-        request
+        _request
       );
     }
 
@@ -380,18 +380,18 @@ class EnhancedRouteMonitor {
         "suspicious_pattern",
         "high",
         route,
-        userId,
-        ipAddress,
+        _userId,
+        _ipAddress,
         {
           recordCount: responseData.users.length,
           reason: "Bulk data access detected",
         },
-        request
+        _request
       );
     }
 
     // Check for rapid auth failures
-    if (!userId) {
+    if (!_userId) {
       const recentFailures = this.alerts.filter(
         alert =>
           alert.ipAddress === ipAddress &&
@@ -400,18 +400,18 @@ class EnhancedRouteMonitor {
       ).length;
 
       if (recentFailures >= this.SUSPICIOUS_PATTERNS.rapidAuthFailures) {
-        this.suspiciousIPs.add(ipAddress);
+        this.suspiciousIPs.add(_ipAddress);
         await this.createAlert(
           "auth_failure_spike",
           "critical",
           route,
-          userId,
-          ipAddress,
+          _userId,
+          _ipAddress,
           {
             failureCount: recentFailures,
             timeWindow: "5 minutes",
           },
-          request
+          _request
         );
       }
     }
@@ -433,12 +433,12 @@ class EnhancedRouteMonitor {
       "medium",
       route,
       undefined,
-      ipAddress,
+      _ipAddress,
       {
         ...metadata,
         reason: "Authentication failure",
       },
-      request
+      _request
     );
   }
 
@@ -468,8 +468,8 @@ class EnhancedRouteMonitor {
     const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
     this.alerts = this.alerts.filter(a => a.timestamp > oneDayAgo);
 
-    if (request) {
-      const clientInfo = auditLogger.extractClientInfo(request);
+    if (_request) {
+      const clientInfo = auditLogger.extractClientInfo(_request);
       await auditLogger.logSOC2Event({
         level:
           severity === "critical"
@@ -518,14 +518,14 @@ class EnhancedRouteMonitor {
         // Clean up old user activity
         const userIdsToDelete: string[] = [];
 
-        this.userActivityCache.forEach((activity, userId) => {
+        this.userActivityCache.forEach((activity, _userId) => {
           if (activity.lastActivity < oneDayAgo) {
-            userIdsToDelete.push(userId);
+            userIdsToDelete.push(_userId);
           }
         });
 
         userIdsToDelete.forEach(userId =>
-          this.userActivityCache.delete(userId)
+          this.userActivityCache.delete(_userId)
         );
 
         // Clean up old alerts
@@ -586,8 +586,8 @@ export const monitorRequest = (
   responseData?: any
 ) =>
   routeMonitor.monitorRequest(
-    request,
-    userId,
+    _request,
+    _userId,
     startTime,
     success,
     responseData
@@ -598,4 +598,4 @@ export const monitorAuthEvent = (
   eventType: "login" | "logout" | "token_refresh" | "auth_failure",
   userId?: string,
   metadata?: any
-) => routeMonitor.monitorAuthEvent(request, eventType, userId, metadata);
+) => routeMonitor.monitorAuthEvent(_request, eventType, _userId, metadata);

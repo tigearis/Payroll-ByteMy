@@ -266,7 +266,7 @@ mutation UpdateRolePermissionConditions(
 # Bulk update user roles with audit logging
 mutation BulkUpdateUserRoles(
   $userId: uuid!
-  $newRoleIds: [uuid!]!
+  $newUserRoles: [user_roles_insert_input!]!
   $reason: String = null
 ) {
   # This would typically be a custom function that handles:
@@ -279,7 +279,7 @@ mutation BulkUpdateUserRoles(
     affected_rows
   }
 
-  insertUserRoles(objects: $newRoleIds) {
+  insertUserRoles(objects: $newUserRoles) {
     affected_rows
     returning {
       id
