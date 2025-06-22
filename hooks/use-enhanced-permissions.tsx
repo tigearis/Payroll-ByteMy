@@ -12,7 +12,7 @@ import {
 const PermissionCacheContext = createContext<Map<string, boolean>>(new Map());
 
 export function useEnhancedPermissions() {
-  const { userId, isLoaded } = useAuth();
+  const { has, userId, isLoaded } = useAuth();
   const { user } = useUser();
   const permissionCache = useContext(PermissionCacheContext);
 
@@ -45,18 +45,22 @@ export function useEnhancedPermissions() {
         return permissionCache.get(cacheKey)!;
       }
 
-      // Use role-based permissions as the base permission set
+      // Step 1: Check base role permissions
       const userPermissions = ROLE_PERMISSIONS[userRole]?.permissions || [];
       const hasRolePermission = userPermissions.includes(permission);
       
-      // For granular restrictions, check if Clerk has explicit denial
-      // If no Clerk permission exists, use role-based permissions
-      const hasPermission = hasRolePermission;
+      // Step 2: Check granular Clerk permissions for enhancements
+      const hasGranularPermission = has({ permission });
+      
+      // Step 3: Combine permissions - user has access if either:
+      // - Their role grants the permission (base access)
+      // - They have been granted granular permission (enhanced access)
+      const hasPermission = hasRolePermission || hasGranularPermission;
       
       permissionCache.set(cacheKey, hasPermission);
       return hasPermission;
     },
-    [isLoaded, user, userId, userRole, permissionCache]
+    [isLoaded, user, userId, userRole, has, permissionCache]
   );
 
   // Check multiple permissions at once with caching
