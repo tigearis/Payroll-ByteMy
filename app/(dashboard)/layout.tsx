@@ -8,6 +8,8 @@ import { Sidebar } from "@/components/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ClientWrapper } from "@/domains/clients/components/client-wrapper";
 import { UserNav } from "@/domains/users/components/user-nav";
+import { DebugSidebarIssue } from "@/debug-sidebar-issue";
+import { DebugSimpleSidebar } from "@/debug-simple-sidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

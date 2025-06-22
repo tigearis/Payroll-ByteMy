@@ -52,14 +52,20 @@ export enum PayrollDateType {
   DOW = "dow",
 }
 
-// Consolidated PayrollStatus enum (replaces payroll_status and payroll_status_new)
+// Consolidated PayrollStatus enum (matches database enum values)
 export enum PayrollStatus {
+  // Original database values
   Active = "Active",
-  Inactive = "Inactive",
   Implementation = "Implementation",
-  Live = "live",
-  Onboarding = "onboarding",
-  Possible = "possible",
+  Inactive = "Inactive",
+
+  // New GraphQL/workflow values
+  Draft = "draft",
+  PendingApproval = "pending_approval",
+  Approved = "approved",
+  Processing = "processing",
+  Completed = "completed",
+  Failed = "failed",
 }
 
 // PermissionAction enum (standardized naming)

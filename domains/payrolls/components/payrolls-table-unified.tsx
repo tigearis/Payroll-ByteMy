@@ -1,9 +1,7 @@
 "use client";
 
 import {
-  Building2,
   Clock,
-  Users,
   CheckCircle,
   AlertTriangle,
   Eye,
@@ -62,27 +60,55 @@ interface PayrollsTableProps {
   onSort?: (field: string) => void;
 }
 
-// Status configuration for payrolls
+// Status configuration for payrolls (updated to match database enum values)
 const payrollStatusConfig: Record<string, StatusConfig> = {
+  // Original database values
+  Active: {
+    variant: "default",
+    icon: CheckCircle,
+    className: "bg-green-50 text-green-700 border-green-200",
+  },
   Implementation: {
     variant: "secondary",
     icon: Clock,
     className: "bg-yellow-50 text-yellow-700 border-yellow-200",
   },
-  Live: {
+  Inactive: {
+    variant: "outline",
+    icon: Clock,
+    className: "bg-gray-50 text-gray-700 border-gray-200",
+  },
+
+  // New workflow values
+  draft: {
+    variant: "secondary",
+    icon: Clock,
+    className: "bg-blue-50 text-blue-700 border-blue-200",
+  },
+  pending_approval: {
+    variant: "secondary",
+    icon: AlertTriangle,
+    className: "bg-orange-50 text-orange-700 border-orange-200",
+  },
+  approved: {
     variant: "default",
     icon: CheckCircle,
     className: "bg-green-50 text-green-700 border-green-200",
   },
-  Suspended: {
+  processing: {
+    variant: "default",
+    icon: Clock,
+    className: "bg-purple-50 text-purple-700 border-purple-200",
+  },
+  completed: {
+    variant: "default",
+    icon: CheckCircle,
+    className: "bg-green-50 text-green-700 border-green-200",
+  },
+  failed: {
     variant: "destructive",
     icon: AlertTriangle,
     className: "bg-red-50 text-red-700 border-red-200",
-  },
-  Archived: {
-    variant: "outline",
-    icon: Clock,
-    className: "bg-gray-50 text-gray-700 border-gray-200",
   },
 };
 

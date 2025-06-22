@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 15.13
--- Dumped by pg_dump version 15.12 (Homebrew)
+-- Dumped by pg_dump version 16.9 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -16,311 +16,35 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-DROP POLICY IF EXISTS users_select_policy ON public.users;
-DROP POLICY IF EXISTS payrolls_select_policy ON public.payrolls;
-ALTER TABLE IF EXISTS ONLY public.user_roles DROP CONSTRAINT IF EXISTS user_roles_user_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.user_roles DROP CONSTRAINT IF EXISTS user_roles_role_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.role_permissions DROP CONSTRAINT IF EXISTS role_permissions_role_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.role_permissions DROP CONSTRAINT IF EXISTS role_permissions_permission_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.permissions DROP CONSTRAINT IF EXISTS permissions_resource_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.permission_overrides DROP CONSTRAINT IF EXISTS permission_overrides_user_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.permission_overrides DROP CONSTRAINT IF EXISTS permission_overrides_created_by_fkey;
-ALTER TABLE IF EXISTS ONLY public.permission_audit_log DROP CONSTRAINT IF EXISTS permission_audit_log_user_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.permission_audit_log DROP CONSTRAINT IF EXISTS permission_audit_log_target_user_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.payrolls DROP CONSTRAINT IF EXISTS payrolls_parent_payroll_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.payrolls DROP CONSTRAINT IF EXISTS payrolls_date_type_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.payrolls DROP CONSTRAINT IF EXISTS payrolls_cycle_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.payrolls DROP CONSTRAINT IF EXISTS payrolls_client_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.payroll_dates DROP CONSTRAINT IF EXISTS payroll_dates_payroll_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.notes DROP CONSTRAINT IF EXISTS notes_user_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS manager_id;
-ALTER TABLE IF EXISTS ONLY public.work_schedule DROP CONSTRAINT IF EXISTS fk_work_schedule_user;
-ALTER TABLE IF EXISTS ONLY public.payrolls DROP CONSTRAINT IF EXISTS fk_primary_consultant_user;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignments DROP CONSTRAINT IF EXISTS fk_payroll_assignment_payroll_date;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignments DROP CONSTRAINT IF EXISTS fk_payroll_assignment_original_consultant;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignments DROP CONSTRAINT IF EXISTS fk_payroll_assignment_consultant;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignments DROP CONSTRAINT IF EXISTS fk_payroll_assignment_assigned_by;
-ALTER TABLE IF EXISTS ONLY public.payrolls DROP CONSTRAINT IF EXISTS fk_manager_user;
-ALTER TABLE IF EXISTS ONLY public.leave DROP CONSTRAINT IF EXISTS fk_leave_user;
-ALTER TABLE IF EXISTS ONLY public.payrolls DROP CONSTRAINT IF EXISTS fk_backup_consultant_user;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignment_audit DROP CONSTRAINT IF EXISTS fk_audit_to_consultant;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignment_audit DROP CONSTRAINT IF EXISTS fk_audit_payroll_date;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignment_audit DROP CONSTRAINT IF EXISTS fk_audit_from_consultant;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignment_audit DROP CONSTRAINT IF EXISTS fk_audit_changed_by;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignment_audit DROP CONSTRAINT IF EXISTS fk_audit_assignment;
-ALTER TABLE IF EXISTS ONLY public.client_external_systems DROP CONSTRAINT IF EXISTS client_external_systems_system_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.client_external_systems DROP CONSTRAINT IF EXISTS client_external_systems_client_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.client_billing_assignment DROP CONSTRAINT IF EXISTS client_billing_assignment_client_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.client_billing_assignment DROP CONSTRAINT IF EXISTS client_billing_assignment_billing_plan_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.billing_items DROP CONSTRAINT IF EXISTS billing_items_payroll_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.billing_items DROP CONSTRAINT IF EXISTS billing_items_invoice_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.billing_invoices DROP CONSTRAINT IF EXISTS billing_invoices_client_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.billing_invoice_item DROP CONSTRAINT IF EXISTS billing_invoice_item_invoice_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.billing_invoice DROP CONSTRAINT IF EXISTS billing_invoice_client_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.billing_event_log DROP CONSTRAINT IF EXISTS billing_event_log_invoice_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.billing_event_log DROP CONSTRAINT IF EXISTS billing_event_log_created_by_fkey;
-ALTER TABLE IF EXISTS ONLY public.adjustment_rules DROP CONSTRAINT IF EXISTS adjustment_rules_date_type_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.adjustment_rules DROP CONSTRAINT IF EXISTS adjustment_rules_cycle_id_fkey;
-DROP TRIGGER IF EXISTS update_user_roles_timestamp ON public.user_roles;
-DROP TRIGGER IF EXISTS update_roles_timestamp ON public.roles;
-DROP TRIGGER IF EXISTS update_role_permissions_timestamp ON public.role_permissions;
-DROP TRIGGER IF EXISTS update_resources_timestamp ON public.resources;
-DROP TRIGGER IF EXISTS update_permissions_timestamp ON public.permissions;
-DROP TRIGGER IF EXISTS update_permission_overrides_updated_at ON public.permission_overrides;
-DROP TRIGGER IF EXISTS update_feature_flags_modtime ON public.feature_flags;
-DROP TRIGGER IF EXISTS trigger_prevent_duplicate_insert ON public.work_schedule;
-DROP TRIGGER IF EXISTS trigger_auto_regenerate_dates ON public.payrolls;
-DROP TRIGGER IF EXISTS trigger_auto_generate_dates ON public.payrolls;
-DROP TRIGGER IF EXISTS trigger_auto_delete_future_dates ON public.payrolls;
-DROP TRIGGER IF EXISTS trg_invoice_item_total ON public.billing_invoice_item;
-DROP TRIGGER IF EXISTS set_timestamp ON public.payroll_assignments;
-DROP TRIGGER IF EXISTS enforce_staff_on_payrolls ON public.payrolls;
-DROP TRIGGER IF EXISTS check_entity_relation ON public.notes;
-DROP TRIGGER IF EXISTS audit_users_changes ON public.users;
-DROP TRIGGER IF EXISTS audit_user_roles_changes ON public.user_roles;
-DROP TRIGGER IF EXISTS audit_role_permissions_changes ON public.role_permissions;
-DROP TRIGGER IF EXISTS audit_payrolls_changes ON public.payrolls;
-DROP TRIGGER IF EXISTS audit_clients_changes ON public.clients;
-DROP INDEX IF EXISTS public.only_one_current_version_per_family;
-DROP INDEX IF EXISTS public.idx_work_schedule_user_id;
-DROP INDEX IF EXISTS public.idx_users_role;
-DROP INDEX IF EXISTS public.idx_users_is_active;
-DROP INDEX IF EXISTS public.idx_users_deactivated_at;
-DROP INDEX IF EXISTS public.idx_users_clerk_composite;
-DROP INDEX IF EXISTS public.idx_users_active_staff;
-DROP INDEX IF EXISTS public.idx_unique_payroll_date;
-DROP INDEX IF EXISTS public.idx_permission_overrides_user_id;
-DROP INDEX IF EXISTS public.idx_permission_overrides_role;
-DROP INDEX IF EXISTS public.idx_permission_overrides_resource;
-DROP INDEX IF EXISTS public.idx_permission_overrides_operation;
-DROP INDEX IF EXISTS public.idx_permission_overrides_expires_at;
-DROP INDEX IF EXISTS public.idx_permission_overrides_created_by;
-DROP INDEX IF EXISTS public.idx_permission_audit_log_user_id;
-DROP INDEX IF EXISTS public.idx_permission_audit_log_timestamp;
-DROP INDEX IF EXISTS public.idx_permission_audit_log_target_user_id;
-DROP INDEX IF EXISTS public.idx_permission_audit_log_resource;
-DROP INDEX IF EXISTS public.idx_permission_audit_log_action;
-DROP INDEX IF EXISTS public.idx_payrolls_versioning;
-DROP INDEX IF EXISTS public.idx_payrolls_status_client;
-DROP INDEX IF EXISTS public.idx_payrolls_staff_composite;
-DROP INDEX IF EXISTS public.idx_payrolls_manager;
-DROP INDEX IF EXISTS public.idx_payrolls_go_live_date;
-DROP INDEX IF EXISTS public.idx_payrolls_current_version;
-DROP INDEX IF EXISTS public.idx_payrolls_consultant;
-DROP INDEX IF EXISTS public.idx_payrolls_client_id;
-DROP INDEX IF EXISTS public.idx_payrolls_active_dates;
-DROP INDEX IF EXISTS public.idx_payroll_dates_processing;
-DROP INDEX IF EXISTS public.idx_payroll_dates_payroll_id;
-DROP INDEX IF EXISTS public.idx_payroll_dates_notes;
-DROP INDEX IF EXISTS public.idx_payroll_dates_date_range;
-DROP INDEX IF EXISTS public.idx_payroll_dates_composite;
-DROP INDEX IF EXISTS public.idx_payroll_dashboard_stats_status;
-DROP INDEX IF EXISTS public.idx_payroll_dashboard_stats_consultants;
-DROP INDEX IF EXISTS public.idx_payroll_assignments_payroll_date;
-DROP INDEX IF EXISTS public.idx_payroll_assignments_consultant;
-DROP INDEX IF EXISTS public.idx_payroll_assignments_assigned_date;
-DROP INDEX IF EXISTS public.idx_payroll_assignments_assigned_by;
-DROP INDEX IF EXISTS public.idx_notes_user_id;
-DROP INDEX IF EXISTS public.idx_notes_important;
-DROP INDEX IF EXISTS public.idx_notes_entity;
-DROP INDEX IF EXISTS public.idx_notes_created_at;
-DROP INDEX IF EXISTS public.idx_leave_user_id;
-DROP INDEX IF EXISTS public.idx_leave_dates;
-DROP INDEX IF EXISTS public.idx_holidays_date_country_region;
-DROP INDEX IF EXISTS public.idx_billing_invoice_client_id;
-DROP INDEX IF EXISTS public.idx_audit_payroll_date;
-DROP INDEX IF EXISTS public.idx_audit_date;
-DROP INDEX IF EXISTS public.idx_audit_changed_by;
-DROP INDEX IF EXISTS public.idx_audit_assignment;
-DROP INDEX IF EXISTS neon_auth.users_sync_deleted_at_idx;
-DROP INDEX IF EXISTS audit.idx_slow_queries_start;
-DROP INDEX IF EXISTS audit.idx_slow_queries_duration;
-DROP INDEX IF EXISTS audit.idx_permission_changes_time;
-DROP INDEX IF EXISTS audit.idx_permission_changes_target_user;
-DROP INDEX IF EXISTS audit.idx_permission_changes_changed_by;
-DROP INDEX IF EXISTS audit.idx_data_access_user;
-DROP INDEX IF EXISTS audit.idx_data_access_time;
-DROP INDEX IF EXISTS audit.idx_data_access_resource;
-DROP INDEX IF EXISTS audit.idx_data_access_classification;
-DROP INDEX IF EXISTS audit.idx_auth_events_user;
-DROP INDEX IF EXISTS audit.idx_auth_events_type;
-DROP INDEX IF EXISTS audit.idx_auth_events_time;
-DROP INDEX IF EXISTS audit.idx_audit_log_user_id;
-DROP INDEX IF EXISTS audit.idx_audit_log_session;
-DROP INDEX IF EXISTS audit.idx_audit_log_resource;
-DROP INDEX IF EXISTS audit.idx_audit_log_event_time;
-DROP INDEX IF EXISTS audit.idx_audit_log_action;
-ALTER TABLE IF EXISTS ONLY public.work_schedule DROP CONSTRAINT IF EXISTS work_schedule_pkey;
-ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_username_key;
-ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_pkey;
-ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_email_key;
-ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_clerk_user_id_key;
-ALTER TABLE IF EXISTS ONLY public.user_roles DROP CONSTRAINT IF EXISTS user_roles_user_id_role_id_key;
-ALTER TABLE IF EXISTS ONLY public.user_roles DROP CONSTRAINT IF EXISTS user_roles_pkey;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignments DROP CONSTRAINT IF EXISTS uq_payroll_assignment_payroll_date;
-ALTER TABLE IF EXISTS ONLY public.work_schedule DROP CONSTRAINT IF EXISTS unique_user_work_day;
-ALTER TABLE IF EXISTS ONLY public.roles DROP CONSTRAINT IF EXISTS roles_pkey;
-ALTER TABLE IF EXISTS ONLY public.roles DROP CONSTRAINT IF EXISTS roles_name_key;
-ALTER TABLE IF EXISTS ONLY public.role_permissions DROP CONSTRAINT IF EXISTS role_permissions_role_id_permission_id_key;
-ALTER TABLE IF EXISTS ONLY public.role_permissions DROP CONSTRAINT IF EXISTS role_permissions_pkey;
-ALTER TABLE IF EXISTS ONLY public.resources DROP CONSTRAINT IF EXISTS resources_pkey;
-ALTER TABLE IF EXISTS ONLY public.resources DROP CONSTRAINT IF EXISTS resources_name_key;
-ALTER TABLE IF EXISTS ONLY public.permissions DROP CONSTRAINT IF EXISTS permissions_resource_id_action_key;
-ALTER TABLE IF EXISTS ONLY public.permissions DROP CONSTRAINT IF EXISTS permissions_pkey;
-ALTER TABLE IF EXISTS ONLY public.permission_overrides DROP CONSTRAINT IF EXISTS permission_overrides_pkey;
-ALTER TABLE IF EXISTS ONLY public.permission_audit_log DROP CONSTRAINT IF EXISTS permission_audit_log_pkey;
-ALTER TABLE IF EXISTS ONLY public.payrolls DROP CONSTRAINT IF EXISTS payrolls_pkey;
-ALTER TABLE IF EXISTS ONLY public.payroll_version_results DROP CONSTRAINT IF EXISTS payroll_version_results_pkey;
-ALTER TABLE IF EXISTS ONLY public.payroll_version_history_results DROP CONSTRAINT IF EXISTS payroll_version_history_results_pkey;
-ALTER TABLE IF EXISTS ONLY public.payroll_dates DROP CONSTRAINT IF EXISTS payroll_dates_pkey;
-ALTER TABLE IF EXISTS ONLY public.payroll_date_types DROP CONSTRAINT IF EXISTS payroll_date_types_pkey;
-ALTER TABLE IF EXISTS ONLY public.payroll_date_types DROP CONSTRAINT IF EXISTS payroll_date_types_name_key;
-ALTER TABLE IF EXISTS ONLY public.payroll_cycles DROP CONSTRAINT IF EXISTS payroll_cycles_pkey;
-ALTER TABLE IF EXISTS ONLY public.payroll_cycles DROP CONSTRAINT IF EXISTS payroll_cycles_name_key;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignments DROP CONSTRAINT IF EXISTS payroll_assignments_pkey;
-ALTER TABLE IF EXISTS ONLY public.payroll_assignment_audit DROP CONSTRAINT IF EXISTS payroll_assignment_audit_pkey;
-ALTER TABLE IF EXISTS ONLY public.payroll_activation_results DROP CONSTRAINT IF EXISTS payroll_activation_results_pkey;
-ALTER TABLE IF EXISTS ONLY public.notes DROP CONSTRAINT IF EXISTS notes_pkey;
-ALTER TABLE IF EXISTS ONLY public.leave DROP CONSTRAINT IF EXISTS leave_pkey;
-ALTER TABLE IF EXISTS ONLY public.latest_payroll_version_results DROP CONSTRAINT IF EXISTS latest_payroll_version_results_pkey;
-ALTER TABLE IF EXISTS ONLY public.holidays DROP CONSTRAINT IF EXISTS holidays_pkey;
-ALTER TABLE IF EXISTS ONLY public.feature_flags DROP CONSTRAINT IF EXISTS feature_flags_pkey;
-ALTER TABLE IF EXISTS ONLY public.feature_flags DROP CONSTRAINT IF EXISTS feature_flags_feature_name_key;
-ALTER TABLE IF EXISTS ONLY public.external_systems DROP CONSTRAINT IF EXISTS external_systems_pkey;
-ALTER TABLE IF EXISTS ONLY public.clients DROP CONSTRAINT IF EXISTS clients_pkey;
-ALTER TABLE IF EXISTS ONLY public.client_external_systems DROP CONSTRAINT IF EXISTS client_external_systems_pkey;
-ALTER TABLE IF EXISTS ONLY public.client_external_systems DROP CONSTRAINT IF EXISTS client_external_systems_client_id_system_id_key;
-ALTER TABLE IF EXISTS ONLY public.client_billing_assignment DROP CONSTRAINT IF EXISTS client_billing_assignment_pkey;
-ALTER TABLE IF EXISTS ONLY public.billing_plan DROP CONSTRAINT IF EXISTS billing_plan_pkey;
-ALTER TABLE IF EXISTS ONLY public.billing_items DROP CONSTRAINT IF EXISTS billing_items_pkey;
-ALTER TABLE IF EXISTS ONLY public.billing_invoices DROP CONSTRAINT IF EXISTS billing_invoices_pkey;
-ALTER TABLE IF EXISTS ONLY public.billing_invoices DROP CONSTRAINT IF EXISTS billing_invoices_invoice_number_key;
-ALTER TABLE IF EXISTS ONLY public.billing_invoice DROP CONSTRAINT IF EXISTS billing_invoice_pkey;
-ALTER TABLE IF EXISTS ONLY public.billing_invoice_item DROP CONSTRAINT IF EXISTS billing_invoice_item_pkey;
-ALTER TABLE IF EXISTS ONLY public.billing_event_log DROP CONSTRAINT IF EXISTS billing_event_log_pkey;
-ALTER TABLE IF EXISTS ONLY public.app_settings DROP CONSTRAINT IF EXISTS app_settings_pkey;
-ALTER TABLE IF EXISTS ONLY public.adjustment_rules DROP CONSTRAINT IF EXISTS adjustment_rules_pkey;
-ALTER TABLE IF EXISTS ONLY public.adjustment_rules DROP CONSTRAINT IF EXISTS adjustment_rules_cycle_id_date_type_id_key;
-ALTER TABLE IF EXISTS ONLY neon_auth.users_sync DROP CONSTRAINT IF EXISTS users_sync_pkey;
-ALTER TABLE IF EXISTS ONLY audit.slow_queries DROP CONSTRAINT IF EXISTS slow_queries_pkey;
-ALTER TABLE IF EXISTS ONLY audit.permission_changes DROP CONSTRAINT IF EXISTS permission_changes_pkey;
-ALTER TABLE IF EXISTS ONLY audit.data_access_log DROP CONSTRAINT IF EXISTS data_access_log_pkey;
-ALTER TABLE IF EXISTS ONLY audit.auth_events DROP CONSTRAINT IF EXISTS auth_events_pkey;
-ALTER TABLE IF EXISTS ONLY audit.audit_log DROP CONSTRAINT IF EXISTS audit_log_pkey;
-DROP TABLE IF EXISTS public.work_schedule;
-DROP TABLE IF EXISTS public.users_role_backup;
-DROP TABLE IF EXISTS public.permission_overrides;
-DROP TABLE IF EXISTS public.permission_audit_log;
-DROP VIEW IF EXISTS public.payroll_triggers_status;
-DROP MATERIALIZED VIEW IF EXISTS public.payroll_dashboard_stats;
-DROP TABLE IF EXISTS public.payroll_assignments;
-DROP TABLE IF EXISTS public.payroll_assignment_audit;
-DROP TABLE IF EXISTS public.notes;
-DROP TABLE IF EXISTS public.leave;
-DROP TABLE IF EXISTS public.holidays;
-DROP TABLE IF EXISTS public.feature_flags;
-DROP TABLE IF EXISTS public.external_systems;
-DROP VIEW IF EXISTS public.current_payrolls;
-DROP TABLE IF EXISTS public.payrolls;
-DROP TABLE IF EXISTS public.payroll_date_types;
-DROP TABLE IF EXISTS public.payroll_cycles;
-DROP TABLE IF EXISTS public.clients;
-DROP TABLE IF EXISTS public.client_external_systems;
-DROP TABLE IF EXISTS public.client_billing_assignment;
-DROP TABLE IF EXISTS public.billing_plan;
-DROP TABLE IF EXISTS public.billing_items;
-DROP TABLE IF EXISTS public.billing_invoices;
-DROP TABLE IF EXISTS public.billing_invoice_item;
-DROP TABLE IF EXISTS public.billing_invoice;
-DROP TABLE IF EXISTS public.billing_event_log;
-DROP TABLE IF EXISTS public.app_settings;
-DROP TABLE IF EXISTS public.adjustment_rules;
-DROP TABLE IF EXISTS neon_auth.users_sync;
-DROP VIEW IF EXISTS audit.user_access_summary;
-DROP TABLE IF EXISTS public.users;
-DROP TABLE IF EXISTS audit.slow_queries;
-DROP VIEW IF EXISTS audit.permission_usage_report;
-DROP TABLE IF EXISTS public.user_roles;
-DROP TABLE IF EXISTS public.roles;
-DROP TABLE IF EXISTS public.role_permissions;
-DROP TABLE IF EXISTS public.resources;
-DROP TABLE IF EXISTS public.permissions;
-DROP TABLE IF EXISTS audit.permission_changes;
-DROP TABLE IF EXISTS audit.data_access_log;
-DROP TABLE IF EXISTS audit.auth_events;
-DROP TABLE IF EXISTS audit.audit_log;
-DROP FUNCTION IF EXISTS public.user_can_perform_action(p_user_id uuid, p_resource text, p_action text);
-DROP FUNCTION IF EXISTS public.update_timestamp();
-DROP FUNCTION IF EXISTS public.update_payroll_dates();
-DROP FUNCTION IF EXISTS public.update_modified_column();
-DROP FUNCTION IF EXISTS public.update_invoice_total();
-DROP FUNCTION IF EXISTS public.trigger_set_timestamp();
-DROP FUNCTION IF EXISTS public.subtract_business_days(p_date date, p_days integer);
-DROP FUNCTION IF EXISTS public.regenerate_all_payroll_dates(p_start_date date, p_end_date date, p_max_dates_per_payroll integer, p_delete_existing boolean);
-DROP FUNCTION IF EXISTS public.prevent_duplicate_workday_insert();
-DROP FUNCTION IF EXISTS public.is_business_day(p_date date);
-DROP FUNCTION IF EXISTS public.get_user_effective_permissions(p_user_id uuid);
-DROP FUNCTION IF EXISTS public.get_payroll_version_history(p_payroll_id uuid);
-DROP TABLE IF EXISTS public.payroll_version_history_results;
-DROP FUNCTION IF EXISTS public.get_latest_payroll_version(p_payroll_id uuid);
-DROP TABLE IF EXISTS public.latest_payroll_version_results;
-DROP FUNCTION IF EXISTS public.get_hasura_claims(user_clerk_id text);
-DROP FUNCTION IF EXISTS public.generate_payroll_dates(p_payroll_id uuid, p_start_date date, p_end_date date, p_max_dates integer);
-DROP TABLE IF EXISTS public.payroll_dates;
-DROP FUNCTION IF EXISTS public.enforce_staff_roles();
-DROP FUNCTION IF EXISTS public.enforce_entity_relation();
-DROP FUNCTION IF EXISTS public.encrypt_sensitive(data text);
-DROP FUNCTION IF EXISTS public.decrypt_sensitive(encrypted_data text);
-DROP FUNCTION IF EXISTS public.create_payroll_version(p_original_payroll_id uuid, p_go_live_date date, p_version_reason text, p_created_by_user_id uuid, p_new_name text, p_new_client_id uuid, p_new_cycle_id uuid, p_new_date_type_id uuid, p_new_date_value integer, p_new_primary_consultant_user_id uuid, p_new_backup_consultant_user_id uuid, p_new_manager_user_id uuid);
-DROP TABLE IF EXISTS public.payroll_version_results;
-DROP FUNCTION IF EXISTS public.auto_regenerate_dates_on_schedule_change();
-DROP FUNCTION IF EXISTS public.auto_generate_dates_on_payroll_insert();
-DROP FUNCTION IF EXISTS public.auto_delete_future_dates_on_supersede();
-DROP FUNCTION IF EXISTS public.adjust_for_non_business_day(p_date date, p_regions text[], p_rule_code text);
-DROP FUNCTION IF EXISTS public.adjust_for_non_business_day(p_date date, p_rule_code text);
-DROP FUNCTION IF EXISTS public.adjust_date_with_reason(p_date date, p_rule_code text);
-DROP FUNCTION IF EXISTS public.activate_payroll_versions();
-DROP TABLE IF EXISTS public.payroll_activation_results;
-DROP FUNCTION IF EXISTS audit.log_changes();
-DROP FUNCTION IF EXISTS audit.archive_old_logs();
-DROP TYPE IF EXISTS public.user_role;
-DROP TYPE IF EXISTS public.status;
-DROP TYPE IF EXISTS public.permission_action;
-DROP TYPE IF EXISTS public.payroll_version_reason;
-DROP TYPE IF EXISTS public.payroll_status_new;
-DROP TYPE IF EXISTS public.payroll_status;
-DROP TYPE IF EXISTS public.payroll_dates_result;
-DROP TYPE IF EXISTS public.payroll_date_type;
-DROP TYPE IF EXISTS public.payroll_date_result;
-DROP TYPE IF EXISTS public.payroll_cycle_type;
-DROP TYPE IF EXISTS public.leave_status_enum;
-DROP EXTENSION IF EXISTS pgcrypto;
--- *not* dropping schema, since initdb creates it
-DROP SCHEMA IF EXISTS neon_auth;
-DROP SCHEMA IF EXISTS audit;
 --
--- Name: audit; Type: SCHEMA; Schema: -; Owner: -
+-- Name: audit; Type: SCHEMA; Schema: -; Owner: neondb_owner
 --
 
 CREATE SCHEMA audit;
 
 
+ALTER SCHEMA audit OWNER TO neondb_owner;
+
 --
--- Name: neon_auth; Type: SCHEMA; Schema: -; Owner: -
+-- Name: neon_auth; Type: SCHEMA; Schema: -; Owner: neondb_owner
 --
 
 CREATE SCHEMA neon_auth;
 
 
+ALTER SCHEMA neon_auth OWNER TO neondb_owner;
+
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: -
+-- Name: public; Type: SCHEMA; Schema: -; Owner: neondb_owner
 --
 
 -- *not* creating schema, since initdb creates it
 
 
+ALTER SCHEMA public OWNER TO neondb_owner;
+
 --
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: neondb_owner
 --
 
 COMMENT ON SCHEMA public IS '';
@@ -334,14 +58,14 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: -
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
 --
--- Name: leave_status_enum; Type: TYPE; Schema: public; Owner: -
+-- Name: leave_status_enum; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.leave_status_enum AS ENUM (
@@ -351,8 +75,10 @@ CREATE TYPE public.leave_status_enum AS ENUM (
 );
 
 
+ALTER TYPE public.leave_status_enum OWNER TO neondb_owner;
+
 --
--- Name: payroll_cycle_type; Type: TYPE; Schema: public; Owner: -
+-- Name: payroll_cycle_type; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.payroll_cycle_type AS ENUM (
@@ -364,8 +90,10 @@ CREATE TYPE public.payroll_cycle_type AS ENUM (
 );
 
 
+ALTER TYPE public.payroll_cycle_type OWNER TO neondb_owner;
+
 --
--- Name: payroll_date_result; Type: TYPE; Schema: public; Owner: -
+-- Name: payroll_date_result; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.payroll_date_result AS (
@@ -374,8 +102,10 @@ CREATE TYPE public.payroll_date_result AS (
 );
 
 
+ALTER TYPE public.payroll_date_result OWNER TO neondb_owner;
+
 --
--- Name: payroll_date_type; Type: TYPE; Schema: public; Owner: -
+-- Name: payroll_date_type; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.payroll_date_type AS ENUM (
@@ -388,8 +118,10 @@ CREATE TYPE public.payroll_date_type AS ENUM (
 );
 
 
+ALTER TYPE public.payroll_date_type OWNER TO neondb_owner;
+
 --
--- Name: payroll_dates_result; Type: TYPE; Schema: public; Owner: -
+-- Name: payroll_dates_result; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.payroll_dates_result AS (
@@ -402,8 +134,10 @@ CREATE TYPE public.payroll_dates_result AS (
 );
 
 
+ALTER TYPE public.payroll_dates_result OWNER TO neondb_owner;
+
 --
--- Name: payroll_status; Type: TYPE; Schema: public; Owner: -
+-- Name: payroll_status; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.payroll_status AS ENUM (
@@ -413,8 +147,10 @@ CREATE TYPE public.payroll_status AS ENUM (
 );
 
 
+ALTER TYPE public.payroll_status OWNER TO neondb_owner;
+
 --
--- Name: payroll_status_new; Type: TYPE; Schema: public; Owner: -
+-- Name: payroll_status_new; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.payroll_status_new AS ENUM (
@@ -426,8 +162,10 @@ CREATE TYPE public.payroll_status_new AS ENUM (
 );
 
 
+ALTER TYPE public.payroll_status_new OWNER TO neondb_owner;
+
 --
--- Name: payroll_version_reason; Type: TYPE; Schema: public; Owner: -
+-- Name: payroll_version_reason; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.payroll_version_reason AS ENUM (
@@ -440,8 +178,10 @@ CREATE TYPE public.payroll_version_reason AS ENUM (
 );
 
 
+ALTER TYPE public.payroll_version_reason OWNER TO neondb_owner;
+
 --
--- Name: permission_action; Type: TYPE; Schema: public; Owner: -
+-- Name: permission_action; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.permission_action AS ENUM (
@@ -456,8 +196,10 @@ CREATE TYPE public.permission_action AS ENUM (
 );
 
 
+ALTER TYPE public.permission_action OWNER TO neondb_owner;
+
 --
--- Name: status; Type: TYPE; Schema: public; Owner: -
+-- Name: status; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.status AS ENUM (
@@ -467,8 +209,10 @@ CREATE TYPE public.status AS ENUM (
 );
 
 
+ALTER TYPE public.status OWNER TO neondb_owner;
+
 --
--- Name: user_role; Type: TYPE; Schema: public; Owner: -
+-- Name: user_role; Type: TYPE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TYPE public.user_role AS ENUM (
@@ -480,8 +224,10 @@ CREATE TYPE public.user_role AS ENUM (
 );
 
 
+ALTER TYPE public.user_role OWNER TO neondb_owner;
+
 --
--- Name: archive_old_logs(); Type: FUNCTION; Schema: audit; Owner: -
+-- Name: archive_old_logs(); Type: FUNCTION; Schema: audit; Owner: neondb_owner
 --
 
 CREATE FUNCTION audit.archive_old_logs() RETURNS void
@@ -507,8 +253,10 @@ END;
 $$;
 
 
+ALTER FUNCTION audit.archive_old_logs() OWNER TO neondb_owner;
+
 --
--- Name: log_changes(); Type: FUNCTION; Schema: audit; Owner: -
+-- Name: log_changes(); Type: FUNCTION; Schema: audit; Owner: neondb_owner
 --
 
 CREATE FUNCTION audit.log_changes() RETURNS trigger
@@ -588,12 +336,14 @@ END;
 $$;
 
 
+ALTER FUNCTION audit.log_changes() OWNER TO neondb_owner;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: payroll_activation_results; Type: TABLE; Schema: public; Owner: -
+-- Name: payroll_activation_results; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.payroll_activation_results (
@@ -605,17 +355,66 @@ CREATE TABLE public.payroll_activation_results (
 );
 
 
+ALTER TABLE public.payroll_activation_results OWNER TO neondb_owner;
+
 --
--- Name: activate_payroll_versions(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: activate_payroll_versions(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.activate_payroll_versions() RETURNS SETOF public.payroll_activation_results
     LANGUAGE plpgsql
-    AS $$ DECLARE activated_count integer := 0; BEGIN DELETE FROM payroll_activation_results WHERE created_at < NOW() - INTERVAL '1 hour'; UPDATE payrolls SET status = 'Active' WHERE go_live_date <= CURRENT_DATE AND superseded_date IS NULL AND status != 'Active'; GET DIAGNOSTICS activated_count = ROW_COUNT; UPDATE payrolls SET status = 'Inactive' WHERE superseded_date IS NOT NULL AND superseded_date <= CURRENT_DATE AND status = 'Active'; INSERT INTO payroll_activation_results (activated_count, message) VALUES (activated_count, CASE WHEN activated_count > 0 THEN 'Activated ' || activated_count || ' payroll versions' ELSE 'No payroll versions needed activation' END); RETURN QUERY SELECT * FROM payroll_activation_results; END; $$;
+    AS $$
+DECLARE
+    r payroll_activation_results%ROWTYPE;
+    v_activated_count integer := 0;
+BEGIN
+    -- Clean up old results (use correct column name: queried_at)
+    DELETE FROM payroll_activation_results WHERE queried_at < NOW() - INTERVAL '1 hour';
+    
+    -- Activate payrolls that have reached their go-live date
+    FOR r IN
+        UPDATE payrolls 
+        SET status = 'Active'::payroll_status
+        WHERE status = 'Draft'::payroll_status 
+        AND go_live_date <= CURRENT_DATE
+        AND superseded_date IS NULL
+        RETURNING id, name, go_live_date, 'Activated'::text as status, CURRENT_TIMESTAMP as queried_at
+    LOOP
+        INSERT INTO payroll_activation_results (payroll_id, name, go_live_date, status)
+        VALUES (r.id, r.name, r.go_live_date, r.status);
+        
+        v_activated_count := v_activated_count + 1;
+        RETURN NEXT r;
+    END LOOP;
+    
+    -- If no payrolls were activated, return a summary record
+    IF v_activated_count = 0 THEN
+        r.payroll_id := NULL;
+        r.name := 'No payrolls activated';
+        r.go_live_date := CURRENT_DATE;
+        r.status := 'No Action';
+        r.queried_at := CURRENT_TIMESTAMP;
+        
+        INSERT INTO payroll_activation_results (payroll_id, name, go_live_date, status)
+        VALUES (r.payroll_id, r.name, r.go_live_date, r.status);
+        
+        RETURN NEXT r;
+    END IF;
+END;
+$$;
+
+
+ALTER FUNCTION public.activate_payroll_versions() OWNER TO neondb_owner;
+
+--
+-- Name: FUNCTION activate_payroll_versions(); Type: COMMENT; Schema: public; Owner: neondb_owner
+--
+
+COMMENT ON FUNCTION public.activate_payroll_versions() IS 'Activates all draft payrolls that have reached their go-live date. No parameters required';
 
 
 --
--- Name: adjust_date_with_reason(date, text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: adjust_date_with_reason(date, text); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.adjust_date_with_reason(p_date date, p_rule_code text DEFAULT 'previous'::text) RETURNS TABLE(adjusted_date date, adjustment_reason text)
@@ -721,8 +520,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.adjust_date_with_reason(p_date date, p_rule_code text) OWNER TO neondb_owner;
+
 --
--- Name: adjust_for_non_business_day(date, text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: adjust_for_non_business_day(date, text); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.adjust_for_non_business_day(p_date date, p_rule_code text DEFAULT 'previous'::text) RETURNS date
@@ -794,8 +595,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.adjust_for_non_business_day(p_date date, p_rule_code text) OWNER TO neondb_owner;
+
 --
--- Name: adjust_for_non_business_day(date, text[], text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: adjust_for_non_business_day(date, text[], text); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.adjust_for_non_business_day(p_date date, p_regions text[], p_rule_code text DEFAULT 'previous'::text) RETURNS date
@@ -863,8 +666,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.adjust_for_non_business_day(p_date date, p_regions text[], p_rule_code text) OWNER TO neondb_owner;
+
 --
--- Name: auto_delete_future_dates_on_supersede(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: auto_delete_future_dates_on_supersede(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.auto_delete_future_dates_on_supersede() RETURNS trigger
@@ -887,8 +692,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.auto_delete_future_dates_on_supersede() OWNER TO neondb_owner;
+
 --
--- Name: auto_generate_dates_on_payroll_insert(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: auto_generate_dates_on_payroll_insert(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.auto_generate_dates_on_payroll_insert() RETURNS trigger
@@ -930,8 +737,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.auto_generate_dates_on_payroll_insert() OWNER TO neondb_owner;
+
 --
--- Name: auto_regenerate_dates_on_schedule_change(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: auto_regenerate_dates_on_schedule_change(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.auto_regenerate_dates_on_schedule_change() RETURNS trigger
@@ -973,8 +782,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.auto_regenerate_dates_on_schedule_change() OWNER TO neondb_owner;
+
 --
--- Name: payroll_version_results; Type: TABLE; Schema: public; Owner: -
+-- Name: payroll_version_results; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.payroll_version_results (
@@ -989,8 +800,10 @@ CREATE TABLE public.payroll_version_results (
 );
 
 
+ALTER TABLE public.payroll_version_results OWNER TO neondb_owner;
+
 --
--- Name: create_payroll_version(uuid, date, text, uuid, text, uuid, uuid, uuid, integer, uuid, uuid, uuid); Type: FUNCTION; Schema: public; Owner: -
+-- Name: create_payroll_version(uuid, date, text, uuid, text, uuid, uuid, uuid, integer, uuid, uuid, uuid); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.create_payroll_version(p_original_payroll_id uuid, p_go_live_date date, p_version_reason text DEFAULT 'schedule_change'::text, p_created_by_user_id uuid DEFAULT NULL::uuid, p_new_name text DEFAULT NULL::text, p_new_client_id uuid DEFAULT NULL::uuid, p_new_cycle_id uuid DEFAULT NULL::uuid, p_new_date_type_id uuid DEFAULT NULL::uuid, p_new_date_value integer DEFAULT NULL::integer, p_new_primary_consultant_user_id uuid DEFAULT NULL::uuid, p_new_backup_consultant_user_id uuid DEFAULT NULL::uuid, p_new_manager_user_id uuid DEFAULT NULL::uuid) RETURNS SETOF public.payroll_version_results
@@ -1115,8 +928,46 @@ END;
 $$;
 
 
+ALTER FUNCTION public.create_payroll_version(p_original_payroll_id uuid, p_go_live_date date, p_version_reason text, p_created_by_user_id uuid, p_new_name text, p_new_client_id uuid, p_new_cycle_id uuid, p_new_date_type_id uuid, p_new_date_value integer, p_new_primary_consultant_user_id uuid, p_new_backup_consultant_user_id uuid, p_new_manager_user_id uuid) OWNER TO neondb_owner;
+
 --
--- Name: decrypt_sensitive(text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: create_payroll_version_simple(uuid, text); Type: FUNCTION; Schema: public; Owner: neondb_owner
+--
+
+CREATE FUNCTION public.create_payroll_version_simple(payroll_id uuid, version_reason text DEFAULT 'System Update'::text) RETURNS SETOF public.payroll_version_results
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Call the existing complex function with default values
+    RETURN QUERY SELECT * FROM public.create_payroll_version(
+        payroll_id,           -- p_original_payroll_id
+        CURRENT_DATE,         -- p_go_live_date
+        version_reason,       -- p_version_reason
+        NULL,                 -- p_created_by_user_id
+        NULL,                 -- p_new_name
+        NULL,                 -- p_new_client_id
+        NULL,                 -- p_new_cycle_id
+        NULL,                 -- p_new_date_type_id
+        NULL,                 -- p_new_date_value
+        NULL,                 -- p_new_primary_consultant_user_id
+        NULL,                 -- p_new_backup_consultant_user_id
+        NULL                  -- p_new_manager_user_id
+    );
+END;
+$$;
+
+
+ALTER FUNCTION public.create_payroll_version_simple(payroll_id uuid, version_reason text) OWNER TO neondb_owner;
+
+--
+-- Name: FUNCTION create_payroll_version_simple(payroll_id uuid, version_reason text); Type: COMMENT; Schema: public; Owner: neondb_owner
+--
+
+COMMENT ON FUNCTION public.create_payroll_version_simple(payroll_id uuid, version_reason text) IS 'Creates a new version of an existing payroll (simplified). Uses camelCase parameters: payroll_id, version_reason';
+
+
+--
+-- Name: decrypt_sensitive(text); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.decrypt_sensitive(encrypted_data text) RETURNS text
@@ -1135,8 +986,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.decrypt_sensitive(encrypted_data text) OWNER TO neondb_owner;
+
 --
--- Name: encrypt_sensitive(text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: encrypt_sensitive(text); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.encrypt_sensitive(data text) RETURNS text
@@ -1157,8 +1010,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.encrypt_sensitive(data text) OWNER TO neondb_owner;
+
 --
--- Name: enforce_entity_relation(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: enforce_entity_relation(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.enforce_entity_relation() RETURNS trigger
@@ -1179,8 +1034,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.enforce_entity_relation() OWNER TO neondb_owner;
+
 --
--- Name: enforce_staff_roles(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: enforce_staff_roles(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.enforce_staff_roles() RETURNS trigger
@@ -1219,8 +1076,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.enforce_staff_roles() OWNER TO neondb_owner;
+
 --
--- Name: payroll_dates; Type: TABLE; Schema: public; Owner: -
+-- Name: payroll_dates; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.payroll_dates (
@@ -1236,270 +1095,142 @@ CREATE TABLE public.payroll_dates (
 );
 
 
+ALTER TABLE public.payroll_dates OWNER TO neondb_owner;
+
 --
--- Name: COLUMN payroll_dates.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_dates.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_dates.id IS 'Unique identifier for the payroll date';
 
 
 --
--- Name: COLUMN payroll_dates.payroll_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_dates.payroll_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_dates.payroll_id IS 'Reference to the payroll this date belongs to';
 
 
 --
--- Name: COLUMN payroll_dates.original_eft_date; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_dates.original_eft_date; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_dates.original_eft_date IS 'Originally calculated EFT date before adjustments';
 
 
 --
--- Name: COLUMN payroll_dates.adjusted_eft_date; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_dates.adjusted_eft_date; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_dates.adjusted_eft_date IS 'Final EFT date after holiday and weekend adjustments';
 
 
 --
--- Name: COLUMN payroll_dates.processing_date; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_dates.processing_date; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_dates.processing_date IS 'Date when payroll processing must be completed';
 
 
 --
--- Name: COLUMN payroll_dates.notes; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_dates.notes; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_dates.notes IS 'Additional notes about this payroll date';
 
 
 --
--- Name: COLUMN payroll_dates.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_dates.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_dates.created_at IS 'Timestamp when the date record was created';
 
 
 --
--- Name: COLUMN payroll_dates.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_dates.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_dates.updated_at IS 'Timestamp when the date record was last updated';
 
 
 --
--- Name: generate_payroll_dates(uuid, date, date, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: generate_payroll_dates(uuid, date, date, integer); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.generate_payroll_dates(p_payroll_id uuid, p_start_date date DEFAULT NULL::date, p_end_date date DEFAULT NULL::date, p_max_dates integer DEFAULT 52) RETURNS SETOF public.payroll_dates
     LANGUAGE plpgsql
     AS $$
 DECLARE
-  -- Payroll configuration variables
-  v_cycle_name text;
-  v_date_type_name text;
-  v_date_value integer;
-  v_processing_days_before_eft integer;
-  v_rule_code text;
-
-  -- Date calculation variables
-  v_current_date date := COALESCE(p_start_date, CURRENT_DATE);
-  v_end_calculation_date date := COALESCE(p_end_date, v_current_date + INTERVAL '1 year');
-  v_original_eft_date date;
-  v_adjusted_eft_date date;
-  v_processing_date date;
-  v_adjustment_reason text;
-
-  -- Tracking variables
-  v_dates_generated integer := 0;
-  v_month integer;
-  v_year integer;
-  v_week_of_year integer;
-  v_is_week_a boolean;
-  v_mid_month_date date;
-  v_end_month_date date;
-  v_target_weekday integer;
-  v_current_weekday integer;
-
-  -- Return variable for Hasura compatibility
-  r public.payroll_dates%ROWTYPE;
+  v_payroll_record payrolls%ROWTYPE;
+  v_cycle_name TEXT;
+  v_date_type_name TEXT;
+  v_date_value INTEGER;
+  v_processing_days INTEGER;
+  v_current_date DATE;
+  v_original_eft_date DATE;
+  v_adjusted_eft_date DATE;
+  v_processing_date DATE;
+  v_adjustment_reason TEXT;
+  v_dates_generated INTEGER := 0;
+  r payroll_dates%ROWTYPE;
 BEGIN
-  -- Retrieve payroll configuration
-  SELECT
-    pc.name,
-    pdt.name,
-    p.date_value,
-    p.processing_days_before_eft,
-    COALESCE(ar.rule_code, 'previous')
-  INTO
-    v_cycle_name,
-    v_date_type_name,
-    v_date_value,
-    v_processing_days_before_eft,
-    v_rule_code
-  FROM
-    payrolls p
-    JOIN payroll_cycles pc ON p.cycle_id = pc.id
-    JOIN payroll_date_types pdt ON p.date_type_id = pdt.id
-    LEFT JOIN adjustment_rules ar ON p.cycle_id = ar.cycle_id
-      AND p.date_type_id = ar.date_type_id
-  WHERE
-    p.id = p_payroll_id;
-
-  -- Validate payroll configuration
-  IF v_cycle_name IS NULL THEN
-    RAISE EXCEPTION 'Payroll configuration not found for ID: %', p_payroll_id;
+  -- Get payroll details
+  SELECT * INTO v_payroll_record FROM payrolls WHERE id = p_payroll_id;
+  
+  IF v_payroll_record.id IS NULL THEN
+    RAISE EXCEPTION 'Payroll with ID % not found', p_payroll_id;
   END IF;
 
-  -- Main date generation loop
-  WHILE v_current_date <= v_end_calculation_date
-    AND v_dates_generated < p_max_dates
-  LOOP
-    -- Reset variables for each iteration
-    v_original_eft_date := NULL;
-    v_adjusted_eft_date := NULL;
-    v_processing_date := NULL;
-    v_adjustment_reason := '';
+  -- Get cycle and date type details
+  SELECT pc.name INTO v_cycle_name FROM payroll_cycles pc WHERE pc.id = v_payroll_record.cycle_id;
+  SELECT pdt.name INTO v_date_type_name FROM payroll_date_types pdt WHERE pdt.id = v_payroll_record.date_type_id;
+  
+  -- Get date_value from payrolls table
+  v_date_value := v_payroll_record.date_value;
+  v_processing_days := COALESCE(v_payroll_record.processing_days_before_eft, 3);
+  
+  -- Set date range
+  v_current_date := COALESCE(p_start_date, CURRENT_DATE);
+  
+  IF p_end_date IS NULL THEN
+    p_end_date := v_current_date + INTERVAL '2 years';
+  END IF;
 
-    -- Cycle type specific date calculations
+  -- Generate dates
+  WHILE v_current_date <= p_end_date AND v_dates_generated < p_max_dates LOOP
+    -- Calculate original EFT date based on cycle and date type
     CASE v_cycle_name
       WHEN 'weekly' THEN
-        -- Always schedule next target weekday
-        v_target_weekday := v_date_value; -- 0=Sunday ... 6=Saturday
-        v_current_weekday := EXTRACT(DOW FROM v_current_date);
-
-        IF v_current_weekday = v_target_weekday THEN
-          v_original_eft_date := v_current_date;
-        ELSE
-          v_original_eft_date := v_current_date + ((7 + v_target_weekday - v_current_weekday) % 7) * INTERVAL '1 day';
-        END IF;
-
+        v_original_eft_date := v_current_date + (COALESCE(v_date_value, 1) - EXTRACT(DOW FROM v_current_date))::integer;
       WHEN 'fortnightly' THEN
-        -- Determine Week A or Week B
-        v_week_of_year := EXTRACT(WEEK FROM v_current_date);
-        v_is_week_a := (v_week_of_year % 2) = 1;
-
-        -- Find next target weekday
-        v_original_eft_date := v_current_date + ((7 + v_date_value - EXTRACT(DOW FROM v_current_date)) % 7) * INTERVAL '1 day';
-
-        -- For Week B, shift forward by a week
-        IF NOT v_is_week_a THEN
-          v_original_eft_date := v_original_eft_date + INTERVAL '7 days';
-        END IF;
-
-      WHEN 'bi_monthly' THEN
-        v_month := EXTRACT(MONTH FROM v_current_date);
-        v_year := EXTRACT(YEAR FROM v_current_date);
-
-        IF v_month = 2 THEN
-          v_mid_month_date := MAKE_DATE(v_year, 2, 14);
-          v_end_month_date := MAKE_DATE(v_year, 2, 28);
-        ELSE
-          v_mid_month_date := MAKE_DATE(v_year, v_month, 15);
-          v_end_month_date := (DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day')::date;
-        END IF;
-
-        IF v_date_type_name = 'som' THEN
-          v_original_eft_date := v_mid_month_date;
-        ELSE
-          v_original_eft_date := v_end_month_date;
-        END IF;
-
+        v_original_eft_date := v_current_date + (COALESCE(v_date_value, 1) - EXTRACT(DOW FROM v_current_date))::integer;
       WHEN 'monthly' THEN
-        CASE v_date_type_name
-          WHEN 'som' THEN
-            v_original_eft_date := DATE_TRUNC('MONTH', v_current_date)::date;
-          WHEN 'eom' THEN
-            v_original_eft_date := (DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day')::date;
-          WHEN 'fixed_date' THEN
-            IF v_date_value IS NULL THEN
-              v_original_eft_date := MAKE_DATE(EXTRACT(YEAR FROM v_current_date)::int, EXTRACT(MONTH FROM v_current_date)::int, 15);
-            ELSE
-              BEGIN
-                v_original_eft_date := MAKE_DATE(EXTRACT(YEAR FROM v_current_date)::int, EXTRACT(MONTH FROM v_current_date)::int, v_date_value);
-              EXCEPTION WHEN OTHERS THEN
-                v_original_eft_date := (DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day')::date;
-              END;
-            END IF;
-        END CASE;
-
-      WHEN 'quarterly' THEN
-        v_month := EXTRACT(MONTH FROM v_current_date);
-
-        IF v_month IN (3, 6, 9, 12) THEN
-          CASE v_date_type_name
-            WHEN 'som' THEN
-              v_original_eft_date := DATE_TRUNC('MONTH', v_current_date)::date;
-            WHEN 'eom' THEN
-              v_original_eft_date := (DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day')::date;
-            WHEN 'fixed_date' THEN
-              BEGIN
-                v_original_eft_date := MAKE_DATE(EXTRACT(YEAR FROM v_current_date)::int, EXTRACT(MONTH FROM v_current_date)::int, COALESCE(v_date_value, 1));
-              EXCEPTION WHEN OTHERS THEN
-                v_original_eft_date := (DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day')::date;
-              END;
-            ELSE
-              v_original_eft_date := (DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month' - INTERVAL '1 day')::date;
-          END CASE;
-        ELSE
-          -- Skip to next valid quarter month
-          v_current_date := DATE_TRUNC('MONTH', v_current_date) + INTERVAL '1 month';
-          CONTINUE;
-        END IF;
-
+        v_original_eft_date := DATE_TRUNC('MONTH', v_current_date) + (COALESCE(v_date_value, 1) - 1) * INTERVAL '1 day';
       ELSE
-        RAISE EXCEPTION 'Unsupported payroll cycle type: %', v_cycle_name;
+        v_original_eft_date := v_current_date;
     END CASE;
 
-    -- Get adjusted date and detailed reason using helper function
-    SELECT
-      ard.adjusted_date,
-      ard.adjustment_reason
-    INTO
-      v_adjusted_eft_date,
-      v_adjustment_reason
-    FROM
-      public.adjust_date_with_reason(
-        v_original_eft_date,
-        COALESCE(v_rule_code, 'previous')
-      ) ard;
+    -- Adjust for business days
+    SELECT adjusted_date, adjustment_reason 
+    INTO v_adjusted_eft_date, v_adjustment_reason
+    FROM adjust_date_with_reason(v_original_eft_date);
+    
+    -- Calculate processing date
+    v_processing_date := subtract_business_days(v_adjusted_eft_date, v_processing_days);
 
-    -- Calculate processing date by subtracting business days
-    v_processing_date := subtract_business_days(
-      v_adjusted_eft_date,
-      v_processing_days_before_eft
-    );
-
-    -- Insert generated payroll date with enhanced notes
+    -- Insert the record - now no ambiguity with p_ prefixed parameters
     INSERT INTO payroll_dates (
-      payroll_id,
-      original_eft_date,
-      adjusted_eft_date,
-      processing_date,
-      created_at,
-      updated_at,
-      notes
+      payroll_id, original_eft_date, adjusted_eft_date, processing_date
+    ) VALUES (
+      p_payroll_id, v_original_eft_date, v_adjusted_eft_date, v_processing_date
     )
-    VALUES (
-      p_payroll_id,
-      v_original_eft_date,
-      v_adjusted_eft_date,
-      v_processing_date,
-      NOW(),
-      NOW(),
-      CASE
-        WHEN v_original_eft_date != v_adjusted_eft_date THEN v_adjustment_reason
-        ELSE NULL
-      END
-    )
+    ON CONFLICT (payroll_id, original_eft_date) DO UPDATE SET
+      adjusted_eft_date = EXCLUDED.adjusted_eft_date,
+      processing_date = EXCLUDED.processing_date,
+      updated_at = CURRENT_TIMESTAMP
     RETURNING * INTO r;
 
-    -- Return the inserted record for Hasura
+    -- Return the inserted/updated record for Hasura
     RETURN NEXT r;
 
     -- Increment tracking variables
@@ -1530,8 +1261,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.generate_payroll_dates(p_payroll_id uuid, p_start_date date, p_end_date date, p_max_dates integer) OWNER TO neondb_owner;
+
 --
--- Name: get_hasura_claims(text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: get_hasura_claims(text); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.get_hasura_claims(user_clerk_id text) RETURNS jsonb
@@ -1580,8 +1313,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.get_hasura_claims(user_clerk_id text) OWNER TO neondb_owner;
+
 --
--- Name: latest_payroll_version_results; Type: TABLE; Schema: public; Owner: -
+-- Name: latest_payroll_version_results; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.latest_payroll_version_results (
@@ -1595,17 +1330,58 @@ CREATE TABLE public.latest_payroll_version_results (
 );
 
 
+ALTER TABLE public.latest_payroll_version_results OWNER TO neondb_owner;
+
 --
--- Name: get_latest_payroll_version(uuid); Type: FUNCTION; Schema: public; Owner: -
+-- Name: get_latest_payroll_version(uuid); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
-CREATE FUNCTION public.get_latest_payroll_version(p_payroll_id uuid) RETURNS SETOF public.latest_payroll_version_results
+CREATE FUNCTION public.get_latest_payroll_version(payroll_id uuid) RETURNS SETOF public.latest_payroll_version_results
     LANGUAGE plpgsql
-    AS $$ BEGIN DELETE FROM latest_payroll_version_results WHERE created_at < NOW() - INTERVAL '1 hour'; INSERT INTO latest_payroll_version_results (id, name, version_number, go_live_date, active) SELECT p.id, p.name, p.version_number, p.go_live_date, CASE WHEN p.status = 'Active' THEN true ELSE false END as active FROM payrolls p WHERE (p.id = p_payroll_id OR p.parent_payroll_id = p_payroll_id) AND p.status = 'Active' AND p.superseded_date IS NULL ORDER BY p.version_number DESC LIMIT 1; RETURN QUERY SELECT * FROM latest_payroll_version_results ORDER BY version_number DESC; END; $$;
+    AS $$ 
+BEGIN 
+    -- Clean up old results (use correct column name: queried_at)
+    DELETE FROM latest_payroll_version_results WHERE queried_at < NOW() - INTERVAL '1 hour'; 
+    
+    -- Insert fresh data - include payroll_id
+    INSERT INTO latest_payroll_version_results (payroll_id, name, version_number, go_live_date, active) 
+    SELECT 
+        p.id,
+        p.name, 
+        p.version_number, 
+        p.go_live_date, 
+        CASE WHEN p.status = 'Active' THEN true ELSE false END as active 
+    FROM payrolls p 
+    WHERE (p.id = payroll_id OR p.parent_payroll_id = payroll_id) 
+    AND p.status = 'Active' 
+    AND p.superseded_date IS NULL 
+    ORDER BY p.version_number DESC 
+    LIMIT 1; 
+    
+    -- Return the results - filter by the specific payroll_id we just inserted
+    RETURN QUERY SELECT * FROM latest_payroll_version_results lvpr
+    WHERE lvpr.payroll_id IN (
+        SELECT DISTINCT p.id 
+        FROM payrolls p 
+        WHERE p.id = get_latest_payroll_version.payroll_id OR p.parent_payroll_id = get_latest_payroll_version.payroll_id
+    )
+    ORDER BY lvpr.queried_at DESC, lvpr.version_number DESC
+    LIMIT 1; 
+END; 
+$$;
+
+
+ALTER FUNCTION public.get_latest_payroll_version(payroll_id uuid) OWNER TO neondb_owner;
+
+--
+-- Name: FUNCTION get_latest_payroll_version(payroll_id uuid); Type: COMMENT; Schema: public; Owner: neondb_owner
+--
+
+COMMENT ON FUNCTION public.get_latest_payroll_version(payroll_id uuid) IS 'Returns the latest active version of a payroll. Uses camelCase parameter: payroll_id';
 
 
 --
--- Name: payroll_version_history_results; Type: TABLE; Schema: public; Owner: -
+-- Name: payroll_version_history_results; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.payroll_version_history_results (
@@ -1622,11 +1398,13 @@ CREATE TABLE public.payroll_version_history_results (
 );
 
 
+ALTER TABLE public.payroll_version_history_results OWNER TO neondb_owner;
+
 --
--- Name: get_payroll_version_history(uuid); Type: FUNCTION; Schema: public; Owner: -
+-- Name: get_payroll_version_history(uuid); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
-CREATE FUNCTION public.get_payroll_version_history(p_payroll_id uuid) RETURNS SETOF public.payroll_version_history_results
+CREATE FUNCTION public.get_payroll_version_history(payroll_id uuid) RETURNS SETOF public.payroll_version_history_results
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -1648,24 +1426,33 @@ BEGIN
     CASE WHEN p.status = 'Active' THEN true ELSE false END as active,
     CASE WHEN p.superseded_date IS NULL AND p.status = 'Active' THEN true ELSE false END as is_current
   FROM payrolls p 
-  WHERE p.id = p_payroll_id OR p.parent_payroll_id = p_payroll_id
+  WHERE p.id = payroll_id OR p.parent_payroll_id = payroll_id
   ORDER BY p.version_number ASC;
   
-  -- Return the results
+  -- Return the results - use table alias to avoid ambiguity
   RETURN QUERY 
-  SELECT * FROM payroll_version_history_results 
-  WHERE payroll_id IN (
+  SELECT * FROM payroll_version_history_results pvhr
+  WHERE pvhr.payroll_id IN (
     SELECT DISTINCT p.id 
     FROM payrolls p 
-    WHERE p.id = p_payroll_id OR p.parent_payroll_id = p_payroll_id
+    WHERE p.id = get_payroll_version_history.payroll_id OR p.parent_payroll_id = get_payroll_version_history.payroll_id
   )
-  ORDER BY version_number ASC;
+  ORDER BY pvhr.version_number ASC;
 END;
 $$;
 
 
+ALTER FUNCTION public.get_payroll_version_history(payroll_id uuid) OWNER TO neondb_owner;
+
 --
--- Name: get_user_effective_permissions(uuid); Type: FUNCTION; Schema: public; Owner: -
+-- Name: FUNCTION get_payroll_version_history(payroll_id uuid); Type: COMMENT; Schema: public; Owner: neondb_owner
+--
+
+COMMENT ON FUNCTION public.get_payroll_version_history(payroll_id uuid) IS 'Returns the complete version history of a payroll. Uses camelCase parameter: payroll_id';
+
+
+--
+-- Name: get_user_effective_permissions(uuid); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.get_user_effective_permissions(p_user_id uuid) RETURNS TABLE(resource text, action text, granted_by text, source_type text, conditions jsonb)
@@ -1729,8 +1516,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.get_user_effective_permissions(p_user_id uuid) OWNER TO neondb_owner;
+
 --
--- Name: is_business_day(date); Type: FUNCTION; Schema: public; Owner: -
+-- Name: is_business_day(date); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.is_business_day(p_date date) RETURNS boolean
@@ -1760,8 +1549,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.is_business_day(p_date date) OWNER TO neondb_owner;
+
 --
--- Name: prevent_duplicate_workday_insert(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: prevent_duplicate_workday_insert(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.prevent_duplicate_workday_insert() RETURNS trigger
@@ -1780,8 +1571,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.prevent_duplicate_workday_insert() OWNER TO neondb_owner;
+
 --
--- Name: regenerate_all_payroll_dates(date, date, integer, boolean); Type: FUNCTION; Schema: public; Owner: -
+-- Name: regenerate_all_payroll_dates(date, date, integer, boolean); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.regenerate_all_payroll_dates(p_start_date date DEFAULT '2024-01-01'::date, p_end_date date DEFAULT '2026-12-31'::date, p_max_dates_per_payroll integer DEFAULT 52, p_delete_existing boolean DEFAULT true) RETURNS TABLE(payroll_id uuid, payroll_name character varying, dates_generated integer, dates_with_adjustments integer)
@@ -1834,8 +1627,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.regenerate_all_payroll_dates(p_start_date date, p_end_date date, p_max_dates_per_payroll integer, p_delete_existing boolean) OWNER TO neondb_owner;
+
 --
--- Name: subtract_business_days(date, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: subtract_business_days(date, integer); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.subtract_business_days(p_date date, p_days integer) RETURNS date
@@ -1857,8 +1652,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.subtract_business_days(p_date date, p_days integer) OWNER TO neondb_owner;
+
 --
--- Name: trigger_set_timestamp(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: trigger_set_timestamp(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.trigger_set_timestamp() RETURNS trigger
@@ -1871,8 +1668,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.trigger_set_timestamp() OWNER TO neondb_owner;
+
 --
--- Name: update_invoice_total(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: update_invoice_total(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.update_invoice_total() RETURNS trigger
@@ -1892,8 +1691,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.update_invoice_total() OWNER TO neondb_owner;
+
 --
--- Name: update_modified_column(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: update_modified_column(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.update_modified_column() RETURNS trigger
@@ -1906,8 +1707,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.update_modified_column() OWNER TO neondb_owner;
+
 --
--- Name: update_payroll_dates(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: update_payroll_dates(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.update_payroll_dates() RETURNS trigger
@@ -1929,8 +1732,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.update_payroll_dates() OWNER TO neondb_owner;
+
 --
--- Name: update_timestamp(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: update_timestamp(); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.update_timestamp() RETURNS trigger
@@ -1943,8 +1748,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.update_timestamp() OWNER TO neondb_owner;
+
 --
--- Name: user_can_perform_action(uuid, text, text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: user_can_perform_action(uuid, text, text); Type: FUNCTION; Schema: public; Owner: neondb_owner
 --
 
 CREATE FUNCTION public.user_can_perform_action(p_user_id uuid, p_resource text, p_action text) RETURNS boolean
@@ -1993,8 +1800,10 @@ END;
 $$;
 
 
+ALTER FUNCTION public.user_can_perform_action(p_user_id uuid, p_resource text, p_action text) OWNER TO neondb_owner;
+
 --
--- Name: audit_log; Type: TABLE; Schema: audit; Owner: -
+-- Name: audit_log; Type: TABLE; Schema: audit; Owner: neondb_owner
 --
 
 CREATE TABLE audit.audit_log (
@@ -2019,8 +1828,10 @@ CREATE TABLE audit.audit_log (
 );
 
 
+ALTER TABLE audit.audit_log OWNER TO neondb_owner;
+
 --
--- Name: auth_events; Type: TABLE; Schema: audit; Owner: -
+-- Name: auth_events; Type: TABLE; Schema: audit; Owner: neondb_owner
 --
 
 CREATE TABLE audit.auth_events (
@@ -2038,8 +1849,10 @@ CREATE TABLE audit.auth_events (
 );
 
 
+ALTER TABLE audit.auth_events OWNER TO neondb_owner;
+
 --
--- Name: data_access_log; Type: TABLE; Schema: audit; Owner: -
+-- Name: data_access_log; Type: TABLE; Schema: audit; Owner: neondb_owner
 --
 
 CREATE TABLE audit.data_access_log (
@@ -2059,8 +1872,10 @@ CREATE TABLE audit.data_access_log (
 );
 
 
+ALTER TABLE audit.data_access_log OWNER TO neondb_owner;
+
 --
--- Name: permission_changes; Type: TABLE; Schema: audit; Owner: -
+-- Name: permission_changes; Type: TABLE; Schema: audit; Owner: neondb_owner
 --
 
 CREATE TABLE audit.permission_changes (
@@ -2079,8 +1894,10 @@ CREATE TABLE audit.permission_changes (
 );
 
 
+ALTER TABLE audit.permission_changes OWNER TO neondb_owner;
+
 --
--- Name: permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: permissions; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.permissions (
@@ -2094,8 +1911,10 @@ CREATE TABLE public.permissions (
 );
 
 
+ALTER TABLE public.permissions OWNER TO neondb_owner;
+
 --
--- Name: resources; Type: TABLE; Schema: public; Owner: -
+-- Name: resources; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.resources (
@@ -2108,8 +1927,10 @@ CREATE TABLE public.resources (
 );
 
 
+ALTER TABLE public.resources OWNER TO neondb_owner;
+
 --
--- Name: role_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: role_permissions; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.role_permissions (
@@ -2122,8 +1943,10 @@ CREATE TABLE public.role_permissions (
 );
 
 
+ALTER TABLE public.role_permissions OWNER TO neondb_owner;
+
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: -
+-- Name: roles; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.roles (
@@ -2138,8 +1961,10 @@ CREATE TABLE public.roles (
 );
 
 
+ALTER TABLE public.roles OWNER TO neondb_owner;
+
 --
--- Name: user_roles; Type: TABLE; Schema: public; Owner: -
+-- Name: user_roles; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.user_roles (
@@ -2151,8 +1976,10 @@ CREATE TABLE public.user_roles (
 );
 
 
+ALTER TABLE public.user_roles OWNER TO neondb_owner;
+
 --
--- Name: permission_usage_report; Type: VIEW; Schema: audit; Owner: -
+-- Name: permission_usage_report; Type: VIEW; Schema: audit; Owner: neondb_owner
 --
 
 CREATE VIEW audit.permission_usage_report AS
@@ -2172,8 +1999,10 @@ CREATE VIEW audit.permission_usage_report AS
   GROUP BY r.name, res.name, p.action;
 
 
+ALTER VIEW audit.permission_usage_report OWNER TO neondb_owner;
+
 --
--- Name: slow_queries; Type: TABLE; Schema: audit; Owner: -
+-- Name: slow_queries; Type: TABLE; Schema: audit; Owner: neondb_owner
 --
 
 CREATE TABLE audit.slow_queries (
@@ -2188,8 +2017,10 @@ CREATE TABLE audit.slow_queries (
 );
 
 
+ALTER TABLE audit.slow_queries OWNER TO neondb_owner;
+
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -
+-- Name: users; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.users (
@@ -2210,85 +2041,87 @@ CREATE TABLE public.users (
 );
 
 
+ALTER TABLE public.users OWNER TO neondb_owner;
+
 --
--- Name: COLUMN users.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.id IS 'Unique identifier for the user';
 
 
 --
--- Name: COLUMN users.name; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.name; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.name IS 'User''s full name';
 
 
 --
--- Name: COLUMN users.email; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.email; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.email IS 'User''s email address (unique)';
 
 
 --
--- Name: COLUMN users.role; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.role; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.role IS 'User''s system role (viewer, consultant, manager, org_admin)';
 
 
 --
--- Name: COLUMN users.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.created_at IS 'Timestamp when the user was created';
 
 
 --
--- Name: COLUMN users.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.updated_at IS 'Timestamp when the user was last updated';
 
 
 --
--- Name: COLUMN users.username; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.username; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.username IS 'User''s unique username for login';
 
 
 --
--- Name: COLUMN users.image; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.image; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.image IS 'URL to the user''s profile image';
 
 
 --
--- Name: COLUMN users.is_staff; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.is_staff; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.is_staff IS 'Whether the user is a staff member (vs. external user)';
 
 
 --
--- Name: COLUMN users.manager_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.manager_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.manager_id IS 'Reference to the user''s manager';
 
 
 --
--- Name: COLUMN users.clerk_user_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN users.clerk_user_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.users.clerk_user_id IS 'External identifier from Clerk authentication service';
 
 
 --
--- Name: user_access_summary; Type: VIEW; Schema: audit; Owner: -
+-- Name: user_access_summary; Type: VIEW; Schema: audit; Owner: neondb_owner
 --
 
 CREATE VIEW audit.user_access_summary AS
@@ -2303,8 +2136,10 @@ CREATE VIEW audit.user_access_summary AS
    FROM public.users u;
 
 
+ALTER VIEW audit.user_access_summary OWNER TO neondb_owner;
+
 --
--- Name: users_sync; Type: TABLE; Schema: neon_auth; Owner: -
+-- Name: users_sync; Type: TABLE; Schema: neon_auth; Owner: neondb_owner
 --
 
 CREATE TABLE neon_auth.users_sync (
@@ -2318,57 +2153,59 @@ CREATE TABLE neon_auth.users_sync (
 );
 
 
+ALTER TABLE neon_auth.users_sync OWNER TO neondb_owner;
+
 --
--- Name: COLUMN users_sync.raw_json; Type: COMMENT; Schema: neon_auth; Owner: -
+-- Name: COLUMN users_sync.raw_json; Type: COMMENT; Schema: neon_auth; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN neon_auth.users_sync.raw_json IS 'Complete JSON data from the authentication provider';
 
 
 --
--- Name: COLUMN users_sync.id; Type: COMMENT; Schema: neon_auth; Owner: -
+-- Name: COLUMN users_sync.id; Type: COMMENT; Schema: neon_auth; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN neon_auth.users_sync.id IS 'Unique identifier from the authentication provider';
 
 
 --
--- Name: COLUMN users_sync.name; Type: COMMENT; Schema: neon_auth; Owner: -
+-- Name: COLUMN users_sync.name; Type: COMMENT; Schema: neon_auth; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN neon_auth.users_sync.name IS 'User''s full name from authentication provider';
 
 
 --
--- Name: COLUMN users_sync.email; Type: COMMENT; Schema: neon_auth; Owner: -
+-- Name: COLUMN users_sync.email; Type: COMMENT; Schema: neon_auth; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN neon_auth.users_sync.email IS 'User''s email address from authentication provider';
 
 
 --
--- Name: COLUMN users_sync.created_at; Type: COMMENT; Schema: neon_auth; Owner: -
+-- Name: COLUMN users_sync.created_at; Type: COMMENT; Schema: neon_auth; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN neon_auth.users_sync.created_at IS 'Timestamp when the user was created in the auth system';
 
 
 --
--- Name: COLUMN users_sync.updated_at; Type: COMMENT; Schema: neon_auth; Owner: -
+-- Name: COLUMN users_sync.updated_at; Type: COMMENT; Schema: neon_auth; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN neon_auth.users_sync.updated_at IS 'Timestamp when the user was last updated in the auth system';
 
 
 --
--- Name: COLUMN users_sync.deleted_at; Type: COMMENT; Schema: neon_auth; Owner: -
+-- Name: COLUMN users_sync.deleted_at; Type: COMMENT; Schema: neon_auth; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN neon_auth.users_sync.deleted_at IS 'Timestamp when the user was deleted in the auth system';
 
 
 --
--- Name: adjustment_rules; Type: TABLE; Schema: public; Owner: -
+-- Name: adjustment_rules; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.adjustment_rules (
@@ -2382,57 +2219,59 @@ CREATE TABLE public.adjustment_rules (
 );
 
 
+ALTER TABLE public.adjustment_rules OWNER TO neondb_owner;
+
 --
--- Name: COLUMN adjustment_rules.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN adjustment_rules.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.adjustment_rules.id IS 'Unique identifier for the adjustment rule';
 
 
 --
--- Name: COLUMN adjustment_rules.cycle_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN adjustment_rules.cycle_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.adjustment_rules.cycle_id IS 'Reference to the payroll cycle this rule applies to';
 
 
 --
--- Name: COLUMN adjustment_rules.date_type_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN adjustment_rules.date_type_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.adjustment_rules.date_type_id IS 'Reference to the payroll date type this rule affects';
 
 
 --
--- Name: COLUMN adjustment_rules.rule_description; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN adjustment_rules.rule_description; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.adjustment_rules.rule_description IS 'Human-readable description of the adjustment rule';
 
 
 --
--- Name: COLUMN adjustment_rules.rule_code; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN adjustment_rules.rule_code; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.adjustment_rules.rule_code IS 'Code/formula used to calculate date adjustments';
 
 
 --
--- Name: COLUMN adjustment_rules.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN adjustment_rules.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.adjustment_rules.created_at IS 'Timestamp when the rule was created';
 
 
 --
--- Name: COLUMN adjustment_rules.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN adjustment_rules.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.adjustment_rules.updated_at IS 'Timestamp when the rule was last updated';
 
 
 --
--- Name: app_settings; Type: TABLE; Schema: public; Owner: -
+-- Name: app_settings; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.app_settings (
@@ -2441,22 +2280,24 @@ CREATE TABLE public.app_settings (
 );
 
 
+ALTER TABLE public.app_settings OWNER TO neondb_owner;
+
 --
--- Name: COLUMN app_settings.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN app_settings.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.app_settings.id IS 'Unique identifier for application setting';
 
 
 --
--- Name: COLUMN app_settings.permissions; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN app_settings.permissions; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.app_settings.permissions IS 'JSON structure containing application permission configurations';
 
 
 --
--- Name: billing_event_log; Type: TABLE; Schema: public; Owner: -
+-- Name: billing_event_log; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.billing_event_log (
@@ -2469,8 +2310,10 @@ CREATE TABLE public.billing_event_log (
 );
 
 
+ALTER TABLE public.billing_event_log OWNER TO neondb_owner;
+
 --
--- Name: billing_invoice; Type: TABLE; Schema: public; Owner: -
+-- Name: billing_invoice; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.billing_invoice (
@@ -2489,8 +2332,10 @@ CREATE TABLE public.billing_invoice (
 );
 
 
+ALTER TABLE public.billing_invoice OWNER TO neondb_owner;
+
 --
--- Name: billing_invoice_item; Type: TABLE; Schema: public; Owner: -
+-- Name: billing_invoice_item; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.billing_invoice_item (
@@ -2505,8 +2350,10 @@ CREATE TABLE public.billing_invoice_item (
 );
 
 
+ALTER TABLE public.billing_invoice_item OWNER TO neondb_owner;
+
 --
--- Name: billing_invoices; Type: TABLE; Schema: public; Owner: -
+-- Name: billing_invoices; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.billing_invoices (
@@ -2523,8 +2370,10 @@ CREATE TABLE public.billing_invoices (
 );
 
 
+ALTER TABLE public.billing_invoices OWNER TO neondb_owner;
+
 --
--- Name: billing_items; Type: TABLE; Schema: public; Owner: -
+-- Name: billing_items; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.billing_items (
@@ -2539,8 +2388,10 @@ CREATE TABLE public.billing_items (
 );
 
 
+ALTER TABLE public.billing_items OWNER TO neondb_owner;
+
 --
--- Name: billing_plan; Type: TABLE; Schema: public; Owner: -
+-- Name: billing_plan; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.billing_plan (
@@ -2554,8 +2405,10 @@ CREATE TABLE public.billing_plan (
 );
 
 
+ALTER TABLE public.billing_plan OWNER TO neondb_owner;
+
 --
--- Name: client_billing_assignment; Type: TABLE; Schema: public; Owner: -
+-- Name: client_billing_assignment; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.client_billing_assignment (
@@ -2570,8 +2423,10 @@ CREATE TABLE public.client_billing_assignment (
 );
 
 
+ALTER TABLE public.client_billing_assignment OWNER TO neondb_owner;
+
 --
--- Name: client_external_systems; Type: TABLE; Schema: public; Owner: -
+-- Name: client_external_systems; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.client_external_systems (
@@ -2584,50 +2439,52 @@ CREATE TABLE public.client_external_systems (
 );
 
 
+ALTER TABLE public.client_external_systems OWNER TO neondb_owner;
+
 --
--- Name: COLUMN client_external_systems.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN client_external_systems.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.client_external_systems.id IS 'Unique identifier for the client-system mapping';
 
 
 --
--- Name: COLUMN client_external_systems.client_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN client_external_systems.client_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.client_external_systems.client_id IS 'Reference to the client';
 
 
 --
--- Name: COLUMN client_external_systems.system_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN client_external_systems.system_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.client_external_systems.system_id IS 'Reference to the external system';
 
 
 --
--- Name: COLUMN client_external_systems.system_client_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN client_external_systems.system_client_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.client_external_systems.system_client_id IS 'Client identifier in the external system';
 
 
 --
--- Name: COLUMN client_external_systems.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN client_external_systems.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.client_external_systems.created_at IS 'Timestamp when the mapping was created';
 
 
 --
--- Name: COLUMN client_external_systems.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN client_external_systems.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.client_external_systems.updated_at IS 'Timestamp when the mapping was last updated';
 
 
 --
--- Name: clients; Type: TABLE; Schema: public; Owner: -
+-- Name: clients; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.clients (
@@ -2642,64 +2499,66 @@ CREATE TABLE public.clients (
 );
 
 
+ALTER TABLE public.clients OWNER TO neondb_owner;
+
 --
--- Name: COLUMN clients.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN clients.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.clients.id IS 'Unique identifier for the client';
 
 
 --
--- Name: COLUMN clients.name; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN clients.name; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.clients.name IS 'Client company name';
 
 
 --
--- Name: COLUMN clients.contact_person; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN clients.contact_person; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.clients.contact_person IS 'Primary contact person at the client';
 
 
 --
--- Name: COLUMN clients.contact_email; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN clients.contact_email; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.clients.contact_email IS 'Email address for the client contact';
 
 
 --
--- Name: COLUMN clients.contact_phone; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN clients.contact_phone; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.clients.contact_phone IS 'Phone number for the client contact';
 
 
 --
--- Name: COLUMN clients.active; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN clients.active; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.clients.active IS 'Whether the client is currently active';
 
 
 --
--- Name: COLUMN clients.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN clients.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.clients.created_at IS 'Timestamp when the client was created';
 
 
 --
--- Name: COLUMN clients.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN clients.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.clients.updated_at IS 'Timestamp when the client was last updated';
 
 
 --
--- Name: payroll_cycles; Type: TABLE; Schema: public; Owner: -
+-- Name: payroll_cycles; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.payroll_cycles (
@@ -2711,43 +2570,45 @@ CREATE TABLE public.payroll_cycles (
 );
 
 
+ALTER TABLE public.payroll_cycles OWNER TO neondb_owner;
+
 --
--- Name: COLUMN payroll_cycles.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_cycles.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_cycles.id IS 'Unique identifier for the payroll cycle';
 
 
 --
--- Name: COLUMN payroll_cycles.name; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_cycles.name; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_cycles.name IS 'Name of the payroll cycle (Weekly, Biweekly, Monthly, etc.)';
 
 
 --
--- Name: COLUMN payroll_cycles.description; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_cycles.description; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_cycles.description IS 'Detailed description of the payroll cycle';
 
 
 --
--- Name: COLUMN payroll_cycles.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_cycles.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_cycles.created_at IS 'Timestamp when the cycle was created';
 
 
 --
--- Name: COLUMN payroll_cycles.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_cycles.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_cycles.updated_at IS 'Timestamp when the cycle was last updated';
 
 
 --
--- Name: payroll_date_types; Type: TABLE; Schema: public; Owner: -
+-- Name: payroll_date_types; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.payroll_date_types (
@@ -2759,43 +2620,45 @@ CREATE TABLE public.payroll_date_types (
 );
 
 
+ALTER TABLE public.payroll_date_types OWNER TO neondb_owner;
+
 --
--- Name: COLUMN payroll_date_types.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_date_types.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_date_types.id IS 'Unique identifier for the payroll date type';
 
 
 --
--- Name: COLUMN payroll_date_types.name; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_date_types.name; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_date_types.name IS 'Name of the date type (Fixed, Last Working Day, etc.)';
 
 
 --
--- Name: COLUMN payroll_date_types.description; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_date_types.description; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_date_types.description IS 'Detailed description of how this date type works';
 
 
 --
--- Name: COLUMN payroll_date_types.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_date_types.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_date_types.created_at IS 'Timestamp when the date type was created';
 
 
 --
--- Name: COLUMN payroll_date_types.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payroll_date_types.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payroll_date_types.updated_at IS 'Timestamp when the date type was last updated';
 
 
 --
--- Name: payrolls; Type: TABLE; Schema: public; Owner: -
+-- Name: payrolls; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.payrolls (
@@ -2826,127 +2689,129 @@ CREATE TABLE public.payrolls (
 );
 
 
+ALTER TABLE public.payrolls OWNER TO neondb_owner;
+
 --
--- Name: COLUMN payrolls.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.id IS 'Unique identifier for the payroll';
 
 
 --
--- Name: COLUMN payrolls.client_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.client_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.client_id IS 'Reference to the client this payroll belongs to';
 
 
 --
--- Name: COLUMN payrolls.name; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.name; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.name IS 'Name of the payroll';
 
 
 --
--- Name: COLUMN payrolls.cycle_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.cycle_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.cycle_id IS 'Reference to the payroll cycle';
 
 
 --
--- Name: COLUMN payrolls.date_type_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.date_type_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.date_type_id IS 'Reference to the payroll date type';
 
 
 --
--- Name: COLUMN payrolls.date_value; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.date_value; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.date_value IS 'Specific value for date calculation (e.g., day of month)';
 
 
 --
--- Name: COLUMN payrolls.primary_consultant_user_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.primary_consultant_user_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.primary_consultant_user_id IS 'Primary consultant responsible for this payroll';
 
 
 --
--- Name: COLUMN payrolls.backup_consultant_user_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.backup_consultant_user_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.backup_consultant_user_id IS 'Backup consultant for this payroll';
 
 
 --
--- Name: COLUMN payrolls.manager_user_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.manager_user_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.manager_user_id IS 'Manager overseeing this payroll';
 
 
 --
--- Name: COLUMN payrolls.processing_days_before_eft; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.processing_days_before_eft; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.processing_days_before_eft IS 'Number of days before EFT that processing must complete';
 
 
 --
--- Name: COLUMN payrolls.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.created_at IS 'Timestamp when the payroll was created';
 
 
 --
--- Name: COLUMN payrolls.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.updated_at IS 'Timestamp when the payroll was last updated';
 
 
 --
--- Name: COLUMN payrolls.payroll_system; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.payroll_system; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.payroll_system IS 'External payroll system used for this client';
 
 
 --
--- Name: COLUMN payrolls.status; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.status; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.status IS 'Current status of the payroll (Implementation, Active, Inactive)';
 
 
 --
--- Name: COLUMN payrolls.processing_time; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.processing_time; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.processing_time IS 'Number of hours required to process this payroll';
 
 
 --
--- Name: COLUMN payrolls.employee_count; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.employee_count; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.employee_count IS 'Number of employees in this payroll';
 
 
 --
--- Name: COLUMN payrolls.go_live_date; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN payrolls.go_live_date; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.payrolls.go_live_date IS 'The date when the payroll went live in the system';
 
 
 --
--- Name: current_payrolls; Type: VIEW; Schema: public; Owner: -
+-- Name: current_payrolls; Type: VIEW; Schema: public; Owner: neondb_owner
 --
 
 CREATE VIEW public.current_payrolls AS
@@ -2977,8 +2842,10 @@ CREATE VIEW public.current_payrolls AS
   ORDER BY COALESCE(p.parent_payroll_id, p.id), p.version_number DESC;
 
 
+ALTER VIEW public.current_payrolls OWNER TO neondb_owner;
+
 --
--- Name: external_systems; Type: TABLE; Schema: public; Owner: -
+-- Name: external_systems; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.external_systems (
@@ -2992,57 +2859,59 @@ CREATE TABLE public.external_systems (
 );
 
 
+ALTER TABLE public.external_systems OWNER TO neondb_owner;
+
 --
--- Name: COLUMN external_systems.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN external_systems.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.external_systems.id IS 'Unique identifier for the external system';
 
 
 --
--- Name: COLUMN external_systems.name; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN external_systems.name; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.external_systems.name IS 'Name of the external system';
 
 
 --
--- Name: COLUMN external_systems.url; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN external_systems.url; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.external_systems.url IS 'URL endpoint for the external system';
 
 
 --
--- Name: COLUMN external_systems.description; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN external_systems.description; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.external_systems.description IS 'Description of the external system and its purpose';
 
 
 --
--- Name: COLUMN external_systems.icon; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN external_systems.icon; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.external_systems.icon IS 'Path or reference to the system icon';
 
 
 --
--- Name: COLUMN external_systems.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN external_systems.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.external_systems.created_at IS 'Timestamp when the system was created';
 
 
 --
--- Name: COLUMN external_systems.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN external_systems.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.external_systems.updated_at IS 'Timestamp when the system was last updated';
 
 
 --
--- Name: feature_flags; Type: TABLE; Schema: public; Owner: -
+-- Name: feature_flags; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.feature_flags (
@@ -3054,43 +2923,45 @@ CREATE TABLE public.feature_flags (
 );
 
 
+ALTER TABLE public.feature_flags OWNER TO neondb_owner;
+
 --
--- Name: COLUMN feature_flags.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN feature_flags.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.feature_flags.id IS 'Unique identifier for the feature flag';
 
 
 --
--- Name: COLUMN feature_flags.feature_name; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN feature_flags.feature_name; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.feature_flags.feature_name IS 'Name of the feature controlled by this flag';
 
 
 --
--- Name: COLUMN feature_flags.is_enabled; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN feature_flags.is_enabled; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.feature_flags.is_enabled IS 'Whether the feature is currently enabled';
 
 
 --
--- Name: COLUMN feature_flags.allowed_roles; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN feature_flags.allowed_roles; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.feature_flags.allowed_roles IS 'JSON array of roles that can access this feature';
 
 
 --
--- Name: COLUMN feature_flags.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN feature_flags.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.feature_flags.updated_at IS 'Timestamp when the feature flag was last updated';
 
 
 --
--- Name: holidays; Type: TABLE; Schema: public; Owner: -
+-- Name: holidays; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.holidays (
@@ -3109,92 +2980,94 @@ CREATE TABLE public.holidays (
 );
 
 
+ALTER TABLE public.holidays OWNER TO neondb_owner;
+
 --
--- Name: COLUMN holidays.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.id IS 'Unique identifier for the holiday';
 
 
 --
--- Name: COLUMN holidays.date; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.date; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.date IS 'Date of the holiday';
 
 
 --
--- Name: COLUMN holidays.local_name; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.local_name; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.local_name IS 'Name of the holiday in local language';
 
 
 --
--- Name: COLUMN holidays.name; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.name; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.name IS 'Name of the holiday in English';
 
 
 --
--- Name: COLUMN holidays.country_code; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.country_code; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.country_code IS 'ISO country code where the holiday is observed';
 
 
 --
--- Name: COLUMN holidays.region; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.region; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.region IS 'Array of regions within the country where the holiday applies';
 
 
 --
--- Name: COLUMN holidays.is_fixed; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.is_fixed; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.is_fixed IS 'Whether the holiday occurs on the same date each year';
 
 
 --
--- Name: COLUMN holidays.is_global; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.is_global; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.is_global IS 'Whether the holiday is observed globally';
 
 
 --
--- Name: COLUMN holidays.launch_year; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.launch_year; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.launch_year IS 'First year when the holiday was observed';
 
 
 --
--- Name: COLUMN holidays.types; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.types; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.types IS 'Array of holiday types (e.g., public, bank, religious)';
 
 
 --
--- Name: COLUMN holidays.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.created_at IS 'Timestamp when the holiday record was created';
 
 
 --
--- Name: COLUMN holidays.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN holidays.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.holidays.updated_at IS 'Timestamp when the holiday record was last updated';
 
 
 --
--- Name: leave; Type: TABLE; Schema: public; Owner: -
+-- Name: leave; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.leave (
@@ -3210,57 +3083,59 @@ CREATE TABLE public.leave (
 );
 
 
+ALTER TABLE public.leave OWNER TO neondb_owner;
+
 --
--- Name: COLUMN leave.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN leave.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.leave.id IS 'Unique identifier for the leave record';
 
 
 --
--- Name: COLUMN leave.user_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN leave.user_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.leave.user_id IS 'Reference to the user taking leave';
 
 
 --
--- Name: COLUMN leave.start_date; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN leave.start_date; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.leave.start_date IS 'First day of the leave period';
 
 
 --
--- Name: COLUMN leave.end_date; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN leave.end_date; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.leave.end_date IS 'Last day of the leave period';
 
 
 --
--- Name: COLUMN leave.leave_type; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN leave.leave_type; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.leave.leave_type IS 'Type of leave (vacation, sick, personal, etc.)';
 
 
 --
--- Name: COLUMN leave.reason; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN leave.reason; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.leave.reason IS 'Reason provided for the leave request';
 
 
 --
--- Name: COLUMN leave.status; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN leave.status; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.leave.status IS 'Current status of the leave request (Pending, Approved, Denied)';
 
 
 --
--- Name: notes; Type: TABLE; Schema: public; Owner: -
+-- Name: notes; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.notes (
@@ -3276,64 +3151,66 @@ CREATE TABLE public.notes (
 );
 
 
+ALTER TABLE public.notes OWNER TO neondb_owner;
+
 --
--- Name: COLUMN notes.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN notes.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.notes.id IS 'Unique identifier for the note';
 
 
 --
--- Name: COLUMN notes.entity_type; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN notes.entity_type; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.notes.entity_type IS 'Type of entity this note is attached to (client, payroll, etc.)';
 
 
 --
--- Name: COLUMN notes.entity_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN notes.entity_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.notes.entity_id IS 'Identifier of the entity this note is attached to';
 
 
 --
--- Name: COLUMN notes.user_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN notes.user_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.notes.user_id IS 'User who created the note';
 
 
 --
--- Name: COLUMN notes.content; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN notes.content; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.notes.content IS 'Content of the note';
 
 
 --
--- Name: COLUMN notes.is_important; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN notes.is_important; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.notes.is_important IS 'Whether the note is flagged as important';
 
 
 --
--- Name: COLUMN notes.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN notes.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.notes.created_at IS 'Timestamp when the note was created';
 
 
 --
--- Name: COLUMN notes.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN notes.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.notes.updated_at IS 'Timestamp when the note was last updated';
 
 
 --
--- Name: payroll_assignment_audit; Type: TABLE; Schema: public; Owner: -
+-- Name: payroll_assignment_audit; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.payroll_assignment_audit (
@@ -3348,8 +3225,10 @@ CREATE TABLE public.payroll_assignment_audit (
 );
 
 
+ALTER TABLE public.payroll_assignment_audit OWNER TO neondb_owner;
+
 --
--- Name: payroll_assignments; Type: TABLE; Schema: public; Owner: -
+-- Name: payroll_assignments; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.payroll_assignments (
@@ -3365,8 +3244,10 @@ CREATE TABLE public.payroll_assignments (
 );
 
 
+ALTER TABLE public.payroll_assignments OWNER TO neondb_owner;
+
 --
--- Name: payroll_dashboard_stats; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+-- Name: payroll_dashboard_stats; Type: MATERIALIZED VIEW; Schema: public; Owner: neondb_owner
 --
 
 CREATE MATERIALIZED VIEW public.payroll_dashboard_stats AS
@@ -3391,8 +3272,10 @@ CREATE MATERIALIZED VIEW public.payroll_dashboard_stats AS
   WITH NO DATA;
 
 
+ALTER MATERIALIZED VIEW public.payroll_dashboard_stats OWNER TO neondb_owner;
+
 --
--- Name: payroll_triggers_status; Type: VIEW; Schema: public; Owner: -
+-- Name: payroll_triggers_status; Type: VIEW; Schema: public; Owner: neondb_owner
 --
 
 CREATE VIEW public.payroll_triggers_status AS
@@ -3406,8 +3289,10 @@ CREATE VIEW public.payroll_triggers_status AS
   ORDER BY triggers.trigger_name;
 
 
+ALTER VIEW public.payroll_triggers_status OWNER TO neondb_owner;
+
 --
--- Name: permission_audit_log; Type: TABLE; Schema: public; Owner: -
+-- Name: permission_audit_log; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.permission_audit_log (
@@ -3426,15 +3311,17 @@ CREATE TABLE public.permission_audit_log (
 );
 
 
+ALTER TABLE public.permission_audit_log OWNER TO neondb_owner;
+
 --
--- Name: TABLE permission_audit_log; Type: COMMENT; Schema: public; Owner: -
+-- Name: TABLE permission_audit_log; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON TABLE public.permission_audit_log IS 'Audit log for permission changes and access attempts';
 
 
 --
--- Name: permission_overrides; Type: TABLE; Schema: public; Owner: -
+-- Name: permission_overrides; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.permission_overrides (
@@ -3454,50 +3341,52 @@ CREATE TABLE public.permission_overrides (
 );
 
 
+ALTER TABLE public.permission_overrides OWNER TO neondb_owner;
+
 --
--- Name: TABLE permission_overrides; Type: COMMENT; Schema: public; Owner: -
+-- Name: TABLE permission_overrides; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON TABLE public.permission_overrides IS 'User-specific and role-specific permission overrides';
 
 
 --
--- Name: COLUMN permission_overrides.user_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN permission_overrides.user_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.permission_overrides.user_id IS 'User ID for user-specific overrides (mutually exclusive with role)';
 
 
 --
--- Name: COLUMN permission_overrides.role; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN permission_overrides.role; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.permission_overrides.role IS 'Role name for role-based overrides (mutually exclusive with user_id)';
 
 
 --
--- Name: COLUMN permission_overrides.granted; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN permission_overrides.granted; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.permission_overrides.granted IS 'Whether the permission is granted (true) or denied (false)';
 
 
 --
--- Name: COLUMN permission_overrides.conditions; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN permission_overrides.conditions; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.permission_overrides.conditions IS 'JSON conditions for conditional permissions';
 
 
 --
--- Name: COLUMN permission_overrides.expires_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN permission_overrides.expires_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.permission_overrides.expires_at IS 'When this override expires (NULL for permanent)';
 
 
 --
--- Name: users_role_backup; Type: TABLE; Schema: public; Owner: -
+-- Name: users_role_backup; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.users_role_backup (
@@ -3508,8 +3397,10 @@ CREATE TABLE public.users_role_backup (
 );
 
 
+ALTER TABLE public.users_role_backup OWNER TO neondb_owner;
+
 --
--- Name: work_schedule; Type: TABLE; Schema: public; Owner: -
+-- Name: work_schedule; Type: TABLE; Schema: public; Owner: neondb_owner
 --
 
 CREATE TABLE public.work_schedule (
@@ -3524,50 +3415,52 @@ CREATE TABLE public.work_schedule (
 );
 
 
+ALTER TABLE public.work_schedule OWNER TO neondb_owner;
+
 --
--- Name: COLUMN work_schedule.id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN work_schedule.id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.work_schedule.id IS 'Unique identifier for the work schedule entry';
 
 
 --
--- Name: COLUMN work_schedule.user_id; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN work_schedule.user_id; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.work_schedule.user_id IS 'Reference to the user this schedule belongs to';
 
 
 --
--- Name: COLUMN work_schedule.work_day; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN work_schedule.work_day; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.work_schedule.work_day IS 'Day of the week (Monday, Tuesday, etc.)';
 
 
 --
--- Name: COLUMN work_schedule.work_hours; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN work_schedule.work_hours; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.work_schedule.work_hours IS 'Number of hours worked on this day';
 
 
 --
--- Name: COLUMN work_schedule.created_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN work_schedule.created_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.work_schedule.created_at IS 'Timestamp when the schedule entry was created';
 
 
 --
--- Name: COLUMN work_schedule.updated_at; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN work_schedule.updated_at; Type: COMMENT; Schema: public; Owner: neondb_owner
 --
 
 COMMENT ON COLUMN public.work_schedule.updated_at IS 'Timestamp when the schedule entry was last updated';
 
 
 --
--- Name: audit_log audit_log_pkey; Type: CONSTRAINT; Schema: audit; Owner: -
+-- Name: audit_log audit_log_pkey; Type: CONSTRAINT; Schema: audit; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY audit.audit_log
@@ -3575,7 +3468,7 @@ ALTER TABLE ONLY audit.audit_log
 
 
 --
--- Name: auth_events auth_events_pkey; Type: CONSTRAINT; Schema: audit; Owner: -
+-- Name: auth_events auth_events_pkey; Type: CONSTRAINT; Schema: audit; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY audit.auth_events
@@ -3583,7 +3476,7 @@ ALTER TABLE ONLY audit.auth_events
 
 
 --
--- Name: data_access_log data_access_log_pkey; Type: CONSTRAINT; Schema: audit; Owner: -
+-- Name: data_access_log data_access_log_pkey; Type: CONSTRAINT; Schema: audit; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY audit.data_access_log
@@ -3591,7 +3484,7 @@ ALTER TABLE ONLY audit.data_access_log
 
 
 --
--- Name: permission_changes permission_changes_pkey; Type: CONSTRAINT; Schema: audit; Owner: -
+-- Name: permission_changes permission_changes_pkey; Type: CONSTRAINT; Schema: audit; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY audit.permission_changes
@@ -3599,7 +3492,7 @@ ALTER TABLE ONLY audit.permission_changes
 
 
 --
--- Name: slow_queries slow_queries_pkey; Type: CONSTRAINT; Schema: audit; Owner: -
+-- Name: slow_queries slow_queries_pkey; Type: CONSTRAINT; Schema: audit; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY audit.slow_queries
@@ -3607,7 +3500,7 @@ ALTER TABLE ONLY audit.slow_queries
 
 
 --
--- Name: users_sync users_sync_pkey; Type: CONSTRAINT; Schema: neon_auth; Owner: -
+-- Name: users_sync users_sync_pkey; Type: CONSTRAINT; Schema: neon_auth; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY neon_auth.users_sync
@@ -3615,7 +3508,7 @@ ALTER TABLE ONLY neon_auth.users_sync
 
 
 --
--- Name: adjustment_rules adjustment_rules_cycle_id_date_type_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: adjustment_rules adjustment_rules_cycle_id_date_type_id_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.adjustment_rules
@@ -3623,7 +3516,7 @@ ALTER TABLE ONLY public.adjustment_rules
 
 
 --
--- Name: adjustment_rules adjustment_rules_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: adjustment_rules adjustment_rules_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.adjustment_rules
@@ -3631,7 +3524,7 @@ ALTER TABLE ONLY public.adjustment_rules
 
 
 --
--- Name: app_settings app_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: app_settings app_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.app_settings
@@ -3639,7 +3532,7 @@ ALTER TABLE ONLY public.app_settings
 
 
 --
--- Name: billing_event_log billing_event_log_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_event_log billing_event_log_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_event_log
@@ -3647,7 +3540,7 @@ ALTER TABLE ONLY public.billing_event_log
 
 
 --
--- Name: billing_invoice_item billing_invoice_item_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_invoice_item billing_invoice_item_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_invoice_item
@@ -3655,7 +3548,7 @@ ALTER TABLE ONLY public.billing_invoice_item
 
 
 --
--- Name: billing_invoice billing_invoice_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_invoice billing_invoice_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_invoice
@@ -3663,7 +3556,7 @@ ALTER TABLE ONLY public.billing_invoice
 
 
 --
--- Name: billing_invoices billing_invoices_invoice_number_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_invoices billing_invoices_invoice_number_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_invoices
@@ -3671,7 +3564,7 @@ ALTER TABLE ONLY public.billing_invoices
 
 
 --
--- Name: billing_invoices billing_invoices_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_invoices billing_invoices_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_invoices
@@ -3679,7 +3572,7 @@ ALTER TABLE ONLY public.billing_invoices
 
 
 --
--- Name: billing_items billing_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_items billing_items_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_items
@@ -3687,7 +3580,7 @@ ALTER TABLE ONLY public.billing_items
 
 
 --
--- Name: billing_plan billing_plan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_plan billing_plan_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_plan
@@ -3695,7 +3588,7 @@ ALTER TABLE ONLY public.billing_plan
 
 
 --
--- Name: client_billing_assignment client_billing_assignment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: client_billing_assignment client_billing_assignment_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.client_billing_assignment
@@ -3703,7 +3596,7 @@ ALTER TABLE ONLY public.client_billing_assignment
 
 
 --
--- Name: client_external_systems client_external_systems_client_id_system_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: client_external_systems client_external_systems_client_id_system_id_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.client_external_systems
@@ -3711,7 +3604,7 @@ ALTER TABLE ONLY public.client_external_systems
 
 
 --
--- Name: client_external_systems client_external_systems_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: client_external_systems client_external_systems_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.client_external_systems
@@ -3719,7 +3612,7 @@ ALTER TABLE ONLY public.client_external_systems
 
 
 --
--- Name: clients clients_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: clients clients_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.clients
@@ -3727,7 +3620,7 @@ ALTER TABLE ONLY public.clients
 
 
 --
--- Name: external_systems external_systems_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: external_systems external_systems_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.external_systems
@@ -3735,7 +3628,7 @@ ALTER TABLE ONLY public.external_systems
 
 
 --
--- Name: feature_flags feature_flags_feature_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: feature_flags feature_flags_feature_name_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.feature_flags
@@ -3743,7 +3636,7 @@ ALTER TABLE ONLY public.feature_flags
 
 
 --
--- Name: feature_flags feature_flags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: feature_flags feature_flags_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.feature_flags
@@ -3751,7 +3644,7 @@ ALTER TABLE ONLY public.feature_flags
 
 
 --
--- Name: holidays holidays_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: holidays holidays_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.holidays
@@ -3759,7 +3652,7 @@ ALTER TABLE ONLY public.holidays
 
 
 --
--- Name: latest_payroll_version_results latest_payroll_version_results_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: latest_payroll_version_results latest_payroll_version_results_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.latest_payroll_version_results
@@ -3767,7 +3660,7 @@ ALTER TABLE ONLY public.latest_payroll_version_results
 
 
 --
--- Name: leave leave_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: leave leave_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.leave
@@ -3775,7 +3668,7 @@ ALTER TABLE ONLY public.leave
 
 
 --
--- Name: notes notes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: notes notes_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.notes
@@ -3783,7 +3676,7 @@ ALTER TABLE ONLY public.notes
 
 
 --
--- Name: payroll_activation_results payroll_activation_results_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_activation_results payroll_activation_results_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_activation_results
@@ -3791,7 +3684,7 @@ ALTER TABLE ONLY public.payroll_activation_results
 
 
 --
--- Name: payroll_assignment_audit payroll_assignment_audit_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignment_audit payroll_assignment_audit_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignment_audit
@@ -3799,7 +3692,7 @@ ALTER TABLE ONLY public.payroll_assignment_audit
 
 
 --
--- Name: payroll_assignments payroll_assignments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignments payroll_assignments_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignments
@@ -3807,7 +3700,7 @@ ALTER TABLE ONLY public.payroll_assignments
 
 
 --
--- Name: payroll_cycles payroll_cycles_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_cycles payroll_cycles_name_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_cycles
@@ -3815,7 +3708,7 @@ ALTER TABLE ONLY public.payroll_cycles
 
 
 --
--- Name: payroll_cycles payroll_cycles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_cycles payroll_cycles_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_cycles
@@ -3823,7 +3716,7 @@ ALTER TABLE ONLY public.payroll_cycles
 
 
 --
--- Name: payroll_date_types payroll_date_types_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_date_types payroll_date_types_name_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_date_types
@@ -3831,7 +3724,7 @@ ALTER TABLE ONLY public.payroll_date_types
 
 
 --
--- Name: payroll_date_types payroll_date_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_date_types payroll_date_types_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_date_types
@@ -3839,7 +3732,7 @@ ALTER TABLE ONLY public.payroll_date_types
 
 
 --
--- Name: payroll_dates payroll_dates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_dates payroll_dates_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_dates
@@ -3847,7 +3740,7 @@ ALTER TABLE ONLY public.payroll_dates
 
 
 --
--- Name: payroll_version_history_results payroll_version_history_results_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_version_history_results payroll_version_history_results_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_version_history_results
@@ -3855,7 +3748,7 @@ ALTER TABLE ONLY public.payroll_version_history_results
 
 
 --
--- Name: payroll_version_results payroll_version_results_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_version_results payroll_version_results_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_version_results
@@ -3863,7 +3756,7 @@ ALTER TABLE ONLY public.payroll_version_results
 
 
 --
--- Name: payrolls payrolls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payrolls payrolls_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payrolls
@@ -3871,7 +3764,7 @@ ALTER TABLE ONLY public.payrolls
 
 
 --
--- Name: permission_audit_log permission_audit_log_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: permission_audit_log permission_audit_log_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.permission_audit_log
@@ -3879,7 +3772,7 @@ ALTER TABLE ONLY public.permission_audit_log
 
 
 --
--- Name: permission_overrides permission_overrides_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: permission_overrides permission_overrides_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.permission_overrides
@@ -3887,7 +3780,7 @@ ALTER TABLE ONLY public.permission_overrides
 
 
 --
--- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.permissions
@@ -3895,7 +3788,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- Name: permissions permissions_resource_id_action_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: permissions permissions_resource_id_action_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.permissions
@@ -3903,7 +3796,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- Name: resources resources_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: resources resources_name_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.resources
@@ -3911,7 +3804,7 @@ ALTER TABLE ONLY public.resources
 
 
 --
--- Name: resources resources_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: resources resources_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.resources
@@ -3919,7 +3812,7 @@ ALTER TABLE ONLY public.resources
 
 
 --
--- Name: role_permissions role_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: role_permissions role_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.role_permissions
@@ -3927,7 +3820,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- Name: role_permissions role_permissions_role_id_permission_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: role_permissions role_permissions_role_id_permission_id_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.role_permissions
@@ -3935,7 +3828,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- Name: roles roles_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: roles roles_name_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.roles
@@ -3943,7 +3836,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.roles
@@ -3951,7 +3844,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: work_schedule unique_user_work_day; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: work_schedule unique_user_work_day; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.work_schedule
@@ -3959,7 +3852,7 @@ ALTER TABLE ONLY public.work_schedule
 
 
 --
--- Name: payroll_assignments uq_payroll_assignment_payroll_date; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignments uq_payroll_assignment_payroll_date; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignments
@@ -3967,7 +3860,7 @@ ALTER TABLE ONLY public.payroll_assignments
 
 
 --
--- Name: user_roles user_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_roles user_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.user_roles
@@ -3975,7 +3868,7 @@ ALTER TABLE ONLY public.user_roles
 
 
 --
--- Name: user_roles user_roles_user_id_role_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_roles user_roles_user_id_role_id_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.user_roles
@@ -3983,7 +3876,7 @@ ALTER TABLE ONLY public.user_roles
 
 
 --
--- Name: users users_clerk_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_clerk_user_id_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.users
@@ -3991,7 +3884,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.users
@@ -3999,7 +3892,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.users
@@ -4007,7 +3900,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.users
@@ -4015,7 +3908,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: work_schedule work_schedule_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: work_schedule work_schedule_pkey; Type: CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.work_schedule
@@ -4023,630 +3916,665 @@ ALTER TABLE ONLY public.work_schedule
 
 
 --
--- Name: idx_audit_log_action; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_audit_log_action; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_audit_log_action ON audit.audit_log USING btree (action);
 
 
 --
--- Name: idx_audit_log_event_time; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_audit_log_event_time; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_audit_log_event_time ON audit.audit_log USING btree (event_time DESC);
 
 
 --
--- Name: idx_audit_log_resource; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_audit_log_resource; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_audit_log_resource ON audit.audit_log USING btree (resource_type, resource_id);
 
 
 --
--- Name: idx_audit_log_session; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_audit_log_session; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_audit_log_session ON audit.audit_log USING btree (session_id);
 
 
 --
--- Name: idx_audit_log_user_id; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_audit_log_user_id; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_audit_log_user_id ON audit.audit_log USING btree (user_id);
 
 
 --
--- Name: idx_auth_events_time; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_auth_events_time; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_auth_events_time ON audit.auth_events USING btree (event_time DESC);
 
 
 --
--- Name: idx_auth_events_type; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_auth_events_type; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_auth_events_type ON audit.auth_events USING btree (event_type);
 
 
 --
--- Name: idx_auth_events_user; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_auth_events_user; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_auth_events_user ON audit.auth_events USING btree (user_id);
 
 
 --
--- Name: idx_data_access_classification; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_data_access_classification; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_data_access_classification ON audit.data_access_log USING btree (data_classification);
 
 
 --
--- Name: idx_data_access_resource; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_data_access_resource; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_data_access_resource ON audit.data_access_log USING btree (resource_type, resource_id);
 
 
 --
--- Name: idx_data_access_time; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_data_access_time; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_data_access_time ON audit.data_access_log USING btree (accessed_at DESC);
 
 
 --
--- Name: idx_data_access_user; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_data_access_user; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_data_access_user ON audit.data_access_log USING btree (user_id);
 
 
 --
--- Name: idx_permission_changes_changed_by; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_permission_changes_changed_by; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_changes_changed_by ON audit.permission_changes USING btree (changed_by_user_id);
 
 
 --
--- Name: idx_permission_changes_target_user; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_permission_changes_target_user; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_changes_target_user ON audit.permission_changes USING btree (target_user_id);
 
 
 --
--- Name: idx_permission_changes_time; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_permission_changes_time; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_changes_time ON audit.permission_changes USING btree (changed_at DESC);
 
 
 --
--- Name: idx_slow_queries_duration; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_slow_queries_duration; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_slow_queries_duration ON audit.slow_queries USING btree (query_duration DESC);
 
 
 --
--- Name: idx_slow_queries_start; Type: INDEX; Schema: audit; Owner: -
+-- Name: idx_slow_queries_start; Type: INDEX; Schema: audit; Owner: neondb_owner
 --
 
 CREATE INDEX idx_slow_queries_start ON audit.slow_queries USING btree (query_start DESC);
 
 
 --
--- Name: users_sync_deleted_at_idx; Type: INDEX; Schema: neon_auth; Owner: -
+-- Name: users_sync_deleted_at_idx; Type: INDEX; Schema: neon_auth; Owner: neondb_owner
 --
 
 CREATE INDEX users_sync_deleted_at_idx ON neon_auth.users_sync USING btree (deleted_at);
 
 
 --
--- Name: idx_audit_assignment; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_audit_assignment; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_audit_assignment ON public.payroll_assignment_audit USING btree (assignment_id);
 
 
 --
--- Name: idx_audit_changed_by; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_audit_changed_by; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_audit_changed_by ON public.payroll_assignment_audit USING btree (changed_by);
 
 
 --
--- Name: idx_audit_date; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_audit_date; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_audit_date ON public.payroll_assignment_audit USING btree (created_at);
 
 
 --
--- Name: idx_audit_payroll_date; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_audit_payroll_date; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_audit_payroll_date ON public.payroll_assignment_audit USING btree (payroll_date_id);
 
 
 --
--- Name: idx_billing_invoice_client_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_billing_invoice_client_id; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_billing_invoice_client_id ON public.billing_invoice USING btree (client_id);
 
 
 --
--- Name: idx_holidays_date_country_region; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_holidays_date_country_region; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_holidays_date_country_region ON public.holidays USING btree (date, country_code, region);
 
 
 --
--- Name: idx_leave_dates; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_latest_payroll_version_results_payroll_id; Type: INDEX; Schema: public; Owner: neondb_owner
+--
+
+CREATE INDEX idx_latest_payroll_version_results_payroll_id ON public.latest_payroll_version_results USING btree (payroll_id);
+
+
+--
+-- Name: idx_latest_payroll_version_results_queried_at; Type: INDEX; Schema: public; Owner: neondb_owner
+--
+
+CREATE INDEX idx_latest_payroll_version_results_queried_at ON public.latest_payroll_version_results USING btree (queried_at);
+
+
+--
+-- Name: idx_leave_dates; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_leave_dates ON public.leave USING btree (start_date, end_date);
 
 
 --
--- Name: idx_leave_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_leave_user_id; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_leave_user_id ON public.leave USING btree (user_id);
 
 
 --
--- Name: idx_notes_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_notes_created_at; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_notes_created_at ON public.notes USING btree (created_at DESC);
 
 
 --
--- Name: idx_notes_entity; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_notes_entity; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_notes_entity ON public.notes USING btree (entity_type, entity_id);
 
 
 --
--- Name: idx_notes_important; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_notes_important; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_notes_important ON public.notes USING btree (is_important) WHERE (is_important = true);
 
 
 --
--- Name: idx_notes_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_notes_user_id; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_notes_user_id ON public.notes USING btree (user_id);
 
 
 --
--- Name: idx_payroll_assignments_assigned_by; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_assignments_assigned_by; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_assignments_assigned_by ON public.payroll_assignments USING btree (assigned_by);
 
 
 --
--- Name: idx_payroll_assignments_assigned_date; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_assignments_assigned_date; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_assignments_assigned_date ON public.payroll_assignments USING btree (assigned_date);
 
 
 --
--- Name: idx_payroll_assignments_consultant; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_assignments_consultant; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_assignments_consultant ON public.payroll_assignments USING btree (consultant_id);
 
 
 --
--- Name: idx_payroll_assignments_payroll_date; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_assignments_payroll_date; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_assignments_payroll_date ON public.payroll_assignments USING btree (payroll_date_id);
 
 
 --
--- Name: idx_payroll_dashboard_stats_consultants; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_dashboard_stats_consultants; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_dashboard_stats_consultants ON public.payroll_dashboard_stats USING btree (primary_consultant_user_id, backup_consultant_user_id);
 
 
 --
--- Name: idx_payroll_dashboard_stats_status; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_dashboard_stats_status; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_dashboard_stats_status ON public.payroll_dashboard_stats USING btree (status);
 
 
 --
--- Name: idx_payroll_dates_composite; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_dates_composite; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_dates_composite ON public.payroll_dates USING btree (payroll_id, adjusted_eft_date, processing_date);
 
 
 --
--- Name: idx_payroll_dates_date_range; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_dates_date_range; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_dates_date_range ON public.payroll_dates USING btree (adjusted_eft_date);
 
 
 --
--- Name: idx_payroll_dates_notes; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_dates_notes; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_dates_notes ON public.payroll_dates USING gin (to_tsvector('english'::regconfig, notes));
 
 
 --
--- Name: idx_payroll_dates_payroll_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_dates_payroll_id; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_dates_payroll_id ON public.payroll_dates USING btree (payroll_id);
 
 
 --
--- Name: idx_payroll_dates_processing; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_dates_processing; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payroll_dates_processing ON public.payroll_dates USING btree (processing_date);
 
 
 --
--- Name: idx_payrolls_active_dates; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payroll_version_history_results_payroll_id; Type: INDEX; Schema: public; Owner: neondb_owner
+--
+
+CREATE INDEX idx_payroll_version_history_results_payroll_id ON public.payroll_version_history_results USING btree (payroll_id);
+
+
+--
+-- Name: idx_payroll_version_history_results_queried_at; Type: INDEX; Schema: public; Owner: neondb_owner
+--
+
+CREATE INDEX idx_payroll_version_history_results_queried_at ON public.payroll_version_history_results USING btree (queried_at);
+
+
+--
+-- Name: idx_payroll_version_results_created_at; Type: INDEX; Schema: public; Owner: neondb_owner
+--
+
+CREATE INDEX idx_payroll_version_results_created_at ON public.payroll_version_results USING btree (created_at);
+
+
+--
+-- Name: idx_payrolls_active_dates; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payrolls_active_dates ON public.payrolls USING btree (status, go_live_date, superseded_date) WHERE (status = 'Active'::public.payroll_status);
 
 
 --
--- Name: idx_payrolls_client_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payrolls_client_id; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payrolls_client_id ON public.payrolls USING btree (client_id);
 
 
 --
--- Name: idx_payrolls_consultant; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payrolls_consultant; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payrolls_consultant ON public.payrolls USING btree (primary_consultant_user_id);
 
 
 --
--- Name: idx_payrolls_current_version; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payrolls_current_version; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payrolls_current_version ON public.payrolls USING btree (parent_payroll_id, version_number DESC) WHERE (superseded_date IS NULL);
 
 
 --
--- Name: idx_payrolls_go_live_date; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payrolls_go_live_date; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payrolls_go_live_date ON public.payrolls USING btree (go_live_date);
 
 
 --
--- Name: idx_payrolls_manager; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payrolls_manager; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payrolls_manager ON public.payrolls USING btree (manager_user_id);
 
 
 --
--- Name: idx_payrolls_staff_composite; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payrolls_staff_composite; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payrolls_staff_composite ON public.payrolls USING btree (primary_consultant_user_id, backup_consultant_user_id, manager_user_id);
 
 
 --
--- Name: idx_payrolls_status_client; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payrolls_status_client; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payrolls_status_client ON public.payrolls USING btree (status, client_id) WHERE (status <> 'Inactive'::public.payroll_status);
 
 
 --
--- Name: idx_payrolls_versioning; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_payrolls_versioning; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_payrolls_versioning ON public.payrolls USING btree (parent_payroll_id, version_number, go_live_date);
 
 
 --
--- Name: idx_permission_audit_log_action; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_audit_log_action; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_audit_log_action ON public.permission_audit_log USING btree (action);
 
 
 --
--- Name: idx_permission_audit_log_resource; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_audit_log_resource; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_audit_log_resource ON public.permission_audit_log USING btree (resource);
 
 
 --
--- Name: idx_permission_audit_log_target_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_audit_log_target_user_id; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_audit_log_target_user_id ON public.permission_audit_log USING btree (target_user_id);
 
 
 --
--- Name: idx_permission_audit_log_timestamp; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_audit_log_timestamp; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_audit_log_timestamp ON public.permission_audit_log USING btree ("timestamp" DESC);
 
 
 --
--- Name: idx_permission_audit_log_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_audit_log_user_id; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_audit_log_user_id ON public.permission_audit_log USING btree (user_id);
 
 
 --
--- Name: idx_permission_overrides_created_by; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_overrides_created_by; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_overrides_created_by ON public.permission_overrides USING btree (created_by);
 
 
 --
--- Name: idx_permission_overrides_expires_at; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_overrides_expires_at; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_overrides_expires_at ON public.permission_overrides USING btree (expires_at);
 
 
 --
--- Name: idx_permission_overrides_operation; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_overrides_operation; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_overrides_operation ON public.permission_overrides USING btree (operation);
 
 
 --
--- Name: idx_permission_overrides_resource; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_overrides_resource; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_overrides_resource ON public.permission_overrides USING btree (resource);
 
 
 --
--- Name: idx_permission_overrides_role; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_overrides_role; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_overrides_role ON public.permission_overrides USING btree (role);
 
 
 --
--- Name: idx_permission_overrides_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_permission_overrides_user_id; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_permission_overrides_user_id ON public.permission_overrides USING btree (user_id);
 
 
 --
--- Name: idx_unique_payroll_date; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_unique_payroll_date; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE UNIQUE INDEX idx_unique_payroll_date ON public.payroll_dates USING btree (payroll_id, original_eft_date);
 
 
 --
--- Name: idx_users_active_staff; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_users_active_staff; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_users_active_staff ON public.users USING btree (is_active, is_staff, role) WHERE (is_active = true);
 
 
 --
--- Name: idx_users_clerk_composite; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_users_clerk_composite; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_users_clerk_composite ON public.users USING btree (clerk_user_id, role, is_staff);
 
 
 --
--- Name: idx_users_deactivated_at; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_users_deactivated_at; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_users_deactivated_at ON public.users USING btree (deactivated_at) WHERE (deactivated_at IS NOT NULL);
 
 
 --
--- Name: idx_users_is_active; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_users_is_active; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_users_is_active ON public.users USING btree (is_active);
 
 
 --
--- Name: idx_users_role; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_users_role; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_users_role ON public.users USING btree (role);
 
 
 --
--- Name: idx_work_schedule_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_work_schedule_user_id; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE INDEX idx_work_schedule_user_id ON public.work_schedule USING btree (user_id);
 
 
 --
--- Name: only_one_current_version_per_family; Type: INDEX; Schema: public; Owner: -
+-- Name: only_one_current_version_per_family; Type: INDEX; Schema: public; Owner: neondb_owner
 --
 
 CREATE UNIQUE INDEX only_one_current_version_per_family ON public.payrolls USING btree (COALESCE(parent_payroll_id, id)) WHERE (superseded_date IS NULL);
 
 
 --
--- Name: clients audit_clients_changes; Type: TRIGGER; Schema: public; Owner: -
+-- Name: clients audit_clients_changes; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER audit_clients_changes AFTER INSERT OR DELETE OR UPDATE ON public.clients FOR EACH ROW EXECUTE FUNCTION audit.log_changes();
 
 
 --
--- Name: payrolls audit_payrolls_changes; Type: TRIGGER; Schema: public; Owner: -
+-- Name: payrolls audit_payrolls_changes; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER audit_payrolls_changes AFTER INSERT OR DELETE OR UPDATE ON public.payrolls FOR EACH ROW EXECUTE FUNCTION audit.log_changes();
 
 
 --
--- Name: role_permissions audit_role_permissions_changes; Type: TRIGGER; Schema: public; Owner: -
+-- Name: role_permissions audit_role_permissions_changes; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER audit_role_permissions_changes AFTER INSERT OR DELETE OR UPDATE ON public.role_permissions FOR EACH ROW EXECUTE FUNCTION audit.log_changes();
 
 
 --
--- Name: user_roles audit_user_roles_changes; Type: TRIGGER; Schema: public; Owner: -
+-- Name: user_roles audit_user_roles_changes; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER audit_user_roles_changes AFTER INSERT OR DELETE OR UPDATE ON public.user_roles FOR EACH ROW EXECUTE FUNCTION audit.log_changes();
 
 
 --
--- Name: users audit_users_changes; Type: TRIGGER; Schema: public; Owner: -
+-- Name: users audit_users_changes; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER audit_users_changes AFTER INSERT OR DELETE OR UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION audit.log_changes();
 
 
 --
--- Name: notes check_entity_relation; Type: TRIGGER; Schema: public; Owner: -
+-- Name: notes check_entity_relation; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER check_entity_relation BEFORE INSERT OR UPDATE ON public.notes FOR EACH ROW EXECUTE FUNCTION public.enforce_entity_relation();
 
 
 --
--- Name: payrolls enforce_staff_on_payrolls; Type: TRIGGER; Schema: public; Owner: -
+-- Name: payrolls enforce_staff_on_payrolls; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER enforce_staff_on_payrolls BEFORE INSERT OR UPDATE ON public.payrolls FOR EACH ROW EXECUTE FUNCTION public.enforce_staff_roles();
 
 
 --
--- Name: payroll_assignments set_timestamp; Type: TRIGGER; Schema: public; Owner: -
+-- Name: payroll_assignments set_timestamp; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER set_timestamp BEFORE UPDATE ON public.payroll_assignments FOR EACH ROW EXECUTE FUNCTION public.trigger_set_timestamp();
 
 
 --
--- Name: billing_invoice_item trg_invoice_item_total; Type: TRIGGER; Schema: public; Owner: -
+-- Name: billing_invoice_item trg_invoice_item_total; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER trg_invoice_item_total AFTER INSERT OR DELETE OR UPDATE ON public.billing_invoice_item FOR EACH ROW EXECUTE FUNCTION public.update_invoice_total();
 
 
 --
--- Name: payrolls trigger_auto_delete_future_dates; Type: TRIGGER; Schema: public; Owner: -
+-- Name: payrolls trigger_auto_delete_future_dates; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER trigger_auto_delete_future_dates AFTER UPDATE ON public.payrolls FOR EACH ROW EXECUTE FUNCTION public.auto_delete_future_dates_on_supersede();
 
 
 --
--- Name: payrolls trigger_auto_generate_dates; Type: TRIGGER; Schema: public; Owner: -
+-- Name: payrolls trigger_auto_generate_dates; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER trigger_auto_generate_dates AFTER INSERT ON public.payrolls FOR EACH ROW EXECUTE FUNCTION public.auto_generate_dates_on_payroll_insert();
 
 
 --
--- Name: payrolls trigger_auto_regenerate_dates; Type: TRIGGER; Schema: public; Owner: -
+-- Name: payrolls trigger_auto_regenerate_dates; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER trigger_auto_regenerate_dates AFTER UPDATE ON public.payrolls FOR EACH ROW EXECUTE FUNCTION public.auto_regenerate_dates_on_schedule_change();
 
 
 --
--- Name: work_schedule trigger_prevent_duplicate_insert; Type: TRIGGER; Schema: public; Owner: -
+-- Name: work_schedule trigger_prevent_duplicate_insert; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER trigger_prevent_duplicate_insert BEFORE INSERT ON public.work_schedule FOR EACH ROW EXECUTE FUNCTION public.prevent_duplicate_workday_insert();
 
 
 --
--- Name: feature_flags update_feature_flags_modtime; Type: TRIGGER; Schema: public; Owner: -
+-- Name: feature_flags update_feature_flags_modtime; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER update_feature_flags_modtime BEFORE UPDATE ON public.feature_flags FOR EACH ROW EXECUTE FUNCTION public.update_modified_column();
 
 
 --
--- Name: permission_overrides update_permission_overrides_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: permission_overrides update_permission_overrides_updated_at; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER update_permission_overrides_updated_at BEFORE UPDATE ON public.permission_overrides FOR EACH ROW EXECUTE FUNCTION public.update_timestamp();
 
 
 --
--- Name: permissions update_permissions_timestamp; Type: TRIGGER; Schema: public; Owner: -
+-- Name: permissions update_permissions_timestamp; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER update_permissions_timestamp BEFORE UPDATE ON public.permissions FOR EACH ROW EXECUTE FUNCTION public.update_timestamp();
 
 
 --
--- Name: resources update_resources_timestamp; Type: TRIGGER; Schema: public; Owner: -
+-- Name: resources update_resources_timestamp; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER update_resources_timestamp BEFORE UPDATE ON public.resources FOR EACH ROW EXECUTE FUNCTION public.update_timestamp();
 
 
 --
--- Name: role_permissions update_role_permissions_timestamp; Type: TRIGGER; Schema: public; Owner: -
+-- Name: role_permissions update_role_permissions_timestamp; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER update_role_permissions_timestamp BEFORE UPDATE ON public.role_permissions FOR EACH ROW EXECUTE FUNCTION public.update_timestamp();
 
 
 --
--- Name: roles update_roles_timestamp; Type: TRIGGER; Schema: public; Owner: -
+-- Name: roles update_roles_timestamp; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER update_roles_timestamp BEFORE UPDATE ON public.roles FOR EACH ROW EXECUTE FUNCTION public.update_timestamp();
 
 
 --
--- Name: user_roles update_user_roles_timestamp; Type: TRIGGER; Schema: public; Owner: -
+-- Name: user_roles update_user_roles_timestamp; Type: TRIGGER; Schema: public; Owner: neondb_owner
 --
 
 CREATE TRIGGER update_user_roles_timestamp BEFORE UPDATE ON public.user_roles FOR EACH ROW EXECUTE FUNCTION public.update_timestamp();
 
 
 --
--- Name: adjustment_rules adjustment_rules_cycle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: adjustment_rules adjustment_rules_cycle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.adjustment_rules
@@ -4654,7 +4582,7 @@ ALTER TABLE ONLY public.adjustment_rules
 
 
 --
--- Name: adjustment_rules adjustment_rules_date_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: adjustment_rules adjustment_rules_date_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.adjustment_rules
@@ -4662,7 +4590,7 @@ ALTER TABLE ONLY public.adjustment_rules
 
 
 --
--- Name: billing_event_log billing_event_log_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_event_log billing_event_log_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_event_log
@@ -4670,7 +4598,7 @@ ALTER TABLE ONLY public.billing_event_log
 
 
 --
--- Name: billing_event_log billing_event_log_invoice_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_event_log billing_event_log_invoice_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_event_log
@@ -4678,7 +4606,7 @@ ALTER TABLE ONLY public.billing_event_log
 
 
 --
--- Name: billing_invoice billing_invoice_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_invoice billing_invoice_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_invoice
@@ -4686,7 +4614,7 @@ ALTER TABLE ONLY public.billing_invoice
 
 
 --
--- Name: billing_invoice_item billing_invoice_item_invoice_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_invoice_item billing_invoice_item_invoice_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_invoice_item
@@ -4694,7 +4622,7 @@ ALTER TABLE ONLY public.billing_invoice_item
 
 
 --
--- Name: billing_invoices billing_invoices_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_invoices billing_invoices_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_invoices
@@ -4702,7 +4630,7 @@ ALTER TABLE ONLY public.billing_invoices
 
 
 --
--- Name: billing_items billing_items_invoice_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_items billing_items_invoice_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_items
@@ -4710,7 +4638,7 @@ ALTER TABLE ONLY public.billing_items
 
 
 --
--- Name: billing_items billing_items_payroll_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: billing_items billing_items_payroll_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.billing_items
@@ -4718,7 +4646,7 @@ ALTER TABLE ONLY public.billing_items
 
 
 --
--- Name: client_billing_assignment client_billing_assignment_billing_plan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: client_billing_assignment client_billing_assignment_billing_plan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.client_billing_assignment
@@ -4726,7 +4654,7 @@ ALTER TABLE ONLY public.client_billing_assignment
 
 
 --
--- Name: client_billing_assignment client_billing_assignment_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: client_billing_assignment client_billing_assignment_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.client_billing_assignment
@@ -4734,7 +4662,7 @@ ALTER TABLE ONLY public.client_billing_assignment
 
 
 --
--- Name: client_external_systems client_external_systems_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: client_external_systems client_external_systems_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.client_external_systems
@@ -4742,7 +4670,7 @@ ALTER TABLE ONLY public.client_external_systems
 
 
 --
--- Name: client_external_systems client_external_systems_system_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: client_external_systems client_external_systems_system_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.client_external_systems
@@ -4750,7 +4678,7 @@ ALTER TABLE ONLY public.client_external_systems
 
 
 --
--- Name: payroll_assignment_audit fk_audit_assignment; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignment_audit fk_audit_assignment; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignment_audit
@@ -4758,7 +4686,7 @@ ALTER TABLE ONLY public.payroll_assignment_audit
 
 
 --
--- Name: payroll_assignment_audit fk_audit_changed_by; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignment_audit fk_audit_changed_by; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignment_audit
@@ -4766,7 +4694,7 @@ ALTER TABLE ONLY public.payroll_assignment_audit
 
 
 --
--- Name: payroll_assignment_audit fk_audit_from_consultant; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignment_audit fk_audit_from_consultant; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignment_audit
@@ -4774,7 +4702,7 @@ ALTER TABLE ONLY public.payroll_assignment_audit
 
 
 --
--- Name: payroll_assignment_audit fk_audit_payroll_date; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignment_audit fk_audit_payroll_date; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignment_audit
@@ -4782,7 +4710,7 @@ ALTER TABLE ONLY public.payroll_assignment_audit
 
 
 --
--- Name: payroll_assignment_audit fk_audit_to_consultant; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignment_audit fk_audit_to_consultant; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignment_audit
@@ -4790,7 +4718,7 @@ ALTER TABLE ONLY public.payroll_assignment_audit
 
 
 --
--- Name: payrolls fk_backup_consultant_user; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payrolls fk_backup_consultant_user; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payrolls
@@ -4798,7 +4726,7 @@ ALTER TABLE ONLY public.payrolls
 
 
 --
--- Name: leave fk_leave_user; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: leave fk_leave_user; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.leave
@@ -4806,7 +4734,7 @@ ALTER TABLE ONLY public.leave
 
 
 --
--- Name: payrolls fk_manager_user; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payrolls fk_manager_user; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payrolls
@@ -4814,7 +4742,7 @@ ALTER TABLE ONLY public.payrolls
 
 
 --
--- Name: payroll_assignments fk_payroll_assignment_assigned_by; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignments fk_payroll_assignment_assigned_by; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignments
@@ -4822,7 +4750,7 @@ ALTER TABLE ONLY public.payroll_assignments
 
 
 --
--- Name: payroll_assignments fk_payroll_assignment_consultant; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignments fk_payroll_assignment_consultant; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignments
@@ -4830,7 +4758,7 @@ ALTER TABLE ONLY public.payroll_assignments
 
 
 --
--- Name: payroll_assignments fk_payroll_assignment_original_consultant; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignments fk_payroll_assignment_original_consultant; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignments
@@ -4838,7 +4766,7 @@ ALTER TABLE ONLY public.payroll_assignments
 
 
 --
--- Name: payroll_assignments fk_payroll_assignment_payroll_date; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_assignments fk_payroll_assignment_payroll_date; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_assignments
@@ -4846,7 +4774,7 @@ ALTER TABLE ONLY public.payroll_assignments
 
 
 --
--- Name: payrolls fk_primary_consultant_user; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payrolls fk_primary_consultant_user; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payrolls
@@ -4854,7 +4782,7 @@ ALTER TABLE ONLY public.payrolls
 
 
 --
--- Name: work_schedule fk_work_schedule_user; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: work_schedule fk_work_schedule_user; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.work_schedule
@@ -4862,7 +4790,7 @@ ALTER TABLE ONLY public.work_schedule
 
 
 --
--- Name: users manager_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: users manager_id; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.users
@@ -4870,7 +4798,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: notes notes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: notes notes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.notes
@@ -4878,7 +4806,7 @@ ALTER TABLE ONLY public.notes
 
 
 --
--- Name: payroll_dates payroll_dates_payroll_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payroll_dates payroll_dates_payroll_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payroll_dates
@@ -4886,7 +4814,7 @@ ALTER TABLE ONLY public.payroll_dates
 
 
 --
--- Name: payrolls payrolls_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payrolls payrolls_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payrolls
@@ -4894,7 +4822,7 @@ ALTER TABLE ONLY public.payrolls
 
 
 --
--- Name: payrolls payrolls_cycle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payrolls payrolls_cycle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payrolls
@@ -4902,7 +4830,7 @@ ALTER TABLE ONLY public.payrolls
 
 
 --
--- Name: payrolls payrolls_date_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payrolls payrolls_date_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payrolls
@@ -4910,7 +4838,7 @@ ALTER TABLE ONLY public.payrolls
 
 
 --
--- Name: payrolls payrolls_parent_payroll_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: payrolls payrolls_parent_payroll_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.payrolls
@@ -4918,7 +4846,7 @@ ALTER TABLE ONLY public.payrolls
 
 
 --
--- Name: permission_audit_log permission_audit_log_target_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: permission_audit_log permission_audit_log_target_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.permission_audit_log
@@ -4926,7 +4854,7 @@ ALTER TABLE ONLY public.permission_audit_log
 
 
 --
--- Name: permission_audit_log permission_audit_log_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: permission_audit_log permission_audit_log_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.permission_audit_log
@@ -4934,7 +4862,7 @@ ALTER TABLE ONLY public.permission_audit_log
 
 
 --
--- Name: permission_overrides permission_overrides_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: permission_overrides permission_overrides_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.permission_overrides
@@ -4942,7 +4870,7 @@ ALTER TABLE ONLY public.permission_overrides
 
 
 --
--- Name: permission_overrides permission_overrides_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: permission_overrides permission_overrides_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.permission_overrides
@@ -4950,7 +4878,7 @@ ALTER TABLE ONLY public.permission_overrides
 
 
 --
--- Name: permissions permissions_resource_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: permissions permissions_resource_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.permissions
@@ -4958,7 +4886,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- Name: role_permissions role_permissions_permission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: role_permissions role_permissions_permission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.role_permissions
@@ -4966,7 +4894,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- Name: role_permissions role_permissions_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: role_permissions role_permissions_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.role_permissions
@@ -4974,7 +4902,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- Name: user_roles user_roles_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_roles user_roles_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.user_roles
@@ -4982,7 +4910,7 @@ ALTER TABLE ONLY public.user_roles
 
 
 --
--- Name: user_roles user_roles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_roles user_roles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE ONLY public.user_roles
@@ -4990,31 +4918,31 @@ ALTER TABLE ONLY public.user_roles
 
 
 --
--- Name: clients; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: clients; Type: ROW SECURITY; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: notes; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: notes; Type: ROW SECURITY; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE public.notes ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: payroll_dates; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: payroll_dates; Type: ROW SECURITY; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE public.payroll_dates ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: payrolls; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: payrolls; Type: ROW SECURITY; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE public.payrolls ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: payrolls payrolls_select_policy; Type: POLICY; Schema: public; Owner: -
+-- Name: payrolls payrolls_select_policy; Type: POLICY; Schema: public; Owner: neondb_owner
 --
 
 CREATE POLICY payrolls_select_policy ON public.payrolls FOR SELECT USING ((EXISTS ( SELECT 1
@@ -5023,18 +4951,39 @@ CREATE POLICY payrolls_select_policy ON public.payrolls FOR SELECT USING ((EXIST
 
 
 --
--- Name: users; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: users; Type: ROW SECURITY; Schema: public; Owner: neondb_owner
 --
 
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: users users_select_policy; Type: POLICY; Schema: public; Owner: -
+-- Name: users users_select_policy; Type: POLICY; Schema: public; Owner: neondb_owner
 --
 
 CREATE POLICY users_select_policy ON public.users FOR SELECT USING (((id = (current_setting('hasura.user_id'::text))::uuid) OR (EXISTS ( SELECT 1
    FROM public.users u
   WHERE ((u.id = (current_setting('hasura.user_id'::text))::uuid) AND (u.role = ANY (ARRAY['developer'::public.user_role, 'org_admin'::public.user_role])))))));
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: neondb_owner
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: cloud_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE cloud_admin IN SCHEMA public GRANT ALL ON SEQUENCES TO neon_superuser WITH GRANT OPTION;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: cloud_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE cloud_admin IN SCHEMA public GRANT ALL ON TABLES TO neon_superuser WITH GRANT OPTION;
 
 
 --
