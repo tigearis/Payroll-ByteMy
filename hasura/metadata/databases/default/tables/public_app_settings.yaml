@@ -5,47 +5,55 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: '*'
+      columns: "*"
     comment: Developer role has full insert access
 select_permissions:
   - role: consultant
     permission:
       columns:
+        - created_at
         - id
         - permissions
+        - updated_at
       filter: {}
     comment: All roles can view app settings
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
   - role: manager
     permission:
       columns:
+        - created_at
         - id
         - permissions
+        - updated_at
       filter: {}
     comment: All roles can view app settings
   - role: org_admin
     permission:
       columns:
+        - created_at
         - id
         - permissions
+        - updated_at
       filter: {}
     comment: Org admins can view app settings
   - role: viewer
     permission:
       columns:
+        - created_at
         - id
         - permissions
+        - updated_at
       filter: {}
     comment: All roles can view app settings
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

@@ -250,6 +250,9 @@ const generatePerDomain = domains
       ];
 
       const validFiles = graphqlFiles.filter(hasGraphQLContent);
+      
+      // Always include shared fragments to resolve dependencies
+      const allFiles = ["./shared/graphql/fragments.graphql", ...validFiles];
 
       if (validFiles.length === 0) return acc;
 
@@ -270,7 +273,7 @@ const generatePerDomain = domains
 
       // Generate TypeScript files with hooks for each domain
       acc[outputDir] = {
-        documents: validFiles,
+        documents: allFiles,
         preset: "client",
         plugins: [
           {

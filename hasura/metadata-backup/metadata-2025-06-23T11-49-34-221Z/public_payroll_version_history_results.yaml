@@ -1,0 +1,90 @@
+table:
+  name: payroll_version_history_results
+  schema: public
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - active
+        - go_live_date
+        - id
+        - is_current
+        - name
+        - payroll_id
+        - queried_at
+        - superseded_date
+        - version_number
+        - version_reason
+      filter: {}
+    comment: Consultants can view relevant data
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - active
+        - go_live_date
+        - id
+        - is_current
+        - name
+        - payroll_id
+        - queried_at
+        - superseded_date
+        - version_number
+        - version_reason
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all data
+  - role: org_admin
+    permission:
+      columns:
+        - active
+        - go_live_date
+        - id
+        - is_current
+        - name
+        - payroll_id
+        - queried_at
+        - superseded_date
+        - version_number
+        - version_reason
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all data
+  - role: viewer
+    permission:
+      columns:
+        - active
+        - go_live_date
+        - id
+        - is_current
+        - name
+        - payroll_id
+        - queried_at
+        - superseded_date
+        - version_number
+        - version_reason
+      filter: {}
+    comment: Viewers can see basic information
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

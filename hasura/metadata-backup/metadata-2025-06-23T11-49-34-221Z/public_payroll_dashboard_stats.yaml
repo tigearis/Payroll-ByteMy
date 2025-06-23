@@ -1,0 +1,85 @@
+table:
+  name: payroll_dashboard_stats
+  schema: public
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_name
+        - cycle_name
+        - future_dates
+        - id
+        - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
+      filter:
+        _or:
+          - primary_consultant_user_id:
+              _eq: X-Hasura-User-Id
+          - backup_consultant_user_id:
+              _eq: X-Hasura-User-Id
+    comment: Consultants can view dashboard stats for their assigned payrolls
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_name
+        - cycle_name
+        - future_dates
+        - id
+        - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all dashboard statistics
+  - role: org_admin
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_name
+        - cycle_name
+        - future_dates
+        - id
+        - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all dashboard statistics including system health
+  - role: viewer
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_name
+        - cycle_name
+        - future_dates
+        - id
+        - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
+      filter: {}
+    comment: Viewers can see basic information

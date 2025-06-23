@@ -1,0 +1,362 @@
+table:
+  name: payrolls
+  schema: public
+configuration:
+  column_config:
+    backup_consultant_user_id:
+      custom_name: backupConsultantUserId
+    client_id:
+      custom_name: clientId
+    created_at:
+      custom_name: createdAt
+    created_by_user_id:
+      custom_name: createdByUserId
+    cycle_id:
+      custom_name: cycleId
+    date_type_id:
+      custom_name: dateTypeId
+    date_value:
+      custom_name: dateValue
+    employee_count:
+      custom_name: employeeCount
+    go_live_date:
+      custom_name: goLiveDate
+    manager_user_id:
+      custom_name: managerUserId
+    parent_payroll_id:
+      custom_name: parentPayrollId
+    payroll_system:
+      custom_name: payrollSystem
+    primary_consultant_user_id:
+      custom_name: primaryConsultantUserId
+    processing_days_before_eft:
+      custom_name: processingDaysBeforeEft
+    processing_time:
+      custom_name: processingTime
+    superseded_date:
+      custom_name: supersededDate
+    updated_at:
+      custom_name: updatedAt
+    version_number:
+      custom_name: versionNumber
+    version_reason:
+      custom_name: versionReason
+  custom_column_names:
+    backup_consultant_user_id: backupConsultantUserId
+    client_id: clientId
+    created_at: createdAt
+    created_by_user_id: createdByUserId
+    cycle_id: cycleId
+    date_type_id: dateTypeId
+    date_value: dateValue
+    employee_count: employeeCount
+    go_live_date: goLiveDate
+    manager_user_id: managerUserId
+    parent_payroll_id: parentPayrollId
+    payroll_system: payrollSystem
+    primary_consultant_user_id: primaryConsultantUserId
+    processing_days_before_eft: processingDaysBeforeEft
+    processing_time: processingTime
+    superseded_date: supersededDate
+    updated_at: updatedAt
+    version_number: versionNumber
+    version_reason: versionReason
+  custom_root_fields:
+    delete: deletePayrolls
+    delete_by_pk: deletePayroll
+    insert: insertPayrolls
+    insert_one: insertPayroll
+    select: payrolls
+    select_aggregate: payrollsAggregate
+    select_by_pk: payroll
+    update: updatePayrolls
+    update_by_pk: updatePayroll
+object_relationships:
+  - name: backupConsultant
+    using:
+      foreign_key_constraint_on: backup_consultant_user_id
+  - name: client
+    using:
+      foreign_key_constraint_on: client_id
+  - name: manager
+    using:
+      foreign_key_constraint_on: manager_user_id
+  - name: parentPayroll
+    using:
+      foreign_key_constraint_on: parent_payroll_id
+  - name: payrollCycle
+    using:
+      foreign_key_constraint_on: cycle_id
+  - name: payrollDateType
+    using:
+      foreign_key_constraint_on: date_type_id
+  - name: primaryConsultant
+    using:
+      foreign_key_constraint_on: primary_consultant_user_id
+array_relationships:
+  - name: billingItems
+    using:
+      foreign_key_constraint_on:
+        column: payroll_id
+        table:
+          name: billing_items
+          schema: public
+  - name: childPayrolls
+    using:
+      foreign_key_constraint_on:
+        column: parent_payroll_id
+        table:
+          name: payrolls
+          schema: public
+  - name: payrollDates
+    using:
+      foreign_key_constraint_on:
+        column: payroll_id
+        table:
+          name: payroll_dates
+          schema: public
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+  - role: manager
+    permission:
+      check:
+        manager_user_id:
+          _eq: X-Hasura-User-Id
+      columns:
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - processing_days_before_eft
+        - status
+        - payroll_system
+        - processing_time
+        - employee_count
+    comment: Managers can create payrolls and assign themselves as manager
+  - role: org_admin
+    permission:
+      check: {}
+      columns:
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - processing_days_before_eft
+        - status
+        - payroll_system
+        - processing_time
+        - employee_count
+    comment: Org Admins can create any payrolls
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - processing_days_before_eft
+        - status
+        - payroll_system
+        - processing_time
+        - employee_count
+        - go_live_date
+        - superseded_date
+        - version_number
+        - parent_payroll_id
+        - version_reason
+        - created_by_user_id
+        - created_at
+        - updated_at
+      filter:
+        _or:
+          - primary_consultant_user_id:
+              _eq: X-Hasura-User-Id
+          - backup_consultant_user_id:
+              _eq: X-Hasura-User-Id
+      allow_aggregations: true
+    comment: Consultants can view payrolls they're assigned to
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - id
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - processing_days_before_eft
+        - status
+        - payroll_system
+        - processing_time
+        - employee_count
+        - go_live_date
+        - superseded_date
+        - version_number
+        - parent_payroll_id
+        - version_reason
+        - created_by_user_id
+        - created_at
+        - updated_at
+      filter:
+        _or:
+          - manager_user_id:
+              _eq: X-Hasura-User-Id
+          - primary_consultant_user_id:
+              _eq: X-Hasura-User-Id
+          - backup_consultant_user_id:
+              _eq: X-Hasura-User-Id
+      allow_aggregations: true
+    comment: Managers can view payrolls they manage or are assigned to
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - processing_days_before_eft
+        - status
+        - payroll_system
+        - processing_time
+        - employee_count
+        - go_live_date
+        - superseded_date
+        - version_number
+        - parent_payroll_id
+        - version_reason
+        - created_by_user_id
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org Admins can view all payrolls
+  - role: viewer
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_id
+        - created_at
+        - created_by_user_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - employee_count
+        - go_live_date
+        - id
+        - manager_user_id
+        - name
+        - parent_payroll_id
+        - payroll_system
+        - primary_consultant_user_id
+        - processing_days_before_eft
+        - processing_time
+        - status
+        - superseded_date
+        - updated_at
+        - version_number
+        - version_reason
+      filter: {}
+      allow_aggregations: true
+    comment: Viewers can view basic payroll information
+update_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - status
+      filter:
+        _or:
+          - primary_consultant_user_id:
+              _eq: X-Hasura-User-Id
+          - backup_consultant_user_id:
+              _eq: X-Hasura-User-Id
+      check: {}
+    comment: Consultants can update status of payrolls they're assigned to
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+  - role: manager
+    permission:
+      columns:
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - processing_days_before_eft
+        - status
+        - payroll_system
+        - processing_time
+        - employee_count
+      filter:
+        manager_user_id:
+          _eq: X-Hasura-User-Id
+      check: {}
+    comment: Managers can update payrolls they manage
+  - role: org_admin
+    permission:
+      columns:
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - processing_days_before_eft
+        - status
+        - payroll_system
+        - processing_time
+        - employee_count
+      filter: {}
+      check: {}
+    comment: Org Admins can update any payrolls
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
+  - role: org_admin
+    permission:
+      filter: {}
+    comment: Only Org Admins can delete payrolls
+apollo_federation_config:
+  enable: v1

@@ -5,22 +5,24 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: '*'
+      columns: "*"
     comment: Developer role has full insert access
 select_permissions:
   - role: consultant
     permission:
       columns:
         - action_taken
+        - created_at
         - executed_at
         - id
         - payroll_id
+        - updated_at
         - version_number
       filter: {}
     comment: Consultants can view relevant data
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -28,9 +30,11 @@ select_permissions:
     permission:
       columns:
         - action_taken
+        - created_at
         - executed_at
         - id
         - payroll_id
+        - updated_at
         - version_number
       filter: {}
       allow_aggregations: true
@@ -39,9 +43,11 @@ select_permissions:
     permission:
       columns:
         - action_taken
+        - created_at
         - executed_at
         - id
         - payroll_id
+        - updated_at
         - version_number
       filter: {}
       allow_aggregations: true
@@ -50,16 +56,18 @@ select_permissions:
     permission:
       columns:
         - action_taken
+        - created_at
         - executed_at
         - id
         - payroll_id
+        - updated_at
         - version_number
       filter: {}
     comment: Viewers can see basic information
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access
