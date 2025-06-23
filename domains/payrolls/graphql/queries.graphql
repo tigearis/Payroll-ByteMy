@@ -179,6 +179,29 @@ query CheckPayrollVersion($id: uuid!) {
   }
 }
 
+query GetVersionCheck($id: uuid!) {
+  current: payrolls(where: { id: { _eq: $id } }) {
+    id
+    supersededDate
+    parentPayrollId
+    versionNumber
+  }
+}
+
+query GetLatestInFamily($rootId: uuid!) {
+  latest: payrolls(
+    where: {
+      _or: [{ id: { _eq: $rootId } }, { parentPayrollId: { _eq: $rootId } }]
+      supersededDate: { _is_null: true }
+    }
+    order_by: { versionNumber: desc }
+    limit: 1
+  ) {
+    id
+    versionNumber
+  }
+}
+
 # Extracted from inline GraphQL operations
 query GetPayrollDatesById($id: uuid!) {
   payrollDates(
@@ -362,24 +385,14 @@ query GetPayrollsPaginated(
   payrolls(
     limit: $limit
     offset: $offset
-    where: { 
-      _and: [
-        { supersededDate: { _is_null: true } }
-        $where
-      ]
-    }
+    where: { _and: [{ supersededDate: { _is_null: true } }, $where] }
     order_by: $orderBy
   ) {
     ...PayrollListItem
   }
-  
+
   payrollsAggregate(
-    where: { 
-      _and: [
-        { supersededDate: { _is_null: true } }
-        $where
-      ]
-    }
+    where: { _and: [{ supersededDate: { _is_null: true } }, $where] }
   ) {
     aggregate {
       count
@@ -393,22 +406,16 @@ query GetPayrollsByClientPaginated(
   $offset: Int = 0
 ) {
   payrolls(
-    where: { 
-      clientId: { _eq: $clientId }
-      supersededDate: { _is_null: true }
-    }
+    where: { clientId: { _eq: $clientId }, supersededDate: { _is_null: true } }
     order_by: { updatedAt: desc }
     limit: $limit
     offset: $offset
   ) {
     ...PayrollTableRow
   }
-  
+
   clientPayrollsAggregate: payrollsAggregate(
-    where: { 
-      clientId: { _eq: $clientId }
-      supersededDate: { _is_null: true }
-    }
+    where: { clientId: { _eq: $clientId }, supersededDate: { _is_null: true } }
   ) {
     aggregate {
       count
@@ -439,7 +446,7 @@ query SearchPayrollsPaginated(
   ) {
     ...PayrollListItem
   }
-  
+
   searchAggregate: payrollsAggregate(
     where: {
       _and: [
@@ -465,22 +472,16 @@ query GetPayrollsByStatusPaginated(
   $offset: Int = 0
 ) {
   payrolls(
-    where: { 
-      status: { _eq: $status }
-      supersededDate: { _is_null: true }
-    }
+    where: { status: { _eq: $status }, supersededDate: { _is_null: true } }
     order_by: { updatedAt: desc }
     limit: $limit
     offset: $offset
   ) {
     ...PayrollListItem
   }
-  
+
   statusAggregate: payrollsAggregate(
-    where: { 
-      status: { _eq: $status }
-      supersededDate: { _is_null: true }
-    }
+    where: { status: { _eq: $status }, supersededDate: { _is_null: true } }
   ) {
     aggregate {
       count
@@ -547,9 +548,7 @@ query GetPayrollCalendarEvents($startDate: date!, $endDate: date!) {
   payrolls(
     where: {
       supersededDate: { _is_null: true }
-      payrollDates: { 
-        adjustedEftDate: { _gte: $startDate, _lte: $endDate }
-      }
+      payrollDates: { adjustedEftDate: { _gte: $startDate, _lte: $endDate } }
     }
   ) {
     id
@@ -571,33 +570,35 @@ query GetPayrollCalendarEvents($startDate: date!, $endDate: date!) {
 query GetPayrollStatusCounts {
   # Quick status overview for dashboard
   total: payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
-    aggregate { count }
-  }
-  
-  active: payrollsAggregate(
-    where: { 
-      supersededDate: { _is_null: true }
-      status: { _eq: "Active" }
+    aggregate {
+      count
     }
-  ) {
-    aggregate { count }
   }
-  
+
+  active: payrollsAggregate(
+    where: { supersededDate: { _is_null: true }, status: { _eq: "Active" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
   implementation: payrollsAggregate(
-    where: { 
+    where: {
       supersededDate: { _is_null: true }
       status: { _eq: "Implementation" }
     }
   ) {
-    aggregate { count }
-  }
-  
-  archived: payrollsAggregate(
-    where: { 
-      supersededDate: { _is_null: true }
-      status: { _eq: "Archived" }
+    aggregate {
+      count
     }
+  }
+
+  archived: payrollsAggregate(
+    where: { supersededDate: { _is_null: true }, status: { _eq: "Archived" } }
   ) {
-    aggregate { count }
+    aggregate {
+      count
+    }
   }
 }

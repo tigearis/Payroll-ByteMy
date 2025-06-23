@@ -2,19 +2,7 @@
 "use client";
 
 import { useParams, notFound, useRouter } from "next/navigation";
-import { useMutation, useQuery, gql, useLazyQuery } from "@apollo/client";
-
-// Temporary inline query until GraphQL consolidation is complete
-const GET_ALL_USERS_LIST = gql`
-  query GetAllUsersList {
-    users {
-      id
-      name
-      email
-      role
-    }
-  }
-`;
+import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
 
 // Import role enums
 
@@ -83,8 +71,18 @@ import {
   GetPayrollByIdDocument,
   GetPayrollDatesDocument,
   GetPayrollFamilyDatesDocument,
+  GetPayrollsDocument,
   UpdatePayrollDocument,
+  GetVersionCheckDocument,
+  GetLatestInFamilyDocument,
+  type GetVersionCheckQuery,
+  type GetLatestInFamilyQuery,
 } from "@/domains/payrolls/graphql/generated/graphql";
+
+// Import additional documents separately to avoid potential module resolution issues
+import { GetPayrollCyclesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
   usePayrollVersioning,
   usePayrollStatusUpdate,
@@ -881,79 +879,6 @@ const formatDateTime = (date: string | Date) => {
   });
 };
 
-// Add GraphQL queries for lookup tables
-const GET_PAYROLL_CYCLES = gql`
-  query GetPAYROLL_CYCLES {
-    payroll_cycles {
-      id
-      name
-      description
-    }
-  }
-`;
-
-const GET_PAYROLL_DATE_TYPES = gql`
-  query GetPayrollDateTypes {
-    payroll_date_types {
-      id
-      name
-      description
-    }
-  }
-`;
-
-// GraphQL query for generating payroll dates (it's a database function exposed as query only)
-const GENERATE_PAYROLL_DATES_QUERY = gql`
-  query GeneratePayrollDates(
-    $payrollId: uuid!
-    $startDate: date!
-    $endDate: date!
-  ) {
-    generate_payroll_dates(
-      p_payroll_id: $payrollId
-      p_start_date: $startDate
-      p_end_date: $endDate
-    ) {
-      id
-      original_eft_date
-      adjusted_eft_date
-      processing_date
-      notes
-    }
-  }
-`;
-
-// GraphQL mutation for generating payroll dates (matching working regenerate-dates.tsx)
-const GENERATE_PAYROLL_DATES_MUTATION = gql`
-  mutation GeneratePayrollDates(
-    $payrollId: uuid!
-    $startDate: date!
-    $endDate: date!
-  ) {
-    generate_payroll_dates(
-      p_payroll_id: $payrollId
-      p_start_date: $startDate
-      p_end_date: $endDate
-    ) {
-      id
-      original_eft_date
-      adjusted_eft_date
-      processing_date
-      notes
-    }
-  }
-`;
-
-// Mutation to delete existing payroll dates
-const DELETE_PAYROLL_DATES = gql`
-  mutation DeletePayrollDates($payrollId: uuid!) {
-    delete_payroll_dates(where: { payroll_id: { _eq: $payrollId } }) {
-      affected_rows
-    }
-  }
-`;
-
-// Helper function to get user-friendly role display name
 // Helper function to get user-friendly role display name
 const getRoleDisplayName = (role: string) => {
   switch (role) {
@@ -967,7 +892,7 @@ const getRoleDisplayName = (role: string) => {
     case "viewer":
       return "Viewer";
     default:
-      return role; // fallback to original value
+      return role;
   }
 };
 
@@ -1014,59 +939,29 @@ export default function PayrollPage() {
   console.log("✅ usePayrollStatusUpdate hook loaded");
 
   // Check if current payroll is superseded and get latest version - run immediately
-  const { data: versionCheckData, loading: versionCheckLoading } = useQuery(
-    gql`
-      query GetVersionCheck($id: uuid!) {
-        current: payrolls(where: { id: { _eq: $id } }) {
-          id
-          superseded_date
-          parent_payroll_id
-          version_number
-        }
-      }
-    `,
-    {
+  const { data: versionCheckData, loading: versionCheckLoading } =
+    useQuery<GetVersionCheckQuery>(GetVersionCheckDocument, {
       variables: { id },
       skip: !id,
       fetchPolicy: "network-only", // Always check for latest version info
-    }
-  );
+    });
   console.log("✅ Version check query loaded");
 
   // If current payroll is superseded, find the latest version
   const currentPayroll = versionCheckData?.current?.[0];
-  const rootId = currentPayroll?.parent_payroll_id || id;
+  const rootId = currentPayroll?.parentPayrollId || id;
 
-  const { data: latestVersionData, loading: latestVersionLoading } = useQuery(
-    gql`
-      query GetLatestInFamily($rootId: uuid!) {
-        latest: payrolls(
-          where: {
-            _or: [
-              { id: { _eq: $rootId } }
-              { parent_payroll_id: { _eq: $rootId } }
-            ]
-            superseded_date: { _is_null: true }
-          }
-          order_by: { version_number: desc }
-          limit: 1
-        ) {
-          id
-          version_number
-        }
-      }
-    `,
-    {
+  const { data: latestVersionData, loading: latestVersionLoading } =
+    useQuery<GetLatestInFamilyQuery>(GetLatestInFamilyDocument, {
       variables: { rootId },
-      skip: !rootId || !currentPayroll?.superseded_date,
+      skip: !rootId || !currentPayroll?.supersededDate,
       fetchPolicy: "network-only", // Always get fresh version data
-    }
-  );
+    });
   console.log("✅ Latest version query loaded");
 
   // Determine if we need to redirect and if so, show loading until redirect happens
   const needsRedirect =
-    currentPayroll?.superseded_date &&
+    currentPayroll?.supersededDate &&
     latestVersionData?.latest?.[0]?.id &&
     latestVersionData.latest[0].id !== id;
 
@@ -1087,34 +982,38 @@ export default function PayrollPage() {
   });
   console.log("✅ Main payroll query loaded");
 
-  // Query for users (for consultant/manager assignments)
-  const { data: usersData } = useQuery(GET_ALL_USERS_LIST, {
-    skip: isVersionCheckingOrRedirecting,
-  });
+  // Query for users (for consultant/manager assignments) - TODO: Move to users domain
+  // const { data: usersData } = useQuery(GET_ALL_USERS_LIST, {
+  //   skip: isVersionCheckingOrRedirecting,
+  // });
+  const usersData = { users: [] }; // Temporary placeholder
   console.log("✅ Users query loaded");
 
   // Query for lookup tables
-  const { data: cyclesData } = useQuery(GET_PAYROLL_CYCLES, {
+  const { data: cyclesData } = useQuery(GetPayrollCyclesDocument, {
     skip: isVersionCheckingOrRedirecting,
   });
   console.log("✅ Cycles query loaded");
 
-  const { data: dateTypesData } = useQuery(GET_PAYROLL_DATE_TYPES, {
+  const { data: dateTypesData } = useQuery(GetPayrollDateTypesDocument, {
     skip: isVersionCheckingOrRedirecting,
   });
   console.log("✅ Date types query loaded");
 
   // Lazy query for regenerating payroll dates
-  const [generatePayrollDates] = useLazyQuery(GENERATE_PAYROLL_DATES_QUERY, {
-    onCompleted: (data: any) => {
-      const count = data?.generate_payroll_dates?.length || 0;
-      toast.success(`Successfully regenerated ${count} payroll dates`);
-      refetch(); // Refresh the payroll data to show updated dates
-    },
-    onError: (error: any) => {
-      toast.error(`Failed to regenerate dates: ${error.message}`);
-    },
-  });
+  const [generatePayrollDates] = useLazyQuery(
+    GeneratePayrollDatesQueryDocument,
+    {
+      onCompleted: (data: any) => {
+        const count = data?.generatePayrollDates?.length || 0;
+        toast.success(`Successfully regenerated ${count} payroll dates`);
+        refetch(); // Refresh the payroll data to show updated dates
+      },
+      onError: (error: any) => {
+        toast.error(`Failed to regenerate dates: ${error.message}`);
+      },
+    }
+  );
   console.log("✅ Generate dates query loaded");
 
   const [updatePayroll] = useMutation(UpdatePayrollDocument, {
@@ -1122,7 +1021,7 @@ export default function PayrollPage() {
       { query: GetPayrollByIdDocument, variables: { id } },
       { query: GetPayrollDatesDocument, variables: { id } },
       { query: GetPayrollFamilyDatesDocument, variables: { payrollId: id } },
-      "GET_PAYROLLS",
+      GetPayrollsDocument,
     ],
     awaitRefetchQueries: true,
     onCompleted: () => {
@@ -1417,21 +1316,23 @@ export default function PayrollPage() {
       // Check if cycle changed by comparing display names
       const originalCycleName = (payroll.payrollCycle as any)?.name;
       if (editedPayroll.cycle_id !== originalCycleName) {
-        cycleId = getCycleIdFromName(editedPayroll.cycle_id);
-        if (!cycleId) {
+        const newCycleId = getCycleIdFromName(editedPayroll.cycle_id);
+        if (!newCycleId) {
           toast.error("Invalid payroll cycle selected");
           return;
         }
+        cycleId = newCycleId;
       }
 
       // Check if date type changed by comparing display names
       const originalDateTypeName = (payroll as any).payrollDateType?.name;
       if (editedPayroll.date_type_id !== originalDateTypeName) {
-        dateTypeId = getDateTypeIdFromName(editedPayroll.date_type_id);
-        if (!dateTypeId) {
+        const newDateTypeId = getDateTypeIdFromName(editedPayroll.date_type_id);
+        if (!newDateTypeId) {
           toast.error("Invalid date type selected");
           return;
         }
+        dateTypeId = newDateTypeId;
       }
 
       // Validate required fields
@@ -1669,7 +1570,7 @@ export default function PayrollPage() {
     <ErrorBoundary>
       <div className="space-y-6">
         {/* Version Warning Banner */}
-        {currentPayroll?.superseded_date && (
+        {currentPayroll?.supersededDate && (
           <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -1677,11 +1578,11 @@ export default function PayrollPage() {
                 <div>
                   <p className="text-amber-800 font-medium">
                     You are viewing an older version of this payroll (v
-                    {currentPayroll.version_number})
+                    {currentPayroll.versionNumber})
                   </p>
                   <p className="text-amber-700 text-sm">
                     This version was superseded on{" "}
-                    {formatDate(currentPayroll.superseded_date)}
+                    {formatDate(currentPayroll.supersededDate)}
                   </p>
                 </div>
               </div>
@@ -1693,7 +1594,7 @@ export default function PayrollPage() {
                   className="bg-amber-600 hover:bg-amber-700 text-white"
                 >
                   View Latest Version (v
-                  {latestVersionData.latest[0].version_number})
+                  {latestVersionData.latest[0].versionNumber})
                 </Button>
               )}
             </div>

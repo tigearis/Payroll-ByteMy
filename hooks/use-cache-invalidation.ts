@@ -1,6 +1,11 @@
 // hooks/useCacheInvalidation.ts
 import { useApolloClient, Reference, DocumentNode } from "@apollo/client";
 import { toast } from "sonner";
+import { 
+  GetPayrollsDocument,
+  GetPayrollsByMonthDocument,
+  GetPayrollsMissingDatesDocument
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 /**
  * Options for invalidating a specific entity
@@ -123,6 +128,35 @@ export function useCacheInvalidation() {
   };
 
   /**
+   * Refetch multiple queries by their DocumentNode references, optionally notifying the user
+   */
+  const refetchQueriesByDocument = async (queryDocuments: DocumentNode[], notifyUser = false) => {
+    try {
+      if (notifyUser) {
+        toast.info("Refreshing data...");
+      }
+
+      const result = await client.refetchQueries({
+        include: queryDocuments,
+      });
+
+      if (notifyUser && result.length > 0) {
+        toast.success("Data refreshed successfully");
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error refetching queries:", error);
+
+      if (notifyUser) {
+        toast.error("Failed to refresh data");
+      }
+
+      return false;
+    }
+  };
+
+  /**
    * Reset the entire cache (use with caution)
    */
   const resetCache = async (notifyUser = false) => {
@@ -171,11 +205,13 @@ export function useCacheInvalidation() {
       }
 
       // Refetch payroll queries to get fresh data
-      await refetchQueries([
-        "GET_PAYROLLS",
-        "GET_PAYROLLS_BY_MONTH",
-        "GET_PAYROLLS_MISSING_DATES",
-      ]);
+      await client.refetchQueries({
+        include: [
+          GetPayrollsDocument,
+          GetPayrollsByMonthDocument,
+          GetPayrollsMissingDatesDocument,
+        ],
+      });
 
       if (showToast) {
         toast.success("Payroll data refreshed");
@@ -197,6 +233,7 @@ export function useCacheInvalidation() {
     invalidateEntity,
     refetchQuery,
     refetchQueries,
+    refetchQueriesByDocument,
     resetCache,
     refreshPayrolls,
   };

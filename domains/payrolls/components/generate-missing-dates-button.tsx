@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 
 import {
   GeneratePayrollDatesQueryDocument as GENERATE_PAYROLL_DATES,
-  GetPayrollsMissingDatesDocument as GET_PAYROLLS_MISSING_DATES,
+  GetPayrollsMissingDatesDocument,
+  GetPayrollsDocument,
 } from "@/domains/payrolls/graphql/generated";
 
 interface GenerateMissingDatesButtonProps {
@@ -90,7 +91,7 @@ export function GenerateMissingDatesButton({
 
       // Final refetch to ensure everything is up to date
       await client.refetchQueries({
-        include: ["GET_PAYROLLS_MISSING_DATES", "GET_PAYROLLS"],
+        include: [GetPayrollsMissingDatesDocument, GetPayrollsDocument],
       });
 
       // Show appropriate message based on results

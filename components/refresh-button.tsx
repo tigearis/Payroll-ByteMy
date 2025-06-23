@@ -7,6 +7,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useCacheInvalidation } from "@/hooks/use-cache-invalidation";
 import { cn } from "@/lib/utils";
+import { 
+  GetPayrollsDocument,
+  GetPayrollsByMonthDocument
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 interface RefreshButtonProps {
   /**
@@ -72,7 +76,7 @@ export function RefreshButton({
   onRefreshComplete,
 }: RefreshButtonProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { refetchQueries, invalidateEntity, refreshPayrolls, resetCache } =
+  const { refetchQueries, refetchQueriesByDocument, invalidateEntity, refreshPayrolls, resetCache } =
     useCacheInvalidation();
 
   const handleRefresh = async () => {
@@ -100,8 +104,8 @@ export function RefreshButton({
           ) {
             success = await invalidateEntity(data);
             // Also refetch relevant queries to update UI
-            await refetchQueries(
-              ["GET_PAYROLLS", "GET_PAYROLLS_BY_MONTH"],
+            await refetchQueriesByDocument(
+              [GetPayrollsDocument, GetPayrollsByMonthDocument],
               false
             );
           } else {
