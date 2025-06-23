@@ -96,8 +96,7 @@ export function UserNav() {
    * Signs out from Clerk and redirects to home page
    */
   const handleSignOut = async () => {
-    await signOut();
-    router.push("/");
+    await signOut({ redirectUrl: "/" });
   };
 
   return (

@@ -250,7 +250,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Enhanced sign out
   const signOut = async () => {
     try {
-      await clerkSignOut();
+      await clerkSignOut({ redirectUrl: "/" });
     } catch (error) {
       console.error("Error signing out:", error);
     }
