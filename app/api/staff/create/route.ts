@@ -1,4 +1,5 @@
 import { clerkClient } from "@clerk/nextjs/server";
+import { createClerkClient } from "@clerk/backend";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -13,6 +14,10 @@ import {
   LogCategory,
   SOC2EventType,
 } from "@/lib/security/audit/logger";
+import { 
+  authenticateServiceRequest, 
+  ServiceOperation 
+} from "@/lib/auth/service-auth";
 
 // Input validation schema
 const CreateStaffSchema = z.object({

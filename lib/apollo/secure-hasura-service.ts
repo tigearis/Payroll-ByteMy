@@ -11,6 +11,7 @@ import { RetryLink } from "@apollo/client/link/retry";
 import { auth } from "@clerk/nextjs/server";
 
 import { SecureErrorHandler } from "@/lib/security/error-responses";
+import { createAdminHeaders } from "@/lib/auth/service-auth";
 import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
   CreateUserDocument,
@@ -78,21 +79,22 @@ const retryLink = new RetryLink({
   },
 });
 
-// Create a secure Apollo client with service account credentials
+// Create a secure Apollo client with admin secret for service operations
 function createServiceAccountClient() {
-  // Use a service account token stored securely in environment variables
-  const serviceAccountToken = process.env.HASURA_SERVICE_ACCOUNT_TOKEN;
+  const adminSecret = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
 
-  if (!serviceAccountToken) {
-    throw new Error("Service account token not configured");
+  if (!adminSecret) {
+    throw new Error("HASURA_GRAPHQL_ADMIN_SECRET not configured");
   }
 
-  const authLink = setContext((_, { headers }) => ({
-    headers: {
-      ...headers,
-      authorization: `Bearer ${serviceAccountToken}`,
-    },
-  }));
+  const authLink = setContext((_, { headers }) => {
+    return {
+      headers: {
+        ...headers,
+        "x-hasura-admin-secret": adminSecret,
+      },
+    };
+  });
 
   const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL || "",

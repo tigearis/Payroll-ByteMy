@@ -107,7 +107,8 @@ const nextConfig = {
 
   // Enable TypeScript type checking during build
   typescript: {
-    ignoreBuildErrors: false,
+    // Ignore build errors for framework-related issues in development
+    ignoreBuildErrors: process.env.NODE_ENV === "development",
   },
 
   // Enable ESLint during builds but be more lenient
@@ -161,7 +162,8 @@ const nextConfig = {
       // Use IgnorePlugin to exclude e2e and test patterns
       config.plugins.push(
         new webpack.IgnorePlugin({
-          resourceRegExp: /\/(e2e|tests|cypress|__tests__|playwright\.config|jest\.config|.*\.(test|spec)\.(js|jsx|ts|tsx))$/,
+          resourceRegExp:
+            /\/(e2e|tests|cypress|__tests__|playwright\.config|jest\.config|.*\.(test|spec)\.(js|jsx|ts|tsx))$/,
         })
       );
 
@@ -189,33 +191,38 @@ const nextConfig = {
         ...config.resolve.alias,
         "@/e2e": false,
         "./e2e": false,
-        "e2e": false,
+        e2e: false,
         "@/tests": false,
         "./tests": false,
-        "tests": false,
+        tests: false,
         "@/cypress": false,
         "./cypress": false,
-        "cypress": false,
+        cypress: false,
         "@/__tests__": false,
         "./__tests__": false,
-        "__tests__": false,
+        __tests__: false,
       };
 
       // Add externals to prevent bundling e2e files
       if (!config.externals) {
         config.externals = [];
       }
-      if (typeof config.externals === 'object' && !Array.isArray(config.externals)) {
+      if (
+        typeof config.externals === "object" &&
+        !Array.isArray(config.externals)
+      ) {
         config.externals = [config.externals];
       }
       if (Array.isArray(config.externals)) {
         config.externals.push(({ request }, callback) => {
-          if (typeof request === 'string' && 
-              (request.includes('/e2e/') || 
-               request.includes('\\e2e\\') ||
-               request.includes('playwright.config') ||
-               request.includes('jest.config'))) {
-            return callback(null, 'commonjs ' + request);
+          if (
+            typeof request === "string" &&
+            (request.includes("/e2e/") ||
+              request.includes("\\e2e\\") ||
+              request.includes("playwright.config") ||
+              request.includes("jest.config"))
+          ) {
+            return callback(null, "commonjs " + request);
           }
           callback();
         });

@@ -1,5 +1,16 @@
 // Backend resolver for commitPayrollAssignments mutation
 // This can be implemented as a Hasura Action or custom GraphQL resolver
+//
+// @future-enhancement Currently unused but valuable for complex GraphQL operations
+// @usage Ideal for implementing custom Hasura Actions or GraphQL resolvers
+// @benefits Allows complex business logic that can't be expressed in simple GraphQL
+// @example
+// ```typescript
+// // As a Hasura Action:
+// // 1. Add this resolver to Hasura Actions
+// // 2. Configure endpoint in Hasura console
+// // 3. Use in GraphQL queries/mutations
+// ```
 
 import { Request, Response } from "express";
 import { Pool } from "pg";

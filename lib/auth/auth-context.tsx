@@ -1,10 +1,17 @@
 "use client";
 
 import { useAuth, useUser } from "@clerk/nextjs";
-import React, { createContext, useContext, useMemo } from "react";
+import React, { createContext, useContext, useMemo, useCallback } from "react";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { Role } from "@/lib/auth/permissions";
+import { 
+  Role, 
+  CustomPermission,
+  ROLE_PERMISSIONS, 
+  ROLE_HIERARCHY, 
+  getPermissionsForRole, 
+  hasRoleLevel 
+} from "./permissions";
 // Using pure Clerk native functions - no custom token management needed
 
 export type UserRole = Role;
@@ -36,129 +43,21 @@ export interface AuthContextType {
   refreshUserData: () => Promise<void>;
 }
 
-// Permission definitions
-const PERMISSIONS = {
-  // Dashboard
-  VIEW_DASHBOARD: "view_dashboard",
 
-  // Staff management
-  MANAGE_STAFF: "manage_staff",
-  VIEW_STAFF: "view_staff",
-
-  // Client management
-  MANAGE_CLIENTS: "manage_clients",
-  VIEW_CLIENTS: "view_clients",
-
-  // Payroll operations
-  PROCESS_PAYROLLS: "process_payrolls",
-  APPROVE_PAYROLLS: "approve_payrolls",
-  VIEW_PAYROLLS: "view_payrolls",
-
-  // Financial access
-  VIEW_FINANCIALS: "view_financials",
-  MANAGE_BILLING: "manage_billing",
-
-  // Reports
-  VIEW_REPORTS: "view_reports",
-  GENERATE_REPORTS: "generate_reports",
-
-  // System administration
-  SYSTEM_ADMIN: "system_admin",
-  MANAGE_SETTINGS: "manage_settings",
-  MANAGE_ROLES: "manageroles",
-
-  // User management
-  MANAGE_USERS: "manage_users",
-  INVITE_USERS: "invite_users",
-
-  // Developer tools
-  DEVELOPER_TOOLS: "developer_tools",
-} as const;
-
-// Role-permission mapping
-const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
-  developer: [
-    PERMISSIONS.VIEW_DASHBOARD,
-    PERMISSIONS.MANAGE_STAFF,
-    PERMISSIONS.VIEW_STAFF,
-    PERMISSIONS.MANAGE_CLIENTS,
-    PERMISSIONS.VIEW_CLIENTS,
-    PERMISSIONS.PROCESS_PAYROLLS,
-    PERMISSIONS.APPROVE_PAYROLLS,
-    PERMISSIONS.VIEW_PAYROLLS,
-    PERMISSIONS.VIEW_FINANCIALS,
-    PERMISSIONS.MANAGE_BILLING,
-    PERMISSIONS.VIEW_REPORTS,
-    PERMISSIONS.GENERATE_REPORTS,
-    PERMISSIONS.SYSTEM_ADMIN,
-    PERMISSIONS.MANAGE_SETTINGS,
-    PERMISSIONS.MANAGE_ROLES,
-    PERMISSIONS.MANAGE_USERS,
-    PERMISSIONS.INVITE_USERS,
-    PERMISSIONS.DEVELOPER_TOOLS,
-  ],
-  org_admin: [
-    PERMISSIONS.VIEW_DASHBOARD,
-    PERMISSIONS.MANAGE_STAFF,
-    PERMISSIONS.VIEW_STAFF,
-    PERMISSIONS.MANAGE_CLIENTS,
-    PERMISSIONS.VIEW_CLIENTS,
-    PERMISSIONS.PROCESS_PAYROLLS,
-    PERMISSIONS.APPROVE_PAYROLLS,
-    PERMISSIONS.VIEW_PAYROLLS,
-    PERMISSIONS.VIEW_FINANCIALS,
-    PERMISSIONS.MANAGE_BILLING,
-    PERMISSIONS.VIEW_REPORTS,
-    PERMISSIONS.GENERATE_REPORTS,
-    PERMISSIONS.MANAGE_SETTINGS,
-    PERMISSIONS.MANAGE_ROLES,
-    PERMISSIONS.MANAGE_USERS,
-    PERMISSIONS.INVITE_USERS,
-  ],
-  manager: [
-    PERMISSIONS.VIEW_DASHBOARD,
-    PERMISSIONS.MANAGE_STAFF,
-    PERMISSIONS.VIEW_STAFF,
-    PERMISSIONS.MANAGE_CLIENTS,
-    PERMISSIONS.VIEW_CLIENTS,
-    PERMISSIONS.PROCESS_PAYROLLS,
-    PERMISSIONS.APPROVE_PAYROLLS,
-    PERMISSIONS.VIEW_PAYROLLS,
-    PERMISSIONS.VIEW_FINANCIALS,
-    PERMISSIONS.VIEW_REPORTS,
-    PERMISSIONS.GENERATE_REPORTS,
-    PERMISSIONS.INVITE_USERS,
-  ],
-  consultant: [
-    PERMISSIONS.VIEW_DASHBOARD,
-    PERMISSIONS.VIEW_STAFF,
-    PERMISSIONS.VIEW_CLIENTS,
-    PERMISSIONS.PROCESS_PAYROLLS,
-    PERMISSIONS.VIEW_PAYROLLS,
-    PERMISSIONS.VIEW_REPORTS,
-  ],
-  viewer: [
-    PERMISSIONS.VIEW_DASHBOARD,
-    PERMISSIONS.VIEW_CLIENTS,
-    PERMISSIONS.VIEW_PAYROLLS,
-    PERMISSIONS.VIEW_REPORTS,
-  ],
-};
-
-// Route permissions mapping
-export const ROUTE_PERMISSIONS: Record<string, string[]> = {
-  "/dashboard": [PERMISSIONS.VIEW_DASHBOARD],
-  "/staff": [PERMISSIONS.VIEW_STAFF],
-  "/staff/new": [PERMISSIONS.MANAGE_STAFF],
-  "/clients": [PERMISSIONS.VIEW_CLIENTS],
-  "/clients/new": [PERMISSIONS.MANAGE_CLIENTS],
-  "/payrolls": [PERMISSIONS.VIEW_PAYROLLS],
-  "/payroll-schedule": [PERMISSIONS.PROCESS_PAYROLLS],
-  "/settings": [PERMISSIONS.MANAGE_SETTINGS],
-  "/developer": [PERMISSIONS.DEVELOPER_TOOLS],
-  "/ai-assistant": [PERMISSIONS.VIEW_DASHBOARD],
-  "/calendar": [PERMISSIONS.VIEW_DASHBOARD],
-  "/tax-calculator": [PERMISSIONS.VIEW_DASHBOARD],
+// Route permissions mapping using new permission system
+export const ROUTE_PERMISSIONS: Record<string, CustomPermission[]> = {
+  "/dashboard": [], // All authenticated users can access dashboard
+  "/staff": ["custom:staff:read"],
+  "/staff/new": ["custom:staff:write"],
+  "/clients": ["custom:client:read"],
+  "/clients/new": ["custom:client:write"],
+  "/payrolls": ["custom:payroll:read"],
+  "/payroll-schedule": ["custom:payroll:write"],
+  "/settings": ["custom:settings:write"],
+  "/developer": ["custom:admin:manage"],
+  "/ai-assistant": [], // All authenticated users
+  "/calendar": [], // All authenticated users
+  "/tax-calculator": [], // All authenticated users
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -192,29 +91,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return claimsRole || "viewer";
   }, [databaseUser?.role, sessionClaims]);
 
-  // Memoize permissions to prevent unnecessary recalculations
-  const userPermissions = useMemo(() => {
-    return ROLE_PERMISSIONS[userRole] || [];
-  }, [userRole]);
-
   // Has valid database user for security checks
   const hasValidDatabaseUser = !dbUserLoading && !!databaseUser && !dbUserError;
 
-  // Permission check functions - STRICT security-aware
-  const hasPermission = (permission: string): boolean => {
+  // Helper function to check permissions using new system
+  const hasPermission = useCallback((permission: string): boolean => {
     // SECURITY: ALWAYS deny if not authenticated
-    if (!isSignedIn || !isClerkLoaded) {
-      return false;
-    }
-
+    if (!isSignedIn || !isClerkLoaded) return false;
+    
     // SECURITY: ALWAYS deny if user doesn't exist in database
-    if (!hasValidDatabaseUser) {
-      return false;
-    }
+    if (!hasValidDatabaseUser) return false;
+    
+    // Get user's permissions from role
+    const userPermissions = getPermissionsForRole(userRole);
+    return userPermissions.includes(permission as CustomPermission);
+  }, [isSignedIn, isClerkLoaded, hasValidDatabaseUser, userRole]);
 
-    return userPermissions.includes(permission);
-  };
+  // Memoize permissions to prevent unnecessary recalculations
+  const userPermissions = useMemo(() => {
+    return getPermissionsForRole(userRole);
+  }, [userRole]);
 
+  // Permission check functions - STRICT security-aware
   const hasAnyPermission = (requiredPermissions: string[]): boolean => {
     return requiredPermissions.some(permission => hasPermission(permission));
   };
@@ -233,19 +131,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return roles.includes(userRole);
   };
 
-  // Computed properties for common checks - STRICT security
-  const hasAdminAccess: boolean = !!(
-    isSignedIn &&
-    isClerkLoaded &&
-    hasValidDatabaseUser &&
-    userRole &&
-    (userRole === "developer" || userRole === "org_admin")
-  );
-
-  const canManageUsers = hasPermission(PERMISSIONS.MANAGE_USERS);
-  const canManageClients = hasPermission(PERMISSIONS.MANAGE_CLIENTS);
-  const canProcessPayrolls = hasPermission(PERMISSIONS.PROCESS_PAYROLLS);
-  const canViewFinancials = hasPermission(PERMISSIONS.VIEW_FINANCIALS);
+  // Update computed permissions using new system
+  const computedPermissions = useMemo(() => {
+    if (!userRole) return {};
+    
+    const userPermissions = getPermissionsForRole(userRole);
+    
+    return {
+      // Staff management
+      canManageStaff: userPermissions.includes("custom:staff:write"),
+      canViewStaff: userPermissions.includes("custom:staff:read"),
+      canInviteStaff: userPermissions.includes("custom:staff:invite"),
+      
+      // Client management  
+      canManageClients: userPermissions.includes("custom:client:write"),
+      canViewClients: userPermissions.includes("custom:client:read"),
+      
+      // Payroll operations
+      canProcessPayrolls: userPermissions.includes("custom:payroll:write"),
+      canViewPayrolls: userPermissions.includes("custom:payroll:read"),
+      
+      // System administration
+      canManageSettings: userPermissions.includes("custom:settings:write"),
+      canAccessAdmin: userPermissions.includes("custom:admin:manage"),
+      
+      // Reporting
+      canViewReports: userPermissions.includes("custom:reports:read"),
+      canExportReports: userPermissions.includes("custom:reports:export"),
+      
+      // Audit
+      canViewAudit: userPermissions.includes("custom:audit:read"),
+      canManageAudit: userPermissions.includes("custom:audit:write"),
+      
+      // Role-based checks
+      isDeveloper: userRole === "developer",
+      isAdministrator: userRole === "org_admin",
+      isManager: userRole === "manager",
+      isConsultant: userRole === "consultant",
+      isViewer: userRole === "viewer",
+      
+      // Role hierarchy checks
+      hasAdminAccess: hasRoleLevel(userRole, "org_admin"),
+      hasManagerAccess: hasRoleLevel(userRole, "manager"),
+      
+      // User management (staff management)
+      canManageUsers: userPermissions.includes("custom:staff:write"),
+      
+      // Financial access
+      canViewFinancials: userPermissions.includes("custom:reports:read"),
+    };
+  }, [userRole]);
 
   // Enhanced sign out
   const signOut = async () => {
@@ -284,11 +219,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     hasRole,
 
     // Admin access checks
-    hasAdminAccess,
-    canManageUsers,
-    canManageClients,
-    canProcessPayrolls,
-    canViewFinancials,
+    hasAdminAccess: computedPermissions.hasAdminAccess || false,
+    canManageUsers: computedPermissions.canManageUsers || false,
+    canManageClients: computedPermissions.canManageClients || false,
+    canProcessPayrolls: computedPermissions.canProcessPayrolls || false,
+    canViewFinancials: computedPermissions.canViewFinancials || false,
 
     // Actions
     signOut,
@@ -306,5 +241,3 @@ export function useAuthContext() {
   return context;
 }
 
-// Export permissions for use in other components
-export { PERMISSIONS };

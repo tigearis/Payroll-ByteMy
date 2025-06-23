@@ -6,6 +6,15 @@
  * - Role-based error messages
  * - Hasura auth failure parsing
  * - User-friendly error messages for common scenarios
+ * 
+ * @future-enhancement Potential improvements:
+ * - Error retry strategies with exponential backoff
+ * - Integration with error tracking services (Sentry, Bugsnag)
+ * - Custom error recovery actions for specific error types
+ * - Error analytics and trending to identify common issues
+ * - Internationalization (i18n) support for error messages
+ * - Context-aware error suggestions based on user role/permissions
+ * - Error reporting dashboard for administrators
  */
 
 import { ApolloError } from "@apollo/client";

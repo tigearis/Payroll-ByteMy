@@ -3,10 +3,8 @@ import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 import { rateLimiter } from "../middleware/rate-limiter";
-import {
-  logUnauthorizedAccess,
-  extractClientInfo,
-} from "../security/auth-audit";
+import { logUnauthorizedAccess } from "../security/auth-audit";
+import { extractClientInfo } from "../utils/client-info";
 import { monitorRequest } from "../security/enhanced-route-monitor";
 // Import comprehensive permission system
 import { Role, ROLE_HIERARCHY } from "./permissions";
@@ -270,7 +268,7 @@ export function withAuth(
       console.log("❌ Auth failed:", error.message);
 
       // Extract client info for audit logging
-      const { ipAddress, userAgent } = extractClientInfo(request);
+      const { clientIP: ipAddress, userAgent } = extractClientInfo(request);
 
       // Monitor failed request
       await monitorRequest(request, undefined, startTime, false);
@@ -396,7 +394,7 @@ export function withAuthParams<T = any>(
       console.log("❌ Auth failed:", error.message);
 
       // Extract client info for audit logging
-      const { ipAddress, userAgent } = extractClientInfo(request);
+      const { clientIP: ipAddress, userAgent } = extractClientInfo(request);
 
       // Monitor failed request
       await monitorRequest(request, undefined, startTime, false);

@@ -85,30 +85,30 @@ const roles = [
     name: "Administrator",
     description: "Full access to all features",
     permissions: [
-      "manage_users",
-      "manage_clients",
-      "manage_payrolls",
-      "view_reports",
-      "manage_settings",
+      "custom:staff:write",
+      "custom:client:write",
+      "custom:payroll:write",
+      "custom:reports:read",
+      "custom:settings:write",
     ],
   },
   {
     id: 2,
     name: "Manager",
     description: "Can manage clients and payrolls",
-    permissions: ["manage_clients", "manage_payrolls", "view_reports"],
+    permissions: ["custom:client:write", "custom:payroll:write", "custom:reports:read"],
   },
   {
     id: 3,
     name: "Accountant",
     description: "Can manage payrolls and view reports",
-    permissions: ["manage_payrolls", "view_reports"],
+    permissions: ["custom:payroll:write", "custom:reports:read"],
   },
   {
     id: 4,
     name: "Viewer",
     description: "Can only view information",
-    permissions: ["view_reports"],
+    permissions: ["custom:reports:read"],
   },
 ];
 
@@ -218,24 +218,24 @@ export function UserRoleManagement() {
                     <Label className="text-right pt-2">Permissions</Label>
                     <div className="col-span-3 space-y-2">
                       <div className="flex items-center space-x-2">
-                        <input type="checkbox" id="manage_users" />
-                        <Label htmlFor="manage_users">Manage Users</Label>
+                        <input type="checkbox" id="custom:staff:write" />
+                        <Label htmlFor="custom:staff:write">Manage Staff</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <input type="checkbox" id="manage_clients" />
-                        <Label htmlFor="manage_clients">Manage Clients</Label>
+                        <input type="checkbox" id="custom:client:write" />
+                        <Label htmlFor="custom:client:write">Manage Clients</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <input type="checkbox" id="manage_payrolls" />
-                        <Label htmlFor="manage_payrolls">Manage Payrolls</Label>
+                        <input type="checkbox" id="custom:payroll:write" />
+                        <Label htmlFor="custom:payroll:write">Manage Payrolls</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <input type="checkbox" id="view_reports" />
-                        <Label htmlFor="view_reports">View Reports</Label>
+                        <input type="checkbox" id="custom:reports:read" />
+                        <Label htmlFor="custom:reports:read">View Reports</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <input type="checkbox" id="manage_settings" />
-                        <Label htmlFor="manage_settings">Manage Settings</Label>
+                        <input type="checkbox" id="custom:settings:write" />
+                        <Label htmlFor="custom:settings:write">Manage Settings</Label>
                       </div>
                     </div>
                   </div>

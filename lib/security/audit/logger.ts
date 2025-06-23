@@ -7,6 +7,7 @@
 import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
+import { extractClientInfo as getClientInfo } from "@/lib/utils/client-info";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 
@@ -404,12 +405,10 @@ class UnifiedAuditLogger {
     ipAddress?: string;
     userAgent?: string;
   } {
+    const { clientIP, userAgent } = getClientInfo(request);
     return {
-      ipAddress:
-        request.headers.get("x-forwarded-for")?.split(",")[0] ||
-        request.headers.get("x-real-ip") ||
-        "unknown",
-      userAgent: request.headers.get("user-agent") || "unknown",
+      ipAddress: clientIP,
+      userAgent,
     };
   }
 

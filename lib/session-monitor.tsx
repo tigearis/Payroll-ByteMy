@@ -16,6 +16,15 @@ import { toast } from "sonner";
  * - Session expiry detection
  * - JWT validation
  * - Authentication state management
+ * 
+ * @future-enhancement Currently unused but valuable for enhanced session monitoring
+ * @usage Add to app layout or providers for global session monitoring
+ * @benefits Provides user-friendly notifications when sessions expire
+ * @example
+ * ```tsx
+ * // In app/providers.tsx or layout.tsx:
+ * <SessionMonitor />
+ * ```
  */
 export function SessionMonitor() {
   const { isSignedIn, isLoaded } = useAuth();
