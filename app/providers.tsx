@@ -49,11 +49,7 @@ export function Providers({ children }: ProvidersProps) {
     <ErrorBoundary>
       <ClerkProvider
         signInUrl="/sign-in"
-        signUpUrl="/sign-up"
         signInFallbackRedirectUrl="/dashboard"
-        signUpFallbackRedirectUrl="/dashboard"
-        signInForceRedirectUrl="/dashboard"
-        signUpForceRedirectUrl="/dashboard"
         afterSignOutUrl="/"
       >
         <AuthenticatedApolloProvider>
