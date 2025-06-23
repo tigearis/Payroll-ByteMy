@@ -1,11 +1,23 @@
-// app/api/clerk-webhooks/route.ts
+// app/api/webhooks/clerk/route.ts
 import { headers } from "next/headers";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
+import { createClerkClient } from "@clerk/backend";
 
 import { UpdateUserRoleFromClerkDocument } from "@/domains/users/graphql/generated/graphql";
 import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
+import type { UserRole } from "@/domains/users/services/user-sync";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { 
+  authenticateServiceRequest, 
+  ServiceOperation,
+  logServiceAuth 
+} from "@/lib/auth/service-auth";
+
+// Initialize Clerk client for backend operations
+const clerkClient = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY!,
+});
 
 // Verify webhook signature for security
 async function verifyWebhook(
@@ -56,6 +68,32 @@ type WebhookEvent = {
 };
 
 export async function POST(req: NextRequest) {
+  // Define the service operation for logging
+  const operation: ServiceOperation = {
+    type: 'webhook',
+    name: 'clerk-webhook',
+    metadata: {
+      endpoint: '/api/webhooks/clerk',
+    },
+  };
+
+  try {
+    // Service authentication check (for audit logging)
+    const authResult = await authenticateServiceRequest(req, operation, {
+      enableAuditLogging: true,
+      enableIPRestrictions: false, // Clerk webhooks come from their servers
+      enableRateLimiting: false, // Clerk handles their own rate limiting
+    });
+
+    if (!authResult.isValid) {
+      console.warn(`🔒 Service auth warning: ${authResult.reason}`);
+      // Continue processing as webhook signature validation is the primary security
+    }
+  } catch (authError) {
+    console.warn('🔒 Service auth check failed:', authError);
+    // Continue processing as webhook signature is primary security
+  }
+
   if (!webhookSecret) {
     throw new Error("Missing CLERK_WEBHOOK_SECRET");
   }
@@ -101,29 +139,57 @@ export async function POST(req: NextRequest) {
   console.log("Webhook body:", body);
 
   try {
+    // Update operation metadata with event details
+    operation.userId = id;
+    operation.metadata = {
+      ...operation.metadata,
+      eventType,
+      clerkUserId: id,
+    };
+
     switch (eventType) {
       case "user.created":
         console.log("👤 New user created:", id);
 
-        // For OAuth users, assign Admin role automatically
-        const hasOAuthProvider =
-          external_accounts && external_accounts.length > 0;
+        // Validate user exists in Clerk before syncing
+        try {
+          const clerkUser = await clerkClient.users.getUser(id);
+          console.log(`✅ Validated user exists in Clerk: ${clerkUser.id}`);
+          
+          // Use validated data from Clerk
+          const userEmail = clerkUser.emailAddresses.find(email => email.id === clerkUser.primaryEmailAddressId)?.emailAddress || '';
+          const userName = `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || "New User";
+          
+          // For OAuth users, assign Admin role automatically
+          const hasOAuthProvider = clerkUser.externalAccounts && clerkUser.externalAccounts.length > 0;
 
-        // Check if role is in invitation metadata first, then default
-        const invitationRole = evt.data.public_metadata?.role;
-        const defaultRole =
-          invitationRole || (hasOAuthProvider ? "org_admin" : "viewer");
+          // Check if role is in invitation metadata first, then default
+          const invitationRole = clerkUser.publicMetadata?.role as string;
+          const defaultRole = (invitationRole as UserRole) || (hasOAuthProvider ? "org_admin" : "viewer");
 
-        await syncUserWithDatabase(
-          id,
-          `${first_name || ""} ${last_name || ""}`.trim() || "New User",
-          email_addresses[0]?.email_address || "",
-          defaultRole,
-          undefined,
-          image_url
-        );
+          await syncUserWithDatabase(
+            id,
+            userName,
+            userEmail,
+            defaultRole,
+            undefined,
+            clerkUser.imageUrl
+          );
 
-        console.log(`✅ User synced with role: ${defaultRole}`);
+          console.log(`✅ User synced with role: ${defaultRole}`);
+        } catch (clerkError) {
+          console.error("❌ Failed to validate user in Clerk:", clerkError);
+          // Fallback to webhook data
+          const defaultRole = (evt.data.public_metadata?.role as UserRole) || "viewer";
+          await syncUserWithDatabase(
+            id,
+            `${first_name || ""} ${last_name || ""}`.trim() || "New User",
+            email_addresses[0]?.email_address || "",
+            defaultRole,
+            undefined,
+            image_url
+          );
+        }
         break;
 
       case "user.updated":

@@ -112,7 +112,7 @@ export function StaffManagerGuard({
   fallback?: React.ReactNode;
 }) {
   return (
-    <PermissionGuard permission="manage_staff" fallback={fallback}>
+    <PermissionGuard permission="custom:staff:write" fallback={fallback}>
       {children}
     </PermissionGuard>
   );
@@ -126,7 +126,7 @@ export function ClientManagerGuard({
   fallback?: React.ReactNode;
 }) {
   return (
-    <PermissionGuard permission="manage_clients" fallback={fallback}>
+    <PermissionGuard permission="custom:client:write" fallback={fallback}>
       {children}
     </PermissionGuard>
   );
@@ -140,7 +140,7 @@ export function PayrollProcessorGuard({
   fallback?: React.ReactNode;
 }) {
   return (
-    <PermissionGuard permission="process_payrolls" fallback={fallback}>
+    <PermissionGuard permission="custom:payroll:write" fallback={fallback}>
       {children}
     </PermissionGuard>
   );
@@ -154,7 +154,7 @@ export function DeveloperGuard({
   fallback?: React.ReactNode;
 }) {
   return (
-    <PermissionGuard permission="developer_tools" fallback={fallback}>
+    <PermissionGuard permission="custom:admin:manage" fallback={fallback}>
       {children}
     </PermissionGuard>
   );

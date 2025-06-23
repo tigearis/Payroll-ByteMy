@@ -98,6 +98,497 @@ The `/components` directory implements a layered component architecture followin
 - **External Services**: Clerk, database user service
 - **Related Components**: Layout components, protected pages
 
+### Permission Guard Components
+
+The permission system provides several guard components to hide/restrict UI elements based on user roles and permissions. These components offer granular control over what users can see and interact with.
+
+#### `<PermissionGuard>` - Main Permission Component
+
+**Purpose**: Flexible component for role and permission-based access control
+
+**Props Reference**:
+
+| Prop              | Type         | Default | Description                                                    |
+| ----------------- | ------------ | ------- | -------------------------------------------------------------- |
+| `children`        | `ReactNode`  | -       | **Required.** Content to protect/show when access granted      |
+| `permission`      | `string`     | -       | Single permission string required for access                   |
+| `permissions`     | `string[]`   | `[]`    | Array of permissions (any one required by default)             |
+| `role`            | `UserRole`   | -       | Single role required for access                                |
+| `roles`           | `UserRole[]` | `[]`    | Array of roles (any one required by default)                   |
+| `requireAll`      | `boolean`    | `false` | If `true`, user must have ALL permissions/roles instead of any |
+| `fallback`        | `ReactNode`  | `null`  | Component shown when access is denied                          |
+| `loadingFallback` | `ReactNode`  | `null`  | Component shown while authentication is loading                |
+
+**Usage Examples**:
+
+```tsx
+import { PermissionGuard } from "@/components/auth/permission-guard";
+
+// Hide button based on single permission
+<PermissionGuard permission="manage_staff">
+  <Button>Add Staff Member</Button>
+</PermissionGuard>
+
+// Hide section based on role
+<PermissionGuard role="manager">
+  <ManagerDashboard />
+</PermissionGuard>
+
+// Multiple permissions (any one required)
+<PermissionGuard permissions={["manage_staff", "view_staff"]}>
+  <StaffSection />
+</PermissionGuard>
+
+// Multiple roles (any one required)
+<PermissionGuard roles={["org_admin", "manager"]}>
+  <AdminTools />
+</PermissionGuard>
+
+// Require ALL permissions
+<PermissionGuard
+  permissions={["manage_staff", "manage_payrolls"]}
+  requireAll={true}
+>
+  <AdvancedManagement />
+</PermissionGuard>
+
+// Show fallback message when access denied
+<PermissionGuard
+  permission="manage_clients"
+  fallback={<div className="text-gray-500">Contact admin for client management access</div>}
+>
+  <ClientManagement />
+</PermissionGuard>
+
+// Custom loading state
+<PermissionGuard
+  role="developer"
+  loadingFallback={<Skeleton className="h-10 w-32" />}
+>
+  <DeveloperTools />
+</PermissionGuard>
+```
+
+#### Pre-built Permission Guards
+
+For common use cases, use these pre-built components:
+
+```tsx
+import {
+  AdminGuard,
+  ManagerGuard,
+  StaffManagerGuard,
+  ClientManagerGuard,
+  PayrollProcessorGuard,
+  DeveloperGuard
+} from "@/components/auth/permission-guard";
+
+// Admin-only features
+<AdminGuard fallback={<div>Admin access required</div>}>
+  <SystemSettings />
+</AdminGuard>
+
+// Manager-level access (includes org_admin)
+<ManagerGuard>
+  <TeamManagement />
+</ManagerGuard>
+
+// Specific permission-based guards
+<StaffManagerGuard>
+  <AddStaffButton />
+</StaffManagerGuard>
+
+<ClientManagerGuard>
+  <CreateClientForm />
+</ClientManagerGuard>
+
+<PayrollProcessorGuard>
+  <ProcessPayrollButton />
+</PayrollProcessorGuard>
+
+<DeveloperGuard>
+  <DebugPanel />
+</DeveloperGuard>
+```
+
+#### `<RoleGuard>` - Role-Based with Redirects
+
+**Purpose**: Role-based access control with automatic redirection capabilities
+
+**Props Reference**:
+
+| Prop                 | Type        | Default        | Description                                      |
+| -------------------- | ----------- | -------------- | ------------------------------------------------ |
+| `children`           | `ReactNode` | -              | **Required.** Content to protect                 |
+| `requiredRole`       | `string`    | -              | Minimum role required for access                 |
+| `requiredPermission` | `string`    | -              | Alternative: specific permission check           |
+| `fallback`           | `ReactNode` | -              | Component shown when access denied (no redirect) |
+| `redirectTo`         | `string`    | `"/dashboard"` | URL to redirect to when access denied            |
+
+**Available Permission Checks**:
+
+- `"canManageUsers"`
+- `"canManageStaff"`
+- `"isAdministrator"`
+- `"isManager"`
+
+**Usage Examples**:
+
+```tsx
+import { RoleGuard } from "@/components/auth/role-guard";
+
+// Role-based protection with redirect
+<RoleGuard requiredRole="manager" redirectTo="/dashboard">
+  <ManagerOnlyPage />
+</RoleGuard>
+
+// Permission-based protection
+<RoleGuard requiredPermission="canManageUsers">
+  <UserManagement />
+</RoleGuard>
+
+// Show fallback instead of redirect
+<RoleGuard
+  requiredRole="org_admin"
+  fallback={
+    <div className="text-center p-8">
+      <h2>Access Denied</h2>
+      <p>Organization admin access required</p>
+    </div>
+  }
+>
+  <AdminPanel />
+</RoleGuard>
+```
+
+#### `<RouteGuard>` - Page-Level Protection
+
+**Purpose**: Comprehensive page-level authentication and authorization
+
+**Props Reference**:
+
+| Prop                  | Type         | Default        | Description                                  |
+| --------------------- | ------------ | -------------- | -------------------------------------------- |
+| `children`            | `ReactNode`  | -              | **Required.** Page content to protect        |
+| `requiredPermissions` | `string[]`   | `[]`           | Array of permissions required                |
+| `requiredRoles`       | `UserRole[]` | `[]`           | Array of roles required                      |
+| `requireAll`          | `boolean`    | `false`        | Require ALL permissions/roles instead of any |
+| `fallbackRoute`       | `string`     | `"/dashboard"` | Route to redirect to on access denial        |
+| `customFallback`      | `ReactNode`  | -              | Custom access denied UI (no redirect)        |
+| `loadingComponent`    | `ReactNode`  | -              | Custom loading component                     |
+
+**Usage Examples**:
+
+```tsx
+import { RouteGuard } from "@/components/auth/route-guard";
+
+// Protect entire page
+<RouteGuard
+  requiredPermissions={["manage_staff"]}
+  fallbackRoute="/dashboard"
+>
+  <StaffManagementPage />
+</RouteGuard>
+
+// Multiple role requirements
+<RouteGuard
+  requiredRoles={["org_admin", "manager"]}
+  customFallback={<AccessDeniedPage />}
+>
+  <AdminPage />
+</RouteGuard>
+
+// Complex requirements
+<RouteGuard
+  requiredPermissions={["manage_payrolls", "approve_payrolls"]}
+  requireAll={true}
+  loadingComponent={<PageSkeleton />}
+>
+  <PayrollApprovalPage />
+</RouteGuard>
+```
+
+### Available Permission Strings
+
+The system uses 18 granular permissions across 5 categories, distributed through a 5-level role hierarchy.
+
+#### Staff Permissions
+
+```typescript
+"custom:staff:read";   // View staff information
+"custom:staff:write";  // Create/edit staff
+"custom:staff:delete"; // Delete staff members  
+"custom:staff:invite"; // Send staff invitations
+```
+
+#### Payroll Permissions
+
+```typescript
+"custom:payroll:read";   // View payroll data
+"custom:payroll:write";  // Create/edit payrolls
+"custom:payroll:delete"; // Delete payrolls
+"custom:payroll:assign"; // Assign payrolls to consultants
+```
+
+#### Client Permissions
+
+```typescript
+"custom:client:read";   // View client information
+"custom:client:write";  // Create/edit clients
+"custom:client:delete"; // Delete clients
+```
+
+#### Admin Permissions
+
+```typescript
+"custom:admin:manage";    // System administration
+"custom:settings:write";  // Modify system settings
+"custom:billing:manage";  // Billing management
+```
+
+#### Reporting Permissions
+
+```typescript
+"custom:reports:read";   // View reports
+"custom:reports:export"; // Export report data
+"custom:audit:read";     // View audit logs
+"custom:audit:write";    // Create audit entries
+```
+
+
+### Available Roles
+
+#### Role Hierarchy with Permission Distribution
+
+The system combines role hierarchy (broad access control) with granular permissions (specific feature access).
+
+```typescript
+export type UserRole =
+  | "developer"  // Level 5 - All 18 permissions
+  | "org_admin"  // Level 4 - 17 permissions (administrative control)
+  | "manager"    // Level 3 - 11 permissions (operational management)
+  | "consultant" // Level 2 - 5 permissions (limited operations)
+  | "viewer";    // Level 1 - 3 permissions (read-only access)
+```
+
+#### Detailed Permission Matrix
+
+| Permission Category | Developer (5) | Org Admin (4) | Manager (3) | Consultant (2) | Viewer (1) |
+|-------------------|:-------------:|:-------------:|:-----------:|:--------------:|:----------:|
+| **Staff Management** | | | | | |
+| `custom:staff:read` | ✅ | ✅ | ✅ | ✅ | ❌ |
+| `custom:staff:write` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `custom:staff:delete` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `custom:staff:invite` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| **Payroll Operations** | | | | | |
+| `custom:payroll:read` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `custom:payroll:write` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `custom:payroll:delete` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `custom:payroll:assign` | ✅ | ❌ | ✅ | ✅ | ❌ |
+| **Client Management** | | | | | |
+| `custom:client:read` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `custom:client:write` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `custom:client:delete` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| **Administration** | | | | | |
+| `custom:admin:manage` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `custom:settings:write` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `custom:billing:manage` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| **Reporting & Audit** | | | | | |
+| `custom:reports:read` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `custom:reports:export` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `custom:audit:read` | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `custom:audit:write` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| **Total Permissions** | **18/18** | **17/18** | **11/18** | **5/18** | **3/18** |
+
+#### Role Access Philosophy
+
+- **Developer**: Complete system access for development and troubleshooting
+- **Org Admin**: Full administrative control except payroll assignment (business separation)
+- **Manager**: Operational management with payroll assignment capabilities
+- **Consultant**: Limited operational access focused on assigned work
+- **Viewer**: Basic read access for reporting and oversight
+
+### Best Practices
+
+#### 1. **Choose Between Role Hierarchy and Granular Permissions**
+
+```tsx
+// ✅ Role Hierarchy - For broad access control
+<ManagerGuard>
+  <PayrollDashboard />  {/* Any manager+ can access */}
+</ManagerGuard>
+
+// ✅ Granular Permissions - For specific actions  
+<PermissionGuard permission="custom:payroll:delete">
+  <DeletePayrollButton />  {/* Only org_admin+ can delete */}
+</PermissionGuard>
+
+// ✅ Combined Approach - Layered security
+<ManagerGuard>
+  <div>
+    <ViewPayrollData />  {/* All managers can see */}
+    <PermissionGuard permission="custom:staff:delete">
+      <DeleteStaffButton />  {/* Only org_admin can delete */}
+    </PermissionGuard>
+  </div>
+</ManagerGuard>
+```
+
+#### 2. **Use Specific Guards for Common Patterns**
+
+```tsx
+// ✅ Good - Use specific guard for common case
+<StaffManagerGuard>
+  <AddStaffButton />
+</StaffManagerGuard>
+
+// ✅ Also Good - Direct permission for specific action
+<PermissionGuard permission="custom:staff:delete">
+  <DeleteStaffButton />
+</PermissionGuard>
+
+// ❌ Avoid - Generic guard for simple role check
+<PermissionGuard roles={["manager", "org_admin"]}>
+  <ManagerDashboard />
+</PermissionGuard>
+// Better: <ManagerGuard><ManagerDashboard /></ManagerGuard>
+```
+
+#### 3. **Provide Meaningful Fallbacks**
+
+```tsx
+// ✅ Good - Helpful fallback
+<PermissionGuard
+  permission="manage_clients"
+  fallback={
+    <div className="p-4 text-center border rounded-lg bg-gray-50">
+      <p className="text-gray-600">Client management access required</p>
+      <p className="text-sm text-gray-500 mt-1">
+        Contact your administrator to request permissions
+      </p>
+    </div>
+  }
+>
+  <ClientManagement />
+</PermissionGuard>
+
+// ❌ Avoid - No feedback to user
+<PermissionGuard permission="manage_clients">
+  <ClientManagement />
+</PermissionGuard>
+```
+
+#### 4. **Combine with Loading States**
+
+```tsx
+// ✅ Good - Smooth loading experience
+<PermissionGuard
+  permission="manage_payrolls"
+  loadingFallback={<Skeleton className="h-40 w-full" />}
+  fallback={<PermissionDenied />}
+>
+  <PayrollManagement />
+</PermissionGuard>
+```
+
+#### 5. **Use Conditional Rendering for Complex Logic**
+
+```tsx
+// ✅ Good - Complex conditional logic combining both systems
+const { hasPermission, userRole, hasRoleLevel } = useAuthContext();
+
+const canManageAdvanced =
+  hasPermission("custom:staff:write") &&
+  hasPermission("custom:payroll:write") &&
+  hasRoleLevel(userRole, "manager");
+
+const canDeleteResources = 
+  hasPermission("custom:staff:delete") &&
+  hasPermission("custom:client:delete");
+
+return (
+  <div>
+    <StaffManagerGuard>
+      <BasicStaffTools />
+    </StaffManagerGuard>
+
+    {canManageAdvanced && <AdvancedManagementTools />}
+    
+    {canDeleteResources && <DangerZoneTools />}
+  </div>
+);
+```
+
+#### 6. **Layer Guards for Multiple Requirements**
+
+```tsx
+// ✅ Good - Layered protection
+<AdminGuard>
+  <PermissionGuard permission="custom:billing:manage">
+    <BillingAdministration />
+  </PermissionGuard>
+</AdminGuard>
+```
+
+### Troubleshooting Permission Issues
+
+#### Common Issues and Solutions
+
+**1. Component Not Hiding Despite Correct Permissions**
+
+- Check if user exists in database (use `StrictDatabaseGuard`)
+- Verify JWT token contains correct role claims
+- Ensure Hasura metadata is applied: `hasura metadata apply`
+
+**2. Permission Strings Not Working**
+
+- Use exact permission strings from the reference above
+- Check for typos in permission names
+- Verify role has the required permission in `ROLE_PERMISSIONS`
+
+**3. Role Hierarchy Not Working**
+
+- Ensure user role is correctly set in Clerk `publicMetadata`
+- Check role hierarchy levels in `ROLE_HIERARCHY`
+- Verify authentication context is properly loaded
+
+**4. Fallback Not Showing**
+
+- Ensure `fallback` prop is provided
+- Check that component is actually being denied access
+- Verify fallback component renders correctly in isolation
+
+#### Debug Permission Issues
+
+```tsx
+// Add temporary debug component
+import { useAuthContext } from "@/lib/auth/auth-context";
+
+function DebugPermissions() {
+  const { userRole, hasPermission, hasRoleLevel, isLoading } = useAuthContext();
+
+  if (process.env.NODE_ENV !== "development") return null;
+
+  return (
+    <div className="fixed bottom-4 right-4 p-2 bg-black text-white text-xs rounded max-w-xs">
+      <div>Role: {userRole}</div>
+      <div>Loading: {isLoading ? "Yes" : "No"}</div>
+      <div>Has Manager+ Access: {hasRoleLevel(userRole, "manager") ? "Yes" : "No"}</div>
+      <div>Can Write Staff: {hasPermission("custom:staff:write") ? "Yes" : "No"}</div>
+      <div>Can Delete Staff: {hasPermission("custom:staff:delete") ? "Yes" : "No"}</div>
+      <div>Can Assign Payrolls: {hasPermission("custom:payroll:assign") ? "Yes" : "No"}</div>
+    </div>
+  );
+}
+```
+
+### Related Documentation
+
+- **[Permission System Extension Guide](../guides/PERMISSION_SYSTEM_EXTENSION_GUIDE.md)** - Adding new permissions and roles
+- **[Authentication Flow Analysis](../security/AUTHENTICATION_FLOW_ANALYSIS.md)** - Complete auth system overview
+- **[JWT Template Customization](../security/JWT_TEMPLATE_CUSTOMIZATION_GUIDE.md)** - Customizing JWT claims
+- **[Hasura Permission Configuration](../hasura/README.md)** - Database-level permissions
+
 ## UI Components (`/components/ui/`)
 
 Built on shadcn/ui with enterprise extensions:

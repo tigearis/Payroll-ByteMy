@@ -53,25 +53,25 @@ const allRoutes = [
     href: "/clients",
     label: "Clients",
     icon: Users,
-    checkAccess: (auth: any) => auth.canManageClients || auth.hasPermission("view_clients"),
+    checkAccess: (auth: any) => auth.canManageClients || auth.hasPermission("custom:client:read"),
   },
   {
     href: "/payrolls",
     label: "Payrolls",
     icon: Calculator,
-    checkAccess: (auth: any) => auth.canProcessPayrolls || auth.hasPermission("view_payrolls"),
+    checkAccess: (auth: any) => auth.canProcessPayrolls || auth.hasPermission("custom:payroll:read"),
   },
   {
     href: "/payroll-schedule",
     label: "Schedule",
     icon: CalendarDays,
-    checkAccess: (auth: any) => auth.canProcessPayrolls || auth.hasPermission("view_payrolls"),
+    checkAccess: (auth: any) => auth.canProcessPayrolls || auth.hasPermission("custom:payroll:read"),
   },
   {
     href: "/staff",
     label: "Staff",
     icon: UserCog,
-    checkAccess: (auth: any) => auth.canManageUsers || auth.hasPermission("view_staff"),
+    checkAccess: (auth: any) => auth.canManageUsers || auth.hasPermission("custom:staff:read"),
   },
   {
     href: "/tax-calculator",
@@ -84,7 +84,7 @@ const allRoutes = [
     href: "/settings",
     label: "Settings",
     icon: Settings,
-    checkAccess: (auth: any) => auth.hasPermission("manage_settings") || auth.hasAdminAccess,
+    checkAccess: (auth: any) => auth.hasPermission("custom:settings:write") || auth.hasAdminAccess,
   },
   {
     href: "/developer",

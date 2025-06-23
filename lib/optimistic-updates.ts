@@ -4,6 +4,18 @@ import { gql } from "@apollo/client";
 
 /**
  * Helper functions for working with optimistic updates in Apollo Client
+ * 
+ * @future-enhancement Currently unused but valuable for improving UX with optimistic updates
+ * @usage Ideal for payroll operations, user management, and data mutations that benefit from immediate UI feedback
+ * @benefits Provides instant feedback to users before server confirmation
+ * @example
+ * ```typescript
+ * // In a mutation hook:
+ * const [updatePayroll] = useMutation(UPDATE_PAYROLL, {
+ *   optimisticResponse: (variables) => ({ updatePayroll: { __typename: 'Payroll', ...variables } }),
+ *   update: (cache, { data }) => updatePayrollInCache(cache, data.id, data)
+ * });
+ * ```
  */
 
 /**

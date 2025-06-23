@@ -6,15 +6,15 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   logFailedLogin,
   logTokenRefresh,
-  extractClientInfo,
 } from "@/lib/security/auth-audit";
+import { extractClientInfo } from "@/lib/utils/client-info";
 import { SecureErrorHandler } from "@/lib/security/error-responses";
 
 export async function GET(req: NextRequest) {
   console.log("🔍 Token endpoint called");
   try {
     // Get client IP and user agent for audit logging
-    const { ipAddress, userAgent } = extractClientInfo(req);
+    const { clientIP: ipAddress, userAgent } = extractClientInfo(req);
 
     console.log("🔍 Request headers:", {
       authorization: req.headers.get("authorization"),
@@ -142,7 +142,7 @@ export async function GET(req: NextRequest) {
     console.error("Error getting token:", error);
 
     // Log error
-    const { ipAddress: errorIp, userAgent: errorUA } = extractClientInfo(req);
+    const { clientIP: errorIp, userAgent: errorUA } = extractClientInfo(req);
     await logFailedLogin(
       "unknown",
       errorIp,

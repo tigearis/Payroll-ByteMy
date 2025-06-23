@@ -109,36 +109,83 @@ export const ROLE_PERMISSIONS: RolePermissions = {
   org_admin: {
     level: 4,
     permissions: [
+      // Payroll permissions - full access except assign
       "custom:payroll:read",
       "custom:payroll:write",
+      "custom:payroll:delete",
+      "custom:payroll:assign",
+
+      // Staff permissions - full access
       "custom:staff:read",
       "custom:staff:write",
+      "custom:staff:delete",
+      "custom:staff:invite",
+
+      // Client permissions - full access
       "custom:client:read",
       "custom:client:write",
+      "custom:client:delete",
+
+      // Admin permissions - full access
       "custom:admin:manage",
       "custom:settings:write",
+      "custom:billing:manage",
+
+      // Reporting permissions - full access
       "custom:reports:read",
+      "custom:reports:export",
+      "custom:audit:read",
+      "custom:audit:write",
     ] as CustomPermission[],
   },
   manager: {
     level: 3,
     permissions: [
+      // Payroll permissions - read and limited write
       "custom:payroll:read",
+      "custom:payroll:write",
+      "custom:payroll:assign",
+
+      // Staff permissions - read and manage
       "custom:staff:read",
+      "custom:staff:write",
+      "custom:staff:invite",
+
+      // Client permissions - read and write
       "custom:client:read",
+      "custom:client:write",
+
+      // Reporting permissions - read and export
       "custom:reports:read",
+      "custom:reports:export",
+      "custom:audit:read",
     ] as CustomPermission[],
   },
   consultant: {
     level: 2,
     permissions: [
+      // Payroll permissions - read only and assign
       "custom:payroll:read",
+      "custom:payroll:assign",
+
+      // Staff permissions - read only
+      "custom:staff:read",
+
+      // Client permissions - read only
       "custom:client:read",
+
+      // Reporting permissions - read only
+      "custom:reports:read",
     ] as CustomPermission[],
   },
   viewer: {
     level: 1,
-    permissions: ["custom:payroll:read"] as CustomPermission[],
+    permissions: [
+      // Very limited read access
+      "custom:payroll:read",
+      "custom:client:read",
+      "custom:reports:read",
+    ] as CustomPermission[],
   },
 };
 

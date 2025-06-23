@@ -22,26 +22,26 @@ export function useUserRole() {
   const isConsultant = userRole === "consultant";
   const isViewer = userRole === "viewer";
 
-  // Enhanced permission checks
+  // Enhanced permission checks using new permission system
   const permissions = {
-    canViewDashboard: hasPermission("view_dashboard"),
-    canManageStaff: hasPermission("manage_staff"),
-    canViewStaff: hasPermission("view_staff"),
-    canManageClients: hasPermission("manage_clients"),
-    canViewClients: hasPermission("view_clients"),
-    canProcessPayrolls: hasPermission("process_payrolls"),
-    canApprovePayrolls: hasPermission("approve_payrolls"),
-    canViewPayrolls: hasPermission("view_payrolls"),
-    canViewFinancials: hasPermission("view_financials"),
-    canManageBilling: hasPermission("manage_billing"),
-    canViewReports: hasPermission("view_reports"),
-    canGenerateReports: hasPermission("generate_reports"),
-    canManageSettings: hasPermission("manage_settings"),
-    canManageRoles: hasPermission("manageroles"),
-    canManageUsers: hasPermission("manage_users"),
-    canInviteUsers: hasPermission("invite_users"),
-    canUseDeveloperTools: hasPermission("developer_tools"),
-    isSystemAdmin: hasPermission("system_admin"),
+    canManageStaff: hasPermission("custom:staff:write"),
+    canViewStaff: hasPermission("custom:staff:read"),
+    canInviteStaff: hasPermission("custom:staff:invite"),
+    canDeleteStaff: hasPermission("custom:staff:delete"),
+    canManageClients: hasPermission("custom:client:write"),
+    canViewClients: hasPermission("custom:client:read"),
+    canDeleteClients: hasPermission("custom:client:delete"),
+    canProcessPayrolls: hasPermission("custom:payroll:write"),
+    canViewPayrolls: hasPermission("custom:payroll:read"),
+    canDeletePayrolls: hasPermission("custom:payroll:delete"),
+    canAssignPayrolls: hasPermission("custom:payroll:assign"),
+    canViewReports: hasPermission("custom:reports:read"),
+    canExportReports: hasPermission("custom:reports:export"),
+    canViewAuditLogs: hasPermission("custom:audit:read"),
+    canWriteAuditLogs: hasPermission("custom:audit:write"),
+    canManageSettings: hasPermission("custom:settings:write"),
+    canManageAdmin: hasPermission("custom:admin:manage"),
+    canManageBilling: hasPermission("custom:billing:manage"),
   };
 
   // Role checking functions

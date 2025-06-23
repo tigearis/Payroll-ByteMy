@@ -372,20 +372,4 @@ function categorizeAuthFailure(errorMessage: string): string {
   return "unknownerror";
 }
 
-/**
- * Utility function to extract client info from request
- */
-export function extractClientInfo(request: NextRequest): {
-  ipAddress: string;
-  userAgent: string;
-} {
-  const ipAddress =
-    request.headers.get("x-forwarded-for")?.split(",")[0] ||
-    request.headers.get("x-real-ip") ||
-    request.headers.get("cf-connecting-ip") ||
-    "unknown";
-
-  const userAgent = request.headers.get("user-agent") || "unknown";
-
-  return { ipAddress, userAgent };
-}
+// extractClientInfo moved to shared utility: @/lib/utils/client-info

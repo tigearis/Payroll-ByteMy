@@ -1,7 +1,21 @@
 /**
  * Unified Apollo Client Factory
- * Consolidates all Apollo client functionality with proper Hasura JWT integration
- * Replaces: apollo-client.ts, client.ts, server-apollo-client.ts, secure-client.ts
+ * 
+ * Hybrid Authentication Strategy:
+ * - Client Context: Clerk JWT tokens with "hasura" template for user operations
+ * - Server Context: Clerk JWT tokens when available for server-side rendering
+ * - Admin Context: Hasura admin secret for service operations (webhooks, cron, admin functions)
+ * 
+ * This approach leverages Clerk's strengths for user authentication while using
+ * Hasura's admin secret for reliable service operations that need unrestricted access.
+ * 
+ * @future-enhancement Potential improvements:
+ * - Add connection pooling for high-traffic scenarios
+ * - Implement request batching for multiple GraphQL operations
+ * - Add metrics collection for monitoring Apollo performance
+ * - Consider Redis caching for frequently accessed data
+ * - Add automatic retry with exponential backoff for failed requests
+ * - Implement subscription reconnection strategies for real-time features
  */
 
 import {
@@ -165,21 +179,26 @@ function createUnifiedHttpLink(): ApolloLink {
 }
 
 /**
- * Simplified authentication link using native Clerk features
+ * Authentication link with hybrid strategy:
+ * - Client context: Clerk JWT tokens
+ * - Server context: Clerk JWT tokens when available
+ * - Admin context: Hasura admin secret for service operations
  */
 function createAuthLink(options: UnifiedClientOptions): ApolloLink {
   return setContext(async (_, { headers }) => {
     try {
-      // Admin context uses service account token
+      // Admin context uses admin secret for service operations
       if (options.context === "admin" && typeof window === "undefined") {
-        const serviceToken = process.env.HASURA_SERVICE_ACCOUNT_TOKEN;
-        if (serviceToken) {
+        const adminSecret = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
+        if (adminSecret) {
           return {
             headers: {
               ...headers,
-              authorization: `Bearer ${serviceToken}`,
+              "x-hasura-admin-secret": adminSecret,
             },
           };
+        } else {
+          throw new Error("HASURA_GRAPHQL_ADMIN_SECRET not configured for admin operations");
         }
       }
 
@@ -437,8 +456,12 @@ export const serverApolloClient = createUnifiedApolloClient({
 });
 
 /**
- * Admin Apollo client with service account access
- * Used for system operations requiring elevated privileges
+ * Admin Apollo client with admin secret access
+ * Used for service operations requiring unrestricted Hasura access:
+ * - Webhook handlers
+ * - Cron jobs
+ * - Admin functions
+ * - User sync operations
  */
 export const adminApolloClient = createUnifiedApolloClient({
   context: "admin",

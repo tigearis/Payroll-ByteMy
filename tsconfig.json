@@ -7,6 +7,7 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
@@ -18,6 +19,8 @@
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": false,
     "noUncheckedIndexedAccess": false,
+    "skipDefaultLibCheck": true,
+    "allowImportingTsExtensions": false,
     "plugins": [
       {
         "name": "next"
@@ -73,6 +76,9 @@
     "**/*.test.tsx",
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "*.md"
+    "*.md",
+    ".next/**/*",
+    "node_modules/@types/react-dom/**/*",
+    "node_modules/next/dist/**/*"
   ]
 }
