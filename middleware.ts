@@ -28,10 +28,7 @@ const isPublicRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req) => {
   if (isPublicRoute(req)) return NextResponse.next();
 
-  const authResult = await auth.protect({
-    unauthenticatedUrl: "/sign-in",
-    unauthorizedUrl: "/unauthorized",
-  });
+  const authResult = await auth.protect();
 
   if (authResult?.userId) {
     const isApi = req.nextUrl.pathname.startsWith("/api");
