@@ -2,12 +2,15 @@
 import { DocumentNode } from "@apollo/client";
 import { ReactNode } from "react";
 
-import { PayrollSubscriptionDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { 
+  PayrollSubscriptionDocument,
+  GetPayrollsDocument
+} from "@/domains/payrolls/graphql/generated/graphql";
 import { useRealTimeSubscription } from "@/hooks/use-subscription";
 
 interface RealTimeUpdatesProps {
   subscription: DocumentNode;
-  refetchQueries: string[];
+  refetchQueries: DocumentNode[];
   variables?: Record<string, any>;
   showToasts?: boolean;
   onUpdate?: (data: any) => void;
@@ -58,11 +61,11 @@ export function RealTimeUpdates({
  * Specialized component for payroll updates
  */
 export function PayrollUpdatesListener({
-  refetchQueries = ["GET_PAYROLLS"],
+  refetchQueries = [GetPayrollsDocument],
   showToasts = false,
   onUpdate,
 }: {
-  refetchQueries?: string[];
+  refetchQueries?: DocumentNode[];
   showToasts?: boolean;
   onUpdate?: (data: any) => void;
 }) {

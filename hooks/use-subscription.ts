@@ -11,7 +11,7 @@ import { toast } from "sonner";
 interface UseRealTimeSubscriptionOptions {
   document: DocumentNode;
   variables?: Record<string, any>;
-  refetchQueries?: string[];
+  refetchQueries?: DocumentNode[];
   shouldToast?: boolean;
   onData?: (data: any) => void;
 }
@@ -47,7 +47,7 @@ export function useRealTimeSubscription({
       }
 
       // Refresh relevant queries
-      if (refetchQueries.length > 0) {
+      if (refetchQueries && refetchQueries.length > 0) {
         await client.refetchQueries({
           include: refetchQueries,
         });
@@ -73,9 +73,11 @@ export function useRealTimeSubscription({
       const timeout = setTimeout(
         () => {
           // Force refetch on reconnection attempt
-          client.refetchQueries({
-            include: refetchQueries,
-          });
+          if (refetchQueries && refetchQueries.length > 0) {
+            client.refetchQueries({
+              include: refetchQueries,
+            });
+          }
         },
         Math.min(retryCount * 1000, 5000)
       ); // Exponential backoff

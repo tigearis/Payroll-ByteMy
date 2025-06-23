@@ -1,15 +1,21 @@
+import { DocumentNode } from "@apollo/client";
+
 import { RealTimeUpdates } from "@/components/real-time-updates";
-import { StaffSubscriptionDocument } from "@/domains/users/graphql/generated/graphql";
+import { 
+  StaffSubscriptionDocument,
+  GetStaffListDocument,
+  GetAllUsersListDocument
+} from "@/domains/users/graphql/generated/graphql";
 
 /**
  * Specialized component for staff updates
  */
 export function StaffUpdatesListener({
-  refetchQueries = ["GET_STAFF_LIST", "GET_ALL_USERS_LIST"],
+  refetchQueries = [GetStaffListDocument, GetAllUsersListDocument],
   showToasts = false,
   onUpdate,
 }: {
-  refetchQueries?: string[];
+  refetchQueries?: DocumentNode[];
   showToasts?: boolean;
   onUpdate?: (data: any) => void;
 }) {

@@ -16,17 +16,20 @@ This is an enterprise-grade payroll management system built with Next.js 15, Rea
 ## Architecture Principles
 
 ### 1. Domain-Driven Design
+
 - Business logic organized by functional domains (`/domains`)
 - Each domain has its own GraphQL operations, types, and services
 - Clear separation of concerns between domains
 
 ### 2. Security-First Approach
+
 - SOC2 compliance with comprehensive audit logging
 - Multi-layer authentication (Route → Component → Database)
 - Role-based access control with 5-tier hierarchy
 - Data classification system (CRITICAL, HIGH, MEDIUM, LOW)
 
 ### 3. Native Clerk Integration
+
 - **NEVER** implement custom JWT handling or token management
 - Use Clerk's native hooks: `useAuth()`, `useUser()`, `sessionClaims`
 - Rely on Clerk's automatic token refresh and session management
@@ -34,6 +37,7 @@ This is an enterprise-grade payroll management system built with Next.js 15, Rea
 ## Code Conventions
 
 ### File and Directory Naming
+
 - **Files/Directories**: kebab-case (`user-profile-card.tsx`, `auth-utils.ts`)
 - **React Components**: PascalCase (`UserProfileCard`, `PayrollScheduleView`)
 - **Functions/Variables**: camelCase (`getCurrentUser`, `handleSubmit`)
@@ -41,6 +45,7 @@ This is an enterprise-grade payroll management system built with Next.js 15, Rea
 - **Database Fields**: snake_case (`user_id`, `created_at`)
 
 ### TypeScript Standards
+
 - **NO `any` types** - Use proper type definitions
 - Strict TypeScript configuration enforced
 - Auto-generated GraphQL types from schema
@@ -48,7 +53,8 @@ This is an enterprise-grade payroll management system built with Next.js 15, Rea
 
 ## Authentication & Authorization
 
-### ✅ DO:
+✅ DO
+
 ```typescript
 // Use Clerk's native hooks
 import { useAuth, useUser } from '@clerk/nextjs';
@@ -56,10 +62,10 @@ import { useAuth, useUser } from '@clerk/nextjs';
 function MyComponent() {
   const { isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
-  
+
   if (!isLoaded) return <div>Loading...</div>;
   if (!isSignedIn) return <div>Please sign in</div>;
-  
+
   return <div>Authenticated content</div>;
 }
 
@@ -69,19 +75,24 @@ import { auth } from '@clerk/nextjs/server';
 export async function GET() {
   const { userId, sessionClaims } = await auth();
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  
+
   const role = sessionClaims?.metadata?.role;
   // Use role for authorization logic
 }
 ```
 
-### ❌ DON'T:
+❌ DON'T
+
 ```typescript
 // NEVER manually decode JWTs
-const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
+const payload = JSON.parse(
+  Buffer.from(token.split(".")[1], "base64").toString()
+);
 
 // NEVER implement custom token refresh
-const refreshToken = async () => { /* custom logic */ };
+const refreshToken = async () => {
+  /* custom logic */
+};
 
 // NEVER create custom session management
 const [sessionExpired, setSessionExpired] = useState(false);
@@ -89,19 +100,21 @@ const [sessionExpired, setSessionExpired] = useState(false);
 
 ## GraphQL Integration
 
-### ✅ DO:
+✅ DO
+
 ```typescript
 // Use the unified Apollo client
-import { clientApolloClient } from '@/lib/apollo/unified-client';
+import { clientApolloClient } from "@/lib/apollo/unified-client";
 
 // Domain-specific GraphQL operations
-import { GetUsersDocument } from '@/domains/users/graphql/generated';
+import { GetUsersDocument } from "@/domains/users/graphql/generated";
 
 // Proper error handling with permission awareness
-import { useGracefulQuery } from '@/hooks/use-graceful-query';
+import { useGracefulQuery } from "@/hooks/use-graceful-query";
 ```
 
-### ❌ DON'T:
+❌ DON'T
+
 ```typescript
 // NEVER create multiple Apollo clients
 const customClient = new ApolloClient({ ... });
@@ -112,18 +125,19 @@ fetch('/graphql', { ... });
 
 ## Security Implementation
 
-### ✅ DO:
+✅ DO
+
 ```typescript
 // Always validate permissions
 import { usePermissions } from '@/hooks/use-enhanced-permissions';
 
 function SensitiveComponent() {
   const { hasPermission } = usePermissions();
-  
+
   if (!hasPermission('payroll:view')) {
     return <div>Access denied</div>;
   }
-  
+
   return <div>Sensitive content</div>;
 }
 
@@ -143,29 +157,35 @@ const userSchema = z.object({
 });
 ```
 
-### ❌ DON'T:
+❌ DON'T
+
 ```typescript
 // NEVER put business logic in client-side code
-const calculateTax = (income: number) => income * 0.30; // WRONG!
+const calculateTax = (income: number) => income * 0.3; // WRONG!
 
 // NEVER expose sensitive data in client
 const API_SECRET = process.env.SECRET_KEY; // WRONG!
 
 // NEVER skip input validation
-const createUser = (userData: any) => { /* without validation */ }; // WRONG!
+const createUser = (userData: any) => {
+  /* without validation */
+}; // WRONG!
 ```
 
 ## Component Development
 
-### ✅ DO:
-```typescript
+✅ DO
+
+```text
 // Follow the component hierarchy
 components/
 ├── auth/                 # Authentication guards
 ├── ui/                   # Base design system components
 ├── business-domain/      # Domain-specific components
 └── error-boundary/       # Error handling
+```
 
+```typescript
 // Use proper error boundaries
 import { ErrorBoundary } from '@/components/error-boundary';
 
@@ -178,7 +198,8 @@ if (loading) return <Skeleton />;
 if (error) return <ErrorMessage error={error} />;
 ```
 
-### ❌ DON'T:
+❌ DON'T
+
 ```typescript
 // NEVER create components without proper error handling
 function RiskyComponent() {
@@ -195,47 +216,52 @@ function AdminPanel() {
 
 ## API Development
 
-### ✅ DO:
+✅ DO
+
 ```typescript
 // Proper API route structure
-import { auth } from '@clerk/nextjs/server';
-import { z } from 'zod';
+import { auth } from "@clerk/nextjs/server";
+import { z } from "zod";
 
 const requestSchema = z.object({
   name: z.string().min(1),
-  email: z.string().email()
+  email: z.string().email(),
 });
 
 export async function POST(request: Request) {
   // 1. Authenticate
   const { userId, sessionClaims } = await auth();
   if (!userId) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
-  
+
   // 2. Validate role
   const role = sessionClaims?.metadata?.role;
-  if (!hasMinimumRole(role, 'manager')) {
-    return Response.json({ error: 'Insufficient permissions' }, { status: 403 });
+  if (!hasMinimumRole(role, "manager")) {
+    return Response.json(
+      { error: "Insufficient permissions" },
+      { status: 403 }
+    );
   }
-  
+
   // 3. Validate input
   const body = await request.json();
   const validatedData = requestSchema.parse(body);
-  
+
   // 4. Business logic with audit logging
   const result = await performOperation(validatedData);
   await auditLogger.log({
     userId,
-    action: 'create_user',
-    entityId: result.id
+    action: "create_user",
+    entityId: result.id,
   });
-  
+
   return Response.json(result);
 }
 ```
 
-### ❌ DON'T:
+❌ DON'T
+
 ```typescript
 // NEVER skip authentication
 export async function POST(request: Request) {
@@ -252,49 +278,54 @@ catch (error) {
 
 ## Data Flow Patterns
 
-### ✅ DO:
-```typescript
+✅ DO
+
+```text
 // Follow the established data flow
 1. User interaction → 2. Component validation → 3. API call → 4. Server validation → 5. Hasura RLS → 6. Database
+```
 
+```typescript
 // Use hooks for business logic
-import { usePayrollCreation } from '@/hooks/use-payroll-creation';
+import { usePayrollCreation } from "@/hooks/use-payroll-creation";
 
 function PayrollForm() {
   const { createPayroll, loading, error } = usePayrollCreation();
-  
-  const handleSubmit = async (data) => {
+
+  const handleSubmit = async data => {
     try {
       await createPayroll(data);
-      toast.success('Payroll created successfully');
+      toast.success("Payroll created successfully");
     } catch (error) {
-      toast.error('Failed to create payroll');
+      toast.error("Failed to create payroll");
     }
   };
 }
 ```
 
-### ❌ DON'T:
+❌ DON'T
+
 ```typescript
 // NEVER bypass the established data flow
 const directDatabaseAccess = () => {
   // Bypassing API and security layers - WRONG!
-  return pg.query('SELECT * FROM users');
+  return pg.query("SELECT * FROM users");
 };
 ```
 
 ## Environment and Configuration
 
-### ✅ DO:
+✅ DO
+
 ```typescript
 // Use environment validation
-import { environmentConfig } from '@/shared/utils/constants';
+import { environmentConfig } from "@/shared/utils/constants";
 
 // Validate required env vars at startup
 environmentConfig.validate();
 
 // Use feature flags
-import { getFeatureFlags } from '@/shared/utils/constants';
+import { getFeatureFlags } from "@/shared/utils/constants";
 
 const features = getFeatureFlags();
 if (features.mfa_enabled) {
@@ -302,18 +333,20 @@ if (features.mfa_enabled) {
 }
 ```
 
-### ❌ DON'T:
+❌ DON'T
+
 ```typescript
 // NEVER use environment variables without validation
 const secret = process.env.SECRET_KEY; // Could be undefined
 
 // NEVER hardcode configuration
-const API_URL = 'https://api.example.com'; // Use env vars
+const API_URL = "https://api.example.com"; // Use env vars
 ```
 
 ## Testing Requirements
 
-### ✅ DO:
+✅ DO
+
 ```typescript
 // Test authentication flows
 describe('AuthenticatedComponent', () => {
@@ -330,7 +363,8 @@ it('should hide sensitive data for viewer role', () => {
 });
 ```
 
-### ❌ DON'T:
+❌ DON'T
+
 ```typescript
 // NEVER test without authentication context
 render(<AuthenticatedComponent />); // Missing auth provider
@@ -338,7 +372,8 @@ render(<AuthenticatedComponent />); // Missing auth provider
 
 ## Performance Guidelines
 
-### ✅ DO:
+✅ DO
+
 ```typescript
 // Use proper memoization
 const expensiveCalculation = useMemo(() => {
@@ -346,13 +381,14 @@ const expensiveCalculation = useMemo(() => {
 }, [props.data]);
 
 // Lazy load heavy components
-const HeavyComponent = lazy(() => import('./HeavyComponent'));
+const HeavyComponent = lazy(() => import("./HeavyComponent"));
 
 // Use proper cache invalidation
 const { invalidateQuery } = useCacheInvalidation();
 ```
 
-### ❌ DON'T:
+❌ DON'T
+
 ```typescript
 // NEVER perform expensive operations on every render
 function Component() {
@@ -378,6 +414,7 @@ Before submitting any code, ensure:
 ## Common Patterns
 
 ### Authentication Context Usage
+
 ```typescript
 // Always check loading state first
 const { isSignedIn, isLoaded } = useAuth();
@@ -386,35 +423,37 @@ if (!isSignedIn) return <SignIn />;
 ```
 
 ### Error Handling Pattern
+
 ```typescript
 // Consistent error handling
 try {
   const result = await operation();
   return { success: true, data: result };
 } catch (error) {
-  logger.error('Operation failed', { error, context });
-  return { success: false, error: 'Operation failed' };
+  logger.error("Operation failed", { error, context });
+  return { success: false, error: "Operation failed" };
 }
 ```
 
 ### Component Structure
+
 ```typescript
 // Standard component structure
 export function ComponentName({ prop1, prop2 }: Props) {
   // 1. Hooks
   const { user } = useCurrentUser();
   const { hasPermission } = usePermissions();
-  
+
   // 2. Early returns
   if (!hasPermission('required:permission')) {
     return <AccessDenied />;
   }
-  
+
   // 3. Event handlers
   const handleAction = useCallback(() => {
     // Implementation
   }, [dependencies]);
-  
+
   // 4. Render
   return (
     <div>
@@ -426,7 +465,7 @@ export function ComponentName({ prop1, prop2 }: Props) {
 
 ## File Structure Reference
 
-```
+```text
 /app                    # Next.js App Router
 ├── (auth)/            # Unauthenticated routes
 ├── (dashboard)/       # Protected routes
@@ -455,6 +494,7 @@ export function ComponentName({ prop1, prop2 }: Props) {
 ## Migration Notes
 
 When working with this codebase:
+
 1. Always use the unified Apollo client from `/lib/apollo/unified-client.ts`
 2. Never implement custom authentication - use Clerk's native functions
 3. Follow the established domain structure for new features
