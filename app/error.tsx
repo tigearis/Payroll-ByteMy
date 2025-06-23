@@ -18,8 +18,19 @@ export default function Error({ error, reset }: ErrorProps) {
   const router = useRouter();
 
   useEffect(() => {
-    // Log the error for debugging
+    // Enhanced logging for debugging
     console.error("App Error:", error);
+    console.error("Error stack:", error.stack);
+    console.error("Error digest:", error.digest);
+    console.error("Error cause:", error.cause);
+    
+    // Log component stack if available
+    if (error.stack) {
+      const componentStackMatch = error.stack.match(/at\s+([^(]+)/g);
+      if (componentStackMatch) {
+        console.error("Potential component stack:", componentStackMatch.slice(0, 10));
+      }
+    }
 
     // Show a toast notification
     toast.error("Application Error", {
@@ -47,6 +58,26 @@ export default function Error({ error, reset }: ErrorProps) {
             An unexpected error has occurred. This has been automatically
             reported to our team.
           </p>
+
+          {/* Show error details in production too for debugging */}
+          <details className="text-left">
+            <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
+              Error Details {error.digest && `(${error.digest})`}
+            </summary>
+            <div className="mt-2 text-xs bg-muted p-3 rounded space-y-2">
+              <div>
+                <strong>Message:</strong> {error.message}
+              </div>
+              {error.digest && (
+                <div>
+                  <strong>Digest:</strong> {error.digest}
+                </div>
+              )}
+              <div>
+                <strong>Timestamp:</strong> {new Date().toISOString()}
+              </div>
+            </div>
+          </details>
 
           {process.env.NODE_ENV === "development" && (
             <details className="text-left">
