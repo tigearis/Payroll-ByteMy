@@ -52,13 +52,11 @@ query GetPayrolls {
 query GetPayrollsFallback {
   payrolls {
     id
-    id
   }
 }
 
 query GetPayrollById($id: uuid!) {
   payroll(id: $id) {
-    id
     id
     clientId
     cycleId
@@ -70,15 +68,11 @@ query GetPayrollById($id: uuid!) {
     goLiveDate
     client {
       id
-      id
     }
     payrollCycle {
       id
-      id
-      id
     }
     payrollDateType {
-      id
       id
     }
     payrollDates(order_by: { adjustedEftDate: asc }) {
@@ -95,7 +89,6 @@ query GetPayrollsByClient($clientId: uuid!) {
     where: { clientId: { _eq: $clientId }, supersededDate: { _is_null: true } }
     order_by: { updatedAt: desc }
   ) {
-    id
     id
     clientId
     employeeCount
@@ -166,9 +159,7 @@ query GetPayrollsMissingDates {
 query GetPayrollsSimple {
   payrolls {
     id
-    id
     client {
-      id
       id
     }
   }
@@ -198,7 +189,6 @@ query GetPayrollDatesById($id: uuid!) {
     originalEftDate
     adjustedEftDate
     processingDate
-    id
   }
 }
 
@@ -213,11 +203,9 @@ query GetPayrollVersionHistory($payrollId: uuid!) {
     order_by: { versionNumber: desc }
   ) {
     id
-    id
     versionNumber
     supersededDate
     goLiveDate
-    id
   }
 }
 
@@ -233,13 +221,12 @@ query GetLatestPayrollVersion($payrollId: uuid!) {
     limit: 1
   ) {
     id
-    id
     versionNumber
     parentPayrollId
   }
 }
 
-query GeneratePayrollDates(
+query GeneratePayrollDatesQuery(
   $payrollId: uuid!
   $startDate: date
   $endDate: date
@@ -313,5 +300,23 @@ query GetUserUpcomingPayrolls(
       id
       name
     }
+  }
+}
+
+# Migrated from inline operations - Priority 1 fixes
+
+query GetPayrollCycles {
+  payroll_cycles {
+    id
+    name
+    description
+  }
+}
+
+query GetPayrollDateTypes {
+  payroll_date_types {
+    id
+    name
+    description
   }
 }

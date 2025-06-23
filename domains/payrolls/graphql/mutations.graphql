@@ -85,3 +85,30 @@ mutation UpdatePayrollDateNotes($id: uuid!, $notes: String) {
     processingDate
   }
 }
+
+# Migrated from inline operations - Priority 1 fixes
+
+# Note: These mutations need to be implemented as Hasura actions or custom functions
+# mutation GeneratePayrollDates(
+#   $payrollId: uuid!
+#   $startDate: date!
+#   $endDate: date!
+# ) {
+#   generate_payroll_dates(
+#     p_payroll_id: $payrollId
+#     p_start_date: $startDate
+#     p_end_date: $endDate
+#   ) {
+#     id
+#     original_eft_date
+#     adjusted_eft_date
+#     processing_date
+#     notes
+#   }
+# }
+
+mutation DeletePayrollDates($payrollId: uuid!) {
+  deletePayrollDates(where: { payrollId: { _eq: $payrollId } }) {
+    affected_rows
+  }
+}

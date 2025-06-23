@@ -1,7 +1,7 @@
 // components/payrolls-missing-dates.tsx - UPDATED VERSION
 "use client";
 
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useLazyQuery } from "@apollo/client";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
@@ -28,7 +28,7 @@ import { useUserRole } from "@/hooks/use-user-role";
 
 import {
   GetPayrollsMissingDatesDocument,
-  GeneratePayrollDatesDocument,
+  GeneratePayrollDatesQueryDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 
 interface PayrollWithDateCount {
@@ -63,8 +63,8 @@ export function PayrollsMissingDates() {
     }
   );
 
-  const [generatePayrollDates, { loading: generating }] = useMutation(
-    GeneratePayrollDatesDocument
+  const [generatePayrollDates, { loading: generating }] = useLazyQuery(
+    GeneratePayrollDatesQueryDocument
   );
 
   useEffect(() => {

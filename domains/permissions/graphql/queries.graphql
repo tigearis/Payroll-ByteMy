@@ -6,18 +6,18 @@ query GetResources(
   $order_by: [resources_order_by!]
 ) {
   resources(where: $where, order_by: $order_by) {
-    ...ResourceCore
+    ...PermissionsResourceCore
     permissions {
-      ...PermissionCore
+      ...PermissionsPermissionCore
     }
   }
 }
 
 query GetResourceById($id: uuid!) {
   resource(id: $id) {
-    ...ResourceCore
+    ...PermissionsResourceCore
     permissions(order_by: { action: asc }) {
-      ...PermissionCore
+      ...PermissionsPermissionCore
     }
   }
 }
@@ -28,7 +28,7 @@ query GetPermissions(
   $order_by: [permissions_order_by!]
 ) {
   permissions(where: $where, order_by: $order_by) {
-    ...PermissionWithResource
+    ...PermissionsPermissionWithResource
   }
 }
 
@@ -37,7 +37,7 @@ query GetPermissionsByResource($resource_name: String!) {
     where: { resource: { name: { _eq: $resource_name } } }
     order_by: { action: asc }
   ) {
-    ...PermissionCore
+    ...PermissionsPermissionCore
   }
 }
 
@@ -64,7 +64,7 @@ query GetRoleById($id: uuid!) {
 
 query GetSystemRoles {
   roles(where: { isSystemRole: { _eq: true } }, order_by: { priority: asc }) {
-    ...RoleCore
+    ...PermissionsRoleCore
   }
 }
 

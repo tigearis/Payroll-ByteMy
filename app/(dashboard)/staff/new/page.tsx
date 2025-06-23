@@ -1,27 +1,15 @@
 "use client";
 
 import { useMutation } from "@apollo/client";
-import { gql } from "@apollo/client";
 import { useAuth } from "@clerk/nextjs";
 import { UserPlus } from "lucide-react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-// Temporary inline mutation until GraphQL consolidation
-const CREATE_STAFF_DIRECT = gql`
-  mutation CreateStaffDirect($input: users_insert_input!) {
-    insert_users_one(object: $input) {
-      id
-      name
-      email
-      role
-    }
-  }
-`;
 import { toast } from "sonner";
 
+import { CreateStaffDirectDocument } from "@/domains/users/graphql/generated/graphql";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -48,7 +36,7 @@ export default function CreateUserPage() {
   const [error, setError] = useState("");
 
   // Use GraphQL mutation directly (like payrolls do)
-  const [createStaff, { loading }] = useMutation(CREATE_STAFF_DIRECT, {
+  const [createStaff, { loading }] = useMutation(CreateStaffDirectDocument, {
     onCompleted: data => {
       toast.success(
         `Staff member ${form.firstName} ${form.lastName} created successfully!`
@@ -81,10 +69,12 @@ export default function CreateUserPage() {
       // Use GraphQL mutation directly (same pattern as payrolls)
       await createStaff({
         variables: {
-          name: `${form.firstName} ${form.lastName}`.trim(),
-          email: form.email,
-          role: form.role,
-          isStaff: true,
+          object: {
+            name: `${form.firstName} ${form.lastName}`.trim(),
+            email: form.email,
+            role: form.role,
+            isStaff: true,
+          },
         },
       });
     } catch (err: unknown) {

@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
 import { format } from "date-fns";
 import {
   Download,
@@ -39,43 +38,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const AUDIT_LOG_QUERY = gql`
-  query AuditLog(
-    $limit: Int!
-    $offset: Int!
-    $where: audit_log_bool_exp
-    $orderBy: [audit_log_order_by!]
-  ) {
-    audit_log(
-      limit: $limit
-      offset: $offset
-      where: $where
-      order_by: $orderBy
-    ) {
-      id
-      user_id
-      userrole
-      action
-      entity_type
-      entity_id
-      data_classification
-      fields_affected
-      success
-      error_message
-      ip_address
-      created_at
-      user {
-        email
-        name
-      }
-    }
-    audit_log_aggregate(where: $where) {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
+import {
+  AuditLogDocument,
+  OrderBy,
+} from "@/domains/audit/graphql/generated/graphql";
 
 const ITEMS_PER_PAGE = 50;
 
@@ -120,16 +86,16 @@ export default function AuditLogPage() {
     where.created_at = { ...where.created_at, _lte: dateTo };
   }
 
-  const { data, loading, error } = useQuery(AUDIT_LOG_QUERY, {
+  const { data, loading, error } = useQuery(AuditLogDocument, {
     variables: {
       limit: ITEMS_PER_PAGE,
       offset: page * ITEMS_PER_PAGE,
       where,
-      orderBy: [{ created_at: "desc" }],
+      orderBy: [{ eventTime: OrderBy.desc }],
     },
   });
 
-  const totalCount = data?.audit_log_aggregate?.aggregate?.count || 0;
+  const totalCount = data?.auditLogsAggregate?.aggregate?.count || 0;
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   const handleExport = () => {
@@ -316,7 +282,7 @@ export default function AuditLogPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {data?.audit_log?.map((entry: any) => (
+                    {data?.auditLogs?.map((entry: any) => (
                       <TableRow key={entry.id}>
                         <TableCell className="font-mono text-sm">
                           {format(

@@ -59,8 +59,13 @@ select_permissions:
     permission:
       columns:
         - created_at
+        - created_by_user_id
+        - dates_deleted
         - id
         - message
+        - new_payroll_id
+        - new_version_number
+        - old_payroll_id
       filter: {}
     comment: Viewers can see basic information
 update_permissions:

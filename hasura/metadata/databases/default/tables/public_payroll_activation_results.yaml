@@ -49,9 +49,11 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - action_taken
         - executed_at
         - id
-        - action_taken
+        - payroll_id
+        - version_number
       filter: {}
     comment: Viewers can see basic information
 update_permissions:

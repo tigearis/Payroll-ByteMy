@@ -127,3 +127,124 @@ mutation CreateUserInDatabase(
     updatedAt
   }
 }
+
+mutation CreateUserByEmail(
+  $name: String!
+  $email: String!
+  $role: user_role!
+  $isStaff: Boolean!
+  $managerId: uuid
+  $clerkUserId: String
+) {
+  insertUser(
+    object: {
+      name: $name
+      email: $email
+      role: $role
+      isStaff: $isStaff
+      managerId: $managerId
+      clerkUserId: $clerkUserId
+    }
+    on_conflict: {
+      constraint: users_email_key
+      update_columns: [name, role, isStaff, managerId, updatedAt]
+    }
+  ) {
+    id
+    name
+    email
+    role
+    isStaff
+    managerId
+    clerkUserId
+    createdAt
+    updatedAt
+  }
+}
+
+# Migrated from inline operations - Priority 1 fixes
+
+mutation CreateStaffDirect($object: users_insert_input!) {
+  insertUser(object: $object) {
+    id
+    name
+    email
+    role
+  }
+}
+
+mutation UpdateUserProfile($id: uuid!, $set: users_set_input!) {
+  updateUser(pk_columns: { id: $id }, _set: $set) {
+    id
+    name
+    email
+    username
+    image
+    role
+    isStaff
+    isActive
+    managerId
+    clerkUserId
+    createdAt
+    updatedAt
+  }
+}
+
+# User deletion operations - migrated from app/api/staff/delete/route.ts
+
+mutation DeactivateUser($id: uuid!, $deactivatedBy: String!) {
+  updateUser(
+    pk_columns: { id: $id }
+    _set: {
+      isActive: false
+      isStaff: false
+      role: "viewer"
+      deactivatedAt: "now()"
+      deactivatedBy: $deactivatedBy
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    name
+    email
+    role
+    clerkUserId
+    isStaff
+    isActive
+    deactivatedAt
+    deactivatedBy
+    manager {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation HardDeleteUser($id: uuid!) {
+  deleteUser(id: $id) {
+    id
+    name
+    email
+    role
+    clerkUserId
+  }
+}
+
+# Settings page operations - migrated from app/(dashboard)/settings/account/page.tsx
+
+mutation UpdateUserProfileSettings(
+  $id: uuid!
+  $name: String
+  $image: String
+) {
+  updateUser(
+    pk_columns: { id: $id }
+    _set: { name: $name, image: $image, updatedAt: "now()" }
+  ) {
+    id
+    name
+    image
+    updatedAt
+  }
+}

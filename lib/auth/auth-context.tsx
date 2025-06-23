@@ -2,16 +2,15 @@
 
 import { useAuth, useUser } from "@clerk/nextjs";
 import React, { createContext, useContext, useMemo, useCallback } from "react";
-
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { 
-  Role, 
+import {
+  Role,
   CustomPermission,
-  ROLE_PERMISSIONS, 
-  ROLE_HIERARCHY, 
-  getPermissionsForRole, 
-  hasRoleLevel 
+  getPermissionsForRole,
+  hasRoleLevel,
+  ROUTE_PERMISSIONS,
 } from "./permissions";
+import { useCurrentUser } from "@/hooks/use-current-user";
+
 // Using pure Clerk native functions - no custom token management needed
 
 export type UserRole = Role;
@@ -42,23 +41,6 @@ export interface AuthContextType {
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
 }
-
-
-// Route permissions mapping using new permission system
-export const ROUTE_PERMISSIONS: Record<string, CustomPermission[]> = {
-  "/dashboard": [], // All authenticated users can access dashboard
-  "/staff": ["custom:staff:read"],
-  "/staff/new": ["custom:staff:write"],
-  "/clients": ["custom:client:read"],
-  "/clients/new": ["custom:client:write"],
-  "/payrolls": ["custom:payroll:read"],
-  "/payroll-schedule": ["custom:payroll:write"],
-  "/settings": ["custom:settings:write"],
-  "/developer": ["custom:admin:manage"],
-  "/ai-assistant": [], // All authenticated users
-  "/calendar": [], // All authenticated users
-  "/tax-calculator": [], // All authenticated users
-};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -95,17 +77,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const hasValidDatabaseUser = !dbUserLoading && !!databaseUser && !dbUserError;
 
   // Helper function to check permissions using new system
-  const hasPermission = useCallback((permission: string): boolean => {
-    // SECURITY: ALWAYS deny if not authenticated
-    if (!isSignedIn || !isClerkLoaded) return false;
-    
-    // SECURITY: ALWAYS deny if user doesn't exist in database
-    if (!hasValidDatabaseUser) return false;
-    
-    // Get user's permissions from role
-    const userPermissions = getPermissionsForRole(userRole);
-    return userPermissions.includes(permission as CustomPermission);
-  }, [isSignedIn, isClerkLoaded, hasValidDatabaseUser, userRole]);
+  const hasPermission = useCallback(
+    (permission: string): boolean => {
+      // SECURITY: ALWAYS deny if not authenticated
+      if (!isSignedIn || !isClerkLoaded) return false;
+
+      // SECURITY: ALWAYS deny if user doesn't exist in database
+      if (!hasValidDatabaseUser) return false;
+
+      // Get user's permissions from role
+      const userPermissions = getPermissionsForRole(userRole);
+      return userPermissions.includes(permission as CustomPermission);
+    },
+    [isSignedIn, isClerkLoaded, hasValidDatabaseUser, userRole]
+  );
 
   // Memoize permissions to prevent unnecessary recalculations
   const userPermissions = useMemo(() => {
@@ -134,49 +119,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Update computed permissions using new system
   const computedPermissions = useMemo(() => {
     if (!userRole) return {};
-    
+
     const userPermissions = getPermissionsForRole(userRole);
-    
+
     return {
       // Staff management
       canManageStaff: userPermissions.includes("custom:staff:write"),
       canViewStaff: userPermissions.includes("custom:staff:read"),
       canInviteStaff: userPermissions.includes("custom:staff:invite"),
-      
-      // Client management  
+
+      // Client management
       canManageClients: userPermissions.includes("custom:client:write"),
       canViewClients: userPermissions.includes("custom:client:read"),
-      
+
       // Payroll operations
       canProcessPayrolls: userPermissions.includes("custom:payroll:write"),
       canViewPayrolls: userPermissions.includes("custom:payroll:read"),
-      
+
       // System administration
       canManageSettings: userPermissions.includes("custom:settings:write"),
       canAccessAdmin: userPermissions.includes("custom:admin:manage"),
-      
+
       // Reporting
       canViewReports: userPermissions.includes("custom:reports:read"),
       canExportReports: userPermissions.includes("custom:reports:export"),
-      
+
       // Audit
       canViewAudit: userPermissions.includes("custom:audit:read"),
       canManageAudit: userPermissions.includes("custom:audit:write"),
-      
+
       // Role-based checks
       isDeveloper: userRole === "developer",
       isAdministrator: userRole === "org_admin",
       isManager: userRole === "manager",
       isConsultant: userRole === "consultant",
       isViewer: userRole === "viewer",
-      
+
       // Role hierarchy checks
       hasAdminAccess: hasRoleLevel(userRole, "org_admin"),
       hasManagerAccess: hasRoleLevel(userRole, "manager"),
-      
+
       // User management (staff management)
       canManageUsers: userPermissions.includes("custom:staff:write"),
-      
+
       // Financial access
       canViewFinancials: userPermissions.includes("custom:reports:read"),
     };
@@ -240,4 +225,3 @@ export function useAuthContext() {
   }
   return context;
 }
-

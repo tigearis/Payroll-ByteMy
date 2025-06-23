@@ -19,8 +19,10 @@ select_permissions:
     permission:
       columns:
         - created_at
-        - id
+        - created_by
         - event_type
+        - id
+        - invoice_id
         - message
       filter: {}
     comment: Consultants can view relevant data
@@ -58,8 +60,10 @@ select_permissions:
     permission:
       columns:
         - created_at
-        - id
+        - created_by
         - event_type
+        - id
+        - invoice_id
         - message
       filter: {}
     comment: Viewers can see basic information

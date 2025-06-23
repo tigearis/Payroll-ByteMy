@@ -87,7 +87,9 @@ import {
   UpdateClientDocument,
   UpdateClientStatusDocument,
   ArchiveClientDocument,
+  type GetClientByIdQuery,
 } from "@/domains/clients/graphql/generated/graphql";
+import { type Payrolls } from "@/domains/payrolls/graphql/generated/graphql";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import { useSmartPolling } from "@/hooks/use-polling";
 
@@ -314,17 +316,13 @@ export default function ClientDetailPage() {
   };
 
   // Transform payroll data (same as payrolls page)
-  const transformPayrollData = (payrolls: any[]) => {
-    return payrolls.map((payroll: any) => {
-      // Calculate total employees from payroll_dates if available, otherwise use direct employee_count
-      const payrollDatesTotal =
-        payroll.payroll_dates?.reduce(
-          (sum: number, date: any) => sum + (date.employee_count || 0),
-          0
-        ) || 0;
+  const transformPayrollData = (payrolls: Payrolls[]) => {
+    return payrolls.map((payroll) => {
+      // PayrollDates don't have employeeCount - use payroll's employeeCount directly
+      const payrollDatesTotal = 0;
 
       const totalEmployees =
-        payrollDatesTotal > 0 ? payrollDatesTotal : payroll.employee_count || 0;
+        payrollDatesTotal > 0 ? payrollDatesTotal : payroll.employeeCount || 0;
 
       return {
         ...payroll,
@@ -332,16 +330,16 @@ export default function ClientDetailPage() {
         priority:
           totalEmployees > 50 ? "high" : totalEmployees > 20 ? "medium" : "low",
         progress: getStatusConfig(payroll.status || "Implementation").progress,
-        lastUpdated: new Date(payroll.updated_at || payroll.created_at),
-        lastUpdatedBy: payroll.userByPrimaryConsultantUserId?.name || "System",
+        lastUpdated: new Date(payroll.updatedAt || payroll.createdAt || new Date()),
+        lastUpdatedBy: payroll.primaryConsultant?.name || "System",
       };
     });
   };
 
   // Handle payroll selection
-  const handleSelectAll = (checked: boolean, payrolls: any[]) => {
+  const handleSelectAll = (checked: boolean, payrolls: Payrolls[]) => {
     if (checked) {
-      setSelectedPayrolls(payrolls.map((p: any) => p.id));
+      setSelectedPayrolls(payrolls.map((p) => p.id));
     } else {
       setSelectedPayrolls([]);
     }
@@ -441,14 +439,8 @@ export default function ClientDetailPage() {
   const totalPayrolls = (client as any)?.payrolls?.length || 0;
   const totalEmployees =
     (client as any)?.payrolls?.reduce((sum: number, p: any) => {
-      // Use same logic as transformPayrollData for consistent employee counts
-      const payrollDatesTotal =
-        p.payroll_dates?.reduce(
-          (dateSum: number, date: any) => dateSum + (date.employee_count || 0),
-          0
-        ) || 0;
-      const employeeCount =
-        payrollDatesTotal > 0 ? payrollDatesTotal : p.employee_count || 0;
+      // PayrollDates don't have employee_count - use payroll's employee_count directly
+      const employeeCount = p.employee_count || 0;
       return sum + employeeCount;
     }, 0) || 0;
   // Note: estimated_monthly_value field doesn't exist in database, setting to 0

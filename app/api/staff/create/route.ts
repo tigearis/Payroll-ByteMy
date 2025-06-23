@@ -195,7 +195,6 @@ export const POST = withAuth(
         const { serverApolloClient } = await import(
           "@/lib/apollo/unified-client"
         );
-        const { gql } = await import("@apollo/client");
         const { auth } = await import("@clerk/nextjs/server");
 
         // Get Clerk authentication token (same as working payroll routes)
@@ -234,40 +233,10 @@ export const POST = withAuth(
           apolloClient = serverApolloClient;
         }
 
-        const CREATE_USER_DB = gql`
-          mutation CreateUserDb(
-            $name: String!
-            $email: String!
-            $role: userrole!
-            $isStaff: Boolean!
-            $managerId: uuid
-            $clerkUserId: String
-          ) {
-            insert_users_one(
-              object: {
-                name: $name
-                email: $email
-                role: $role
-                is_staff: $isStaff
-                manager_id: $managerId
-                clerk_user_id: $clerkUserId
-              }
-              on_conflict: {
-                constraint: users_email_key
-                update_columns: [name, role, is_staff, manager_id, updated_at]
-              }
-            ) {
-              id
-              name
-              email
-              role
-              is_staff
-              manager_id
-              created_at
-              updated_at
-            }
-          }
-        `;
+        // Import generated GraphQL operation
+        const { CreateUserByEmailDocument } = await import(
+          "@/domains/users/graphql/generated/graphql"
+        );
 
         console.log("💾 Executing GraphQL mutation with variables:", {
           name: staffInput.name,
@@ -278,7 +247,7 @@ export const POST = withAuth(
         });
 
         const { data, errors } = await apolloClient.mutate({
-          mutation: CREATE_USER_DB,
+          mutation: CreateUserByEmailDocument,
           variables: {
             name: staffInput.name,
             email: staffInput.email,
@@ -305,7 +274,7 @@ export const POST = withAuth(
           );
         }
 
-        databaseUser = data.insert_users_one;
+        databaseUser = data?.insertUser;
         console.log(`✅ Created database user: ${databaseUser?.id}`);
       } catch (dbError: any) {
         console.error(`❌ Failed to create database user:`, {
@@ -357,7 +326,7 @@ export const POST = withAuth(
         is_staff: staffInput.is_staff,
         manager_id: staffInput.managerId,
         createdBy: session.userId,
-        createdAt: databaseUser?.created_at || new Date().toISOString(),
+        createdAt: databaseUser?.createdAt || new Date().toISOString(),
         invitationSent,
       };
 
@@ -368,7 +337,7 @@ export const POST = withAuth(
         eventType: SOC2EventType.USER_CREATED,
         userId: session.userId,
         userRole: session.role,
-        resourceId: staffData.id,
+        resourceId: staffData.id || "unknown",
         resourceType: "staff",
         action: "CREATE",
         success: true,

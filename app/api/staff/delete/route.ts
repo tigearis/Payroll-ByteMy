@@ -1,135 +1,19 @@
-import { gql } from "@apollo/client";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
 import { SecureErrorHandler } from "@/lib/security/error-responses";
-
-// GraphQL mutation to deactivate user (soft delete)
-const DEACTIVATE_USER = gql`
-  mutation DeactivateUser($id: uuid!, $deactivatedBy: String!) {
-    update_users_by_pk(
-      pk_columns: { id: $id }
-      _set: {
-        is_active: false
-        is_staff: false
-        role: "viewer"
-        deactivated_at: "now()"
-        deactivated_by: $deactivatedBy
-        updated_at: "now()"
-      }
-    ) {
-      id
-      name
-      email
-      role
-      clerk_user_id
-      is_staff
-      is_active
-      deactivated_at
-      deactivated_by
-      manager {
-        id
-        name
-        email
-      }
-    }
-  }
-`;
-
-// GraphQL mutation to hard delete user (developers only)
-const HARD_DELETE_USER = gql`
-  mutation HardDeleteUser($id: uuid!) {
-    delete_users_by_pk(id: $id) {
-      id
-      name
-      email
-      role
-      clerk_user_id
-    }
-  }
-`;
-
-// Query to get user details and check for dependencies
-const GET_USER_FOR_DELETION = gql`
-  query GetUserForDeletion($id: uuid!) {
-    users_by_pk(id: $id) {
-      id
-      name
-      email
-      role
-      clerk_user_id
-      is_staff
-      is_active
-      created_at
-      manager {
-        id
-        name
-        email
-      }
-    }
-
-    # Check for active payroll assignments
-    payrolls(
-      where: {
-        _or: [
-          { primary_consultant_user_id: { _eq: $id } }
-          { backup_consultant_user_id: { _eq: $id } }
-          { manager_user_id: { _eq: $id } }
-        ]
-        status: { _eq: "Active" }
-      }
-    ) {
-      id
-      name
-      status
-    }
-
-    # Check for subordinate staff
-    subordinates: users(
-      where: { manager_id: { _eq: $id }, is_active: { _eq: true } }
-    ) {
-      id
-      name
-      email
-    }
-
-    # Check for pending leave approvals (if user is a manager)
-    pending_leaves: leave(
-      where: {
-        _and: [
-          { user: { manager_id: { _eq: $id } } }
-          { status: { _eq: "Pending" } }
-        ]
-      }
-    ) {
-      id
-      user {
-        name
-      }
-      leave_type
-      start_date
-      end_date
-    }
-  }
-`;
-
-// Query to get current user's role and permissions
-const GET_CURRENT_USER_ROLE = gql`
-  query GetCurrentUserRole($clerkUserId: String!) {
-    users(where: { clerk_user_id: { _eq: $clerkUserId } }) {
-      id
-      role
-      name
-      email
-    }
-  }
-`;
+import { 
+  GetUserForDeletionDocument, 
+  GetCurrentUserRoleDocument,
+  DeactivateUserDocument,
+  HardDeleteUserDocument
+} from "@/domains/users";
 
 async function checkUserPermissions(clerkUserId: string) {
   const { data } = await adminApolloClient.query({
-    query: GET_CURRENT_USER_ROLE,
+    query: GetCurrentUserRoleDocument,
     variables: { clerkUserId },
     fetchPolicy: "no-cache",
   });
@@ -194,17 +78,17 @@ export const POST = withAuth(
 
       // Get user details and check dependencies
       const { data: userData } = await adminApolloClient.query({
-        query: GET_USER_FOR_DELETION,
+        query: GetUserForDeletionDocument,
         variables: { id: staffId },
         fetchPolicy: "no-cache",
       });
 
-      const user = userData?.users_by_pk;
+      const user = userData?.user;
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
 
-      if (!user.is_active && !forceHardDelete) {
+      if (!user.isActive && !forceHardDelete) {
         return NextResponse.json(
           { error: "User is already inactive" },
           { status: 400 }
@@ -212,7 +96,7 @@ export const POST = withAuth(
       }
 
       // Prevent self-deletion
-      if (user.clerk_user_id === userId) {
+      if (user.clerkUserId === userId) {
         return NextResponse.json(
           { error: "Cannot delete your own account" },
           { status: 400 }
@@ -236,9 +120,9 @@ export const POST = withAuth(
         );
       }
 
-      if (userData.pending_leaves?.length > 0) {
+      if (userData.pendingLeaves?.length > 0) {
         blockingDependencies.push(
-          `${userData.pendingleaves.length} pending leave approvals`
+          `${userData.pendingLeaves.length} pending leave approvals`
         );
       }
 
@@ -267,11 +151,11 @@ export const POST = withAuth(
       let result;
 
       // Delete from Clerk first (if they have an account)
-      if (user.clerk_user_id) {
+      if (user.clerkUserId) {
         try {
-          console.log(`🔄 Deleting Clerk user: ${user.clerk_user_id}`);
+          console.log(`🔄 Deleting Clerk user: ${user.clerkUserId}`);
           const client = await clerkClient();
-          await client.users.deleteUser(user.clerk_user_id);
+          await client.users.deleteUser(user.clerkUserId);
           clerkDeleted = true;
           console.log("✅ User deleted from Clerk successfully");
         } catch (clerkError) {
@@ -287,11 +171,11 @@ export const POST = withAuth(
         // Hard delete (developers only)
         console.log("💥 Performing HARD DELETE (irreversible)");
         const { data: deleteData } = await adminApolloClient.mutate({
-          mutation: HARD_DELETE_USER,
+          mutation: HardDeleteUserDocument,
           variables: { id: staffId },
         });
 
-        result = deleteData?.delete_users_by_pk;
+        result = deleteData?.deleteUser;
         if (!result) {
           return NextResponse.json(
             { error: "Failed to hard delete user from database" },
@@ -316,14 +200,14 @@ export const POST = withAuth(
         // Soft delete (deactivation)
         console.log("📝 Performing SOFT DELETE (deactivation)");
         const { data: deactivateData } = await adminApolloClient.mutate({
-          mutation: DEACTIVATE_USER,
+          mutation: DeactivateUserDocument,
           variables: {
             id: staffId,
             deactivatedBy: userId,
           },
         });
 
-        result = deactivateData?.update_users_by_pk;
+        result = deactivateData?.updateUser;
         if (!result) {
           return NextResponse.json(
             { error: "Failed to deactivate user in database" },
@@ -339,10 +223,10 @@ export const POST = withAuth(
           user: result,
           clerkDeleted,
           auditInfo: {
-            deactivatedAt: result.deactivated_at,
+            deactivatedAt: result.deactivatedAt,
             deactivatedBy: userId,
             originalRole: user.role,
-            hadClerkAccount: !!user.clerk_user_id,
+            hadClerkAccount: !!user.clerkUserId,
           },
           dependenciesFound:
             blockingDependencies.length > 0 ? blockingDependencies : null,
@@ -394,12 +278,12 @@ export async function GET(req: NextRequest) {
 
     // Get user details and dependencies
     const { data: userData } = await adminApolloClient.query({
-      query: GET_USER_FOR_DELETION,
+      query: GetUserForDeletionDocument,
       variables: { id: staffId },
       fetchPolicy: "no-cache",
     });
 
-    const user = userData?.users_by_pk;
+    const user = userData?.user;
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -430,15 +314,15 @@ export async function GET(req: NextRequest) {
       warnings.push("User manages other staff members who need a new manager");
     }
 
-    if (userData.pending_leaves?.length > 0) {
+    if (userData.pendingLeaves?.length > 0) {
       dependencies.push({
         type: "pending_leaves",
-        count: userData.pendingleaves.length,
-        items: userData.pendingleaves.map((l: any) => ({
+        count: userData.pendingLeaves.length,
+        items: userData.pendingLeaves.map((l: any) => ({
           id: l.id,
           user: l.user.name,
-          type: l.leave_type,
-          dates: `${l.start_date} to ${l.end_date}`,
+          type: l.leaveType,
+          dates: `${l.startDate} to ${l.endDate}`,
         })),
       });
       warnings.push("User has pending leave approvals to process");
@@ -450,9 +334,9 @@ export async function GET(req: NextRequest) {
         name: user.name,
         email: user.email,
         role: user.role,
-        isActive: user.is_active,
-        hasClerkAccount: !!user.clerk_user_id,
-        createdAt: user.created_at,
+        isActive: user.isActive,
+        hasClerkAccount: !!user.clerkUserId,
+        createdAt: user.createdAt,
         manager: user.manager,
       },
       permissions: {
@@ -466,7 +350,7 @@ export async function GET(req: NextRequest) {
       recommendedAction:
         dependencies.length > 0 && !permissions.isDeveloper
           ? "resolve_dependencies"
-          : user.is_active
+          : user.isActive
             ? "deactivate"
             : "already_inactive",
     });

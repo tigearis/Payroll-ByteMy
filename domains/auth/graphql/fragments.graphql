@@ -1,6 +1,7 @@
 # Auth Domain Fragments
+# Import shared fragments: UserCore, RoleCore, PermissionCore, ResourceCore, UserRoleCore, RolePermissionCore
 
-fragment UserCore on users {
+fragment AuthUserCore on users {
   id
   name
   email
@@ -12,7 +13,7 @@ fragment UserCore on users {
   updatedAt
 }
 
-fragment RoleCore on roles {
+fragment AuthRoleCore on roles {
   id
   name
   displayName
@@ -23,7 +24,7 @@ fragment RoleCore on roles {
   updatedAt
 }
 
-fragment PermissionCore on permissions {
+fragment AuthPermissionCore on permissions {
   id
   resourceId
   action
@@ -33,41 +34,17 @@ fragment PermissionCore on permissions {
   updatedAt
 }
 
-fragment ResourceCore on resources {
-  id
-  name
-  displayName
-  description
-  createdAt
-  updatedAt
-}
-
-fragment UserRoleCore on user_roles {
-  id
-  userId
-  roleId
-  createdAt
-  updatedAt
-}
-
 fragment AuthUserRoleWithDetails on user_roles {
   ...UserRoleCore
   user {
-    ...UserCore
+    ...AuthUserCore
   }
   role {
-    ...RoleCore
+    ...AuthRoleCore
   }
 }
 
-fragment RolePermissionCore on role_permissions {
-  id
-  roleId
-  permissionId
-  conditions
-  createdAt
-  updatedAt
-}
+# RolePermissionCore now moved to shared/graphql/fragments.graphql
 
 fragment PermissionOverrideCore on permission_overrides {
   id
