@@ -51,12 +51,14 @@ export default function SecurityDashboard() {
   });
 
   const {
-    isDeveloper,
-    isAdministrator,
-    hasAdminAccess,
+    hasPermission,
     isLoading: roleLoading,
     userRole,
   } = useUserRole();
+  
+  const isDeveloper = userRole === "developer";
+  const isAdministrator = userRole === "org_admin";
+  const hasAdminAccess = hasPermission("custom:admin:manage");
   const router = useRouter();
 
   // Debug loading states with more detail

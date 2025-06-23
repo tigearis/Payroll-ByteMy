@@ -24,9 +24,6 @@ import { twMerge } from "tailwind-merge";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
-import { DebugPermissions } from "@/components/debug-permissions";
-import { DebugPermissionInfo } from "@/components/debug-permission-info";
 import { useAuthContext } from "@/lib/auth/auth-context";
 
 // Local utility function
@@ -47,44 +44,44 @@ const allRoutes = [
     href: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    checkAccess: (auth: any) => true, // Dashboard always accessible
+    checkAccess: () => true, // Dashboard always accessible
   },
   {
     href: "/clients",
     label: "Clients",
     icon: Users,
-    checkAccess: (auth: any) => auth.canManageClients || auth.hasPermission("custom:client:read"),
+    checkAccess: (auth: any) => auth.hasPermission("custom:client:read"),
   },
   {
     href: "/payrolls",
     label: "Payrolls",
     icon: Calculator,
-    checkAccess: (auth: any) => auth.canProcessPayrolls || auth.hasPermission("custom:payroll:read"),
+    checkAccess: (auth: any) => auth.hasPermission("custom:payroll:read"),
   },
   {
     href: "/payroll-schedule",
     label: "Schedule",
     icon: CalendarDays,
-    checkAccess: (auth: any) => auth.canProcessPayrolls || auth.hasPermission("custom:payroll:read"),
+    checkAccess: (auth: any) => auth.hasPermission("custom:payroll:read"),
   },
   {
     href: "/staff",
     label: "Staff",
     icon: UserCog,
-    checkAccess: (auth: any) => auth.canManageUsers || auth.hasPermission("custom:staff:read"),
+    checkAccess: (auth: any) => auth.hasPermission("custom:staff:read"),
   },
   {
     href: "/tax-calculator",
     label: "Tax Calculator",
     icon: DollarSign,
-    checkAccess: (auth: any) => true,
+    checkAccess: () => true,
     devOnly: true, // Only show in development
   },
   {
     href: "/settings",
     label: "Settings",
     icon: Settings,
-    checkAccess: (auth: any) => auth.hasPermission("custom:settings:write") || auth.hasAdminAccess,
+    checkAccess: (auth: any) => auth.hasPermission("custom:settings:write"),
   },
   {
     href: "/developer",
@@ -97,7 +94,7 @@ const allRoutes = [
     href: "/security",
     label: "Security",
     icon: Shield,
-    checkAccess: (auth: any) => auth.hasAdminAccess || auth.userRole === "developer",
+    checkAccess: (auth: any) => auth.userRole === "developer" || auth.userRole === "org_admin",
   },
 ];
 
@@ -112,24 +109,19 @@ const routes = allRoutes.filter(route => {
 export function Sidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { user, isLoaded } = useUser();
-  const permissions = useEnhancedPermissions();
+  const { isLoaded } = useUser();
   const authContext = useAuthContext();
 
-  // Filter routes based on auth context (fallback to enhanced permissions)
+  // Filter routes based on auth context
   const accessibleRoutes = routes.filter(route => {
     if (!authContext.isLoading && authContext.isAuthenticated) {
       return route.checkAccess(authContext);
     }
-    // Fallback to enhanced permissions
-    if (!permissions.isLoaded) {
-      return false;
-    }
-    return route.checkAccess(permissions);
+    return false; // Don't show routes if not authenticated
   });
 
-  // Show loading state while user data is being fetched
-  if (!isLoaded) {
+  // Show loading state while auth data is being fetched
+  if (!isLoaded || authContext.isLoading) {
     return (
       <div
         className={cn(
@@ -153,8 +145,8 @@ export function Sidebar() {
     );
   }
 
-  // If user has no role or permissions not loaded, show minimal sidebar
-  if (!permissions.isLoaded || !permissions.userRole) {
+  // If user is not authenticated or has no role, show minimal sidebar
+  if (!authContext.isAuthenticated || !authContext.userRole) {
     return (
       <div
         className={cn(
@@ -167,7 +159,7 @@ export function Sidebar() {
         </div>
         <div className="flex-1 flex items-center justify-center">
           <p className="text-sm text-gray-500 text-center px-4">
-            {!permissions.isLoaded
+            {authContext.isLoading
               ? "Loading permissions..."
               : "Access restricted. Please contact your administrator."}
           </p>
@@ -199,7 +191,6 @@ export function Sidebar() {
         </Button>
       </div>
       <ScrollArea className="flex-1">
-        <DebugPermissions />
         <nav className="flex flex-col gap-2 p-2">
           {accessibleRoutes.map(route => (
             <Button
@@ -216,12 +207,6 @@ export function Sidebar() {
           ))}
         </nav>
 
-        {/* Debug info - temporary */}
-        {!isCollapsed && (
-          <div className="p-2 border-t">
-            <DebugPermissionInfo />
-          </div>
-        )}
 
         {/* Optional: Show role indicator */}
         {!isCollapsed && (
@@ -229,7 +214,7 @@ export function Sidebar() {
             <p className="text-xs text-gray-500">
               Role:{" "}
               <span className="font-medium">
-                {roleDisplayNames[permissions.userRole] || permissions.userRole}
+                {roleDisplayNames[authContext.userRole] || authContext.userRole}
               </span>
             </p>
           </div>

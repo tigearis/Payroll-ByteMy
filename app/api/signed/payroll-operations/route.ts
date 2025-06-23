@@ -20,7 +20,7 @@ const PROCESS_PAYROLL_BATCH = gql`
     update_payrolls(
       where: { id: { _in: $payrollIds } }
       _set: {
-        status: "Processing"
+        status: "Implementation"
         processed_at: "now()"
         processed_by: $processedBy
         updated_at: "now()"

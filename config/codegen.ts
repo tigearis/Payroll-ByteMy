@@ -25,8 +25,8 @@ if (
 }
 
 // SOC2 Compliance Header - using function to avoid template literal issues
-const generateSOC2Header = () =>
-  [
+const generateSOC2Header = () => {
+  return [
     "/**",
     " * THIS FILE IS AUTO-GENERATED - DO NOT EDIT MANUALLY",
     " * ",
@@ -51,6 +51,7 @@ const generateSOC2Header = () =>
     "",
     "",
   ].join("\n");
+};
 
 // Define domains with SOC2 compliance levels and auto-discovery
 const domains = [
@@ -353,17 +354,19 @@ const config: CodegenConfig = {
       plugins: [
         {
           add: {
-            content: [
-              generateSOC2Header(),
-              "/* ",
-              " * DOMAIN: SHARED",
-              " * SECURITY LEVEL: LOW",
-              " * ACCESS CONTROLS: Basic Authentication",
-              " * AUTO-EXPORTED: This file is automatically exported from domain index",
-              " */",
-              "",
-              "",
-            ].join("\n"),
+            content:
+              generateSOC2Header() +
+              "\n" +
+              [
+                "/* ",
+                " * DOMAIN: SHARED",
+                " * SECURITY LEVEL: LOW",
+                " * ACCESS CONTROLS: Basic Authentication",
+                " * AUTO-EXPORTED: This file is automatically exported from domain index",
+                " */",
+                "",
+                "",
+              ].join("\n"),
           },
         },
       ],
@@ -386,19 +389,39 @@ const config: CodegenConfig = {
       plugins: [
         {
           add: {
-            content: [
-              generateSOC2Header(),
-              "// Central export aggregator for GraphQL operations",
-              "// GQL utilities and base types",
-              "export * from './gql';",
-              "export * from './graphql';",
-              "",
-              "// Domain-specific exports (import directly to avoid conflicts)",
-              "// Example: import { GetCurrentUserDocument } from '../../../domains/users/graphql/generated/graphql';",
-              "",
-              "// Fragment masking utilities (if generated):",
-              "// export * from './fragment-masking';",
-            ].join("\n"),
+            placement: "content",
+            content: `/* AUTO-GENERATED - DO NOT EDIT MANUALLY
+ *
+ * SOC2 Compliant GraphQL Operations
+ * Security Classifications Applied:
+ * - CRITICAL: Auth, user roles, financial data - Requires admin access + MFA
+ * - HIGH: PII, client data, employee info - Requires role-based access
+ * - MEDIUM: Internal business data - Requires authentication
+ * - LOW: Public/aggregate data - Basic access control
+ *
+ * Compliance Features:
+ * ✓ Role-based access control (RBAC)
+ * ✓ Audit logging integration
+ * ✓ Data classification enforcement
+ * ✓ Permission boundary validation
+ * ✓ Automatic domain isolation and exports
+ *
+ * Generated: ${new Date().toISOString()}
+ * Schema Version: Latest from Hasura
+ * CodeGen Version: Unified v2.0
+ */
+
+// Central export aggregator for GraphQL operations
+// GQL utilities and base types
+export * from './gql';
+export * from './graphql';
+
+// Domain-specific exports (import directly to avoid conflicts)
+// Example: import { GetCurrentUserDocument } from '../../../domains/users/graphql/generated/graphql';
+
+// Fragment masking utilities (if generated):
+// export * from './fragment-masking';
+`,
           },
         },
       ],

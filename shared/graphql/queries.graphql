@@ -18,7 +18,9 @@ query GetDashboardStats {
   }
 
   # Active payrolls (non-superseded)
-  active_payrolls: payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
+  active_payrolls: payrollsAggregate(
+    where: { supersededDate: { _is_null: true } }
+  ) {
     aggregate {
       count
     }
@@ -26,9 +28,9 @@ query GetDashboardStats {
 
   # Processing queue (payrolls needing attention - can be refined later)
   processing_queue: payrollsAggregate(
-    where: { 
+    where: {
       supersededDate: { _is_null: true }
-      status: { _in: ["processing", "pending", "review"] }
+      status: { _in: ["Implementation"] }
     }
   ) {
     aggregate {
@@ -60,7 +62,7 @@ query GetSystemStats {
 
 query GetUpcomingPayrolls($from_date: date!, $limit: Int = 10) {
   payrolls(
-    where: { 
+    where: {
       supersededDate: { _is_null: true }
       payrollDates: { adjustedEftDate: { _gte: $from_date } }
     }

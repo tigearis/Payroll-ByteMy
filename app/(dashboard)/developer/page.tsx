@@ -25,6 +25,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { DebugPermissions } from "@/components/debug-permissions";
+import { DebugPermissionInfo } from "@/components/debug-permission-info";
 import { useUserRole } from "@/hooks/use-user-role";
 
 // Conditionally import ActorTokenManager only in development
@@ -86,7 +88,8 @@ interface OAuthStatus {
 
 export default function DeveloperPage() {
   // SECURITY: Verify user has developer permissions
-  const { isDeveloper, isLoading: roleLoading } = useUserRole();
+  const { userRole, isLoading: roleLoading } = useUserRole();
+  const isDeveloper = userRole === "developer";
 
   const [enabledFeatures, setEnabledFeatures] = useState<string[]>([]);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
@@ -241,6 +244,24 @@ export default function DeveloperPage() {
           Development tools and debugging utilities for testing the application.
         </p>
       </div>
+
+      {/* Debug Permissions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            Permission Debug
+          </CardTitle>
+          <CardDescription>
+            Current user permissions and authentication state
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <DebugPermissions />
+          <Separator className="my-4" />
+          <DebugPermissionInfo />
+        </CardContent>
+      </Card>
 
       {/* OAuth User Status */}
       <Card>
