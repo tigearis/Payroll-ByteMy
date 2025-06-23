@@ -48,14 +48,9 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <ErrorBoundary>
       <ClerkProvider>
+        {/* Temporarily simplified - removing potentially problematic providers */}
         <AuthenticatedApolloProvider>
-          <AuthProvider>
-            <PermissionCacheProvider>
-              <LayoutPreferencesProvider>
-                <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
-              </LayoutPreferencesProvider>
-            </PermissionCacheProvider>
-          </AuthProvider>
+          {children}
         </AuthenticatedApolloProvider>
       </ClerkProvider>
     </ErrorBoundary>
