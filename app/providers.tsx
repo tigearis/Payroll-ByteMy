@@ -44,14 +44,10 @@ function AuthenticatedApolloProvider({
 // PROVIDERS COMPONENT
 // ================================
 
-export function Providers({ children }: ProvidersProps) {  
+export function Providers({ children }: ProvidersProps) {
   return (
     <ErrorBoundary>
-      <ClerkProvider
-        signInUrl="/sign-in"
-        signInFallbackRedirectUrl="/dashboard"
-        afterSignOutUrl="/"
-      >
+      <ClerkProvider>
         <AuthenticatedApolloProvider>
           <AuthProvider>
             <PermissionCacheProvider>
