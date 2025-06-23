@@ -5,13 +5,14 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: '*'
+      columns: "*"
     comment: Developer role has full insert access
 select_permissions:
   - role: consultant
     permission:
       columns:
         - allowed_roles
+        - created_at
         - feature_name
         - id
         - is_enabled
@@ -20,7 +21,7 @@ select_permissions:
     comment: Consultants can view enabled features
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -28,6 +29,7 @@ select_permissions:
     permission:
       columns:
         - allowed_roles
+        - created_at
         - feature_name
         - id
         - is_enabled
@@ -38,6 +40,7 @@ select_permissions:
     permission:
       columns:
         - allowed_roles
+        - created_at
         - feature_name
         - id
         - is_enabled
@@ -48,6 +51,7 @@ select_permissions:
     permission:
       columns:
         - allowed_roles
+        - created_at
         - feature_name
         - id
         - is_enabled
@@ -57,7 +61,7 @@ select_permissions:
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

@@ -34,7 +34,7 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: '*'
+      columns: "*"
     comment: Developer role has full insert access
 select_permissions:
   - role: consultant
@@ -51,12 +51,13 @@ select_permissions:
         - target_role
         - target_user_id
         - timestamp
+        - updated_at
         - user_id
       filter: {}
     comment: Consultants can view relevant data
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -74,6 +75,7 @@ select_permissions:
         - target_role
         - target_user_id
         - timestamp
+        - updated_at
         - user_id
       filter: {}
       allow_aggregations: true
@@ -92,6 +94,7 @@ select_permissions:
         - target_role
         - target_user_id
         - timestamp
+        - updated_at
         - user_id
       filter: {}
     comment: Only org admins can view audit logs
@@ -109,13 +112,14 @@ select_permissions:
         - target_role
         - target_user_id
         - timestamp
+        - updated_at
         - user_id
       filter: {}
     comment: Viewers can see basic information
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

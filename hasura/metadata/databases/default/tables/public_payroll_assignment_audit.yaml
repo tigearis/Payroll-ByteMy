@@ -21,7 +21,7 @@ insert_permissions:
   - role: developer
     permission:
       check: {}
-      columns: '*'
+      columns: "*"
     comment: Developer role has full insert access
   - role: manager
     permission:
@@ -59,6 +59,7 @@ select_permissions:
         - id
         - payroll_date_id
         - to_consultant_id
+        - updated_at
       filter:
         _or:
           - from_consultant_id:
@@ -68,7 +69,7 @@ select_permissions:
     comment: Consultants can view audit records where they are involved
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -83,6 +84,7 @@ select_permissions:
         - id
         - payroll_date_id
         - to_consultant_id
+        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Managers can view all assignment audit records
@@ -97,6 +99,7 @@ select_permissions:
         - id
         - payroll_date_id
         - to_consultant_id
+        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all assignment audit records
@@ -111,12 +114,13 @@ select_permissions:
         - id
         - payroll_date_id
         - to_consultant_id
+        - updated_at
       filter: {}
     comment: Viewers can see basic information
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

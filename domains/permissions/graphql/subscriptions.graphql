@@ -3,7 +3,7 @@
 # Subscribe to role changes
 subscription RolesUpdated {
   roles(order_by: { updatedAt: desc }) {
-    ...PermissionsRoleCore
+    ...RoleCore
   }
 }
 
@@ -30,6 +30,6 @@ subscription PermissionsUpdated {
 
 subscription ResourcesUpdated {
   resources(order_by: { updatedAt: desc }) {
-    ...PermissionsResourceCore
+    ...ResourceCore
   }
 }
