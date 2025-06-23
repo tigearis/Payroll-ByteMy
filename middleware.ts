@@ -36,34 +36,35 @@ export default clerkMiddleware(async (auth, req) => {
       !req.nextUrl.pathname.includes("_next") &&
       !req.nextUrl.pathname.includes("favicon");
 
-    if (shouldLog) {
-      try {
-        await auditLogger.logAuditEvent({
-          userId: authResult.userId,
-          userRole:
-            (
-              authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any
-            )?.["x-hasura-role"] ||
-            authResult.sessionClaims?.metadata?.role ||
-            "unknown",
-          action: AuditAction.READ,
-          entityType: isApi ? "api_route" : "page_route",
-          entityId: req.nextUrl.pathname,
-          dataClassification: DataClassification.LOW,
-          requestId: crypto.randomUUID(),
-          success: true,
-          method: req.method,
-          userAgent:
-            req.headers.get("user-agent")?.substring(0, 100) || "unknown",
-          ipAddress:
-            req.headers.get("x-forwarded-for") ||
-            req.headers.get("x-real-ip") ||
-            "unknown",
-        });
-      } catch (err) {
-        console.error("[AUDIT] Failed to log middleware access:", err);
-      }
-    }
+    // Temporarily disable audit logging to debug infinite loop
+    // if (shouldLog) {
+    //   try {
+    //     await auditLogger.logAuditEvent({
+    //       userId: authResult.userId,
+    //       userRole:
+    //         (
+    //           authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any
+    //         )?.["x-hasura-role"] ||
+    //         authResult.sessionClaims?.metadata?.role ||
+    //         "unknown",
+    //       action: AuditAction.READ,
+    //       entityType: isApi ? "api_route" : "page_route",
+    //       entityId: req.nextUrl.pathname,
+    //       dataClassification: DataClassification.LOW,
+    //       requestId: crypto.randomUUID(),
+    //       success: true,
+    //       method: req.method,
+    //       userAgent:
+    //         req.headers.get("user-agent")?.substring(0, 100) || "unknown",
+    //       ipAddress:
+    //         req.headers.get("x-forwarded-for") ||
+    //         req.headers.get("x-real-ip") ||
+    //         "unknown",
+    //     });
+    //   } catch (err) {
+    //     console.error("[AUDIT] Failed to log middleware access:", err);
+    //   }
+    // }
   }
 
   return NextResponse.next();
