@@ -96,10 +96,10 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
     if (isVerificationCached) return; // Skip grace period if using cached result
     
     if (clerkLoaded && clerkUser && !gracePeriodEnded) {
-      // Give authentication flow 3 seconds to settle
+      // Give authentication flow minimal time to settle (reduced from 3s to 500ms)
       const timer = setTimeout(() => {
         setGracePeriodEnded(true);
-      }, 3000);
+      }, 500);
 
       return () => clearTimeout(timer);
     }
@@ -233,10 +233,12 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
     isBackgroundRefreshing,
   ]);
 
-  // Show loading while verifying (skip if using cached verification)
+  // Only show loading screen if:
+  // 1. Clerk hasn't loaded yet, OR
+  // 2. We have a user but no cached verification AND grace period hasn't ended yet
   if (
     !clerkLoaded ||
-    (clerkUser && !isVerificationCached && (dbUserLoading || !isReady || !gracePeriodEnded))
+    (clerkUser && !isVerificationCached && !gracePeriodEnded)
   ) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
