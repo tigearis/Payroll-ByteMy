@@ -1,19 +1,103 @@
 # Shared Subscriptions
 # Common subscriptions used across domains
 
-# Placeholder for shared subscriptions
-# Domain-specific subscriptions should be in their respective domain files
+# Real-time dashboard subscriptions
 
-# Example shared subscription for real-time updates
-# subscription OnAuditLogAdded {
-#   auditLog(order_by: {timestamp: desc}, limit: 1) {
-#     id
-#     timestamp
-#     event_type
-#   }
-# }
+subscription ClientCountUpdates {
+  clientsAggregate(where: { active: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+}
 
-# Placeholder subscription to make file valid
-# subscription PlaceholderSubscription {
-#   __typename
-# }
+subscription PayrollCountUpdates {
+  payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription UserCountUpdates {
+  usersAggregate(where: { isActive: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription RecentPayrollActivity {
+  payrolls(
+    where: { supersededDate: { _is_null: true } }
+    order_by: { updatedAt: desc }
+    limit: 5
+  ) {
+    id
+    name
+    status
+    updatedAt
+    client {
+      name
+    }
+  }
+}
+
+subscription RecentUserActivity {
+  users(
+    where: { isActive: { _eq: true } }
+    order_by: { updatedAt: desc }
+    limit: 3
+  ) {
+    id
+    name
+    role
+    updatedAt
+  }
+}
+
+subscription CriticalPayrollNotifications {
+  payrolls(
+    where: {
+      supersededDate: { _is_null: true }
+      status: { _in: ["Issue", "Critical"] }
+    }
+    order_by: { updatedAt: desc }
+    limit: 10
+  ) {
+    id
+    name
+    status
+    client {
+      name
+    }
+    primaryConsultant {
+      name
+    }
+  }
+}
+
+subscription UpcomingPayrollsUpdates($fromDate: date!) {
+  payrolls(
+    where: {
+      supersededDate: { _is_null: true }
+      payrollDates: { adjustedEftDate: { _gte: $fromDate } }
+    }
+    order_by: { payrollDates_aggregate: { min: { adjustedEftDate: asc } } }
+    limit: 5
+  ) {
+    id
+    name
+    status
+    client {
+      name
+    }
+    nextDate: payrollDates(
+      where: { adjustedEftDate: { _gte: $fromDate } }
+      order_by: { adjustedEftDate: asc }
+      limit: 1
+    ) {
+      adjustedEftDate
+    }
+  }
+}

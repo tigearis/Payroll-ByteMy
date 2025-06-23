@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 
+import { RegeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { secureHasuraService } from "@/lib/apollo/secure-hasura-service";
 import { withAuth, checkRateLimit } from "@/lib/auth/api-auth";
 
@@ -48,18 +48,7 @@ export const POST = withAuth(
 
       // Use secure service to regenerate dates
       const result = await secureHasuraService.executeAdminMutation(
-        gql`
-          mutation RegeneratePayrollDates(
-            $payrollId: uuid!
-            $startDate: date!
-            $endDate: date!
-          ) {
-            delete_payroll_dates(where: { payroll_id: { _eq: $payrollId } }) {
-              affected_rows
-            }
-            # Add regeneration logic here as needed
-          }
-        `,
+        RegeneratePayrollDatesDocument,
         { payrollId, startDate, endDate }
       );
 

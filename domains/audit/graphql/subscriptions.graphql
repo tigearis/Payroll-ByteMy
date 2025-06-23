@@ -35,3 +35,68 @@ subscription SubscribeToDataAccessLogs {
     ...DataAccessLogCore
   }
 }
+
+# Real-time security events for dashboard
+subscription SecurityEventsStream($twentyFourHoursAgo: timestamptz!) {
+  auditLogs(
+    where: { eventTime: { _gte: $twentyFourHoursAgo } }
+    order_by: { eventTime: desc }
+    limit: 50
+  ) {
+    id
+    eventTime
+    userId
+    user_email
+    user_role
+    action
+    resourceType
+    resourceId
+    success
+    error_message
+    ipAddress
+    metadata
+  }
+}
+
+# Real-time failed operations stream
+subscription FailedOperationsStream($twentyFourHoursAgo: timestamptz!) {
+  auditLogs(
+    where: { 
+      success: { _eq: false }
+      eventTime: { _gte: $twentyFourHoursAgo } 
+    }
+    order_by: { eventTime: desc }
+    limit: 20
+  ) {
+    id
+    eventTime
+    userId
+    user_email
+    user_role
+    action
+    resourceType
+    error_message
+    ipAddress
+  }
+}
+
+# Real-time critical data access stream
+subscription CriticalDataAccessStream($sevenDaysAgo: timestamptz!) {
+  dataAccessLogs(
+    where: { 
+      accessedAt: { _gte: $sevenDaysAgo }
+      dataClassification: { _eq: "CRITICAL" }
+    }
+    order_by: { accessedAt: desc }
+    limit: 30
+  ) {
+    id
+    accessedAt
+    userId
+    resourceType
+    accessType
+    dataClassification
+    rowCount
+    ipAddress
+  }
+}

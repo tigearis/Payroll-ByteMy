@@ -249,10 +249,6 @@ const nextConfig = {
             destination: "/404",
           },
           {
-            source: "/payroll-schedule",
-            destination: "/404",
-          },
-          {
             source: "/tax-calculator",
             destination: "/404",
           },

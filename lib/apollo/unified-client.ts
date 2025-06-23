@@ -205,17 +205,70 @@ function createUnifiedCache(): InMemoryCache {
             },
           },
           
-          // Audit logs (append-only)
+          // Audit logs with smart real-time updates
           auditLogs: {
+            keyArgs: ["where", "order_by"],
+            merge(existing = [], incoming, { args, readField }) {
+              const offset = args?.offset || 0;
+              
+              // For subscriptions (single new events), prepend to existing
+              if (incoming.length === 1 && existing.length > 0) {
+                const newEvent = incoming[0];
+                const existingIds = new Set(existing.map((log: any) => log.id));
+                
+                // Only add if not already present (prevent duplicates)
+                if (!existingIds.has(newEvent.id)) {
+                  return [newEvent, ...existing];
+                }
+                return existing;
+              }
+              
+              // For queries with pagination
+              if (offset > 0) {
+                return [...existing, ...incoming];
+              }
+              
+              // For fresh queries (offset = 0), check if data actually changed
+              if (existing.length > 0 && incoming.length > 0) {
+                const latestExisting = existing[0]?.eventTime;
+                const latestIncoming = incoming[0]?.eventTime;
+                
+                // If the latest event time is the same, no new data
+                if (latestExisting === latestIncoming && existing.length === incoming.length) {
+                  return existing; // No change, keep existing cache
+                }
+              }
+              
+              // Replace with incoming data
+              return incoming;
+            },
+          },
+          
+          // Data access logs with real-time updates
+          dataAccessLogs: {
             keyArgs: ["where", "order_by"],
             merge(existing = [], incoming, { args }) {
               const offset = args?.offset || 0;
               
-              if (offset === 0) {
-                return incoming;
+              // For subscriptions (single new events), prepend to existing
+              if (incoming.length === 1 && existing.length > 0) {
+                const newEvent = incoming[0];
+                const existingIds = new Set(existing.map((log: any) => log.id));
+                
+                // Only add if not already present
+                if (!existingIds.has(newEvent.id)) {
+                  return [newEvent, ...existing];
+                }
+                return existing;
               }
               
-              return [...existing, ...incoming];
+              // For queries with pagination
+              if (offset > 0) {
+                return [...existing, ...incoming];
+              }
+              
+              // Replace with incoming data for fresh queries
+              return incoming;
             },
           },
         },
@@ -290,6 +343,37 @@ function createUnifiedCache(): InMemoryCache {
       // Audit and compliance entities
       auditAuditLog: {
         keyFields: ["id"],
+        fields: {
+          // Ensure consistent event time handling
+          eventTime: {
+            merge: (_existing, incoming) => incoming,
+          },
+          // Metadata should be replaced, not merged
+          metadata: {
+            merge: (_existing, incoming) => incoming,
+          },
+        },
+      },
+      
+      auditDataAccessLog: {
+        keyFields: ["id"],
+        fields: {
+          accessedAt: {
+            merge: (_existing, incoming) => incoming,
+          },
+          dataClassification: {
+            merge: (_existing, incoming) => incoming,
+          },
+        },
+      },
+      
+      auditAuthEvents: {
+        keyFields: ["id"],
+        fields: {
+          eventTime: {
+            merge: (_existing, incoming) => incoming,
+          },
+        },
       },
       
       permissionAuditLog: {
@@ -314,7 +398,7 @@ function createUnifiedCache(): InMemoryCache {
         keyFields: ["id"],
         fields: {
           rolePermissions: {
-            merge: (existing, incoming) => incoming,
+            merge: (_existing, incoming) => incoming,
           },
         },
       },

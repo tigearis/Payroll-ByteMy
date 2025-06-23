@@ -320,3 +320,284 @@ query GetPayrollDateTypes {
     description
   }
 }
+
+# Enhanced payroll report query migrated from app/api/signed/payroll-operations/route.ts
+
+query GeneratePayrollReport($startDate: timestamptz!, $endDate: timestamptz!) {
+  payrolls(
+    where: {
+      _and: [
+        { createdAt: { _gte: $startDate } }
+        { createdAt: { _lte: $endDate } }
+        { status: { _in: ["Approved", "Completed"] } }
+      ]
+    }
+    order_by: { createdAt: desc }
+  ) {
+    id
+    name
+    status
+    createdAt
+    updatedAt
+    client {
+      id
+      name
+    }
+    primaryConsultant {
+      id
+      name
+      email
+    }
+  }
+}
+
+# Phase 2: Paginated payroll queries for performance optimization
+
+query GetPayrollsPaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: payrolls_bool_exp = {}
+  $orderBy: [payrolls_order_by!] = [{ updatedAt: desc }]
+) {
+  payrolls(
+    limit: $limit
+    offset: $offset
+    where: { 
+      _and: [
+        { supersededDate: { _is_null: true } }
+        $where
+      ]
+    }
+    order_by: $orderBy
+  ) {
+    ...PayrollListItem
+  }
+  
+  payrollsAggregate(
+    where: { 
+      _and: [
+        { supersededDate: { _is_null: true } }
+        $where
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetPayrollsByClientPaginated(
+  $clientId: uuid!
+  $limit: Int = 20
+  $offset: Int = 0
+) {
+  payrolls(
+    where: { 
+      clientId: { _eq: $clientId }
+      supersededDate: { _is_null: true }
+    }
+    order_by: { updatedAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...PayrollTableRow
+  }
+  
+  clientPayrollsAggregate: payrollsAggregate(
+    where: { 
+      clientId: { _eq: $clientId }
+      supersededDate: { _is_null: true }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query SearchPayrollsPaginated(
+  $searchTerm: String!
+  $limit: Int = 20
+  $offset: Int = 0
+) {
+  payrolls(
+    where: {
+      _and: [
+        { supersededDate: { _is_null: true } }
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } }
+            { client: { name: { _ilike: $searchTerm } } }
+          ]
+        }
+      ]
+    }
+    order_by: { updatedAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...PayrollListItem
+  }
+  
+  searchAggregate: payrollsAggregate(
+    where: {
+      _and: [
+        { supersededDate: { _is_null: true } }
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } }
+            { client: { name: { _ilike: $searchTerm } } }
+          ]
+        }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetPayrollsByStatusPaginated(
+  $status: payroll_status!
+  $limit: Int = 20
+  $offset: Int = 0
+) {
+  payrolls(
+    where: { 
+      status: { _eq: $status }
+      supersededDate: { _is_null: true }
+    }
+    order_by: { updatedAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...PayrollListItem
+  }
+  
+  statusAggregate: payrollsAggregate(
+    where: { 
+      status: { _eq: $status }
+      supersededDate: { _is_null: true }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Phase 2: Optimized payroll queries to reduce over-fetching
+
+query GetPayrollsQuickList {
+  # Minimal payroll data for dropdowns and quick lists
+  payrolls(
+    where: { supersededDate: { _is_null: true } }
+    order_by: { name: asc }
+  ) {
+    ...PayrollMinimal
+  }
+}
+
+query GetPayrollCard($id: uuid!) {
+  # Essential payroll data for cards and previews
+  payroll(id: $id) {
+    ...PayrollSummary
+    client {
+      name
+    }
+    primaryConsultant {
+      name
+    }
+    nextDate: payrollDates(
+      where: { adjustedEftDate: { _gte: "now()" } }
+      order_by: { adjustedEftDate: asc }
+      limit: 1
+    ) {
+      adjustedEftDate
+    }
+  }
+}
+
+query GetPayrollOptions {
+  # Ultra-minimal for form options and selectors
+  payrolls(
+    where: { supersededDate: { _is_null: true } }
+    order_by: { name: asc }
+  ) {
+    id
+    name
+  }
+}
+
+query GetPayrollDashboardCards($limit: Int = 10) {
+  # Optimized for payroll dashboard grid
+  payrolls(
+    where: { supersededDate: { _is_null: true } }
+    order_by: { updatedAt: desc }
+    limit: $limit
+  ) {
+    ...PayrollDashboardCard
+  }
+}
+
+query GetPayrollCalendarEvents($startDate: date!, $endDate: date!) {
+  # Minimal data for calendar view
+  payrolls(
+    where: {
+      supersededDate: { _is_null: true }
+      payrollDates: { 
+        adjustedEftDate: { _gte: $startDate, _lte: $endDate }
+      }
+    }
+  ) {
+    id
+    name
+    status
+    client {
+      name
+    }
+    calendarDates: payrollDates(
+      where: { adjustedEftDate: { _gte: $startDate, _lte: $endDate } }
+      order_by: { adjustedEftDate: asc }
+    ) {
+      adjustedEftDate
+      processingDate
+    }
+  }
+}
+
+query GetPayrollStatusCounts {
+  # Quick status overview for dashboard
+  total: payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
+    aggregate { count }
+  }
+  
+  active: payrollsAggregate(
+    where: { 
+      supersededDate: { _is_null: true }
+      status: { _eq: "Active" }
+    }
+  ) {
+    aggregate { count }
+  }
+  
+  implementation: payrollsAggregate(
+    where: { 
+      supersededDate: { _is_null: true }
+      status: { _eq: "Implementation" }
+    }
+  ) {
+    aggregate { count }
+  }
+  
+  archived: payrollsAggregate(
+    where: { 
+      supersededDate: { _is_null: true }
+      status: { _eq: "Archived" }
+    }
+  ) {
+    aggregate { count }
+  }
+}

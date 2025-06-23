@@ -1,39 +1,14 @@
-import { gql } from "@apollo/client";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
 
-// GraphQL mutation to update user role in database
-const UPDATE_STAFF_ROLE = gql`
-  mutation UpdateStaffRole($id: uuid!, $role: userrole!) {
-    update_users_by_pk(
-      pk_columns: { id: $id }
-      _set: { role: $role, updated_at: "now()" }
-    ) {
-      id
-      name
-      email
-      role
-      clerk_user_id
-      updated_at
-    }
-  }
-`;
-
-// Query to get user's Clerk ID from database
-const GET_USER_CLERK_ID = gql`
-  query GetUserClerkId($id: uuid!) {
-    users_by_pk(id: $id) {
-      id
-      name
-      email
-      role
-      clerk_user_id
-    }
-  }
-`;
+// Import domain operations
+import { 
+  UpdateStaffRoleDocument, 
+  GetUserClerkIdDocument 
+} from "@/domains/users/graphql/generated/graphql";
 
 export const POST = withAuth(
   async (req: NextRequest) => {
@@ -62,12 +37,12 @@ export const POST = withAuth(
 
       // First, get the user's Clerk ID from the database
       const { data: userData } = await adminApolloClient.query({
-        query: GET_USER_CLERK_ID,
+        query: GetUserClerkIdDocument,
         variables: { id: staffId },
         fetchPolicy: "no-cache",
       });
 
-      const user = userData?.users_by_pk;
+      const user = userData?.user;
       if (!user) {
         return NextResponse.json(
           { error: "Staff member not found" },
@@ -78,14 +53,14 @@ export const POST = withAuth(
       // Update database first
       console.log("📝 Updating database...");
       const { data: updateData } = await adminApolloClient.mutate({
-        mutation: UPDATE_STAFF_ROLE,
+        mutation: UpdateStaffRoleDocument,
         variables: {
           id: staffId,
           role: newRole,
         },
       });
 
-      const updatedUser = updateData?.update_users_by_pk;
+      const updatedUser = updateData?.updateUser;
       if (!updatedUser) {
         return NextResponse.json(
           { error: "Failed to update database" },
@@ -96,16 +71,16 @@ export const POST = withAuth(
       console.log("✅ Database updated successfully");
 
       // If user has a Clerk ID, update Clerk metadata too
-      if (user.clerk_user_id) {
-        console.log(`🔄 Updating Clerk metadata for ${user.clerk_user_id}...`);
+      if (user.clerkUserId) {
+        console.log(`🔄 Updating Clerk metadata for ${user.clerkUserId}...`);
 
         try {
           const client = await clerkClient();
 
           // Get current metadata to preserve other fields
-          const clerkUser = await client.users.getUser(user.clerk_user_id);
+          const clerkUser = await client.users.getUser(user.clerkUserId);
 
-          await client.users.updateUserMetadata(user.clerk_user_id, {
+          await client.users.updateUserMetadata(user.clerkUserId, {
             publicMetadata: {
               ...clerkUser.publicMetadata,
               role: newRole, // Update to new role
@@ -133,7 +108,7 @@ export const POST = withAuth(
         success: true,
         message: "Role updated successfully",
         user: updatedUser,
-        clerkSynced: !!user.clerk_user_id,
+        clerkSynced: !!user.clerkUserId,
       });
     } catch (error) {
       console.error("❌ Error updating staff role:", error);

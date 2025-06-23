@@ -35,7 +35,72 @@ fragment ClientWithRelations on clients {
   }
   notes: externalSystems {
     id
-    id
     system_id
+  }
+}
+
+# Performance-optimized fragments for Phase 2
+
+fragment ClientSummary on clients {
+  id
+  name
+  active
+}
+
+fragment ClientListItem on clients {
+  ...ClientSummary
+  contactEmail
+  contactPhone
+  payrollCount: payrolls_aggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+fragment ClientDashboardCard on clients {
+  ...ClientSummary
+  activePayrolls: payrolls_aggregate(
+    where: { supersededDate: { _is_null: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+fragment ClientTableRow on clients {
+  ...ClientListItem
+  contactPerson
+  updatedAt
+}
+
+fragment ClientMinimal on clients {
+  id
+  name
+}
+
+fragment ClientWithMetrics on clients {
+  ...ClientSummary
+  totalPayrolls: payrolls_aggregate {
+    aggregate {
+      count
+    }
+  }
+  activePayrolls: payrolls_aggregate(
+    where: { supersededDate: { _is_null: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  recentPayrolls: payrolls(
+    order_by: { updatedAt: desc }
+    limit: 3
+  ) {
+    id
+    name
+    status
+    updatedAt
   }
 }

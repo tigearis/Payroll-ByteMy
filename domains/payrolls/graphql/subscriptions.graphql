@@ -40,3 +40,119 @@ subscription TestSubscription {
     name
   }
 }
+
+# Phase 2: Enhanced real-time subscriptions
+
+subscription PayrollStatusUpdates($status: payroll_status!) {
+  payrolls(
+    where: { 
+      status: { _eq: $status }
+      supersededDate: { _is_null: true }
+    }
+    order_by: { updatedAt: desc }
+  ) {
+    ...PayrollListItem
+  }
+}
+
+subscription UserPayrollUpdates($userId: uuid!) {
+  payrolls(
+    where: {
+      _and: [
+        { supersededDate: { _is_null: true } }
+        {
+          _or: [
+            { primaryConsultantUserId: { _eq: $userId } }
+            { backupConsultantUserId: { _eq: $userId } }
+            { managerUserId: { _eq: $userId } }
+          ]
+        }
+      ]
+    }
+    order_by: { updatedAt: desc }
+  ) {
+    ...PayrollDashboardCard
+  }
+}
+
+subscription PayrollTotalCount {
+  payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription ActivePayrollCount {
+  payrollsAggregate(
+    where: { 
+      supersededDate: { _is_null: true }
+      status: { _eq: "Active" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription ImplementationPayrollCount {
+  payrollsAggregate(
+    where: { 
+      supersededDate: { _is_null: true }
+      status: { _eq: "Implementation" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription UpcomingPayrollDates($fromDate: date!) {
+  payrollDates(
+    where: { adjustedEftDate: { _gte: $fromDate } }
+    order_by: { adjustedEftDate: asc }
+    limit: 10
+  ) {
+    id
+    adjustedEftDate
+    processingDate
+    payroll {
+      id
+      name
+      status
+      client {
+        name
+      }
+      primaryConsultant {
+        name
+      }
+    }
+  }
+}
+
+subscription PayrollCalendarUpdates($startDate: date!, $endDate: date!) {
+  payrolls(
+    where: {
+      supersededDate: { _is_null: true }
+      payrollDates: { 
+        adjustedEftDate: { _gte: $startDate, _lte: $endDate }
+      }
+    }
+  ) {
+    id
+    name
+    status
+    client {
+      name
+    }
+    payrollDates(
+      where: { adjustedEftDate: { _gte: $startDate, _lte: $endDate } }
+      order_by: { adjustedEftDate: asc }
+    ) {
+      adjustedEftDate
+      processingDate
+    }
+  }
+}

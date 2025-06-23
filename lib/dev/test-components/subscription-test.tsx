@@ -30,7 +30,7 @@ export function SubscriptionTest() {
 
   const { data, loading, error } = useSubscription(TEST_SUBSCRIPTION, {
     skip: !isActive,
-    onSubscriptionData: () => {
+    onData: () => {
       addLog("✅ Received subscription data");
     },
     onSubscriptionComplete: () => {

@@ -33,7 +33,7 @@ export function useRealTimeSubscription({
   // Subscription options
   const options: SubscriptionHookOptions = {
     variables: variables || {},
-    onSubscriptionData: async ({ subscriptionData }) => {
+    onData: async ({ data }) => {
       if (!isConnected) {
         setIsConnected(true);
         if (shouldToast) {
@@ -42,8 +42,8 @@ export function useRealTimeSubscription({
       }
 
       // Handle the data
-      if (subscriptionData.data && onData) {
-        onData(subscriptionData.data);
+      if (data.data && onData) {
+        onData(data.data);
       }
 
       // Refresh relevant queries

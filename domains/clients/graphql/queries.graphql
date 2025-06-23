@@ -83,3 +83,222 @@ query GetClientStats {
     }
   }
 }
+
+# Phase 2: Paginated client queries for performance optimization
+
+query GetClientsPaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: clients_bool_exp = {}
+  $orderBy: [clients_order_by!] = [{ name: asc }]
+) {
+  clients(
+    limit: $limit
+    offset: $offset
+    where: { 
+      _and: [
+        { active: { _eq: true } }
+        $where
+      ]
+    }
+    order_by: $orderBy
+  ) {
+    ...ClientListItem
+  }
+  
+  clientsAggregate(
+    where: { 
+      _and: [
+        { active: { _eq: true } }
+        $where
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetAllClientsPaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: clients_bool_exp = {}
+  $orderBy: [clients_order_by!] = [{ name: asc }]
+) {
+  clients(
+    limit: $limit
+    offset: $offset
+    where: $where
+    order_by: $orderBy
+  ) {
+    ...ClientTableRow
+  }
+  
+  allClientsAggregate: clientsAggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query SearchClientsPaginated(
+  $searchTerm: String!
+  $limit: Int = 20
+  $offset: Int = 0
+) {
+  clients(
+    where: {
+      _and: [
+        { active: { _eq: true } }
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } }
+            { contactPerson: { _ilike: $searchTerm } }
+            { contactEmail: { _ilike: $searchTerm } }
+          ]
+        }
+      ]
+    }
+    order_by: { name: asc }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...ClientListItem
+  }
+  
+  searchAggregate: clientsAggregate(
+    where: {
+      _and: [
+        { active: { _eq: true } }
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } }
+            { contactPerson: { _ilike: $searchTerm } }
+            { contactEmail: { _ilike: $searchTerm } }
+          ]
+        }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetInactiveClientsPaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+) {
+  clients(
+    where: { active: { _eq: false } }
+    order_by: { name: asc }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...ClientTableRow
+  }
+  
+  inactiveAggregate: clientsAggregate(
+    where: { active: { _eq: false } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Phase 2: Optimized client queries to reduce over-fetching
+
+query GetClientsQuickList {
+  # Minimal client data for dropdowns and quick lists
+  clients(
+    where: { active: { _eq: true } }
+    order_by: { name: asc }
+  ) {
+    ...ClientMinimal
+  }
+}
+
+query GetClientCard($id: uuid!) {
+  # Essential client data for cards and previews
+  client(id: $id) {
+    ...ClientSummary
+    contactEmail
+    payrollCount: payrolls_aggregate(
+      where: { supersededDate: { _is_null: true } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Migrated from app/api/developer/route.ts
+
+query GetAllClientsForDeveloper {
+  clients {
+    id
+    name
+    contactPerson
+    contactEmail
+    active
+  }
+}
+
+query GetClientOptions {
+  # Ultra-minimal for form options and selectors
+  clients(
+    where: { active: { _eq: true } }
+    order_by: { name: asc }
+  ) {
+    id
+    name
+  }
+}
+
+query GetClientDashboardCards($limit: Int = 12) {
+  # Optimized for client dashboard grid
+  clients(
+    where: { active: { _eq: true } }
+    order_by: { name: asc }
+    limit: $limit
+  ) {
+    ...ClientDashboardCard
+  }
+}
+
+query GetClientWithActivePayrolls($id: uuid!) {
+  # Client data with only active payroll summary
+  client(id: $id) {
+    ...ClientSummary
+    contactEmail
+    contactPhone
+    contactPerson
+    activePayrolls: payrolls(
+      where: { supersededDate: { _is_null: true } }
+      order_by: { name: asc }
+    ) {
+      id
+      name
+      status
+      primaryConsultant {
+        name
+      }
+    }
+  }
+}
+
+# Migrated from app/api/developer/route.ts
+
+query GetAllClientsForDeveloper {
+  clients {
+    id
+    name
+    contactPerson
+    contactEmail
+    active
+  }
+}

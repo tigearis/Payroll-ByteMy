@@ -12,7 +12,7 @@ export const PayrollUpdatesComponent = ({
   refetchPayrolls: RefetchFunction;
 }) => {
   useSubscription(PayrollUpdatesDocument, {
-    onSubscriptionData: async () => {
+    onData: async () => {
       await refetchPayrolls(); // Trigger refetch when subscription data is received
     },
   });

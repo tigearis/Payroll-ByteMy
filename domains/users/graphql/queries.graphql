@@ -499,3 +499,276 @@ query GetCurrentUserRole($clerkUserId: String!) {
     email
   }
 }
+
+# Phase 2: Paginated queries for performance optimization
+
+query GetUsersPaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: users_bool_exp = {}
+  $orderBy: [users_order_by!] = [{ name: asc }]
+) {
+  users(
+    limit: $limit
+    offset: $offset
+    where: $where
+    order_by: $orderBy
+  ) {
+    ...UserListItem
+  }
+  
+  usersAggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetStaffPaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: users_bool_exp = {}
+) {
+  users(
+    limit: $limit
+    offset: $offset
+    where: { 
+      _and: [
+        { isActive: { _eq: true } }
+        { role: { _in: ["consultant", "manager", "org_admin"] } }
+        $where
+      ]
+    }
+    order_by: { name: asc }
+  ) {
+    ...UserListItem
+    manager {
+      ...UserMinimal
+    }
+  }
+  
+  staffAggregate: usersAggregate(
+    where: { 
+      _and: [
+        { isActive: { _eq: true } }
+        { role: { _in: ["consultant", "manager", "org_admin"] } }
+        $where
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query SearchUsersPaginated(
+  $searchTerm: String!
+  $limit: Int = 20
+  $offset: Int = 0
+) {
+  users(
+    where: {
+      _and: [
+        { isActive: { _eq: true } }
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } }
+            { email: { _ilike: $searchTerm } }
+            { username: { _ilike: $searchTerm } }
+          ]
+        }
+      ]
+    }
+    order_by: { name: asc }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...UserListItem
+  }
+  
+  searchAggregate: usersAggregate(
+    where: {
+      _and: [
+        { isActive: { _eq: true } }
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } }
+            { email: { _ilike: $searchTerm } }
+            { username: { _ilike: $searchTerm } }
+          ]
+        }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Enhanced user queries migrated from /app/api/users/[id]/route.ts
+
+query GetUserByIdComplete($id: uuid!) {
+  user(id: $id) {
+    id
+    name
+    email
+    role
+    createdAt
+    updatedAt
+    isStaff
+    managerId
+    clerkUserId
+    manager {
+      id
+      name
+      email
+      role
+    }
+    directReports {
+      id
+      name
+      email
+      role
+    }
+  }
+}
+
+query GetUserByClerkIdComplete($clerkId: String!) {
+  users(where: { clerkUserId: { _eq: $clerkId } }) {
+    id
+    name
+    email
+    role
+    createdAt
+    updatedAt
+    isStaff
+    managerId
+    clerkUserId
+    manager {
+      id
+      name
+      email
+      role
+    }
+    directReports {
+      id
+      name
+      email
+      role
+    }
+  }
+}
+
+# Migrated from app/api/staff/update-role/route.ts
+
+query GetUserClerkId($id: uuid!) {
+  user(id: $id) {
+    id
+    name
+    email
+    role
+    clerkUserId
+  }
+}
+
+# Phase 2: Optimized user queries to reduce over-fetching
+
+query GetUsersQuickList {
+  # Minimal user data for quick lists and dropdowns
+  users(
+    where: { isActive: { _eq: true } }
+    order_by: { name: asc }
+  ) {
+    ...UserMinimal
+  }
+}
+
+query GetStaffQuickList {
+  # Minimal staff data for assignments and dropdowns
+  users(
+    where: { 
+      isActive: { _eq: true }
+      role: { _in: ["consultant", "manager", "org_admin"] }
+    }
+    order_by: { name: asc }
+  ) {
+    ...UserMinimal
+  }
+}
+
+query GetManagersQuickList {
+  # Minimal manager data for hierarchy views
+  users(
+    where: { 
+      isActive: { _eq: true }
+      role: { _in: ["manager", "org_admin"] }
+    }
+    order_by: { name: asc }
+  ) {
+    ...UserMinimal
+  }
+}
+
+query GetUserCard($id: uuid!) {
+  # Minimal user data for user cards and preview
+  user(id: $id) {
+    ...UserSummary
+    email
+    manager {
+      ...UserMinimal
+    }
+  }
+}
+
+query GetUserAssignmentData($id: uuid!) {
+  # Essential data for assignment views (payrolls, clients)
+  user(id: $id) {
+    ...UserSummary
+    email
+    activePayrollCount: primaryConsultantPayrolls_aggregate(
+      where: { supersededDate: { _is_null: true } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+    backupPayrollCount: backupConsultantPayrolls_aggregate(
+      where: { supersededDate: { _is_null: true } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+query GetUserWorkload($id: uuid!) {
+  # Workload data without full details
+  user(id: $id) {
+    ...UserSummary
+    primaryPayrolls: primaryConsultantPayrolls(
+      where: { supersededDate: { _is_null: true } }
+      limit: 10
+    ) {
+      id
+      name
+      status
+      client {
+        name
+      }
+    }
+    backupPayrolls: backupConsultantPayrolls(
+      where: { supersededDate: { _is_null: true } }
+      limit: 10
+    ) {
+      id
+      name
+      status
+      client {
+        name
+      }
+    }
+  }
+}

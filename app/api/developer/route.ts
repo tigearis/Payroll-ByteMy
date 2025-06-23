@@ -1,10 +1,10 @@
 // app/api/developer/route.ts
 // SECURITY: Developer routes are disabled in production
-import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { GetAllClientsForDeveloperDocument } from "@/domains/clients/graphql/generated/graphql";
 
 // SECURITY: Check if in production and return 404
 const isProduction = process.env.NODE_ENV === "production";
@@ -29,19 +29,9 @@ export async function GET() {
       );
     }
 
-    const GET_ALL_CLIENTS = gql`
-      query GetAllClients {
-        clients {
-          id
-          name
-          contact_person
-          contact_email
-          active
-        }
-      }
-    `;
-
-    const { data } = await adminApolloClient.query({ query: GET_ALL_CLIENTS });
+    const { data } = await adminApolloClient.query({ 
+      query: GetAllClientsForDeveloperDocument 
+    });
     return NextResponse.json({ clients: data.clients, success: true });
   } catch (error) {
     return NextResponse.json(
@@ -81,20 +71,10 @@ export async function POST(req: NextRequest) {
 
     const { operation } = await req.json();
 
-    const GET_ALL_CLIENTS = gql`
-      query GetAllClients {
-        clients {
-          id
-          name
-          contact_person
-          contact_email
-          active
-        }
-      }
-    `;
-
     if (operation === "get_all_clients") {
-      const result = await adminApolloClient.query({ query: GET_ALL_CLIENTS });
+      const result = await adminApolloClient.query({ 
+        query: GetAllClientsForDeveloperDocument 
+      });
       return NextResponse.json({ success: true, clients: result.data.clients });
     }
 
