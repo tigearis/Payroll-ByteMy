@@ -1,5 +1,5 @@
 // types/interface.ts
-export type PayrollStatus = "Active" | "Inactive" | "Implementation";
+export type PayrollStatus = "Active" | "Implementation" | "Inactive";
 
 export type Account = {
   id: string;

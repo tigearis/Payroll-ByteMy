@@ -224,8 +224,11 @@ function MultiSelect({
 
 export default function StaffManagementPage() {
   // ⚠️ ALL HOOKS MUST BE CALLED AT THE TOP LEVEL - NEVER CONDITIONALLY
-  const { isAdministrator, isManager, isConsultant, isDeveloper } =
-    useUserRole();
+  const { hasPermission, userRole } = useUserRole();
+  const isAdministrator = userRole === "org_admin";
+  const isManager = userRole === "manager" || userRole === "org_admin";
+  const isConsultant = userRole === "consultant";
+  const isDeveloper = userRole === "developer";
   const { userId, getToken, isLoaded } = useAuth();
   const apolloClient = useApolloClient();
   const {

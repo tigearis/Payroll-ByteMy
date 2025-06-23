@@ -416,11 +416,14 @@ export default function PayrollsPage() {
   );
 
   const {
-    hasAdminAccess,
-    isManager,
-    isDeveloper,
+    hasPermission,
+    userRole,
     isLoading: roleLoading,
   } = useUserRole();
+  
+  const hasAdminAccess = hasPermission("custom:admin:manage");
+  const isManager = userRole === "manager" || userRole === "org_admin";
+  const isDeveloper = userRole === "developer";
 
   const { data, loading, error, refetch } = useQuery(GetPayrollsDocument, {
     fetchPolicy: "cache-and-network",
@@ -750,9 +753,7 @@ export default function PayrollsPage() {
     sortedPayrolls.map((p: any) => p.client?.id).filter(Boolean)
   ).size;
   const pendingPayrolls = sortedPayrolls.filter((p: any) =>
-    ["Implementation", "draft", "data-entry", "review", "processing"].includes(
-      p.status || "Implementation"
-    )
+    ["Implementation"].includes(p.status || "Implementation")
   ).length;
 
   // Helper functions for views

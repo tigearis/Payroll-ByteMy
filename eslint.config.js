@@ -141,6 +141,14 @@ const eslintConfig = [
       "graphql/schema/schema.graphql",
       "backups/**",
       "_backup_delete/**",
+      "*.md",
+      ".cursorrules",
+      "eslint.config.js",
+      "tsconfig.json",
+      "tsconfig.production.json",
+      "tsconfig.test.json",
+      "tsconfig.test.production.json",
+      "tsconfig.test.production.json",
     ],
   },
 
@@ -151,13 +159,13 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
-          "argsIgnorePattern": "^_",
-          "varsIgnorePattern": "^_",
-          "caughtErrorsIgnorePattern": "^_",
-          "destructuredArrayIgnorePattern": "^_"
-        }
-      ]
-    }
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+        },
+      ],
+    },
   },
 ];
 

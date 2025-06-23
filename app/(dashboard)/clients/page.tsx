@@ -126,8 +126,8 @@ function MultiSelect({
 
 export default function ClientsPage() {
   const { user, isLoaded: userLoaded } = useUser();
-  const { canManageClients, userRole, isLoading } = useUserRole();
-  const canCreateClient = canManageClients;
+  const { hasPermission, userRole, isLoading } = useUserRole();
+  const canCreateClient = hasPermission("custom:client:write");
 
   // State management
   const [searchTerm, setSearchTerm] = useState("");

@@ -154,7 +154,7 @@ export function DeveloperGuard({
   fallback?: React.ReactNode;
 }) {
   return (
-    <PermissionGuard permission="custom:admin:manage" fallback={fallback}>
+    <PermissionGuard roles={["developer"]} fallback={fallback}>
       {children}
     </PermissionGuard>
   );

@@ -54,18 +54,10 @@ export enum PayrollDateType {
 
 // Consolidated PayrollStatus enum (matches database enum values)
 export enum PayrollStatus {
-  // Original database values
+  // Database values (these are the only valid values)
   Active = "Active",
   Implementation = "Implementation",
   Inactive = "Inactive",
-
-  // New GraphQL/workflow values
-  Draft = "draft",
-  PendingApproval = "pending_approval",
-  Approved = "approved",
-  Processing = "processing",
-  Completed = "completed",
-  Failed = "failed",
 }
 
 // PermissionAction enum (standardized naming)

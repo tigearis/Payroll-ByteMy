@@ -42,8 +42,11 @@ export default function UserInfoPage() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
-  const { hasAdminAccess, isManager, isDeveloper, isConsultant } =
-    useUserRole();
+  const { hasPermission, userRole } = useUserRole();
+  const hasAdminAccess = hasPermission("custom:admin:manage");
+  const isManager = userRole === "manager" || userRole === "org_admin";
+  const isDeveloper = userRole === "developer";
+  const isConsultant = userRole === "consultant";
   const { loading, error, data } = useQuery(GET_STAFF_BY_ID, {
     variables: { id },
     skip: !id, // Skip query if id is not available

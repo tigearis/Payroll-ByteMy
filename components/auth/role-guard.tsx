@@ -7,10 +7,14 @@ interface RoleGuardProps {
   children: React.ReactNode;
   requiredRole?: string;
   requiredPermission?:
-    | "canManageUsers"
-    | "canManageStaff"
-    | "isAdministrator"
-    | "isManager";
+    | "custom:staff:read"
+    | "custom:staff:write" 
+    | "custom:client:read"
+    | "custom:client:write"
+    | "custom:payroll:read"
+    | "custom:payroll:write"
+    | "custom:admin:manage"
+    | "custom:settings:write";
   fallback?: React.ReactNode;
   redirectTo?: string;
 }
@@ -26,10 +30,7 @@ export function RoleGuard({
     userRole: role,
     isLoading: isLoadingRole,
     hasRole,
-    canManageUsers,
-    isAdministrator,
-    isManager,
-    permissions,
+    hasPermission,
   } = useUserRole();
   const router = useRouter();
 
@@ -43,18 +44,7 @@ export function RoleGuard({
     }
 
     if (requiredPermission) {
-      switch (requiredPermission) {
-        case "canManageUsers":
-          return canManageUsers;
-        case "canManageStaff":
-          return permissions.canManageStaff;
-        case "isAdministrator":
-          return isAdministrator;
-        case "isManager":
-          return isManager;
-        default:
-          return false;
-      }
+      return hasPermission(requiredPermission);
     }
 
     return true; // Default to granting access if no specific role/permission is required
@@ -63,10 +53,7 @@ export function RoleGuard({
     requiredRole,
     requiredPermission,
     hasRole,
-    canManageUsers,
-    permissions.canManageStaff,
-    isAdministrator,
-    isManager,
+    hasPermission,
   ]);
 
   useEffect(() => {
