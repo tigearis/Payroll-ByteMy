@@ -1,8 +1,8 @@
-import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 
-import { secureHasuraService } from "@/lib/apollo/secure-hasura-service";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth, checkRateLimit } from "@/lib/auth/api-auth";
+import { CleanAllPayrollDatesDocument } from "@/domains/audit/graphql/generated/graphql";
 
 export const POST = withAuth(
   async (request: NextRequest, session) => {
@@ -27,35 +27,24 @@ export const POST = withAuth(
         `🔄 Admin ${session.userId} (${session.role}) starting clean all dates and versions...`
       );
 
-      // Use secure service to clean payroll dates
-      const result = await secureHasuraService.executeAdminMutation(gql`
-        mutation CleanAllPayrollDates {
-          delete_payroll_dates(where: {}) {
-            affected_rows
-          }
-          delete_payroll_versions(where: {}) {
-            affected_rows
-          }
-          update_payrolls(where: {}, _set: { current_version: 1 }) {
-            affected_rows
-          }
-        }
-      `);
+      // Use domain operation to clean payroll dates
+      const result = await adminApolloClient.mutate({
+        mutation: CleanAllPayrollDatesDocument,
+      });
 
       const deletedDates =
-        result.data?.delete_payroll_dates?.affected_rows || 0;
-      const deletedVersions =
-        result.data?.delete_payroll_versions?.affected_rows || 0;
-      const resetPayrolls = result.data?.update_payrolls?.affected_rows || 0;
+        result.data?.deletePayrollDates?.affected_rows || 0;
+      const resetPayrolls = result.data?.updatePayrolls?.affected_rows || 0;
 
       console.log(
-        `✅ Clean complete: ${deletedDates} dates deleted, ${deletedVersions} versions deleted, ${resetPayrolls} payrolls reset`
+        `✅ Clean complete: ${deletedDates} dates deleted, ${resetPayrolls} payrolls reset`
       );
 
       return NextResponse.json({
         success: true,
         message: `Cleaned all dates and versions`,
-        ...result,
+        deletedDates,
+        resetPayrolls,
         performedBy: {
           userId: session.userId,
           role: session.role,

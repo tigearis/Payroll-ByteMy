@@ -1,0 +1,68 @@
+# Clients Domain Subscriptions
+# Security Classification: HIGH - Contains PII and business-critical data
+# SOC2 Compliance: Customer data with audit trail requirements
+
+subscription ClientUpdates($id: uuid!) {
+  client(id: $id) {
+    ...ClientWithRelations
+  }
+}
+
+subscription ClientListUpdates {
+  clients(
+    where: { active: { _eq: true } }
+    order_by: { name: asc }
+  ) {
+    ...ClientBasicInfo
+  }
+}
+
+subscription ClientStatusUpdates($id: uuid!) {
+  client(id: $id) {
+    id
+    name
+    active
+    updatedAt
+  }
+}
+
+subscription ClientPayrollUpdates($clientId: uuid!) {
+  payrolls(
+    where: { 
+      clientId: { _eq: $clientId }
+      supersededDate: { _is_null: true }
+    }
+    order_by: { updatedAt: desc }
+  ) {
+    id
+    name
+    status
+    updatedAt
+  }
+}
+
+subscription ActiveClientsCount {
+  clientsAggregate(where: { active: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Phase 2: Real-time dashboard subscriptions
+
+subscription ClientDashboardUpdates {
+  clients(
+    where: { active: { _eq: true } }
+    order_by: { name: asc }
+    limit: 10
+  ) {
+    ...ClientDashboardCard
+  }
+}
+
+subscription ClientMetricsUpdates($id: uuid!) {
+  client(id: $id) {
+    ...ClientWithMetrics
+  }
+}

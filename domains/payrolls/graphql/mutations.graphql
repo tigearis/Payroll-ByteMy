@@ -112,3 +112,89 @@ mutation DeletePayrollDates($payrollId: uuid!) {
     affected_rows
   }
 }
+
+# Payroll operations migrated from app/api/signed/payroll-operations/route.ts
+
+mutation ProcessPayrollBatch($payrollIds: [uuid!]!, $processedBy: String!) {
+  updatePayrolls(
+    where: { id: { _in: $payrollIds } }
+    _set: {
+      status: "Implementation"
+      updatedAt: "now()"
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      name
+      status
+      updatedAt
+    }
+  }
+}
+
+mutation ApprovePayrollBatch($payrollIds: [uuid!]!, $approvedBy: String!) {
+  updatePayrolls(
+    where: { id: { _in: $payrollIds } }
+    _set: {
+      status: "Approved"
+      updatedAt: "now()"
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      name
+      status
+      updatedAt
+    }
+  }
+}
+
+# Payroll deletion and archiving operations (missing from current schema)
+
+mutation ArchivePayroll($id: uuid!, $archivedBy: String!) {
+  updatePayroll(
+    pk_columns: { id: $id }
+    _set: {
+      status: "Archived"
+      supersededDate: "now()"
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    name
+    status
+    supersededDate
+  }
+}
+
+mutation DeletePayrollSoft($id: uuid!, $deletedBy: String!) {
+  updatePayroll(
+    pk_columns: { id: $id }
+    _set: {
+      status: "Deleted"
+      supersededDate: "now()"
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    name
+    status
+    supersededDate
+  }
+}
+
+# Date regeneration mutation migrated from app/api/developer/regenerate-single-dates/route.ts
+
+mutation RegeneratePayrollDates(
+  $payrollId: uuid!
+  $startDate: date!
+  $endDate: date!
+) {
+  deletePayrollDates(where: { payrollId: { _eq: $payrollId } }) {
+    affected_rows
+  }
+  # Note: Additional regeneration logic would need to be implemented
+  # as a Hasura action or custom function
+}

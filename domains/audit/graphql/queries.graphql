@@ -332,9 +332,59 @@ query GetAuditAnalytics($startDate: timestamptz!, $endDate: timestamptz!) {
   }
 }
 
-# Note: Compliance report queries from app/api/audit/compliance-report/route.ts
-# need to be migrated here, but the schema fields don't match current Hasura setup.
-# Those API routes contain custom schema that may need to be implemented as Hasura views or functions.
+# Compliance report queries migrated from app/api/audit/compliance-report/route.ts
+# Note: These queries are commented out because the schema doesn't match the current Hasura setup
+# They would need custom views or functions to be implemented properly
+
+# query UserAccessReport($startDate: timestamptz!, $endDate: timestamptz!) {
+#   userAccessSummary {
+#     id
+#     name
+#     email
+#     role
+#     isActive
+#     createdAt
+#     updatedAt
+#   }
+#
+#   auditLogsAggregate(
+#     where: { eventTime: { _gte: $startDate, _lte: $endDate } }
+#   ) {
+#     aggregate {
+#       count
+#     }
+#     nodes {
+#       action
+#       resourceType
+#       success
+#     }
+#   }
+# }
+
+# Basic compliance report using existing schema
+query ComplianceAuditLogs($startDate: timestamptz!, $endDate: timestamptz!) {
+  auditLogs(
+    where: { eventTime: { _gte: $startDate, _lte: $endDate } }
+    order_by: { eventTime: desc }
+  ) {
+    id
+    eventTime
+    userId
+    action
+    resourceType
+    resourceId
+    success
+    metadata
+  }
+  
+  auditLogsAggregate(
+    where: { eventTime: { _gte: $startDate, _lte: $endDate } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
 
 # Migrated from inline operations - Priority 1 fixes
 

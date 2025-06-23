@@ -1,27 +1,10 @@
 // app/api/payroll-dates/[payrollId]/route.ts
-import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuthParams } from "@/lib/auth/api-auth";
-
-// GraphQL query to get payroll dates
-const GET_PAYROLL_DATES = gql`
-  query GetPayrollDates($payrollId: uuid!, $limit: Int) {
-    payroll_dates(
-      where: { payroll_id: { _eq: $payrollId } }
-      order_by: { adjusted_eft_date: asc }
-      limit: $limit
-    ) {
-      id
-      original_eft_date
-      adjusted_eft_date
-      processing_date
-      notes
-    }
-  }
-`;
+import { GetPayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 export const GET = withAuthParams(
   async (
@@ -49,7 +32,7 @@ export const GET = withAuthParams(
 
       // Fetch payroll dates
       const { data } = await adminApolloClient.query({
-        query: GET_PAYROLL_DATES,
+        query: GetPayrollDatesDocument,
         variables: {
           payrollId,
           limit,
@@ -57,7 +40,7 @@ export const GET = withAuthParams(
       });
 
       return NextResponse.json({
-        dates: data.payroll_dates,
+        dates: data.payrollDates,
       });
     } catch (error) {
       console.error("Error fetching payroll dates:", error);

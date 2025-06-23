@@ -87,3 +87,186 @@ query GetUpcomingPayrolls($from_date: date!, $limit: Int = 10) {
     }
   }
 }
+
+# Unified dashboard query combining stats and upcoming payrolls for optimal performance
+
+query GetUnifiedDashboardData($from_date: date!, $limit: Int = 5) {
+  # All dashboard statistics in one call
+  clients_aggregate: clientsAggregate {
+    aggregate {
+      count
+    }
+  }
+
+  payrolls_aggregate: payrollsAggregate {
+    aggregate {
+      count
+    }
+  }
+
+  active_payrolls: payrollsAggregate(
+    where: { supersededDate: { _is_null: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  processing_queue: payrollsAggregate(
+    where: {
+      supersededDate: { _is_null: true }
+      status: { _in: ["Implementation"] }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  # Recent user activity count for dashboard insights
+  active_users: usersAggregate(
+    where: { isActive: { _eq: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  # Upcoming payrolls with enhanced data for dashboard cards
+  upcoming_payrolls: payrolls(
+    where: {
+      supersededDate: { _is_null: true }
+      payrollDates: { adjustedEftDate: { _gte: $from_date } }
+    }
+    order_by: { payrollDates_aggregate: { min: { adjustedEftDate: asc } } }
+    limit: $limit
+  ) {
+    id
+    name
+    status
+    employeeCount
+    client {
+      id
+      name
+    }
+    primaryConsultant {
+      id
+      name
+    }
+    payrollDates(
+      where: { adjustedEftDate: { _gte: $from_date } }
+      order_by: { adjustedEftDate: asc }
+      limit: 1
+    ) {
+      id
+      adjustedEftDate
+      processingDate
+    }
+  }
+
+  # Recent activity summary for quick insights
+  recent_payroll_updates: payrolls(
+    where: { supersededDate: { _is_null: true } }
+    order_by: { updatedAt: desc }
+    limit: 3
+  ) {
+    id
+    name
+    status
+    updatedAt
+    client {
+      name
+    }
+  }
+}
+
+# Phase 2: Optimized queries to reduce over-fetching in list views
+
+query GetDashboardStatsMinimal {
+  # Minimal stats for quick dashboard loading
+  clientCount: clientsAggregate {
+    aggregate {
+      count
+    }
+  }
+  
+  payrollCount: payrollsAggregate(
+    where: { supersededDate: { _is_null: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  userCount: usersAggregate(
+    where: { isActive: { _eq: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetUpcomingPayrollsMinimal($from_date: date!, $limit: Int = 5) {
+  # Minimal data for dashboard upcoming payrolls widget
+  payrolls(
+    where: {
+      supersededDate: { _is_null: true }
+      payrollDates: { adjustedEftDate: { _gte: $from_date } }
+    }
+    order_by: { payrollDates_aggregate: { min: { adjustedEftDate: asc } } }
+    limit: $limit
+  ) {
+    id
+    name
+    status
+    client {
+      name
+    }
+    nextDate: payrollDates(
+      where: { adjustedEftDate: { _gte: $from_date } }
+      order_by: { adjustedEftDate: asc }
+      limit: 1
+    ) {
+      adjustedEftDate
+    }
+  }
+}
+
+query GetRecentActivityMinimal($limit: Int = 10) {
+  # Minimal recent activity for activity feed
+  payrolls(
+    where: { supersededDate: { _is_null: true } }
+    order_by: { updatedAt: desc }
+    limit: $limit
+  ) {
+    id
+    name
+    status
+    updatedAt
+    client {
+      name
+    }
+  }
+}
+
+query GetQuickStatsOnly {
+  # Only aggregated counts for very fast loading
+  totals: payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
+    aggregate {
+      count
+    }
+  }
+  
+  activeClients: clientsAggregate(where: { active: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+  
+  activeUsers: usersAggregate(where: { isActive: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+}

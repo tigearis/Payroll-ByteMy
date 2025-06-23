@@ -248,3 +248,19 @@ mutation UpdateUserProfileSettings(
     updatedAt
   }
 }
+
+# Migrated from app/api/staff/update-role/route.ts
+
+mutation UpdateStaffRole($id: uuid!, $role: user_role!) {
+  updateUser(
+    pk_columns: { id: $id }
+    _set: { role: $role, updatedAt: "now()" }
+  ) {
+    id
+    name
+    email
+    role
+    clerkUserId
+    updatedAt
+  }
+}

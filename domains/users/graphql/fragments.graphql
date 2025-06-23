@@ -173,3 +173,50 @@ fragment UserPermissionsInfo on users {
     }
   }
 }
+
+# Performance-optimized fragments for Phase 2
+
+fragment UserSummary on users {
+  id
+  name
+  role
+  isActive
+  isStaff
+}
+
+fragment UserListItem on users {
+  ...UserSummary
+  email
+  managerId
+  clerkUserId
+  updatedAt
+}
+
+fragment UserDashboardCard on users {
+  ...UserSummary
+  manager {
+    id
+    name
+  }
+}
+
+fragment UserTeamSummary on users {
+  ...UserSummary
+  email
+  manager {
+    id
+    name
+  }
+  directReports {
+    id
+    name
+    role
+    isActive
+  }
+}
+
+fragment UserMinimal on users {
+  id
+  name
+  role
+}

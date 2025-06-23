@@ -69,3 +69,14 @@ mutation CreateMultipleDataAccessLogs(
     affected_rows
   }
 }
+
+# Migrated from app/api/developer/clean-all-dates/route.ts
+
+mutation CleanAllPayrollDates {
+  deletePayrollDates(where: {}) {
+    affected_rows
+  }
+  updatePayrolls(where: {}, _set: { versionNumber: 1 }) {
+    affected_rows
+  }
+}

@@ -82,3 +82,78 @@ fragment PayrollWithDates on payrolls {
     ...PayrollDate
   }
 }
+
+# Performance-optimized fragments for Phase 2
+
+fragment PayrollSummary on payrolls {
+  id
+  name
+  status
+  employeeCount
+  updatedAt
+}
+
+fragment PayrollListItem on payrolls {
+  ...PayrollSummary
+  client {
+    id
+    name
+  }
+  primaryConsultant {
+    id
+    name
+  }
+  nextPayrollDate: payrollDates(
+    where: { adjustedEftDate: { _gte: "now()" } }
+    order_by: { adjustedEftDate: asc }
+    limit: 1
+  ) {
+    adjustedEftDate
+  }
+}
+
+fragment PayrollDashboardCard on payrolls {
+  ...PayrollSummary
+  client {
+    id
+    name
+  }
+  primaryConsultant {
+    id
+    name
+  }
+}
+
+fragment PayrollTableRow on payrolls {
+  ...PayrollListItem
+  cycleId
+  backupConsultant {
+    id
+    name
+  }
+  manager {
+    id
+    name
+  }
+}
+
+fragment PayrollMinimal on payrolls {
+  id
+  name
+  status
+}
+
+fragment PayrollWithNextDate on payrolls {
+  ...PayrollSummary
+  client {
+    name
+  }
+  nextDate: payrollDates(
+    where: { adjustedEftDate: { _gte: "now()" } }
+    order_by: { adjustedEftDate: asc }
+    limit: 1
+  ) {
+    adjustedEftDate
+    processingDate
+  }
+}

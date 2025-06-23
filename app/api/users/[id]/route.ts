@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,6 +7,10 @@ import {
   UserRole,
   updateUserRole,
 } from "@/domains/users/services/user-sync";
+import { 
+  GetUserByIdCompleteDocument,
+  GetUserByClerkIdCompleteDocument 
+} from "@/domains/users/graphql/generated/graphql";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuthParams } from "@/lib/auth/api-auth";
 import {
@@ -16,63 +19,6 @@ import {
   LogCategory,
   SOC2EventType,
 } from "@/lib/security/audit/logger";
-
-// Get user by ID (either database ID or Clerk ID)
-const GET_USER_BY_ID = gql`
-  query GetUserById($id: uuid!) {
-    users_by_pk(id: $id) {
-      id
-      name
-      email
-      role
-      created_at
-      updated_at
-      is_staff
-      manager_id
-      clerk_user_id
-      manager {
-        id
-        name
-        email
-        role
-      }
-      subordinates: users(where: { manager_id: { _eq: $id } }) {
-        id
-        name
-        email
-        role
-      }
-    }
-  }
-`;
-
-const GET_USER_BY_CLERK_ID = gql`
-  query GetUserByClerkId($clerkId: String!) {
-    users(where: { clerk_user_id: { _eq: $clerkId } }) {
-      id
-      name
-      email
-      role
-      created_at
-      updated_at
-      is_staff
-      manager_id
-      clerk_user_id
-      manager {
-        id
-        name
-        email
-        role
-      }
-      subordinates: users(where: { manager_id: { _eq: $id } }) {
-        id
-        name
-        email
-        role
-      }
-    }
-  }
-`;
 
 // Helper function to get current user's role
 async function getCurrentUserRole(
@@ -150,17 +96,17 @@ export async function GET(
     if (isUUID(targetId)) {
       // Database ID
       const result = await adminApolloClient.query({
-        query: GET_USER_BY_ID,
+        query: GetUserByIdCompleteDocument,
         variables: { id: targetId },
         fetchPolicy: "network-only",
         errorPolicy: "all",
       });
-      userData = result.data?.users_by_pk;
+      userData = result.data?.user;
       errors = result.errors;
     } else {
       // Clerk ID
       const result = await adminApolloClient.query({
-        query: GET_USER_BY_CLERK_ID,
+        query: GetUserByClerkIdCompleteDocument,
         variables: { clerkId: targetId },
         fetchPolicy: "network-only",
         errorPolicy: "all",
@@ -185,7 +131,9 @@ export async function GET(
     const client = await clerkClient();
     let clerkUser;
     try {
-      clerkUser = await client.users.getUser(userData.clerk_user_id);
+      if (userData.clerkUserId) {
+        clerkUser = await client.users.getUser(userData.clerkUserId);
+      }
     } catch (error) {
       console.warn("Could not fetch Clerk user details:", error);
     }
@@ -276,14 +224,14 @@ export const PUT = withAuthParams(
       let targetUser;
       if (isUUID(targetId)) {
         const result = await adminApolloClient.query({
-          query: GET_USER_BY_ID,
+          query: GetUserByIdCompleteDocument,
           variables: { id: targetId },
           fetchPolicy: "network-only",
         });
-        targetUser = result.data?.users_by_pk;
+        targetUser = result.data?.user;
       } else {
         const result = await adminApolloClient.query({
-          query: GET_USER_BY_CLERK_ID,
+          query: GetUserByClerkIdCompleteDocument,
           variables: { clerkId: targetId },
           fetchPolicy: "network-only",
         });
@@ -298,6 +246,16 @@ export const PUT = withAuthParams(
       const client = await clerkClient();
       const updateData: any = {};
 
+      // Get current Clerk user to preserve publicMetadata
+      let clerkTargetUser;
+      if (targetUser.clerkUserId) {
+        try {
+          clerkTargetUser = await client.users.getUser(targetUser.clerkUserId);
+        } catch (error) {
+          console.warn("Could not fetch target user from Clerk:", error);
+        }
+      }
+
       if (name) {
         const nameParts = name.split(" ");
         updateData.firstName = nameParts[0];
@@ -306,7 +264,7 @@ export const PUT = withAuthParams(
 
       if (role) {
         updateData.publicMetadata = {
-          ...targetUser.publicMetadata,
+          ...(clerkTargetUser?.publicMetadata || {}),
           role,
           managerId,
           isStaff: role === "developer" || role === "manager",
@@ -315,15 +273,15 @@ export const PUT = withAuthParams(
         };
       }
 
-      if (Object.keys(updateData).length > 0) {
-        await client.users.updateUser(targetUser.clerk_user_id, updateData);
-        console.log(`✅ Updated Clerk user: ${targetUser.clerk_user_id}`);
+      if (Object.keys(updateData).length > 0 && targetUser.clerkUserId) {
+        await client.users.updateUser(targetUser.clerkUserId, updateData);
+        console.log(`✅ Updated Clerk user: ${targetUser.clerkUserId}`);
       }
 
       // If role changed, update via our enhanced role update function
-      if (role && role !== targetUser.role) {
+      if (role && role !== targetUser.role && targetUser.clerkUserId) {
         await updateUserRole(
-          targetUser.clerk_user_id,
+          targetUser.clerkUserId,
           role as UserRole,
           userId,
           managerId
@@ -338,7 +296,7 @@ export const PUT = withAuthParams(
         message: "User updated successfully",
         user: {
           id: targetUser.id,
-          clerkId: targetUser.clerk_user_id,
+          clerkId: targetUser.clerkUserId,
           name: name || targetUser.name,
           email: email || targetUser.email,
           role: role || targetUser.role,
@@ -400,14 +358,14 @@ export const DELETE = withAuthParams(
       let targetUser;
       if (isUUID(targetId)) {
         const result = await adminApolloClient.query({
-          query: GET_USER_BY_ID,
+          query: GetUserByIdCompleteDocument,
           variables: { id: targetId },
           fetchPolicy: "network-only",
         });
-        targetUser = result.data?.users_by_pk;
+        targetUser = result.data?.user;
       } else {
         const result = await adminApolloClient.query({
-          query: GET_USER_BY_CLERK_ID,
+          query: GetUserByClerkIdCompleteDocument,
           variables: { clerkId: targetId },
           fetchPolicy: "network-only",
         });
@@ -420,9 +378,11 @@ export const DELETE = withAuthParams(
 
       // Delete from Clerk (this will trigger webhook to delete from database)
       const client = await clerkClient();
-      await client.users.deleteUser(targetUser.clerk_user_id);
+      if (targetUser.clerkUserId) {
+        await client.users.deleteUser(targetUser.clerkUserId);
+      }
 
-      console.log(`✅ User deleted: ${targetUser.clerk_user_id}`);
+      console.log(`✅ User deleted: ${targetUser.clerkUserId}`);
 
       return NextResponse.json({
         success: true,

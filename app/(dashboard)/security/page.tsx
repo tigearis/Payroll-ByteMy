@@ -1,7 +1,8 @@
 "use client";
 
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { formatDistanceToNow, format, subHours, subDays } from "date-fns";
+import { useMemo, useState, useEffect } from "react";
 import {
   AlertTriangle,
   Shield,
@@ -28,27 +29,114 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SecurityOverviewDocument } from "@/domains/audit/graphql/generated/graphql";
+import { 
+  SecurityOverviewDocument,
+  SecurityEventsStreamDocument,
+  FailedOperationsStreamDocument,
+  CriticalDataAccessStreamDocument
+} from "@/domains/audit/graphql/generated/graphql";
 import { useUserRole } from "@/hooks/use-user-role";
 
 export default function SecurityDashboard() {
+  // State for WebSocket connection status
+  const [isWebSocketConnected, setIsWebSocketConnected] = useState(true);
+  
+  // Calculate time ranges - memoized to prevent unnecessary re-subscriptions
+  const timeRanges = useMemo(() => ({
+    twentyFourHoursAgo: subHours(new Date(), 24).toISOString(),
+    sevenDaysAgo: subDays(new Date(), 7).toISOString(),
+  }), []);
+
+  // Initial data load with cache-first policy
   const {
-    data,
+    data: initialData,
     loading: queryLoading,
     error,
     refetch,
-    networkStatus,
   } = useQuery(SecurityOverviewDocument, {
-    variables: {
-      twentyFourHoursAgo: subHours(new Date(), 24).toISOString(),
-      sevenDaysAgo: subDays(new Date(), 7).toISOString(),
-    },
-    // Poll every 2 minutes instead of 30 seconds to reduce server load
-    // while still maintaining reasonable data freshness for security monitoring
-    pollInterval: 120000,
-    errorPolicy: "all", // Return partial data even if there are errors
-    notifyOnNetworkStatusChange: true, // Important for polling
+    variables: timeRanges,
+    fetchPolicy: "cache-and-network", // Load from cache first, then network
+    errorPolicy: "all",
+    // No polling - subscriptions handle real-time updates
+    pollInterval: 0,
   });
+
+  // Real-time security events subscription
+  const { 
+    data: securityEventsData,
+    error: securityEventsError 
+  } = useSubscription(SecurityEventsStreamDocument, {
+    variables: { twentyFourHoursAgo: timeRanges.twentyFourHoursAgo },
+    onError: (error) => {
+      console.warn("Security events subscription error:", error);
+      setIsWebSocketConnected(false);
+    },
+    onComplete: () => {
+      console.log("Security events subscription completed");
+    },
+  });
+
+  // Real-time failed operations subscription
+  const { 
+    data: failedOpsData,
+    error: failedOpsError 
+  } = useSubscription(FailedOperationsStreamDocument, {
+    variables: { twentyFourHoursAgo: timeRanges.twentyFourHoursAgo },
+    onError: (error) => {
+      console.warn("Failed operations subscription error:", error);
+      setIsWebSocketConnected(false);
+    },
+  });
+
+  // Real-time critical data access subscription
+  const { 
+    data: criticalDataAccessData,
+    error: criticalDataAccessError 
+  } = useSubscription(CriticalDataAccessStreamDocument, {
+    variables: { sevenDaysAgo: timeRanges.sevenDaysAgo },
+    onError: (error) => {
+      console.warn("Critical data access subscription error:", error);
+      setIsWebSocketConnected(false);
+    },
+  });
+
+  // Fallback polling when WebSocket is disconnected
+  const { 
+    data: fallbackData,
+    loading: fallbackLoading 
+  } = useQuery(SecurityOverviewDocument, {
+    variables: timeRanges,
+    // Only poll if WebSocket is disconnected
+    skip: isWebSocketConnected,
+    pollInterval: isWebSocketConnected ? 0 : 300000, // 5 minutes fallback
+    errorPolicy: "all",
+    fetchPolicy: "network-only", // Always fetch fresh data for fallback
+  });
+
+  // Monitor WebSocket connection status
+  useEffect(() => {
+    const hasSubscriptionErrors = !!(securityEventsError || failedOpsError || criticalDataAccessError);
+    if (hasSubscriptionErrors) {
+      setIsWebSocketConnected(false);
+    } else if (securityEventsData || failedOpsData || criticalDataAccessData) {
+      setIsWebSocketConnected(true);
+    }
+  }, [securityEventsData, failedOpsData, criticalDataAccessData, securityEventsError, failedOpsError, criticalDataAccessError]);
+
+  // Merge initial data with real-time updates
+  const data = useMemo(() => {
+    const baseData = isWebSocketConnected ? initialData : (fallbackData || initialData);
+    
+    if (!baseData) return null;
+
+    return {
+      ...baseData,
+      // Use real-time data when available, fallback to initial data
+      recent_audit_logs: securityEventsData?.auditLogs || baseData.recent_audit_logs,
+      failed_operations: failedOpsData?.auditLogs || baseData.failed_operations,
+      data_access_summary: criticalDataAccessData?.dataAccessLogs || baseData.data_access_summary,
+    };
+  }, [initialData, fallbackData, securityEventsData, failedOpsData, criticalDataAccessData, isWebSocketConnected]);
 
   const {
     hasPermission,
@@ -61,15 +149,23 @@ export default function SecurityDashboard() {
   const hasAdminAccess = hasPermission("custom:admin:manage");
   const router = useRouter();
 
-  // Debug loading states with more detail
-  console.log("🔍 Security Dashboard Loading States:", {
+  // Enhanced loading state considering subscriptions
+  const loading = queryLoading || fallbackLoading;
+
+  // Debug loading states with subscription info
+  console.log("🔍 Security Dashboard States:", {
     queryLoading,
     roleLoading,
+    fallbackLoading,
     hasData: !!data,
     hasError: !!error,
-    networkStatus, // 1: loading, 2: setVariables, 3: fetchMore, 4: refetch, 6: poll, 7: ready
-    isPolling: networkStatus === 6,
-    isRefetching: networkStatus === 4,
+    isWebSocketConnected,
+    hasSubscriptionData: !!(securityEventsData || failedOpsData || criticalDataAccessData),
+    subscriptionErrors: {
+      securityEvents: !!securityEventsError,
+      failedOps: !!failedOpsError,
+      criticalDataAccess: !!criticalDataAccessError,
+    }
   });
 
   // Check if user has access to security features
@@ -95,8 +191,8 @@ export default function SecurityDashboard() {
   }
 
   // Show loading state only if we're still loading role information
-  // or if we have access and the query is still loading
-  if (roleLoading || (hasAdminAccess && queryLoading)) {
+  // or if we have access and are loading initial data
+  if (roleLoading || (hasAdminAccess && loading && !data)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -107,10 +203,10 @@ export default function SecurityDashboard() {
               Verifying access permissions...
             </p>
           )}
-          {queryLoading && !roleLoading && (
+          {loading && !roleLoading && (
             <p className="text-sm text-muted-foreground">
-              {networkStatus === 6
-                ? "Refreshing security data..."
+              {!isWebSocketConnected 
+                ? "Loading security data (fallback mode)..."
                 : "Loading security data..."}
             </p>
           )}
@@ -160,9 +256,19 @@ export default function SecurityDashboard() {
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Security & Compliance
           </h1>
-          <p className="text-muted-foreground">
-            Monitor security events, audit trails, and compliance status
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-muted-foreground">
+              Monitor security events, audit trails, and compliance status
+            </p>
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${
+                isWebSocketConnected ? 'bg-green-500' : 'bg-orange-500'
+              }`} />
+              <span className="text-xs text-muted-foreground">
+                {isWebSocketConnected ? 'Real-time' : 'Fallback mode'}
+              </span>
+            </div>
+          </div>
         </div>
         <Button onClick={() => refetch()} variant="outline">
           <RefreshCcw className="mr-2 h-4 w-4" />

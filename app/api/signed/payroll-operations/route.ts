@@ -1,8 +1,12 @@
 // app/api/signed/payroll-operations/route.ts
-import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
+import {
+  ProcessPayrollBatchDocument,
+  ApprovePayrollBatchDocument,
+  GeneratePayrollReportDocument
+} from "@/domains/payrolls/graphql/generated/graphql";
 import {
   withSignatureValidation,
   apiKeyManager,
@@ -13,84 +17,6 @@ import {
   LogCategory,
   SOC2EventType,
 } from "@/lib/security/audit/logger";
-
-// GraphQL mutations for payroll operations
-const PROCESS_PAYROLL_BATCH = gql`
-  mutation ProcessPayrollBatch($payrollIds: [uuid!]!, $processedBy: String!) {
-    update_payrolls(
-      where: { id: { _in: $payrollIds } }
-      _set: {
-        status: "Implementation"
-        processed_at: "now()"
-        processed_by: $processedBy
-        updated_at: "now()"
-      }
-    ) {
-      affected_rows
-      returning {
-        id
-        name
-        status
-        processed_at
-      }
-    }
-  }
-`;
-
-const APPROVE_PAYROLL_BATCH = gql`
-  mutation ApprovePayrollBatch($payrollIds: [uuid!]!, $approvedBy: String!) {
-    update_payrolls(
-      where: { id: { _in: $payrollIds } }
-      _set: {
-        status: "Approved"
-        approved_at: "now()"
-        approved_by: $approvedBy
-        updated_at: "now()"
-      }
-    ) {
-      affected_rows
-      returning {
-        id
-        name
-        status
-        approved_at
-        total_amount
-      }
-    }
-  }
-`;
-
-const GENERATE_PAYROLL_REPORT = gql`
-  query GeneratePayrollReport($startDate: date!, $endDate: date!) {
-    payrolls(
-      where: {
-        _and: [
-          { created_at: { _gte: $startDate } }
-          { created_at: { _lte: $endDate } }
-          { status: { _in: ["Approved", "Completed"] } }
-        ]
-      }
-      order_by: { created_at: desc }
-    ) {
-      id
-      name
-      status
-      total_amount
-      created_at
-      approved_at
-      processed_at
-      client {
-        id
-        name
-      }
-      primary_consultant {
-        id
-        name
-        email
-      }
-    }
-  }
-`;
 
 // Sensitive payroll operations handler
 const handlePayrollOperations = withSignatureValidation(
@@ -131,15 +57,15 @@ const handlePayrollOperations = withSignatureValidation(
           }
 
           const result = await adminApolloClient.mutate({
-            mutation: PROCESS_PAYROLL_BATCH,
+            mutation: ProcessPayrollBatchDocument,
             variables: { payrollIds, processedBy },
           });
 
           return NextResponse.json({
             success: true,
             operation: "process_batch",
-            affected_rows: result.data?.update_payrolls?.affected_rows || 0,
-            payrolls: result.data?.update_payrolls?.returning || [],
+            affected_rows: result.data?.updatePayrolls?.affected_rows || 0,
+            payrolls: result.data?.updatePayrolls?.returning || [],
           });
         }
 
@@ -154,15 +80,15 @@ const handlePayrollOperations = withSignatureValidation(
           }
 
           const result = await adminApolloClient.mutate({
-            mutation: APPROVE_PAYROLL_BATCH,
+            mutation: ApprovePayrollBatchDocument,
             variables: { payrollIds, approvedBy },
           });
 
           return NextResponse.json({
             success: true,
             operation: "approve_batch",
-            affected_rows: result.data?.update_payrolls?.affected_rows || 0,
-            payrolls: result.data?.update_payrolls?.returning || [],
+            affected_rows: result.data?.updatePayrolls?.affected_rows || 0,
+            payrolls: result.data?.updatePayrolls?.returning || [],
           });
         }
 
@@ -177,7 +103,7 @@ const handlePayrollOperations = withSignatureValidation(
           }
 
           const result = await adminApolloClient.query({
-            query: GENERATE_PAYROLL_REPORT,
+            query: GeneratePayrollReportDocument,
             variables: { startDate, endDate },
             fetchPolicy: "no-cache",
           });

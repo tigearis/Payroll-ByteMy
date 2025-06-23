@@ -26,3 +26,78 @@ subscription StaffListUpdates {
     ...UserBasicInfo
   }
 }
+
+# Real-time authentication and user status subscriptions
+
+subscription UserRoleChanges($userId: uuid!) {
+  user(id: $userId) {
+    id
+    role
+    isActive
+    isStaff
+    updatedAt
+    managerId
+  }
+}
+
+subscription UserStatusUpdates($userId: uuid!) {
+  user(id: $userId) {
+    id
+    name
+    role
+    isActive
+    isStaff
+    deactivatedAt
+    deactivatedBy
+    updatedAt
+  }
+}
+
+subscription ActiveUsersCount {
+  usersAggregate(where: { isActive: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription UserSessionStatus($clerkUserId: String!) {
+  users(where: { clerkUserId: { _eq: $clerkUserId } }) {
+    id
+    role
+    isActive
+    updatedAt
+  }
+}
+
+subscription TeamMemberUpdates($managerId: uuid!) {
+  users(where: { managerId: { _eq: $managerId } }) {
+    id
+    name
+    role
+    isActive
+    updatedAt
+  }
+}
+
+subscription UserPermissionUpdates($userId: uuid!) {
+  user(id: $userId) {
+    id
+    role
+    isActive
+    userRoles {
+      role {
+        name
+        rolePermissions {
+          permission {
+            action
+            description
+            resource {
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+}

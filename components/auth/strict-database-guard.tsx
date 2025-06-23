@@ -93,7 +93,11 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
 
   // Grace period to allow authentication to settle (skip if cached)
   useEffect(() => {
-    if (isVerificationCached) return; // Skip grace period if using cached result
+    // If we have cached verification, skip grace period entirely
+    if (isVerificationCached) {
+      setGracePeriodEnded(true);
+      return;
+    }
     
     if (clerkLoaded && clerkUser && !gracePeriodEnded) {
       // Give authentication flow minimal time to settle (reduced from 3s to 500ms)
@@ -236,6 +240,7 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
   // Only show loading screen if:
   // 1. Clerk hasn't loaded yet, OR
   // 2. We have a user but no cached verification AND grace period hasn't ended yet
+  // Note: If we have cached verification, skip loading screen entirely
   if (
     !clerkLoaded ||
     (clerkUser && !isVerificationCached && !gracePeriodEnded)
