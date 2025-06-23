@@ -73,9 +73,14 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - billing_period_end
+        - billing_period_start
+        - client_id
         - created_at
         - id
+        - invoice_number
         - status
+        - total_amount
         - updated_at
       filter: {}
     comment: Viewers can see basic billing information

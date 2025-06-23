@@ -93,6 +93,7 @@ select_permissions:
         - created_at
         - description
         - id
+        - legacy_permission_name
         - resource_id
         - updated_at
       filter: {}

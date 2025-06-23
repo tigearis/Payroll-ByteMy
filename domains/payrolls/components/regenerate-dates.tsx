@@ -1,7 +1,7 @@
 // components/regenerate-dates.tsx
 "use client";
 
-import { useMutation } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { format, addMonths } from "date-fns";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -10,8 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  GeneratePayrollDatesDocument,
-  GetPayrollDatesDocument,
+  GeneratePayrollDatesQueryDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 
 interface RegenerateDatesProps {
@@ -26,16 +25,10 @@ export function RegenerateDates({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [months, setMonths] = useState(12);
 
-  // Set up the mutation with proper refetching
-  const [generateDates, { loading, error }] = useMutation(
-    GeneratePayrollDatesDocument,
+  // Set up the query with proper refetching
+  const [generateDates, { loading, error }] = useLazyQuery(
+    GeneratePayrollDatesQueryDocument,
     {
-      refetchQueries: [
-        { query: GetPayrollDatesDocument, variables: { payrollId: payrollId } },
-        "GET_PAYROLLS", // Refetch the main payrolls list if you have this query
-        "GET_PAYROLLS_BY_MONTH", // Refetch the schedule view if it's open
-      ],
-      awaitRefetchQueries: true,
       onCompleted: data => {
         const count = data?.generatePayrollDates?.length || 0;
         toast.success(`Successfully generated ${count} payroll dates`);
@@ -46,11 +39,6 @@ export function RegenerateDates({
       },
       onError: err => {
         toast.error(`Failed to generate dates: ${err.message}`);
-      },
-      update: cache => {
-        // Invalidate cache to trigger refetch
-        cache.evict({ fieldName: "payrolls" });
-        cache.gc();
       },
     }
   );

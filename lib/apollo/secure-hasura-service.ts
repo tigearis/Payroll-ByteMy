@@ -12,7 +12,7 @@ import { auth } from "@clerk/nextjs/server";
 
 import { SecureErrorHandler } from "@/lib/security/error-responses";
 import { createAdminHeaders } from "@/lib/auth/service-auth";
-import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
   CreateUserDocument,
   UpdateUserDocument,
@@ -359,7 +359,7 @@ export class SecureHasuraService {
 
     // Then generate new dates using the generated document
     const { data: generateData, errors: generateErrors } =
-      await this.executeAdminQuery(GeneratePayrollDatesDocument, {
+      await this.executeAdminQuery(GeneratePayrollDatesQueryDocument, {
         payrollId,
         startDate,
         endDate,

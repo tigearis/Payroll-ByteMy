@@ -1,40 +1,12 @@
 # Permissions Domain Fragments
+# Import shared fragments: ResourceCore, PermissionCore, RoleCore, UserRoleCore, RolePermissionCore
 
-fragment ResourceCore on resources {
-  id
-  name
-  displayName
-  description
-  createdAt
-  updatedAt
-}
-
-fragment PermissionCore on permissions {
-  id
-  resourceId
-  action
-  description
-  legacy_permission_name
-  createdAt
-  updatedAt
-}
-
-fragment PermissionWithResource on permissions {
+fragment PermissionsPermissionWithResource on permissions {
   ...PermissionCore
+  legacy_permission_name
   resource {
     ...ResourceCore
   }
-}
-
-fragment RoleCore on roles {
-  id
-  name
-  displayName
-  description
-  priority
-  isSystemRole
-  createdAt
-  updatedAt
 }
 
 fragment RoleWithPermissions on roles {
@@ -43,7 +15,7 @@ fragment RoleWithPermissions on roles {
     id
     conditions
     permission {
-      ...PermissionWithResource
+      ...PermissionsPermissionWithResource
     }
   }
   rolePermissions_aggregate {
@@ -53,14 +25,7 @@ fragment RoleWithPermissions on roles {
   }
 }
 
-fragment RolePermissionCore on role_permissions {
-  id
-  roleId
-  permissionId
-  conditions
-  createdAt
-  updatedAt
-}
+# RolePermissionCore and UserRoleCore now moved to shared/graphql/fragments.graphql
 
 fragment RolePermissionWithDetails on role_permissions {
   ...RolePermissionCore
@@ -68,16 +33,8 @@ fragment RolePermissionWithDetails on role_permissions {
     ...RoleCore
   }
   permission {
-    ...PermissionWithResource
+    ...PermissionsPermissionWithResource
   }
-}
-
-fragment UserRoleCore on user_roles {
-  id
-  userId
-  roleId
-  createdAt
-  updatedAt
 }
 
 fragment UserRoleWithDetails on user_roles {

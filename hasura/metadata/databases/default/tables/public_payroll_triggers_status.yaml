@@ -12,6 +12,9 @@ select_permissions:
     permission:
       columns:
         - action_statement
+        - action_timing
+        - event_manipulation
+        - event_object_table
         - trigger_name
       filter: {}
     comment: Consultants can view relevant data
@@ -46,6 +49,10 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - action_statement
+        - action_timing
+        - event_manipulation
+        - event_object_table
         - trigger_name
       filter: {}
     comment: Viewers can see basic information

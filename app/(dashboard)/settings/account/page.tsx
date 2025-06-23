@@ -2,7 +2,6 @@
 "use client";
 
 import { useQuery, useMutation } from "@apollo/client";
-import { gql } from "@apollo/client";
 import { useUser } from "@clerk/nextjs";
 import {
   User,
@@ -47,47 +46,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUserRole } from "@/hooks/use-user-role";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
-
-// Import extracted GraphQL operations
-const GET_USER_PROFILE = gql`
-  query GetUserProfileSettings($id: uuid!) {
-    users_by_pk(id: $id) {
-      id
-      name
-      email
-      avatar_url
-      role
-      is_staff
-      is_active
-      created_at
-      updated_at
-      clerk_user_id
-      manager {
-        id
-        name
-        email
-      }
-    }
-  }
-`;
-
-const UPDATE_USER_PROFILE = gql`
-  mutation UpdateUserProfileSettings(
-    $id: uuid!
-    $name: String
-    $image: String
-  ) {
-    update_users_by_pk(
-      pk_columns: { id: $id }
-      _set: { name: $name, avatar_url: $image, updated_at: "now()" }
-    ) {
-      id
-      name
-      avatar_url
-      updated_at
-    }
-  }
-`;
+import { 
+  GetUserProfileSettingsDocument,
+  UpdateUserProfileSettingsDocument
+} from "@/domains/users";
 
 interface ProfileForm {
   firstName: string;
@@ -131,13 +93,13 @@ export default function AccountSettings() {
     data: userData,
     loading: userLoading,
     refetch,
-  } = useQuery(GET_USER_PROFILE, {
-    variables: { id: currentUserId },
+  } = useQuery(GetUserProfileSettingsDocument, {
+    variables: { id: currentUserId! },
     skip: !currentUserId,
     fetchPolicy: "cache-and-network",
   });
 
-  const [updateUserProfile] = useMutation(UPDATE_USER_PROFILE);
+  const [updateUserProfile] = useMutation(UpdateUserProfileSettingsDocument);
 
   // Helper function to get the correct avatar image
   const getAvatarImage = useCallback(() => {
@@ -164,8 +126,8 @@ export default function AccountSettings() {
 
   // Load user data when component mounts
   useEffect(() => {
-    if (isLoaded && clerkUser && userData?.users_by_pk) {
-      const dbUser = userData.users_by_pk;
+    if (isLoaded && clerkUser && userData?.user) {
+      const dbUser = userData.user;
       setProfileForm({
         firstName: clerkUser.firstName || "",
         lastName: clerkUser.lastName || "",
@@ -230,6 +192,10 @@ export default function AccountSettings() {
   };
 
   const syncUserWithDatabase = async (profileData: ProfileForm) => {
+    if (!currentUserId) {
+      throw new Error("User ID not available");
+    }
+
     try {
       const fullName =
         `${profileData.firstName} ${profileData.lastName}`.trim();
@@ -332,7 +298,7 @@ export default function AccountSettings() {
     );
   }
 
-  const dbUser = userData?.users_by_pk;
+  const dbUser = userData?.user;
 
   return (
     <div className="space-y-6">
@@ -553,8 +519,8 @@ export default function AccountSettings() {
                             ? "Consultant"
                             : "Viewer"}
                   </Badge>
-                  <Badge variant={dbUser?.is_staff ? "default" : "secondary"}>
-                    {dbUser?.is_staff ? "Staff Member" : "External User"}
+                  <Badge variant={dbUser?.isStaff ? "default" : "secondary"}>
+                    {dbUser?.isStaff ? "Staff Member" : "External User"}
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -601,23 +567,19 @@ export default function AccountSettings() {
                 <div>
                   <Label className="text-sm font-medium">Clerk ID</Label>
                   <p className="text-sm text-muted-foreground">
-                    {dbUser?.clerk_user_id}
+                    {dbUser?.clerkUserId}
                   </p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Member Since</Label>
                   <p className="text-sm text-muted-foreground">
-                    {dbUser?.created_at
-                      ? new Date(dbUser.created_at).toLocaleDateString()
-                      : "N/A"}
+                    {"N/A"}
                   </p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Last Updated</Label>
                   <p className="text-sm text-muted-foreground">
-                    {dbUser?.updated_at
-                      ? new Date(dbUser.updated_at).toLocaleDateString()
-                      : "N/A"}
+                    {"N/A"}
                   </p>
                 </div>
               </div>

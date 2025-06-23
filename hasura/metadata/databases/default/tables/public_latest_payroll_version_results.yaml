@@ -11,8 +11,8 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - queried_at
         - id
+        - queried_at
       filter: {}
     comment: Consultants can view relevant data
   - role: developer
@@ -24,24 +24,24 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - queried_at
         - id
+        - queried_at
       filter: {}
       allow_aggregations: true
     comment: Managers can view all data
   - role: org_admin
     permission:
       columns:
-        - queried_at
         - id
+        - queried_at
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all data
   - role: viewer
     permission:
       columns:
-        - queried_at
         - id
+        - queried_at
       filter: {}
     comment: Viewers can see basic information
 update_permissions:

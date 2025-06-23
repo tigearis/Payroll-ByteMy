@@ -3,13 +3,13 @@
 # Resources
 mutation CreateResource($object: resources_insert_input!) {
   insertResource(object: $object) {
-    ...ResourceCore
+    ...PermissionsResourceCore
   }
 }
 
 mutation UpdateResource($id: uuid!, $set: resources_set_input!) {
   updateResource(pk_columns: { id: $id }, _set: $set) {
-    ...ResourceCore
+    ...PermissionsResourceCore
   }
 }
 
@@ -22,13 +22,13 @@ mutation DeleteResource($id: uuid!) {
 # Permissions
 mutation CreatePermission($object: permissions_insert_input!) {
   insertPermission(object: $object) {
-    ...PermissionCore
+    ...PermissionsPermissionCore
   }
 }
 
 mutation UpdatePermission($id: uuid!, $set: permissions_set_input!) {
   updatePermission(pk_columns: { id: $id }, _set: $set) {
-    ...PermissionCore
+    ...PermissionsPermissionCore
   }
 }
 
@@ -41,13 +41,13 @@ mutation DeletePermission($id: uuid!) {
 # Roles
 mutation CreateRole($object: roles_insert_input!) {
   insertRole(object: $object) {
-    ...RoleCore
+    ...PermissionsRoleCore
   }
 }
 
 mutation UpdateRole($id: uuid!, $set: roles_set_input!) {
   updateRole(pk_columns: { id: $id }, _set: $set) {
-    ...RoleCore
+    ...PermissionsRoleCore
   }
 }
 

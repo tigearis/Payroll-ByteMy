@@ -110,7 +110,25 @@ query GetStaffList {
 
 query GetStaffById($id: uuid!) {
   user(id: $id) {
-    ...UserForStaff
+    id
+    name
+    email
+    role
+    username
+    image
+    isStaff
+    isActive
+    clerkUserId
+    createdAt
+    updatedAt
+    leaves {
+      id
+      startDate
+      endDate
+      leaveType
+      status
+      reason
+    }
   }
 }
 
@@ -306,7 +324,7 @@ query GetUsersWithFiltering(
 
 query GetManagers {
   users(
-    where: { role: { _in: [developer, manager] } }
+    where: { role: { _in: ["developer", "manager"] } }
     order_by: { name: asc }
   ) {
     id
@@ -332,5 +350,152 @@ query GetUserRoleFallbackSecure($userId: uuid!) {
     isStaff
     isActive
     clerkUserId
+  }
+}
+
+# Migrated from inline operations - Priority 1 fixes
+
+query GetUserProfileComplete($id: uuid!) {
+  user(id: $id) {
+    id
+    name
+    email
+    username
+    image
+    role
+    isStaff
+    isActive
+    createdAt
+    updatedAt
+    clerkUserId
+    manager {
+      id
+      name
+      email
+      image
+    }
+    directReports {
+      id
+      name
+      email
+      role
+      image
+    }
+    primaryConsultantPayrolls {
+      id
+      name
+      status
+      client {
+        name
+      }
+      employeeCount
+    }
+    backupConsultantPayrolls {
+      id
+      name
+      status
+      client {
+        name
+      }
+    }
+    managedPayrolls {
+      id
+      name
+      status
+      client {
+        name
+      }
+    }
+    leaves(order_by: { startDate: desc }, limit: 5) {
+      id
+      startDate
+      endDate
+      leaveType
+      status
+      reason
+    }
+    notesWritten(order_by: { created_at: desc }, limit: 5) {
+      id
+      content
+      created_at
+      entity_type
+      entity_id
+      is_important
+    }
+    workSchedules(order_by: { createdAt: desc }, limit: 7) {
+      id
+      workDay
+      workHours
+      createdAt
+    }
+  }
+}
+
+# User deletion queries - migrated from app/api/staff/delete/route.ts
+
+query GetUserForDeletion($id: uuid!) {
+  user(id: $id) {
+    id
+    name
+    email
+    role
+    clerkUserId
+    isStaff
+    isActive
+    createdAt
+    manager {
+      id
+      name
+      email
+    }
+  }
+  
+  payrolls(
+    where: {
+      _or: [
+        { primaryConsultantUserId: { _eq: $id } }
+        { backupConsultantUserId: { _eq: $id } }
+        { managerUserId: { _eq: $id } }
+      ]
+      status: { _eq: "Active" }
+    }
+  ) {
+    id
+    name
+    status
+  }
+  
+  subordinates: users(
+    where: { managerId: { _eq: $id }, isActive: { _eq: true } }
+  ) {
+    id
+    name
+    email
+  }
+  
+  pendingLeaves: leaves(
+    where: {
+      _and: [
+        { user: { managerId: { _eq: $id } } }
+        { status: { _eq: "Pending" } }
+      ]
+    }
+  ) {
+    id
+    user {
+      name
+    }
+    leaveType
+    startDate
+    endDate
+  }
+}
+
+query GetCurrentUserRole($clerkUserId: String!) {
+  users(where: { clerkUserId: { _eq: $clerkUserId } }) {
+    id
+    role
+    name
+    email
   }
 }

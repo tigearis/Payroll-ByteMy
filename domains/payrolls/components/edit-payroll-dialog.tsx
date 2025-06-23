@@ -2,7 +2,6 @@
 "use client";
 
 import { useMutation } from "@apollo/client";
-import { gql } from "@apollo/client";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,43 +15,23 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-
-// Import extracted GraphQL operations
-const UPDATE_PAYROLL = gql`
-  mutation UpdatePayrollExtracted($id: uuid!, $name: String, $notes: String) {
-    update_payrolls_by_pk(
-      pk_columns: { id: $id }
-      _set: { name: $name, notes: $notes, updated_at: "now()" }
-    ) {
-      id
-      name
-      notes
-      updated_at
-    }
-  }
-`;
-
-const GET_PAYROLLS = gql`
-  query GetPayrollsSimple {
-    payrolls {
-      id
-      name
-      status
-      updated_at
-      client {
-        id
-        name
-      }
-    }
-  }
-`;
+import { 
+  UpdatePayrollDocument,
+  GetPayrollsSimpleDocument,
+  GetPayrollByIdDocument,
+  GetPayrollsDocument
+} from "@/domains/payrolls/graphql/generated/graphql";
+import { handleGraphQLError } from "@/lib/utils/handle-graphql-error";
 
 interface EditPayrollDialogProps {
   payroll: {
     id: string;
     name: string;
-    notes?: string;
+    clientId: string;
+    cycleId: string;
+    dateTypeId: string;
+    primaryConsultantUserId: string | null;
+    employeeCount: number | null;
   };
   onSuccess?: () => void;
 }
@@ -62,25 +41,13 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
   onSuccess,
 }) => {
   const [name, setName] = useState(payroll.name);
-  const [notes, setNotes] = useState(payroll.notes || "");
   const [isOpen, setIsOpen] = useState(false);
 
   // Set up the mutation with refetchQueries
-  const [updatePayroll, { loading, error }] = useMutation(UPDATE_PAYROLL, {
+  const [updatePayroll, { loading, error }] = useMutation(UpdatePayrollDocument, {
     refetchQueries: [
-      "GET_PAYROLLS", // Refetch the payrolls list
-      {
-        query: gql`                     // Refetch the specific payroll details
-        query GetPayrollById($id: uuid!) {
-          payrolls(where: {id: {_eq: $id}}) {
-            id
-            name
-            notes
-            updated_at
-          }
-        }`,
-        variables: { id: payroll.id },
-      },
+      { query: GetPayrollsSimpleDocument },
+      { query: GetPayrollByIdDocument, variables: { id: payroll.id } },
     ],
     awaitRefetchQueries: true, // Wait for refetches to complete before considering the mutation done
     onCompleted: data => {
@@ -91,21 +58,26 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
       }
     },
     onError: error => {
-      toast.error(`Failed to update payroll: ${error.message}`);
+      const errorDetails = handleGraphQLError(error);
+      toast.error(`Failed to update payroll: ${errorDetails.userMessage}`);
+      console.error("Payroll update error:", errorDetails);
     },
     optimisticResponse: {
-      // Provide an optimistic response that will be used to update the cache immediately
-      update_payrolls_by_pk: {
+      __typename: "mutation_root",
+      updatePayroll: {
         __typename: "payrolls",
         id: payroll.id,
         name,
-        notes: notes.trim() || null,
-        updated_at: new Date().toISOString(),
+        clientId: payroll.clientId,
+        cycleId: payroll.cycleId,
+        dateTypeId: payroll.dateTypeId,
+        primaryConsultantUserId: payroll.primaryConsultantUserId,
+        employeeCount: payroll.employeeCount,
       },
     },
     update: (cache, { data }) => {
       // We could also use the updatePayrollInCache utility here, but this way works too
-      if (!data?.update_payrolls_by_pk) {
+      if (!data?.updatePayroll) {
         return;
       }
 
@@ -113,7 +85,7 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
       try {
         // Find the payroll in the GET_PAYROLLS query result
         const existingPayrollsQuery = cache.readQuery<{ payrolls: any[] }>({
-          query: GET_PAYROLLS,
+          query: GetPayrollsDocument,
         });
 
         if (existingPayrollsQuery?.payrolls) {
@@ -123,9 +95,9 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
 
           // Write the updated list back to the cache
           cache.writeQuery({
-            query: GET_PAYROLLS,
+            query: GetPayrollsDocument,
             data: {
-              ...existingPayrollsQuery,
+              __typename: "query_root",
               payrolls: updatedPayrolls,
             },
           });
@@ -142,8 +114,9 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
       await updatePayroll({
         variables: {
           id: payroll.id,
-          name,
-          notes: notes.trim() || null,
+          set: {
+            name,
+          },
         },
       });
     } catch (err) {
@@ -163,7 +136,7 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
         <DialogHeader>
           <DialogTitle>Edit Payroll</DialogTitle>
           <DialogDescription>
-            Update payroll details and notes.
+            Update payroll details.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -175,15 +148,6 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Enter payroll name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Notes</label>
-            <Textarea
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              placeholder="Enter notes"
-              rows={4}
             />
           </div>
         </div>

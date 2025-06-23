@@ -324,3 +324,19 @@ export interface PermissionValidationResult {
   requiredRole?: Role;
   userRole?: Role;
 }
+
+// Route permissions mapping
+export const ROUTE_PERMISSIONS: Record<string, CustomPermission[]> = {
+  "/dashboard": [], // All authenticated users can access dashboard
+  "/staff": ["custom:staff:read"],
+  "/staff/new": ["custom:staff:write"],
+  "/clients": ["custom:client:read"],
+  "/clients/new": ["custom:client:write"],
+  "/payrolls": ["custom:payroll:read"],
+  "/payroll-schedule": ["custom:payroll:write"],
+  "/settings": ["custom:settings:write"],
+  "/developer": ["custom:admin:manage"],
+  "/ai-assistant": [], // All authenticated users
+  "/calendar": [], // All authenticated users
+  "/tax-calculator": [], // All authenticated users
+};

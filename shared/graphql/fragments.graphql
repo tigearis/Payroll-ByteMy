@@ -98,6 +98,35 @@ fragment PayrollBasic on payrolls {
   clientId
 }
 
+# Core Resource fragments - Used across auth and permissions domains
+fragment ResourceCore on resources {
+  id
+  name
+  displayName
+  description
+  createdAt
+  updatedAt
+}
+
+# Core User Role fragments - Used across auth and permissions domains
+fragment UserRoleCore on user_roles {
+  id
+  userId
+  roleId
+  createdAt
+  updatedAt
+}
+
+# Core Role Permission fragments - Used across auth and permissions domains
+fragment RolePermissionCore on role_permissions {
+  id
+  roleId
+  permissionId
+  conditions
+  createdAt
+  updatedAt
+}
+
 # Audit and timestamp patterns
 fragment AuditFields on audit_audit_log {
   id

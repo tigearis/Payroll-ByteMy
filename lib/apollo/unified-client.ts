@@ -51,6 +51,14 @@ export {
   type GraphQLErrorDetails,
 };
 
+// Export cache utilities
+export { 
+  CacheInvalidationManager, 
+  OptimisticUpdateManager, 
+  useCacheInvalidation, 
+  createCacheUtils 
+} from "./cache-utils";
+
 // Client configuration options
 export interface UnifiedClientOptions {
   context: "client" | "server" | "admin";
@@ -106,59 +114,241 @@ const DEFAULT_SECURITY_MAP: Record<string, OperationSecurityMetadata> = {
 };
 
 /**
- * Create cache configuration with proper type policies
+ * Create optimized cache configuration with enhanced type policies
  */
 function createUnifiedCache(): InMemoryCache {
   return new InMemoryCache({
+    // Optimize cache size and performance
+    resultCaching: true,
+    possibleTypes: {
+      // Define possible types for better cache normalization
+    },
     typePolicies: {
       Query: {
         fields: {
+          // Users pagination and caching
           users: {
-            merge: (_, incoming) => incoming,
             keyArgs: ["where", "order_by"],
+            merge(existing = [], incoming, { args }) {
+              const offset = args?.offset || 0;
+              const merged = existing ? existing.slice() : [];
+              
+              // Handle pagination
+              if (offset === 0) {
+                return incoming;
+              }
+              
+              for (let i = 0; i < incoming.length; ++i) {
+                merged[offset + i] = incoming[i];
+              }
+              return merged;
+            },
           },
+          
+          // Clients with optimized caching
           clients: {
-            merge: (_, incoming) => incoming,
             keyArgs: ["where", "order_by"],
+            merge(existing = [], incoming, { args }) {
+              const offset = args?.offset || 0;
+              
+              if (offset === 0) {
+                return incoming;
+              }
+              
+              const merged = existing ? existing.slice() : [];
+              for (let i = 0; i < incoming.length; ++i) {
+                merged[offset + i] = incoming[i];
+              }
+              return merged;
+            },
           },
+          
+          // Payrolls with relationship handling
           payrolls: {
-            merge: (_, incoming) => incoming,
             keyArgs: ["where", "order_by"],
+            merge(existing = [], incoming, { args }) {
+              // Handle real-time updates and pagination
+              const offset = args?.offset || 0;
+              
+              if (offset === 0) {
+                return incoming;
+              }
+              
+              const merged = existing ? existing.slice() : [];
+              for (let i = 0; i < incoming.length; ++i) {
+                merged[offset + i] = incoming[i];
+              }
+              return merged;
+            },
+          },
+          
+          // Payroll dates for calendar views
+          payrollDates: {
+            keyArgs: ["where", "order_by"],
+            merge: (existing, incoming) => {
+              // Always return fresh data for calendar accuracy
+              return incoming;
+            },
+          },
+          
+          // Notes with chronological ordering
+          notes: {
+            keyArgs: ["where", "order_by"],
+            merge(existing = [], incoming) {
+              // Merge notes chronologically
+              const existingIds = new Set(existing.map((note: any) => note.id));
+              const newNotes = incoming.filter((note: any) => !existingIds.has(note.id));
+              
+              return [...existing, ...newNotes].sort((a: any, b: any) => 
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              );
+            },
+          },
+          
+          // Audit logs (append-only)
+          auditLogs: {
+            keyArgs: ["where", "order_by"],
+            merge(existing = [], incoming, { args }) {
+              const offset = args?.offset || 0;
+              
+              if (offset === 0) {
+                return incoming;
+              }
+              
+              return [...existing, ...incoming];
+            },
           },
         },
       },
-      User: { keyFields: ["id"] },
-      Client: {
-        keyFields: (object: any) => {
-          if (object.id) {
-            return ["id"];
-          }
-          if (object.name) {
-            return ["name"];
-          }
-          return false;
-        },
-      },
-      Payroll: {
+      
+      // Enhanced entity type policies
+      users: { 
         keyFields: ["id"],
         fields: {
-          payroll_dates: { merge: (_, incoming) => incoming },
+          // Cache user roles and permissions
+          userRoles: {
+            merge: (existing, incoming) => incoming,
+          },
+          // Manager relationships
+          teamMembers: {
+            merge: (existing, incoming) => incoming,
+          },
+          // Work schedules
+          workSchedules: {
+            merge: (existing, incoming) => incoming,
+          },
         },
       },
-      staff: { keyFields: ["id"] },
-      holidays: { keyFields: ["date", "country_code"] },
+      
+      clients: {
+        keyFields: ["id"],
+        fields: {
+          // Client payrolls relationship
+          payrolls: {
+            keyArgs: ["where", "order_by"],
+            merge: (existing, incoming) => incoming,
+          },
+          // Client notes
+          notes: {
+            merge(existing = [], incoming) {
+              return incoming.sort((a: any, b: any) => 
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              );
+            },
+          },
+        },
+      },
+      
+      payrolls: {
+        keyFields: ["id"],
+        fields: {
+          // Payroll dates with temporal ordering
+          payrollDates: {
+            merge(existing, incoming) {
+              return incoming?.sort((a: any, b: any) => 
+                new Date(a.adjustedEftDate).getTime() - new Date(b.adjustedEftDate).getTime()
+              ) || existing;
+            },
+          },
+          // Version history
+          childPayrolls: {
+            merge(existing, incoming) {
+              return incoming?.sort((a: any, b: any) => b.versionNumber - a.versionNumber) || existing;
+            },
+          },
+          // Notes chronological
+          notes: {
+            merge(existing = [], incoming) {
+              return incoming.sort((a: any, b: any) => 
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              );
+            },
+          },
+        },
+      },
+      
+      // Audit and compliance entities
+      auditAuditLog: {
+        keyFields: ["id"],
+      },
+      
+      permissionAuditLog: {
+        keyFields: ["id"],
+      },
+      
+      // Reference data (cached longer)
+      payrollCycles: {
+        keyFields: ["id"],
+      },
+      
+      payrollDateTypes: {
+        keyFields: ["id"],
+      },
+      
+      holidays: {
+        keyFields: ["date", "countryCode"],
+      },
+      
+      // Role and permission entities
+      roles: {
+        keyFields: ["id"],
+        fields: {
+          rolePermissions: {
+            merge: (existing, incoming) => incoming,
+          },
+        },
+      },
+      
+      permissions: {
+        keyFields: ["id"],
+      },
+      
+      resources: {
+        keyFields: ["id"],
+      },
     },
+    
+    // Custom data ID generation for better normalization
     dataIdFromObject: (object: any) => {
-      if (object.__typename === "clients") {
-        if (object.id) {
-          return `clients:${object.id}`;
-        }
-        if (object.name) {
-          return `clients:name:${object.name}`;
-        }
-        return undefined;
+      // Handle different entity types
+      switch (object.__typename) {
+        case "users":
+          return `users:${object.id}`;
+        case "clients":
+          return object.id ? `clients:${object.id}` : undefined;
+        case "payrolls":
+          return `payrolls:${object.id}`;
+        case "payrollDates":
+          return `payrollDates:${object.id}`;
+        case "notes":
+          return `notes:${object.id}`;
+        case "auditAuditLog":
+          return `auditAuditLog:${object.id}`;
+        case "holidays":
+          return `holidays:${object.date}:${object.countryCode}`;
+        default:
+          return object.id ? `${object.__typename}:${object.id}` : undefined;
       }
-      return object.id ? `${object.__typename}:${object.id}` : undefined;
     },
   });
 }
@@ -279,7 +469,7 @@ function createErrorLink(options: UnifiedClientOptions): ApolloLink {
 // Removed complex audit logging - using simplified approach
 
 /**
- * Create WebSocket link for subscriptions (client-side only)
+ * Enhanced WebSocket link with intelligent connection management
  */
 function createWebSocketLink(
   options: UnifiedClientOptions
@@ -296,6 +486,11 @@ function createWebSocketLink(
     console.warn("WebSocket URL not available");
     return null;
   }
+
+  // Enhanced connection management
+  let reconnectAttempts = 0;
+  const maxReconnectAttempts = 10;
+  let isIntentionalClose = false;
 
   return new GraphQLWsLink(
     createClient({
@@ -318,20 +513,74 @@ function createWebSocketLink(
           return {};
         }
       },
-      retryAttempts: 5,
-      shouldRetry: error => {
-        console.warn(
-          "WebSocket connection error, attempting to reconnect:",
-          error
-        );
-        return true;
+      
+      // Optimized retry strategy
+      retryAttempts: maxReconnectAttempts,
+      shouldRetry: (error) => {
+        if (isIntentionalClose) return false;
+        
+        reconnectAttempts++;
+        const shouldRetry = reconnectAttempts <= maxReconnectAttempts;
+        
+        if (shouldRetry) {
+          console.warn(
+            `WebSocket reconnection attempt ${reconnectAttempts}/${maxReconnectAttempts}:`,
+            error
+          );
+        } else {
+          console.error("WebSocket max reconnection attempts reached");
+        }
+        
+        return shouldRetry;
       },
-      connectionAckWaitTimeout: 10000,
+      
+      // Connection timeouts
+      connectionAckWaitTimeout: 15000, // Increased for reliability
+      keepAlive: 30000, // Keep connection alive
+      
+      // Enhanced event handling
       on: {
-        connected: () => console.log("WebSocket connected"),
-        error: error => console.error("WebSocket error:", error),
-        closed: () => console.log("WebSocket connection closed"),
+        connected: () => {
+          console.log("🔗 WebSocket connected to Hasura");
+          reconnectAttempts = 0; // Reset counter on successful connection
+        },
+        
+        error: (error) => {
+          console.error("❌ WebSocket error:", error);
+        },
+        
+        closed: (event) => {
+          if (!isIntentionalClose) {
+            console.warn("🔌 WebSocket connection closed unexpectedly:", event);
+          } else {
+            console.log("🔌 WebSocket connection closed intentionally");
+          }
+        },
+        
+        connecting: () => {
+          console.log("🔄 WebSocket connecting...");
+        },
+        
+        opened: () => {
+          console.log("✅ WebSocket opened");
+        },
+        
+        ping: (received, payload) => {
+          // Log ping/pong for debugging if needed
+          if (process.env.NODE_ENV === "development") {
+            console.debug("📡 WebSocket ping received:", { received, payload });
+          }
+        },
+        
+        pong: (received, payload) => {
+          if (process.env.NODE_ENV === "development") {
+            console.debug("📡 WebSocket pong received:", { received, payload });
+          }
+        },
       },
+      
+      // Lazy connection - only connect when subscriptions are active
+      lazy: true,
     })
   );
 }

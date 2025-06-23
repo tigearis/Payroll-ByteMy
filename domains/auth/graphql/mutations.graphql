@@ -5,8 +5,9 @@
 
 # Assign role to user
 mutation AssignRoleToUser($userId: uuid!, $roleId: uuid!) {
-  insertUserRole(object: { roleId: $roleId }) {
+  insertUserRole(object: { userId: $userId, roleId: $roleId }) {
     id
+    userId
     roleId
     role {
       name
@@ -334,8 +335,10 @@ mutation RestoreUserAccess($userId: uuid!, $viewerRoleId: uuid!) {
   }
 
   # Assign default viewer role
-  insertUserRole(object: { roleId: $viewerRoleId }) {
+  insertUserRole(object: { userId: $userId, roleId: $viewerRoleId }) {
     id
+    userId
+    roleId
     role {
       name
       displayName
@@ -389,13 +392,13 @@ mutation DeletePermissionOverrideById($id: uuid!) {
 # Role Management
 mutation CreateRole($object: roles_insert_input!) {
   insertRole(object: $object) {
-    ...RoleCore
+    ...AuthRoleCore
   }
 }
 
 mutation UpdateRoleById($id: uuid!, $set: roles_set_input!) {
   updateRole(pk_columns: { id: $id }, _set: $set) {
-    ...RoleCore
+    ...AuthRoleCore
   }
 }
 

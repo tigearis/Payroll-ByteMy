@@ -1,32 +1,9 @@
 "use client";
 
-import { useQuery } from "@apollo/client";
-
-import { UserDetails } from "@/types/interface";
-
-import { gql } from "@apollo/client";
 import { useRouter, useParams } from "next/navigation";
 
-// Import extracted GraphQL operations (simplified version)
-const GET_STAFF_BY_ID = gql`
-  query GetStaffById($id: uuid!) {
-    users_by_pk(id: $id) {
-      id
-      name
-      email
-      role
-      created_at
-      updated_at
-    }
-  }
-`;
-import {
-  Key,
-  ReactElement,
-  JSXElementConstructor,
-  ReactNode,
-  ReactPortal,
-} from "react";
+import { GetStaffByIdDocument } from "@/domains/users/graphql/generated/graphql";
+import { useQuery } from "@apollo/client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -47,7 +24,8 @@ export default function UserInfoPage() {
   const isManager = userRole === "manager" || userRole === "org_admin";
   const isDeveloper = userRole === "developer";
   const isConsultant = userRole === "consultant";
-  const { loading, error, data } = useQuery(GET_STAFF_BY_ID, {
+
+  const { loading, error, data } = useQuery(GetStaffByIdDocument, {
     variables: { id },
     skip: !id, // Skip query if id is not available
   });
@@ -62,7 +40,7 @@ export default function UserInfoPage() {
     return <p>Error loading user data.</p>;
   }
 
-  const user = data.users.find((u: UserDetails) => u.id === id);
+  const user = data?.user;
   if (!user) {
     return <p>User not found.</p>;
   }
@@ -90,70 +68,12 @@ export default function UserInfoPage() {
             <TableCell>{user.email}</TableCell>
             <TableCell>{user.role}</TableCell>
             <TableCell>
-              {user.leavedates.length > 0
-                ? user.leavedates.map(
-                    (leave: {
-                      id: Key | null | undefined;
-                      start_date:
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | ReactElement<
-                            unknown,
-                            string | JSXElementConstructor<any>
-                          >
-                        | Iterable<ReactNode>
-                        | ReactPortal
-                        | Promise<
-                            | string
-                            | number
-                            | bigint
-                            | boolean
-                            | ReactPortal
-                            | ReactElement<
-                                unknown,
-                                string | JSXElementConstructor<any>
-                              >
-                            | Iterable<ReactNode>
-                            | null
-                            | undefined
-                          >
-                        | null
-                        | undefined;
-                      end_date:
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | ReactElement<
-                            unknown,
-                            string | JSXElementConstructor<any>
-                          >
-                        | Iterable<ReactNode>
-                        | ReactPortal
-                        | Promise<
-                            | string
-                            | number
-                            | bigint
-                            | boolean
-                            | ReactPortal
-                            | ReactElement<
-                                unknown,
-                                string | JSXElementConstructor<any>
-                              >
-                            | Iterable<ReactNode>
-                            | null
-                            | undefined
-                          >
-                        | null
-                        | undefined;
-                    }) => (
-                      <p key={leave.id}>
-                        {leave.start_date} - {leave.end_date}
-                      </p>
-                    )
-                  )
+              {user.leaves && user.leaves.length > 0
+                ? user.leaves.map(leaveRecord => (
+                    <p key={leaveRecord.id}>
+                      {leaveRecord.startDate} - {leaveRecord.endDate}
+                    </p>
+                  ))
                 : "No leave dates"}
             </TableCell>
             {canEditLeave && (
