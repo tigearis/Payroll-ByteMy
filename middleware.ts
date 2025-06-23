@@ -14,6 +14,7 @@ import {
 const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
+  "/sign-up(.*)",
   "/accept-invitation(.*)",
   "/api/clerk-webhooks(.*)",
   "/_next(.*)",
@@ -27,7 +28,10 @@ const isPublicRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req) => {
   if (isPublicRoute(req)) return NextResponse.next();
 
-  const authResult = await auth.protect();
+  const authResult = await auth.protect({
+    unauthenticatedUrl: "/sign-in",
+    unauthorizedUrl: "/unauthorized",
+  });
 
   if (authResult?.userId) {
     const isApi = req.nextUrl.pathname.startsWith("/api");
