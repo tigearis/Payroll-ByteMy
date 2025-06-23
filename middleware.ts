@@ -14,7 +14,6 @@ import {
 const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
-  "/sign-up(.*)",
   "/accept-invitation(.*)",
   "/api/clerk-webhooks(.*)",
   "/_next(.*)",
