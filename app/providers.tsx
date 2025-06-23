@@ -51,7 +51,7 @@ export function Providers({ children }: ProvidersProps) {
         <AuthenticatedApolloProvider>
           <AuthProvider>
             <LayoutPreferencesProvider>
-              {children}
+              <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
             </LayoutPreferencesProvider>
           </AuthProvider>
         </AuthenticatedApolloProvider>
