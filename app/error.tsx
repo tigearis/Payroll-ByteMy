@@ -23,13 +23,16 @@ export default function Error({ error, reset }: ErrorProps) {
     console.error("Error stack:", error.stack);
     console.error("Error digest:", error.digest);
     console.error("Error cause:", error.cause);
-    
+
     // Log component stack if available
     if (error.stack) {
       try {
         const componentStackMatch = error.stack.match(/at\s+([^(]+)/g);
         if (componentStackMatch && Array.isArray(componentStackMatch)) {
-          console.error("Potential component stack:", componentStackMatch.slice(0, 10));
+          console.error(
+            "Potential component stack:",
+            componentStackMatch.slice(0, 10)
+          );
         }
       } catch (stackError) {
         console.error("Error parsing stack trace:", stackError);
@@ -66,11 +69,11 @@ export default function Error({ error, reset }: ErrorProps) {
           {/* Show error details in production too for debugging */}
           <details className="text-left">
             <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
-              Error Details {error?.digest ? `(${error.digest})` : ''}
+              Error Details {error?.digest ? `(${error.digest})` : ""}
             </summary>
             <div className="mt-2 text-xs bg-muted p-3 rounded space-y-2">
               <div>
-                <strong>Message:</strong> {error?.message || 'Unknown error'}
+                <strong>Message:</strong> {error?.message || "Unknown error"}
               </div>
               {error?.digest && (
                 <div>
@@ -83,7 +86,7 @@ export default function Error({ error, reset }: ErrorProps) {
             </div>
           </details>
 
-          {process.env.NODE_ENV === "development" && (
+          {process.env.NODE_ENV === "production" && (
             <details className="text-left">
               <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
                 Technical Details
