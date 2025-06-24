@@ -24,7 +24,6 @@ select_permissions:
         - id
         - invoice_id
         - message
-        - updated_at
       filter: {}
     comment: Consultants can view relevant data
   - role: developer
@@ -42,7 +41,6 @@ select_permissions:
         - id
         - invoice_id
         - message
-        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Managers can view all data
@@ -55,7 +53,6 @@ select_permissions:
         - id
         - invoice_id
         - message
-        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all data
@@ -68,7 +65,6 @@ select_permissions:
         - id
         - invoice_id
         - message
-        - updated_at
       filter: {}
     comment: Viewers can see basic information
 update_permissions:

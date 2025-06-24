@@ -89,14 +89,12 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - created_at
         - end_date
         - id
         - leave_type
         - reason
         - start_date
         - status
-        - updated_at
         - user_id
       filter:
         user_id:
@@ -111,14 +109,12 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - created_at
         - end_date
         - id
         - leave_type
         - reason
         - start_date
         - status
-        - updated_at
         - user_id
       filter:
         _or:
@@ -132,14 +128,12 @@ select_permissions:
   - role: org_admin
     permission:
       columns:
-        - created_at
         - end_date
         - id
         - leave_type
         - reason
         - start_date
         - status
-        - updated_at
         - user_id
       filter: {}
       allow_aggregations: true
@@ -147,14 +141,12 @@ select_permissions:
   - role: viewer
     permission:
       columns:
-        - created_at
         - end_date
         - id
         - leave_type
         - reason
         - start_date
         - status
-        - updated_at
         - user_id
       filter:
         user_id:

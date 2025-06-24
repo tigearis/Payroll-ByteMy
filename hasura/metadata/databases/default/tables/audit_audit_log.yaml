@@ -68,28 +68,6 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
-  - role: manager
-    permission:
-      columns:
-        - id
-        - event_time
-        - user_id
-        - user_email
-        - user_role
-        - action
-        - resource_type
-        - resource_id
-        - success
-        - created_at
-      filter:
-        _and:
-          - user_id:
-              _eq: X-Hasura-User-Id
-          - resource_type:
-              _in:
-                - payrolls
-                - payroll_dates
-                - staff
   - role: org_admin
     permission:
       columns:
@@ -110,10 +88,63 @@ select_permissions:
         - success
         - error_message
         - metadata
-        - created_at
       filter: {}
       allow_aggregations: true
     comment: Organization admins can view all audit logs
+  - role: manager
+    permission:
+      columns:
+        - id
+        - event_time
+        - user_id
+        - user_email
+        - user_role
+        - action
+        - resource_type
+        - resource_id
+        - success
+        - error_message
+        - ip_address
+        - metadata
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all audit logs for security monitoring
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - event_time
+        - user_id
+        - user_email
+        - user_role
+        - action
+        - resource_type
+        - resource_id
+        - success
+      filter:
+        _and:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - resource_type:
+              _in:
+                - payrolls
+                - payroll_dates
+                - staff
+      allow_aggregations: true
+    comment: Consultants can view their own audit logs
+  - role: viewer
+    permission:
+      columns:
+        - id
+        - event_time
+        - action
+        - resource_type
+        - success
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      allow_aggregations: true
+    comment: Viewers can see basic audit info for their own actions
 update_permissions:
   - role: developer
     permission:

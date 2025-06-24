@@ -363,10 +363,12 @@ export default function ClientDetailPage() {
 
   // Handle opening edit dialog
   const handleEditClient = () => {
+    if (!client) return;
+    
     setEditFormData({
       name: (client as any).name || "",
-      contact_person: (client as any).contactName || "",
-      contact_email: (client as any).contact_email || "",
+      contact_person: (client as any).contactPerson || "",
+      contact_email: (client as any).contactEmail || "",
       contact_phone: (client as any).contactPhone || "",
       active: (client as any).active ?? true,
     });
@@ -434,13 +436,13 @@ export default function ClientDetailPage() {
 
   // Calculate client statistics
   const activePayrolls =
-    (client as any)?.payrolls?.filter((p: any) => !p.superseded_date)?.length ||
+    (client as any)?.payrolls?.filter((p: any) => !p.supersededDate)?.length ||
     0;
   const totalPayrolls = (client as any)?.payrolls?.length || 0;
   const totalEmployees =
     (client as any)?.payrolls?.reduce((sum: number, p: any) => {
-      // PayrollDates don't have employee_count - use payroll's employee_count directly
-      const employeeCount = p.employee_count || 0;
+      // PayrollDates don't have employeeCount - use payroll's employeeCount directly
+      const employeeCount = p.employeeCount || 0;
       return sum + employeeCount;
     }, 0) || 0;
   // Note: estimated_monthly_value field doesn't exist in database, setting to 0
@@ -634,7 +636,7 @@ export default function ClientDetailPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-500">Email</p>
                       <p className="text-sm text-gray-900">
-                        {(client as any).contact_email || "Not specified"}
+                        {(client as any).contactEmail || "Not specified"}
                       </p>
                     </div>
                   </div>

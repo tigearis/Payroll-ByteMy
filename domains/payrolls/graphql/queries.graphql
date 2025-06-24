@@ -34,6 +34,9 @@ query GetPayrolls {
     employeeCount
     goLiveDate
     status
+    dateValue
+    createdAt
+    updatedAt
     client {
       id
       name
@@ -76,6 +79,7 @@ query GetPayrollsFallback {
 query GetPayrollById($id: uuid!) {
   payroll(id: $id) {
     id
+    name
     clientId
     cycleId
     dateTypeId
@@ -84,14 +88,37 @@ query GetPayrollById($id: uuid!) {
     managerUserId
     employeeCount
     goLiveDate
+    status
+    dateValue
+    processingDaysBeforeEft
+    createdAt
+    updatedAt
+    supersededDate
+    versionNumber
+    parentPayrollId
     client {
       id
+      name
     }
     payrollCycle {
       id
+      name
     }
     payrollDateType {
       id
+      name
+    }
+    primaryConsultant {
+      id
+      name
+    }
+    backupConsultant {
+      id
+      name
+    }
+    manager {
+      id
+      name
     }
     payrollDates(order_by: { adjustedEftDate: asc }) {
       id
@@ -122,7 +149,98 @@ query GetPayrollsByMonth($startDate: date!, $endDate: date!) {
     }
     order_by: { updatedAt: desc }
   ) {
-    ...PayrollWithDates
+    id
+    name
+    status
+    employeeCount
+    processingTime
+    client {
+      id
+      name
+    }
+    payrollCycle {
+      id
+      name
+    }
+    userByPrimaryConsultantUserId: primaryConsultant {
+      id
+      name
+      email
+      leaves {
+        id
+        startDate
+        endDate
+        leaveType
+        reason
+        status
+      }
+    }
+    userByBackupConsultantUserId: backupConsultant {
+      id
+      name
+      email
+      leaves {
+        id
+        startDate
+        endDate
+        leaveType
+        reason
+        status
+      }
+    }
+  }
+  
+  payrollDates(
+    where: {
+      payroll: {
+        supersededDate: { _is_null: true }
+        payrollDates: { adjustedEftDate: { _gte: $startDate, _lte: $endDate } }
+      }
+      adjustedEftDate: { _gte: $startDate, _lte: $endDate }
+    }
+    order_by: { adjustedEftDate: asc }
+  ) {
+    id
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    payroll {
+      id
+      name
+      employeeCount
+      processingTime
+      client {
+        id
+        name
+      }
+      userByPrimaryConsultantUserId: primaryConsultant {
+        id
+        name
+        email
+        leaves {
+          id
+          startDate
+          endDate
+          leaveType
+          reason
+          status
+        }
+      }
+      userByBackupConsultantUserId: backupConsultant {
+        id
+        name
+        email
+        leaves {
+          id
+          startDate
+          endDate
+          leaveType
+          reason
+          status
+        }
+      }
+    }
   }
 }
 

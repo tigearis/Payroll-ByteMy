@@ -19,7 +19,6 @@ select_permissions:
         - new_payroll_id
         - new_version_number
         - old_payroll_id
-        - updated_at
       filter: {}
     comment: Consultants can view relevant data
   - role: developer
@@ -39,7 +38,6 @@ select_permissions:
         - new_payroll_id
         - new_version_number
         - old_payroll_id
-        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Managers can view all data
@@ -54,7 +52,6 @@ select_permissions:
         - new_payroll_id
         - new_version_number
         - old_payroll_id
-        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all data
@@ -69,7 +66,6 @@ select_permissions:
         - new_payroll_id
         - new_version_number
         - old_payroll_id
-        - updated_at
       filter: {}
     comment: Viewers can see basic information
 update_permissions:

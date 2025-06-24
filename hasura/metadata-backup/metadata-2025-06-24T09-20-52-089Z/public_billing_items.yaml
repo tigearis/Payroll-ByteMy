@@ -1,0 +1,69 @@
+table:
+  name: billing_items
+  schema: public
+object_relationships:
+  - name: invoice_reference
+    using:
+      foreign_key_constraint_on: invoice_id
+  - name: payroll
+    using:
+      foreign_key_constraint_on: payroll_id
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: "*"
+    comment: Developer role has full insert access
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - created_at
+        - id
+        - updated_at
+      filter: {}
+    comment: Consultants can view relevant data
+  - role: developer
+    permission:
+      columns: "*"
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - created_at
+        - id
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all data
+  - role: org_admin
+    permission:
+      columns:
+        - created_at
+        - id
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all data
+  - role: viewer
+    permission:
+      columns:
+        - created_at
+        - id
+        - updated_at
+      filter: {}
+    comment: Viewers can see basic information
+update_permissions:
+  - role: developer
+    permission:
+      columns: "*"
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

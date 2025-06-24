@@ -5,32 +5,7 @@ import { format, addMonths } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client"; // Updated import to use the unified client
-
-// GraphQL query to generate payroll dates for a single payroll (database function)
-const GENERATE_PAYROLL_DATES = gql`
-  query GeneratePayrollDates(
-    $payrollId: uuid!
-    $startDate: date
-    $endDate: date
-    $maxDates: Int
-  ) {
-    generatePayrollDates(
-      args: {
-        p_payroll_id: $payrollId
-        p_start_date: $startDate
-        p_end_date: $endDate
-        p_max_dates: $maxDates
-      }
-    ) {
-      id
-      payrollId
-      originalEftDate
-      adjustedEftDate
-      processingDate
-      notes
-    }
-  }
-`;
+import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated";
 
 export async function POST(req: NextRequest) {
   try {
@@ -100,7 +75,7 @@ export async function POST(req: NextRequest) {
 
         // Generate dates using the admin Apollo client
         const { data, errors } = await adminApolloClient.query({
-          query: GENERATE_PAYROLL_DATES,
+          query: GeneratePayrollDatesQueryDocument,
           variables: {
             payrollId,
             startDate: formatDate(start),

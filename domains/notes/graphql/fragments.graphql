@@ -6,6 +6,11 @@ fragment NoteBasicInfo on notes {
   id
   content
   is_important
+  created_at
+  updated_at
+  entity_id
+  entity_type
+  user_id
 }
 
 fragment NoteWithUser on notes {
@@ -20,5 +25,10 @@ fragment NoteWithUser on notes {
 fragment NoteForAudit on notes {
   id
   is_important
+  created_at
+  updated_at
+  entity_id
+  entity_type
+  user_id
   # Content excluded for audit logs - contains potentially sensitive info
 }

@@ -18,8 +18,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <div className="container flex h-16 items-center justify-between py-4">
           <div className="flex items-center gap-8">
             <h1 className="text-xl font-bold">Payroll Matrix</h1>
+            <MainNav />
           </div>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <UserNav />
           </div>
         </div>

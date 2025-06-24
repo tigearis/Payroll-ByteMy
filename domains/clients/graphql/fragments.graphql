@@ -29,13 +29,29 @@ fragment ClientForAudit on clients {
 fragment ClientWithRelations on clients {
   ...ClientWithContact
   active
-  payrolls {
+  contactPerson
+  createdAt
+  updatedAt
+  payrolls(where: { supersededDate: { _is_null: true } }) {
     id
     name
-  }
-  notes: externalSystems {
-    id
-    system_id
+    status
+    employeeCount
+    createdAt
+    updatedAt
+    primaryConsultant {
+      id
+      name
+    }
+    manager {
+      id
+      name
+    }
+    payrollCycle {
+      id
+      name
+    }
+    supersededDate
   }
 }
 

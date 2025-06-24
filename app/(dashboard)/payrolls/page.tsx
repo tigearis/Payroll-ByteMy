@@ -215,9 +215,9 @@ const formatDateTime = (date: string | Date) => {
 
 // Helper function to format payroll cycle information
 const formatPayrollCycle = (payroll: any) => {
-  const cycleName = payroll.payroll_cycle?.name;
-  const dateTypeName = payroll.payroll_date_type?.name;
-  const dateValue = payroll.date_value;
+  const cycleName = payroll.payrollCycle?.name;
+  const dateTypeName = payroll.payrollDateType?.name;
+  const dateValue = payroll.dateValue;
 
   if (!cycleName) {
     return "Not configured";
@@ -505,10 +505,10 @@ export default function PayrollsPage() {
 
   // Transform payroll data
   const transformedPayrolls = payrolls.map((payroll: any) => {
-    // Fix employee count - use the employee_count from the payroll directly
-    const employeeCount = payroll.employee_count || 0;
+    // Fix employee count - use the employeeCount from the payroll directly
+    const employeeCount = payroll.employeeCount || 0;
 
-    // Get next EFT date from payroll_dates
+    // Get next EFT date from payrollDates
     const getNextEftDate = (payrollDates: any[]) => {
       if (!payrollDates || payrollDates.length === 0) {
         return null;
@@ -518,15 +518,15 @@ export default function PayrollsPage() {
       const futureDates = payrollDates
         .filter(
           date =>
-            date.adjusted_eft_date && new Date(date.adjusted_eft_date) >= today
+            date.adjustedEftDate && new Date(date.adjustedEftDate) >= today
         )
         .sort(
           (a, b) =>
-            new Date(a.adjusted_eft_date).getTime() -
-            new Date(b.adjusted_eft_date).getTime()
+            new Date(a.adjustedEftDate).getTime() -
+            new Date(b.adjustedEftDate).getTime()
         );
 
-      return futureDates.length > 0 ? futureDates[0].adjusted_eft_date : null;
+      return futureDates.length > 0 ? futureDates[0].adjustedEftDate : null;
     };
 
     return {
@@ -536,9 +536,9 @@ export default function PayrollsPage() {
       priority:
         employeeCount > 50 ? "high" : employeeCount > 20 ? "medium" : "low",
       progress: getStatusConfig(payroll.status || "Implementation").progress,
-      nextEftDate: getNextEftDate(payroll.payroll_dates),
-      lastUpdated: new Date(payroll.updated_at || payroll.created_at),
-      lastUpdatedBy: payroll.userByPrimaryConsultantUserId?.name || "System",
+      nextEftDate: getNextEftDate(payroll.payrollDates),
+      lastUpdated: new Date(payroll.updatedAt || payroll.createdAt),
+      lastUpdatedBy: payroll.primaryConsultant?.name || "System",
     };
   });
 
@@ -548,7 +548,7 @@ export default function PayrollsPage() {
       !searchTerm ||
       payroll.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payroll.client?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payroll.userByPrimaryConsultantUserId?.name
+      payroll.primaryConsultant?.name
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
       payroll.payrollCycle.toLowerCase().includes(searchTerm.toLowerCase());
@@ -561,15 +561,15 @@ export default function PayrollsPage() {
 
     const matchesConsultant =
       consultantFilter.length === 0 ||
-      consultantFilter.includes(payroll.userByPrimaryConsultantUserId?.id);
+      consultantFilter.includes(payroll.primaryConsultant?.id);
 
     const matchesPayCycle =
       payCycleFilter.length === 0 ||
-      payCycleFilter.includes(payroll.payroll_cycle?.name);
+      payCycleFilter.includes(payroll.payrollCycle?.name);
 
     const matchesDateType =
       dateTypeFilter.length === 0 ||
-      dateTypeFilter.includes(payroll.payroll_date_type?.name);
+      dateTypeFilter.includes(payroll.payrollDateType?.name);
 
     return (
       matchesSearch &&
@@ -591,8 +591,8 @@ export default function PayrollsPage() {
       aValue = a.client?.name || "";
       bValue = b.client?.name || "";
     } else if (sortField === "consultant") {
-      aValue = a.userByPrimaryConsultantUserId?.name || "";
-      bValue = b.userByPrimaryConsultantUserId?.name || "";
+      aValue = a.primaryConsultant?.name || "";
+      bValue = b.primaryConsultant?.name || "";
     } else if (sortField === "employees") {
       aValue = a.employeeCount;
       bValue = b.employeeCount;
@@ -661,18 +661,18 @@ export default function PayrollsPage() {
   const uniqueConsultants = Array.from(
     new Map(
       payrolls
-        .filter((p: any) => p.userByPrimaryConsultantUserId?.id)
+        .filter((p: any) => p.primaryConsultant?.id)
         .map((p: any) => [
-          p.userByPrimaryConsultantUserId.id,
-          p.userByPrimaryConsultantUserId,
+          p.primaryConsultant.id,
+          p.primaryConsultant,
         ])
     ).values()
   ) as any[];
   const uniquePayCycles = Array.from(
-    new Set(payrolls.map((p: any) => p.payroll_cycle?.name).filter(Boolean))
+    new Set(payrolls.map((p: any) => p.payrollCycle?.name).filter(Boolean))
   ) as string[];
   const uniqueDateTypes = Array.from(
-    new Set(payrolls.map((p: any) => p.payroll_date_type?.name).filter(Boolean))
+    new Set(payrolls.map((p: any) => p.payrollDateType?.name).filter(Boolean))
   ) as string[];
 
   // Handle selection

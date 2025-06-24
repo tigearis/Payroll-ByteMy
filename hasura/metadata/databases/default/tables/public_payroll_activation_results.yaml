@@ -12,11 +12,9 @@ select_permissions:
     permission:
       columns:
         - action_taken
-        - created_at
         - executed_at
         - id
         - payroll_id
-        - updated_at
         - version_number
       filter: {}
     comment: Consultants can view relevant data
@@ -30,11 +28,9 @@ select_permissions:
     permission:
       columns:
         - action_taken
-        - created_at
         - executed_at
         - id
         - payroll_id
-        - updated_at
         - version_number
       filter: {}
       allow_aggregations: true
@@ -43,11 +39,9 @@ select_permissions:
     permission:
       columns:
         - action_taken
-        - created_at
         - executed_at
         - id
         - payroll_id
-        - updated_at
         - version_number
       filter: {}
       allow_aggregations: true
@@ -56,11 +50,9 @@ select_permissions:
     permission:
       columns:
         - action_taken
-        - created_at
         - executed_at
         - id
         - payroll_id
-        - updated_at
         - version_number
       filter: {}
     comment: Viewers can see basic information

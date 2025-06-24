@@ -25,6 +25,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuthContext } from "@/lib/auth/auth-context";
+import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 
 // Local utility function
 function cn(...inputs: ClassValue[]) {
@@ -108,9 +109,9 @@ const routes = allRoutes.filter(route => {
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const { isLoaded } = useUser();
   const authContext = useAuthContext();
+  const { sidebarCollapsed, toggleSidebar } = useLayoutPreferences();
 
   // Filter routes based on auth context
   const accessibleRoutes = routes.filter(route => {
@@ -172,11 +173,11 @@ export function Sidebar() {
     <div
       className={cn(
         "flex flex-col border-r bg-gray-100/40 dark:bg-gray-800/40",
-        isCollapsed ? "w-16" : "w-64"
+        sidebarCollapsed ? "w-16" : "w-64"
       )}
     >
       <div className="flex h-16 items-center border-b px-4">
-        {!isCollapsed && (
+        {!sidebarCollapsed && (
           <span>
             <ThemeToggle />
           </span>
@@ -185,9 +186,9 @@ export function Sidebar() {
           variant="ghost"
           size="icon"
           className="ml-auto"
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={toggleSidebar}
         >
-          {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </Button>
       </div>
       <ScrollArea className="flex-1">
@@ -196,12 +197,12 @@ export function Sidebar() {
             <Button
               key={route.href}
               variant={pathname === route.href ? "secondary" : "ghost"}
-              className={cn("justify-start", isCollapsed && "justify-center")}
+              className={cn("justify-start", sidebarCollapsed && "justify-center")}
               asChild
             >
               <Link href={route.href}>
                 <route.icon className="h-4 w-4" />
-                {!isCollapsed && <span className="ml-2">{route.label}</span>}
+                {!sidebarCollapsed && <span className="ml-2">{route.label}</span>}
               </Link>
             </Button>
           ))}
@@ -209,7 +210,7 @@ export function Sidebar() {
 
 
         {/* Optional: Show role indicator */}
-        {!isCollapsed && (
+        {!sidebarCollapsed && (
           <div className="mt-auto p-4 border-t">
             <p className="text-xs text-gray-500">
               Role:{" "}

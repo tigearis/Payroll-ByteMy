@@ -12,7 +12,6 @@ select_permissions:
     permission:
       columns:
         - active
-        - created_at
         - go_live_date
         - id
         - is_current
@@ -20,7 +19,6 @@ select_permissions:
         - payroll_id
         - queried_at
         - superseded_date
-        - updated_at
         - version_number
         - version_reason
       filter: {}
@@ -35,7 +33,6 @@ select_permissions:
     permission:
       columns:
         - active
-        - created_at
         - go_live_date
         - id
         - is_current
@@ -43,7 +40,6 @@ select_permissions:
         - payroll_id
         - queried_at
         - superseded_date
-        - updated_at
         - version_number
         - version_reason
       filter: {}
@@ -53,7 +49,6 @@ select_permissions:
     permission:
       columns:
         - active
-        - created_at
         - go_live_date
         - id
         - is_current
@@ -61,7 +56,6 @@ select_permissions:
         - payroll_id
         - queried_at
         - superseded_date
-        - updated_at
         - version_number
         - version_reason
       filter: {}
@@ -71,7 +65,6 @@ select_permissions:
     permission:
       columns:
         - active
-        - created_at
         - go_live_date
         - id
         - is_current
@@ -79,7 +72,6 @@ select_permissions:
         - payroll_id
         - queried_at
         - superseded_date
-        - updated_at
         - version_number
         - version_reason
       filter: {}
