@@ -7,10 +7,8 @@ import {
   ApprovePayrollBatchDocument,
   GeneratePayrollReportDocument
 } from "@/domains/payrolls/graphql/generated/graphql";
-import {
-  withSignatureValidation,
-  apiKeyManager,
-} from "@/lib/security/api-signing";
+import { withSignatureValidation } from "@/lib/security/api-signing";
+import { PersistentAPIKeyManager } from "@/lib/security/persistent-api-keys";
 import {
   auditLogger,
   LogLevel,
@@ -176,7 +174,7 @@ const handlePayrollOperations = withSignatureValidation(
   },
   // API secret lookup function
   async (apiKey: string) => {
-    return await apiKeyManager.getSecret(apiKey);
+    return await PersistentAPIKeyManager.getAPISecret(apiKey);
   }
 );
 

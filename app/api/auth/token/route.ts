@@ -8,7 +8,7 @@ import {
   logTokenRefresh,
 } from "@/lib/security/auth-audit";
 import { extractClientInfo } from "@/lib/utils/client-info";
-import { SecureErrorHandler } from "@/lib/security/error-responses";
+import { ApiResponses } from "@/lib/api-responses";
 
 export async function GET(req: NextRequest) {
   console.log("🔍 Token endpoint called");
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
         }
       );
 
-      const error = SecureErrorHandler.authenticationError();
+      const error = ApiResponses.authenticationRequired();
       return NextResponse.json(error, { status: 401 });
     }
 
@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
         }
       );
 
-      const error = SecureErrorHandler.sanitizeError(
+      const error = ApiResponses.secureError(
         new Error("Token generation failed"),
         "auth_token"
       );
@@ -158,7 +158,7 @@ export async function GET(req: NextRequest) {
       }
     );
 
-    const sanitizedError = SecureErrorHandler.sanitizeError(
+    const sanitizedError = ApiResponses.secureError(
       error,
       "auth_token_endpoint"
     );

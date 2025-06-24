@@ -141,7 +141,7 @@ export const ApiResponses = {
       {
         error: message,
         details: errors,
-        code: "VALIDATIONerror",
+        code: "VALIDATION_ERROR",
         timestamp: new Date().toISOString(),
       } as ApiError,
       { status: 422 }
@@ -186,7 +186,7 @@ export const ApiResponses = {
       {
         error: message,
         details: process.env.NODE_ENV === "development" ? details : undefined,
-        code: "INTERNALerror",
+        code: "INTERNAL_ERROR",
         timestamp: new Date().toISOString(),
       } as ApiError,
       { status: 500 }
@@ -294,6 +294,48 @@ export const ApiResponses = {
       { status: 501 }
     );
   },
+
+  // Security-focused error handling (from security/error-responses.ts)
+  secureError: (error: any, context?: string) => {
+    const isProduction = process.env.NODE_ENV === "production";
+    
+    if (isProduction) {
+      // In production, return sanitized generic messages
+      if (
+        error?.message?.includes("permission") ||
+        error?.message?.includes("unauthorized")
+      ) {
+        return ApiResponses.forbidden("Access denied", "PERMISSION_DENIED");
+      }
+
+      if (
+        error?.message?.includes("not found") ||
+        error?.message?.includes("does not exist")
+      ) {
+        return ApiResponses.notFound("Resource not found");
+      }
+
+      if (
+        error?.message?.includes("validation") ||
+        error?.message?.includes("invalid")
+      ) {
+        return ApiResponses.badRequest("Invalid request");
+      }
+
+      // Generic server error for everything else
+      return ApiResponses.serverError("Internal server error");
+    } else {
+      // In development, return detailed errors
+      return ApiResponses.serverError(
+        error instanceof Error ? error.message : String(error),
+        {
+          context,
+          stack: error?.stack,
+          timestamp: new Date().toISOString(),
+        }
+      );
+    }
+  },
 };
 
 /**
@@ -350,4 +392,81 @@ export function withErrorHandling(
       return handleApiError(error, handler.name);
     }
   };
+}
+
+/**
+ * Permission validation utilities (from security/error-responses.ts)
+ */
+export class PermissionValidator {
+  static hasPermission(userPermissions: string[], requiredPermission: string): boolean {
+    return userPermissions.includes(requiredPermission);
+  }
+
+  static hasAnyPermission(userPermissions: string[], requiredPermissions: string[]): boolean {
+    return requiredPermissions.some(permission => userPermissions.includes(permission));
+  }
+
+  static hasAllPermissions(userPermissions: string[], requiredPermissions: string[]): boolean {
+    return requiredPermissions.every(permission => userPermissions.includes(permission));
+  }
+
+  static validatePermission(
+    userPermissions: string[], 
+    requiredPermission: string,
+    context?: string
+  ): Response | null {
+    if (!this.hasPermission(userPermissions, requiredPermission)) {
+      return ApiResponses.insufficientPermissions([requiredPermission]);
+    }
+    return null;
+  }
+
+  static validateAnyPermission(
+    userPermissions: string[], 
+    requiredPermissions: string[],
+    context?: string
+  ): Response | null {
+    if (!this.hasAnyPermission(userPermissions, requiredPermissions)) {
+      return ApiResponses.insufficientPermissions(requiredPermissions);
+    }
+    return null;
+  }
+}
+
+/**
+ * Alternative response interface for backward compatibility (from shared/responses.ts)
+ */
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+
+/**
+ * Backward compatibility helpers (from shared/responses.ts)
+ */
+export function successResponse<T>(data: T, message?: string): NextResponse {
+  return ApiResponses.success(data, message);
+}
+
+export function errorResponse(error: string, status: number = 400): NextResponse {
+  return NextResponse.json(
+    {
+      success: false,
+      error,
+    } as ApiResponse,
+    { status }
+  );
+}
+
+export function validationErrorResponse(errors: string[]): NextResponse {
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Validation failed",
+      details: errors,
+    } as ApiResponse,
+    { status: 400 }
+  );
 }

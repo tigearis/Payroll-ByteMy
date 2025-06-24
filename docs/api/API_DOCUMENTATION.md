@@ -36,28 +36,34 @@ const token = await getToken({ template: "hasura" });
 
 ## Error Handling
 
-All API endpoints return standardized error responses:
+All API endpoints use the consolidated error handling system via `/lib/api-responses.ts` for consistent, secure error responses:
 
 ```json
 {
-  "error": {
-    "code": "UNAUTHORIZED",
-    "message": "Authentication required",
-    "details": "Valid JWT token must be provided",
-    "timestamp": "2024-01-15T10:30:00Z",
-    "requestId": "req_abc123"
-  }
+  "error": "Authentication required",
+  "details": "Valid JWT token must be provided",
+  "code": "AUTHENTICATION_REQUIRED",
+  "timestamp": "2024-06-24T10:30:00Z"
 }
 ```
 
 ### Error Codes
 
-- `UNAUTHORIZED` - Authentication required or invalid token
-- `FORBIDDEN` - Insufficient permissions for operation
+- `AUTHENTICATION_REQUIRED` - Authentication required or invalid token
+- `FORBIDDEN` - Insufficient permissions for operation  
 - `NOT_FOUND` - Requested resource not found
 - `VALIDATION_ERROR` - Invalid input data
+- `BAD_REQUEST` - Invalid request format or parameters
+- `CONFLICT` - Resource conflict (e.g., duplicate data)
 - `RATE_LIMITED` - Too many requests
 - `INTERNAL_ERROR` - Server error
+
+### Security Features
+
+- **Error Sanitization**: Error messages are sanitized in production to prevent information disclosure
+- **Audit Logging**: All API errors are logged for SOC2 compliance monitoring
+- **Permission Validation**: Role-based access control with detailed permission checking
+- **API Key Support**: Secure API key management for system integrations via `PersistentAPIKeyManager`
 
 ## Rate Limiting
 

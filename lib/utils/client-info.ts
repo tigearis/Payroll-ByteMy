@@ -11,7 +11,6 @@
  * - lib/security/audit/logger.ts
  * - lib/security/api-signing.ts
  * - lib/security/enhanced-route-monitor.ts
- * - lib/security/mfa-middleware.ts
  */
 
 import { NextRequest } from 'next/server';

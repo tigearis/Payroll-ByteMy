@@ -5,7 +5,7 @@
  */
 
 // Main cache configuration
-export { createUnifiedCache, createCustomCache, type CacheOptions } from "./cache-config";
+export { createUnifiedCache, createCustomCache } from "./cache-config";
 
 // Type policies and data ID generation
 export { typePolicies, generateDataId } from "./type-policies";

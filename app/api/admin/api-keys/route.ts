@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { withAuth } from "@/lib/auth/api-auth";
-import { apiKeyManager } from "@/lib/security/api-signing";
+import { PersistentAPIKeyManager } from "@/lib/security/persistent-api-keys";
 import {
   auditLogger,
   LogLevel,
@@ -29,15 +29,15 @@ export const GET = withAuth(
         complianceNote: "API keys list accessed",
       });
 
-      const keys = apiKeyManager.listKeys();
+      const keys = await PersistentAPIKeyManager.listAPIKeys(session.userId);
 
       return NextResponse.json({
         success: true,
         keys: keys.map(key => ({
           ...key,
           // Mask the API key for security
-          apiKey: `${key.apiKey.substring(0, 8)}...${key.apiKey.slice(-4)}`,
-          fullKey: key.apiKey, // Include full key for copying
+          apiKey: `${key.key.substring(0, 8)}...${key.key.slice(-4)}`,
+          fullKey: key.key, // Include full key for copying
         })),
       });
     } catch (error) {
@@ -60,11 +60,12 @@ export const POST = withAuth(
       const body = await request.json();
       const { permissions = [] } = body;
 
-      // Generate new key pair
-      const { apiKey, apiSecret } = apiKeyManager.generateKeyPair();
-
-      // Store the key with permissions
-      apiKeyManager.storeKey(apiKey, apiSecret, permissions);
+      // Create new API key with permissions
+      const result = await PersistentAPIKeyManager.createAPIKey({
+        name: body.name || "Untitled API Key",
+        permissions,
+        createdBy: session.userId,
+      });
 
       const clientInfo = auditLogger.extractClientInfo(request);
       await auditLogger.logSOC2Event({
@@ -73,7 +74,7 @@ export const POST = withAuth(
         eventType: SOC2EventType.SYSTEM_CONFIG_CHANGE,
         userId: session.userId,
         userRole: session.role,
-        resourceId: apiKey,
+        resourceId: result.apiKey,
         resourceType: "api_key",
         action: "CREATE",
         success: true,
@@ -88,8 +89,8 @@ export const POST = withAuth(
 
       return NextResponse.json({
         success: true,
-        apiKey,
-        apiSecret,
+        apiKey: result.apiKey,
+        apiSecret: result.apiSecret,
         permissions,
         warning: "Store the API secret securely. It will not be shown again.",
       });
@@ -121,7 +122,7 @@ export const DELETE = withAuth(
       }
 
       // Revoke the key
-      apiKeyManager.revokeKey(apiKey);
+      await PersistentAPIKeyManager.deactivateAPIKey(apiKey, session.userId);
 
       const clientInfo = auditLogger.extractClientInfo(request);
       await auditLogger.logSOC2Event({

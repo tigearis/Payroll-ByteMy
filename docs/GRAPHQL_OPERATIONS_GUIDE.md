@@ -1,12 +1,31 @@
 # GraphQL Operations Guide
 
-**Last Updated**: June 23, 2025  
+**Last Updated**: June 24, 2025  
 **GraphQL Architecture**: Domain-Driven with SOC2 Compliance  
+**Apollo Client**: Modular Architecture (Optimized June 2025)  
 **Coverage**: 100% Frontend Alignment  
 
 ## Overview
 
 This guide provides comprehensive documentation for the optimized GraphQL operations in the Payroll-ByteMy application. Following a complete audit and optimization, all operations are now organized by business domain with full type safety and performance optimization.
+
+### Apollo Client Architecture
+
+The GraphQL operations are powered by a **modular Apollo Client architecture** optimized in June 2025:
+
+- **Modular Structure**: Split across 15+ specialized files with clear responsibilities
+- **Link Chain**: Documented order (error → retry → auth → http) critical for proper operation  
+- **Type Safety**: Centralized type definitions in `lib/apollo/types.ts`
+- **Zero Redundancy**: Eliminated 1,249+ lines of duplicate code
+- **Comprehensive Documentation**: Link chain order and patterns fully documented
+
+**Key Architecture Files**:
+- `lib/apollo/unified-client.ts` - Main export point with backward compatibility
+- `lib/apollo/types.ts` - Centralized Apollo type definitions  
+- `lib/apollo/clients/client-factory.ts` - Client creation with documented link chain
+- `lib/apollo/links/` - Individual link implementations with position documentation
+
+For detailed Apollo Client architecture information, see [`/docs/architecture/APOLLO_CLIENT_ARCHITECTURE.md`](./architecture/APOLLO_CLIENT_ARCHITECTURE.md).
 
 ## Quick Start
 

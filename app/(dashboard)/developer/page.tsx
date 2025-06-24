@@ -245,6 +245,41 @@ export default function DeveloperPage() {
         </p>
       </div>
 
+      {/* Development Dashboard Navigation */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            Comprehensive Development Dashboard
+          </CardTitle>
+          <CardDescription>
+            Access the full suite of testing and debugging tools including WebSocket testing, 
+            JWT analysis, GraphQL debugging, and reference examples.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="space-y-1">
+              <h4 className="font-medium text-sm">Critical Tests</h4>
+              <p className="text-xs text-muted-foreground">JWT authentication, WebSocket connectivity</p>
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-medium text-sm">Debugging Tools</h4>
+              <p className="text-xs text-muted-foreground">Direct WebSocket, Apollo subscriptions</p>
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-medium text-sm">Reference Examples</h4>
+              <p className="text-xs text-muted-foreground">Error handling patterns, best practices</p>
+            </div>
+          </div>
+          <Button asChild>
+            <a href="/developer/dev">
+              Open Development Dashboard
+            </a>
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Debug Permissions */}
       <Card>
         <CardHeader>

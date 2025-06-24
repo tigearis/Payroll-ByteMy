@@ -1,4 +1,4 @@
-export * from "./gql"; NOT EDIT MANUALLY
+/* AUTO-GENERATED - DO NOT EDIT MANUALLY
  *
  * SOC2 Compliant GraphQL Operations
  * Security Classifications Applied:
@@ -14,7 +14,7 @@ export * from "./gql"; NOT EDIT MANUALLY
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  *
- * Generated: 2025-06-24T01:52:18.147Z
+ * Generated: 2025-06-24T02:30:55.244Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v2.0
  */

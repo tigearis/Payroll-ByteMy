@@ -36,10 +36,54 @@ export function createUnifiedApolloClient(
   const retryLink = createRetryLink(config);
   const wsLink = createWebSocketLink(config);
 
-  // Combine links
+  // ================================
+  // CRITICAL: APOLLO LINK CHAIN ORDER
+  // ================================
+  // 
+  // The order of links in the chain is CRITICAL for proper operation.
+  // Each link processes requests in sequence and responses in reverse:
+  //
+  // REQUEST FLOW (Component → Hasura):
+  // Component → errorLink → retryLink → authLink → httpLink → Hasura
+  //
+  // RESPONSE FLOW (Hasura → Component):  
+  // Hasura → httpLink → authLink → retryLink → errorLink → Component
+  //
+  // WHY THIS ORDER MATTERS:
+  //
+  // 1. ERROR LINK (first) - Must catch ALL errors from subsequent links
+  //    - Catches network errors from httpLink
+  //    - Catches auth errors from authLink  
+  //    - Provides centralized error logging and user messaging
+  //    - Can trigger token refresh and retry operations
+  //
+  // 2. RETRY LINK (second) - Must be after error link, before auth
+  //    - Retries failed operations with exponential backoff
+  //    - Does NOT retry authentication errors (prevents infinite loops)
+  //    - Retries network errors and transient failures
+  //    - Must come before auth to ensure fresh tokens on retry
+  //
+  // 3. AUTH LINK (third) - Must be just before transport
+  //    - Injects authentication tokens into every request
+  //    - Retrieves fresh Clerk JWT tokens when needed
+  //    - Must be after retry to get fresh tokens for retried requests
+  //    - Must be before httpLink to include auth in transport
+  //
+  // 4. HTTP LINK (last) - Actual transport to GraphQL endpoint
+  //    - Sends requests to Hasura with all headers/auth
+  //    - Returns raw GraphQL responses
+  //    - Network errors bubble up through the chain
+  //
+  // ⚠️  CHANGING THIS ORDER CAN BREAK:
+  //    - Authentication (tokens missing or stale)
+  //    - Error handling (errors not caught properly)  
+  //    - Retry logic (infinite loops or missing auth)
+  //    - Audit logging (errors not logged)
+
   let link;
 
   if (wsLink && config.enableWebSocket) {
+    // Split transport: WebSocket for subscriptions, HTTP for queries/mutations
     link = split(
       ({ query }) => {
         const definition = getMainDefinition(query);
@@ -48,10 +92,12 @@ export function createUnifiedApolloClient(
           definition.operation === "subscription"
         );
       },
-      wsLink,
+      wsLink, // Real-time subscriptions go to WebSocket
+      // All other operations go through the standard link chain  
       from([errorLink, retryLink, authLink, httpLink])
     );
   } else {
+    // Standard HTTP-only link chain (server/admin contexts)
     link = from([errorLink, retryLink, authLink, httpLink]);
   }
 

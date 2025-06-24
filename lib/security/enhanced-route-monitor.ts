@@ -510,31 +510,104 @@ class EnhancedRouteMonitor {
     return significantRoutes.some(sr => route.startsWith(sr));
   }
 
+  private cleanupInterval: NodeJS.Timeout | null = null;
+
   private startCleanupInterval(): void {
-    setInterval(
+    this.cleanupInterval = setInterval(
       () => {
-        const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+        try {
+          const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+          const initialStats = {
+            routes: this.routeMetrics.size,
+            users: this.userActivityCache.size,
+            suspiciousIPs: this.suspiciousIPs.size,
+            alerts: this.alerts.length,
+          };
 
-        // Clean up old user activity
-        const userIdsToDelete: string[] = [];
+          // Clean up old user activity
+          const userIdsToDelete: string[] = [];
+          this.userActivityCache.forEach((activity, userId) => {
+            if (activity.lastActivity < oneDayAgo) {
+              userIdsToDelete.push(userId);
+            }
+          });
+          userIdsToDelete.forEach(userId =>
+            this.userActivityCache.delete(userId)
+          );
 
-        this.userActivityCache.forEach((activity, userId) => {
-          if (activity.lastActivity < oneDayAgo) {
-            userIdsToDelete.push(userId);
+          // Clean up old route metrics (keep only active routes from last day)
+          const routesToDelete: string[] = [];
+          this.routeMetrics.forEach((metrics, route) => {
+            if (metrics.lastAccessed < oneDayAgo) {
+              routesToDelete.push(route);
+            }
+          });
+          routesToDelete.forEach(route => this.routeMetrics.delete(route));
+
+          // Clean up old alerts
+          this.alerts = this.alerts.filter(alert => alert.timestamp > oneDayAgo);
+
+          // Clean up suspicious IPs older than 7 days (implement tracking if needed)
+          // For now, we'll limit the Set size
+          if (this.suspiciousIPs.size > 1000) {
+            console.warn(`⚠️ [MEMORY WARNING] Suspicious IPs set size: ${this.suspiciousIPs.size}`);
+            // Keep only the most recent 500 entries (would need timestamps for proper implementation)
+            const ipsArray = Array.from(this.suspiciousIPs);
+            this.suspiciousIPs.clear();
+            ipsArray.slice(-500).forEach(ip => this.suspiciousIPs.add(ip));
           }
-        });
 
-        userIdsToDelete.forEach(userId =>
-          this.userActivityCache.delete(userId)
-        );
+          const finalStats = {
+            routes: this.routeMetrics.size,
+            users: this.userActivityCache.size,
+            suspiciousIPs: this.suspiciousIPs.size,
+            alerts: this.alerts.length,
+          };
 
-        // Clean up old alerts
-        this.alerts = this.alerts.filter(alert => alert.timestamp > oneDayAgo);
+          const cleanedItems = {
+            routes: initialStats.routes - finalStats.routes,
+            users: initialStats.users - finalStats.users,
+            alerts: initialStats.alerts - finalStats.alerts,
+          };
 
-        console.log(`🧹 Cleaned up old monitoring data`);
+          console.log(`🧹 [ROUTE MONITOR CLEANUP] Cleaned: ${cleanedItems.routes} routes, ${cleanedItems.users} users, ${cleanedItems.alerts} alerts`);
+          
+          // Memory warning if stores are growing too large
+          if (finalStats.routes > 5000 || finalStats.users > 10000) {
+            console.warn(`⚠️ [MEMORY WARNING] Route monitor memory usage: ${JSON.stringify(finalStats)}`);
+          }
+        } catch (error) {
+          console.error("❌ [ROUTE MONITOR CLEANUP ERROR]:", error);
+        }
       },
       60 * 60 * 1000
     ); // Run every hour
+  }
+
+  // Cleanup function for graceful shutdown
+  public cleanup(): void {
+    try {
+      if (this.cleanupInterval) {
+        clearInterval(this.cleanupInterval);
+        this.cleanupInterval = null;
+      }
+      
+      const stats = {
+        routes: this.routeMetrics.size,
+        users: this.userActivityCache.size,
+        suspiciousIPs: this.suspiciousIPs.size,
+        alerts: this.alerts.length,
+      };
+      
+      this.routeMetrics.clear();
+      this.userActivityCache.clear();
+      this.suspiciousIPs.clear();
+      this.alerts = [];
+      
+      console.log(`🧹 [SHUTDOWN] Route monitor cleanup completed: ${JSON.stringify(stats)}`);
+    } catch (error) {
+      console.error("❌ [SHUTDOWN ERROR] Failed to cleanup route monitor:", error);
+    }
   }
 
   private startAnalyticsInterval(): void {

@@ -86,6 +86,85 @@ await signIn();
 - Monitor token expiry times
 - Set up proper token refresh mechanisms
 
+## 📝 API Response Utilities Issues
+
+### Issue: Import Errors for API Response Utilities
+
+**Symptoms**: Build fails with missing module errors
+```
+Cannot find module '@/lib/security/error-responses'
+Cannot find module '@/lib/shared/responses'
+Property 'error' does not exist on type 'NextResponse'
+```
+
+**Quick Fix**:
+```typescript
+// Update import statements
+// OLD (deprecated)
+import { SecureErrorHandler } from '@/lib/security/error-responses';
+
+// NEW (current)
+import { ApiResponses } from '@/lib/api-responses';
+```
+
+**Root Causes & Solutions**:
+1. **Outdated imports**: Update to use consolidated `/lib/api-responses.ts`
+2. **Method name changes**: Use new method names (see below)
+3. **Response structure**: Methods now return `NextResponse` objects directly
+
+**Method Migration Guide**:
+```typescript
+// Authentication errors
+SecureErrorHandler.authenticationError() → ApiResponses.authenticationRequired()
+
+// Validation errors  
+SecureErrorHandler.validationError("msg") → ApiResponses.badRequest("msg")
+
+// Error sanitization
+SecureErrorHandler.sanitizeError(err, "ctx") → ApiResponses.secureError(err, "ctx")
+
+// Permission errors
+SecureErrorHandler.authorizationError("role") → ApiResponses.insufficientPermissions(["role"])
+```
+
+**Prevention**:
+- Use `/lib/api-responses.ts` for all new error handling
+- Follow the consolidated error response patterns
+- Review TypeScript build errors for import issues
+
+### Issue: API Key Management Errors
+
+**Symptoms**: API key operations fail with method not found
+```
+Property 'generateKeyPair' does not exist
+apiKeyManager.storeKey is not a function
+```
+
+**Quick Fix**:
+```typescript
+// OLD (deprecated)
+import { apiKeyManager } from '@/lib/security/api-signing';
+const { apiKey, apiSecret } = apiKeyManager.generateKeyPair();
+
+// NEW (current)
+import { PersistentAPIKeyManager } from '@/lib/security/persistent-api-keys';
+const result = await PersistentAPIKeyManager.createAPIKey({
+  name: "API Key Name",
+  permissions: ["read", "write"],
+  createdBy: userId
+});
+```
+
+**Root Causes & Solutions**:
+1. **Deprecated methods**: Migrate to `PersistentAPIKeyManager` for database-backed security
+2. **Missing parameters**: New methods require additional parameters like `createdBy`
+3. **Async operations**: New methods are all async and return promises
+
+**Prevention**:
+- Use `PersistentAPIKeyManager` for all API key operations
+- Check method signatures before implementing
+- Ensure proper error handling for async operations
+
 ## 🔧 Development Environment Issues
 
 ### Issue: "pnpm dev" Fails to Start

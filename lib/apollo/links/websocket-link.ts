@@ -1,7 +1,28 @@
 /**
  * WebSocket Link for Apollo Client
  * 
- * Provides intelligent WebSocket connection management for real-time subscriptions
+ * POSITION IN CHAIN: PARALLEL (split transport for subscriptions only)
+ * 
+ * RESPONSIBILITIES:
+ * - Handles real-time GraphQL subscriptions via WebSocket
+ * - Provides intelligent connection management and retry logic
+ * - Injects authentication parameters for subscription auth
+ * - Maintains persistent connection for live data updates
+ * - Client-side only (disabled in server/admin contexts)
+ * 
+ * SPLIT TRANSPORT ARCHITECTURE:
+ * - Subscriptions → WebSocket Link (real-time)
+ * - Queries/Mutations → Standard HTTP Link Chain
+ * - Allows mixing real-time and request-response patterns
+ * - WebSocket auth handled via connection params (not headers)
+ * 
+ * WHY PARALLEL IN CHAIN:
+ * - Split from HTTP chain using operation type detection
+ * - Only subscriptions use WebSocket transport
+ * - Avoids retry/error handling complexity for persistent connections
+ * - Direct connection to Hasura subscriptions endpoint
+ * 
+ * CRITICAL: Only enabled in client context with window object
  */
 
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";

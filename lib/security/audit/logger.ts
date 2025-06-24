@@ -205,22 +205,20 @@ class UnifiedAuditLogger {
       const variables: LogAuditEventMutationVariables = {
         object: {
           action: entry.action,
-          // Map to correct schema field names (camelCase)
-          entityType: entry.entityType,
-          entityId: entry.entityId,
-          dataClassification: entry.dataClassification,
-          fieldsAffected: entry.fieldsAffected as any,
-          oldValues: entry.previousValues as any,
-          newValues: entry.newValues as any,
+          // Map to correct schema field names and include required fields from permissions
+          resourceType: entry.entityType,
+          ...(entry.entityId && { resourceId: entry.entityId }),
+          ...(entry.previousValues && { oldValues: entry.previousValues as any }),
+          ...(entry.newValues && { newValues: entry.newValues as any }),
           request_id: entry.requestId,
           success: entry.success,
-          errorMessage: entry.errorMessage,
-          method: entry.method,
-          userAgent: entry.userAgent,
-          ipAddress: entry.ipAddress,
-          sessionId: entry.sessionId,
-          // Add missing required fields
-          eventTime: new Date().toISOString(),
+          ...(entry.errorMessage && { error_message: entry.errorMessage }),
+          ...(entry.userAgent && { userAgent: entry.userAgent }),
+          ...(entry.ipAddress && { ipAddress: entry.ipAddress }),
+          ...(entry.sessionId && { sessionId: entry.sessionId }),
+          // Add user fields that are allowed in system role permissions  
+          userId: entry.userId,
+          ...(entry.userRole && { user_role: entry.userRole }),
         },
       };
 
@@ -243,18 +241,18 @@ class UnifiedAuditLogger {
       // For now, log as a regular audit event
       await this.logAuditEvent({
         userId: entry.userId || "system",
-        userRole: entry.userRole,
+        ...(entry.userRole && { userRole: entry.userRole }),
         action: AuditAction.CREATE,
         entityType: "soc2_compliance",
-        entityId: entry.resourceId,
+        ...(entry.resourceId && { entityId: entry.resourceId }),
         dataClassification: entry.dataClassification || DataClassification.CRITICAL,
         requestId: `soc2-${Date.now()}`,
         success: entry.success,
-        errorMessage: entry.errorMessage,
+        ...(entry.errorMessage && { errorMessage: entry.errorMessage }),
         method: "SOC2_LOG",
-        userAgent: entry.userAgent,
-        ipAddress: entry.ipAddress,
-        sessionId: entry.sessionId,
+        ...(entry.userAgent && { userAgent: entry.userAgent }),
+        ...(entry.ipAddress && { ipAddress: entry.ipAddress }),
+        ...(entry.sessionId && { sessionId: entry.sessionId }),
         newValues: {
           level: entry.level,
           category: entry.category,
@@ -278,15 +276,13 @@ class UnifiedAuditLogger {
       const variables: LogAuthEventMutationVariables = {
         object: {
           eventType: entry.eventType,
-          userId: entry.userId,
-          userEmail: entry.userEmail,
-          ipAddress: entry.ipAddress,
-          userAgent: entry.userAgent,
+          ...(entry.userId && { userId: entry.userId }),
+          ...(entry.userEmail && { userEmail: entry.userEmail }),
+          ...(entry.ipAddress && { ipAddress: entry.ipAddress }),
+          ...(entry.userAgent && { userAgent: entry.userAgent }),
           success: entry.success,
-          failureReason: entry.failureReason,
-          metadata: entry.metadata as any,
-          // Add required field
-          eventTime: new Date().toISOString(),
+          ...(entry.failureReason && { failureReason: entry.failureReason }),
+          ...(entry.metadata && { metadata: entry.metadata as any }),
         },
       };
 

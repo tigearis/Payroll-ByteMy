@@ -1,7 +1,23 @@
 /**
  * Error Handling Link for Apollo Client
  * 
- * Provides comprehensive error handling using the consolidated error handler
+ * POSITION IN CHAIN: FIRST (catches all errors from subsequent links)
+ * 
+ * RESPONSIBILITIES:
+ * - Catches and processes all GraphQL and network errors
+ * - Provides user-friendly error messages and logging
+ * - Handles JWT token expiration with automatic refresh
+ * - Prevents error propagation that would crash components
+ * - Integrates with audit logging for security compliance
+ * 
+ * WHY FIRST IN CHAIN:
+ * - Must catch errors from authLink (auth failures)  
+ * - Must catch errors from httpLink (network failures)
+ * - Must catch errors from retryLink (retry exhaustion)
+ * - Provides centralized error logging and user messaging
+ * - Can trigger token refresh and operation retry for auth errors
+ * 
+ * CRITICAL: This link MUST be first to catch all downstream errors
  */
 
 import { ApolloLink } from "@apollo/client";
@@ -67,10 +83,5 @@ export function createErrorLink(options: UnifiedClientOptions): ApolloLink {
   });
 }
 
-// Re-export error utilities for convenience
-export {
-  isPermissionError,
-  isAuthError,
-  getSimpleErrorMessage,
-  type GraphQLErrorDetails,
-};
+// Error utilities are available through main apollo exports
+// Import directly from @/lib/utils/handle-graphql-error if needed elsewhere

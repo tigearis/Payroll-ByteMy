@@ -6,9 +6,10 @@ Choose your path based on your role:
 
 ### 👨‍💻 **Developer Getting Started**
 1. [Authentication System](./architecture/AUTHENTICATION_SYSTEM_DOCUMENTATION.md) - Understanding the auth flow
-2. [GraphQL Development](./architecture/CODEGEN_SYSTEM.md) - Working with GraphQL and code generation
-3. [Database Customization](./guides/DATABASE_SCHEMA_CUSTOMIZATION_GUIDE.md) - Understanding the database
-4. [Permission System](./guides/PERMISSION_SYSTEM_EXTENSION_GUIDE.md) - Role-based access control
+2. [Apollo Client Architecture](./architecture/APOLLO_CLIENT_ARCHITECTURE.md) - Modular GraphQL client system ⭐ **NEW**
+3. [GraphQL Development](./architecture/CODEGEN_SYSTEM.md) - Working with GraphQL and code generation
+4. [Database Customization](./guides/DATABASE_SCHEMA_CUSTOMIZATION_GUIDE.md) - Understanding the database
+5. [Permission System](./guides/PERMISSION_SYSTEM_EXTENSION_GUIDE.md) - Role-based access control
 
 ### 🛠️ **Administrator/DevOps**
 1. [Deployment Guide](./deployment/DEPLOYMENT_GUIDE.md) - Production deployment
@@ -35,8 +36,10 @@ Payroll ByteMy is an enterprise-grade payroll management system built with Next.
 - **[Data Classification Matrix](./security/DATA_CLASSIFICATION_MATRIX.md)** - Data security and access controls
 
 ### **Development & API**
+- **[Apollo Client Architecture](./architecture/APOLLO_CLIENT_ARCHITECTURE.md)** ⭐ **NEW** - Modular GraphQL client with link chain documentation
 - **[GraphQL Code Generation](./architecture/CODEGEN_SYSTEM.md)** - TypeScript type generation and development workflow
-- **[API Documentation](./api/API_DOCUMENTATION.md)** - REST and GraphQL API reference
+- **[GraphQL Operations Guide](./GRAPHQL_OPERATIONS_GUIDE.md)** - Optimized GraphQL operations and domain patterns
+- **[API Documentation](./api/API_DOCUMENTATION.md)** ⭐ **UPDATED** - REST and GraphQL API reference with consolidated error handling
 - **[Deployment Guide](./deployment/DEPLOYMENT_GUIDE.md)** - Production deployment instructions
 - **[Case Conventions](./architecture/CASE_CONVENTION_SYSTEM.md)** - Coding standards and naming patterns
 

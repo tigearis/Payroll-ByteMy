@@ -1,3 +1,31 @@
+/**
+ * Graceful Clients List - Reference Implementation
+ * 
+ * This component demonstrates graceful error handling and fallback patterns
+ * for permission-based failures in GraphQL operations.
+ * 
+ * REAL IMPLEMENTATIONS OF THESE PATTERNS:
+ * - Permission-based error boundaries: /components/graphql-error-boundary.tsx:73-157
+ * - Graceful query with fallbacks: /hooks/use-graceful-query.ts:74-100
+ * - Permission error detection: /app/(dashboard)/security/page.tsx:185
+ * - Fallback data patterns: Used in user management components throughout /domains/users/
+ * 
+ * KEY PATTERNS DEMONSTRATED:
+ * - useGracefulQuery hook for permission-aware data fetching
+ * - GraphQLErrorBoundary for containing permission failures
+ * - Fallback data when permissions are insufficient
+ * - Graceful degradation without breaking user experience
+ * - Permission-specific error messaging
+ * 
+ * PRODUCTION USAGE:
+ * - GraphQLErrorBoundary: Used as wrapper in multiple components
+ * - useGracefulQuery: Core infrastructure for permission-aware queries
+ * - Permission checks: Throughout /domains/users/components/ with toast notifications
+ * 
+ * NOTE: This component is NOT used in production - it serves as
+ * architectural documentation for graceful error handling patterns.
+ */
+
 "use client";
 
 import { Building2, Users, AlertCircle } from "lucide-react";
