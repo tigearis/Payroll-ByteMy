@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 
-import { secureHasuraService } from "@/lib/apollo/secure-hasura-service";
+import { adminOperationsService } from "@/lib/apollo/admin-operations";
 import { validateCronRequest } from "@/lib/auth/api-auth";
 
 // GraphQL query for bulk date generation
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     // First, check current coverage
     console.log("📊 Checking current date coverage...");
     const { data: coverageData, errors: coverageErrors } =
-      await secureHasuraService.executeAdminQuery(
+      await adminOperationsService.executeAdminQuery(
         CHECK_COVERAGE_QUERY,
         {},
         { skipAuth: true } // System operation
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Get current stats
-    const { data: statsData } = await secureHasuraService.executeAdminQuery(
+    const { data: statsData } = await adminOperationsService.executeAdminQuery(
       GET_STATS_QUERY,
       {},
       { skipAuth: true }
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     );
 
     const { data: generateData, errors: generateErrors } =
-      await secureHasuraService.executeAdminQuery(
+      await adminOperationsService.executeAdminQuery(
         GENERATE_BULK_DATES_QUERY,
         { yearsAhead },
         { skipAuth: true }
@@ -170,7 +170,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get current stats only
-    const { data: statsData } = await secureHasuraService.executeAdminQuery(
+    const { data: statsData } = await adminOperationsService.executeAdminQuery(
       GET_STATS_QUERY,
       {},
       { skipAuth: true }

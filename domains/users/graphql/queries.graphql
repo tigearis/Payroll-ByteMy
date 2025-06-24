@@ -17,6 +17,16 @@ query GetUsers {
   }
 }
 
+# Simple user list for forms and dropdowns (migrated from payrolls/new/page.tsx)
+query GetUsersForDropdown {
+  users {
+    id
+    name
+    email
+    role
+  }
+}
+
 query GetActiveUsers {
   users(where: { isActive: { _eq: true } }, order_by: { name: asc }) {
     ...UserBasicInfo

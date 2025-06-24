@@ -48,7 +48,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ClientsTable } from "@/domains/clients/components/clients-table";
-import { GetClientsWithContactDocument } from "@/domains/clients/graphql/generated/graphql";
+import { GetAllClientsPaginatedDocument } from "@/domains/clients/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useUserRole } from "@/hooks/use-user-role";
 
@@ -142,8 +142,12 @@ export default function ClientsPage() {
 
   // GraphQL operations - only execute when user is loaded and authenticated
   const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(
-    GetClientsWithContactDocument,
+    GetAllClientsPaginatedDocument,
     {
+      variables: {
+        limit: 1000, // Fetch all clients for now
+        offset: 0,
+      },
       fetchPolicy: "cache-and-network",
       nextFetchPolicy: "cache-first",
       pollInterval: 60000,
@@ -213,7 +217,7 @@ export default function ClientsPage() {
 
   // Get unique values for filters
   const uniquePayrollCounts = Array.from(
-    new Set(clients.map((c: any) => c.payrolls?.length || 0))
+    new Set(clients.map((c: any) => c.payrollCount?.aggregate?.count || 0))
   ) as number[];
   uniquePayrollCounts.sort((a, b) => a - b);
 
@@ -222,16 +226,16 @@ export default function ClientsPage() {
     const matchesSearch =
       searchTerm === "" ||
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.contact_person?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.contact_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.contact_phone?.toLowerCase().includes(searchTerm.toLowerCase());
+      client.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.contactEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.contactPhone?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       statusFilter.length === 0 ||
       (statusFilter.includes("active") && client.active) ||
       (statusFilter.includes("inactive") && !client.active);
 
-    const payrollCount = client.payrolls?.length || 0;
+    const payrollCount = client.payrollCount?.aggregate?.count || 0;
     const matchesPayrollCount =
       payrollCountFilter.length === 0 ||
       (payrollCountFilter.includes("0") && payrollCount === 0) ||
@@ -253,32 +257,21 @@ export default function ClientsPage() {
 
     // Handle specific sort fields
     if (sortField === "payrollCount") {
-      aValue = (a as any).payrolls?.length || 0;
-      bValue = (b as any).payrolls?.length || 0;
+      aValue = (a as any).payrollCount?.aggregate?.count || 0;
+      bValue = (b as any).payrollCount?.aggregate?.count || 0;
     } else if (sortField === "activePayrolls") {
-      aValue =
-        (a as any).payrolls?.filter(
-          (p: any) =>
-            p.status !== "Inactive" &&
-            p.status !== "cancelled" &&
-            p.status !== "on-hold"
-        ).length || 0;
-      bValue =
-        (b as any).payrolls?.filter(
-          (p: any) =>
-            p.status !== "Inactive" &&
-            p.status !== "cancelled" &&
-            p.status !== "on-hold"
-        ).length || 0;
+      // For now, use total count since we don't have active payroll count in this query
+      aValue = (a as any).payrollCount?.aggregate?.count || 0;
+      bValue = (b as any).payrollCount?.aggregate?.count || 0;
     } else if (sortField === "lastUpdated") {
-      aValue = new Date((a as any).updated_at || (a as any).created_at);
-      bValue = new Date((b as any).updated_at || (b as any).created_at);
+      aValue = new Date((a as any).updatedAt || (a as any).createdAt);
+      bValue = new Date((b as any).updatedAt || (b as any).createdAt);
     } else if (sortField === "contact_person") {
-      aValue = (a as any).contact_person || "";
-      bValue = (b as any).contact_person || "";
+      aValue = (a as any).contactPerson || "";
+      bValue = (b as any).contactPerson || "";
     } else if (sortField === "contact_email") {
-      aValue = (a as any).contact_email || "";
-      bValue = (b as any).contact_email || "";
+      aValue = (a as any).contactEmail || "";
+      bValue = (b as any).contactEmail || "";
     } else if (sortField === "status") {
       aValue = (a as any).active ? "Active" : "Inactive";
       bValue = (b as any).active ? "Active" : "Inactive";
@@ -335,18 +328,11 @@ export default function ClientsPage() {
   const totalClients = clients.length;
   const activeClients = clients.filter((c: any) => c.active).length;
   const totalPayrolls = clients.reduce(
-    (sum: number, c: any) => sum + (c.payrolls?.length || 0),
+    (sum: number, c: any) => sum + (c.payrollCount?.aggregate?.count || 0),
     0
   );
-  const totalEmployees = clients.reduce(
-    (sum: number, c: any) =>
-      sum +
-      (c.payrolls?.reduce(
-        (pSum: number, p: any) => pSum + (p.employee_count || 0),
-        0
-      ) || 0),
-    0
-  );
+  // We don't have employee count in this query, so we'll set it to 0 for now
+  const totalEmployees = 0;
 
   // Render card view
   const renderCardView = () => (
@@ -369,13 +355,13 @@ export default function ClientsPage() {
               <div className="flex items-center space-x-2">
                 <Building2 className="w-4 h-4 text-gray-400" />
                 <span className="text-gray-600">
-                  {client.contact_person || "No contact"}
+                  {client.contactPerson || "No contact"}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Users className="w-4 h-4 text-gray-400" />
                 <span className="text-gray-600">
-                  {client.payrolls?.length || 0} payrolls
+                  {client.payrollCount?.aggregate?.count || 0} payrolls
                 </span>
               </div>
             </div>
@@ -436,7 +422,7 @@ export default function ClientsPage() {
                 <div>
                   <h3 className="font-medium text-gray-900">{client.name}</h3>
                   <p className="text-sm text-gray-500">
-                    {client.contact_person || "No contact person"}
+                    {client.contactPerson || "No contact person"}
                   </p>
                 </div>
               </div>
@@ -444,16 +430,10 @@ export default function ClientsPage() {
               <div className="flex items-center space-x-4">
                 <div className="text-right text-sm">
                   <p className="font-medium text-gray-900">
-                    {client.payrolls?.filter(
-                      (p: any) =>
-                        p.status !== "Inactive" &&
-                        p.status !== "cancelled" &&
-                        p.status !== "on-hold"
-                    ).length || 0}{" "}
-                    active payrolls
+                    {client.payrollCount?.aggregate?.count || 0} payrolls
                   </p>
                   <p className="text-gray-500">
-                    {client.payrolls?.length || 0} total
+                    {client.active ? "Active" : "Inactive"} client
                   </p>
                 </div>
 
@@ -582,7 +562,7 @@ export default function ClientsPage() {
                   Total Employees
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {totalEmployees}
+                  N/A
                 </p>
               </div>
               <Users className="w-8 h-8 text-orange-600" />

@@ -8,6 +8,14 @@ query GetClients {
   }
 }
 
+# Simple client list for forms and dropdowns (migrated from payrolls/new/page.tsx)
+query GetClientsSimple {
+  clients {
+    id
+    name
+  }
+}
+
 query GetClientsWithContact {
   clients(where: { active: { _eq: true } }, order_by: { name: asc }) {
     ...ClientWithContact

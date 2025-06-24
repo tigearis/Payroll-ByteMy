@@ -1,132 +1,40 @@
-import {
-  ApolloClient,
-  HttpLink,
-  InMemoryCache,
-  from,
-  gql,
-} from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { onError } from "@apollo/client/link/error";
-import { RetryLink } from "@apollo/client/link/retry";
-import { auth } from "@clerk/nextjs/server";
+/**
+ * Admin Operations Service
+ * 
+ * Provides secure admin operations using the unified Apollo client.
+ * Replaces the functionality from secure-hasura-service.ts with 
+ * unified client approach.
+ */
 
+import { auth } from "@clerk/nextjs/server";
+import { gql } from "@apollo/client";
+
+import { adminApolloClient } from "./unified-client";
 import { SecureErrorHandler } from "@/lib/security/error-responses";
-import { createAdminHeaders } from "@/lib/auth/service-auth";
-import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
   CreateUserDocument,
   UpdateUserDocument,
   GetUserByClerkIdDocument,
   GetUserByEmailDocument,
 } from "@/domains/users/graphql/generated/graphql";
+import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 // Define allowed roles for admin operations
 const ADMIN_ROLES = ["developer", "org_admin"];
 
-// Cache configuration
-const createCache = () => {
-  return new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          users: {
-            merge(existing = [], incoming) {
-              return incoming;
-            },
-          },
-          clients: {
-            merge(existing = [], incoming) {
-              return incoming;
-            },
-          },
-          payrolls: {
-            merge(existing = [], incoming) {
-              return incoming;
-            },
-          },
-        },
-      },
-    },
-  });
-};
+/**
+ * Admin operations service using unified Apollo client
+ */
+export class AdminOperationsService {
+  private static instance: AdminOperationsService;
 
-// Error handling link
-const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path }) => {
-      console.error(
-        `[GraphQL error in ${operation.operationName}]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      );
-    });
-  }
-  if (networkError) {
-    console.error(
-      `[Network error in ${operation.operationName}]: ${networkError}`
-    );
-  }
-});
+  private constructor() {}
 
-// Retry link for resilience
-const retryLink = new RetryLink({
-  delay: {
-    initial: 300,
-    max: 10000,
-    jitter: true,
-  },
-  attempts: {
-    max: 3,
-    retryIf: error => !!error,
-  },
-});
-
-// Create a secure Apollo client with admin secret for service operations
-function createServiceAccountClient() {
-  const adminSecret = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
-
-  if (!adminSecret) {
-    throw new Error("HASURA_GRAPHQL_ADMIN_SECRET not configured");
-  }
-
-  const authLink = setContext((_, { headers }) => {
-    return {
-      headers: {
-        ...headers,
-        "x-hasura-admin-secret": adminSecret,
-      },
-    };
-  });
-
-  const httpLink = new HttpLink({
-    uri: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL || "",
-    credentials: "include",
-  });
-
-  return new ApolloClient({
-    link: from([errorLink, retryLink, authLink, httpLink]),
-    cache: createCache(),
-    defaultOptions: {
-      query: {
-        fetchPolicy: "network-only",
-        errorPolicy: "all",
-      },
-    },
-  });
-}
-
-// Secure Hasura service class
-export class SecureHasuraService {
-  private static instance: SecureHasuraService;
-  private serviceClient: ApolloClient<any>;
-
-  private constructor() {
-    this.serviceClient = createServiceAccountClient();
-  }
-
-  static getInstance(): SecureHasuraService {
-    if (!SecureHasuraService.instance) {
-      SecureHasuraService.instance = new SecureHasuraService();
+  static getInstance(): AdminOperationsService {
+    if (!AdminOperationsService.instance) {
+      AdminOperationsService.instance = new AdminOperationsService();
     }
-    return SecureHasuraService.instance;
+    return AdminOperationsService.instance;
   }
 
   // Validate user has admin permissions
@@ -164,7 +72,7 @@ export class SecureHasuraService {
   ): Promise<{ data?: T; errors?: readonly any[] }> {
     // Skip auth check only for system operations (webhooks, cron jobs)
     if (!options?.skipAuth) {
-      const { isValid, userId, role } = await this.validateAdminAccess();
+      const { isValid } = await this.validateAdminAccess();
 
       if (!isValid) {
         const error = SecureErrorHandler.authorizationError("admin access");
@@ -173,7 +81,7 @@ export class SecureHasuraService {
     }
 
     try {
-      const result = await this.serviceClient.query({
+      const result = await adminApolloClient.query({
         query,
         variables,
         fetchPolicy: "network-only",
@@ -194,7 +102,7 @@ export class SecureHasuraService {
   ): Promise<{ data?: T; errors?: readonly any[] }> {
     // Skip auth check only for system operations
     if (!options?.skipAuth) {
-      const { isValid, userId, role } = await this.validateAdminAccess();
+      const { isValid } = await this.validateAdminAccess();
 
       if (!isValid) {
         const error = SecureErrorHandler.authorizationError("admin access");
@@ -203,7 +111,7 @@ export class SecureHasuraService {
     }
 
     try {
-      const result = await this.serviceClient.mutate({
+      const result = await adminApolloClient.mutate({
         mutation,
         variables,
       });
@@ -293,8 +201,7 @@ export class SecureHasuraService {
 
     console.log(`Admin ${userId} is cleaning all payroll dates`);
 
-    // This is a bulk admin operation that doesn't have a generated document equivalent
-    // Keep as inline GraphQL for admin-only operations
+    // This is a bulk admin operation - keep as inline GraphQL for admin-only operations
     const CLEAN_ALL_DATES = gql`
       mutation CleanAllDatesAndVersions {
         delete_payroll_dates(where: {}) {
@@ -377,9 +284,6 @@ export class SecureHasuraService {
       generate_payroll_dates: generateData?.generatePayrollDates,
     };
 
-    // Check for errors in the operation
-    // This will be populated if there are actual errors from the operations
-
     return {
       deletedDates: data.delete_payroll_dates?.affected_rows || 0,
       generatedDates: data.generate_payroll_dates?.length || 0,
@@ -387,36 +291,83 @@ export class SecureHasuraService {
   }
 }
 
-// Export singleton instance
-// Lazy initialization to prevent build-time errors
-let _secureHasuraService: SecureHasuraService | null = null;
+// Export singleton instance with lazy initialization
+let _adminOperationsService: AdminOperationsService | null = null;
 
-export const secureHasuraService: Pick<
-  SecureHasuraService,
-  "executeAdminQuery" | "executeAdminMutation"
+export const adminOperationsService: Pick<
+  AdminOperationsService,
+  "executeAdminQuery" | "executeAdminMutation" | "syncUserWithDatabase" | "cleanAllPayrollDates" | "regeneratePayrollDates"
 > = {
   executeAdminQuery: async <T = any>(
     query: any,
     variables?: any,
     options?: { skipAuth?: boolean }
   ): Promise<{ data?: T; errors?: readonly any[] }> => {
-    if (!_secureHasuraService) {
-      _secureHasuraService = SecureHasuraService.getInstance();
+    if (!_adminOperationsService) {
+      _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return _secureHasuraService.executeAdminQuery(query, variables, options);
+    return _adminOperationsService.executeAdminQuery(query, variables, options);
   },
+  
   executeAdminMutation: async <T = any>(
     mutation: any,
     variables?: any,
     options?: { skipAuth?: boolean }
   ): Promise<{ data?: T; errors?: readonly any[] }> => {
-    if (!_secureHasuraService) {
-      _secureHasuraService = SecureHasuraService.getInstance();
+    if (!_adminOperationsService) {
+      _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return _secureHasuraService.executeAdminMutation(
+    return _adminOperationsService.executeAdminMutation(
       mutation,
       variables,
       options
     );
   },
+
+  syncUserWithDatabase: async (
+    clerkUserId: string,
+    name: string,
+    email: string,
+    role?: string,
+    managerId?: string,
+    imageUrl?: string
+  ) => {
+    if (!_adminOperationsService) {
+      _adminOperationsService = AdminOperationsService.getInstance();
+    }
+    return _adminOperationsService.syncUserWithDatabase(
+      clerkUserId,
+      name,
+      email,
+      role,
+      managerId,
+      imageUrl
+    );
+  },
+
+  cleanAllPayrollDates: async () => {
+    if (!_adminOperationsService) {
+      _adminOperationsService = AdminOperationsService.getInstance();
+    }
+    return _adminOperationsService.cleanAllPayrollDates();
+  },
+
+  regeneratePayrollDates: async (
+    payrollId: string,
+    startDate: string,
+    endDate: string
+  ) => {
+    if (!_adminOperationsService) {
+      _adminOperationsService = AdminOperationsService.getInstance();
+    }
+    return _adminOperationsService.regeneratePayrollDates(
+      payrollId,
+      startDate,
+      endDate
+    );
+  },
 };
+
+// For backwards compatibility, export the old names
+export const secureHasuraService = adminOperationsService;
+export { AdminOperationsService as SecureHasuraService };

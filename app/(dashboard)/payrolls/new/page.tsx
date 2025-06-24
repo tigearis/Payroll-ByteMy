@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, gql } from "@apollo/client";
+import { useMutation, useQuery, useLazyQuery, gql } from "@apollo/client";
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -25,49 +25,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { CreatePayrollDocument } from "@/domains/payrolls/graphql/generated/graphql";
-
-// Temporary inline queries until GraphQL consolidation
-const GET_CLIENTS = gql`
-  query GetClients {
-    clients {
-      id
-      name
-    }
-  }
-`;
-
-const GET_ALL_USERS_LIST = gql`
-  query GetAllUsersList {
-    users {
-      id
-      name
-      email
-      role
-    }
-  }
-`;
-
-// GraphQL mutation for generating payroll dates (it's a database function exposed as mutation)
-const GENERATE_PAYROLL_DATES_MUTATION = gql`
-  mutation GeneratePayrollDates(
-    $payrollId: uuid!
-    $startDate: date!
-    $endDate: date!
-  ) {
-    generate_payroll_dates(
-      p_payroll_id: $payrollId
-      p_start_date: $startDate
-      p_end_date: $endDate
-    ) {
-      id
-      original_eft_date
-      adjusted_eft_date
-      processing_date
-      notes
-    }
-  }
-`;
+import { CreatePayrollDocument, GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GetClientsSimpleDocument } from "@/domains/clients/graphql/generated/graphql";
+import { GetUsersForDropdownDocument } from "@/domains/users/graphql/generated/graphql";
 
 // Hardcoded options for cycles and date types (these should ideally come from the database)
 const PAYROLL_CYCLES = [
@@ -531,15 +491,15 @@ export default function NewPayrollPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // GraphQL operations
-  const { data: clientsData } = useQuery(GET_CLIENTS);
-  const { data: usersData } = useQuery(GET_ALL_USERS_LIST);
+  const { data: clientsData } = useQuery(GetClientsSimpleDocument);
+  const { data: usersData } = useQuery(GetUsersForDropdownDocument);
 
   const [createPayroll] = useMutation(CreatePayrollDocument);
 
-  // Mutation for generating payroll dates after creation
-  const [generatePayrollDates] = useMutation(GENERATE_PAYROLL_DATES_MUTATION, {
+  // Lazy query for generating payroll dates after creation
+  const [generatePayrollDates] = useLazyQuery(GeneratePayrollDatesDocument, {
     onCompleted: data => {
-      const count = data?.generate_payroll_dates?.length || 0;
+      const count = data?.generatePayrollDates?.length || 0;
       toast.success(`Successfully generated ${count} payroll dates`);
       setIsLoading(false);
     },
@@ -780,9 +740,11 @@ export default function NewPayrollPage() {
         // Generate dates - this will handle loading state and redirect
         generatePayrollDates({
           variables: {
-            payrollId: newPayrollId,
-            startDate,
-            endDate,
+            args: {
+              p_payroll_id: newPayrollId,
+              p_start_date: startDate,
+              p_end_date: endDate,
+            },
           },
         });
 

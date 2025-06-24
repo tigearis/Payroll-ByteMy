@@ -426,3 +426,6 @@ mutation UpdateRolePermission($id: uuid!, $set: role_permissions_set_input!) {
     ...RolePermissionCore
   }
 }
+
+# NOTE: API key management mutations removed - api_keys table not found in schema
+# File: lib/security/persistent-api-keys.ts still uses inline GraphQL

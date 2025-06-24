@@ -195,3 +195,11 @@ query GetPermissionAuditLogs(
     created_at
   }
 }
+
+# NOTE: GetHasuraClaimsForUser query cannot be added yet because 
+# get_hasura_claims function is not exposed in GraphQL schema.
+# This needs to be added to Hasura metadata first.
+
+# NOTE: API key management queries removed - api_keys table not found in schema
+# File: lib/security/persistent-api-keys.ts still uses inline GraphQL
+
