@@ -28,6 +28,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserRoleManagement } from "@/domains/users/components/user-role-management";
 import { useAuthContext } from "@/lib/auth/auth-context";
+import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 
 const roles = ["developer", "org_admin", "manager", "consultant", "viewer"];
 const features = [
@@ -39,6 +40,7 @@ const features = [
 
 export default function SettingsPage() {
   const { userRole, hasAdminAccess, isLoading: authLoading } = useAuthContext();
+  const { layoutType, setLayoutType, sidebarCollapsed, setSidebarCollapsed, toggleSidebar } = useLayoutPreferences();
   const [isLoading, setIsLoading] = useState(false);
   const [roleAccess, setRoleAccess] = useState({
     admin: { create: true, modify: true, delete: true, view: true },
@@ -117,6 +119,7 @@ export default function SettingsPage() {
         <Tabs defaultValue="general" className="space-y-4">
           <TabsList>
             <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="layout">Layout</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="users">Users & Roles</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
@@ -253,6 +256,142 @@ export default function SettingsPage() {
                     </>
                   )}
                 </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="layout">
+            <Card>
+              <CardHeader>
+                <CardTitle>Layout Preferences</CardTitle>
+                <CardDescription>
+                  Customize how the application interface is displayed.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Navigation Layout</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="layout-sidebar">Sidebar Navigation</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Use a fixed sidebar on the left for navigation
+                        </p>
+                      </div>
+                      <Switch
+                        id="layout-sidebar"
+                        checked={layoutType === "sidebar"}
+                        onCheckedChange={(checked) =>
+                          setLayoutType(checked ? "sidebar" : "header")
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="layout-header">Header Navigation</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Use a horizontal header bar for navigation
+                        </p>
+                      </div>
+                      <Switch
+                        id="layout-header"
+                        checked={layoutType === "header"}
+                        onCheckedChange={(checked) =>
+                          setLayoutType(checked ? "header" : "sidebar")
+                        }
+                      />
+                    </div>
+                    {layoutType === "sidebar" && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <Label htmlFor="sidebar-collapsed">Collapse Sidebar</Label>
+                            <p className="text-sm text-muted-foreground">
+                              Start with the sidebar collapsed to save space
+                            </p>
+                          </div>
+                          <Switch
+                            id="sidebar-collapsed"
+                            checked={sidebarCollapsed}
+                            onCheckedChange={setSidebarCollapsed}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <Label>Quick Toggle</Label>
+                            <p className="text-sm text-muted-foreground">
+                              Click to toggle sidebar immediately
+                            </p>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={toggleSidebar}
+                          >
+                            {sidebarCollapsed ? "Expand" : "Collapse"} Sidebar
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Layout Options</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="layout-type">Navigation Style</Label>
+                    <Select
+                      value={layoutType}
+                      onValueChange={(value: "sidebar" | "header") =>
+                        setLayoutType(value)
+                      }
+                    >
+                      <SelectTrigger id="layout-type">
+                        <SelectValue placeholder="Select layout style" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sidebar">
+                          Sidebar Navigation
+                        </SelectItem>
+                        <SelectItem value="header">
+                          Header Navigation
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-sm text-muted-foreground">
+                      Choose between sidebar or header-based navigation layout
+                    </p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Current Settings</h3>
+                  <div className="rounded-lg border p-4 space-y-2">
+                    <div className="flex justify-between">
+                      <span className="font-medium">Navigation Layout:</span>
+                      <span className="capitalize">{layoutType}</span>
+                    </div>
+                    {layoutType === "sidebar" && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Sidebar:</span>
+                        <span>{sidebarCollapsed ? "Collapsed" : "Expanded"}</span>
+                      </div>
+                    )}
+                    <div className="text-sm text-muted-foreground">
+                      Your layout preferences are saved automatically when changed.
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className="text-sm text-muted-foreground">
+                  Layout changes take effect immediately. Your preferences are saved to your browser.
+                </div>
               </CardFooter>
             </Card>
           </TabsContent>

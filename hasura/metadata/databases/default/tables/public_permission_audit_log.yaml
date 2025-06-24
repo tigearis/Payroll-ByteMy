@@ -51,7 +51,6 @@ select_permissions:
         - target_role
         - target_user_id
         - timestamp
-        - updated_at
         - user_id
       filter: {}
     comment: Consultants can view relevant data
@@ -75,7 +74,6 @@ select_permissions:
         - target_role
         - target_user_id
         - timestamp
-        - updated_at
         - user_id
       filter: {}
       allow_aggregations: true
@@ -94,7 +92,6 @@ select_permissions:
         - target_role
         - target_user_id
         - timestamp
-        - updated_at
         - user_id
       filter: {}
     comment: Only org admins can view audit logs
@@ -112,7 +109,6 @@ select_permissions:
         - target_role
         - target_user_id
         - timestamp
-        - updated_at
         - user_id
       filter: {}
     comment: Viewers can see basic information

@@ -93,9 +93,9 @@ interface Holiday {
 
 interface Leave {
   id: string;
-  start_date: string;
-  end_date: string;
-  leave_type: string;
+  startDate: string;
+  endDate: string;
+  leaveType: string;
   reason: string;
   status: string;
 }
@@ -195,6 +195,16 @@ export default function AdvancedPayrollScheduler() {
       },
       errorPolicy: "all",
       skip: !isClient, // Skip query until client-side hydration is complete
+      onCompleted: (data) => {
+        console.log("✅ Query completed successfully:", {
+          dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+          payrollsCount: data.payrolls?.length || 0,
+          payrollDatesCount: data.payrollDates?.length || 0
+        });
+      },
+      onError: (error) => {
+        console.error("❌ Query failed:", error);
+      }
     }
   );
 
@@ -206,8 +216,8 @@ export default function AdvancedPayrollScheduler() {
     if (!consultant?.leaves) return false;
 
     return consultant.leaves.some((leave: Leave) => {
-      const leaveStart = new Date(leave.start_date);
-      const leaveEnd = new Date(leave.end_date);
+      const leaveStart = new Date(leave.startDate);
+      const leaveEnd = new Date(leave.endDate);
       return (
         leave.status === "approved" &&
         isWithinInterval(date, { start: leaveStart, end: leaveEnd })
@@ -217,7 +227,7 @@ export default function AdvancedPayrollScheduler() {
 
   // Transform data into assignments
   const transformData = (data: any): PayrollAssignment[] => {
-    if (!data?.payroll_dates) return [];
+    if (!data?.payrollDates) return [];
 
     const assignmentList: PayrollAssignment[] = [];
     const payrollsMap = new Map();
@@ -227,11 +237,11 @@ export default function AdvancedPayrollScheduler() {
       payrollsMap.set(payroll.id, payroll);
     });
 
-    data.payrolldates.forEach((dateInfo: any) => {
-      const payroll = dateInfo.payroll || payrollsMap.get(dateInfo.payroll_id);
+    data.payrollDates.forEach((dateInfo: any) => {
+      const payroll = dateInfo.payroll || payrollsMap.get(dateInfo.payrollId);
       if (!payroll) return;
 
-      const assignmentDate = new Date(dateInfo.adjusted_eft_date);
+      const assignmentDate = new Date(dateInfo.adjustedEftDate);
       const primaryConsultant = payroll.userByPrimaryConsultantUserId;
       const backupConsultant = payroll.userByBackupConsultantUserId;
 
@@ -260,11 +270,11 @@ export default function AdvancedPayrollScheduler() {
         payrollId: payroll.id,
         payrollName: payroll.name,
         clientName: payroll.client?.name || "Unknown Client",
-        originalEftDate: dateInfo.original_eft_date,
-        adjustedEftDate: dateInfo.adjusted_eft_date,
-        processingDate: dateInfo.processing_date,
-        employeeCount: payroll.employee_count || 0,
-        processingTime: payroll.processing_time || 1,
+        originalEftDate: dateInfo.originalEftDate,
+        adjustedEftDate: dateInfo.adjustedEftDate,
+        processingDate: dateInfo.processingDate,
+        employeeCount: payroll.employeeCount || 0,
+        processingTime: payroll.processingTime || 1,
         consultantId: finalConsultantId,
         consultantName: finalConsultantName,
         isBackup,
@@ -281,6 +291,13 @@ export default function AdvancedPayrollScheduler() {
   // Initialize assignments when data loads
   useEffect(() => {
     if (data) {
+      console.log("🔍 Raw data received:", {
+        payrolls: data.payrolls?.length || 0,
+        payrollDates: data.payrollDates?.length || 0,
+        samplePayroll: data.payrolls?.[0],
+        samplePayrollDate: data.payrollDates?.[0]
+      });
+      
       const freshAssignments = transformData(data);
       setAssignments(freshAssignments);
       setOriginalAssignments([...freshAssignments]);
@@ -934,6 +951,22 @@ export default function AdvancedPayrollScheduler() {
           </div>
         </div>
 
+        {/* Debug Info Card */}
+        <Card className="border-orange-200 bg-orange-50">
+          <CardContent className="p-4">
+            <h4 className="font-semibold text-orange-800 mb-2">Debug Information</h4>
+            <div className="text-sm text-orange-700 space-y-1">
+              <p><strong>Date Range:</strong> {formatPeriodDisplay()}</p>
+              <p><strong>Query Variables:</strong> {format(dateRange.start, "yyyy-MM-dd")} to {format(dateRange.end, "yyyy-MM-dd")}</p>
+              <p><strong>Raw Payrolls Count:</strong> {data?.payrolls?.length || 0}</p>
+              <p><strong>Raw PayrollDates Count:</strong> {data?.payrollDates?.length || 0}</p>
+              <p><strong>Consultants Found:</strong> {consultants.length}</p>
+              <p><strong>Assignments Transformed:</strong> {assignments.length}</p>
+              {error && <p><strong>Error:</strong> {(error as any)?.message || "Unknown error"}</p>}
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-gray-400 mb-4">
@@ -946,10 +979,16 @@ export default function AdvancedPayrollScheduler() {
               There are no payroll assignments for{" "}
               {formatPeriodDisplay().toLowerCase()}.
             </p>
-            <Button variant="outline" onClick={() => refetch()}>
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh Data
-            </Button>
+            <div className="flex gap-2 justify-center">
+              <Button variant="outline" onClick={() => refetch()}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh Data
+              </Button>
+              <Button variant="outline" onClick={() => setCurrentDate(new Date())}>
+                <Calendar className="w-4 h-4 mr-2" />
+                Go to Current Month
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

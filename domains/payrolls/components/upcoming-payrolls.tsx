@@ -16,11 +16,8 @@ import {
 } from "@/components/ui/table";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { GET_USER_UPCOMING_PAYROLLS } from "@/graphql/queries/dashboard/getAlerts";
+import { GetUserUpcomingPayrollsDocument } from "@/domains/payrolls/graphql/generated";
 import {
-  PayrollDate,
-  Client,
-  Consultant,
   UserUpcomingPayroll as UpcomingPayroll,
   UserUpcomingPayrollsData as UpcomingPayrollsData,
   StatusVariant,
@@ -72,7 +69,7 @@ export function UpcomingPayrolls() {
   const today = new Date().toISOString().split("T")[0];
 
   const { data, loading, error } = useQuery<UpcomingPayrollsData>(
-    GET_USER_UPCOMING_PAYROLLS,
+    GetUserUpcomingPayrollsDocument,
     {
       variables: {
         userId: currentUserId,

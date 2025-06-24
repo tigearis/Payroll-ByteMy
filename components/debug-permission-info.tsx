@@ -1,13 +1,13 @@
 "use client";
 
 import { useAuth, useUser } from "@clerk/nextjs";
-import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
+import { useUserRole } from "@/hooks/use-user-role";
 import { useAuthContext } from "@/lib/auth/auth-context";
 
 export function DebugPermissionInfo() {
   const { isLoaded: authLoaded, userId, has } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
-  const permissions = useEnhancedPermissions();
+  const permissions = useUserRole();
   const authContext = useAuthContext();
 
   // Test a few key permissions

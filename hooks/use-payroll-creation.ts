@@ -1,55 +1,11 @@
-import { useMutation } from "@apollo/client";
-import { gql } from "@apollo/client";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import { toast } from "sonner";
 
-// Import extracted GraphQL operations
-const CREATE_PAYROLL_MUTATION = gql`
-  mutation CreatePayrollExtracted(
-    $name: String!
-    $clientId: uuid!
-    $cycleId: uuid!
-    $primaryConsultantId: uuid!
-    $managerId: uuid!
-    $processingDaysBeforeEft: Int!
-  ) {
-    insert_payrolls_one(
-      object: {
-        name: $name
-        client_id: $clientId
-        cycle_id: $cycleId
-        primary_consultant_user_id: $primaryConsultantId
-        manager_user_id: $managerId
-        processing_days_before_eft: $processingDaysBeforeEft
-      }
-    ) {
-      id
-      name
-      client_id
-      cycle_id
-      created_at
-    }
-  }
-`;
-
-// Import extracted GraphQL operations - simplified version that works with current schema
-const GENERATE_TWO_YEARS_DATES_QUERY = gql`
-  mutation GeneratePayrollDatesExtracted(
-    $payrollId: uuid!
-    $startDate: date!
-    $endDate: date!
-  ) {
-    generate_payroll_dates(
-      p_payroll_id: $payrollId
-      p_start_date: $startDate
-      p_end_date: $endDate
-    ) {
-      id
-      original_eft_date
-      adjusted_eft_date
-      processing_date
-    }
-  }
-`;
+// Import GraphQL operations from domains
+import { 
+  CreatePayrollDocument,
+  GeneratePayrollDatesQueryDocument 
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 interface CreatePayrollInput {
   name: string;
@@ -66,11 +22,11 @@ interface CreatePayrollInput {
 
 export function usePayrollCreation() {
   const [createPayroll, { loading: creating }] = useMutation(
-    CREATE_PAYROLL_MUTATION
+    CreatePayrollDocument
   );
 
-  const [generateDates, { loading: generatingDates }] = useMutation(
-    GENERATE_TWO_YEARS_DATES_QUERY
+  const [generateDates, { loading: generatingDates }] = useLazyQuery(
+    GeneratePayrollDatesQueryDocument
   );
 
   const createPayrollWithDates = async (input: CreatePayrollInput) => {
@@ -80,14 +36,18 @@ export function usePayrollCreation() {
       // Step 1: Create the payroll
       const payrollResult = await createPayroll({
         variables: {
-          input: {
-            ...input,
-            active: input.active ?? true,
+          object: {
+            name: input.name,
+            clientId: input.client_id,
+            cycleId: input.cycle_id,
+            primaryConsultantUserId: input.primary_consultant_user_id || null,
+            managerUserId: input.manager_user_id || null,
+            // Note: processing_days_before_eft field may need schema update
           },
         },
       });
 
-      const newPayroll = payrollResult.data?.insert_payrolls_one;
+      const newPayroll = payrollResult.data?.insertPayroll;
       if (!newPayroll) {
         throw new Error("Failed to create payroll");
       }
@@ -106,11 +66,12 @@ export function usePayrollCreation() {
           variables: {
             payrollId: newPayroll.id,
             startDate: input.start_date,
+            endDate: null, // Will use default 2 years
+            maxDates: 104 // ~2 years for weekly payrolls
           },
         });
 
-        const generatedDates =
-          datesResult.data?.generate_payroll_dates_two_years;
+        const generatedDates = datesResult.data?.generatePayrollDates;
         const dateCount = generatedDates?.length || 0;
 
         console.log(`✅ Generated ${dateCount} payroll dates`);
@@ -163,8 +124,8 @@ export function usePayrollCreation() {
 
 // Helper function for manual date generation (used in edit scenarios)
 export function usePayrollDateGeneration() {
-  const [generateDates, { loading }] = useMutation(
-    GENERATE_TWO_YEARS_DATES_QUERY
+  const [generateDates, { loading }] = useLazyQuery(
+    GeneratePayrollDatesQueryDocument
   );
 
   const generateTwoYearsOfDates = async (
@@ -177,12 +138,14 @@ export function usePayrollDateGeneration() {
 
       const result = await generateDates({
         variables: {
-          payrollId,
-          startDate,
+          payrollId: payrollId,
+          startDate: startDate,
+          endDate: null, // Will use default 2 years
+          maxDates: 104 // ~2 years for weekly payrolls
         },
       });
 
-      const generatedDates = result.data?.generate_payroll_dates_two_years;
+      const generatedDates = result.data?.generatePayrollDates;
       const dateCount = generatedDates?.length || 0;
 
       console.log(`✅ Generated ${dateCount} payroll dates`);

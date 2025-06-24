@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 import {
-  GeneratePayrollDatesQueryDocument as GENERATE_PAYROLL_DATES,
+  GeneratePayrollDatesQueryDocument,
   GetPayrollsMissingDatesDocument,
   GetPayrollsDocument,
 } from "@/domains/payrolls/graphql/generated";
@@ -27,7 +27,7 @@ export function GenerateMissingDatesButton({
 
   // Set up the query with proper refetching
   const [generatePayrollDates, { error, client }] = useLazyQuery(
-    GENERATE_PAYROLL_DATES,
+    GeneratePayrollDatesQueryDocument,
     {
       fetchPolicy: "network-only",
       onError: error => {

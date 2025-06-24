@@ -11,10 +11,8 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - created_at
         - id
         - permissions
-        - updated_at
       filter: {}
     comment: All roles can view app settings
   - role: developer
@@ -26,28 +24,22 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - created_at
         - id
         - permissions
-        - updated_at
       filter: {}
     comment: All roles can view app settings
   - role: org_admin
     permission:
       columns:
-        - created_at
         - id
         - permissions
-        - updated_at
       filter: {}
     comment: Org admins can view app settings
   - role: viewer
     permission:
       columns:
-        - created_at
         - id
         - permissions
-        - updated_at
       filter: {}
     comment: All roles can view app settings
 update_permissions:

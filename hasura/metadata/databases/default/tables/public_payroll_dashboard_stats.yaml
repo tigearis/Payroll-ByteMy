@@ -7,7 +7,6 @@ select_permissions:
       columns:
         - backup_consultant_user_id
         - client_name
-        - created_at
         - cycle_name
         - future_dates
         - id
@@ -18,7 +17,6 @@ select_permissions:
         - primary_consultant_user_id
         - status
         - total_dates
-        - updated_at
       filter:
         _or:
           - primary_consultant_user_id:
@@ -37,7 +35,6 @@ select_permissions:
       columns:
         - backup_consultant_user_id
         - client_name
-        - created_at
         - cycle_name
         - future_dates
         - id
@@ -48,7 +45,6 @@ select_permissions:
         - primary_consultant_user_id
         - status
         - total_dates
-        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Managers can view all dashboard statistics
@@ -57,7 +53,6 @@ select_permissions:
       columns:
         - backup_consultant_user_id
         - client_name
-        - created_at
         - cycle_name
         - future_dates
         - id
@@ -68,7 +63,6 @@ select_permissions:
         - primary_consultant_user_id
         - status
         - total_dates
-        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all dashboard statistics including system health
@@ -77,7 +71,6 @@ select_permissions:
       columns:
         - backup_consultant_user_id
         - client_name
-        - created_at
         - cycle_name
         - future_dates
         - id
@@ -88,6 +81,5 @@ select_permissions:
         - primary_consultant_user_id
         - status
         - total_dates
-        - updated_at
       filter: {}
     comment: Viewers can see basic information

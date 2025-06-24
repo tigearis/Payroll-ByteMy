@@ -13,12 +13,9 @@ select_permissions:
       columns:
         - action_statement
         - action_timing
-        - created_at
         - event_manipulation
         - event_object_table
-        - id
         - trigger_name
-        - updated_at
       filter: {}
     comment: Consultants can view relevant data
   - role: developer
@@ -32,12 +29,9 @@ select_permissions:
       columns:
         - action_statement
         - action_timing
-        - created_at
         - event_manipulation
         - event_object_table
-        - id
         - trigger_name
-        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Managers can view all data
@@ -46,12 +40,9 @@ select_permissions:
       columns:
         - action_statement
         - action_timing
-        - created_at
         - event_manipulation
         - event_object_table
-        - id
         - trigger_name
-        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all data
@@ -60,12 +51,9 @@ select_permissions:
       columns:
         - action_statement
         - action_timing
-        - created_at
         - event_manipulation
         - event_object_table
-        - id
         - trigger_name
-        - updated_at
       filter: {}
     comment: Viewers can see basic information
 update_permissions:

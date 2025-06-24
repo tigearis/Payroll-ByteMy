@@ -1,10 +1,10 @@
 "use client";
 
-import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
+import { useUserRole } from "@/hooks/use-user-role";
 import { useUser } from "@clerk/nextjs";
 
 export function DebugPermissions() {
-  const permissions = useEnhancedPermissions();
+  const permissions = useUserRole();
   const { user, isLoaded } = useUser();
 
   return (

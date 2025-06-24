@@ -4,7 +4,7 @@ import { format, addMonths } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
 import { UpdatePayrollStatusDocument as UPDATE_PAYROLL_STATUS } from "@/domains/payrolls";
-import { GeneratePayrollDatesQueryDocument as GENERATE_PAYROLL_DATES } from "@/domains/payrolls/graphql/generated";
+import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated";
 import { serverApolloClient } from "@/lib/apollo/unified-client";
 
 export async function POST(req: NextRequest) {
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
         // Generate dates using Apollo query
         const { data: dateData, errors: dateErrors } = await client.query({
-          query: GENERATE_PAYROLL_DATES,
+          query: GeneratePayrollDatesQueryDocument,
           variables: {
             payrollId,
             startDate: formattedStart,

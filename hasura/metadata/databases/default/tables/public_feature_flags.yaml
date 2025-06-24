@@ -12,7 +12,6 @@ select_permissions:
     permission:
       columns:
         - allowed_roles
-        - created_at
         - feature_name
         - id
         - is_enabled
@@ -29,7 +28,6 @@ select_permissions:
     permission:
       columns:
         - allowed_roles
-        - created_at
         - feature_name
         - id
         - is_enabled
@@ -40,7 +38,6 @@ select_permissions:
     permission:
       columns:
         - allowed_roles
-        - created_at
         - feature_name
         - id
         - is_enabled
@@ -51,7 +48,6 @@ select_permissions:
     permission:
       columns:
         - allowed_roles
-        - created_at
         - feature_name
         - id
         - is_enabled
