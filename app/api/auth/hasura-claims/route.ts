@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { SecureHasuraService } from "@/lib/apollo/secure-hasura-service";
+import { AdminOperationsService } from "@/lib/apollo/admin-operations";
 
 // GraphQL query to get Hasura claims
 const GET_HASURA_CLAIMS = gql`
@@ -31,8 +31,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Use the secure Hasura service to get claims
-    const hasuraService = SecureHasuraService.getInstance();
+    // Use the admin operations service to get claims
+    const hasuraService = AdminOperationsService.getInstance();
 
     try {
       const { data, errors } = await hasuraService.executeAdminQuery(

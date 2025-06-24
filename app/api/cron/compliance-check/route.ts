@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 import { subDays } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
-import { secureHasuraService } from "@/lib/apollo/secure-hasura-service";
+import { adminOperationsService } from "@/lib/apollo/admin-operations";
 import {
   auditLogger,
   LogLevel,
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     const sevenYearsAgo = subDays(now, 365 * 7).toISOString();
 
     // Run compliance checks
-    const { data, errors } = await secureHasuraService.executeAdminQuery(
+    const { data, errors } = await adminOperationsService.executeAdminQuery(
       COMPLIANCE_CHECKS,
       {
         ninetyDaysAgo,
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
 
     if (findings.old_audit_logs > 0) {
       // Run retention cleanup
-      await secureHasuraService.executeAdminQuery(
+      await adminOperationsService.executeAdminQuery(
         gql`
           query {
             enforce_audit_retention
@@ -197,7 +197,7 @@ export async function POST(request: NextRequest) {
 
     // Record compliance check
     const { data: checkData, errors: checkErrors } =
-      await secureHasuraService.executeAdminMutation(
+      await adminOperationsService.executeAdminMutation(
         INSERT_COMPLIANCE_CHECK,
         {
           checkType: "automated_compliance_check",

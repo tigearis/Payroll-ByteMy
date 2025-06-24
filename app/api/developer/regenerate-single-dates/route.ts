@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { RegeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
-import { secureHasuraService } from "@/lib/apollo/secure-hasura-service";
+import { adminOperationsService } from "@/lib/apollo/admin-operations";
 import { withAuth, checkRateLimit } from "@/lib/auth/api-auth";
 
 export const POST = withAuth(
@@ -46,8 +46,8 @@ export const POST = withAuth(
         .toISOString()
         .split("T")[0];
 
-      // Use secure service to regenerate dates
-      const result = await secureHasuraService.executeAdminMutation(
+      // Use admin operations service to regenerate dates
+      const result = await adminOperationsService.executeAdminMutation(
         RegeneratePayrollDatesDocument,
         { payrollId, startDate, endDate }
       );

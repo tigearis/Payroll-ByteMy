@@ -1,5 +1,23 @@
 # Payroll Queries
 
+# ================================
+# PAYROLL DATE GENERATION QUERIES
+# Migrated from app/(dashboard)/payrolls/new/page.tsx
+# ================================
+
+# Generate payroll dates for a specific payroll
+query GeneratePayrollDates(
+  $args: generate_payroll_dates_args!
+) {
+  generatePayrollDates(args: $args) {
+    id
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+  }
+}
+
 query GetPayrolls {
   payrolls(
     where: { supersededDate: { _is_null: true } }

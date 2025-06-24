@@ -31,43 +31,6 @@ mutation DeletePayroll($id: uuid!) {
   }
 }
 
-# Migrated from hooks/use-payroll-creation.ts
-
-# Note: These mutations were extracted from hooks/use-payroll-creation.ts
-# but the field names and operations don't match the current Hasura schema.
-# They need to be updated to match the actual schema or use existing operations.
-
-# mutation CreatePayrollExtracted(
-#   $name: String!
-#   $clientId: uuid!
-#   $cycleId: uuid!
-#   $primaryConsultantId: uuid!
-#   $managerId: uuid!
-#   $processingDaysBeforeEft: Int!
-# ) {
-#   insertPayrolls(
-#     objects: [{
-#       name: $name
-#       clientId: $clientId
-#       cycleId: $cycleId
-#       primaryConsultantUserId: $primaryConsultantId
-#       managerUserId: $managerId
-#       processingDaysBeforeEft: $processingDaysBeforeEft
-#     }]
-#   ) {
-#     returning {
-#       id
-#       name
-#       clientId
-#       cycleId
-#       createdAt
-#     }
-#   }
-# }
-
-# Note: generate_payroll_dates appears to be a custom function
-# that may need to be implemented as a Hasura action or custom function
-
 mutation UpdatePayrollStatus($id: uuid!, $status: payroll_status!) {
   updatePayroll(pk_columns: { id: $id }, _set: { status: $status }) {
     id
@@ -86,27 +49,6 @@ mutation UpdatePayrollDateNotes($id: uuid!, $notes: String) {
   }
 }
 
-# Migrated from inline operations - Priority 1 fixes
-
-# Note: These mutations need to be implemented as Hasura actions or custom functions
-# mutation GeneratePayrollDates(
-#   $payrollId: uuid!
-#   $startDate: date!
-#   $endDate: date!
-# ) {
-#   generate_payroll_dates(
-#     p_payroll_id: $payrollId
-#     p_start_date: $startDate
-#     p_end_date: $endDate
-#   ) {
-#     id
-#     original_eft_date
-#     adjusted_eft_date
-#     processing_date
-#     notes
-#   }
-# }
-
 mutation DeletePayrollDates($payrollId: uuid!) {
   deletePayrollDates(where: { payrollId: { _eq: $payrollId } }) {
     affected_rows
@@ -118,10 +60,7 @@ mutation DeletePayrollDates($payrollId: uuid!) {
 mutation ProcessPayrollBatch($payrollIds: [uuid!]!, $processedBy: String!) {
   updatePayrolls(
     where: { id: { _in: $payrollIds } }
-    _set: {
-      status: "Implementation"
-      updatedAt: "now()"
-    }
+    _set: { status: "Implementation", updatedAt: "now()" }
   ) {
     affected_rows
     returning {
@@ -136,10 +75,7 @@ mutation ProcessPayrollBatch($payrollIds: [uuid!]!, $processedBy: String!) {
 mutation ApprovePayrollBatch($payrollIds: [uuid!]!, $approvedBy: String!) {
   updatePayrolls(
     where: { id: { _in: $payrollIds } }
-    _set: {
-      status: "Approved"
-      updatedAt: "now()"
-    }
+    _set: { status: "Approved", updatedAt: "now()" }
   ) {
     affected_rows
     returning {
@@ -156,11 +92,7 @@ mutation ApprovePayrollBatch($payrollIds: [uuid!]!, $approvedBy: String!) {
 mutation ArchivePayroll($id: uuid!, $archivedBy: String!) {
   updatePayroll(
     pk_columns: { id: $id }
-    _set: {
-      status: "Archived"
-      supersededDate: "now()"
-      updatedAt: "now()"
-    }
+    _set: { status: "Archived", supersededDate: "now()", updatedAt: "now()" }
   ) {
     id
     name
@@ -172,11 +104,7 @@ mutation ArchivePayroll($id: uuid!, $archivedBy: String!) {
 mutation DeletePayrollSoft($id: uuid!, $deletedBy: String!) {
   updatePayroll(
     pk_columns: { id: $id }
-    _set: {
-      status: "Deleted"
-      supersededDate: "now()"
-      updatedAt: "now()"
-    }
+    _set: { status: "Deleted", supersededDate: "now()", updatedAt: "now()" }
   ) {
     id
     name

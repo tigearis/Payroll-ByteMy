@@ -4,12 +4,17 @@
  * Provides comprehensive logging for audit, security, and SOC2 compliance requirements
  */
 
-import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 import { extractClientInfo as getClientInfo } from "@/lib/utils/client-info";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { 
+  LogAuditEventDocument, 
+  LogAuthEventDocument, 
+  type LogAuditEventMutationVariables, 
+  type LogAuthEventMutationVariables 
+} from "@/domains/audit/graphql/generated/graphql";
 
 // ================================
 // TYPES AND ENUMS
@@ -172,129 +177,9 @@ export interface AuthLogEntry {
 }
 
 // ================================
-// GRAPHQL MUTATIONS
+// GRAPHQL MUTATIONS MIGRATED TO DOMAIN
+// Now imported from @/domains/audit/graphql/generated/graphql
 // ================================
-
-const LOG_AUDIT_EVENT = gql`
-  mutation LogAuditEvent(
-    $user_id: String!
-    $userrole: String
-    $action: String!
-    $entity_type: String!
-    $entity_id: String
-    $data_classification: String!
-    $fields_affected: jsonb
-    $previous_values: jsonb
-    $new_values: jsonb
-    $request_id: String!
-    $success: Boolean!
-    $error_message: String
-    $method: String
-    $user_agent: String
-    $ip_address: String
-    $session_id: String
-  ) {
-    insert_audit_audit_log_one(
-      object: {
-        user_id: $user_id
-        userrole: $userrole
-        action: $action
-        entity_type: $entity_type
-        entity_id: $entity_id
-        data_classification: $data_classification
-        fields_affected: $fields_affected
-        previous_values: $previous_values
-        new_values: $new_values
-        request_id: $request_id
-        success: $success
-        error_message: $error_message
-        method: $method
-        user_agent: $user_agent
-        ip_address: $ip_address
-        session_id: $session_id
-      }
-    ) {
-      id
-      timestamp
-    }
-  }
-`;
-
-const LOG_SOC2_EVENT = gql`
-  mutation LogSOC2Event(
-    $level: String!
-    $category: String!
-    $event_type: String!
-    $user_id: String
-    $user_email: String
-    $userrole: String
-    $resource_id: String
-    $resource_type: String
-    $action: String
-    $ip_address: String
-    $user_agent: String
-    $session_id: String
-    $success: Boolean!
-    $error_message: String
-    $metadata: jsonb
-    $data_classification: String
-    $compliance_note: String
-  ) {
-    insert_audit_compliance_log_one(
-      object: {
-        level: $level
-        category: $category
-        event_type: $event_type
-        user_id: $user_id
-        user_email: $user_email
-        userrole: $userrole
-        resource_id: $resource_id
-        resource_type: $resource_type
-        action: $action
-        ip_address: $ip_address
-        user_agent: $user_agent
-        session_id: $session_id
-        success: $success
-        error_message: $error_message
-        metadata: $metadata
-        data_classification: $data_classification
-        compliance_note: $compliance_note
-      }
-    ) {
-      id
-      timestamp
-    }
-  }
-`;
-
-const LOG_AUTH_EVENT = gql`
-  mutation LogAuthEvent(
-    $event_type: String!
-    $user_id: String
-    $user_email: String
-    $ip_address: String
-    $user_agent: String
-    $success: Boolean!
-    $failure_reason: String
-    $metadata: jsonb
-  ) {
-    insert_audit_auth_events_one(
-      object: {
-        event_type: $event_type
-        user_id: $user_id
-        user_email: $user_email
-        ip_address: $ip_address
-        user_agent: $user_agent
-        success: $success
-        failure_reason: $failure_reason
-        metadata: $metadata
-      }
-    ) {
-      id
-      timestamp
-    }
-  }
-`;
 
 // ================================
 // UNIFIED AUDIT LOGGER CLASS
@@ -317,26 +202,31 @@ class UnifiedAuditLogger {
    */
   async logAuditEvent(entry: AuditLogEntry): Promise<void> {
     try {
-      await adminApolloClient.mutate({
-        mutation: LOG_AUDIT_EVENT,
-        variables: {
-          user_id: entry.userId,
-          userrole: entry.userRole,
+      const variables: LogAuditEventMutationVariables = {
+        object: {
           action: entry.action,
-          entity_type: entry.entityType,
-          entity_id: entry.entityId,
-          data_classification: entry.dataClassification,
-          fields_affected: entry.fieldsAffected,
-          previous_values: entry.previousValues,
-          new_values: entry.newValues,
+          // Map to correct schema field names (camelCase)
+          entityType: entry.entityType,
+          entityId: entry.entityId,
+          dataClassification: entry.dataClassification,
+          fieldsAffected: entry.fieldsAffected as any,
+          oldValues: entry.previousValues as any,
+          newValues: entry.newValues as any,
           request_id: entry.requestId,
           success: entry.success,
-          error_message: entry.errorMessage,
+          errorMessage: entry.errorMessage,
           method: entry.method,
-          user_agent: entry.userAgent,
-          ip_address: entry.ipAddress,
-          session_id: entry.sessionId,
+          userAgent: entry.userAgent,
+          ipAddress: entry.ipAddress,
+          sessionId: entry.sessionId,
+          // Add missing required fields
+          eventTime: new Date().toISOString(),
         },
+      };
+
+      await adminApolloClient.mutate({
+        mutation: LogAuditEventDocument,
+        variables,
       });
     } catch (error) {
       console.error("Failed to log audit event:", error);
@@ -345,29 +235,34 @@ class UnifiedAuditLogger {
 
   /**
    * Log SOC2 compliance events
+   * NOTE: This uses a placeholder - SOC2 logging needs proper table/mutation setup
    */
   async logSOC2Event(entry: SOC2LogEntry): Promise<void> {
     try {
-      await adminApolloClient.mutate({
-        mutation: LOG_SOC2_EVENT,
-        variables: {
+      // TODO: Implement proper SOC2 compliance logging once the table is set up
+      // For now, log as a regular audit event
+      await this.logAuditEvent({
+        userId: entry.userId || "system",
+        userRole: entry.userRole,
+        action: AuditAction.CREATE,
+        entityType: "soc2_compliance",
+        entityId: entry.resourceId,
+        dataClassification: entry.dataClassification || DataClassification.CRITICAL,
+        requestId: `soc2-${Date.now()}`,
+        success: entry.success,
+        errorMessage: entry.errorMessage,
+        method: "SOC2_LOG",
+        userAgent: entry.userAgent,
+        ipAddress: entry.ipAddress,
+        sessionId: entry.sessionId,
+        newValues: {
           level: entry.level,
           category: entry.category,
-          event_type: entry.eventType,
-          user_id: entry.userId,
-          user_email: entry.userEmail,
-          userrole: entry.userRole,
-          resource_id: entry.resourceId,
-          resource_type: entry.resourceType,
+          eventType: entry.eventType,
+          resourceType: entry.resourceType,
           action: entry.action,
-          ip_address: entry.ipAddress,
-          user_agent: entry.userAgent,
-          session_id: entry.sessionId,
-          success: entry.success,
-          error_message: entry.errorMessage,
           metadata: entry.metadata,
-          data_classification: entry.dataClassification,
-          compliance_note: entry.complianceNote,
+          complianceNote: entry.complianceNote,
         },
       });
     } catch (error) {
@@ -380,18 +275,24 @@ class UnifiedAuditLogger {
    */
   async logAuthEvent(entry: AuthLogEntry): Promise<void> {
     try {
-      await adminApolloClient.mutate({
-        mutation: LOG_AUTH_EVENT,
-        variables: {
-          event_type: entry.eventType,
-          user_id: entry.userId,
-          user_email: entry.userEmail,
-          ip_address: entry.ipAddress,
-          user_agent: entry.userAgent,
+      const variables: LogAuthEventMutationVariables = {
+        object: {
+          eventType: entry.eventType,
+          userId: entry.userId,
+          userEmail: entry.userEmail,
+          ipAddress: entry.ipAddress,
+          userAgent: entry.userAgent,
           success: entry.success,
-          failure_reason: entry.failureReason,
-          metadata: entry.metadata,
+          failureReason: entry.failureReason,
+          metadata: entry.metadata as any,
+          // Add required field
+          eventTime: new Date().toISOString(),
         },
+      };
+
+      await adminApolloClient.mutate({
+        mutation: LogAuthEventDocument,
+        variables,
       });
     } catch (error) {
       console.error("Failed to log auth event:", error);

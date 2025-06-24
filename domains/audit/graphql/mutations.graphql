@@ -80,3 +80,38 @@ mutation CleanAllPayrollDates {
     affected_rows
   }
 }
+
+# ================================
+# LOGGER SERVICE MUTATIONS
+# Migrated from lib/security/audit/logger.ts
+# ================================
+
+# Log general audit events
+mutation LogAuditEvent(
+  $object: audit_audit_log_insert_input!
+) {
+  insertAuditLog(object: $object) {
+    id
+    eventTime
+  }
+}
+
+# Log authentication events
+mutation LogAuthEvent(
+  $object: audit_auth_events_insert_input!
+) {
+  insertAuthEvent(object: $object) {
+    id
+    eventTime
+  }
+}
+
+# SOC2 compliance logging using the custom function
+mutation LogSOC2ComplianceEvent(
+  $event: AuditEventInput!
+) {
+  logAuditEvent(event: $event) {
+    success
+    message
+  }
+}
