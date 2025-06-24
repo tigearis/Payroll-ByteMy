@@ -753,9 +753,9 @@ type audit_audit_log {
   sessionId: String
   success: Boolean
   userAgent: String
+  userEmail: String
   userId: uuid
-  user_email: String
-  user_role: String
+  userRole: String
 }
 
 """
@@ -804,9 +804,9 @@ input audit_audit_log_bool_exp {
   sessionId: String_comparison_exp
   success: Boolean_comparison_exp
   userAgent: String_comparison_exp
+  userEmail: String_comparison_exp
   userId: uuid_comparison_exp
-  user_email: String_comparison_exp
-  user_role: String_comparison_exp
+  userRole: String_comparison_exp
 }
 
 """
@@ -865,9 +865,9 @@ input audit_audit_log_insert_input {
   sessionId: String
   success: Boolean
   userAgent: String
+  userEmail: String
   userId: uuid
-  user_email: String
-  user_role: String
+  userRole: String
 }
 
 """aggregate max on columns"""
@@ -882,9 +882,9 @@ type audit_audit_log_max_fields {
   resourceType: String
   sessionId: String
   userAgent: String
+  userEmail: String
   userId: uuid
-  user_email: String
-  user_role: String
+  userRole: String
 }
 
 """aggregate min on columns"""
@@ -899,9 +899,9 @@ type audit_audit_log_min_fields {
   resourceType: String
   sessionId: String
   userAgent: String
+  userEmail: String
   userId: uuid
-  user_email: String
-  user_role: String
+  userRole: String
 }
 
 """
@@ -940,9 +940,9 @@ input audit_audit_log_order_by {
   sessionId: order_by
   success: order_by
   userAgent: order_by
+  userEmail: order_by
   userId: order_by
-  user_email: order_by
-  user_role: order_by
+  userRole: order_by
 }
 
 """primary key columns input for table: audit.audit_log"""
@@ -992,11 +992,11 @@ enum audit_audit_log_select_column {
   """column name"""
   userAgent
   """column name"""
+  userEmail
+  """column name"""
   userId
   """column name"""
-  user_email
-  """column name"""
-  user_role
+  userRole
 }
 
 """
@@ -1018,9 +1018,9 @@ input audit_audit_log_set_input {
   sessionId: String
   success: Boolean
   userAgent: String
+  userEmail: String
   userId: uuid
-  user_email: String
-  user_role: String
+  userRole: String
 }
 
 """
@@ -1050,9 +1050,9 @@ input audit_audit_log_stream_cursor_value_input {
   sessionId: String
   success: Boolean
   userAgent: String
+  userEmail: String
   userId: uuid
-  user_email: String
-  user_role: String
+  userRole: String
 }
 
 """
@@ -1090,11 +1090,11 @@ enum audit_audit_log_update_column {
   """column name"""
   userAgent
   """column name"""
+  userEmail
+  """column name"""
   userId
   """column name"""
-  user_email
-  """column name"""
-  user_role
+  userRole
 }
 
 input audit_audit_log_updates {
@@ -2318,14 +2318,14 @@ type audit_permission_usage_report_variance_fields {
 columns and relationships of "audit.slow_queries"
 """
 type audit_slow_queries {
-  application_name: String
-  client_addr: inet
-  created_at: timestamptz
+  applicationName: String
+  clientAddr: inet
+  createdAt: timestamptz
   id: uuid!
   query: String!
-  query_duration: interval!
-  query_start: timestamptz!
-  user_id: uuid
+  queryDuration: interval!
+  queryStart: timestamptz!
+  userId: uuid
 }
 
 """
@@ -2352,14 +2352,14 @@ input audit_slow_queries_bool_exp {
   _and: [audit_slow_queries_bool_exp!]
   _not: audit_slow_queries_bool_exp
   _or: [audit_slow_queries_bool_exp!]
-  application_name: String_comparison_exp
-  client_addr: inet_comparison_exp
-  created_at: timestamptz_comparison_exp
+  applicationName: String_comparison_exp
+  clientAddr: inet_comparison_exp
+  createdAt: timestamptz_comparison_exp
   id: uuid_comparison_exp
   query: String_comparison_exp
-  query_duration: interval_comparison_exp
-  query_start: timestamptz_comparison_exp
-  user_id: uuid_comparison_exp
+  queryDuration: interval_comparison_exp
+  queryStart: timestamptz_comparison_exp
+  userId: uuid_comparison_exp
 }
 
 """
@@ -2376,34 +2376,34 @@ enum audit_slow_queries_constraint {
 input type for inserting data into table "audit.slow_queries"
 """
 input audit_slow_queries_insert_input {
-  application_name: String
-  client_addr: inet
-  created_at: timestamptz
+  applicationName: String
+  clientAddr: inet
+  createdAt: timestamptz
   id: uuid
   query: String
-  query_duration: interval
-  query_start: timestamptz
-  user_id: uuid
+  queryDuration: interval
+  queryStart: timestamptz
+  userId: uuid
 }
 
 """aggregate max on columns"""
 type audit_slow_queries_max_fields {
-  application_name: String
-  created_at: timestamptz
+  applicationName: String
+  createdAt: timestamptz
   id: uuid
   query: String
-  query_start: timestamptz
-  user_id: uuid
+  queryStart: timestamptz
+  userId: uuid
 }
 
 """aggregate min on columns"""
 type audit_slow_queries_min_fields {
-  application_name: String
-  created_at: timestamptz
+  applicationName: String
+  createdAt: timestamptz
   id: uuid
   query: String
-  query_start: timestamptz
-  user_id: uuid
+  queryStart: timestamptz
+  userId: uuid
 }
 
 """
@@ -2427,14 +2427,14 @@ input audit_slow_queries_on_conflict {
 
 """Ordering options when selecting data from "audit.slow_queries"."""
 input audit_slow_queries_order_by {
-  application_name: order_by
-  client_addr: order_by
-  created_at: order_by
+  applicationName: order_by
+  clientAddr: order_by
+  createdAt: order_by
   id: order_by
   query: order_by
-  query_duration: order_by
-  query_start: order_by
-  user_id: order_by
+  queryDuration: order_by
+  queryStart: order_by
+  userId: order_by
 }
 
 """primary key columns input for table: audit.slow_queries"""
@@ -2447,35 +2447,35 @@ select columns of table "audit.slow_queries"
 """
 enum audit_slow_queries_select_column {
   """column name"""
-  application_name
+  applicationName
   """column name"""
-  client_addr
+  clientAddr
   """column name"""
-  created_at
+  createdAt
   """column name"""
   id
   """column name"""
   query
   """column name"""
-  query_duration
+  queryDuration
   """column name"""
-  query_start
+  queryStart
   """column name"""
-  user_id
+  userId
 }
 
 """
 input type for updating data in table "audit.slow_queries"
 """
 input audit_slow_queries_set_input {
-  application_name: String
-  client_addr: inet
-  created_at: timestamptz
+  applicationName: String
+  clientAddr: inet
+  createdAt: timestamptz
   id: uuid
   query: String
-  query_duration: interval
-  query_start: timestamptz
-  user_id: uuid
+  queryDuration: interval
+  queryStart: timestamptz
+  userId: uuid
 }
 
 """
@@ -2490,14 +2490,14 @@ input audit_slow_queries_stream_cursor_input {
 
 """Initial value of the column from where the streaming should start"""
 input audit_slow_queries_stream_cursor_value_input {
-  application_name: String
-  client_addr: inet
-  created_at: timestamptz
+  applicationName: String
+  clientAddr: inet
+  createdAt: timestamptz
   id: uuid
   query: String
-  query_duration: interval
-  query_start: timestamptz
-  user_id: uuid
+  queryDuration: interval
+  queryStart: timestamptz
+  userId: uuid
 }
 
 """
@@ -2505,21 +2505,21 @@ update columns of table "audit.slow_queries"
 """
 enum audit_slow_queries_update_column {
   """column name"""
-  application_name
+  applicationName
   """column name"""
-  client_addr
+  clientAddr
   """column name"""
-  created_at
+  createdAt
   """column name"""
   id
   """column name"""
   query
   """column name"""
-  query_duration
+  queryDuration
   """column name"""
-  query_start
+  queryStart
   """column name"""
-  user_id
+  userId
 }
 
 input audit_slow_queries_updates {

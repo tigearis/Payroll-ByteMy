@@ -135,7 +135,7 @@ export function UserFormModal({
             email: user?.email || "",
             role: user?.role || "viewer",
             managerId: user?.manager?.id || "",
-            isStaff: user?.is_staff || false,
+            isStaff: user?.isStaff || false,
             isActive: user?.lastSignIn ? true : false,
           },
   });
@@ -148,7 +148,7 @@ export function UserFormModal({
         email: user.email,
         role: user.role,
         managerId: user.manager?.id || "",
-        isStaff: user.is_staff,
+        isStaff: user.isStaff,
         isActive: user.lastSignIn ? true : false,
       });
     }

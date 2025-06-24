@@ -46,8 +46,8 @@ subscription SecurityEventsStream($twentyFourHoursAgo: timestamptz!) {
     id
     eventTime
     userId
-    user_email
-    user_role
+    userEmail
+    userRole
     action
     resourceType
     resourceId
@@ -71,8 +71,8 @@ subscription FailedOperationsStream($twentyFourHoursAgo: timestamptz!) {
     id
     eventTime
     userId
-    user_email
-    user_role
+    userEmail
+    userRole
     action
     resourceType
     error_message

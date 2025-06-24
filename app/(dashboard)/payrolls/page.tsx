@@ -62,7 +62,6 @@ import {
 import { PayrollsTable } from "@/domains/payrolls/components/payrolls-table";
 import {
   GetPayrollsDocument,
-  GetPayrollsFallbackDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { useUserRole } from "@/hooks/use-user-role";
 
@@ -430,25 +429,7 @@ export default function PayrollsPage() {
     errorPolicy: "all",
   });
 
-  // Fallback query if the main query fails
-  const {
-    data: fallbackData,
-    loading: fallbackLoading,
-    error: fallbackError,
-    refetch: fallbackRefetch,
-  } = useQuery(GetPayrollsFallbackDocument, {
-    skip: !error, // Only run fallback if main query fails
-    fetchPolicy: "cache-and-network",
-    errorPolicy: "all",
-  });
-
-  // Choose which data to use
-  const finalData = data || fallbackData;
-  const finalLoading = (loading || (error && fallbackLoading)) ?? false;
-  const finalError = error && fallbackError ? fallbackError : null;
-  const finalRefetch = data ? refetch : fallbackRefetch;
-
-  const payrolls = finalData?.payrolls || [];
+  const payrolls = data?.payrolls || [];
 
   useEffect(() => {
     if (roleLoading) {
@@ -475,7 +456,7 @@ export default function PayrollsPage() {
     );
   }
 
-  if (finalLoading && !payrolls.length) {
+  if (loading && !payrolls.length) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
@@ -486,15 +467,15 @@ export default function PayrollsPage() {
     );
   }
 
-  if (finalError && !payrolls.length) {
+  if (error && !payrolls.length) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
           <AlertTriangle className="w-8 h-8 mx-auto text-destructive" />
           <p className="text-destructive">
-            Error loading payrolls: {finalError.message}
+            Error loading payrolls: {error.message}
           </p>
-          <Button onClick={() => finalRefetch()} variant="outline">
+          <Button onClick={() => refetch()} variant="outline">
             <RefreshCw className="w-4 h-4 mr-2" />
             Try Again
           </Button>
@@ -538,7 +519,7 @@ export default function PayrollsPage() {
       progress: getStatusConfig(payroll.status || "Implementation").progress,
       nextEftDate: getNextEftDate(payroll.payrollDates),
       lastUpdated: new Date(payroll.updatedAt || payroll.createdAt),
-      lastUpdatedBy: payroll.primaryConsultant?.name || "System",
+      lastUpdatedBy: payroll.backupConsultant?.name || "System",
     };
   });
 
@@ -1309,7 +1290,7 @@ export default function PayrollsPage() {
           </Card>
         )}
 
-        {finalLoading && !payrolls.length ? (
+        {loading && !payrolls.length ? (
           <Card>
             <CardContent className="p-12">
               <div className="flex items-center justify-center">
@@ -1350,8 +1331,8 @@ export default function PayrollsPage() {
             {viewMode === "table" && (
               <PayrollsTable
                 payrolls={sortedPayrolls}
-                loading={!!finalLoading}
-                onRefresh={finalRefetch}
+                loading={!!loading}
+                onRefresh={refetch}
                 selectedPayrolls={selectedPayrolls}
                 onSelectPayroll={handleSelectPayroll}
                 onSelectAll={handleSelectAll}

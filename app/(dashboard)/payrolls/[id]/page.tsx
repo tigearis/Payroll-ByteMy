@@ -1753,6 +1753,10 @@ export default function PayrollPage() {
                   <span>{statusConfig.progress}%</span>
                 </div>
                 <Progress value={statusConfig.progress} className="h-2" />
+                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                  <span>Manager: {(payroll as any).manager?.name || "Not assigned"}</span>
+                  <span>Status: {(payroll as any).status || "Implementation"}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -2281,8 +2285,7 @@ export default function PayrollPage() {
                                 Primary Consultant
                               </Label>
                               <p className="mt-1">
-                                {(payroll as any).userByPrimaryConsultantUserId
-                                  ?.name || "Not assigned"}
+                                {(payroll as any).primaryConsultant?.name || "Not assigned"}
                               </p>
                             </div>
                             <div>
@@ -2290,8 +2293,7 @@ export default function PayrollPage() {
                                 Backup Consultant
                               </Label>
                               <p className="mt-1">
-                                {(payroll as any).userByBackupConsultantUserId
-                                  ?.name || "Not assigned"}
+                                {(payroll as any).backupConsultant?.name || "Not assigned"}
                               </p>
                             </div>
                             <div>
@@ -2299,8 +2301,7 @@ export default function PayrollPage() {
                                 Manager
                               </Label>
                               <p className="mt-1">
-                                {(payroll as any).userByManagerUserId?.name ||
-                                  "Not assigned"}
+                                {(payroll as any).manager?.name || "Not assigned"}
                               </p>
                             </div>
                             <div>

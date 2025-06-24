@@ -138,6 +138,6 @@ fragment AuditFields on audit_audit_log {
   ipAddress
   userAgent
   success
-  user_email
-  user_role
+  userEmail
+  userRole
 }
