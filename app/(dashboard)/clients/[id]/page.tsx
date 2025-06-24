@@ -71,7 +71,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PayrollsTabLoading } from "@/components/ui/loading-states";
-import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -87,13 +86,45 @@ import {
   UpdateClientDocument,
   UpdateClientStatusDocument,
   ArchiveClientDocument,
-  type GetClientByIdQuery,
 } from "@/domains/clients/graphql/generated/graphql";
 import { type Payrolls } from "@/domains/payrolls/graphql/generated/graphql";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import { useSmartPolling } from "@/hooks/use-polling";
 
 import { safeFormatDate } from "@/lib/utils/date-utils";
+
+// Helper function to format payroll cycle information
+const formatPayrollCycle = (payroll: any) => {
+  const cycleName = payroll.payrollCycle?.name;
+
+  if (!cycleName) {
+    return "Not configured";
+  }
+
+  // Create readable cycle name
+  let readableCycle = "";
+  switch (cycleName) {
+    case "weekly":
+      readableCycle = "Weekly";
+      break;
+    case "fortnightly":
+      readableCycle = "Fortnightly";
+      break;
+    case "bi_monthly":
+      readableCycle = "Bi-Monthly";
+      break;
+    case "monthly":
+      readableCycle = "Monthly";
+      break;
+    case "quarterly":
+      readableCycle = "Quarterly";
+      break;
+    default:
+      readableCycle = cycleName.charAt(0).toUpperCase() + cycleName.slice(1);
+  }
+
+  return readableCycle;
+};
 
 // Payroll status configuration (same as payrolls page)
 const getStatusConfig = (status: string) => {
@@ -277,17 +308,6 @@ export default function ClientDetailPage() {
     }).format(amount || 0);
   };
 
-  const formatDate = (date: string | Date) => {
-    if (!date) {
-      return "Not set";
-    }
-    const d = typeof date === "string" ? new Date(date) : date;
-    return d.toLocaleDateString("en-AU", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -327,11 +347,12 @@ export default function ClientDetailPage() {
       return {
         ...payroll,
         employeeCount: totalEmployees,
+        payrollSchedule: formatPayrollCycle(payroll),
         priority:
           totalEmployees > 50 ? "high" : totalEmployees > 20 ? "medium" : "low",
         progress: getStatusConfig(payroll.status || "Implementation").progress,
         lastUpdated: new Date(payroll.updatedAt || payroll.createdAt || new Date()),
-        lastUpdatedBy: payroll.primaryConsultant?.name || "System",
+        lastUpdatedBy: payroll.backupConsultant?.name || "System",
       };
     });
   };
@@ -773,10 +794,11 @@ export default function ClientDetailPage() {
                             </TableHead>
                             <TableHead>Payroll</TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead>Consultant</TableHead>
+                            <TableHead>Payroll Schedule</TableHead>
                             <TableHead>Employees</TableHead>
-                            <TableHead>Last Updated</TableHead>
-                            <TableHead>Progress</TableHead>
+                            <TableHead>Consultant</TableHead>
+                            <TableHead>Backup Consultant</TableHead>
+                            <TableHead>Manager</TableHead>
                             <TableHead className="w-12"></TableHead>
                           </TableRow>
                         </TableHeader>
@@ -807,6 +829,7 @@ export default function ClientDetailPage() {
                                     }
                                   />
                                 </TableCell>
+                                {/* Payroll Name */}
                                 <TableCell>
                                   <div>
                                     <Link
@@ -815,26 +838,28 @@ export default function ClientDetailPage() {
                                     >
                                       {payroll.name}
                                     </Link>
-                                    <div className="text-sm text-gray-500">
-                                      {/* Additional payroll info can go here */}
-                                    </div>
                                   </div>
                                 </TableCell>
+                                
+                                {/* Status */}
                                 <TableCell>
                                   <Badge className={statusConfig.color}>
                                     <StatusIcon className="w-3 h-3 mr-1" />
                                     {payroll.status || "Implementation"}
                                   </Badge>
                                 </TableCell>
+                                
+                                {/* Payroll Schedule */}
                                 <TableCell>
                                   <div className="flex items-center gap-2">
-                                    <UserCheck className="w-4 h-4 text-gray-400" />
-                                    <span>
-                                      {payroll.userByPrimaryConsultantUserId
-                                        ?.name || "Unassigned"}
+                                    <Clock className="w-4 h-4 text-gray-500" />
+                                    <span className="font-medium">
+                                      {payroll.payrollSchedule}
                                     </span>
                                   </div>
                                 </TableCell>
+                                
+                                {/* Employees */}
                                 <TableCell>
                                   <div className="flex items-center gap-2">
                                     <Users className="w-4 h-4 text-gray-400" />
@@ -847,23 +872,34 @@ export default function ClientDetailPage() {
                                     </span>
                                   </div>
                                 </TableCell>
+                                
+                                {/* Consultant */}
                                 <TableCell>
-                                  <div className="text-sm">
-                                    <div>{formatDate(payroll.lastUpdated)}</div>
-                                    <div className="text-gray-500 text-xs">
-                                      by {payroll.lastUpdatedBy}
-                                    </div>
+                                  <div className="flex items-center gap-2">
+                                    <UserCheck className="w-4 h-4 text-gray-400" />
+                                    <span>
+                                      {payroll.primaryConsultant?.name || "Unassigned"}
+                                    </span>
                                   </div>
                                 </TableCell>
+                                
+                                {/* Backup Consultant */}
                                 <TableCell>
-                                  <div className="w-full max-w-[100px]">
-                                    <div className="flex items-center justify-between text-xs mb-1">
-                                      <span>{payroll.progress}%</span>
-                                    </div>
-                                    <Progress
-                                      value={payroll.progress}
-                                      className="h-2"
-                                    />
+                                  <div className="flex items-center gap-2">
+                                    <UserCheck className="w-4 h-4 text-gray-500" />
+                                    <span>
+                                      {payroll.backupConsultant?.name || "Unassigned"}
+                                    </span>
+                                  </div>
+                                </TableCell>
+                                
+                                {/* Manager */}
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <UserCheck className="w-4 h-4 text-blue-500" />
+                                    <span>
+                                      {payroll.manager?.name || "Unassigned"}
+                                    </span>
                                   </div>
                                 </TableCell>
                                 <TableCell>

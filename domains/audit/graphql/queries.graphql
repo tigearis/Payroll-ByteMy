@@ -163,8 +163,9 @@ query SecurityOverview(
   ) {
     id
     eventTime
-    user_email
-    user_role
+    userId
+    userEmail
+    userRole
     action
     resourceType
     resourceId
@@ -191,7 +192,9 @@ query SecurityOverview(
   ) {
     id
     eventTime
-    user_email
+    userId
+    userEmail
+    userRole
     action
     resourceType
     error_message
@@ -273,8 +276,6 @@ query ComplianceReport($startDate: timestamptz!, $endDate: timestamptz!) {
     distinct_on: userId
   ) {
     userId
-    user_email
-    user_role
     eventTime
     action
   }
@@ -325,8 +326,6 @@ query GetAuditAnalytics($startDate: timestamptz!, $endDate: timestamptz!) {
     limit: 100
   ) {
     userId
-    user_email
-    user_role
     action
     eventTime
   }
@@ -397,7 +396,8 @@ query AuditLog(
   auditLogs(limit: $limit, offset: $offset, where: $where, order_by: $orderBy) {
     id
     userId
-    user_role
+    userEmail
+    userRole
     action
     resourceType
     resourceId

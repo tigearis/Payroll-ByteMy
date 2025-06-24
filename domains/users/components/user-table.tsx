@@ -121,7 +121,7 @@ export function UserTable({
 
   // Helper function to check if user is trying to delete themselves
   const isCurrentUser = (user: User): boolean => {
-    return user.clerk_user_id === userId;
+    return user.clerkUserId === userId;
   };
 
   if (loading) {
@@ -204,11 +204,11 @@ export function UserTable({
                 <div className="flex items-center space-x-2">
                   <div
                     className={`w-2 h-2 rounded-full ${
-                      user.is_staff ? "bg-green-500" : "bg-gray-400"
+                      user.isStaff ? "bg-green-500" : "bg-gray-400"
                     }`}
                   />
-                  <Badge variant={user.is_staff ? "default" : "secondary"}>
-                    {user.is_staff ? "Active" : "Inactive"}
+                  <Badge variant={user.isStaff ? "default" : "secondary"}>
+                    {user.isStaff ? "Active" : "Inactive"}
                   </Badge>
                 </div>
               </TableCell>
@@ -221,7 +221,7 @@ export function UserTable({
               <TableCell>
                 <div className="text-sm flex items-center text-muted-foreground">
                   <Calendar className="h-3 w-3 mr-1" />
-                  {formatDate(user.created_at)}
+                  {formatDate(user.createdAt)}
                 </div>
               </TableCell>
               <TableCell>
@@ -308,13 +308,13 @@ export function UserTable({
                   <div className="flex items-center space-x-2 mt-1">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        selectedUser.is_staff ? "bg-green-500" : "bg-gray-400"
+                        selectedUser.isStaff ? "bg-green-500" : "bg-gray-400"
                       }`}
                     />
                     <Badge
-                      variant={selectedUser.is_staff ? "default" : "secondary"}
+                      variant={selectedUser.isStaff ? "default" : "secondary"}
                     >
-                      {selectedUser.is_staff ? "Active" : "Inactive"}
+                      {selectedUser.isStaff ? "Active" : "Inactive"}
                     </Badge>
                     {selectedUser.emailVerified && (
                       <Badge variant="outline">
@@ -342,7 +342,7 @@ export function UserTable({
                   <div className="space-y-1 text-sm">
                     <div className="flex items-center">
                       <Calendar className="mr-2 h-4 w-4" />
-                      Joined {formatDate(selectedUser.created_at)}
+                      Joined {formatDate(selectedUser.createdAt)}
                     </div>
                     <div className="flex items-center">
                       <Clock className="mr-2 h-4 w-4" />
@@ -359,15 +359,15 @@ export function UserTable({
                   <div className="space-y-1 text-sm">
                     <div className="flex items-center">
                       <Shield className="mr-2 h-4 w-4" />
-                      {selectedUser.clerk_user_id ? (
+                      {selectedUser.clerkUserId ? (
                         <Badge variant="default">Connected</Badge>
                       ) : (
                         <Badge variant="destructive">Not Connected</Badge>
                       )}
                     </div>
-                    {selectedUser.clerk_user_id && (
+                    {selectedUser.clerkUserId && (
                       <div className="text-xs text-muted-foreground">
-                        ID: {selectedUser.clerk_user_id}
+                        ID: {selectedUser.clerkUserId}
                       </div>
                     )}
                   </div>

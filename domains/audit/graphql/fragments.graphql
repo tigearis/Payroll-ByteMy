@@ -4,8 +4,8 @@ fragment AuditLogCore on audit_audit_log {
   id
   userId
   eventTime
-  user_email
-  user_role
+  userEmail
+  userRole
   action
   resourceType
   resourceId

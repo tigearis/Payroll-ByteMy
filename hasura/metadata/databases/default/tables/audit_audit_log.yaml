@@ -19,8 +19,12 @@ configuration:
       custom_name: sessionId
     user_agent:
       custom_name: userAgent
+    user_email:
+      custom_name: userEmail
     user_id:
       custom_name: userId
+    user_role:
+      custom_name: userRole
   custom_column_names:
     event_time: eventTime
     ip_address: ipAddress
@@ -30,7 +34,9 @@ configuration:
     resource_type: resourceType
     session_id: sessionId
     user_agent: userAgent
+    user_email: userEmail
     user_id: userId
+    user_role: userRole
   custom_root_fields:
     delete: deleteAuditLogs
     delete_by_pk: deleteAuditLog
@@ -62,53 +68,6 @@ insert_permissions:
         - error_message
         - metadata
 select_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      allow_aggregations: true
-    comment: Developer role has full select access
-  - role: org_admin
-    permission:
-      columns:
-        - id
-        - event_time
-        - user_id
-        - user_email
-        - user_role
-        - action
-        - resource_type
-        - resource_id
-        - old_values
-        - new_values
-        - ip_address
-        - user_agent
-        - session_id
-        - request_id
-        - success
-        - error_message
-        - metadata
-      filter: {}
-      allow_aggregations: true
-    comment: Organization admins can view all audit logs
-  - role: manager
-    permission:
-      columns:
-        - id
-        - event_time
-        - user_id
-        - user_email
-        - user_role
-        - action
-        - resource_type
-        - resource_id
-        - success
-        - error_message
-        - ip_address
-        - metadata
-      filter: {}
-      allow_aggregations: true
-    comment: Managers can view all audit logs for security monitoring
   - role: consultant
     permission:
       columns:
@@ -132,6 +91,53 @@ select_permissions:
                 - staff
       allow_aggregations: true
     comment: Consultants can view their own audit logs
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - id
+        - event_time
+        - user_id
+        - user_email
+        - user_role
+        - action
+        - resource_type
+        - resource_id
+        - success
+        - error_message
+        - ip_address
+        - metadata
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all audit logs for security monitoring
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - event_time
+        - user_id
+        - user_email
+        - user_role
+        - action
+        - resource_type
+        - resource_id
+        - old_values
+        - new_values
+        - ip_address
+        - user_agent
+        - session_id
+        - request_id
+        - success
+        - error_message
+        - metadata
+      filter: {}
+      allow_aggregations: true
+    comment: Organization admins can view all audit logs
   - role: viewer
     permission:
       columns:

@@ -16,7 +16,7 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-24T09:43:51.220Z
+ * Generated: 2025-06-24T11:35:03.199Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v2.0
  */
@@ -741,9 +741,9 @@ export type AuditAuditLog = {
   sessionId: Maybe<Scalars['String']['output']>;
   success: Maybe<Scalars['Boolean']['output']>;
   userAgent: Maybe<Scalars['String']['output']>;
+  userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-  user_email: Maybe<Scalars['String']['output']>;
-  user_role: Maybe<Scalars['String']['output']>;
+  userRole: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -813,9 +813,9 @@ export type AuditAuditLogBoolExp = {
   sessionId?: InputMaybe<StringComparisonExp>;
   success?: InputMaybe<BooleanComparisonExp>;
   userAgent?: InputMaybe<StringComparisonExp>;
+  userEmail?: InputMaybe<StringComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
-  user_email?: InputMaybe<StringComparisonExp>;
-  user_role?: InputMaybe<StringComparisonExp>;
+  userRole?: InputMaybe<StringComparisonExp>;
 };
 
 /** unique or primary key constraints on table "audit.audit_log" */
@@ -862,9 +862,9 @@ export type AuditAuditLogInsertInput = {
   sessionId?: InputMaybe<Scalars['String']['input']>;
   success?: InputMaybe<Scalars['Boolean']['input']>;
   userAgent?: InputMaybe<Scalars['String']['input']>;
+  userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-  user_email?: InputMaybe<Scalars['String']['input']>;
-  user_role?: InputMaybe<Scalars['String']['input']>;
+  userRole?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** aggregate max on columns */
@@ -880,9 +880,9 @@ export type AuditAuditLogMaxFields = {
   resourceType: Maybe<Scalars['String']['output']>;
   sessionId: Maybe<Scalars['String']['output']>;
   userAgent: Maybe<Scalars['String']['output']>;
+  userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-  user_email: Maybe<Scalars['String']['output']>;
-  user_role: Maybe<Scalars['String']['output']>;
+  userRole: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
@@ -898,9 +898,9 @@ export type AuditAuditLogMinFields = {
   resourceType: Maybe<Scalars['String']['output']>;
   sessionId: Maybe<Scalars['String']['output']>;
   userAgent: Maybe<Scalars['String']['output']>;
+  userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-  user_email: Maybe<Scalars['String']['output']>;
-  user_role: Maybe<Scalars['String']['output']>;
+  userRole: Maybe<Scalars['String']['output']>;
 };
 
 /** response of any mutation on the table "audit.audit_log" */
@@ -936,9 +936,9 @@ export type AuditAuditLogOrderBy = {
   sessionId?: InputMaybe<OrderBy>;
   success?: InputMaybe<OrderBy>;
   userAgent?: InputMaybe<OrderBy>;
+  userEmail?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-  user_email?: InputMaybe<OrderBy>;
-  user_role?: InputMaybe<OrderBy>;
+  userRole?: InputMaybe<OrderBy>;
 };
 
 /** primary key columns input for table: audit.audit_log */
@@ -986,11 +986,11 @@ export enum AuditAuditLogSelectColumn {
   /** column name */
   userAgent = 'userAgent',
   /** column name */
+  userEmail = 'userEmail',
+  /** column name */
   userId = 'userId',
   /** column name */
-  user_email = 'user_email',
-  /** column name */
-  user_role = 'user_role'
+  userRole = 'userRole'
 }
 
 /** input type for updating data in table "audit.audit_log" */
@@ -1010,9 +1010,9 @@ export type AuditAuditLogSetInput = {
   sessionId?: InputMaybe<Scalars['String']['input']>;
   success?: InputMaybe<Scalars['Boolean']['input']>;
   userAgent?: InputMaybe<Scalars['String']['input']>;
+  userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-  user_email?: InputMaybe<Scalars['String']['input']>;
-  user_role?: InputMaybe<Scalars['String']['input']>;
+  userRole?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Streaming cursor of the table "audit_audit_log" */
@@ -1040,9 +1040,9 @@ export type AuditAuditLogStreamCursorValueInput = {
   sessionId?: InputMaybe<Scalars['String']['input']>;
   success?: InputMaybe<Scalars['Boolean']['input']>;
   userAgent?: InputMaybe<Scalars['String']['input']>;
+  userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-  user_email?: InputMaybe<Scalars['String']['input']>;
-  user_role?: InputMaybe<Scalars['String']['input']>;
+  userRole?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** update columns of table "audit.audit_log" */
@@ -1078,11 +1078,11 @@ export enum AuditAuditLogUpdateColumn {
   /** column name */
   userAgent = 'userAgent',
   /** column name */
+  userEmail = 'userEmail',
+  /** column name */
   userId = 'userId',
   /** column name */
-  user_email = 'user_email',
-  /** column name */
-  user_role = 'user_role'
+  userRole = 'userRole'
 }
 
 export type AuditAuditLogUpdates = {
@@ -2251,14 +2251,14 @@ export type AuditPermissionUsageReportVarianceFields = {
 /** columns and relationships of "audit.slow_queries" */
 export type AuditSlowQueries = {
   __typename: 'audit_slow_queries';
-  application_name: Maybe<Scalars['String']['output']>;
-  client_addr: Maybe<Scalars['inet']['output']>;
-  created_at: Maybe<Scalars['timestamptz']['output']>;
+  applicationName: Maybe<Scalars['String']['output']>;
+  clientAddr: Maybe<Scalars['inet']['output']>;
+  createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Scalars['uuid']['output'];
   query: Scalars['String']['output'];
-  query_duration: Scalars['interval']['output'];
-  query_start: Scalars['timestamptz']['output'];
-  user_id: Maybe<Scalars['uuid']['output']>;
+  queryDuration: Scalars['interval']['output'];
+  queryStart: Scalars['timestamptz']['output'];
+  userId: Maybe<Scalars['uuid']['output']>;
 };
 
 /** aggregated selection of "audit.slow_queries" */
@@ -2288,14 +2288,14 @@ export type AuditSlowQueriesBoolExp = {
   _and?: InputMaybe<Array<AuditSlowQueriesBoolExp>>;
   _not?: InputMaybe<AuditSlowQueriesBoolExp>;
   _or?: InputMaybe<Array<AuditSlowQueriesBoolExp>>;
-  application_name?: InputMaybe<StringComparisonExp>;
-  client_addr?: InputMaybe<InetComparisonExp>;
-  created_at?: InputMaybe<TimestamptzComparisonExp>;
+  applicationName?: InputMaybe<StringComparisonExp>;
+  clientAddr?: InputMaybe<InetComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   query?: InputMaybe<StringComparisonExp>;
-  query_duration?: InputMaybe<IntervalComparisonExp>;
-  query_start?: InputMaybe<TimestamptzComparisonExp>;
-  user_id?: InputMaybe<UuidComparisonExp>;
+  queryDuration?: InputMaybe<IntervalComparisonExp>;
+  queryStart?: InputMaybe<TimestamptzComparisonExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
 };
 
 /** unique or primary key constraints on table "audit.slow_queries" */
@@ -2306,36 +2306,36 @@ export enum AuditSlowQueriesConstraint {
 
 /** input type for inserting data into table "audit.slow_queries" */
 export type AuditSlowQueriesInsertInput = {
-  application_name?: InputMaybe<Scalars['String']['input']>;
-  client_addr?: InputMaybe<Scalars['inet']['input']>;
-  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  applicationName?: InputMaybe<Scalars['String']['input']>;
+  clientAddr?: InputMaybe<Scalars['inet']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   query?: InputMaybe<Scalars['String']['input']>;
-  query_duration?: InputMaybe<Scalars['interval']['input']>;
-  query_start?: InputMaybe<Scalars['timestamptz']['input']>;
-  user_id?: InputMaybe<Scalars['uuid']['input']>;
+  queryDuration?: InputMaybe<Scalars['interval']['input']>;
+  queryStart?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
 export type AuditSlowQueriesMaxFields = {
   __typename: 'audit_slow_queries_max_fields';
-  application_name: Maybe<Scalars['String']['output']>;
-  created_at: Maybe<Scalars['timestamptz']['output']>;
+  applicationName: Maybe<Scalars['String']['output']>;
+  createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   query: Maybe<Scalars['String']['output']>;
-  query_start: Maybe<Scalars['timestamptz']['output']>;
-  user_id: Maybe<Scalars['uuid']['output']>;
+  queryStart: Maybe<Scalars['timestamptz']['output']>;
+  userId: Maybe<Scalars['uuid']['output']>;
 };
 
 /** aggregate min on columns */
 export type AuditSlowQueriesMinFields = {
   __typename: 'audit_slow_queries_min_fields';
-  application_name: Maybe<Scalars['String']['output']>;
-  created_at: Maybe<Scalars['timestamptz']['output']>;
+  applicationName: Maybe<Scalars['String']['output']>;
+  createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   query: Maybe<Scalars['String']['output']>;
-  query_start: Maybe<Scalars['timestamptz']['output']>;
-  user_id: Maybe<Scalars['uuid']['output']>;
+  queryStart: Maybe<Scalars['timestamptz']['output']>;
+  userId: Maybe<Scalars['uuid']['output']>;
 };
 
 /** response of any mutation on the table "audit.slow_queries" */
@@ -2356,14 +2356,14 @@ export type AuditSlowQueriesOnConflict = {
 
 /** Ordering options when selecting data from "audit.slow_queries". */
 export type AuditSlowQueriesOrderBy = {
-  application_name?: InputMaybe<OrderBy>;
-  client_addr?: InputMaybe<OrderBy>;
-  created_at?: InputMaybe<OrderBy>;
+  applicationName?: InputMaybe<OrderBy>;
+  clientAddr?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   query?: InputMaybe<OrderBy>;
-  query_duration?: InputMaybe<OrderBy>;
-  query_start?: InputMaybe<OrderBy>;
-  user_id?: InputMaybe<OrderBy>;
+  queryDuration?: InputMaybe<OrderBy>;
+  queryStart?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
 };
 
 /** primary key columns input for table: audit.slow_queries */
@@ -2374,33 +2374,33 @@ export type AuditSlowQueriesPkColumnsInput = {
 /** select columns of table "audit.slow_queries" */
 export enum AuditSlowQueriesSelectColumn {
   /** column name */
-  application_name = 'application_name',
+  applicationName = 'applicationName',
   /** column name */
-  client_addr = 'client_addr',
+  clientAddr = 'clientAddr',
   /** column name */
-  created_at = 'created_at',
+  createdAt = 'createdAt',
   /** column name */
   id = 'id',
   /** column name */
   query = 'query',
   /** column name */
-  query_duration = 'query_duration',
+  queryDuration = 'queryDuration',
   /** column name */
-  query_start = 'query_start',
+  queryStart = 'queryStart',
   /** column name */
-  user_id = 'user_id'
+  userId = 'userId'
 }
 
 /** input type for updating data in table "audit.slow_queries" */
 export type AuditSlowQueriesSetInput = {
-  application_name?: InputMaybe<Scalars['String']['input']>;
-  client_addr?: InputMaybe<Scalars['inet']['input']>;
-  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  applicationName?: InputMaybe<Scalars['String']['input']>;
+  clientAddr?: InputMaybe<Scalars['inet']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   query?: InputMaybe<Scalars['String']['input']>;
-  query_duration?: InputMaybe<Scalars['interval']['input']>;
-  query_start?: InputMaybe<Scalars['timestamptz']['input']>;
-  user_id?: InputMaybe<Scalars['uuid']['input']>;
+  queryDuration?: InputMaybe<Scalars['interval']['input']>;
+  queryStart?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** Streaming cursor of the table "audit_slow_queries" */
@@ -2413,34 +2413,34 @@ export type AuditSlowQueriesStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type AuditSlowQueriesStreamCursorValueInput = {
-  application_name?: InputMaybe<Scalars['String']['input']>;
-  client_addr?: InputMaybe<Scalars['inet']['input']>;
-  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  applicationName?: InputMaybe<Scalars['String']['input']>;
+  clientAddr?: InputMaybe<Scalars['inet']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   query?: InputMaybe<Scalars['String']['input']>;
-  query_duration?: InputMaybe<Scalars['interval']['input']>;
-  query_start?: InputMaybe<Scalars['timestamptz']['input']>;
-  user_id?: InputMaybe<Scalars['uuid']['input']>;
+  queryDuration?: InputMaybe<Scalars['interval']['input']>;
+  queryStart?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** update columns of table "audit.slow_queries" */
 export enum AuditSlowQueriesUpdateColumn {
   /** column name */
-  application_name = 'application_name',
+  applicationName = 'applicationName',
   /** column name */
-  client_addr = 'client_addr',
+  clientAddr = 'clientAddr',
   /** column name */
-  created_at = 'created_at',
+  createdAt = 'createdAt',
   /** column name */
   id = 'id',
   /** column name */
   query = 'query',
   /** column name */
-  query_duration = 'query_duration',
+  queryDuration = 'queryDuration',
   /** column name */
-  query_start = 'query_start',
+  queryStart = 'queryStart',
   /** column name */
-  user_id = 'user_id'
+  userId = 'userId'
 }
 
 export type AuditSlowQueriesUpdates = {
@@ -22421,7 +22421,7 @@ export type UserRoleCoreFragment = { __typename: 'user_roles', id: string, userI
 
 export type RolePermissionCoreFragment = { __typename: 'role_permissions', id: string, roleId: string, permissionId: string, conditions: any | null, createdAt: string, updatedAt: string } & { ' $fragmentName'?: 'RolePermissionCoreFragment' };
 
-export type AuditFieldsFragment = { __typename: 'audit_audit_log', id: string, eventTime: string, action: string, resourceType: string, resourceId: string | null, userId: string | null, ipAddress: string | null, userAgent: string | null, success: boolean | null, user_email: string | null, user_role: string | null } & { ' $fragmentName'?: 'AuditFieldsFragment' };
+export type AuditFieldsFragment = { __typename: 'audit_audit_log', id: string, eventTime: string, action: string, resourceType: string, resourceId: string | null, userId: string | null, ipAddress: string | null, userAgent: string | null, success: boolean | null, userEmail: string | null, userRole: string | null } & { ' $fragmentName'?: 'AuditFieldsFragment' };
 
 export const ClientForBillingFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientForBilling"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","alias":{"kind":"Name","value":"billing_contactPerson"},"name":{"kind":"Name","value":"contactPerson"}},{"kind":"Field","alias":{"kind":"Name","value":"billing_contact_email"},"name":{"kind":"Name","value":"contactEmail"}}]}}]} as unknown as DocumentNode<ClientForBillingFragment, unknown>;
 export const ClientForAuditFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientForAudit"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<ClientForAuditFragment, unknown>;
@@ -22447,7 +22447,7 @@ export const PayrollBasicFragmentDoc = {"kind":"Document","definitions":[{"kind"
 export const ResourceCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ResourceCoreFragment, unknown>;
 export const UserRoleCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"user_roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserRoleCoreFragment, unknown>;
 export const RolePermissionCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"role_permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<RolePermissionCoreFragment, unknown>;
-export const AuditFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"audit_audit_log"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"user_email"}},{"kind":"Field","name":{"kind":"Name","value":"user_role"}}]}}]} as unknown as DocumentNode<AuditFieldsFragment, unknown>;
+export const AuditFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"audit_audit_log"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"userRole"}}]}}]} as unknown as DocumentNode<AuditFieldsFragment, unknown>;
 export const CreateClientDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateClient"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"contactName"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"contactEmail"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"contactPhone"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"address"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"city"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"state"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"postalCode"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"country"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"defaultValue":{"kind":"StringValue","value":"Australia","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertClient"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"contactEmail"},"value":{"kind":"Variable","name":{"kind":"Name","value":"contactEmail"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"contactPhone"},"value":{"kind":"Variable","name":{"kind":"Name","value":"contactPhone"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientWithContact"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBasicInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientWithContact"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientBasicInfo"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"contactPhone"}}]}}]} as unknown as DocumentNode<CreateClientMutation, CreateClientMutationVariables>;
 export const UpdateClientDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateClient"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"contactName"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"contactEmail"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"contactPhone"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"address"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"city"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"state"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"postalCode"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"country"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateClient"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pk_columns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"contactEmail"},"value":{"kind":"Variable","name":{"kind":"Name","value":"contactEmail"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"contactPhone"},"value":{"kind":"Variable","name":{"kind":"Name","value":"contactPhone"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientWithContact"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBasicInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientWithContact"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientBasicInfo"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"contactPhone"}}]}}]} as unknown as DocumentNode<UpdateClientMutation, UpdateClientMutationVariables>;
 export const UpdateClientStatusDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateClientStatus"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"active"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateClient"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pk_columns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"Variable","name":{"kind":"Name","value":"active"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientBasicInfo"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBasicInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<UpdateClientStatusMutation, UpdateClientStatusMutationVariables>;

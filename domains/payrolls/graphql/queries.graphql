@@ -70,11 +70,6 @@ query GetPayrolls {
   }
 }
 
-query GetPayrollsFallback {
-  payrolls {
-    id
-  }
-}
 
 query GetPayrollById($id: uuid!) {
   payroll(id: $id) {

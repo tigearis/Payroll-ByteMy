@@ -13,11 +13,12 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
-  created_at: string;
-  updated_at: string;
-  is_staff: boolean;
-  manager_id?: string;
-  clerk_user_id: string;
+  createdAt: string;
+  updatedAt: string;
+  isStaff: boolean;
+  isActive: boolean;
+  managerId?: string;
+  clerkUserId: string;
   manager?: {
     id: string;
     name: string;
@@ -288,8 +289,8 @@ export function useUserManagement(): UseUserManagementReturn {
           // Update the user in local state
           setUsers(prevUsers =>
             prevUsers.map(user =>
-              user.id === id || user.clerk_user_id === id
-                ? { ...user, ...userData, updated_at: new Date().toISOString() }
+              user.id === id || user.clerkUserId === id
+                ? { ...user, ...userData, updatedAt: new Date().toISOString() }
                 : user
             )
           );
@@ -297,7 +298,7 @@ export function useUserManagement(): UseUserManagementReturn {
           // Update current user if it's the same user
           if (
             currentUser &&
-            (currentUser.id === id || currentUser.clerk_user_id === id)
+            (currentUser.id === id || currentUser.clerkUserId === id)
           ) {
             setCurrentUser(prev => (prev ? { ...prev, ...userData } : null));
           }
@@ -334,7 +335,7 @@ export function useUserManagement(): UseUserManagementReturn {
           // Remove user from local state
           setUsers(prevUsers =>
             prevUsers.filter(
-              user => user.id !== id && user.clerk_user_id !== id
+              user => user.id !== id && user.clerkUserId !== id
             )
           );
           setTotalCount(prev => Math.max(0, prev - 1));
@@ -400,7 +401,7 @@ export function useUserManagement(): UseUserManagementReturn {
       if (!permissions || !userId) return false;
 
       // Users can edit their own profile
-      if (user.clerk_user_id === userId) return true;
+      if (user.clerkUserId === userId) return true;
 
       // Admins and managers can edit others
       return permissions.canManageUsers;
@@ -413,7 +414,7 @@ export function useUserManagement(): UseUserManagementReturn {
       if (!permissions || !userId) return false;
 
       // Cannot delete yourself
-      if (user.clerk_user_id === userId) return false;
+      if (user.clerkUserId === userId) return false;
 
       // Only admins can delete other admins
       if (user.role === "org_admin" && currentUserRole !== "org_admin")

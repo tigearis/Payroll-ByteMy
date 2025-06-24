@@ -91,8 +91,8 @@ export function EditUserModal({
         name: user.name,
         email: user.email,
         role: user.role,
-        managerId: user.manager_id || "",
-        isStaff: user.is_staff,
+        managerId: user.managerId || "",
+        isStaff: user.isStaff,
       });
     }
   }, [user, form]);

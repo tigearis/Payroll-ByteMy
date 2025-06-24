@@ -405,7 +405,7 @@ export function PayrollsTable({
                           <div className="flex items-center gap-2">
                             <UserCheck className="w-4 h-4 text-gray-500" />
                             <span>
-                              {payroll.userByPrimaryConsultantUserId?.name ||
+                              {payroll.primaryConsultant?.name ||
                                 "Unassigned"}
                             </span>
                           </div>

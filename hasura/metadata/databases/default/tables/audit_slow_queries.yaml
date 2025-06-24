@@ -1,6 +1,28 @@
 table:
   name: slow_queries
   schema: audit
+configuration:
+  column_config:
+    application_name:
+      custom_name: applicationName
+    client_addr:
+      custom_name: clientAddr
+    created_at:
+      custom_name: createdAt
+    query_duration:
+      custom_name: queryDuration
+    query_start:
+      custom_name: queryStart
+    user_id:
+      custom_name: userId
+  custom_column_names:
+    application_name: applicationName
+    client_addr: clientAddr
+    created_at: createdAt
+    query_duration: queryDuration
+    query_start: queryStart
+    user_id: userId
+  custom_root_fields: {}
 insert_permissions:
   - role: developer
     permission:

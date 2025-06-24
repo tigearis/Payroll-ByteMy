@@ -24,10 +24,10 @@ interface User {
   name: string;
   email: string;
   role: string;
-  is_staff: boolean;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  isStaff: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
   manager?: {
     id: string;
     name: string;
@@ -134,7 +134,7 @@ export function UsersTableUnified({
       },
     },
     {
-      key: "is_active",
+      key: "isActive",
       label: "Status",
       sortable: true,
       defaultVisible: true,
@@ -142,7 +142,7 @@ export function UsersTableUnified({
         cellRenderers.badge(active ? "Active" : "Inactive"),
     },
     {
-      key: "is_staff",
+      key: "isStaff",
       label: "Staff Member",
       sortable: true,
       defaultVisible: true,
@@ -180,14 +180,14 @@ export function UsersTableUnified({
       cellRenderer: email => cellRenderers.iconText(email, Mail),
     },
     {
-      key: "created_at",
+      key: "createdAt",
       label: "Created",
       sortable: true,
       defaultVisible: false,
       cellRenderer: date => cellRenderers.simpleDate(date),
     },
     {
-      key: "updated_at",
+      key: "updatedAt",
       label: "Last Updated",
       sortable: true,
       defaultVisible: true,

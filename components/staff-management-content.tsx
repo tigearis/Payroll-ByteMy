@@ -178,8 +178,8 @@ export function StaffManagementContent() {
                   </TableCell>
                   <TableCell>{member.manager?.name || '-'}</TableCell>
                   <TableCell>
-                    <Badge variant={member.is_staff ? "default" : "secondary"}>
-                      {member.is_staff ? "Active" : "Inactive"}
+                    <Badge variant={member.isStaff ? "default" : "secondary"}>
+                      {member.isStaff ? "Active" : "Inactive"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">

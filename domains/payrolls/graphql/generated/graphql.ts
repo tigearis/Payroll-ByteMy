@@ -16,7 +16,7 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-24T09:43:51.228Z
+ * Generated: 2025-06-24T11:35:03.210Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v2.0
  */
@@ -741,9 +741,9 @@ export type AuditAuditLog = {
   sessionId: Maybe<Scalars['String']['output']>;
   success: Maybe<Scalars['Boolean']['output']>;
   userAgent: Maybe<Scalars['String']['output']>;
+  userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-  user_email: Maybe<Scalars['String']['output']>;
-  user_role: Maybe<Scalars['String']['output']>;
+  userRole: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -813,9 +813,9 @@ export type AuditAuditLogBoolExp = {
   sessionId?: InputMaybe<StringComparisonExp>;
   success?: InputMaybe<BooleanComparisonExp>;
   userAgent?: InputMaybe<StringComparisonExp>;
+  userEmail?: InputMaybe<StringComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
-  user_email?: InputMaybe<StringComparisonExp>;
-  user_role?: InputMaybe<StringComparisonExp>;
+  userRole?: InputMaybe<StringComparisonExp>;
 };
 
 /** unique or primary key constraints on table "audit.audit_log" */
@@ -862,9 +862,9 @@ export type AuditAuditLogInsertInput = {
   sessionId?: InputMaybe<Scalars['String']['input']>;
   success?: InputMaybe<Scalars['Boolean']['input']>;
   userAgent?: InputMaybe<Scalars['String']['input']>;
+  userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-  user_email?: InputMaybe<Scalars['String']['input']>;
-  user_role?: InputMaybe<Scalars['String']['input']>;
+  userRole?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** aggregate max on columns */
@@ -880,9 +880,9 @@ export type AuditAuditLogMaxFields = {
   resourceType: Maybe<Scalars['String']['output']>;
   sessionId: Maybe<Scalars['String']['output']>;
   userAgent: Maybe<Scalars['String']['output']>;
+  userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-  user_email: Maybe<Scalars['String']['output']>;
-  user_role: Maybe<Scalars['String']['output']>;
+  userRole: Maybe<Scalars['String']['output']>;
 };
 
 /** aggregate min on columns */
@@ -898,9 +898,9 @@ export type AuditAuditLogMinFields = {
   resourceType: Maybe<Scalars['String']['output']>;
   sessionId: Maybe<Scalars['String']['output']>;
   userAgent: Maybe<Scalars['String']['output']>;
+  userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-  user_email: Maybe<Scalars['String']['output']>;
-  user_role: Maybe<Scalars['String']['output']>;
+  userRole: Maybe<Scalars['String']['output']>;
 };
 
 /** response of any mutation on the table "audit.audit_log" */
@@ -936,9 +936,9 @@ export type AuditAuditLogOrderBy = {
   sessionId?: InputMaybe<OrderBy>;
   success?: InputMaybe<OrderBy>;
   userAgent?: InputMaybe<OrderBy>;
+  userEmail?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-  user_email?: InputMaybe<OrderBy>;
-  user_role?: InputMaybe<OrderBy>;
+  userRole?: InputMaybe<OrderBy>;
 };
 
 /** primary key columns input for table: audit.audit_log */
@@ -986,11 +986,11 @@ export enum AuditAuditLogSelectColumn {
   /** column name */
   userAgent = 'userAgent',
   /** column name */
+  userEmail = 'userEmail',
+  /** column name */
   userId = 'userId',
   /** column name */
-  user_email = 'user_email',
-  /** column name */
-  user_role = 'user_role'
+  userRole = 'userRole'
 }
 
 /** input type for updating data in table "audit.audit_log" */
@@ -1010,9 +1010,9 @@ export type AuditAuditLogSetInput = {
   sessionId?: InputMaybe<Scalars['String']['input']>;
   success?: InputMaybe<Scalars['Boolean']['input']>;
   userAgent?: InputMaybe<Scalars['String']['input']>;
+  userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-  user_email?: InputMaybe<Scalars['String']['input']>;
-  user_role?: InputMaybe<Scalars['String']['input']>;
+  userRole?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Streaming cursor of the table "audit_audit_log" */
@@ -1040,9 +1040,9 @@ export type AuditAuditLogStreamCursorValueInput = {
   sessionId?: InputMaybe<Scalars['String']['input']>;
   success?: InputMaybe<Scalars['Boolean']['input']>;
   userAgent?: InputMaybe<Scalars['String']['input']>;
+  userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-  user_email?: InputMaybe<Scalars['String']['input']>;
-  user_role?: InputMaybe<Scalars['String']['input']>;
+  userRole?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** update columns of table "audit.audit_log" */
@@ -1078,11 +1078,11 @@ export enum AuditAuditLogUpdateColumn {
   /** column name */
   userAgent = 'userAgent',
   /** column name */
+  userEmail = 'userEmail',
+  /** column name */
   userId = 'userId',
   /** column name */
-  user_email = 'user_email',
-  /** column name */
-  user_role = 'user_role'
+  userRole = 'userRole'
 }
 
 export type AuditAuditLogUpdates = {
@@ -2251,14 +2251,14 @@ export type AuditPermissionUsageReportVarianceFields = {
 /** columns and relationships of "audit.slow_queries" */
 export type AuditSlowQueries = {
   __typename: 'audit_slow_queries';
-  application_name: Maybe<Scalars['String']['output']>;
-  client_addr: Maybe<Scalars['inet']['output']>;
-  created_at: Maybe<Scalars['timestamptz']['output']>;
+  applicationName: Maybe<Scalars['String']['output']>;
+  clientAddr: Maybe<Scalars['inet']['output']>;
+  createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Scalars['uuid']['output'];
   query: Scalars['String']['output'];
-  query_duration: Scalars['interval']['output'];
-  query_start: Scalars['timestamptz']['output'];
-  user_id: Maybe<Scalars['uuid']['output']>;
+  queryDuration: Scalars['interval']['output'];
+  queryStart: Scalars['timestamptz']['output'];
+  userId: Maybe<Scalars['uuid']['output']>;
 };
 
 /** aggregated selection of "audit.slow_queries" */
@@ -2288,14 +2288,14 @@ export type AuditSlowQueriesBoolExp = {
   _and?: InputMaybe<Array<AuditSlowQueriesBoolExp>>;
   _not?: InputMaybe<AuditSlowQueriesBoolExp>;
   _or?: InputMaybe<Array<AuditSlowQueriesBoolExp>>;
-  application_name?: InputMaybe<StringComparisonExp>;
-  client_addr?: InputMaybe<InetComparisonExp>;
-  created_at?: InputMaybe<TimestamptzComparisonExp>;
+  applicationName?: InputMaybe<StringComparisonExp>;
+  clientAddr?: InputMaybe<InetComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   query?: InputMaybe<StringComparisonExp>;
-  query_duration?: InputMaybe<IntervalComparisonExp>;
-  query_start?: InputMaybe<TimestamptzComparisonExp>;
-  user_id?: InputMaybe<UuidComparisonExp>;
+  queryDuration?: InputMaybe<IntervalComparisonExp>;
+  queryStart?: InputMaybe<TimestamptzComparisonExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
 };
 
 /** unique or primary key constraints on table "audit.slow_queries" */
@@ -2306,36 +2306,36 @@ export enum AuditSlowQueriesConstraint {
 
 /** input type for inserting data into table "audit.slow_queries" */
 export type AuditSlowQueriesInsertInput = {
-  application_name?: InputMaybe<Scalars['String']['input']>;
-  client_addr?: InputMaybe<Scalars['inet']['input']>;
-  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  applicationName?: InputMaybe<Scalars['String']['input']>;
+  clientAddr?: InputMaybe<Scalars['inet']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   query?: InputMaybe<Scalars['String']['input']>;
-  query_duration?: InputMaybe<Scalars['interval']['input']>;
-  query_start?: InputMaybe<Scalars['timestamptz']['input']>;
-  user_id?: InputMaybe<Scalars['uuid']['input']>;
+  queryDuration?: InputMaybe<Scalars['interval']['input']>;
+  queryStart?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** aggregate max on columns */
 export type AuditSlowQueriesMaxFields = {
   __typename: 'audit_slow_queries_max_fields';
-  application_name: Maybe<Scalars['String']['output']>;
-  created_at: Maybe<Scalars['timestamptz']['output']>;
+  applicationName: Maybe<Scalars['String']['output']>;
+  createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   query: Maybe<Scalars['String']['output']>;
-  query_start: Maybe<Scalars['timestamptz']['output']>;
-  user_id: Maybe<Scalars['uuid']['output']>;
+  queryStart: Maybe<Scalars['timestamptz']['output']>;
+  userId: Maybe<Scalars['uuid']['output']>;
 };
 
 /** aggregate min on columns */
 export type AuditSlowQueriesMinFields = {
   __typename: 'audit_slow_queries_min_fields';
-  application_name: Maybe<Scalars['String']['output']>;
-  created_at: Maybe<Scalars['timestamptz']['output']>;
+  applicationName: Maybe<Scalars['String']['output']>;
+  createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   query: Maybe<Scalars['String']['output']>;
-  query_start: Maybe<Scalars['timestamptz']['output']>;
-  user_id: Maybe<Scalars['uuid']['output']>;
+  queryStart: Maybe<Scalars['timestamptz']['output']>;
+  userId: Maybe<Scalars['uuid']['output']>;
 };
 
 /** response of any mutation on the table "audit.slow_queries" */
@@ -2356,14 +2356,14 @@ export type AuditSlowQueriesOnConflict = {
 
 /** Ordering options when selecting data from "audit.slow_queries". */
 export type AuditSlowQueriesOrderBy = {
-  application_name?: InputMaybe<OrderBy>;
-  client_addr?: InputMaybe<OrderBy>;
-  created_at?: InputMaybe<OrderBy>;
+  applicationName?: InputMaybe<OrderBy>;
+  clientAddr?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   query?: InputMaybe<OrderBy>;
-  query_duration?: InputMaybe<OrderBy>;
-  query_start?: InputMaybe<OrderBy>;
-  user_id?: InputMaybe<OrderBy>;
+  queryDuration?: InputMaybe<OrderBy>;
+  queryStart?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
 };
 
 /** primary key columns input for table: audit.slow_queries */
@@ -2374,33 +2374,33 @@ export type AuditSlowQueriesPkColumnsInput = {
 /** select columns of table "audit.slow_queries" */
 export enum AuditSlowQueriesSelectColumn {
   /** column name */
-  application_name = 'application_name',
+  applicationName = 'applicationName',
   /** column name */
-  client_addr = 'client_addr',
+  clientAddr = 'clientAddr',
   /** column name */
-  created_at = 'created_at',
+  createdAt = 'createdAt',
   /** column name */
   id = 'id',
   /** column name */
   query = 'query',
   /** column name */
-  query_duration = 'query_duration',
+  queryDuration = 'queryDuration',
   /** column name */
-  query_start = 'query_start',
+  queryStart = 'queryStart',
   /** column name */
-  user_id = 'user_id'
+  userId = 'userId'
 }
 
 /** input type for updating data in table "audit.slow_queries" */
 export type AuditSlowQueriesSetInput = {
-  application_name?: InputMaybe<Scalars['String']['input']>;
-  client_addr?: InputMaybe<Scalars['inet']['input']>;
-  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  applicationName?: InputMaybe<Scalars['String']['input']>;
+  clientAddr?: InputMaybe<Scalars['inet']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   query?: InputMaybe<Scalars['String']['input']>;
-  query_duration?: InputMaybe<Scalars['interval']['input']>;
-  query_start?: InputMaybe<Scalars['timestamptz']['input']>;
-  user_id?: InputMaybe<Scalars['uuid']['input']>;
+  queryDuration?: InputMaybe<Scalars['interval']['input']>;
+  queryStart?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** Streaming cursor of the table "audit_slow_queries" */
@@ -2413,34 +2413,34 @@ export type AuditSlowQueriesStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type AuditSlowQueriesStreamCursorValueInput = {
-  application_name?: InputMaybe<Scalars['String']['input']>;
-  client_addr?: InputMaybe<Scalars['inet']['input']>;
-  created_at?: InputMaybe<Scalars['timestamptz']['input']>;
+  applicationName?: InputMaybe<Scalars['String']['input']>;
+  clientAddr?: InputMaybe<Scalars['inet']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   query?: InputMaybe<Scalars['String']['input']>;
-  query_duration?: InputMaybe<Scalars['interval']['input']>;
-  query_start?: InputMaybe<Scalars['timestamptz']['input']>;
-  user_id?: InputMaybe<Scalars['uuid']['input']>;
+  queryDuration?: InputMaybe<Scalars['interval']['input']>;
+  queryStart?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** update columns of table "audit.slow_queries" */
 export enum AuditSlowQueriesUpdateColumn {
   /** column name */
-  application_name = 'application_name',
+  applicationName = 'applicationName',
   /** column name */
-  client_addr = 'client_addr',
+  clientAddr = 'clientAddr',
   /** column name */
-  created_at = 'created_at',
+  createdAt = 'createdAt',
   /** column name */
   id = 'id',
   /** column name */
   query = 'query',
   /** column name */
-  query_duration = 'query_duration',
+  queryDuration = 'queryDuration',
   /** column name */
-  query_start = 'query_start',
+  queryStart = 'queryStart',
   /** column name */
-  user_id = 'user_id'
+  userId = 'userId'
 }
 
 export type AuditSlowQueriesUpdates = {
@@ -22174,11 +22174,6 @@ export type GetPayrollsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetPayrollsQuery = { __typename: 'query_root', payrolls: Array<{ __typename: 'payrolls', id: string, name: string, clientId: string, cycleId: string, dateTypeId: string, primaryConsultantUserId: string | null, backupConsultantUserId: string | null, managerUserId: string | null, employeeCount: number | null, goLiveDate: string | null, status: string, dateValue: number | null, createdAt: string | null, updatedAt: string | null, client: { __typename: 'clients', id: string, name: string }, payrollCycle: { __typename: 'payroll_cycles', id: string, name: string }, payrollDateType: { __typename: 'payroll_date_types', id: string, name: string }, primaryConsultant: { __typename: 'users', id: string, name: string } | null, backupConsultant: { __typename: 'users', id: string, name: string } | null, manager: { __typename: 'users', id: string, name: string } | null, payrollDates: Array<{ __typename: 'payroll_dates', id: string, originalEftDate: string, adjustedEftDate: string, processingDate: string }> }> };
 
-export type GetPayrollsFallbackQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetPayrollsFallbackQuery = { __typename: 'query_root', payrolls: Array<{ __typename: 'payrolls', id: string }> };
-
 export type GetPayrollByIdQueryVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
@@ -22525,7 +22520,7 @@ export type UserRoleCoreFragment = { __typename: 'user_roles', id: string, userI
 
 export type RolePermissionCoreFragment = { __typename: 'role_permissions', id: string, roleId: string, permissionId: string, conditions: any | null, createdAt: string, updatedAt: string } & { ' $fragmentName'?: 'RolePermissionCoreFragment' };
 
-export type AuditFieldsFragment = { __typename: 'audit_audit_log', id: string, eventTime: string, action: string, resourceType: string, resourceId: string | null, userId: string | null, ipAddress: string | null, userAgent: string | null, success: boolean | null, user_email: string | null, user_role: string | null } & { ' $fragmentName'?: 'AuditFieldsFragment' };
+export type AuditFieldsFragment = { __typename: 'audit_audit_log', id: string, eventTime: string, action: string, resourceType: string, resourceId: string | null, userId: string | null, ipAddress: string | null, userAgent: string | null, success: boolean | null, userEmail: string | null, userRole: string | null } & { ' $fragmentName'?: 'AuditFieldsFragment' };
 
 export const PayrollBasicInfoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollBasicInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"cycleId"}},{"kind":"Field","name":{"kind":"Name","value":"dateTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUserId"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"goLiveDate"}}]}}]} as unknown as DocumentNode<PayrollBasicInfoFragment, unknown>;
 export const PayrollWithClientFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollWithClient"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollBasicInfo"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollBasicInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"cycleId"}},{"kind":"Field","name":{"kind":"Name","value":"dateTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUserId"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"goLiveDate"}}]}}]} as unknown as DocumentNode<PayrollWithClientFragment, unknown>;
@@ -22552,7 +22547,7 @@ export const PayrollBasicFragmentDoc = {"kind":"Document","definitions":[{"kind"
 export const ResourceCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ResourceCoreFragment, unknown>;
 export const UserRoleCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"user_roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserRoleCoreFragment, unknown>;
 export const RolePermissionCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"role_permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<RolePermissionCoreFragment, unknown>;
-export const AuditFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"audit_audit_log"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"user_email"}},{"kind":"Field","name":{"kind":"Name","value":"user_role"}}]}}]} as unknown as DocumentNode<AuditFieldsFragment, unknown>;
+export const AuditFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"audit_audit_log"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"userRole"}}]}}]} as unknown as DocumentNode<AuditFieldsFragment, unknown>;
 export const CreatePayrollDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePayroll"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls_insert_input"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPayroll"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"cycleId"}},{"kind":"Field","name":{"kind":"Name","value":"dateTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]} as unknown as DocumentNode<CreatePayrollMutation, CreatePayrollMutationVariables>;
 export const UpdatePayrollDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdatePayroll"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls_set_input"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePayroll"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pk_columns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"cycleId"}},{"kind":"Field","name":{"kind":"Name","value":"dateTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]} as unknown as DocumentNode<UpdatePayrollMutation, UpdatePayrollMutationVariables>;
 export const DeletePayrollDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeletePayroll"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePayroll"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<DeletePayrollMutation, DeletePayrollMutationVariables>;
@@ -22566,7 +22561,6 @@ export const DeletePayrollSoftDocument = {"kind":"Document","definitions":[{"kin
 export const RegeneratePayrollDatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegeneratePayrollDates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePayrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affected_rows"}}]}}]}}]} as unknown as DocumentNode<RegeneratePayrollDatesMutation, RegeneratePayrollDatesMutationVariables>;
 export const GeneratePayrollDatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GeneratePayrollDates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"generate_payroll_dates_args"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"generatePayrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"args"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"processingDate"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}}]}}]}}]} as unknown as DocumentNode<GeneratePayrollDatesQuery, GeneratePayrollDatesQueryVariables>;
 export const GetPayrollsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrolls"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_is_null"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"order_by"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"desc"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"cycleId"}},{"kind":"Field","name":{"kind":"Name","value":"dateTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUserId"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"goLiveDate"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"dateValue"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollCycle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"manager"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"order_by"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"asc"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"processingDate"}}]}}]}}]}}]} as unknown as DocumentNode<GetPayrollsQuery, GetPayrollsQueryVariables>;
-export const GetPayrollsFallbackDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollsFallback"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetPayrollsFallbackQuery, GetPayrollsFallbackQueryVariables>;
 export const GetPayrollByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payroll"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"cycleId"}},{"kind":"Field","name":{"kind":"Name","value":"dateTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUserId"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"goLiveDate"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"dateValue"}},{"kind":"Field","name":{"kind":"Name","value":"processingDaysBeforeEft"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"supersededDate"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"parentPayrollId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollCycle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"manager"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"order_by"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"asc"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"processingDate"}}]}}]}}]}}]} as unknown as DocumentNode<GetPayrollByIdQuery, GetPayrollByIdQueryVariables>;
 export const GetPayrollsByClientDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollsByClient"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_is_null"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"order_by"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"desc"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"goLiveDate"}}]}}]}}]} as unknown as DocumentNode<GetPayrollsByClientQuery, GetPayrollsByClientQueryVariables>;
 export const GetPayrollsByMonthDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollsByMonth"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_is_null"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"order_by"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"desc"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"processingTime"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollCycle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userByPrimaryConsultantUserId"},"name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"leaves"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"leaveType"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userByBackupConsultantUserId"},"name":{"kind":"Name","value":"backupConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"leaves"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"leaveType"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payroll"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_is_null"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}]}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"order_by"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"asc"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"processingDate"}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"processingTime"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userByPrimaryConsultantUserId"},"name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"leaves"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"leaveType"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userByBackupConsultantUserId"},"name":{"kind":"Name","value":"backupConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"leaves"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"leaveType"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetPayrollsByMonthQuery, GetPayrollsByMonthQueryVariables>;

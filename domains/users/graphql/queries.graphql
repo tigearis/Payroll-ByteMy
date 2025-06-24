@@ -317,6 +317,7 @@ query GetUsersWithFiltering(
     createdAt
     updatedAt
     isStaff
+    isActive
     managerId
     clerkUserId
     manager {
