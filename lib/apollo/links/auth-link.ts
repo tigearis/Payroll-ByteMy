@@ -1,10 +1,27 @@
 /**
  * Authentication Link for Apollo Client
  * 
- * Handles authentication across different contexts:
- * - Client context: Clerk JWT tokens
- * - Server context: Clerk JWT tokens when available
+ * POSITION IN CHAIN: THIRD (just before HTTP transport)
+ * 
+ * RESPONSIBILITIES:
+ * - Injects authentication tokens into every request
+ * - Handles different auth contexts (client/server/admin)
+ * - Retrieves fresh Clerk JWT tokens using native methods
+ * - Provides admin access with Hasura admin secret
+ * - Ensures proper authentication for all GraphQL operations
+ * 
+ * AUTHENTICATION CONTEXTS:
+ * - Client context: Clerk JWT tokens with user permissions
+ * - Server context: Clerk JWT tokens when user context available  
  * - Admin context: Hasura admin secret for service operations
+ * 
+ * WHY THIRD IN CHAIN:
+ * - After retry: Fresh tokens for retried operations
+ * - Before HTTP: Authentication included in transport
+ * - Just before transport: Latest possible token retrieval
+ * - Minimizes risk of token expiration during request
+ * 
+ * CRITICAL: Must be immediately before HTTP transport
  */
 
 import { ApolloLink } from "@apollo/client";

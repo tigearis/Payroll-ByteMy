@@ -11,6 +11,7 @@
 
 import { InMemoryCache } from "@apollo/client";
 import { typePolicies, generateDataId } from "./type-policies";
+import type { CacheOptions } from "../types";
 
 /**
  * Create optimized cache configuration with enhanced type policies
@@ -33,14 +34,6 @@ export function createUnifiedCache(): InMemoryCache {
   });
 }
 
-/**
- * Cache configuration options
- */
-export interface CacheOptions {
-  resultCaching?: boolean;
-  enableDevTools?: boolean;
-  maxCacheSize?: number;
-}
 
 /**
  * Create cache with custom options

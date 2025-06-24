@@ -1,3 +1,25 @@
+/**
+ * Enhanced Users List - Reference Implementation
+ * 
+ * This component demonstrates advanced GraphQL error handling patterns
+ * that are widely used throughout the production codebase.
+ * 
+ * REAL IMPLEMENTATIONS OF THESE PATTERNS:
+ * - Authentication error detection: /app/(dashboard)/staff/page.tsx:310-330
+ * - Toast notifications for GraphQL errors: /domains/notes/components/notes-list.tsx:79,95
+ * - Structured error processing: /lib/utils/handle-graphql-error.ts:150-200
+ * - Permission-based error handling: /domains/users/components/user-table.tsx:105
+ * 
+ * KEY PATTERNS DEMONSTRATED:
+ * - isAuthError() helper function for detecting auth failures
+ * - Automatic redirect to sign-in on authentication errors
+ * - User-friendly error messages with toast notifications
+ * - Graceful error recovery with manual refresh capability
+ * 
+ * NOTE: This component is NOT used in production - it serves as
+ * architectural documentation for error handling best practices.
+ */
+
 "use client";
 
 import { useQuery, gql } from "@apollo/client";

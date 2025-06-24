@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
-import { SecureErrorHandler } from "@/lib/security/error-responses";
+import { ApiResponses } from "@/lib/api-responses";
 import { 
   GetUserForDeletionDocument, 
   GetCurrentUserRoleDocument,

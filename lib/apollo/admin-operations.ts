@@ -10,7 +10,7 @@ import { auth } from "@clerk/nextjs/server";
 import { gql } from "@apollo/client";
 
 import { adminApolloClient } from "./unified-client";
-import { SecureErrorHandler } from "@/lib/security/error-responses";
+import { ApiResponses } from "@/lib/api-responses";
 import {
   CreateUserDocument,
   UpdateUserDocument,
@@ -75,8 +75,7 @@ export class AdminOperationsService {
       const { isValid } = await this.validateAdminAccess();
 
       if (!isValid) {
-        const error = SecureErrorHandler.authorizationError("admin access");
-        throw new Error(error.error);
+        throw new Error("Insufficient permissions for admin access");
       }
     }
 
@@ -105,8 +104,7 @@ export class AdminOperationsService {
       const { isValid } = await this.validateAdminAccess();
 
       if (!isValid) {
-        const error = SecureErrorHandler.authorizationError("admin access");
-        throw new Error(error.error);
+        throw new Error("Insufficient permissions for admin access");
       }
     }
 

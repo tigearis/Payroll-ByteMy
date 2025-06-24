@@ -4,21 +4,7 @@
  */
 
 import { ApolloCache, InMemoryCache } from "@apollo/client";
-
-export interface CacheInvalidationOptions {
-  /**
-   * Whether to broadcast cache updates to all components
-   */
-  broadcast?: boolean;
-  /**
-   * Whether to refetch active queries after invalidation
-   */
-  refetchQueries?: boolean;
-  /**
-   * Specific cache keys to invalidate (for granular control)
-   */
-  fields?: string[];
-}
+import type { CacheInvalidationOptions } from "../types";
 
 /**
  * Strategic cache invalidation patterns based on entity relationships

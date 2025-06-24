@@ -6,7 +6,12 @@
  */
 
 // Export types
-export { type UnifiedClientOptions, SecurityLevel } from "./types";
+export { 
+  type UnifiedClientOptions, 
+  type CacheOptions, 
+  type CacheInvalidationOptions,
+  SecurityLevel 
+} from "./types";
 
 // Export client factory and instances
 export { 
@@ -22,7 +27,7 @@ export {
   isAuthError,
   getSimpleErrorMessage,
   type GraphQLErrorDetails,
-} from "./links";
+} from "@/lib/utils/handle-graphql-error";
 
 // Export cache utilities
 export { 

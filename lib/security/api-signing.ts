@@ -10,7 +10,7 @@ import {
   SOC2EventType,
 } from "./audit/logger";
 
-import { SecureErrorHandler } from "./error-responses";
+import { ApiResponses } from "@/lib/api-responses";
 
 // Configuration for API signing
 const SIGNING_CONFIG = {
@@ -23,15 +23,45 @@ const SIGNING_CONFIG = {
 // In-memory nonce store (in production, use Redis or database)
 const nonceStore = new Map<string, number>();
 
-// Cleanup old nonces periodically
-setInterval(() => {
-  const now = Date.now();
-  for (const [nonce, timestamp] of nonceStore.entries()) {
-    if (now - timestamp > SIGNING_CONFIG.nonceWindow) {
-      nonceStore.delete(nonce);
+// Enhanced cleanup with memory management and error handling
+const cleanupInterval = setInterval(() => {
+  try {
+    const now = Date.now();
+    const initialSize = nonceStore.size;
+    let cleanedCount = 0;
+    
+    for (const [nonce, timestamp] of nonceStore.entries()) {
+      if (now - timestamp > SIGNING_CONFIG.nonceWindow) {
+        nonceStore.delete(nonce);
+        cleanedCount++;
+      }
     }
+    
+    // Log cleanup stats for monitoring
+    if (cleanedCount > 0) {
+      console.log(`🧹 [NONCE CLEANUP] Removed ${cleanedCount} expired nonces (${initialSize} → ${nonceStore.size})`);
+    }
+    
+    // Prevent memory growth beyond reasonable limits
+    if (nonceStore.size > 10000) {
+      console.warn(`⚠️ [MEMORY WARNING] Nonce store size: ${nonceStore.size}. Consider Redis for production.`);
+    }
+  } catch (error) {
+    console.error("❌ [NONCE CLEANUP ERROR]:", error);
   }
 }, 60000); // Clean up every minute
+
+// Cleanup function for graceful shutdown
+export function cleanupNonceStore(): void {
+  try {
+    clearInterval(cleanupInterval);
+    const size = nonceStore.size;
+    nonceStore.clear();
+    console.log(`🧹 [SHUTDOWN] Cleared nonce store (${size} entries)`);
+  } catch (error) {
+    console.error("❌ [SHUTDOWN ERROR] Failed to cleanup nonce store:", error);
+  }
+}
 
 /**
  * Generate API signature for request
@@ -119,7 +149,7 @@ export async function validateSignature(
     if (!apiKey || !timestamp || !nonce || !signature) {
       return {
         isValid: false,
-        error: SecureErrorHandler.validationError(
+        error: ApiResponses.badRequest(
           "Missing required signature headers"
         ),
       };
@@ -151,7 +181,7 @@ export async function validateSignature(
 
       return {
         isValid: false,
-        error: SecureErrorHandler.validationError(
+        error: ApiResponses.badRequest(
           "Request timestamp out of tolerance"
         ),
       };
@@ -179,7 +209,7 @@ export async function validateSignature(
 
       return {
         isValid: false,
-        error: SecureErrorHandler.validationError(
+        error: ApiResponses.badRequest(
           "Nonce already used (replay attack)"
         ),
       };
@@ -204,7 +234,7 @@ export async function validateSignature(
 
       return {
         isValid: false,
-        error: SecureErrorHandler.authenticationError(),
+        error: ApiResponses.authenticationRequired(),
       };
     }
 
@@ -253,7 +283,7 @@ export async function validateSignature(
 
       return {
         isValid: false,
-        error: SecureErrorHandler.authenticationError(),
+        error: ApiResponses.authenticationRequired(),
       };
     }
 
@@ -289,7 +319,7 @@ export async function validateSignature(
     console.error("Signature validation error:", error);
     return {
       isValid: false,
-      error: SecureErrorHandler.sanitizeError(error, "signature_validation"),
+      error: ApiResponses.secureError(error, "signature_validation"),
     };
   }
 }
@@ -321,76 +351,9 @@ export function withSignatureValidation(
 }
 
 /**
- * Legacy API key management utilities (deprecated - use PersistentAPIKeyManager)
- * @deprecated Use PersistentAPIKeyManager for new implementations
+ * API Key Management
+ * NOTE: Use PersistentAPIKeyManager from persistent-api-keys.ts for database-backed key management
  */
-export class APIKeyManager {
-  private static keyStore = new Map<
-    string,
-    { secret: string; permissions: string[] }
-  >();
-
-  /**
-   * Generate new API key pair
-   * @deprecated Use PersistentAPIKeyManager.generateKeyPair()
-   */
-  static generateKeyPair(): { apiKey: string; apiSecret: string } {
-    const apiKey = `ak_${randomBytes(16).toString("hex")}`;
-    const apiSecret = randomBytes(32).toString("hex");
-
-    return { apiKey, apiSecret };
-  }
-
-  /**
-   * Store API key (in production, use secure database)
-   * @deprecated Use PersistentAPIKeyManager.createAPIKey()
-   */
-  static storeKey(
-    apiKey: string,
-    apiSecret: string,
-    permissions: string[] = []
-  ): void {
-    this.keyStore.set(apiKey, { secret: apiSecret, permissions });
-  }
-
-  /**
-   * Get API secret for key
-   * @deprecated Use PersistentAPIKeyManager.validateAPIKey()
-   */
-  static async getSecret(apiKey: string): Promise<string | null> {
-    const keyData = this.keyStore.get(apiKey);
-    return keyData?.secret || null;
-  }
-
-  /**
-   * Check if API key has permission
-   * @deprecated Use PersistentAPIKeyManager.hasPermission()
-   */
-  static async hasPermission(
-    apiKey: string,
-    permission: string
-  ): Promise<boolean> {
-    const keyData = this.keyStore.get(apiKey);
-    return keyData?.permissions.includes(permission) || false;
-  }
-
-  /**
-   * Revoke API key
-   */
-  static revokeKey(apiKey: string): void {
-    this.keyStore.delete(apiKey);
-  }
-
-  /**
-   * List all API keys (returns only metadata, not secrets)
-   */
-  static listKeys(): Array<{ apiKey: string; permissions: string[] }> {
-    return Array.from(this.keyStore.entries()).map(([apiKey, data]) => ({
-      apiKey,
-      permissions: data.permissions,
-    }));
-  }
-}
 
 /**
  * Client-side utility for making signed requests
@@ -445,4 +408,4 @@ export class SignedAPIClient {
 }
 
 // Export default instances
-export const apiKeyManager = APIKeyManager;
+// Note: Use PersistentAPIKeyManager for new implementations

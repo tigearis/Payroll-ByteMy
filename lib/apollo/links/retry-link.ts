@@ -1,7 +1,22 @@
 /**
  * Retry Link for Apollo Client
  * 
- * Provides resilient operations with smart retry logic
+ * POSITION IN CHAIN: SECOND (after error link, before auth link)
+ * 
+ * RESPONSIBILITIES:
+ * - Retries failed operations with exponential backoff
+ * - Handles transient network failures and timeouts
+ * - Prevents retry loops on authentication errors
+ * - Implements jitter to avoid thundering herd
+ * - Provides resilient operations for production stability
+ * 
+ * WHY SECOND IN CHAIN:
+ * - After errorLink: Error handling can trigger retries
+ * - Before authLink: Ensures fresh tokens for retry attempts  
+ * - Before httpLink: Retries include authentication
+ * - Avoids retrying authentication failures (infinite loops)
+ * 
+ * CRITICAL: Must be after error handling, before authentication
  */
 
 import { ApolloLink } from "@apollo/client";

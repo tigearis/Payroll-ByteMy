@@ -285,3 +285,80 @@ export function checkRateLimit(
   record.count++;
   return { allowed: true };
 }
+
+/**
+ * Clean up expired rate limit records
+ * Should be called periodically to prevent memory leaks
+ */
+export function cleanupRateLimitStore(
+  attempts: Map<string, { count: number; resetTime: number }>
+): { cleaned: number; remaining: number } {
+  const now = Date.now();
+  const initialSize = attempts.size;
+  let cleanedCount = 0;
+
+  for (const [key, record] of attempts.entries()) {
+    if (record.resetTime < now) {
+      attempts.delete(key);
+      cleanedCount++;
+    }
+  }
+
+  const remaining = attempts.size;
+  
+  if (cleanedCount > 0) {
+    console.log(`🧹 [RATE LIMIT CLEANUP] Removed ${cleanedCount} expired entries (${initialSize} → ${remaining})`);
+  }
+
+  // Memory warning for large stores
+  if (remaining > 5000) {
+    console.warn(`⚠️ [MEMORY WARNING] Rate limit store size: ${remaining}. Consider implementing more aggressive cleanup.`);
+  }
+
+  return { cleaned: cleanedCount, remaining };
+}
+
+/**
+ * Create a managed rate limit store with automatic cleanup
+ */
+export function createManagedRateLimitStore(): {
+  store: Map<string, { count: number; resetTime: number }>;
+  cleanup: () => void;
+  getStats: () => { size: number; oldestEntry: number | null };
+} {
+  const store = new Map<string, { count: number; resetTime: number }>();
+  
+  // Auto cleanup every 5 minutes
+  const cleanupInterval = setInterval(() => {
+    try {
+      cleanupRateLimitStore(store);
+    } catch (error) {
+      console.error("❌ [RATE LIMIT AUTO-CLEANUP ERROR]:", error);
+    }
+  }, 5 * 60 * 1000);
+
+  return {
+    store,
+    cleanup: () => {
+      try {
+        clearInterval(cleanupInterval);
+        const size = store.size;
+        store.clear();
+        console.log(`🧹 [SHUTDOWN] Rate limit store cleared (${size} entries)`);
+      } catch (error) {
+        console.error("❌ [SHUTDOWN ERROR] Failed to cleanup rate limit store:", error);
+      }
+    },
+    getStats: () => {
+      const entries = Array.from(store.values());
+      const oldestEntry = entries.length > 0 
+        ? Math.min(...entries.map(e => e.resetTime))
+        : null;
+      
+      return { 
+        size: store.size, 
+        oldestEntry 
+      };
+    }
+  };
+}

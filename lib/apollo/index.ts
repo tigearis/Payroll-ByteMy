@@ -18,3 +18,13 @@ export {
   getSimpleErrorMessage,
   type GraphQLErrorDetails,
 } from "./unified-client";
+
+// Export optimistic update utilities
+export {
+  updatePayrollInCache,
+  updatePayrollDateInCache,
+  updatePayrollStatusInCache,
+  addPayrollToCache,
+  removePayrollFromCache,
+  optimisticResponseGenerators,
+} from "./optimistic-updates";
