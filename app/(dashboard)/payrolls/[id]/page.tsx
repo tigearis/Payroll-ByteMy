@@ -1,8 +1,13 @@
 // app/(dashboard)/payrolls/[id]/page.tsx
 "use client";
 
-import { useParams, notFound, useRouter } from "next/navigation";
-import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
+import { useParams, useRouter } from "next/navigation";
+import {
+  useMutation,
+  useQuery,
+  useLazyQuery,
+  ApolloError,
+} from "@apollo/client";
 
 // Import role enums
 
@@ -966,10 +971,45 @@ export default function PayrollPage() {
 
   // Show loading if we're checking versions or about to redirect
   const isVersionCheckingOrRedirecting =
-    versionCheckLoading ||
-    latestVersionLoading ||
-    needsRedirect ||
-    !versionCheckData;
+    versionCheckLoading || latestVersionLoading || needsRedirect;
+
+  // Add debugging for versioning logic
+  useEffect(() => {
+    console.log("🔍 VERSIONING DEBUG:", {
+      id,
+      versionCheckLoading,
+      latestVersionLoading,
+      needsRedirect,
+      hasVersionCheckData: !!versionCheckData,
+      isVersionCheckingOrRedirecting,
+      currentPayroll: currentPayroll
+        ? {
+            id: currentPayroll.id,
+            supersededDate: currentPayroll.supersededDate,
+            parentPayrollId: currentPayroll.parentPayrollId,
+            versionNumber: currentPayroll.versionNumber,
+          }
+        : null,
+      rootId,
+      latestVersionData: latestVersionData
+        ? {
+            hasPayrolls: !!latestVersionData.payrolls,
+            payrollsLength: latestVersionData.payrolls?.length,
+            firstPayrollId: latestVersionData.payrolls?.[0]?.id,
+          }
+        : null,
+    });
+  }, [
+    id,
+    versionCheckLoading,
+    latestVersionLoading,
+    needsRedirect,
+    versionCheckData,
+    isVersionCheckingOrRedirecting,
+    currentPayroll,
+    rootId,
+    latestVersionData,
+  ]);
 
   // Get payroll data - use network-only to prevent flash of old cached data
   // Skip this query if we're still checking versions or about to redirect
@@ -982,6 +1022,51 @@ export default function PayrollPage() {
     }
   );
   console.log("✅ Main payroll query loaded");
+
+  // Add extensive debugging for this issue
+  useEffect(() => {
+    if (error) {
+      console.error("🔥 PAYROLL FETCH ERROR:", {
+        error,
+        errorName: error.name,
+        errorMessage: error.message,
+        graphQLErrors: error.graphQLErrors,
+        networkError: error.networkError,
+        extraInfo: error.extraInfo,
+        clientErrors: error.clientErrors,
+        stack: error.stack,
+      });
+
+      // Also log the payroll ID and user permissions
+      console.log("🆔 Payroll ID being queried:", id);
+
+      // Debug authorization context
+      if (typeof window !== "undefined" && (window as any).Clerk?.session) {
+        (window as any).Clerk.session
+          .getToken({
+            template: "hasura",
+          })
+          .then((token: string | null) => {
+            if (token) {
+              console.log("✓ Hasura token is available");
+              // Don't log the actual token for security reasons
+            } else {
+              console.warn("⚠️ No Hasura token available");
+            }
+          })
+          .catch((tokenError: Error) => {
+            console.error("🔥 Token retrieval error:", tokenError);
+          });
+      }
+    }
+
+    if (data) {
+      console.log("📊 Payload received:", {
+        hasPayroll: !!data.payrollById,
+        responseKeys: data ? Object.keys(data) : [],
+      });
+    }
+  }, [error, data, id]);
 
   // Query for users (for consultant/manager assignments)
   const { data: usersData } = useQuery(GetAllUsersListDocument, {
@@ -1277,12 +1362,68 @@ export default function PayrollPage() {
     );
   }
 
-  if (!data || !data.payroll) {
-    toast.error("No payroll data found.");
-    return notFound();
+  if (!data || !data.payrollById) {
+    // Show detailed error information instead of calling notFound()
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] p-8 space-y-6">
+        <AlertTriangle className="w-16 h-16 text-red-500" />
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold">Payroll Data Issue</h2>
+          <p className="text-gray-600">
+            The payroll with ID "{id}" could not be loaded
+          </p>
+
+          {error ? (
+            <div className="bg-red-50 border border-red-200 p-4 rounded-md text-left max-w-lg mx-auto mt-4">
+              <p className="font-semibold">Error Details:</p>
+              <p className="text-red-700">
+                {(error as Error).message || "Unknown error"}
+              </p>
+
+              {(error as ApolloError).graphQLErrors?.length > 0 && (
+                <div className="mt-2">
+                  <p className="font-semibold">GraphQL Errors:</p>
+                  <ul className="list-disc pl-4">
+                    {(error as ApolloError).graphQLErrors.map(
+                      (e: any, i: number) => (
+                        <li key={i} className="text-sm text-red-600">
+                          {e.message}
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md text-left max-w-lg mx-auto mt-4">
+              <p>No error was reported, but payrollById returned null.</p>
+              <p className="text-sm mt-2">
+                This usually happens when the record exists but you don't have
+                permission to view it, or the record doesn't exist.
+              </p>
+            </div>
+          )}
+
+          <div className="mt-6">
+            <Button
+              onClick={() => refetch()}
+              variant="outline"
+              className="mr-2"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Try Again
+            </Button>
+            <Button onClick={() => router.push("/payrolls")} variant="outline">
+              Back to Payrolls List
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  const payroll = data.payroll;
+  const payroll = data.payrollById;
   const client = payroll.client;
 
   // Debug: Log payroll data to see what we're getting
