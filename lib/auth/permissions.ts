@@ -13,15 +13,18 @@ export type StaffPermission =
   | "staff:delete"
   | "staff:invite";
 
-export type ClientPermission =
-  | "client:read"
-  | "client:write"
-  | "client:delete";
+export type ClientPermission = "client:read" | "client:write" | "client:delete";
 
 export type AdminPermission =
   | "admin:manage"
   | "settings:write"
   | "billing:manage";
+
+// Security permissions
+export type SecurityPermission =
+  | "security:read"
+  | "security:write"
+  | "security:manage";
 
 export type ReportingPermission =
   | "reports:read"
@@ -35,6 +38,7 @@ export type Permission =
   | StaffPermission
   | ClientPermission
   | AdminPermission
+  | SecurityPermission
   | ReportingPermission;
 
 // Role type
@@ -82,6 +86,11 @@ export const ALL_PERMISSIONS = [
   "admin:manage",
   "settings:write",
   "billing:manage",
+
+  // Security permissions
+  "security:read",
+  "security:write",
+  "security:manage",
 
   // Reporting permissions
   "reports:read",
@@ -131,6 +140,11 @@ export const ROLE_PERMISSIONS: RolePermissions = {
       "settings:write",
       "billing:manage",
 
+      // Security permissions - full access
+      "security:read",
+      "security:write",
+      "security:manage",
+
       // Reporting permissions - full access
       "reports:read",
       "reports:export",
@@ -154,6 +168,9 @@ export const ROLE_PERMISSIONS: RolePermissions = {
       // Client permissions - read and write
       "client:read",
       "client:write",
+
+      // Security permissions - read access for monitoring
+      "security:read",
 
       // Reporting permissions - read and export
       "reports:read",
@@ -205,16 +222,14 @@ export const PERMISSION_CATEGORIES = {
     "staff:invite",
   ] as Permission[],
 
-  CLIENT: [
-    "client:read",
-    "client:write",
-    "client:delete",
-  ] as Permission[],
+  CLIENT: ["client:read", "client:write", "client:delete"] as Permission[],
 
-  ADMIN: [
-    "admin:manage",
-    "settings:write",
-    "billing:manage",
+  ADMIN: ["admin:manage", "settings:write", "billing:manage"] as Permission[],
+
+  SECURITY: [
+    "security:read",
+    "security:write",
+    "security:manage",
   ] as Permission[],
 
   REPORTING: [
@@ -277,10 +292,7 @@ export function getRoleLevel(role: Role): number {
 }
 
 // Check if a role has a specific permission
-export function roleHasPermission(
-  role: Role,
-  permission: Permission
-): boolean {
+export function roleHasPermission(role: Role, permission: Permission): boolean {
   return ROLE_PERMISSIONS[role]?.permissions.includes(permission) || false;
 }
 

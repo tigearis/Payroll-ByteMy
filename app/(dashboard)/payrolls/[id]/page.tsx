@@ -3,6 +3,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
+import { useAuthContext } from "@/lib/auth/auth-context";
 
 // Import role enums
 
@@ -565,8 +566,8 @@ const getCycleName = (payroll: any) => {
 
   // Fallback to cycle_id lookup if nested object not available
   if (payroll?.cycle_id) {
-    const cycle = PAYROLL_CYCLES.find(c => c.id === payroll.cycle_id);
-    return cycle ? cycle.name : `${payroll.cycle_id} (Unknown)`;
+    const cycle = PAYROLL_CYCLES.find(c => c.id === payroll.cycleId);
+    return cycle ? cycle.name : `${payroll.cycleId} (Unknown)`;
   }
 
   return "Not set";
@@ -602,8 +603,8 @@ const getDateTypeName = (payroll: any) => {
   }
 
   // For weekly/fortnightly, default to Day of Week if no date type is specified
-  const cycleId = payroll.payroll_cycle?.id || payroll.cycle_id;
-  const cycleName = payroll.payroll_cycle?.name;
+  const cycleId = payroll.payrollCycle?.id || payroll.cycleId;
+  const cycleName = payroll.payrollCycle?.name;
   if (cycleName === "weekly" || cycleName === "fortnightly") {
     return "Day of Week";
   }
@@ -613,8 +614,8 @@ const getDateTypeName = (payroll: any) => {
 
 // Helper function to get readable date value display (comprehensive version)
 const getDateValueDisplay = (payroll: any) => {
-  const cycleId = payroll.payroll_cycle?.id || payroll.cycle_id;
-  const dateValue = payroll.date_value;
+  const cycleId = payroll.payrollCycle?.id || payroll.cycleId;
+  const dateValue = payroll.dateValue;
 
   // If no date value is set, show appropriate message based on cycle
   if (!dateValue && dateValue !== 0) {
@@ -628,7 +629,7 @@ const getDateValueDisplay = (payroll: any) => {
       return "Based on date type";
     }
     if (cycleId === "monthly" || cycleId === "quarterly") {
-      const dateTypeId = payroll.payroll_date_type?.id || payroll.date_type_id;
+      const dateTypeId = payroll.payrollDateType?.id || payroll.dateTypeId;
       if (dateTypeId === "SOM" || dateTypeId === "som") {
         return "Start of the Month (1st)";
       }
@@ -659,7 +660,7 @@ const getDateValueDisplay = (payroll: any) => {
 
   // For bi-monthly - show based on date type
   if (cycleId === "bi_monthly") {
-    const dateTypeId = payroll.payroll_date_type?.id || payroll.date_type_id;
+    const dateTypeId = payroll.payrollDateType?.id || payroll.dateTypeId;
     if (dateTypeId === "SOM" || dateTypeId === "som") {
       return "1st and 15th of month";
     }
@@ -671,7 +672,7 @@ const getDateValueDisplay = (payroll: any) => {
 
   // For monthly/quarterly with fixed dates - show ordinal
   if (cycleId === "monthly" || cycleId === "quarterly") {
-    const dateTypeId = payroll.payroll_date_type?.id || payroll.date_type_id;
+    const dateTypeId = payroll.payrollDateType?.id || payroll.dateTypeId;
     if (dateTypeId === "fixed" || dateTypeId === "fixed_date") {
       return `${dateValue}${getOrdinalSuffix(dateValue)} of the Month`;
     }
@@ -690,8 +691,8 @@ const getDateValueDisplay = (payroll: any) => {
 // Helper function to get enhanced schedule summary with Week A/B for fortnightly
 const getEnhancedScheduleSummary = (payroll: any) => {
   const cycleName = getCycleName(payroll);
-  const cycleNameLower = payroll.payroll_cycle?.name; // This contains enum values like 'weekly'
-  const dateValue = payroll.date_value;
+  const cycleNameLower = payroll.payrollCycle?.name; // This contains enum values like 'weekly'
+  const dateValue = payroll.dateValue;
 
   // If no cycle is set
   if (!cycleName || cycleName === "Not set") {
@@ -733,7 +734,7 @@ const getEnhancedScheduleSummary = (payroll: any) => {
   }
 
   if (cycleNameLower === "bi_monthly") {
-    const dateTypeName = payroll.payroll_date_type?.name;
+    const dateTypeName = payroll.payrollDateType?.name;
     if (dateTypeName === "som") {
       return `${cycleName} - 1st and 15th of Month`;
     }
@@ -744,7 +745,7 @@ const getEnhancedScheduleSummary = (payroll: any) => {
   }
 
   if (cycleNameLower === "monthly" || cycleNameLower === "quarterly") {
-    const dateTypeName = payroll.payroll_date_type?.name;
+    const dateTypeName = payroll.payrollDateType?.name;
 
     if (dateTypeName === "fixed_date" && dateValue) {
       return `${cycleName} - ${dateValue}${getOrdinalSuffix(
@@ -774,8 +775,8 @@ const getEnhancedScheduleSummary = (payroll: any) => {
 // Helper function to get schedule summary (like creation form)
 const getScheduleSummary = (payroll: any) => {
   const cycleName = getCycleName(payroll);
-  const cycleNameLower = payroll.payroll_cycle?.name; // This contains enum values like 'weekly'
-  const dateValue = payroll.date_value;
+  const cycleNameLower = payroll.payrollCycle?.name; // This contains enum values like 'weekly'
+  const dateValue = payroll.dateValue;
 
   // If no cycle is set
   if (!cycleName || cycleName === "Not set") {
@@ -799,7 +800,7 @@ const getScheduleSummary = (payroll: any) => {
   }
 
   if (cycleNameLower === "bi_monthly") {
-    const dateTypeName = payroll.payroll_date_type?.name;
+    const dateTypeName = payroll.payrollDateType?.name;
     if (dateTypeName === "som") {
       return `${cycleName} - 1st and 15th of the Month`;
     }
@@ -810,7 +811,7 @@ const getScheduleSummary = (payroll: any) => {
   }
 
   if (cycleNameLower === "monthly" || cycleNameLower === "quarterly") {
-    const dateTypeName = payroll.payroll_date_type?.name;
+    const dateTypeName = payroll.payrollDateType?.name;
 
     if (dateTypeName === "fixed_date" && dateValue) {
       return `${cycleName} - ${dateValue}${getOrdinalSuffix(
@@ -900,8 +901,36 @@ export default function PayrollPage() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
+  const { hasPermission, userRole } = useAuthContext();
 
   console.log("📋 Payroll ID:", id);
+
+  // Permission checks
+  const canEditPayroll = hasPermission("payroll:write");
+  const canDeletePayroll = hasPermission("payroll:delete");
+  const canAssignPayroll = hasPermission("payroll:assign");
+  const canViewPayroll = hasPermission("payroll:read");
+
+  // Check if user has permission to view payrolls
+  if (!canViewPayroll) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] p-8 space-y-6">
+        <Shield className="w-16 h-16 text-red-500" />
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold">Access Denied</h2>
+          <p className="text-gray-600">
+            You don't have permission to view payroll details
+          </p>
+          <p className="text-sm text-gray-500 mt-2">Current role: {userRole}</p>
+          <div className="mt-6">
+            <Button onClick={() => router.push("/dashboard")} variant="outline">
+              Back to Dashboard
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const [loadingToastShown, setLoadingToastShown] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -1149,8 +1178,8 @@ export default function PayrollPage() {
 
   // Initialize edit state when payroll data loads
   useEffect(() => {
-    if (data?.payroll && !editedPayroll.id) {
-      const payroll = data.payroll;
+    if (data?.payrollById && !editedPayroll.id) {
+      const payroll = data.payrollById;
       setEditedPayroll({
         ...payroll,
         // Ensure field names match the form - use the enum values from nested relationships
@@ -1769,10 +1798,12 @@ export default function PayrollPage() {
                   </>
                 ) : (
                   <>
-                    <DropdownMenuItem onClick={() => setIsEditing(true)}>
-                      <Pencil className="w-4 h-4 mr-2" />
-                      Edit Payroll
-                    </DropdownMenuItem>
+                    {canEditPayroll && (
+                      <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                        <Pencil className="w-4 h-4 mr-2" />
+                        Edit Payroll
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                   </>
                 )}
@@ -1839,10 +1870,12 @@ export default function PayrollPage() {
                 <DropdownMenuSeparator />
 
                 {/* Danger Zone */}
-                <DropdownMenuItem className="text-red-600">
-                  <AlertTriangle className="w-4 h-4 mr-2" />
-                  Archive Payroll
-                </DropdownMenuItem>
+                {canDeletePayroll && (
+                  <DropdownMenuItem className="text-red-600">
+                    <AlertTriangle className="w-4 h-4 mr-2" />
+                    Archive Payroll
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

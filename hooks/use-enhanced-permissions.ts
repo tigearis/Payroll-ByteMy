@@ -1,4 +1,10 @@
 import { useUserRole } from "@/hooks/use-user-role";
+import {
+  ROLE_HIERARCHY,
+  Role,
+  Permission,
+  roleHasPermission,
+} from "@/lib/auth/permissions";
 
 export interface PermissionResult {
   granted: boolean;
@@ -17,7 +23,7 @@ export interface PermissionOptions {
 
 /**
  * Enhanced permission hook with detailed feedback
- * Replaces all direct role checking patterns
+ * Uses the proper role hierarchy system from lib/auth/permissions.ts
  */
 export function useEnhancedPermissions() {
   const { userRole, hasPermission, isLoading } = useUserRole();
@@ -101,39 +107,24 @@ export function useEnhancedPermissions() {
   };
 }
 
-// Helper functions
+// Helper functions using the proper role hierarchy system
 function getMinimumRoleForPermission(permission: string): string {
-  const permissionRoles: Record<string, string> = {
-    // Payroll permissions
-    "payroll:read": "consultant",
-    "payroll:write": "manager",
-    "payroll:delete": "org_admin",
-    "payroll:assign": "consultant",
-    
-    // Staff permissions  
-    "staff:read": "consultant",
-    "staff:write": "manager",
-    "staff:delete": "org_admin",
-    "staff:invite": "manager",
-    
-    // Client permissions
-    "client:read": "consultant", 
-    "client:write": "manager",
-    "client:delete": "org_admin",
-    
-    // Admin permissions
-    "admin:manage": "developer",
-    "settings:write": "org_admin",
-    "billing:manage": "org_admin",
-    
-    // Reporting permissions
-    "reports:read": "consultant",
-    "reports:export": "manager", 
-    "audit:read": "manager",
-    "audit:write": "org_admin",
-  };
+  // Convert permission string to Permission type
+  const permissionKey = permission as Permission;
 
-  return permissionRoles[permission] || "org_admin";
+  // Check each role level from lowest to highest to find minimum required role
+  const rolesByLevel = Object.entries(ROLE_HIERARCHY)
+    .sort(([, a], [, b]) => a - b) // Sort by level (lowest first)
+    .map(([role]) => role as Role);
+
+  for (const role of rolesByLevel) {
+    if (roleHasPermission(role, permissionKey)) {
+      return role;
+    }
+  }
+
+  // If permission not found in any role, require highest role
+  return "developer";
 }
 
 function generatePermissionSuggestions(
