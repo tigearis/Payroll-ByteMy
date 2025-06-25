@@ -3,8 +3,6 @@ table:
   schema: public
 configuration:
   column_config:
-    created_at:
-      custom_name: createdAt
     created_by:
       custom_name: createdBy
     event_type:
@@ -12,7 +10,6 @@ configuration:
     invoice_id:
       custom_name: invoiceId
   custom_column_names:
-    created_at: createdAt
     created_by: createdBy
     event_type: eventType
     invoice_id: invoiceId
@@ -50,10 +47,8 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - created_at
         - created_by
         - event_type
-        - id
         - invoice_id
         - message
       filter: {}
@@ -67,10 +62,8 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - created_at
         - created_by
         - event_type
-        - id
         - invoice_id
         - message
       filter: {}
@@ -79,10 +72,8 @@ select_permissions:
   - role: org_admin
     permission:
       columns:
-        - created_at
         - created_by
         - event_type
-        - id
         - invoice_id
         - message
       filter: {}
@@ -91,10 +82,8 @@ select_permissions:
   - role: viewer
     permission:
       columns:
-        - created_at
         - created_by
         - event_type
-        - id
         - invoice_id
         - message
       filter: {}

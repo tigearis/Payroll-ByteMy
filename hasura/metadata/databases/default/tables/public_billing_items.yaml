@@ -3,14 +3,11 @@ table:
   schema: public
 configuration:
   column_config:
-    created_at:
-      custom_name: createdAt
     invoice_id:
       custom_name: invoiceId
     payroll_id:
       custom_name: payrollId
   custom_column_names:
-    created_at: createdAt
     invoice_id: invoiceId
     payroll_id: payrollId
   custom_name: billingItems
@@ -41,8 +38,8 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - created_at
-        - id
+        - invoice_id
+        - payroll_id
       filter: {}
     comment: Consultants can view relevant data
   - role: developer
@@ -54,24 +51,24 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - created_at
-        - id
+        - invoice_id
+        - payroll_id
       filter: {}
       allow_aggregations: true
     comment: Managers can view all data
   - role: org_admin
     permission:
       columns:
-        - created_at
-        - id
+        - invoice_id
+        - payroll_id
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all data
   - role: viewer
     permission:
       columns:
-        - created_at
-        - id
+        - invoice_id
+        - payroll_id
       filter: {}
     comment: Viewers can see basic information
 update_permissions:

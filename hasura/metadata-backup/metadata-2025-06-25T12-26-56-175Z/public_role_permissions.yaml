@@ -1,0 +1,105 @@
+table:
+  name: role_permissions
+  schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    permission_id:
+      custom_name: permissionId
+    role_id:
+      custom_name: roleId
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    permission_id: permissionId
+    role_id: roleId
+    updated_at: updatedAt
+  custom_name: rolePermissions
+  custom_root_fields:
+    delete: bulkDeleteRolePermissions
+    delete_by_pk: deleteRolePermissionById
+    insert: bulkInsertRolePermissions
+    insert_one: insertRolePermission
+    select: rolePermissions
+    select_aggregate: rolePermissionsAggregate
+    select_by_pk: rolePermissionById
+    update: bulkUpdateRolePermissions
+    update_by_pk: updateRolePermissionById
+object_relationships:
+  - name: grantedPermission
+    using:
+      foreign_key_constraint_on: permission_id
+  - name: grantedToRole
+    using:
+      foreign_key_constraint_on: role_id
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - created_at
+        - id
+        - permission_id
+        - role_id
+        - updated_at
+      filter: {}
+    comment: Consultants can view relevant data
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - created_at
+        - id
+        - permission_id
+        - role_id
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all data
+  - role: org_admin
+    permission:
+      columns:
+        - created_at
+        - id
+        - permission_id
+        - role_id
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all data
+  - role: viewer
+    permission:
+      columns:
+        - created_at
+        - id
+        - permission_id
+        - role_id
+        - updated_at
+      filter: {}
+    comment: Viewers can see basic information
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

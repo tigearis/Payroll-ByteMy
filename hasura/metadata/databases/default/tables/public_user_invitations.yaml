@@ -3,48 +3,48 @@ table:
   schema: public
 configuration:
   column_config:
-    first_name:
-      custom_name: firstName
-    last_name:
-      custom_name: lastName
-    invited_role:
-      custom_name: invitedRole
-    manager_id:
-      custom_name: managerId
-    clerk_invitation_id:
-      custom_name: clerkInvitationId
-    clerk_ticket:
-      custom_name: clerkTicket
-    invitation_metadata:
-      custom_name: invitationMetadata
-    invited_by:
-      custom_name: invitedBy
-    invited_at:
-      custom_name: invitedAt
     accepted_at:
       custom_name: acceptedAt
     accepted_by:
       custom_name: acceptedBy
-    expires_at:
-      custom_name: expiresAt
+    clerk_invitation_id:
+      custom_name: clerkInvitationId
+    clerk_ticket:
+      custom_name: clerkTicket
     created_at:
       custom_name: createdAt
+    expires_at:
+      custom_name: expiresAt
+    first_name:
+      custom_name: firstName
+    invitation_metadata:
+      custom_name: invitationMetadata
+    invited_at:
+      custom_name: invitedAt
+    invited_by:
+      custom_name: invitedBy
+    invited_role:
+      custom_name: invitedRole
+    last_name:
+      custom_name: lastName
+    manager_id:
+      custom_name: managerId
     updated_at:
       custom_name: updatedAt
   custom_column_names:
-    first_name: firstName
-    last_name: lastName
-    invited_role: invitedRole
-    manager_id: managerId
-    clerk_invitation_id: clerkInvitationId
-    clerk_ticket: clerkTicket
-    invitation_metadata: invitationMetadata
-    invited_by: invitedBy
-    invited_at: invitedAt
     accepted_at: acceptedAt
     accepted_by: acceptedBy
-    expires_at: expiresAt
+    clerk_invitation_id: clerkInvitationId
+    clerk_ticket: clerkTicket
     created_at: createdAt
+    expires_at: expiresAt
+    first_name: firstName
+    invitation_metadata: invitationMetadata
+    invited_at: invitedAt
+    invited_by: invitedBy
+    invited_role: invitedRole
+    last_name: lastName
+    manager_id: managerId
     updated_at: updatedAt
   custom_name: userInvitations
   custom_root_fields:
@@ -58,6 +58,15 @@ configuration:
     update: bulkUpdateUserInvitations
     update_by_pk: updateUserInvitationById
 object_relationships:
+  - name: acceptedByUser
+    using:
+      manual_configuration:
+        column_mapping:
+          accepted_by: id
+        insertion_order: null
+        remote_table:
+          name: users
+          schema: public
   - name: invitedByUser
     using:
       manual_configuration:
@@ -72,15 +81,6 @@ object_relationships:
       manual_configuration:
         column_mapping:
           manager_id: id
-        insertion_order: null
-        remote_table:
-          name: users
-          schema: public
-  - name: acceptedByUser
-    using:
-      manual_configuration:
-        column_mapping:
-          accepted_by: id
         insertion_order: null
         remote_table:
           name: users
@@ -127,15 +127,23 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
-        - email
-        - first_name
-        - last_name
-        - invited_role
-        - status
-        - invited_at
         - accepted_at
+        - accepted_by
+        - clerk_invitation_id
+        - clerk_ticket
+        - created_at
+        - email
         - expires_at
+        - first_name
+        - id
+        - invitation_metadata
+        - invited_at
+        - invited_by
+        - invited_role
+        - last_name
+        - manager_id
+        - status
+        - updated_at
       filter:
         email:
           _eq: X-Hasura-User-Email
@@ -183,15 +191,23 @@ select_permissions:
   - role: viewer
     permission:
       columns:
-        - id
-        - email
-        - first_name
-        - last_name
-        - invited_role
-        - status
-        - invited_at
         - accepted_at
+        - accepted_by
+        - clerk_invitation_id
+        - clerk_ticket
+        - created_at
+        - email
         - expires_at
+        - first_name
+        - id
+        - invitation_metadata
+        - invited_at
+        - invited_by
+        - invited_role
+        - last_name
+        - manager_id
+        - status
+        - updated_at
       filter:
         email:
           _eq: X-Hasura-User-Email

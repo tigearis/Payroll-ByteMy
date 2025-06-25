@@ -1,0 +1,90 @@
+table:
+  name: billing_items
+  schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    invoice_id:
+      custom_name: invoiceId
+    payroll_id:
+      custom_name: payrollId
+  custom_column_names:
+    created_at: createdAt
+    invoice_id: invoiceId
+    payroll_id: payrollId
+  custom_name: billingItems
+  custom_root_fields:
+    delete: bulkDeleteBillingItems
+    delete_by_pk: deleteBillingItemById
+    insert: bulkInsertBillingItems
+    insert_one: insertBillingItem
+    select: billingItems
+    select_aggregate: billingItemsAggregate
+    select_by_pk: billingItemById
+    update: bulkUpdateBillingItems
+    update_by_pk: updateBillingItemById
+object_relationships:
+  - name: relatedInvoice
+    using:
+      foreign_key_constraint_on: invoice_id
+  - name: relatedPayroll
+    using:
+      foreign_key_constraint_on: payroll_id
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - created_at
+        - id
+      filter: {}
+    comment: Consultants can view relevant data
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - created_at
+        - id
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all data
+  - role: org_admin
+    permission:
+      columns:
+        - created_at
+        - id
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all data
+  - role: viewer
+    permission:
+      columns:
+        - created_at
+        - id
+      filter: {}
+    comment: Viewers can see basic information
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

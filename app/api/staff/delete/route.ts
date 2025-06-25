@@ -216,7 +216,7 @@ export const POST = withAuth(
           user: result,
           clerkDeleted,
           auditInfo: {
-            deactivatedAt: new Date().toISOString(), // TODO: Extract from fragment-masked result
+            deactivatedAt: result?.updatedAt || new Date().toISOString(),
             deactivatedBy: userId,
             originalRole: user.role,
             hadClerkAccount: !!user.clerkUserId,

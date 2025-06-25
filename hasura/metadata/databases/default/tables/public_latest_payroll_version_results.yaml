@@ -28,7 +28,6 @@ select_permissions:
   - role: consultant
     permission:
       columns:
-        - id
         - queried_at
       filter: {}
     comment: Consultants can view relevant data
@@ -41,7 +40,6 @@ select_permissions:
   - role: manager
     permission:
       columns:
-        - id
         - queried_at
       filter: {}
       allow_aggregations: true
@@ -49,7 +47,6 @@ select_permissions:
   - role: org_admin
     permission:
       columns:
-        - id
         - queried_at
       filter: {}
       allow_aggregations: true
@@ -57,7 +54,6 @@ select_permissions:
   - role: viewer
     permission:
       columns:
-        - id
         - queried_at
       filter: {}
     comment: Viewers can see basic information

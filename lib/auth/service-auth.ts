@@ -20,6 +20,7 @@
 
 import { NextRequest } from 'next/server';
 import { extractClientInfo } from '@/lib/utils/client-info';
+import { auditLogger, LogLevel, LogCategory, AuditAction, DataClassification } from '@/lib/security/audit/logger';
 
 // Types for service authentication
 export interface ServiceAuthConfig {
@@ -154,11 +155,36 @@ export async function logServiceAuth(
     },
   };
   
-  // Log to console (could be enhanced to send to external logging service)
-  console.log('🔐 Service Auth:', JSON.stringify(logEntry, null, 2));
+  // Log to console for development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔐 Service Auth:', JSON.stringify(logEntry, null, 2));
+  }
   
-  // TODO: Send to audit logging service in production
-  // await sendToAuditService(logEntry);
+  // Send to audit logging service
+  try {
+    await auditLogger.logAuditEvent({
+      userId: 'service',
+      userRole: 'system',
+      action: AuditAction.READ,
+      entityType: 'service_auth',
+      entityId: operation,
+      dataClassification: DataClassification.CRITICAL,
+      success: logEntry.success,
+      errorMessage: logEntry.errorMessage,
+      metadata: {
+        operation: logEntry.operation,
+        clientIP: logEntry.clientIP,
+        userAgent: logEntry.userAgent,
+        timestamp: logEntry.timestamp,
+        duration: logEntry.duration,
+      },
+      method: 'SERVICE_AUTH',
+      ipAddress: logEntry.clientIP,
+      userAgent: logEntry.userAgent,
+    });
+  } catch (error) {
+    console.error('Failed to log service authentication to audit service:', error);
+  }
 }
 
 /**

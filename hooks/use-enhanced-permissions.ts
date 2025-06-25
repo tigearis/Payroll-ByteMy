@@ -36,7 +36,7 @@ export function useEnhancedPermissions() {
       };
     }
 
-    // Check permission using existing system (remove custom prefix for cleaner format)
+    // Check permission using existing system (clean format)
     const permissionString = `${resource}:${action}`;
     const granted = hasPermission(permissionString);
 
@@ -96,34 +96,41 @@ export function useEnhancedPermissions() {
     // Legacy compatibility
     hasPermission: (resource: string, action: string) =>
       checkPermission(resource, action).granted,
+    // Direct permission check with full string
+    hasDirectPermission: hasPermission,
   };
 }
 
 // Helper functions
 function getMinimumRoleForPermission(permission: string): string {
   const permissionRoles: Record<string, string> = {
+    // Payroll permissions
+    "payroll:read": "consultant",
+    "payroll:write": "manager",
+    "payroll:delete": "org_admin",
+    "payroll:assign": "consultant",
+    
+    // Staff permissions  
+    "staff:read": "consultant",
+    "staff:write": "manager",
+    "staff:delete": "org_admin",
+    "staff:invite": "manager",
+    
+    // Client permissions
+    "client:read": "consultant", 
+    "client:write": "manager",
+    "client:delete": "org_admin",
+    
+    // Admin permissions
+    "admin:manage": "developer",
+    "settings:write": "org_admin",
+    "billing:manage": "org_admin",
+    
+    // Reporting permissions
+    "reports:read": "consultant",
+    "reports:export": "manager", 
     "audit:read": "manager",
     "audit:write": "org_admin",
-    "payrolls:read": "consultant",
-    "payrolls:write": "manager",
-    "payrolls:manage": "manager",
-    "users:read": "consultant",
-    "users:write": "manager",
-    "users:manage": "org_admin",
-    "clients:read": "consultant",
-    "clients:write": "manager",
-    "clients:manage": "manager",
-    "security:read": "manager",
-    "security:write": "org_admin",
-    "security:admin": "developer",
-    "system:admin": "developer",
-    "invitations:manage": "org_admin",
-    "staff:manage": "manager",
-    "dashboard:read": "viewer",
-    "reports:read": "consultant",
-    "reports:write": "manager",
-    "settings:read": "manager",
-    "settings:write": "org_admin",
   };
 
   return permissionRoles[permission] || "org_admin";
@@ -137,7 +144,7 @@ function generatePermissionSuggestions(
   const requiredRole = getMinimumRoleForPermission(permission);
 
   suggestions.push(
-    `Contact your administrator to request ${requiredRole} role`
+    `Contact your administrator to request ${requiredRole} role (current: ${currentRole})`
   );
 
   if (permission.includes("read")) {

@@ -77,6 +77,7 @@ import {
 // Import additional documents separately to avoid potential module resolution issues
 import { GetPayrollCyclesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GetAllUsersListDocument } from "@/domains/users/graphql/generated/graphql";
 import { GetLatestPayrollVersionDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
@@ -980,11 +981,10 @@ export default function PayrollPage() {
   );
   console.log("✅ Main payroll query loaded");
 
-  // Query for users (for consultant/manager assignments) - TODO: Move to users domain
-  // const { data: usersData } = useQuery(GET_ALL_USERS_LIST, {
-  //   skip: isVersionCheckingOrRedirecting,
-  // });
-  const usersData = { users: [] }; // Temporary placeholder
+  // Query for users (for consultant/manager assignments)
+  const { data: usersData } = useQuery(GetAllUsersListDocument, {
+    skip: isVersionCheckingOrRedirecting,
+  });
   console.log("✅ Users query loaded");
 
   // Query for lookup tables
@@ -1285,17 +1285,23 @@ export default function PayrollPage() {
 
   const payroll = data.payroll;
   const client = payroll.client;
+  
+  // Debug: Log payroll data to see what we're getting
+  console.log("Payroll details data:", {
+    payroll,
+    payrollKeys: payroll ? Object.keys(payroll) : [],
+    client,
+    clientKeys: client ? Object.keys(client) : [],
+  });
+  
   const statusConfig = getStatusConfig(
     (payroll as any).status || "Implementation"
   );
   const StatusIcon = statusConfig.icon;
 
   // Calculate totals from payroll dates if available
-  const payrollDates = payroll.payrollDates || [];
-  const totalEmployees = payrollDates.reduce(
-    (sum: number, date: any) => sum + (date.employee_count || 0),
-    0
-  );
+  const payrollDates = payroll.recentPayrollDates || payroll.payrollDates || [];
+  const totalEmployees = payroll.employeeCount || 0;
 
   const handleSave = async () => {
     try {

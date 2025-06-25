@@ -1,7 +1,8 @@
 // app/api/payrolls/schedule/route.ts
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-// import { generatePayrollSchedule } from "@/lib/payroll-service"; // Commented out due to missing Drizzle schema
+import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 export async function GET(req: NextRequest) {
   try {
@@ -30,7 +31,8 @@ export async function GET(req: NextRequest) {
     const payrollId = url.searchParams.get("payrollId");
     const startDate =
       url.searchParams.get("startDate") || new Date().toISOString();
-    const periods = url.searchParams.get("periods") || "12";
+    const endDate = url.searchParams.get("endDate");
+    const maxDates = url.searchParams.get("maxDates") || "24";
 
     if (!payrollId) {
       return NextResponse.json(
@@ -39,15 +41,58 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // TODO: Implement payroll schedule generation with Hasura GraphQL
-    // For now, return a placeholder response
-    return NextResponse.json({
-      message: "Payroll schedule generation not yet implemented with Hasura",
-      payrollId,
-      startDate,
-      periods: parseInt(periods),
-      // schedule: await generatePayrollSchedule(parseInt(payrollId), new Date(startDate), parseInt(periods))
-    });
+    // Calculate end date if not provided (1 year from start date)
+    let calculatedEndDate = endDate;
+    if (!calculatedEndDate) {
+      const start = new Date(startDate);
+      const end = new Date(start);
+      end.setFullYear(start.getFullYear() + 1);
+      calculatedEndDate = end.toISOString().split('T')[0];
+    }
+
+    try {
+      // Generate payroll dates using Hasura function
+      const result = await adminApolloClient.query({
+        query: GeneratePayrollDatesQueryDocument,
+        variables: {
+          payrollId,
+          startDate: startDate.split('T')[0], // Ensure date format
+          endDate: calculatedEndDate,
+          maxDates: parseInt(maxDates),
+        },
+        fetchPolicy: "no-cache",
+      });
+
+      const generatedDates = result.data?.generatePayrollDates || [];
+
+      return NextResponse.json({
+        success: true,
+        payrollId,
+        startDate: startDate.split('T')[0],
+        endDate: calculatedEndDate,
+        maxDates: parseInt(maxDates),
+        generatedCount: generatedDates.length,
+        schedule: generatedDates.map(date => ({
+          id: date.id,
+          originalEftDate: date.originalEftDate,
+          adjustedEftDate: date.adjustedEftDate,
+          processingDate: date.processingDate,
+          notes: date.notes,
+          payrollId: date.payrollId,
+          createdAt: date.createdAt,
+          updatedAt: date.updatedAt,
+        })),
+      });
+    } catch (graphqlError) {
+      console.error("GraphQL error during schedule generation:", graphqlError);
+      return NextResponse.json(
+        { 
+          error: "Failed to generate payroll schedule",
+          details: graphqlError instanceof Error ? graphqlError.message : "Unknown GraphQL error"
+        },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error("Schedule generation error:", error);
     return NextResponse.json(

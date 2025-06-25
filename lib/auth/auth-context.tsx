@@ -4,7 +4,7 @@ import { useAuth, useUser } from "@clerk/nextjs";
 import React, { createContext, useContext, useMemo, useCallback } from "react";
 import {
   Role,
-  CustomPermission,
+  Permission,
   getPermissionsForRole,
   hasRoleLevel,
   ROUTE_PERMISSIONS,
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Get user's permissions from role
       const userPermissions = getPermissionsForRole(userRole);
-      return userPermissions.includes(permission as CustomPermission);
+      return userPermissions.includes(permission as Permission);
     },
     [isSignedIn, isClerkLoaded, hasValidDatabaseUser, userRole]
   );
@@ -124,29 +124,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return {
       // Staff management
-      canManageStaff: userPermissions.includes("custom:staff:write"),
-      canViewStaff: userPermissions.includes("custom:staff:read"),
-      canInviteStaff: userPermissions.includes("custom:staff:invite"),
+      canManageStaff: userPermissions.includes("staff:write"),
+      canViewStaff: userPermissions.includes("staff:read"),
+      canInviteStaff: userPermissions.includes("staff:invite"),
 
       // Client management
-      canManageClients: userPermissions.includes("custom:client:write"),
-      canViewClients: userPermissions.includes("custom:client:read"),
+      canManageClients: userPermissions.includes("client:write"),
+      canViewClients: userPermissions.includes("client:read"),
 
       // Payroll operations
-      canProcessPayrolls: userPermissions.includes("custom:payroll:write"),
-      canViewPayrolls: userPermissions.includes("custom:payroll:read"),
+      canProcessPayrolls: userPermissions.includes("payroll:write"),
+      canViewPayrolls: userPermissions.includes("payroll:read"),
 
       // System administration
-      canManageSettings: userPermissions.includes("custom:settings:write"),
-      canAccessAdmin: userPermissions.includes("custom:admin:manage"),
+      canManageSettings: userPermissions.includes("settings:write"),
+      canAccessAdmin: userPermissions.includes("admin:manage"),
 
       // Reporting
-      canViewReports: userPermissions.includes("custom:reports:read"),
-      canExportReports: userPermissions.includes("custom:reports:export"),
+      canViewReports: userPermissions.includes("reports:read"),
+      canExportReports: userPermissions.includes("reports:export"),
 
       // Audit
-      canViewAudit: userPermissions.includes("custom:audit:read"),
-      canManageAudit: userPermissions.includes("custom:audit:write"),
+      canViewAudit: userPermissions.includes("audit:read"),
+      canManageAudit: userPermissions.includes("audit:write"),
 
       // Role-based checks
       isDeveloper: userRole === "developer",
@@ -160,10 +160,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       hasManagerAccess: hasRoleLevel(userRole, "manager"),
 
       // User management (staff management)
-      canManageUsers: userPermissions.includes("custom:staff:write"),
+      canManageUsers: userPermissions.includes("staff:write"),
 
       // Financial access
-      canViewFinancials: userPermissions.includes("custom:reports:read"),
+      canViewFinancials: userPermissions.includes("reports:read"),
     };
   }, [userRole]);
 

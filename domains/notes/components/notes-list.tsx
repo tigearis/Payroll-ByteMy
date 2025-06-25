@@ -63,7 +63,7 @@ export function NotesList({
   const { data, loading, error, refetch } = useQuery<GetNotesExtractedQuery>(
     GetNotesExtractedDocument,
     {
-      variables: { entity_type: entityType, entity_id: entityId },
+      variables: { entityType: entityType, entityId: entityId },
       fetchPolicy: "cache-and-network",
     }
   );

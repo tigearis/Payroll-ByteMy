@@ -12,9 +12,9 @@ export function DebugPermissionInfo() {
 
   // Test a few key permissions
   const testPermissions = [
-    "custom:staff:read",
-    "custom:payroll:read", 
-    "custom:client:read"
+    "staff:read",
+    "payroll:read", 
+    "client:read"
   ];
 
   return (

@@ -48,7 +48,6 @@ select_permissions:
       columns:
         - active
         - go_live_date
-        - id
         - is_current
         - name
         - payroll_id
@@ -69,7 +68,6 @@ select_permissions:
       columns:
         - active
         - go_live_date
-        - id
         - is_current
         - name
         - payroll_id
@@ -85,7 +83,6 @@ select_permissions:
       columns:
         - active
         - go_live_date
-        - id
         - is_current
         - name
         - payroll_id
@@ -101,7 +98,6 @@ select_permissions:
       columns:
         - active
         - go_live_date
-        - id
         - is_current
         - name
         - payroll_id

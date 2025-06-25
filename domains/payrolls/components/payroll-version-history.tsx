@@ -2,11 +2,14 @@
 
 import { Calendar, Clock, GitBranch } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useLazyQuery } from "@apollo/client";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { usePayrollVersionHistory } from "@/hooks/use-payroll-versioning";
+import { usePayrollVersionHistory, usePayrollVersioning } from "@/hooks/use-payroll-versioning";
+import { GetPayrollByIdDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 // Local date formatting function
 const formatDate = (dateString: string) => {
@@ -25,8 +28,59 @@ export function PayrollVersionHistory({
   payrollId,
 }: PayrollVersionHistoryProps) {
   const router = useRouter();
-  const { versionHistory, loading, error, refetch } =
-    usePayrollVersionHistory(payrollId);
+  const { versionHistory, loading, error, refetch } = usePayrollVersionHistory(payrollId);
+  const { savePayrollEdit, createVersioningInput } = usePayrollVersioning();
+  const [getPayrollById] = useLazyQuery(GetPayrollByIdDocument);
+
+  const handleCloneVersion = async (versionId: string) => {
+    try {
+      toast.loading("Cloning payroll version...");
+      
+      // Fetch the full payroll data for the version to clone
+      const { data: payrollData } = await getPayrollById({
+        variables: { id: versionId }
+      });
+
+      if (!payrollData?.payrollById) {
+        throw new Error("Failed to fetch payroll data for cloning");
+      }
+
+      const sourcePayroll = payrollData.payrollById;
+      
+      // Create new version input based on the source payroll
+      // Set go live date to today to ensure new dates are generated
+      const today = new Date().toISOString().split('T')[0];
+      
+      const versionInput = createVersioningInput(
+        sourcePayroll,
+        sourcePayroll, // Use source payroll as "edited" fields (effectively copying all fields)
+        today,
+        `Cloned from version ${sourcePayroll.versionNumber}`
+      );
+
+      // Create the new version
+      const result = await savePayrollEdit(versionInput);
+      
+      if (result.success) {
+        toast.dismiss();
+        toast.success("Payroll version cloned successfully!");
+        
+        // Refresh the version history to show the new version
+        refetch();
+        
+        // Navigate to the new version
+        if (result.newVersionId) {
+          router.push(`/payrolls/${result.newVersionId}`);
+        }
+      } else {
+        throw new Error(result.error || "Failed to clone version");
+      }
+    } catch (error: any) {
+      toast.dismiss();
+      toast.error(`Failed to clone version: ${error.message}`);
+      console.error("Clone version error:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -191,10 +245,7 @@ export function PayrollVersionHistory({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        // TODO: Create new version based on this one
-                        console.log("Clone version:", version.id);
-                      }}
+                      onClick={() => handleCloneVersion(version.id)}
                     >
                       Clone
                     </Button>

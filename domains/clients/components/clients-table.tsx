@@ -46,7 +46,7 @@ const COLUMN_DEFINITIONS = [
     defaultVisible: true,
   },
   {
-    key: "contact_email",
+    key: "contactEmail",
     label: "Contact Email",
     sortable: true,
     defaultVisible: true,
@@ -64,16 +64,16 @@ const COLUMN_DEFINITIONS = [
 interface Client {
   id: string;
   name: string;
-  contact_person: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
+  contactPerson: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
   active: boolean;
-  payrolls?: Array<{
-    id: string;
-    name: string;
-    status: string;
-    active?: boolean;
-  }>;
+  payrollCount?: {
+    aggregate: {
+      count: number;
+    };
+  };
+  updatedAt?: string;
 }
 
 interface ClientsTableProps {
@@ -162,9 +162,9 @@ export function ClientsTable({
                     {renderSortableHeader("Contact Person", "contactPerson")}
                   </TableHead>
                 )}
-                {visibleColumns.includes("contact_email") && (
+                {visibleColumns.includes("contactEmail") && (
                   <TableHead>
-                    {renderSortableHeader("Contact Email", "contact_email")}
+                    {renderSortableHeader("Contact Email", "contactEmail")}
                   </TableHead>
                 )}
                 {visibleColumns.includes("contactPhone") && (
@@ -217,15 +217,15 @@ export function ClientsTable({
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <User className="w-4 h-4 text-gray-500" />
-                          <span>{client.contact_person || "Not set"}</span>
+                          <span>{client.contactPerson || "Not set"}</span>
                         </div>
                       </TableCell>
                     )}
-                    {visibleColumns.includes("contact_email") && (
+                    {visibleColumns.includes("contactEmail") && (
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Mail className="w-4 h-4 text-gray-500" />
-                          <span>{client.contact_email || "Not set"}</span>
+                          <span>{client.contactEmail || "Not set"}</span>
                         </div>
                       </TableCell>
                     )}
@@ -233,7 +233,7 @@ export function ClientsTable({
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Phone className="w-4 h-4 text-gray-500" />
-                          <span>{client.contact_phone || "Not set"}</span>
+                          <span>{client.contactPhone || "Not set"}</span>
                         </div>
                       </TableCell>
                     )}
@@ -242,7 +242,7 @@ export function ClientsTable({
                         <div className="flex items-center gap-2">
                           <Calculator className="w-4 h-4 text-gray-500" />
                           <span className="font-medium">
-                            {(client as any).payrolls?.length || 0}
+                            {(client as any).payrollCount?.aggregate?.count || 0}
                           </span>
                         </div>
                       </TableCell>

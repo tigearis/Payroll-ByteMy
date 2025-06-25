@@ -34,7 +34,7 @@ async function GET(request: NextRequest) {
       switch (view) {
         case "pending":
           // Get all pending invitations (admin/manager view)
-          if (!["developer", "org_admin", "manager"].includes(authUser.role)) {
+          if (!authUser.hasPermission("staff:read")) {
             return NextResponse.json(
               { error: "Insufficient permissions" },
               { status: 403 }
@@ -89,7 +89,7 @@ async function GET(request: NextRequest) {
 
         case "cleanup":
           // Mark expired invitations as expired (admin only)
-          if (!["developer", "org_admin"].includes(authUser.role)) {
+          if (!authUser.hasPermission("settings:write")) {
             return NextResponse.json(
               { error: "Insufficient permissions for cleanup operations" },
               { status: 403 }

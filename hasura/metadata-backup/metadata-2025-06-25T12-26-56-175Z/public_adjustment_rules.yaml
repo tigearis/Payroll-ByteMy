@@ -1,0 +1,141 @@
+table:
+  name: adjustment_rules
+  schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    cycle_id:
+      custom_name: cycleId
+    date_type_id:
+      custom_name: dateTypeId
+    rule_code:
+      custom_name: ruleCode
+    rule_description:
+      custom_name: ruleDescription
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    cycle_id: cycleId
+    date_type_id: dateTypeId
+    rule_code: ruleCode
+    rule_description: ruleDescription
+    updated_at: updatedAt
+  custom_name: adjustmentRules
+  custom_root_fields:
+    delete: bulkDeleteAdjustmentRules
+    delete_by_pk: deleteAdjustmentRuleById
+    insert: bulkInsertAdjustmentRules
+    insert_one: insertAdjustmentRule
+    select: adjustmentRules
+    select_aggregate: adjustmentRulesAggregate
+    select_by_pk: adjustmentRuleById
+    update: bulkUpdateAdjustmentRules
+    update_by_pk: updateAdjustmentRuleById
+object_relationships:
+  - name: relatedPayrollCycle
+    using:
+      foreign_key_constraint_on: cycle_id
+  - name: relatedPayrollDateType
+    using:
+      foreign_key_constraint_on: date_type_id
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+  - role: org_admin
+    permission:
+      check: {}
+      columns:
+        - cycle_id
+        - date_type_id
+        - rule_description
+        - rule_code
+    comment: Org admins can insert adjustment rules
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - created_at
+        - cycle_id
+        - date_type_id
+        - id
+        - rule_code
+        - rule_description
+        - updated_at
+      filter: {}
+    comment: All users can view adjustment rules as they're system-wide settings
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - id
+        - cycle_id
+        - date_type_id
+        - rule_code
+        - rule_description
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view and aggregate adjustment rules
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - cycle_id
+        - date_type_id
+        - rule_code
+        - rule_description
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins have full view access to adjustment rules
+  - role: viewer
+    permission:
+      columns:
+        - created_at
+        - cycle_id
+        - date_type_id
+        - id
+        - rule_code
+        - rule_description
+        - updated_at
+      filter: {}
+    comment: Viewers can view basic adjustment rule information
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+  - role: org_admin
+    permission:
+      columns:
+        - rule_code
+        - rule_description
+        - updated_at
+      filter: {}
+      check: {}
+    comment: Org admins can update adjustment rules
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
+  - role: org_admin
+    permission:
+      filter: {}
+    comment: Org admins can delete adjustment rules
+apollo_federation_config:
+  enable: v1

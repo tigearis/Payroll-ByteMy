@@ -3,8 +3,6 @@ table:
   schema: public
 configuration:
   column_config:
-    created_at:
-      custom_name: createdAt
     new_value:
       custom_name: newValue
     previous_value:
@@ -18,7 +16,6 @@ configuration:
     user_id:
       custom_name: userId
   custom_column_names:
-    created_at: createdAt
     new_value: newValue
     previous_value: previousValue
     target_role: targetRole
@@ -54,8 +51,6 @@ select_permissions:
     permission:
       columns:
         - action
-        - created_at
-        - id
         - new_value
         - operation
         - previous_value
@@ -77,8 +72,6 @@ select_permissions:
     permission:
       columns:
         - action
-        - created_at
-        - id
         - new_value
         - operation
         - previous_value
@@ -95,8 +88,6 @@ select_permissions:
     permission:
       columns:
         - action
-        - created_at
-        - id
         - new_value
         - operation
         - previous_value
@@ -112,8 +103,6 @@ select_permissions:
     permission:
       columns:
         - action
-        - created_at
-        - id
         - new_value
         - operation
         - previous_value

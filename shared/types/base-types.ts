@@ -15,7 +15,7 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-25T12:00:12.482Z
+ * Generated: 2025-06-25T13:11:57.867Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v3.0
  */
@@ -56,16 +56,16 @@ export type Scalars = {
   uuid: { input: string; output: string; }
 };
 
-export type AffectedAssignment = {
+export interface AffectedAssignment {
   __typename?: 'AffectedAssignment';
   adjustedEftDate: Scalars['String']['output'];
   id: Scalars['String']['output'];
   newConsultantId: Scalars['String']['output'];
   originalConsultantId: Scalars['String']['output'];
   payrollDateId: Scalars['String']['output'];
-};
+}
 
-export type AuditEventInput = {
+export interface AuditEventInput {
   action: Scalars['String']['input'];
   ipAddress?: InputMaybe<Scalars['String']['input']>;
   metadata?: InputMaybe<Scalars['json']['input']>;
@@ -73,17 +73,17 @@ export type AuditEventInput = {
   resourceType: Scalars['String']['input'];
   userAgent?: InputMaybe<Scalars['String']['input']>;
   userId: Scalars['String']['input'];
-};
+}
 
-export type AuditEventResponse = {
+export interface AuditEventResponse {
   __typename?: 'AuditEventResponse';
   eventId: Maybe<Scalars['String']['output']>;
   message: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
-};
+}
 
 /** Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'. */
-export type BigintComparisonExp = {
+export interface BigintComparisonExp {
   _eq?: InputMaybe<Scalars['bigint']['input']>;
   _gt?: InputMaybe<Scalars['bigint']['input']>;
   _gte?: InputMaybe<Scalars['bigint']['input']>;
@@ -93,10 +93,10 @@ export type BigintComparisonExp = {
   _lte?: InputMaybe<Scalars['bigint']['input']>;
   _neq?: InputMaybe<Scalars['bigint']['input']>;
   _nin?: InputMaybe<Array<Scalars['bigint']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
-export type BooleanComparisonExp = {
+export interface BooleanComparisonExp {
   _eq?: InputMaybe<Scalars['Boolean']['input']>;
   _gt?: InputMaybe<Scalars['Boolean']['input']>;
   _gte?: InputMaybe<Scalars['Boolean']['input']>;
@@ -106,10 +106,10 @@ export type BooleanComparisonExp = {
   _lte?: InputMaybe<Scalars['Boolean']['input']>;
   _neq?: InputMaybe<Scalars['Boolean']['input']>;
   _nin?: InputMaybe<Array<Scalars['Boolean']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "bpchar". All fields are combined with logical 'AND'. */
-export type BpcharComparisonExp = {
+export interface BpcharComparisonExp {
   _eq?: InputMaybe<Scalars['bpchar']['input']>;
   _gt?: InputMaybe<Scalars['bpchar']['input']>;
   _gte?: InputMaybe<Scalars['bpchar']['input']>;
@@ -139,30 +139,30 @@ export type BpcharComparisonExp = {
   _regex?: InputMaybe<Scalars['bpchar']['input']>;
   /** does the column match the given SQL regular expression */
   _similar?: InputMaybe<Scalars['bpchar']['input']>;
-};
+}
 
-export type CommitPayrollAssignmentsOutput = {
+export interface CommitPayrollAssignmentsOutput {
   __typename?: 'CommitPayrollAssignmentsOutput';
   affectedAssignments: Maybe<Array<AffectedAssignment>>;
   errors: Maybe<Array<Scalars['String']['output']>>;
   message: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
-};
+}
 
-export type ComplianceReportInput = {
+export interface ComplianceReportInput {
   endDate: Scalars['String']['input'];
   includeDetails?: InputMaybe<Scalars['Boolean']['input']>;
   reportType: Scalars['String']['input'];
   startDate: Scalars['String']['input'];
-};
+}
 
-export type ComplianceReportResponse = {
+export interface ComplianceReportResponse {
   __typename?: 'ComplianceReportResponse';
   generatedAt: Scalars['String']['output'];
   reportUrl: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
   summary: Maybe<Scalars['json']['output']>;
-};
+}
 
 /** ordering argument of a cursor */
 export enum CursorOrdering {
@@ -173,7 +173,7 @@ export enum CursorOrdering {
 }
 
 /** Boolean expression to compare columns of type "date". All fields are combined with logical 'AND'. */
-export type DateComparisonExp = {
+export interface DateComparisonExp {
   _eq?: InputMaybe<Scalars['date']['input']>;
   _gt?: InputMaybe<Scalars['date']['input']>;
   _gte?: InputMaybe<Scalars['date']['input']>;
@@ -183,10 +183,10 @@ export type DateComparisonExp = {
   _lte?: InputMaybe<Scalars['date']['input']>;
   _neq?: InputMaybe<Scalars['date']['input']>;
   _nin?: InputMaybe<Array<Scalars['date']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "inet". All fields are combined with logical 'AND'. */
-export type InetComparisonExp = {
+export interface InetComparisonExp {
   _eq?: InputMaybe<Scalars['inet']['input']>;
   _gt?: InputMaybe<Scalars['inet']['input']>;
   _gte?: InputMaybe<Scalars['inet']['input']>;
@@ -196,10 +196,10 @@ export type InetComparisonExp = {
   _lte?: InputMaybe<Scalars['inet']['input']>;
   _neq?: InputMaybe<Scalars['inet']['input']>;
   _nin?: InputMaybe<Array<Scalars['inet']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
-export type IntComparisonExp = {
+export interface IntComparisonExp {
   _eq?: InputMaybe<Scalars['Int']['input']>;
   _gt?: InputMaybe<Scalars['Int']['input']>;
   _gte?: InputMaybe<Scalars['Int']['input']>;
@@ -209,10 +209,10 @@ export type IntComparisonExp = {
   _lte?: InputMaybe<Scalars['Int']['input']>;
   _neq?: InputMaybe<Scalars['Int']['input']>;
   _nin?: InputMaybe<Array<Scalars['Int']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "interval". All fields are combined with logical 'AND'. */
-export type IntervalComparisonExp = {
+export interface IntervalComparisonExp {
   _eq?: InputMaybe<Scalars['interval']['input']>;
   _gt?: InputMaybe<Scalars['interval']['input']>;
   _gte?: InputMaybe<Scalars['interval']['input']>;
@@ -222,14 +222,14 @@ export type IntervalComparisonExp = {
   _lte?: InputMaybe<Scalars['interval']['input']>;
   _neq?: InputMaybe<Scalars['interval']['input']>;
   _nin?: InputMaybe<Array<Scalars['interval']['input']>>;
-};
+}
 
-export type JsonbCastExp = {
+export interface JsonbCastExp {
   String?: InputMaybe<StringComparisonExp>;
-};
+}
 
 /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
-export type JsonbComparisonExp = {
+export interface JsonbComparisonExp {
   _cast?: InputMaybe<JsonbCastExp>;
   /** is the column contained in the given json value */
   _containedIn?: InputMaybe<Scalars['jsonb']['input']>;
@@ -250,10 +250,10 @@ export type JsonbComparisonExp = {
   _lte?: InputMaybe<Scalars['jsonb']['input']>;
   _neq?: InputMaybe<Scalars['jsonb']['input']>;
   _nin?: InputMaybe<Array<Scalars['jsonb']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "leave_status_enum". All fields are combined with logical 'AND'. */
-export type LeaveStatusEnumComparisonExp = {
+export interface LeaveStatusEnumComparisonExp {
   _eq?: InputMaybe<Scalars['leave_status_enum']['input']>;
   _gt?: InputMaybe<Scalars['leave_status_enum']['input']>;
   _gte?: InputMaybe<Scalars['leave_status_enum']['input']>;
@@ -263,15 +263,15 @@ export type LeaveStatusEnumComparisonExp = {
   _lte?: InputMaybe<Scalars['leave_status_enum']['input']>;
   _neq?: InputMaybe<Scalars['leave_status_enum']['input']>;
   _nin?: InputMaybe<Array<Scalars['leave_status_enum']['input']>>;
-};
+}
 
-export type Mutation = {
+export interface Mutation {
   __typename?: 'Mutation';
   checkSuspiciousActivity: Maybe<SuspiciousActivityResponse>;
   commitPayrollAssignments: Maybe<CommitPayrollAssignmentsOutput>;
   generateComplianceReport: Maybe<ComplianceReportResponse>;
   logAuditEvent: Maybe<AuditEventResponse>;
-};
+}
 
 
 export type MutationCheckSuspiciousActivityArgs = {
@@ -295,7 +295,7 @@ export type MutationLogAuditEventArgs = {
 };
 
 /** Boolean expression to compare columns of type "name". All fields are combined with logical 'AND'. */
-export type NameComparisonExp = {
+export interface NameComparisonExp {
   _eq?: InputMaybe<Scalars['name']['input']>;
   _gt?: InputMaybe<Scalars['name']['input']>;
   _gte?: InputMaybe<Scalars['name']['input']>;
@@ -305,10 +305,10 @@ export type NameComparisonExp = {
   _lte?: InputMaybe<Scalars['name']['input']>;
   _neq?: InputMaybe<Scalars['name']['input']>;
   _nin?: InputMaybe<Array<Scalars['name']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "numeric". All fields are combined with logical 'AND'. */
-export type NumericComparisonExp = {
+export interface NumericComparisonExp {
   _eq?: InputMaybe<Scalars['numeric']['input']>;
   _gt?: InputMaybe<Scalars['numeric']['input']>;
   _gte?: InputMaybe<Scalars['numeric']['input']>;
@@ -318,7 +318,7 @@ export type NumericComparisonExp = {
   _lte?: InputMaybe<Scalars['numeric']['input']>;
   _neq?: InputMaybe<Scalars['numeric']['input']>;
   _nin?: InputMaybe<Array<Scalars['numeric']['input']>>;
-};
+}
 
 /** column ordering options */
 export enum OrderBy {
@@ -336,15 +336,15 @@ export enum OrderBy {
   DESC_NULLS_LAST = 'DESC_NULLS_LAST'
 }
 
-export type PayrollAssignmentInput = {
+export interface PayrollAssignmentInput {
   date: Scalars['String']['input'];
   fromConsultantId: Scalars['String']['input'];
   payrollId: Scalars['String']['input'];
   toConsultantId: Scalars['String']['input'];
-};
+}
 
 /** Boolean expression to compare columns of type "payroll_cycle_type". All fields are combined with logical 'AND'. */
-export type PayrollCycleTypeComparisonExp = {
+export interface PayrollCycleTypeComparisonExp {
   _eq?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
   _gt?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
   _gte?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
@@ -354,10 +354,10 @@ export type PayrollCycleTypeComparisonExp = {
   _lte?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
   _neq?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
   _nin?: InputMaybe<Array<Scalars['payroll_cycle_type']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "payroll_date_type". All fields are combined with logical 'AND'. */
-export type PayrollDateTypeComparisonExp = {
+export interface PayrollDateTypeComparisonExp {
   _eq?: InputMaybe<Scalars['payroll_date_type']['input']>;
   _gt?: InputMaybe<Scalars['payroll_date_type']['input']>;
   _gte?: InputMaybe<Scalars['payroll_date_type']['input']>;
@@ -367,10 +367,10 @@ export type PayrollDateTypeComparisonExp = {
   _lte?: InputMaybe<Scalars['payroll_date_type']['input']>;
   _neq?: InputMaybe<Scalars['payroll_date_type']['input']>;
   _nin?: InputMaybe<Array<Scalars['payroll_date_type']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "payroll_status". All fields are combined with logical 'AND'. */
-export type PayrollStatusComparisonExp = {
+export interface PayrollStatusComparisonExp {
   _eq?: InputMaybe<Scalars['payroll_status']['input']>;
   _gt?: InputMaybe<Scalars['payroll_status']['input']>;
   _gte?: InputMaybe<Scalars['payroll_status']['input']>;
@@ -380,10 +380,10 @@ export type PayrollStatusComparisonExp = {
   _lte?: InputMaybe<Scalars['payroll_status']['input']>;
   _neq?: InputMaybe<Scalars['payroll_status']['input']>;
   _nin?: InputMaybe<Array<Scalars['payroll_status']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "permission_action". All fields are combined with logical 'AND'. */
-export type PermissionActionComparisonExp = {
+export interface PermissionActionComparisonExp {
   _eq?: InputMaybe<Scalars['permission_action']['input']>;
   _gt?: InputMaybe<Scalars['permission_action']['input']>;
   _gte?: InputMaybe<Scalars['permission_action']['input']>;
@@ -393,10 +393,10 @@ export type PermissionActionComparisonExp = {
   _lte?: InputMaybe<Scalars['permission_action']['input']>;
   _neq?: InputMaybe<Scalars['permission_action']['input']>;
   _nin?: InputMaybe<Array<Scalars['permission_action']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
-export type StringArrayComparisonExp = {
+export interface StringArrayComparisonExp {
   /** is the array contained in the given array value */
   _containedIn?: InputMaybe<Array<Scalars['String']['input']>>;
   /** does the array contain the given value */
@@ -410,10 +410,10 @@ export type StringArrayComparisonExp = {
   _lte?: InputMaybe<Array<Scalars['String']['input']>>;
   _neq?: InputMaybe<Array<Scalars['String']['input']>>;
   _nin?: InputMaybe<Array<Array<Scalars['String']['input']>>>;
-};
+}
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
-export type StringComparisonExp = {
+export interface StringComparisonExp {
   _eq?: InputMaybe<Scalars['String']['input']>;
   _gt?: InputMaybe<Scalars['String']['input']>;
   _gte?: InputMaybe<Scalars['String']['input']>;
@@ -443,26 +443,26 @@ export type StringComparisonExp = {
   _regex?: InputMaybe<Scalars['String']['input']>;
   /** does the column match the given SQL regular expression */
   _similar?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
-export type SuspiciousActivityResponse = {
+export interface SuspiciousActivityResponse {
   __typename?: 'SuspiciousActivityResponse';
   events: Maybe<Array<SuspiciousEvent>>;
   message: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
   suspicious: Scalars['Boolean']['output'];
-};
+}
 
-export type SuspiciousEvent = {
+export interface SuspiciousEvent {
   __typename?: 'SuspiciousEvent';
   count: Scalars['Int']['output'];
   eventType: Scalars['String']['output'];
   severity: Scalars['String']['output'];
   timeframe: Scalars['String']['output'];
-};
+}
 
 /** Boolean expression to compare columns of type "timestamp". All fields are combined with logical 'AND'. */
-export type TimestampComparisonExp = {
+export interface TimestampComparisonExp {
   _eq?: InputMaybe<Scalars['timestamp']['input']>;
   _gt?: InputMaybe<Scalars['timestamp']['input']>;
   _gte?: InputMaybe<Scalars['timestamp']['input']>;
@@ -472,10 +472,10 @@ export type TimestampComparisonExp = {
   _lte?: InputMaybe<Scalars['timestamp']['input']>;
   _neq?: InputMaybe<Scalars['timestamp']['input']>;
   _nin?: InputMaybe<Array<Scalars['timestamp']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
-export type TimestamptzComparisonExp = {
+export interface TimestamptzComparisonExp {
   _eq?: InputMaybe<Scalars['timestamptz']['input']>;
   _gt?: InputMaybe<Scalars['timestamptz']['input']>;
   _gte?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -485,10 +485,10 @@ export type TimestamptzComparisonExp = {
   _lte?: InputMaybe<Scalars['timestamptz']['input']>;
   _neq?: InputMaybe<Scalars['timestamptz']['input']>;
   _nin?: InputMaybe<Array<Scalars['timestamptz']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "user_role". All fields are combined with logical 'AND'. */
-export type UserRoleComparisonExp = {
+export interface UserRoleComparisonExp {
   _eq?: InputMaybe<Scalars['user_role']['input']>;
   _gt?: InputMaybe<Scalars['user_role']['input']>;
   _gte?: InputMaybe<Scalars['user_role']['input']>;
@@ -498,10 +498,10 @@ export type UserRoleComparisonExp = {
   _lte?: InputMaybe<Scalars['user_role']['input']>;
   _neq?: InputMaybe<Scalars['user_role']['input']>;
   _nin?: InputMaybe<Array<Scalars['user_role']['input']>>;
-};
+}
 
 /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
-export type UuidComparisonExp = {
+export interface UuidComparisonExp {
   _eq?: InputMaybe<Scalars['uuid']['input']>;
   _gt?: InputMaybe<Scalars['uuid']['input']>;
   _gte?: InputMaybe<Scalars['uuid']['input']>;
@@ -511,19 +511,19 @@ export type UuidComparisonExp = {
   _lte?: InputMaybe<Scalars['uuid']['input']>;
   _neq?: InputMaybe<Scalars['uuid']['input']>;
   _nin?: InputMaybe<Array<Scalars['uuid']['input']>>;
-};
+}
 
 /** A union of all types that use the @key directive */
 export type Entity = AdjustmentRules | AppSettings | AuditLogs | AuthEvents | BillingEventLogs | BillingInvoice | BillingInvoices | BillingItems | BillingPlans | ClientBillingAssignments | ClientExternalSystems | Clients | DataAccessLogs | ExternalSystems | FeatureFlags | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudits | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLogs | PermissionChanges | PermissionOverrides | Permissions | Resources | RolePermissions | Roles | SlowQueries | UserInvitations | UserRoles | Users | WorkSchedules;
 
-export type Service = {
+export interface Service {
   __typename?: '_Service';
   /** SDL representation of schema */
   sdl: Scalars['String']['output'];
-};
+}
 
 /** columns and relationships of "adjustment_rules" */
-export type AdjustmentRules = {
+export interface AdjustmentRules {
   __typename?: 'adjustmentRules';
   /** Timestamp when the rule was created */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -543,33 +543,33 @@ export type AdjustmentRules = {
   ruleDescription: Scalars['String']['output'];
   /** Timestamp when the rule was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregated selection of "adjustment_rules" */
-export type AdjustmentRulesAggregate = {
+export interface AdjustmentRulesAggregate {
   __typename?: 'adjustmentRulesAggregate';
   aggregate: Maybe<AdjustmentRulesAggregateFields>;
   nodes: Array<AdjustmentRules>;
-};
+}
 
-export type AdjustmentRulesAggregateBoolExp = {
+export interface AdjustmentRulesAggregateBoolExp {
   count?: InputMaybe<AdjustmentRulesAggregateBoolExpCount>;
-};
+}
 
-export type AdjustmentRulesAggregateBoolExpCount = {
+export interface AdjustmentRulesAggregateBoolExpCount {
   arguments?: InputMaybe<Array<AdjustmentRulesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<AdjustmentRulesBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "adjustment_rules" */
-export type AdjustmentRulesAggregateFields = {
+export interface AdjustmentRulesAggregateFields {
   __typename?: 'adjustmentRulesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<AdjustmentRulesMaxFields>;
   min: Maybe<AdjustmentRulesMinFields>;
-};
+}
 
 
 /** aggregate fields of "adjustment_rules" */
@@ -579,21 +579,21 @@ export type AdjustmentRulesAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "adjustment_rules" */
-export type AdjustmentRulesAggregateOrderBy = {
+export interface AdjustmentRulesAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<AdjustmentRulesMaxOrderBy>;
   min?: InputMaybe<AdjustmentRulesMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "adjustment_rules" */
-export type AdjustmentRulesArrRelInsertInput = {
+export interface AdjustmentRulesArrRelInsertInput {
   data: Array<AdjustmentRulesInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<AdjustmentRulesOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "adjustment_rules". All fields are combined with a logical 'AND'. */
-export type AdjustmentRulesBoolExp = {
+export interface AdjustmentRulesBoolExp {
   _and?: InputMaybe<Array<AdjustmentRulesBoolExp>>;
   _not?: InputMaybe<AdjustmentRulesBoolExp>;
   _or?: InputMaybe<Array<AdjustmentRulesBoolExp>>;
@@ -606,7 +606,7 @@ export type AdjustmentRulesBoolExp = {
   ruleCode?: InputMaybe<StringComparisonExp>;
   ruleDescription?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "adjustment_rules" */
 export enum AdjustmentRulesConstraint {
@@ -617,7 +617,7 @@ export enum AdjustmentRulesConstraint {
 }
 
 /** input type for inserting data into table "adjustment_rules" */
-export type AdjustmentRulesInsertInput = {
+export interface AdjustmentRulesInsertInput {
   /** Timestamp when the rule was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Reference to the payroll cycle this rule applies to */
@@ -634,10 +634,10 @@ export type AdjustmentRulesInsertInput = {
   ruleDescription?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the rule was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type AdjustmentRulesMaxFields = {
+export interface AdjustmentRulesMaxFields {
   __typename?: 'adjustmentRulesMaxFields';
   /** Timestamp when the rule was created */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -653,10 +653,10 @@ export type AdjustmentRulesMaxFields = {
   ruleDescription: Maybe<Scalars['String']['output']>;
   /** Timestamp when the rule was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by max() on columns of table "adjustment_rules" */
-export type AdjustmentRulesMaxOrderBy = {
+export interface AdjustmentRulesMaxOrderBy {
   /** Timestamp when the rule was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Reference to the payroll cycle this rule applies to */
@@ -671,10 +671,10 @@ export type AdjustmentRulesMaxOrderBy = {
   ruleDescription?: InputMaybe<OrderBy>;
   /** Timestamp when the rule was last updated */
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type AdjustmentRulesMinFields = {
+export interface AdjustmentRulesMinFields {
   __typename?: 'adjustmentRulesMinFields';
   /** Timestamp when the rule was created */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -690,10 +690,10 @@ export type AdjustmentRulesMinFields = {
   ruleDescription: Maybe<Scalars['String']['output']>;
   /** Timestamp when the rule was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by min() on columns of table "adjustment_rules" */
-export type AdjustmentRulesMinOrderBy = {
+export interface AdjustmentRulesMinOrderBy {
   /** Timestamp when the rule was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Reference to the payroll cycle this rule applies to */
@@ -708,26 +708,26 @@ export type AdjustmentRulesMinOrderBy = {
   ruleDescription?: InputMaybe<OrderBy>;
   /** Timestamp when the rule was last updated */
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "adjustment_rules" */
-export type AdjustmentRulesMutationResponse = {
+export interface AdjustmentRulesMutationResponse {
   __typename?: 'adjustmentRulesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<AdjustmentRules>;
-};
+}
 
 /** on_conflict condition type for table "adjustment_rules" */
-export type AdjustmentRulesOnConflict = {
+export interface AdjustmentRulesOnConflict {
   constraint: AdjustmentRulesConstraint;
   updateColumns?: Array<AdjustmentRulesUpdateColumn>;
   where?: InputMaybe<AdjustmentRulesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "adjustment_rules". */
-export type AdjustmentRulesOrderBy = {
+export interface AdjustmentRulesOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   cycleId?: InputMaybe<OrderBy>;
   dateTypeId?: InputMaybe<OrderBy>;
@@ -737,13 +737,13 @@ export type AdjustmentRulesOrderBy = {
   ruleCode?: InputMaybe<OrderBy>;
   ruleDescription?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: adjustment_rules */
-export type AdjustmentRulesPkColumnsInput = {
+export interface AdjustmentRulesPkColumnsInput {
   /** Unique identifier for the adjustment rule */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "adjustment_rules" */
 export enum AdjustmentRulesSelectColumn {
@@ -764,7 +764,7 @@ export enum AdjustmentRulesSelectColumn {
 }
 
 /** input type for updating data in table "adjustment_rules" */
-export type AdjustmentRulesSetInput = {
+export interface AdjustmentRulesSetInput {
   /** Timestamp when the rule was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Reference to the payroll cycle this rule applies to */
@@ -779,18 +779,18 @@ export type AdjustmentRulesSetInput = {
   ruleDescription?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the rule was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "adjustmentRules" */
-export type AdjustmentRulesStreamCursorInput = {
+export interface AdjustmentRulesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: AdjustmentRulesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type AdjustmentRulesStreamCursorValueInput = {
+export interface AdjustmentRulesStreamCursorValueInput {
   /** Timestamp when the rule was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Reference to the payroll cycle this rule applies to */
@@ -805,7 +805,7 @@ export type AdjustmentRulesStreamCursorValueInput = {
   ruleDescription?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the rule was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "adjustment_rules" */
 export enum AdjustmentRulesUpdateColumn {
@@ -825,21 +825,21 @@ export enum AdjustmentRulesUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type AdjustmentRulesUpdates = {
+export interface AdjustmentRulesUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<AdjustmentRulesSetInput>;
   /** filter the rows which have to be updated */
   where: AdjustmentRulesBoolExp;
-};
+}
 
 /** columns and relationships of "app_settings" */
-export type AppSettings = {
+export interface AppSettings {
   __typename?: 'appSettings';
   /** Unique identifier for application setting */
   id: Scalars['String']['output'];
   /** JSON structure containing application permission configurations */
   permissions: Maybe<Scalars['jsonb']['output']>;
-};
+}
 
 
 /** columns and relationships of "app_settings" */
@@ -848,19 +848,19 @@ export type AppSettingsPermissionsArgs = {
 };
 
 /** aggregated selection of "app_settings" */
-export type AppSettingsAggregate = {
+export interface AppSettingsAggregate {
   __typename?: 'appSettingsAggregate';
   aggregate: Maybe<AppSettingsAggregateFields>;
   nodes: Array<AppSettings>;
-};
+}
 
 /** aggregate fields of "app_settings" */
-export type AppSettingsAggregateFields = {
+export interface AppSettingsAggregateFields {
   __typename?: 'appSettingsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<AppSettingsMaxFields>;
   min: Maybe<AppSettingsMinFields>;
-};
+}
 
 
 /** aggregate fields of "app_settings" */
@@ -870,19 +870,19 @@ export type AppSettingsAggregateFieldsCountArgs = {
 };
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type AppSettingsAppendInput = {
+export interface AppSettingsAppendInput {
   /** JSON structure containing application permission configurations */
   permissions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "app_settings". All fields are combined with a logical 'AND'. */
-export type AppSettingsBoolExp = {
+export interface AppSettingsBoolExp {
   _and?: InputMaybe<Array<AppSettingsBoolExp>>;
   _not?: InputMaybe<AppSettingsBoolExp>;
   _or?: InputMaybe<Array<AppSettingsBoolExp>>;
   id?: InputMaybe<StringComparisonExp>;
   permissions?: InputMaybe<JsonbComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "app_settings" */
 export enum AppSettingsConstraint {
@@ -891,78 +891,78 @@ export enum AppSettingsConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type AppSettingsDeleteAtPathInput = {
+export interface AppSettingsDeleteAtPathInput {
   /** JSON structure containing application permission configurations */
   permissions?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type AppSettingsDeleteElemInput = {
+export interface AppSettingsDeleteElemInput {
   /** JSON structure containing application permission configurations */
   permissions?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type AppSettingsDeleteKeyInput = {
+export interface AppSettingsDeleteKeyInput {
   /** JSON structure containing application permission configurations */
   permissions?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for inserting data into table "app_settings" */
-export type AppSettingsInsertInput = {
+export interface AppSettingsInsertInput {
   /** Unique identifier for application setting */
   id?: InputMaybe<Scalars['String']['input']>;
   /** JSON structure containing application permission configurations */
   permissions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type AppSettingsMaxFields = {
+export interface AppSettingsMaxFields {
   __typename?: 'appSettingsMaxFields';
   /** Unique identifier for application setting */
   id: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type AppSettingsMinFields = {
+export interface AppSettingsMinFields {
   __typename?: 'appSettingsMinFields';
   /** Unique identifier for application setting */
   id: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** response of any mutation on the table "app_settings" */
-export type AppSettingsMutationResponse = {
+export interface AppSettingsMutationResponse {
   __typename?: 'appSettingsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<AppSettings>;
-};
+}
 
 /** on_conflict condition type for table "app_settings" */
-export type AppSettingsOnConflict = {
+export interface AppSettingsOnConflict {
   constraint: AppSettingsConstraint;
   updateColumns?: Array<AppSettingsUpdateColumn>;
   where?: InputMaybe<AppSettingsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "app_settings". */
-export type AppSettingsOrderBy = {
+export interface AppSettingsOrderBy {
   id?: InputMaybe<OrderBy>;
   permissions?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: app_settings */
-export type AppSettingsPkColumnsInput = {
+export interface AppSettingsPkColumnsInput {
   /** Unique identifier for application setting */
   id: Scalars['String']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type AppSettingsPrependInput = {
+export interface AppSettingsPrependInput {
   /** JSON structure containing application permission configurations */
   permissions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "app_settings" */
 export enum AppSettingsSelectColumn {
@@ -973,28 +973,28 @@ export enum AppSettingsSelectColumn {
 }
 
 /** input type for updating data in table "app_settings" */
-export type AppSettingsSetInput = {
+export interface AppSettingsSetInput {
   /** Unique identifier for application setting */
   id?: InputMaybe<Scalars['String']['input']>;
   /** JSON structure containing application permission configurations */
   permissions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** Streaming cursor of the table "appSettings" */
-export type AppSettingsStreamCursorInput = {
+export interface AppSettingsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: AppSettingsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type AppSettingsStreamCursorValueInput = {
+export interface AppSettingsStreamCursorValueInput {
   /** Unique identifier for application setting */
   id?: InputMaybe<Scalars['String']['input']>;
   /** JSON structure containing application permission configurations */
   permissions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** update columns of table "app_settings" */
 export enum AppSettingsUpdateColumn {
@@ -1004,7 +1004,7 @@ export enum AppSettingsUpdateColumn {
   permissions = 'permissions'
 }
 
-export type AppSettingsUpdates = {
+export interface AppSettingsUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<AppSettingsAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -1019,10 +1019,10 @@ export type AppSettingsUpdates = {
   _set?: InputMaybe<AppSettingsSetInput>;
   /** filter the rows which have to be updated */
   where: AppSettingsBoolExp;
-};
+}
 
 /** columns and relationships of "audit.audit_log" */
-export type AuditLogs = {
+export interface AuditLogs {
   __typename?: 'auditLogs';
   action: Scalars['String']['output'];
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -1042,7 +1042,7 @@ export type AuditLogs = {
   userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
   userRole: Maybe<Scalars['String']['output']>;
-};
+}
 
 
 /** columns and relationships of "audit.audit_log" */
@@ -1063,19 +1063,19 @@ export type AuditLogsOldValuesArgs = {
 };
 
 /** aggregated selection of "audit.audit_log" */
-export type AuditLogsAggregate = {
+export interface AuditLogsAggregate {
   __typename?: 'auditLogsAggregate';
   aggregate: Maybe<AuditLogsAggregateFields>;
   nodes: Array<AuditLogs>;
-};
+}
 
 /** aggregate fields of "audit.audit_log" */
-export type AuditLogsAggregateFields = {
+export interface AuditLogsAggregateFields {
   __typename?: 'auditLogsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<AuditLogsMaxFields>;
   min: Maybe<AuditLogsMinFields>;
-};
+}
 
 
 /** aggregate fields of "audit.audit_log" */
@@ -1085,14 +1085,14 @@ export type AuditLogsAggregateFieldsCountArgs = {
 };
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type AuditLogsAppendInput = {
+export interface AuditLogsAppendInput {
   metadata?: InputMaybe<Scalars['jsonb']['input']>;
   newValues?: InputMaybe<Scalars['jsonb']['input']>;
   oldValues?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "audit.audit_log". All fields are combined with a logical 'AND'. */
-export type AuditLogsBoolExp = {
+export interface AuditLogsBoolExp {
   _and?: InputMaybe<Array<AuditLogsBoolExp>>;
   _not?: InputMaybe<AuditLogsBoolExp>;
   _or?: InputMaybe<Array<AuditLogsBoolExp>>;
@@ -1114,7 +1114,7 @@ export type AuditLogsBoolExp = {
   userEmail?: InputMaybe<StringComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
   userRole?: InputMaybe<StringComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "audit.audit_log" */
 export enum AuditLogsConstraint {
@@ -1123,28 +1123,28 @@ export enum AuditLogsConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type AuditLogsDeleteAtPathInput = {
+export interface AuditLogsDeleteAtPathInput {
   metadata?: InputMaybe<Array<Scalars['String']['input']>>;
   newValues?: InputMaybe<Array<Scalars['String']['input']>>;
   oldValues?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type AuditLogsDeleteElemInput = {
+export interface AuditLogsDeleteElemInput {
   metadata?: InputMaybe<Scalars['Int']['input']>;
   newValues?: InputMaybe<Scalars['Int']['input']>;
   oldValues?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type AuditLogsDeleteKeyInput = {
+export interface AuditLogsDeleteKeyInput {
   metadata?: InputMaybe<Scalars['String']['input']>;
   newValues?: InputMaybe<Scalars['String']['input']>;
   oldValues?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for inserting data into table "audit.audit_log" */
-export type AuditLogsInsertInput = {
+export interface AuditLogsInsertInput {
   action?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   errorMessage?: InputMaybe<Scalars['String']['input']>;
@@ -1163,10 +1163,10 @@ export type AuditLogsInsertInput = {
   userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
   userRole?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type AuditLogsMaxFields = {
+export interface AuditLogsMaxFields {
   __typename?: 'auditLogsMaxFields';
   action: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -1181,10 +1181,10 @@ export type AuditLogsMaxFields = {
   userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
   userRole: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type AuditLogsMinFields = {
+export interface AuditLogsMinFields {
   __typename?: 'auditLogsMinFields';
   action: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -1199,26 +1199,26 @@ export type AuditLogsMinFields = {
   userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
   userRole: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** response of any mutation on the table "audit.audit_log" */
-export type AuditLogsMutationResponse = {
+export interface AuditLogsMutationResponse {
   __typename?: 'auditLogsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<AuditLogs>;
-};
+}
 
 /** on_conflict condition type for table "audit.audit_log" */
-export type AuditLogsOnConflict = {
+export interface AuditLogsOnConflict {
   constraint: AuditLogsConstraint;
   updateColumns?: Array<AuditLogsUpdateColumn>;
   where?: InputMaybe<AuditLogsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "audit.audit_log". */
-export type AuditLogsOrderBy = {
+export interface AuditLogsOrderBy {
   action?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   errorMessage?: InputMaybe<OrderBy>;
@@ -1237,19 +1237,19 @@ export type AuditLogsOrderBy = {
   userEmail?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
   userRole?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: audit.audit_log */
-export type AuditLogsPkColumnsInput = {
+export interface AuditLogsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type AuditLogsPrependInput = {
+export interface AuditLogsPrependInput {
   metadata?: InputMaybe<Scalars['jsonb']['input']>;
   newValues?: InputMaybe<Scalars['jsonb']['input']>;
   oldValues?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "audit.audit_log" */
 export enum AuditLogsSelectColumn {
@@ -1292,7 +1292,7 @@ export enum AuditLogsSelectColumn {
 }
 
 /** input type for updating data in table "audit.audit_log" */
-export type AuditLogsSetInput = {
+export interface AuditLogsSetInput {
   action?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   errorMessage?: InputMaybe<Scalars['String']['input']>;
@@ -1311,18 +1311,18 @@ export type AuditLogsSetInput = {
   userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
   userRole?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** Streaming cursor of the table "auditLogs" */
-export type AuditLogsStreamCursorInput = {
+export interface AuditLogsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: AuditLogsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type AuditLogsStreamCursorValueInput = {
+export interface AuditLogsStreamCursorValueInput {
   action?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   errorMessage?: InputMaybe<Scalars['String']['input']>;
@@ -1341,7 +1341,7 @@ export type AuditLogsStreamCursorValueInput = {
   userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
   userRole?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** update columns of table "audit.audit_log" */
 export enum AuditLogsUpdateColumn {
@@ -1383,7 +1383,7 @@ export enum AuditLogsUpdateColumn {
   userRole = 'userRole'
 }
 
-export type AuditLogsUpdates = {
+export interface AuditLogsUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<AuditLogsAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -1398,10 +1398,10 @@ export type AuditLogsUpdates = {
   _set?: InputMaybe<AuditLogsSetInput>;
   /** filter the rows which have to be updated */
   where: AuditLogsBoolExp;
-};
+}
 
 /** columns and relationships of "audit.auth_events" */
-export type AuthEvents = {
+export interface AuthEvents {
   __typename?: 'authEvents';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   eventTime: Scalars['timestamptz']['output'];
@@ -1414,7 +1414,7 @@ export type AuthEvents = {
   userAgent: Maybe<Scalars['String']['output']>;
   userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 
 /** columns and relationships of "audit.auth_events" */
@@ -1423,19 +1423,19 @@ export type AuthEventsMetadataArgs = {
 };
 
 /** aggregated selection of "audit.auth_events" */
-export type AuthEventsAggregate = {
+export interface AuthEventsAggregate {
   __typename?: 'authEventsAggregate';
   aggregate: Maybe<AuthEventsAggregateFields>;
   nodes: Array<AuthEvents>;
-};
+}
 
 /** aggregate fields of "audit.auth_events" */
-export type AuthEventsAggregateFields = {
+export interface AuthEventsAggregateFields {
   __typename?: 'authEventsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<AuthEventsMaxFields>;
   min: Maybe<AuthEventsMinFields>;
-};
+}
 
 
 /** aggregate fields of "audit.auth_events" */
@@ -1445,12 +1445,12 @@ export type AuthEventsAggregateFieldsCountArgs = {
 };
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type AuthEventsAppendInput = {
+export interface AuthEventsAppendInput {
   metadata?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "audit.auth_events". All fields are combined with a logical 'AND'. */
-export type AuthEventsBoolExp = {
+export interface AuthEventsBoolExp {
   _and?: InputMaybe<Array<AuthEventsBoolExp>>;
   _not?: InputMaybe<AuthEventsBoolExp>;
   _or?: InputMaybe<Array<AuthEventsBoolExp>>;
@@ -1465,7 +1465,7 @@ export type AuthEventsBoolExp = {
   userAgent?: InputMaybe<StringComparisonExp>;
   userEmail?: InputMaybe<StringComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "audit.auth_events" */
 export enum AuthEventsConstraint {
@@ -1474,22 +1474,22 @@ export enum AuthEventsConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type AuthEventsDeleteAtPathInput = {
+export interface AuthEventsDeleteAtPathInput {
   metadata?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type AuthEventsDeleteElemInput = {
+export interface AuthEventsDeleteElemInput {
   metadata?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type AuthEventsDeleteKeyInput = {
+export interface AuthEventsDeleteKeyInput {
   metadata?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for inserting data into table "audit.auth_events" */
-export type AuthEventsInsertInput = {
+export interface AuthEventsInsertInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   eventTime?: InputMaybe<Scalars['timestamptz']['input']>;
   eventType?: InputMaybe<Scalars['String']['input']>;
@@ -1501,10 +1501,10 @@ export type AuthEventsInsertInput = {
   userAgent?: InputMaybe<Scalars['String']['input']>;
   userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type AuthEventsMaxFields = {
+export interface AuthEventsMaxFields {
   __typename?: 'authEventsMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   eventTime: Maybe<Scalars['timestamptz']['output']>;
@@ -1514,10 +1514,10 @@ export type AuthEventsMaxFields = {
   userAgent: Maybe<Scalars['String']['output']>;
   userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type AuthEventsMinFields = {
+export interface AuthEventsMinFields {
   __typename?: 'authEventsMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   eventTime: Maybe<Scalars['timestamptz']['output']>;
@@ -1527,26 +1527,26 @@ export type AuthEventsMinFields = {
   userAgent: Maybe<Scalars['String']['output']>;
   userEmail: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** response of any mutation on the table "audit.auth_events" */
-export type AuthEventsMutationResponse = {
+export interface AuthEventsMutationResponse {
   __typename?: 'authEventsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<AuthEvents>;
-};
+}
 
 /** on_conflict condition type for table "audit.auth_events" */
-export type AuthEventsOnConflict = {
+export interface AuthEventsOnConflict {
   constraint: AuthEventsConstraint;
   updateColumns?: Array<AuthEventsUpdateColumn>;
   where?: InputMaybe<AuthEventsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "audit.auth_events". */
-export type AuthEventsOrderBy = {
+export interface AuthEventsOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   eventTime?: InputMaybe<OrderBy>;
   eventType?: InputMaybe<OrderBy>;
@@ -1558,17 +1558,17 @@ export type AuthEventsOrderBy = {
   userAgent?: InputMaybe<OrderBy>;
   userEmail?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: audit.auth_events */
-export type AuthEventsPkColumnsInput = {
+export interface AuthEventsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type AuthEventsPrependInput = {
+export interface AuthEventsPrependInput {
   metadata?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "audit.auth_events" */
 export enum AuthEventsSelectColumn {
@@ -1597,7 +1597,7 @@ export enum AuthEventsSelectColumn {
 }
 
 /** input type for updating data in table "audit.auth_events" */
-export type AuthEventsSetInput = {
+export interface AuthEventsSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   eventTime?: InputMaybe<Scalars['timestamptz']['input']>;
   eventType?: InputMaybe<Scalars['String']['input']>;
@@ -1609,18 +1609,18 @@ export type AuthEventsSetInput = {
   userAgent?: InputMaybe<Scalars['String']['input']>;
   userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** Streaming cursor of the table "authEvents" */
-export type AuthEventsStreamCursorInput = {
+export interface AuthEventsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: AuthEventsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type AuthEventsStreamCursorValueInput = {
+export interface AuthEventsStreamCursorValueInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   eventTime?: InputMaybe<Scalars['timestamptz']['input']>;
   eventType?: InputMaybe<Scalars['String']['input']>;
@@ -1632,7 +1632,7 @@ export type AuthEventsStreamCursorValueInput = {
   userAgent?: InputMaybe<Scalars['String']['input']>;
   userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** update columns of table "audit.auth_events" */
 export enum AuthEventsUpdateColumn {
@@ -1660,7 +1660,7 @@ export enum AuthEventsUpdateColumn {
   userId = 'userId'
 }
 
-export type AuthEventsUpdates = {
+export interface AuthEventsUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<AuthEventsAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -1675,10 +1675,10 @@ export type AuthEventsUpdates = {
   _set?: InputMaybe<AuthEventsSetInput>;
   /** filter the rows which have to be updated */
   where: AuthEventsBoolExp;
-};
+}
 
 /** columns and relationships of "neon_auth.users_sync" */
-export type AuthUsersSync = {
+export interface AuthUsersSync {
   __typename?: 'authUsersSync';
   /** Timestamp when the user was created in the auth system */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -1694,7 +1694,7 @@ export type AuthUsersSync = {
   rawJson: Scalars['jsonb']['output'];
   /** Timestamp when the user was last updated in the auth system */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 
 /** columns and relationships of "neon_auth.users_sync" */
@@ -1703,19 +1703,19 @@ export type AuthUsersSyncRawJsonArgs = {
 };
 
 /** aggregated selection of "neon_auth.users_sync" */
-export type AuthUsersSyncAggregate = {
+export interface AuthUsersSyncAggregate {
   __typename?: 'authUsersSyncAggregate';
   aggregate: Maybe<AuthUsersSyncAggregateFields>;
   nodes: Array<AuthUsersSync>;
-};
+}
 
 /** aggregate fields of "neon_auth.users_sync" */
-export type AuthUsersSyncAggregateFields = {
+export interface AuthUsersSyncAggregateFields {
   __typename?: 'authUsersSyncAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<AuthUsersSyncMaxFields>;
   min: Maybe<AuthUsersSyncMinFields>;
-};
+}
 
 
 /** aggregate fields of "neon_auth.users_sync" */
@@ -1725,13 +1725,13 @@ export type AuthUsersSyncAggregateFieldsCountArgs = {
 };
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type AuthUsersSyncAppendInput = {
+export interface AuthUsersSyncAppendInput {
   /** Complete JSON data from the authentication provider */
   rawJson?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "neon_auth.users_sync". All fields are combined with a logical 'AND'. */
-export type AuthUsersSyncBoolExp = {
+export interface AuthUsersSyncBoolExp {
   _and?: InputMaybe<Array<AuthUsersSyncBoolExp>>;
   _not?: InputMaybe<AuthUsersSyncBoolExp>;
   _or?: InputMaybe<Array<AuthUsersSyncBoolExp>>;
@@ -1742,7 +1742,7 @@ export type AuthUsersSyncBoolExp = {
   name?: InputMaybe<StringComparisonExp>;
   rawJson?: InputMaybe<JsonbComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "neon_auth.users_sync" */
 export enum AuthUsersSyncConstraint {
@@ -1751,35 +1751,35 @@ export enum AuthUsersSyncConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type AuthUsersSyncDeleteAtPathInput = {
+export interface AuthUsersSyncDeleteAtPathInput {
   /** Complete JSON data from the authentication provider */
   rawJson?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type AuthUsersSyncDeleteElemInput = {
+export interface AuthUsersSyncDeleteElemInput {
   /** Complete JSON data from the authentication provider */
   rawJson?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type AuthUsersSyncDeleteKeyInput = {
+export interface AuthUsersSyncDeleteKeyInput {
   /** Complete JSON data from the authentication provider */
   rawJson?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for inserting data into table "neon_auth.users_sync" */
-export type AuthUsersSyncInsertInput = {
+export interface AuthUsersSyncInsertInput {
   /** Timestamp when the user was deleted in the auth system */
   deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Complete JSON data from the authentication provider */
   rawJson?: InputMaybe<Scalars['jsonb']['input']>;
   /** Timestamp when the user was last updated in the auth system */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type AuthUsersSyncMaxFields = {
+export interface AuthUsersSyncMaxFields {
   __typename?: 'authUsersSyncMaxFields';
   /** Timestamp when the user was created in the auth system */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -1793,10 +1793,10 @@ export type AuthUsersSyncMaxFields = {
   name: Maybe<Scalars['String']['output']>;
   /** Timestamp when the user was last updated in the auth system */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type AuthUsersSyncMinFields = {
+export interface AuthUsersSyncMinFields {
   __typename?: 'authUsersSyncMinFields';
   /** Timestamp when the user was created in the auth system */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -1810,26 +1810,26 @@ export type AuthUsersSyncMinFields = {
   name: Maybe<Scalars['String']['output']>;
   /** Timestamp when the user was last updated in the auth system */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** response of any mutation on the table "neon_auth.users_sync" */
-export type AuthUsersSyncMutationResponse = {
+export interface AuthUsersSyncMutationResponse {
   __typename?: 'authUsersSyncMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<AuthUsersSync>;
-};
+}
 
 /** on_conflict condition type for table "neon_auth.users_sync" */
-export type AuthUsersSyncOnConflict = {
+export interface AuthUsersSyncOnConflict {
   constraint: AuthUsersSyncConstraint;
   updateColumns?: Array<AuthUsersSyncUpdateColumn>;
   where?: InputMaybe<AuthUsersSyncBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "neon_auth.users_sync". */
-export type AuthUsersSyncOrderBy = {
+export interface AuthUsersSyncOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   deletedAt?: InputMaybe<OrderBy>;
   email?: InputMaybe<OrderBy>;
@@ -1837,19 +1837,19 @@ export type AuthUsersSyncOrderBy = {
   name?: InputMaybe<OrderBy>;
   rawJson?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: neon_auth.users_sync */
-export type AuthUsersSyncPkColumnsInput = {
+export interface AuthUsersSyncPkColumnsInput {
   /** Unique identifier from the authentication provider */
   id: Scalars['String']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type AuthUsersSyncPrependInput = {
+export interface AuthUsersSyncPrependInput {
   /** Complete JSON data from the authentication provider */
   rawJson?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "neon_auth.users_sync" */
 export enum AuthUsersSyncSelectColumn {
@@ -1870,25 +1870,25 @@ export enum AuthUsersSyncSelectColumn {
 }
 
 /** input type for updating data in table "neon_auth.users_sync" */
-export type AuthUsersSyncSetInput = {
+export interface AuthUsersSyncSetInput {
   /** Timestamp when the user was deleted in the auth system */
   deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Complete JSON data from the authentication provider */
   rawJson?: InputMaybe<Scalars['jsonb']['input']>;
   /** Timestamp when the user was last updated in the auth system */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "authUsersSync" */
-export type AuthUsersSyncStreamCursorInput = {
+export interface AuthUsersSyncStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: AuthUsersSyncStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type AuthUsersSyncStreamCursorValueInput = {
+export interface AuthUsersSyncStreamCursorValueInput {
   /** Timestamp when the user was created in the auth system */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Timestamp when the user was deleted in the auth system */
@@ -1903,7 +1903,7 @@ export type AuthUsersSyncStreamCursorValueInput = {
   rawJson?: InputMaybe<Scalars['jsonb']['input']>;
   /** Timestamp when the user was last updated in the auth system */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "neon_auth.users_sync" */
 export enum AuthUsersSyncUpdateColumn {
@@ -1915,7 +1915,7 @@ export enum AuthUsersSyncUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type AuthUsersSyncUpdates = {
+export interface AuthUsersSyncUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<AuthUsersSyncAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -1930,10 +1930,10 @@ export type AuthUsersSyncUpdates = {
   _set?: InputMaybe<AuthUsersSyncSetInput>;
   /** filter the rows which have to be updated */
   where: AuthUsersSyncBoolExp;
-};
+}
 
 /** columns and relationships of "billing_event_log" */
-export type BillingEventLogs = {
+export interface BillingEventLogs {
   __typename?: 'billingEventLogs';
   /** An object relationship */
   billingInvoice: Maybe<BillingInvoices>;
@@ -1945,33 +1945,33 @@ export type BillingEventLogs = {
   id: Scalars['uuid']['output'];
   invoiceId: Maybe<Scalars['uuid']['output']>;
   message: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** aggregated selection of "billing_event_log" */
-export type BillingEventLogsAggregate = {
+export interface BillingEventLogsAggregate {
   __typename?: 'billingEventLogsAggregate';
   aggregate: Maybe<BillingEventLogsAggregateFields>;
   nodes: Array<BillingEventLogs>;
-};
+}
 
-export type BillingEventLogsAggregateBoolExp = {
+export interface BillingEventLogsAggregateBoolExp {
   count?: InputMaybe<BillingEventLogsAggregateBoolExpCount>;
-};
+}
 
-export type BillingEventLogsAggregateBoolExpCount = {
+export interface BillingEventLogsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<BillingEventLogsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "billing_event_log" */
-export type BillingEventLogsAggregateFields = {
+export interface BillingEventLogsAggregateFields {
   __typename?: 'billingEventLogsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<BillingEventLogsMaxFields>;
   min: Maybe<BillingEventLogsMinFields>;
-};
+}
 
 
 /** aggregate fields of "billing_event_log" */
@@ -1981,21 +1981,21 @@ export type BillingEventLogsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "billing_event_log" */
-export type BillingEventLogsAggregateOrderBy = {
+export interface BillingEventLogsAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<BillingEventLogsMaxOrderBy>;
   min?: InputMaybe<BillingEventLogsMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "billing_event_log" */
-export type BillingEventLogsArrRelInsertInput = {
+export interface BillingEventLogsArrRelInsertInput {
   data: Array<BillingEventLogsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<BillingEventLogsOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "billing_event_log". All fields are combined with a logical 'AND'. */
-export type BillingEventLogsBoolExp = {
+export interface BillingEventLogsBoolExp {
   _and?: InputMaybe<Array<BillingEventLogsBoolExp>>;
   _not?: InputMaybe<BillingEventLogsBoolExp>;
   _or?: InputMaybe<Array<BillingEventLogsBoolExp>>;
@@ -2007,7 +2007,7 @@ export type BillingEventLogsBoolExp = {
   id?: InputMaybe<UuidComparisonExp>;
   invoiceId?: InputMaybe<UuidComparisonExp>;
   message?: InputMaybe<StringComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "billing_event_log" */
 export enum BillingEventLogsConstraint {
@@ -2016,7 +2016,7 @@ export enum BillingEventLogsConstraint {
 }
 
 /** input type for inserting data into table "billing_event_log" */
-export type BillingEventLogsInsertInput = {
+export interface BillingEventLogsInsertInput {
   billingInvoice?: InputMaybe<BillingInvoicesObjRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBy?: InputMaybe<Scalars['uuid']['input']>;
@@ -2025,10 +2025,10 @@ export type BillingEventLogsInsertInput = {
   id?: InputMaybe<Scalars['uuid']['input']>;
   invoiceId?: InputMaybe<Scalars['uuid']['input']>;
   message?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type BillingEventLogsMaxFields = {
+export interface BillingEventLogsMaxFields {
   __typename?: 'billingEventLogsMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   createdBy: Maybe<Scalars['uuid']['output']>;
@@ -2036,20 +2036,20 @@ export type BillingEventLogsMaxFields = {
   id: Maybe<Scalars['uuid']['output']>;
   invoiceId: Maybe<Scalars['uuid']['output']>;
   message: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** order by max() on columns of table "billing_event_log" */
-export type BillingEventLogsMaxOrderBy = {
+export interface BillingEventLogsMaxOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   createdBy?: InputMaybe<OrderBy>;
   eventType?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   invoiceId?: InputMaybe<OrderBy>;
   message?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type BillingEventLogsMinFields = {
+export interface BillingEventLogsMinFields {
   __typename?: 'billingEventLogsMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   createdBy: Maybe<Scalars['uuid']['output']>;
@@ -2057,36 +2057,36 @@ export type BillingEventLogsMinFields = {
   id: Maybe<Scalars['uuid']['output']>;
   invoiceId: Maybe<Scalars['uuid']['output']>;
   message: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** order by min() on columns of table "billing_event_log" */
-export type BillingEventLogsMinOrderBy = {
+export interface BillingEventLogsMinOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   createdBy?: InputMaybe<OrderBy>;
   eventType?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   invoiceId?: InputMaybe<OrderBy>;
   message?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "billing_event_log" */
-export type BillingEventLogsMutationResponse = {
+export interface BillingEventLogsMutationResponse {
   __typename?: 'billingEventLogsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<BillingEventLogs>;
-};
+}
 
 /** on_conflict condition type for table "billing_event_log" */
-export type BillingEventLogsOnConflict = {
+export interface BillingEventLogsOnConflict {
   constraint: BillingEventLogsConstraint;
   updateColumns?: Array<BillingEventLogsUpdateColumn>;
   where?: InputMaybe<BillingEventLogsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "billing_event_log". */
-export type BillingEventLogsOrderBy = {
+export interface BillingEventLogsOrderBy {
   billingInvoice?: InputMaybe<BillingInvoicesOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   createdBy?: InputMaybe<OrderBy>;
@@ -2095,12 +2095,12 @@ export type BillingEventLogsOrderBy = {
   id?: InputMaybe<OrderBy>;
   invoiceId?: InputMaybe<OrderBy>;
   message?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: billing_event_log */
-export type BillingEventLogsPkColumnsInput = {
+export interface BillingEventLogsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "billing_event_log" */
 export enum BillingEventLogsSelectColumn {
@@ -2119,32 +2119,32 @@ export enum BillingEventLogsSelectColumn {
 }
 
 /** input type for updating data in table "billing_event_log" */
-export type BillingEventLogsSetInput = {
+export interface BillingEventLogsSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBy?: InputMaybe<Scalars['uuid']['input']>;
   eventType?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invoiceId?: InputMaybe<Scalars['uuid']['input']>;
   message?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** Streaming cursor of the table "billingEventLogs" */
-export type BillingEventLogsStreamCursorInput = {
+export interface BillingEventLogsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: BillingEventLogsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type BillingEventLogsStreamCursorValueInput = {
+export interface BillingEventLogsStreamCursorValueInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBy?: InputMaybe<Scalars['uuid']['input']>;
   eventType?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invoiceId?: InputMaybe<Scalars['uuid']['input']>;
   message?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** update columns of table "billing_event_log" */
 export enum BillingEventLogsUpdateColumn {
@@ -2162,15 +2162,15 @@ export enum BillingEventLogsUpdateColumn {
   message = 'message'
 }
 
-export type BillingEventLogsUpdates = {
+export interface BillingEventLogsUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<BillingEventLogsSetInput>;
   /** filter the rows which have to be updated */
   where: BillingEventLogsBoolExp;
-};
+}
 
 /** columns and relationships of "billing_invoice" */
-export type BillingInvoice = {
+export interface BillingInvoice {
   __typename?: 'billingInvoice';
   /** An array relationship */
   billingEventLogs: Array<BillingEventLogs>;
@@ -2190,7 +2190,7 @@ export type BillingInvoice = {
   status: Scalars['String']['output'];
   totalAmount: Scalars['numeric']['output'];
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 
 /** columns and relationships of "billing_invoice" */
@@ -2213,25 +2213,25 @@ export type BillingInvoiceBillingEventLogsAggregateArgs = {
 };
 
 /** aggregated selection of "billing_invoice" */
-export type BillingInvoiceAggregate = {
+export interface BillingInvoiceAggregate {
   __typename?: 'billingInvoiceAggregate';
   aggregate: Maybe<BillingInvoiceAggregateFields>;
   nodes: Array<BillingInvoice>;
-};
+}
 
-export type BillingInvoiceAggregateBoolExp = {
+export interface BillingInvoiceAggregateBoolExp {
   count?: InputMaybe<BillingInvoiceAggregateBoolExpCount>;
-};
+}
 
-export type BillingInvoiceAggregateBoolExpCount = {
+export interface BillingInvoiceAggregateBoolExpCount {
   arguments?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<BillingInvoiceBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "billing_invoice" */
-export type BillingInvoiceAggregateFields = {
+export interface BillingInvoiceAggregateFields {
   __typename?: 'billingInvoiceAggregateFields';
   avg: Maybe<BillingInvoiceAvgFields>;
   count: Scalars['Int']['output'];
@@ -2244,7 +2244,7 @@ export type BillingInvoiceAggregateFields = {
   varPop: Maybe<BillingInvoiceVarPopFields>;
   varSamp: Maybe<BillingInvoiceVarSampFields>;
   variance: Maybe<BillingInvoiceVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "billing_invoice" */
@@ -2254,7 +2254,7 @@ export type BillingInvoiceAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "billing_invoice" */
-export type BillingInvoiceAggregateOrderBy = {
+export interface BillingInvoiceAggregateOrderBy {
   avg?: InputMaybe<BillingInvoiceAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<BillingInvoiceMaxOrderBy>;
@@ -2266,28 +2266,28 @@ export type BillingInvoiceAggregateOrderBy = {
   varPop?: InputMaybe<BillingInvoiceVarPopOrderBy>;
   varSamp?: InputMaybe<BillingInvoiceVarSampOrderBy>;
   variance?: InputMaybe<BillingInvoiceVarianceOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "billing_invoice" */
-export type BillingInvoiceArrRelInsertInput = {
+export interface BillingInvoiceArrRelInsertInput {
   data: Array<BillingInvoiceInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<BillingInvoiceOnConflict>;
-};
+}
 
 /** aggregate avg on columns */
-export type BillingInvoiceAvgFields = {
+export interface BillingInvoiceAvgFields {
   __typename?: 'billingInvoiceAvgFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by avg() on columns of table "billing_invoice" */
-export type BillingInvoiceAvgOrderBy = {
+export interface BillingInvoiceAvgOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** Boolean expression to filter rows from the table "billing_invoice". All fields are combined with a logical 'AND'. */
-export type BillingInvoiceBoolExp = {
+export interface BillingInvoiceBoolExp {
   _and?: InputMaybe<Array<BillingInvoiceBoolExp>>;
   _not?: InputMaybe<BillingInvoiceBoolExp>;
   _or?: InputMaybe<Array<BillingInvoiceBoolExp>>;
@@ -2306,7 +2306,7 @@ export type BillingInvoiceBoolExp = {
   status?: InputMaybe<StringComparisonExp>;
   totalAmount?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "billing_invoice" */
 export enum BillingInvoiceConstraint {
@@ -2315,12 +2315,12 @@ export enum BillingInvoiceConstraint {
 }
 
 /** input type for incrementing numeric columns in table "billing_invoice" */
-export type BillingInvoiceIncInput = {
+export interface BillingInvoiceIncInput {
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
-};
+}
 
 /** input type for inserting data into table "billing_invoice" */
-export type BillingInvoiceInsertInput = {
+export interface BillingInvoiceInsertInput {
   billingEventLogs?: InputMaybe<BillingEventLogsArrRelInsertInput>;
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
@@ -2335,10 +2335,10 @@ export type BillingInvoiceInsertInput = {
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type BillingInvoiceMaxFields = {
+export interface BillingInvoiceMaxFields {
   __typename?: 'billingInvoiceMaxFields';
   billingPeriodEnd: Maybe<Scalars['date']['output']>;
   billingPeriodStart: Maybe<Scalars['date']['output']>;
@@ -2352,10 +2352,10 @@ export type BillingInvoiceMaxFields = {
   status: Maybe<Scalars['String']['output']>;
   totalAmount: Maybe<Scalars['numeric']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by max() on columns of table "billing_invoice" */
-export type BillingInvoiceMaxOrderBy = {
+export interface BillingInvoiceMaxOrderBy {
   billingPeriodEnd?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
@@ -2368,10 +2368,10 @@ export type BillingInvoiceMaxOrderBy = {
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type BillingInvoiceMinFields = {
+export interface BillingInvoiceMinFields {
   __typename?: 'billingInvoiceMinFields';
   billingPeriodEnd: Maybe<Scalars['date']['output']>;
   billingPeriodStart: Maybe<Scalars['date']['output']>;
@@ -2385,10 +2385,10 @@ export type BillingInvoiceMinFields = {
   status: Maybe<Scalars['String']['output']>;
   totalAmount: Maybe<Scalars['numeric']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by min() on columns of table "billing_invoice" */
-export type BillingInvoiceMinOrderBy = {
+export interface BillingInvoiceMinOrderBy {
   billingPeriodEnd?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
@@ -2401,26 +2401,26 @@ export type BillingInvoiceMinOrderBy = {
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "billing_invoice" */
-export type BillingInvoiceMutationResponse = {
+export interface BillingInvoiceMutationResponse {
   __typename?: 'billingInvoiceMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<BillingInvoice>;
-};
+}
 
 /** on_conflict condition type for table "billing_invoice" */
-export type BillingInvoiceOnConflict = {
+export interface BillingInvoiceOnConflict {
   constraint: BillingInvoiceConstraint;
   updateColumns?: Array<BillingInvoiceUpdateColumn>;
   where?: InputMaybe<BillingInvoiceBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "billing_invoice". */
-export type BillingInvoiceOrderBy = {
+export interface BillingInvoiceOrderBy {
   billingEventLogsAggregate?: InputMaybe<BillingEventLogsAggregateOrderBy>;
   billingPeriodEnd?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
@@ -2435,12 +2435,12 @@ export type BillingInvoiceOrderBy = {
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: billing_invoice */
-export type BillingInvoicePkColumnsInput = {
+export interface BillingInvoicePkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "billing_invoice" */
 export enum BillingInvoiceSelectColumn {
@@ -2471,7 +2471,7 @@ export enum BillingInvoiceSelectColumn {
 }
 
 /** input type for updating data in table "billing_invoice" */
-export type BillingInvoiceSetInput = {
+export interface BillingInvoiceSetInput {
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
@@ -2484,51 +2484,51 @@ export type BillingInvoiceSetInput = {
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type BillingInvoiceStddevFields = {
+export interface BillingInvoiceStddevFields {
   __typename?: 'billingInvoiceStddevFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddev() on columns of table "billing_invoice" */
-export type BillingInvoiceStddevOrderBy = {
+export interface BillingInvoiceStddevOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type BillingInvoiceStddevPopFields = {
+export interface BillingInvoiceStddevPopFields {
   __typename?: 'billingInvoiceStddevPopFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddevPop() on columns of table "billing_invoice" */
-export type BillingInvoiceStddevPopOrderBy = {
+export interface BillingInvoiceStddevPopOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type BillingInvoiceStddevSampFields = {
+export interface BillingInvoiceStddevSampFields {
   __typename?: 'billingInvoiceStddevSampFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddevSamp() on columns of table "billing_invoice" */
-export type BillingInvoiceStddevSampOrderBy = {
+export interface BillingInvoiceStddevSampOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** Streaming cursor of the table "billingInvoice" */
-export type BillingInvoiceStreamCursorInput = {
+export interface BillingInvoiceStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: BillingInvoiceStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type BillingInvoiceStreamCursorValueInput = {
+export interface BillingInvoiceStreamCursorValueInput {
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
@@ -2541,18 +2541,18 @@ export type BillingInvoiceStreamCursorValueInput = {
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type BillingInvoiceSumFields = {
+export interface BillingInvoiceSumFields {
   __typename?: 'billingInvoiceSumFields';
   totalAmount: Maybe<Scalars['numeric']['output']>;
-};
+}
 
 /** order by sum() on columns of table "billing_invoice" */
-export type BillingInvoiceSumOrderBy = {
+export interface BillingInvoiceSumOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** update columns of table "billing_invoice" */
 export enum BillingInvoiceUpdateColumn {
@@ -2582,50 +2582,50 @@ export enum BillingInvoiceUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type BillingInvoiceUpdates = {
+export interface BillingInvoiceUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<BillingInvoiceIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<BillingInvoiceSetInput>;
   /** filter the rows which have to be updated */
   where: BillingInvoiceBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type BillingInvoiceVarPopFields = {
+export interface BillingInvoiceVarPopFields {
   __typename?: 'billingInvoiceVarPopFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by varPop() on columns of table "billing_invoice" */
-export type BillingInvoiceVarPopOrderBy = {
+export interface BillingInvoiceVarPopOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type BillingInvoiceVarSampFields = {
+export interface BillingInvoiceVarSampFields {
   __typename?: 'billingInvoiceVarSampFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by varSamp() on columns of table "billing_invoice" */
-export type BillingInvoiceVarSampOrderBy = {
+export interface BillingInvoiceVarSampOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate variance on columns */
-export type BillingInvoiceVarianceFields = {
+export interface BillingInvoiceVarianceFields {
   __typename?: 'billingInvoiceVarianceFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by variance() on columns of table "billing_invoice" */
-export type BillingInvoiceVarianceOrderBy = {
+export interface BillingInvoiceVarianceOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** columns and relationships of "billing_invoices" */
-export type BillingInvoices = {
+export interface BillingInvoices {
   __typename?: 'billingInvoices';
   /** An array relationship */
   billingItems: Array<BillingItems>;
@@ -2642,7 +2642,7 @@ export type BillingInvoices = {
   status: Maybe<Scalars['String']['output']>;
   totalAmount: Maybe<Scalars['numeric']['output']>;
   updatedAt: Maybe<Scalars['timestamp']['output']>;
-};
+}
 
 
 /** columns and relationships of "billing_invoices" */
@@ -2665,25 +2665,25 @@ export type BillingInvoicesBillingItemsAggregateArgs = {
 };
 
 /** aggregated selection of "billing_invoices" */
-export type BillingInvoicesAggregate = {
+export interface BillingInvoicesAggregate {
   __typename?: 'billingInvoicesAggregate';
   aggregate: Maybe<BillingInvoicesAggregateFields>;
   nodes: Array<BillingInvoices>;
-};
+}
 
-export type BillingInvoicesAggregateBoolExp = {
+export interface BillingInvoicesAggregateBoolExp {
   count?: InputMaybe<BillingInvoicesAggregateBoolExpCount>;
-};
+}
 
-export type BillingInvoicesAggregateBoolExpCount = {
+export interface BillingInvoicesAggregateBoolExpCount {
   arguments?: InputMaybe<Array<BillingInvoicesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<BillingInvoicesBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "billing_invoices" */
-export type BillingInvoicesAggregateFields = {
+export interface BillingInvoicesAggregateFields {
   __typename?: 'billingInvoicesAggregateFields';
   avg: Maybe<BillingInvoicesAvgFields>;
   count: Scalars['Int']['output'];
@@ -2696,7 +2696,7 @@ export type BillingInvoicesAggregateFields = {
   varPop: Maybe<BillingInvoicesVarPopFields>;
   varSamp: Maybe<BillingInvoicesVarSampFields>;
   variance: Maybe<BillingInvoicesVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "billing_invoices" */
@@ -2706,7 +2706,7 @@ export type BillingInvoicesAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "billing_invoices" */
-export type BillingInvoicesAggregateOrderBy = {
+export interface BillingInvoicesAggregateOrderBy {
   avg?: InputMaybe<BillingInvoicesAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<BillingInvoicesMaxOrderBy>;
@@ -2718,28 +2718,28 @@ export type BillingInvoicesAggregateOrderBy = {
   varPop?: InputMaybe<BillingInvoicesVarPopOrderBy>;
   varSamp?: InputMaybe<BillingInvoicesVarSampOrderBy>;
   variance?: InputMaybe<BillingInvoicesVarianceOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "billing_invoices" */
-export type BillingInvoicesArrRelInsertInput = {
+export interface BillingInvoicesArrRelInsertInput {
   data: Array<BillingInvoicesInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<BillingInvoicesOnConflict>;
-};
+}
 
 /** aggregate avg on columns */
-export type BillingInvoicesAvgFields = {
+export interface BillingInvoicesAvgFields {
   __typename?: 'billingInvoicesAvgFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by avg() on columns of table "billing_invoices" */
-export type BillingInvoicesAvgOrderBy = {
+export interface BillingInvoicesAvgOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** Boolean expression to filter rows from the table "billing_invoices". All fields are combined with a logical 'AND'. */
-export type BillingInvoicesBoolExp = {
+export interface BillingInvoicesBoolExp {
   _and?: InputMaybe<Array<BillingInvoicesBoolExp>>;
   _not?: InputMaybe<BillingInvoicesBoolExp>;
   _or?: InputMaybe<Array<BillingInvoicesBoolExp>>;
@@ -2755,7 +2755,7 @@ export type BillingInvoicesBoolExp = {
   status?: InputMaybe<StringComparisonExp>;
   totalAmount?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestampComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "billing_invoices" */
 export enum BillingInvoicesConstraint {
@@ -2766,12 +2766,12 @@ export enum BillingInvoicesConstraint {
 }
 
 /** input type for incrementing numeric columns in table "billing_invoices" */
-export type BillingInvoicesIncInput = {
+export interface BillingInvoicesIncInput {
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
-};
+}
 
 /** input type for inserting data into table "billing_invoices" */
-export type BillingInvoicesInsertInput = {
+export interface BillingInvoicesInsertInput {
   billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
@@ -2783,10 +2783,10 @@ export type BillingInvoicesInsertInput = {
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type BillingInvoicesMaxFields = {
+export interface BillingInvoicesMaxFields {
   __typename?: 'billingInvoicesMaxFields';
   billingPeriodEnd: Maybe<Scalars['date']['output']>;
   billingPeriodStart: Maybe<Scalars['date']['output']>;
@@ -2797,10 +2797,10 @@ export type BillingInvoicesMaxFields = {
   status: Maybe<Scalars['String']['output']>;
   totalAmount: Maybe<Scalars['numeric']['output']>;
   updatedAt: Maybe<Scalars['timestamp']['output']>;
-};
+}
 
 /** order by max() on columns of table "billing_invoices" */
-export type BillingInvoicesMaxOrderBy = {
+export interface BillingInvoicesMaxOrderBy {
   billingPeriodEnd?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
@@ -2810,10 +2810,10 @@ export type BillingInvoicesMaxOrderBy = {
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type BillingInvoicesMinFields = {
+export interface BillingInvoicesMinFields {
   __typename?: 'billingInvoicesMinFields';
   billingPeriodEnd: Maybe<Scalars['date']['output']>;
   billingPeriodStart: Maybe<Scalars['date']['output']>;
@@ -2824,10 +2824,10 @@ export type BillingInvoicesMinFields = {
   status: Maybe<Scalars['String']['output']>;
   totalAmount: Maybe<Scalars['numeric']['output']>;
   updatedAt: Maybe<Scalars['timestamp']['output']>;
-};
+}
 
 /** order by min() on columns of table "billing_invoices" */
-export type BillingInvoicesMinOrderBy = {
+export interface BillingInvoicesMinOrderBy {
   billingPeriodEnd?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
@@ -2837,33 +2837,33 @@ export type BillingInvoicesMinOrderBy = {
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "billing_invoices" */
-export type BillingInvoicesMutationResponse = {
+export interface BillingInvoicesMutationResponse {
   __typename?: 'billingInvoicesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<BillingInvoices>;
-};
+}
 
 /** input type for inserting object relation for remote table "billing_invoices" */
-export type BillingInvoicesObjRelInsertInput = {
+export interface BillingInvoicesObjRelInsertInput {
   data: BillingInvoicesInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<BillingInvoicesOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "billing_invoices" */
-export type BillingInvoicesOnConflict = {
+export interface BillingInvoicesOnConflict {
   constraint: BillingInvoicesConstraint;
   updateColumns?: Array<BillingInvoicesUpdateColumn>;
   where?: InputMaybe<BillingInvoicesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "billing_invoices". */
-export type BillingInvoicesOrderBy = {
+export interface BillingInvoicesOrderBy {
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
   billingPeriodEnd?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
@@ -2875,12 +2875,12 @@ export type BillingInvoicesOrderBy = {
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: billing_invoices */
-export type BillingInvoicesPkColumnsInput = {
+export interface BillingInvoicesPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "billing_invoices" */
 export enum BillingInvoicesSelectColumn {
@@ -2905,7 +2905,7 @@ export enum BillingInvoicesSelectColumn {
 }
 
 /** input type for updating data in table "billing_invoices" */
-export type BillingInvoicesSetInput = {
+export interface BillingInvoicesSetInput {
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
@@ -2915,51 +2915,51 @@ export type BillingInvoicesSetInput = {
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type BillingInvoicesStddevFields = {
+export interface BillingInvoicesStddevFields {
   __typename?: 'billingInvoicesStddevFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddev() on columns of table "billing_invoices" */
-export type BillingInvoicesStddevOrderBy = {
+export interface BillingInvoicesStddevOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type BillingInvoicesStddevPopFields = {
+export interface BillingInvoicesStddevPopFields {
   __typename?: 'billingInvoicesStddevPopFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddevPop() on columns of table "billing_invoices" */
-export type BillingInvoicesStddevPopOrderBy = {
+export interface BillingInvoicesStddevPopOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type BillingInvoicesStddevSampFields = {
+export interface BillingInvoicesStddevSampFields {
   __typename?: 'billingInvoicesStddevSampFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddevSamp() on columns of table "billing_invoices" */
-export type BillingInvoicesStddevSampOrderBy = {
+export interface BillingInvoicesStddevSampOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** Streaming cursor of the table "billingInvoices" */
-export type BillingInvoicesStreamCursorInput = {
+export interface BillingInvoicesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: BillingInvoicesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type BillingInvoicesStreamCursorValueInput = {
+export interface BillingInvoicesStreamCursorValueInput {
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
@@ -2969,18 +2969,18 @@ export type BillingInvoicesStreamCursorValueInput = {
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type BillingInvoicesSumFields = {
+export interface BillingInvoicesSumFields {
   __typename?: 'billingInvoicesSumFields';
   totalAmount: Maybe<Scalars['numeric']['output']>;
-};
+}
 
 /** order by sum() on columns of table "billing_invoices" */
-export type BillingInvoicesSumOrderBy = {
+export interface BillingInvoicesSumOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** update columns of table "billing_invoices" */
 export enum BillingInvoicesUpdateColumn {
@@ -3004,50 +3004,50 @@ export enum BillingInvoicesUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type BillingInvoicesUpdates = {
+export interface BillingInvoicesUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<BillingInvoicesIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<BillingInvoicesSetInput>;
   /** filter the rows which have to be updated */
   where: BillingInvoicesBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type BillingInvoicesVarPopFields = {
+export interface BillingInvoicesVarPopFields {
   __typename?: 'billingInvoicesVarPopFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by varPop() on columns of table "billing_invoices" */
-export type BillingInvoicesVarPopOrderBy = {
+export interface BillingInvoicesVarPopOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type BillingInvoicesVarSampFields = {
+export interface BillingInvoicesVarSampFields {
   __typename?: 'billingInvoicesVarSampFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by varSamp() on columns of table "billing_invoices" */
-export type BillingInvoicesVarSampOrderBy = {
+export interface BillingInvoicesVarSampOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate variance on columns */
-export type BillingInvoicesVarianceFields = {
+export interface BillingInvoicesVarianceFields {
   __typename?: 'billingInvoicesVarianceFields';
   totalAmount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by variance() on columns of table "billing_invoices" */
-export type BillingInvoicesVarianceOrderBy = {
+export interface BillingInvoicesVarianceOrderBy {
   totalAmount?: InputMaybe<OrderBy>;
-};
+}
 
 /** columns and relationships of "billing_items" */
-export type BillingItems = {
+export interface BillingItems {
   __typename?: 'billingItems';
   amount: Maybe<Scalars['numeric']['output']>;
   createdAt: Maybe<Scalars['timestamp']['output']>;
@@ -3061,28 +3061,28 @@ export type BillingItems = {
   /** An object relationship */
   relatedPayroll: Maybe<Payrolls>;
   unitPrice: Scalars['numeric']['output'];
-};
+}
 
 /** aggregated selection of "billing_items" */
-export type BillingItemsAggregate = {
+export interface BillingItemsAggregate {
   __typename?: 'billingItemsAggregate';
   aggregate: Maybe<BillingItemsAggregateFields>;
   nodes: Array<BillingItems>;
-};
+}
 
-export type BillingItemsAggregateBoolExp = {
+export interface BillingItemsAggregateBoolExp {
   count?: InputMaybe<BillingItemsAggregateBoolExpCount>;
-};
+}
 
-export type BillingItemsAggregateBoolExpCount = {
+export interface BillingItemsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<BillingItemsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<BillingItemsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "billing_items" */
-export type BillingItemsAggregateFields = {
+export interface BillingItemsAggregateFields {
   __typename?: 'billingItemsAggregateFields';
   avg: Maybe<BillingItemsAvgFields>;
   count: Scalars['Int']['output'];
@@ -3095,7 +3095,7 @@ export type BillingItemsAggregateFields = {
   varPop: Maybe<BillingItemsVarPopFields>;
   varSamp: Maybe<BillingItemsVarSampFields>;
   variance: Maybe<BillingItemsVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "billing_items" */
@@ -3105,7 +3105,7 @@ export type BillingItemsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "billing_items" */
-export type BillingItemsAggregateOrderBy = {
+export interface BillingItemsAggregateOrderBy {
   avg?: InputMaybe<BillingItemsAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<BillingItemsMaxOrderBy>;
@@ -3117,32 +3117,32 @@ export type BillingItemsAggregateOrderBy = {
   varPop?: InputMaybe<BillingItemsVarPopOrderBy>;
   varSamp?: InputMaybe<BillingItemsVarSampOrderBy>;
   variance?: InputMaybe<BillingItemsVarianceOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "billing_items" */
-export type BillingItemsArrRelInsertInput = {
+export interface BillingItemsArrRelInsertInput {
   data: Array<BillingItemsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<BillingItemsOnConflict>;
-};
+}
 
 /** aggregate avg on columns */
-export type BillingItemsAvgFields = {
+export interface BillingItemsAvgFields {
   __typename?: 'billingItemsAvgFields';
   amount: Maybe<Scalars['Float']['output']>;
   quantity: Maybe<Scalars['Float']['output']>;
   unitPrice: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by avg() on columns of table "billing_items" */
-export type BillingItemsAvgOrderBy = {
+export interface BillingItemsAvgOrderBy {
   amount?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** Boolean expression to filter rows from the table "billing_items". All fields are combined with a logical 'AND'. */
-export type BillingItemsBoolExp = {
+export interface BillingItemsBoolExp {
   _and?: InputMaybe<Array<BillingItemsBoolExp>>;
   _not?: InputMaybe<BillingItemsBoolExp>;
   _or?: InputMaybe<Array<BillingItemsBoolExp>>;
@@ -3156,7 +3156,7 @@ export type BillingItemsBoolExp = {
   relatedInvoice?: InputMaybe<BillingInvoicesBoolExp>;
   relatedPayroll?: InputMaybe<PayrollsBoolExp>;
   unitPrice?: InputMaybe<NumericComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "billing_items" */
 export enum BillingItemsConstraint {
@@ -3165,13 +3165,13 @@ export enum BillingItemsConstraint {
 }
 
 /** input type for incrementing numeric columns in table "billing_items" */
-export type BillingItemsIncInput = {
+export interface BillingItemsIncInput {
   quantity?: InputMaybe<Scalars['Int']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-};
+}
 
 /** input type for inserting data into table "billing_items" */
-export type BillingItemsInsertInput = {
+export interface BillingItemsInsertInput {
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -3181,10 +3181,10 @@ export type BillingItemsInsertInput = {
   relatedInvoice?: InputMaybe<BillingInvoicesObjRelInsertInput>;
   relatedPayroll?: InputMaybe<PayrollsObjRelInsertInput>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type BillingItemsMaxFields = {
+export interface BillingItemsMaxFields {
   __typename?: 'billingItemsMaxFields';
   amount: Maybe<Scalars['numeric']['output']>;
   createdAt: Maybe<Scalars['timestamp']['output']>;
@@ -3194,10 +3194,10 @@ export type BillingItemsMaxFields = {
   payrollId: Maybe<Scalars['uuid']['output']>;
   quantity: Maybe<Scalars['Int']['output']>;
   unitPrice: Maybe<Scalars['numeric']['output']>;
-};
+}
 
 /** order by max() on columns of table "billing_items" */
-export type BillingItemsMaxOrderBy = {
+export interface BillingItemsMaxOrderBy {
   amount?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
@@ -3206,10 +3206,10 @@ export type BillingItemsMaxOrderBy = {
   payrollId?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type BillingItemsMinFields = {
+export interface BillingItemsMinFields {
   __typename?: 'billingItemsMinFields';
   amount: Maybe<Scalars['numeric']['output']>;
   createdAt: Maybe<Scalars['timestamp']['output']>;
@@ -3219,10 +3219,10 @@ export type BillingItemsMinFields = {
   payrollId: Maybe<Scalars['uuid']['output']>;
   quantity: Maybe<Scalars['Int']['output']>;
   unitPrice: Maybe<Scalars['numeric']['output']>;
-};
+}
 
 /** order by min() on columns of table "billing_items" */
-export type BillingItemsMinOrderBy = {
+export interface BillingItemsMinOrderBy {
   amount?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
@@ -3231,26 +3231,26 @@ export type BillingItemsMinOrderBy = {
   payrollId?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "billing_items" */
-export type BillingItemsMutationResponse = {
+export interface BillingItemsMutationResponse {
   __typename?: 'billingItemsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<BillingItems>;
-};
+}
 
 /** on_conflict condition type for table "billing_items" */
-export type BillingItemsOnConflict = {
+export interface BillingItemsOnConflict {
   constraint: BillingItemsConstraint;
   updateColumns?: Array<BillingItemsUpdateColumn>;
   where?: InputMaybe<BillingItemsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "billing_items". */
-export type BillingItemsOrderBy = {
+export interface BillingItemsOrderBy {
   amount?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
@@ -3261,12 +3261,12 @@ export type BillingItemsOrderBy = {
   relatedInvoice?: InputMaybe<BillingInvoicesOrderBy>;
   relatedPayroll?: InputMaybe<PayrollsOrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: billing_items */
-export type BillingItemsPkColumnsInput = {
+export interface BillingItemsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "billing_items" */
 export enum BillingItemsSelectColumn {
@@ -3289,7 +3289,7 @@ export enum BillingItemsSelectColumn {
 }
 
 /** input type for updating data in table "billing_items" */
-export type BillingItemsSetInput = {
+export interface BillingItemsSetInput {
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -3297,63 +3297,63 @@ export type BillingItemsSetInput = {
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type BillingItemsStddevFields = {
+export interface BillingItemsStddevFields {
   __typename?: 'billingItemsStddevFields';
   amount: Maybe<Scalars['Float']['output']>;
   quantity: Maybe<Scalars['Float']['output']>;
   unitPrice: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddev() on columns of table "billing_items" */
-export type BillingItemsStddevOrderBy = {
+export interface BillingItemsStddevOrderBy {
   amount?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type BillingItemsStddevPopFields = {
+export interface BillingItemsStddevPopFields {
   __typename?: 'billingItemsStddevPopFields';
   amount: Maybe<Scalars['Float']['output']>;
   quantity: Maybe<Scalars['Float']['output']>;
   unitPrice: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddevPop() on columns of table "billing_items" */
-export type BillingItemsStddevPopOrderBy = {
+export interface BillingItemsStddevPopOrderBy {
   amount?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type BillingItemsStddevSampFields = {
+export interface BillingItemsStddevSampFields {
   __typename?: 'billingItemsStddevSampFields';
   amount: Maybe<Scalars['Float']['output']>;
   quantity: Maybe<Scalars['Float']['output']>;
   unitPrice: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddevSamp() on columns of table "billing_items" */
-export type BillingItemsStddevSampOrderBy = {
+export interface BillingItemsStddevSampOrderBy {
   amount?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** Streaming cursor of the table "billingItems" */
-export type BillingItemsStreamCursorInput = {
+export interface BillingItemsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: BillingItemsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type BillingItemsStreamCursorValueInput = {
+export interface BillingItemsStreamCursorValueInput {
   amount?: InputMaybe<Scalars['numeric']['input']>;
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -3362,22 +3362,22 @@ export type BillingItemsStreamCursorValueInput = {
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type BillingItemsSumFields = {
+export interface BillingItemsSumFields {
   __typename?: 'billingItemsSumFields';
   amount: Maybe<Scalars['numeric']['output']>;
   quantity: Maybe<Scalars['Int']['output']>;
   unitPrice: Maybe<Scalars['numeric']['output']>;
-};
+}
 
 /** order by sum() on columns of table "billing_items" */
-export type BillingItemsSumOrderBy = {
+export interface BillingItemsSumOrderBy {
   amount?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** update columns of table "billing_items" */
 export enum BillingItemsUpdateColumn {
@@ -3397,62 +3397,62 @@ export enum BillingItemsUpdateColumn {
   unitPrice = 'unitPrice'
 }
 
-export type BillingItemsUpdates = {
+export interface BillingItemsUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<BillingItemsIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<BillingItemsSetInput>;
   /** filter the rows which have to be updated */
   where: BillingItemsBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type BillingItemsVarPopFields = {
+export interface BillingItemsVarPopFields {
   __typename?: 'billingItemsVarPopFields';
   amount: Maybe<Scalars['Float']['output']>;
   quantity: Maybe<Scalars['Float']['output']>;
   unitPrice: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by varPop() on columns of table "billing_items" */
-export type BillingItemsVarPopOrderBy = {
+export interface BillingItemsVarPopOrderBy {
   amount?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type BillingItemsVarSampFields = {
+export interface BillingItemsVarSampFields {
   __typename?: 'billingItemsVarSampFields';
   amount: Maybe<Scalars['Float']['output']>;
   quantity: Maybe<Scalars['Float']['output']>;
   unitPrice: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by varSamp() on columns of table "billing_items" */
-export type BillingItemsVarSampOrderBy = {
+export interface BillingItemsVarSampOrderBy {
   amount?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate variance on columns */
-export type BillingItemsVarianceFields = {
+export interface BillingItemsVarianceFields {
   __typename?: 'billingItemsVarianceFields';
   amount: Maybe<Scalars['Float']['output']>;
   quantity: Maybe<Scalars['Float']['output']>;
   unitPrice: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by variance() on columns of table "billing_items" */
-export type BillingItemsVarianceOrderBy = {
+export interface BillingItemsVarianceOrderBy {
   amount?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
-};
+}
 
 /** columns and relationships of "billing_plan" */
-export type BillingPlans = {
+export interface BillingPlans {
   __typename?: 'billingPlans';
   /** An array relationship */
   clientBillingAssignments: Array<ClientBillingAssignments>;
@@ -3465,7 +3465,7 @@ export type BillingPlans = {
   name: Scalars['String']['output'];
   ratePerPayroll: Scalars['numeric']['output'];
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 
 /** columns and relationships of "billing_plan" */
@@ -3488,14 +3488,14 @@ export type BillingPlansClientBillingAssignmentsAggregateArgs = {
 };
 
 /** aggregated selection of "billing_plan" */
-export type BillingPlansAggregate = {
+export interface BillingPlansAggregate {
   __typename?: 'billingPlansAggregate';
   aggregate: Maybe<BillingPlansAggregateFields>;
   nodes: Array<BillingPlans>;
-};
+}
 
 /** aggregate fields of "billing_plan" */
-export type BillingPlansAggregateFields = {
+export interface BillingPlansAggregateFields {
   __typename?: 'billingPlansAggregateFields';
   avg: Maybe<BillingPlansAvgFields>;
   count: Scalars['Int']['output'];
@@ -3508,7 +3508,7 @@ export type BillingPlansAggregateFields = {
   varPop: Maybe<BillingPlansVarPopFields>;
   varSamp: Maybe<BillingPlansVarSampFields>;
   variance: Maybe<BillingPlansVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "billing_plan" */
@@ -3518,13 +3518,13 @@ export type BillingPlansAggregateFieldsCountArgs = {
 };
 
 /** aggregate avg on columns */
-export type BillingPlansAvgFields = {
+export interface BillingPlansAvgFields {
   __typename?: 'billingPlansAvgFields';
   ratePerPayroll: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "billing_plan". All fields are combined with a logical 'AND'. */
-export type BillingPlansBoolExp = {
+export interface BillingPlansBoolExp {
   _and?: InputMaybe<Array<BillingPlansBoolExp>>;
   _not?: InputMaybe<BillingPlansBoolExp>;
   _or?: InputMaybe<Array<BillingPlansBoolExp>>;
@@ -3537,7 +3537,7 @@ export type BillingPlansBoolExp = {
   name?: InputMaybe<StringComparisonExp>;
   ratePerPayroll?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "billing_plan" */
 export enum BillingPlansConstraint {
@@ -3546,12 +3546,12 @@ export enum BillingPlansConstraint {
 }
 
 /** input type for incrementing numeric columns in table "billing_plan" */
-export type BillingPlansIncInput = {
+export interface BillingPlansIncInput {
   ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
-};
+}
 
 /** input type for inserting data into table "billing_plan" */
-export type BillingPlansInsertInput = {
+export interface BillingPlansInsertInput {
   clientBillingAssignments?: InputMaybe<ClientBillingAssignmentsArrRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
@@ -3560,10 +3560,10 @@ export type BillingPlansInsertInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type BillingPlansMaxFields = {
+export interface BillingPlansMaxFields {
   __typename?: 'billingPlansMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   currency: Maybe<Scalars['String']['output']>;
@@ -3572,10 +3572,10 @@ export type BillingPlansMaxFields = {
   name: Maybe<Scalars['String']['output']>;
   ratePerPayroll: Maybe<Scalars['numeric']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type BillingPlansMinFields = {
+export interface BillingPlansMinFields {
   __typename?: 'billingPlansMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   currency: Maybe<Scalars['String']['output']>;
@@ -3584,33 +3584,33 @@ export type BillingPlansMinFields = {
   name: Maybe<Scalars['String']['output']>;
   ratePerPayroll: Maybe<Scalars['numeric']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** response of any mutation on the table "billing_plan" */
-export type BillingPlansMutationResponse = {
+export interface BillingPlansMutationResponse {
   __typename?: 'billingPlansMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<BillingPlans>;
-};
+}
 
 /** input type for inserting object relation for remote table "billing_plan" */
-export type BillingPlansObjRelInsertInput = {
+export interface BillingPlansObjRelInsertInput {
   data: BillingPlansInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<BillingPlansOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "billing_plan" */
-export type BillingPlansOnConflict = {
+export interface BillingPlansOnConflict {
   constraint: BillingPlansConstraint;
   updateColumns?: Array<BillingPlansUpdateColumn>;
   where?: InputMaybe<BillingPlansBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "billing_plan". */
-export type BillingPlansOrderBy = {
+export interface BillingPlansOrderBy {
   clientBillingAssignmentsAggregate?: InputMaybe<ClientBillingAssignmentsAggregateOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   currency?: InputMaybe<OrderBy>;
@@ -3619,12 +3619,12 @@ export type BillingPlansOrderBy = {
   name?: InputMaybe<OrderBy>;
   ratePerPayroll?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: billing_plan */
-export type BillingPlansPkColumnsInput = {
+export interface BillingPlansPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "billing_plan" */
 export enum BillingPlansSelectColumn {
@@ -3645,7 +3645,7 @@ export enum BillingPlansSelectColumn {
 }
 
 /** input type for updating data in table "billing_plan" */
-export type BillingPlansSetInput = {
+export interface BillingPlansSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -3653,36 +3653,36 @@ export type BillingPlansSetInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type BillingPlansStddevFields = {
+export interface BillingPlansStddevFields {
   __typename?: 'billingPlansStddevFields';
   ratePerPayroll: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type BillingPlansStddevPopFields = {
+export interface BillingPlansStddevPopFields {
   __typename?: 'billingPlansStddevPopFields';
   ratePerPayroll: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type BillingPlansStddevSampFields = {
+export interface BillingPlansStddevSampFields {
   __typename?: 'billingPlansStddevSampFields';
   ratePerPayroll: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "billingPlans" */
-export type BillingPlansStreamCursorInput = {
+export interface BillingPlansStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: BillingPlansStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type BillingPlansStreamCursorValueInput = {
+export interface BillingPlansStreamCursorValueInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -3690,13 +3690,13 @@ export type BillingPlansStreamCursorValueInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type BillingPlansSumFields = {
+export interface BillingPlansSumFields {
   __typename?: 'billingPlansSumFields';
   ratePerPayroll: Maybe<Scalars['numeric']['output']>;
-};
+}
 
 /** update columns of table "billing_plan" */
 export enum BillingPlansUpdateColumn {
@@ -3716,35 +3716,35 @@ export enum BillingPlansUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type BillingPlansUpdates = {
+export interface BillingPlansUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<BillingPlansIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<BillingPlansSetInput>;
   /** filter the rows which have to be updated */
   where: BillingPlansBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type BillingPlansVarPopFields = {
+export interface BillingPlansVarPopFields {
   __typename?: 'billingPlansVarPopFields';
   ratePerPayroll: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type BillingPlansVarSampFields = {
+export interface BillingPlansVarSampFields {
   __typename?: 'billingPlansVarSampFields';
   ratePerPayroll: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type BillingPlansVarianceFields = {
+export interface BillingPlansVarianceFields {
   __typename?: 'billingPlansVarianceFields';
   ratePerPayroll: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "client_billing_assignment" */
-export type ClientBillingAssignments = {
+export interface ClientBillingAssignments {
   __typename?: 'clientBillingAssignments';
   /** An object relationship */
   assignedBillingPlan: BillingPlans;
@@ -3758,49 +3758,49 @@ export type ClientBillingAssignments = {
   isActive: Maybe<Scalars['Boolean']['output']>;
   startDate: Scalars['date']['output'];
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregated selection of "client_billing_assignment" */
-export type ClientBillingAssignmentsAggregate = {
+export interface ClientBillingAssignmentsAggregate {
   __typename?: 'clientBillingAssignmentsAggregate';
   aggregate: Maybe<ClientBillingAssignmentsAggregateFields>;
   nodes: Array<ClientBillingAssignments>;
-};
+}
 
-export type ClientBillingAssignmentsAggregateBoolExp = {
+export interface ClientBillingAssignmentsAggregateBoolExp {
   bool_and?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpBoolAnd>;
   bool_or?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpBoolOr>;
   count?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpCount>;
-};
+}
 
-export type ClientBillingAssignmentsAggregateBoolExpBoolAnd = {
+export interface ClientBillingAssignmentsAggregateBoolExpBoolAnd {
   arguments: ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type ClientBillingAssignmentsAggregateBoolExpBoolOr = {
+export interface ClientBillingAssignmentsAggregateBoolExpBoolOr {
   arguments: ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type ClientBillingAssignmentsAggregateBoolExpCount = {
+export interface ClientBillingAssignmentsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<ClientBillingAssignmentsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "client_billing_assignment" */
-export type ClientBillingAssignmentsAggregateFields = {
+export interface ClientBillingAssignmentsAggregateFields {
   __typename?: 'clientBillingAssignmentsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<ClientBillingAssignmentsMaxFields>;
   min: Maybe<ClientBillingAssignmentsMinFields>;
-};
+}
 
 
 /** aggregate fields of "client_billing_assignment" */
@@ -3810,21 +3810,21 @@ export type ClientBillingAssignmentsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "client_billing_assignment" */
-export type ClientBillingAssignmentsAggregateOrderBy = {
+export interface ClientBillingAssignmentsAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<ClientBillingAssignmentsMaxOrderBy>;
   min?: InputMaybe<ClientBillingAssignmentsMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "client_billing_assignment" */
-export type ClientBillingAssignmentsArrRelInsertInput = {
+export interface ClientBillingAssignmentsArrRelInsertInput {
   data: Array<ClientBillingAssignmentsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<ClientBillingAssignmentsOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "client_billing_assignment". All fields are combined with a logical 'AND'. */
-export type ClientBillingAssignmentsBoolExp = {
+export interface ClientBillingAssignmentsBoolExp {
   _and?: InputMaybe<Array<ClientBillingAssignmentsBoolExp>>;
   _not?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   _or?: InputMaybe<Array<ClientBillingAssignmentsBoolExp>>;
@@ -3838,7 +3838,7 @@ export type ClientBillingAssignmentsBoolExp = {
   isActive?: InputMaybe<BooleanComparisonExp>;
   startDate?: InputMaybe<DateComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "client_billing_assignment" */
 export enum ClientBillingAssignmentsConstraint {
@@ -3847,7 +3847,7 @@ export enum ClientBillingAssignmentsConstraint {
 }
 
 /** input type for inserting data into table "client_billing_assignment" */
-export type ClientBillingAssignmentsInsertInput = {
+export interface ClientBillingAssignmentsInsertInput {
   assignedBillingPlan?: InputMaybe<BillingPlansObjRelInsertInput>;
   assignedClient?: InputMaybe<ClientsObjRelInsertInput>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
@@ -3858,10 +3858,10 @@ export type ClientBillingAssignmentsInsertInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   startDate?: InputMaybe<Scalars['date']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type ClientBillingAssignmentsMaxFields = {
+export interface ClientBillingAssignmentsMaxFields {
   __typename?: 'clientBillingAssignmentsMaxFields';
   billingPlanId: Maybe<Scalars['uuid']['output']>;
   clientId: Maybe<Scalars['uuid']['output']>;
@@ -3870,10 +3870,10 @@ export type ClientBillingAssignmentsMaxFields = {
   id: Maybe<Scalars['uuid']['output']>;
   startDate: Maybe<Scalars['date']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by max() on columns of table "client_billing_assignment" */
-export type ClientBillingAssignmentsMaxOrderBy = {
+export interface ClientBillingAssignmentsMaxOrderBy {
   billingPlanId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
@@ -3881,10 +3881,10 @@ export type ClientBillingAssignmentsMaxOrderBy = {
   id?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type ClientBillingAssignmentsMinFields = {
+export interface ClientBillingAssignmentsMinFields {
   __typename?: 'clientBillingAssignmentsMinFields';
   billingPlanId: Maybe<Scalars['uuid']['output']>;
   clientId: Maybe<Scalars['uuid']['output']>;
@@ -3893,10 +3893,10 @@ export type ClientBillingAssignmentsMinFields = {
   id: Maybe<Scalars['uuid']['output']>;
   startDate: Maybe<Scalars['date']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by min() on columns of table "client_billing_assignment" */
-export type ClientBillingAssignmentsMinOrderBy = {
+export interface ClientBillingAssignmentsMinOrderBy {
   billingPlanId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
@@ -3904,26 +3904,26 @@ export type ClientBillingAssignmentsMinOrderBy = {
   id?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "client_billing_assignment" */
-export type ClientBillingAssignmentsMutationResponse = {
+export interface ClientBillingAssignmentsMutationResponse {
   __typename?: 'clientBillingAssignmentsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<ClientBillingAssignments>;
-};
+}
 
 /** on_conflict condition type for table "client_billing_assignment" */
-export type ClientBillingAssignmentsOnConflict = {
+export interface ClientBillingAssignmentsOnConflict {
   constraint: ClientBillingAssignmentsConstraint;
   updateColumns?: Array<ClientBillingAssignmentsUpdateColumn>;
   where?: InputMaybe<ClientBillingAssignmentsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "client_billing_assignment". */
-export type ClientBillingAssignmentsOrderBy = {
+export interface ClientBillingAssignmentsOrderBy {
   assignedBillingPlan?: InputMaybe<BillingPlansOrderBy>;
   assignedClient?: InputMaybe<ClientsOrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
@@ -3934,12 +3934,12 @@ export type ClientBillingAssignmentsOrderBy = {
   isActive?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: client_billing_assignment */
-export type ClientBillingAssignmentsPkColumnsInput = {
+export interface ClientBillingAssignmentsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "client_billing_assignment" */
 export enum ClientBillingAssignmentsSelectColumn {
@@ -3974,7 +3974,7 @@ export enum ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregat
 }
 
 /** input type for updating data in table "client_billing_assignment" */
-export type ClientBillingAssignmentsSetInput = {
+export interface ClientBillingAssignmentsSetInput {
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -3983,18 +3983,18 @@ export type ClientBillingAssignmentsSetInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   startDate?: InputMaybe<Scalars['date']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "clientBillingAssignments" */
-export type ClientBillingAssignmentsStreamCursorInput = {
+export interface ClientBillingAssignmentsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: ClientBillingAssignmentsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type ClientBillingAssignmentsStreamCursorValueInput = {
+export interface ClientBillingAssignmentsStreamCursorValueInput {
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -4003,7 +4003,7 @@ export type ClientBillingAssignmentsStreamCursorValueInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   startDate?: InputMaybe<Scalars['date']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "client_billing_assignment" */
 export enum ClientBillingAssignmentsUpdateColumn {
@@ -4025,15 +4025,15 @@ export enum ClientBillingAssignmentsUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type ClientBillingAssignmentsUpdates = {
+export interface ClientBillingAssignmentsUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<ClientBillingAssignmentsSetInput>;
   /** filter the rows which have to be updated */
   where: ClientBillingAssignmentsBoolExp;
-};
+}
 
 /** columns and relationships of "client_external_systems" */
-export type ClientExternalSystems = {
+export interface ClientExternalSystems {
   __typename?: 'clientExternalSystems';
   /** Reference to the client */
   clientId: Scalars['uuid']['output'];
@@ -4051,33 +4051,33 @@ export type ClientExternalSystems = {
   systemClientId: Maybe<Scalars['String']['output']>;
   /** Timestamp when the mapping was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregated selection of "client_external_systems" */
-export type ClientExternalSystemsAggregate = {
+export interface ClientExternalSystemsAggregate {
   __typename?: 'clientExternalSystemsAggregate';
   aggregate: Maybe<ClientExternalSystemsAggregateFields>;
   nodes: Array<ClientExternalSystems>;
-};
+}
 
-export type ClientExternalSystemsAggregateBoolExp = {
+export interface ClientExternalSystemsAggregateBoolExp {
   count?: InputMaybe<ClientExternalSystemsAggregateBoolExpCount>;
-};
+}
 
-export type ClientExternalSystemsAggregateBoolExpCount = {
+export interface ClientExternalSystemsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<ClientExternalSystemsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientExternalSystemsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "client_external_systems" */
-export type ClientExternalSystemsAggregateFields = {
+export interface ClientExternalSystemsAggregateFields {
   __typename?: 'clientExternalSystemsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<ClientExternalSystemsMaxFields>;
   min: Maybe<ClientExternalSystemsMinFields>;
-};
+}
 
 
 /** aggregate fields of "client_external_systems" */
@@ -4087,21 +4087,21 @@ export type ClientExternalSystemsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "client_external_systems" */
-export type ClientExternalSystemsAggregateOrderBy = {
+export interface ClientExternalSystemsAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<ClientExternalSystemsMaxOrderBy>;
   min?: InputMaybe<ClientExternalSystemsMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "client_external_systems" */
-export type ClientExternalSystemsArrRelInsertInput = {
+export interface ClientExternalSystemsArrRelInsertInput {
   data: Array<ClientExternalSystemsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<ClientExternalSystemsOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "client_external_systems". All fields are combined with a logical 'AND'. */
-export type ClientExternalSystemsBoolExp = {
+export interface ClientExternalSystemsBoolExp {
   _and?: InputMaybe<Array<ClientExternalSystemsBoolExp>>;
   _not?: InputMaybe<ClientExternalSystemsBoolExp>;
   _or?: InputMaybe<Array<ClientExternalSystemsBoolExp>>;
@@ -4113,7 +4113,7 @@ export type ClientExternalSystemsBoolExp = {
   linkedExternalSystem?: InputMaybe<ExternalSystemsBoolExp>;
   systemClientId?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "client_external_systems" */
 export enum ClientExternalSystemsConstraint {
@@ -4124,7 +4124,7 @@ export enum ClientExternalSystemsConstraint {
 }
 
 /** input type for inserting data into table "client_external_systems" */
-export type ClientExternalSystemsInsertInput = {
+export interface ClientExternalSystemsInsertInput {
   /** Reference to the client */
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the mapping was created */
@@ -4139,10 +4139,10 @@ export type ClientExternalSystemsInsertInput = {
   systemClientId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the mapping was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type ClientExternalSystemsMaxFields = {
+export interface ClientExternalSystemsMaxFields {
   __typename?: 'clientExternalSystemsMaxFields';
   /** Reference to the client */
   clientId: Maybe<Scalars['uuid']['output']>;
@@ -4156,10 +4156,10 @@ export type ClientExternalSystemsMaxFields = {
   systemClientId: Maybe<Scalars['String']['output']>;
   /** Timestamp when the mapping was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by max() on columns of table "client_external_systems" */
-export type ClientExternalSystemsMaxOrderBy = {
+export interface ClientExternalSystemsMaxOrderBy {
   /** Reference to the client */
   clientId?: InputMaybe<OrderBy>;
   /** Timestamp when the mapping was created */
@@ -4172,10 +4172,10 @@ export type ClientExternalSystemsMaxOrderBy = {
   systemClientId?: InputMaybe<OrderBy>;
   /** Timestamp when the mapping was last updated */
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type ClientExternalSystemsMinFields = {
+export interface ClientExternalSystemsMinFields {
   __typename?: 'clientExternalSystemsMinFields';
   /** Reference to the client */
   clientId: Maybe<Scalars['uuid']['output']>;
@@ -4189,10 +4189,10 @@ export type ClientExternalSystemsMinFields = {
   systemClientId: Maybe<Scalars['String']['output']>;
   /** Timestamp when the mapping was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by min() on columns of table "client_external_systems" */
-export type ClientExternalSystemsMinOrderBy = {
+export interface ClientExternalSystemsMinOrderBy {
   /** Reference to the client */
   clientId?: InputMaybe<OrderBy>;
   /** Timestamp when the mapping was created */
@@ -4205,26 +4205,26 @@ export type ClientExternalSystemsMinOrderBy = {
   systemClientId?: InputMaybe<OrderBy>;
   /** Timestamp when the mapping was last updated */
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "client_external_systems" */
-export type ClientExternalSystemsMutationResponse = {
+export interface ClientExternalSystemsMutationResponse {
   __typename?: 'clientExternalSystemsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<ClientExternalSystems>;
-};
+}
 
 /** on_conflict condition type for table "client_external_systems" */
-export type ClientExternalSystemsOnConflict = {
+export interface ClientExternalSystemsOnConflict {
   constraint: ClientExternalSystemsConstraint;
   updateColumns?: Array<ClientExternalSystemsUpdateColumn>;
   where?: InputMaybe<ClientExternalSystemsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "client_external_systems". */
-export type ClientExternalSystemsOrderBy = {
+export interface ClientExternalSystemsOrderBy {
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   externalSystemId?: InputMaybe<OrderBy>;
@@ -4233,13 +4233,13 @@ export type ClientExternalSystemsOrderBy = {
   linkedExternalSystem?: InputMaybe<ExternalSystemsOrderBy>;
   systemClientId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: client_external_systems */
-export type ClientExternalSystemsPkColumnsInput = {
+export interface ClientExternalSystemsPkColumnsInput {
   /** Unique identifier for the client-system mapping */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "client_external_systems" */
 export enum ClientExternalSystemsSelectColumn {
@@ -4258,7 +4258,7 @@ export enum ClientExternalSystemsSelectColumn {
 }
 
 /** input type for updating data in table "client_external_systems" */
-export type ClientExternalSystemsSetInput = {
+export interface ClientExternalSystemsSetInput {
   /** Reference to the client */
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the mapping was created */
@@ -4271,18 +4271,18 @@ export type ClientExternalSystemsSetInput = {
   systemClientId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the mapping was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "clientExternalSystems" */
-export type ClientExternalSystemsStreamCursorInput = {
+export interface ClientExternalSystemsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: ClientExternalSystemsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type ClientExternalSystemsStreamCursorValueInput = {
+export interface ClientExternalSystemsStreamCursorValueInput {
   /** Reference to the client */
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the mapping was created */
@@ -4295,7 +4295,7 @@ export type ClientExternalSystemsStreamCursorValueInput = {
   systemClientId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the mapping was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "client_external_systems" */
 export enum ClientExternalSystemsUpdateColumn {
@@ -4313,15 +4313,15 @@ export enum ClientExternalSystemsUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type ClientExternalSystemsUpdates = {
+export interface ClientExternalSystemsUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<ClientExternalSystemsSetInput>;
   /** filter the rows which have to be updated */
   where: ClientExternalSystemsBoolExp;
-};
+}
 
 /** columns and relationships of "clients" */
-export type Clients = {
+export interface Clients {
   __typename?: 'clients';
   /** Whether the client is currently active */
   active: Maybe<Scalars['Boolean']['output']>;
@@ -4357,7 +4357,7 @@ export type Clients = {
   payrollsAggregate: PayrollsAggregate;
   /** Timestamp when the client was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 
 /** columns and relationships of "clients" */
@@ -4400,7 +4400,14 @@ export type ClientsBillingInvoicesAggregateArgs = {
 };
 
 
-/** columns and relationships of "clients" - duplicate removed */
+/** columns and relationships of "clients" */
+export type ClientsBillingInvoicesArgs = {
+  distinctOn: InputMaybe<Array<BillingInvoiceSelectColumn>>;
+  limit: InputMaybe<Scalars['Int']['input']>;
+  offset: InputMaybe<Scalars['Int']['input']>;
+  orderBy: InputMaybe<Array<BillingInvoiceOrderBy>>;
+  where: InputMaybe<BillingInvoiceBoolExp>;
+};
 
 
 /** columns and relationships of "clients" */
@@ -4443,46 +4450,46 @@ export type ClientsPayrollsAggregateArgs = {
 };
 
 /** aggregated selection of "clients" */
-export type ClientsAggregate = {
+export interface ClientsAggregate {
   __typename?: 'clientsAggregate';
   aggregate: Maybe<ClientsAggregateFields>;
   nodes: Array<Clients>;
-};
+}
 
-export type ClientsAggregateBoolExp = {
+export interface ClientsAggregateBoolExp {
   bool_and?: InputMaybe<ClientsAggregateBoolExpBoolAnd>;
   bool_or?: InputMaybe<ClientsAggregateBoolExpBoolOr>;
   count?: InputMaybe<ClientsAggregateBoolExpCount>;
-};
+}
 
-export type ClientsAggregateBoolExpBoolAnd = {
+export interface ClientsAggregateBoolExpBoolAnd {
   arguments: ClientsSelectColumnClientsAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientsBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type ClientsAggregateBoolExpBoolOr = {
+export interface ClientsAggregateBoolExpBoolOr {
   arguments: ClientsSelectColumnClientsAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientsBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type ClientsAggregateBoolExpCount = {
+export interface ClientsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<ClientsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "clients" */
-export type ClientsAggregateFields = {
+export interface ClientsAggregateFields {
   __typename?: 'clientsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<ClientsMaxFields>;
   min: Maybe<ClientsMinFields>;
-};
+}
 
 
 /** aggregate fields of "clients" */
@@ -4492,21 +4499,21 @@ export type ClientsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "clients" */
-export type ClientsAggregateOrderBy = {
+export interface ClientsAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<ClientsMaxOrderBy>;
   min?: InputMaybe<ClientsMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "clients" */
-export type ClientsArrRelInsertInput = {
+export interface ClientsArrRelInsertInput {
   data: Array<ClientsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<ClientsOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "clients". All fields are combined with a logical 'AND'. */
-export type ClientsBoolExp = {
+export interface ClientsBoolExp {
   _and?: InputMaybe<Array<ClientsBoolExp>>;
   _not?: InputMaybe<ClientsBoolExp>;
   _or?: InputMaybe<Array<ClientsBoolExp>>;
@@ -4528,7 +4535,7 @@ export type ClientsBoolExp = {
   payrolls?: InputMaybe<PayrollsBoolExp>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "clients" */
 export enum ClientsConstraint {
@@ -4537,7 +4544,7 @@ export enum ClientsConstraint {
 }
 
 /** input type for inserting data into table "clients" */
-export type ClientsInsertInput = {
+export interface ClientsInsertInput {
   /** Whether the client is currently active */
   active?: InputMaybe<Scalars['Boolean']['input']>;
   billingAssignments?: InputMaybe<ClientBillingAssignmentsArrRelInsertInput>;
@@ -4559,10 +4566,10 @@ export type ClientsInsertInput = {
   payrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** Timestamp when the client was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type ClientsMaxFields = {
+export interface ClientsMaxFields {
   __typename?: 'clientsMaxFields';
   /** Email address for the client contact */
   contactEmail: Maybe<Scalars['String']['output']>;
@@ -4578,10 +4585,10 @@ export type ClientsMaxFields = {
   name: Maybe<Scalars['String']['output']>;
   /** Timestamp when the client was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by max() on columns of table "clients" */
-export type ClientsMaxOrderBy = {
+export interface ClientsMaxOrderBy {
   /** Email address for the client contact */
   contactEmail?: InputMaybe<OrderBy>;
   /** Primary contact person at the client */
@@ -4596,10 +4603,10 @@ export type ClientsMaxOrderBy = {
   name?: InputMaybe<OrderBy>;
   /** Timestamp when the client was last updated */
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type ClientsMinFields = {
+export interface ClientsMinFields {
   __typename?: 'clientsMinFields';
   /** Email address for the client contact */
   contactEmail: Maybe<Scalars['String']['output']>;
@@ -4615,10 +4622,10 @@ export type ClientsMinFields = {
   name: Maybe<Scalars['String']['output']>;
   /** Timestamp when the client was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by min() on columns of table "clients" */
-export type ClientsMinOrderBy = {
+export interface ClientsMinOrderBy {
   /** Email address for the client contact */
   contactEmail?: InputMaybe<OrderBy>;
   /** Primary contact person at the client */
@@ -4633,33 +4640,33 @@ export type ClientsMinOrderBy = {
   name?: InputMaybe<OrderBy>;
   /** Timestamp when the client was last updated */
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "clients" */
-export type ClientsMutationResponse = {
+export interface ClientsMutationResponse {
   __typename?: 'clientsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<Clients>;
-};
+}
 
 /** input type for inserting object relation for remote table "clients" */
-export type ClientsObjRelInsertInput = {
+export interface ClientsObjRelInsertInput {
   data: ClientsInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<ClientsOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "clients" */
-export type ClientsOnConflict = {
+export interface ClientsOnConflict {
   constraint: ClientsConstraint;
   updateColumns?: Array<ClientsUpdateColumn>;
   where?: InputMaybe<ClientsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "clients". */
-export type ClientsOrderBy = {
+export interface ClientsOrderBy {
   active?: InputMaybe<OrderBy>;
   billingAssignmentsAggregate?: InputMaybe<ClientBillingAssignmentsAggregateOrderBy>;
   billingInvoicesAggregate?: InputMaybe<BillingInvoicesAggregateOrderBy>;
@@ -4673,13 +4680,13 @@ export type ClientsOrderBy = {
   name?: InputMaybe<OrderBy>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: clients */
-export type ClientsPkColumnsInput = {
+export interface ClientsPkColumnsInput {
   /** Unique identifier for the client */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "clients" */
 export enum ClientsSelectColumn {
@@ -4714,7 +4721,7 @@ export enum ClientsSelectColumnClientsAggregateBoolExpBoolOrArgumentsColumns {
 }
 
 /** input type for updating data in table "clients" */
-export type ClientsSetInput = {
+export interface ClientsSetInput {
   /** Whether the client is currently active */
   active?: InputMaybe<Scalars['Boolean']['input']>;
   /** Email address for the client contact */
@@ -4731,18 +4738,18 @@ export type ClientsSetInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the client was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "clients" */
-export type ClientsStreamCursorInput = {
+export interface ClientsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: ClientsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type ClientsStreamCursorValueInput = {
+export interface ClientsStreamCursorValueInput {
   /** Whether the client is currently active */
   active?: InputMaybe<Scalars['Boolean']['input']>;
   /** Email address for the client contact */
@@ -4759,7 +4766,7 @@ export type ClientsStreamCursorValueInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the client was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "clients" */
 export enum ClientsUpdateColumn {
@@ -4781,14 +4788,14 @@ export enum ClientsUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type ClientsUpdates = {
+export interface ClientsUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<ClientsSetInput>;
   /** filter the rows which have to be updated */
   where: ClientsBoolExp;
-};
+}
 
-export type CreatePayrollVersionArgs = {
+export interface CreatePayrollVersionArgs {
   p_created_by_user_id?: InputMaybe<Scalars['uuid']['input']>;
   p_go_live_date?: InputMaybe<Scalars['date']['input']>;
   p_new_backup_consultant_user_id?: InputMaybe<Scalars['uuid']['input']>;
@@ -4801,15 +4808,15 @@ export type CreatePayrollVersionArgs = {
   p_new_primary_consultant_user_id?: InputMaybe<Scalars['uuid']['input']>;
   p_original_payroll_id?: InputMaybe<Scalars['uuid']['input']>;
   p_version_reason?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
-export type CreatePayrollVersionSimpleArgs = {
+export interface CreatePayrollVersionSimpleArgs {
   payroll_id?: InputMaybe<Scalars['uuid']['input']>;
   version_reason?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** columns and relationships of "current_payrolls" */
-export type CurrentPayrolls = {
+export interface CurrentPayrolls {
   __typename?: 'currentPayrolls';
   backupConsultantUserId: Maybe<Scalars['uuid']['output']>;
   clientId: Maybe<Scalars['uuid']['output']>;
@@ -4830,17 +4837,17 @@ export type CurrentPayrolls = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
   versionReason: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** aggregated selection of "current_payrolls" */
-export type CurrentPayrollsAggregate = {
+export interface CurrentPayrollsAggregate {
   __typename?: 'currentPayrollsAggregate';
   aggregate: Maybe<CurrentPayrollsAggregateFields>;
   nodes: Array<CurrentPayrolls>;
-};
+}
 
 /** aggregate fields of "current_payrolls" */
-export type CurrentPayrollsAggregateFields = {
+export interface CurrentPayrollsAggregateFields {
   __typename?: 'currentPayrollsAggregateFields';
   avg: Maybe<CurrentPayrollsAvgFields>;
   count: Scalars['Int']['output'];
@@ -4853,7 +4860,7 @@ export type CurrentPayrollsAggregateFields = {
   varPop: Maybe<CurrentPayrollsVarPopFields>;
   varSamp: Maybe<CurrentPayrollsVarSampFields>;
   variance: Maybe<CurrentPayrollsVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "current_payrolls" */
@@ -4863,14 +4870,14 @@ export type CurrentPayrollsAggregateFieldsCountArgs = {
 };
 
 /** aggregate avg on columns */
-export type CurrentPayrollsAvgFields = {
+export interface CurrentPayrollsAvgFields {
   __typename?: 'currentPayrollsAvgFields';
   dateValue: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "current_payrolls". All fields are combined with a logical 'AND'. */
-export type CurrentPayrollsBoolExp = {
+export interface CurrentPayrollsBoolExp {
   _and?: InputMaybe<Array<CurrentPayrollsBoolExp>>;
   _not?: InputMaybe<CurrentPayrollsBoolExp>;
   _or?: InputMaybe<Array<CurrentPayrollsBoolExp>>;
@@ -4893,10 +4900,10 @@ export type CurrentPayrollsBoolExp = {
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   versionNumber?: InputMaybe<IntComparisonExp>;
   versionReason?: InputMaybe<StringComparisonExp>;
-};
+}
 
 /** aggregate max on columns */
-export type CurrentPayrollsMaxFields = {
+export interface CurrentPayrollsMaxFields {
   __typename?: 'currentPayrollsMaxFields';
   backupConsultantUserId: Maybe<Scalars['uuid']['output']>;
   clientId: Maybe<Scalars['uuid']['output']>;
@@ -4917,10 +4924,10 @@ export type CurrentPayrollsMaxFields = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
   versionReason: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type CurrentPayrollsMinFields = {
+export interface CurrentPayrollsMinFields {
   __typename?: 'currentPayrollsMinFields';
   backupConsultantUserId: Maybe<Scalars['uuid']['output']>;
   clientId: Maybe<Scalars['uuid']['output']>;
@@ -4941,10 +4948,10 @@ export type CurrentPayrollsMinFields = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
   versionReason: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** Ordering options when selecting data from "current_payrolls". */
-export type CurrentPayrollsOrderBy = {
+export interface CurrentPayrollsOrderBy {
   backupConsultantUserId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   clientName?: InputMaybe<OrderBy>;
@@ -4964,7 +4971,7 @@ export type CurrentPayrollsOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
   versionReason?: InputMaybe<OrderBy>;
-};
+}
 
 /** select columns of table "current_payrolls" */
 export enum CurrentPayrollsSelectColumn {
@@ -5009,36 +5016,36 @@ export enum CurrentPayrollsSelectColumn {
 }
 
 /** aggregate stddev on columns */
-export type CurrentPayrollsStddevFields = {
+export interface CurrentPayrollsStddevFields {
   __typename?: 'currentPayrollsStddevFields';
   dateValue: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type CurrentPayrollsStddevPopFields = {
+export interface CurrentPayrollsStddevPopFields {
   __typename?: 'currentPayrollsStddevPopFields';
   dateValue: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type CurrentPayrollsStddevSampFields = {
+export interface CurrentPayrollsStddevSampFields {
   __typename?: 'currentPayrollsStddevSampFields';
   dateValue: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "currentPayrolls" */
-export type CurrentPayrollsStreamCursorInput = {
+export interface CurrentPayrollsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: CurrentPayrollsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type CurrentPayrollsStreamCursorValueInput = {
+export interface CurrentPayrollsStreamCursorValueInput {
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   clientName?: InputMaybe<Scalars['String']['input']>;
@@ -5058,38 +5065,38 @@ export type CurrentPayrollsStreamCursorValueInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
   versionReason?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type CurrentPayrollsSumFields = {
+export interface CurrentPayrollsSumFields {
   __typename?: 'currentPayrollsSumFields';
   dateValue: Maybe<Scalars['Int']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** aggregate varPop on columns */
-export type CurrentPayrollsVarPopFields = {
+export interface CurrentPayrollsVarPopFields {
   __typename?: 'currentPayrollsVarPopFields';
   dateValue: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type CurrentPayrollsVarSampFields = {
+export interface CurrentPayrollsVarSampFields {
   __typename?: 'currentPayrollsVarSampFields';
   dateValue: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type CurrentPayrollsVarianceFields = {
+export interface CurrentPayrollsVarianceFields {
   __typename?: 'currentPayrollsVarianceFields';
   dateValue: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "audit.data_access_log" */
-export type DataAccessLogs = {
+export interface DataAccessLogs {
   __typename?: 'dataAccessLogs';
   accessType: Scalars['String']['output'];
   accessedAt: Scalars['timestamptz']['output'];
@@ -5104,7 +5111,7 @@ export type DataAccessLogs = {
   rowCount: Maybe<Scalars['Int']['output']>;
   sessionId: Maybe<Scalars['String']['output']>;
   userId: Scalars['uuid']['output'];
-};
+}
 
 
 /** columns and relationships of "audit.data_access_log" */
@@ -5113,14 +5120,14 @@ export type DataAccessLogsMetadataArgs = {
 };
 
 /** aggregated selection of "audit.data_access_log" */
-export type DataAccessLogsAggregate = {
+export interface DataAccessLogsAggregate {
   __typename?: 'dataAccessLogsAggregate';
   aggregate: Maybe<DataAccessLogsAggregateFields>;
   nodes: Array<DataAccessLogs>;
-};
+}
 
 /** aggregate fields of "audit.data_access_log" */
-export type DataAccessLogsAggregateFields = {
+export interface DataAccessLogsAggregateFields {
   __typename?: 'dataAccessLogsAggregateFields';
   avg: Maybe<DataAccessLogsAvgFields>;
   count: Scalars['Int']['output'];
@@ -5133,7 +5140,7 @@ export type DataAccessLogsAggregateFields = {
   varPop: Maybe<DataAccessLogsVarPopFields>;
   varSamp: Maybe<DataAccessLogsVarSampFields>;
   variance: Maybe<DataAccessLogsVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "audit.data_access_log" */
@@ -5143,18 +5150,18 @@ export type DataAccessLogsAggregateFieldsCountArgs = {
 };
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type DataAccessLogsAppendInput = {
+export interface DataAccessLogsAppendInput {
   metadata?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** aggregate avg on columns */
-export type DataAccessLogsAvgFields = {
+export interface DataAccessLogsAvgFields {
   __typename?: 'dataAccessLogsAvgFields';
   rowCount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "audit.data_access_log". All fields are combined with a logical 'AND'. */
-export type DataAccessLogsBoolExp = {
+export interface DataAccessLogsBoolExp {
   _and?: InputMaybe<Array<DataAccessLogsBoolExp>>;
   _not?: InputMaybe<DataAccessLogsBoolExp>;
   _or?: InputMaybe<Array<DataAccessLogsBoolExp>>;
@@ -5171,7 +5178,7 @@ export type DataAccessLogsBoolExp = {
   rowCount?: InputMaybe<IntComparisonExp>;
   sessionId?: InputMaybe<StringComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "audit.data_access_log" */
 export enum DataAccessLogsConstraint {
@@ -5180,27 +5187,27 @@ export enum DataAccessLogsConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type DataAccessLogsDeleteAtPathInput = {
+export interface DataAccessLogsDeleteAtPathInput {
   metadata?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type DataAccessLogsDeleteElemInput = {
+export interface DataAccessLogsDeleteElemInput {
   metadata?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type DataAccessLogsDeleteKeyInput = {
+export interface DataAccessLogsDeleteKeyInput {
   metadata?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for incrementing numeric columns in table "audit.data_access_log" */
-export type DataAccessLogsIncInput = {
+export interface DataAccessLogsIncInput {
   rowCount?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** input type for inserting data into table "audit.data_access_log" */
-export type DataAccessLogsInsertInput = {
+export interface DataAccessLogsInsertInput {
   accessType?: InputMaybe<Scalars['String']['input']>;
   accessedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   dataClassification?: InputMaybe<Scalars['String']['input']>;
@@ -5214,10 +5221,10 @@ export type DataAccessLogsInsertInput = {
   rowCount?: InputMaybe<Scalars['Int']['input']>;
   sessionId?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type DataAccessLogsMaxFields = {
+export interface DataAccessLogsMaxFields {
   __typename?: 'dataAccessLogsMaxFields';
   accessType: Maybe<Scalars['String']['output']>;
   accessedAt: Maybe<Scalars['timestamptz']['output']>;
@@ -5230,10 +5237,10 @@ export type DataAccessLogsMaxFields = {
   rowCount: Maybe<Scalars['Int']['output']>;
   sessionId: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type DataAccessLogsMinFields = {
+export interface DataAccessLogsMinFields {
   __typename?: 'dataAccessLogsMinFields';
   accessType: Maybe<Scalars['String']['output']>;
   accessedAt: Maybe<Scalars['timestamptz']['output']>;
@@ -5246,26 +5253,26 @@ export type DataAccessLogsMinFields = {
   rowCount: Maybe<Scalars['Int']['output']>;
   sessionId: Maybe<Scalars['String']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** response of any mutation on the table "audit.data_access_log" */
-export type DataAccessLogsMutationResponse = {
+export interface DataAccessLogsMutationResponse {
   __typename?: 'dataAccessLogsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<DataAccessLogs>;
-};
+}
 
 /** on_conflict condition type for table "audit.data_access_log" */
-export type DataAccessLogsOnConflict = {
+export interface DataAccessLogsOnConflict {
   constraint: DataAccessLogsConstraint;
   updateColumns?: Array<DataAccessLogsUpdateColumn>;
   where?: InputMaybe<DataAccessLogsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "audit.data_access_log". */
-export type DataAccessLogsOrderBy = {
+export interface DataAccessLogsOrderBy {
   accessType?: InputMaybe<OrderBy>;
   accessedAt?: InputMaybe<OrderBy>;
   dataClassification?: InputMaybe<OrderBy>;
@@ -5279,17 +5286,17 @@ export type DataAccessLogsOrderBy = {
   rowCount?: InputMaybe<OrderBy>;
   sessionId?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: audit.data_access_log */
-export type DataAccessLogsPkColumnsInput = {
+export interface DataAccessLogsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type DataAccessLogsPrependInput = {
+export interface DataAccessLogsPrependInput {
   metadata?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "audit.data_access_log" */
 export enum DataAccessLogsSelectColumn {
@@ -5322,7 +5329,7 @@ export enum DataAccessLogsSelectColumn {
 }
 
 /** input type for updating data in table "audit.data_access_log" */
-export type DataAccessLogsSetInput = {
+export interface DataAccessLogsSetInput {
   accessType?: InputMaybe<Scalars['String']['input']>;
   accessedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   dataClassification?: InputMaybe<Scalars['String']['input']>;
@@ -5336,36 +5343,36 @@ export type DataAccessLogsSetInput = {
   rowCount?: InputMaybe<Scalars['Int']['input']>;
   sessionId?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type DataAccessLogsStddevFields = {
+export interface DataAccessLogsStddevFields {
   __typename?: 'dataAccessLogsStddevFields';
   rowCount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type DataAccessLogsStddevPopFields = {
+export interface DataAccessLogsStddevPopFields {
   __typename?: 'dataAccessLogsStddevPopFields';
   rowCount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type DataAccessLogsStddevSampFields = {
+export interface DataAccessLogsStddevSampFields {
   __typename?: 'dataAccessLogsStddevSampFields';
   rowCount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "dataAccessLogs" */
-export type DataAccessLogsStreamCursorInput = {
+export interface DataAccessLogsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: DataAccessLogsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type DataAccessLogsStreamCursorValueInput = {
+export interface DataAccessLogsStreamCursorValueInput {
   accessType?: InputMaybe<Scalars['String']['input']>;
   accessedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   dataClassification?: InputMaybe<Scalars['String']['input']>;
@@ -5379,13 +5386,13 @@ export type DataAccessLogsStreamCursorValueInput = {
   rowCount?: InputMaybe<Scalars['Int']['input']>;
   sessionId?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type DataAccessLogsSumFields = {
+export interface DataAccessLogsSumFields {
   __typename?: 'dataAccessLogsSumFields';
   rowCount: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** update columns of table "audit.data_access_log" */
 export enum DataAccessLogsUpdateColumn {
@@ -5417,7 +5424,7 @@ export enum DataAccessLogsUpdateColumn {
   userId = 'userId'
 }
 
-export type DataAccessLogsUpdates = {
+export interface DataAccessLogsUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<DataAccessLogsAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -5434,28 +5441,28 @@ export type DataAccessLogsUpdates = {
   _set?: InputMaybe<DataAccessLogsSetInput>;
   /** filter the rows which have to be updated */
   where: DataAccessLogsBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type DataAccessLogsVarPopFields = {
+export interface DataAccessLogsVarPopFields {
   __typename?: 'dataAccessLogsVarPopFields';
   rowCount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type DataAccessLogsVarSampFields = {
+export interface DataAccessLogsVarSampFields {
   __typename?: 'dataAccessLogsVarSampFields';
   rowCount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type DataAccessLogsVarianceFields = {
+export interface DataAccessLogsVarianceFields {
   __typename?: 'dataAccessLogsVarianceFields';
   rowCount: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "external_systems" */
-export type ExternalSystems = {
+export interface ExternalSystems {
   __typename?: 'externalSystems';
   /** An array relationship */
   clientExternalSystems: Array<ClientExternalSystems>;
@@ -5475,7 +5482,7 @@ export type ExternalSystems = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   /** URL endpoint for the external system */
   url: Scalars['String']['output'];
-};
+}
 
 
 /** columns and relationships of "external_systems" */
@@ -5498,19 +5505,19 @@ export type ExternalSystemsClientExternalSystemsAggregateArgs = {
 };
 
 /** aggregated selection of "external_systems" */
-export type ExternalSystemsAggregate = {
+export interface ExternalSystemsAggregate {
   __typename?: 'externalSystemsAggregate';
   aggregate: Maybe<ExternalSystemsAggregateFields>;
   nodes: Array<ExternalSystems>;
-};
+}
 
 /** aggregate fields of "external_systems" */
-export type ExternalSystemsAggregateFields = {
+export interface ExternalSystemsAggregateFields {
   __typename?: 'externalSystemsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<ExternalSystemsMaxFields>;
   min: Maybe<ExternalSystemsMinFields>;
-};
+}
 
 
 /** aggregate fields of "external_systems" */
@@ -5520,7 +5527,7 @@ export type ExternalSystemsAggregateFieldsCountArgs = {
 };
 
 /** Boolean expression to filter rows from the table "external_systems". All fields are combined with a logical 'AND'. */
-export type ExternalSystemsBoolExp = {
+export interface ExternalSystemsBoolExp {
   _and?: InputMaybe<Array<ExternalSystemsBoolExp>>;
   _not?: InputMaybe<ExternalSystemsBoolExp>;
   _or?: InputMaybe<Array<ExternalSystemsBoolExp>>;
@@ -5533,7 +5540,7 @@ export type ExternalSystemsBoolExp = {
   name?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   url?: InputMaybe<StringComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "external_systems" */
 export enum ExternalSystemsConstraint {
@@ -5542,7 +5549,7 @@ export enum ExternalSystemsConstraint {
 }
 
 /** input type for inserting data into table "external_systems" */
-export type ExternalSystemsInsertInput = {
+export interface ExternalSystemsInsertInput {
   clientExternalSystems?: InputMaybe<ClientExternalSystemsArrRelInsertInput>;
   /** Timestamp when the system was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -5558,10 +5565,10 @@ export type ExternalSystemsInsertInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** URL endpoint for the external system */
   url?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type ExternalSystemsMaxFields = {
+export interface ExternalSystemsMaxFields {
   __typename?: 'externalSystemsMaxFields';
   /** Timestamp when the system was created */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -5577,10 +5584,10 @@ export type ExternalSystemsMaxFields = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   /** URL endpoint for the external system */
   url: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type ExternalSystemsMinFields = {
+export interface ExternalSystemsMinFields {
   __typename?: 'externalSystemsMinFields';
   /** Timestamp when the system was created */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -5596,33 +5603,33 @@ export type ExternalSystemsMinFields = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   /** URL endpoint for the external system */
   url: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** response of any mutation on the table "external_systems" */
-export type ExternalSystemsMutationResponse = {
+export interface ExternalSystemsMutationResponse {
   __typename?: 'externalSystemsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<ExternalSystems>;
-};
+}
 
 /** input type for inserting object relation for remote table "external_systems" */
-export type ExternalSystemsObjRelInsertInput = {
+export interface ExternalSystemsObjRelInsertInput {
   data: ExternalSystemsInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<ExternalSystemsOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "external_systems" */
-export type ExternalSystemsOnConflict = {
+export interface ExternalSystemsOnConflict {
   constraint: ExternalSystemsConstraint;
   updateColumns?: Array<ExternalSystemsUpdateColumn>;
   where?: InputMaybe<ExternalSystemsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "external_systems". */
-export type ExternalSystemsOrderBy = {
+export interface ExternalSystemsOrderBy {
   clientExternalSystemsAggregate?: InputMaybe<ClientExternalSystemsAggregateOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
@@ -5631,13 +5638,13 @@ export type ExternalSystemsOrderBy = {
   name?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   url?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: external_systems */
-export type ExternalSystemsPkColumnsInput = {
+export interface ExternalSystemsPkColumnsInput {
   /** Unique identifier for the external system */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "external_systems" */
 export enum ExternalSystemsSelectColumn {
@@ -5658,7 +5665,7 @@ export enum ExternalSystemsSelectColumn {
 }
 
 /** input type for updating data in table "external_systems" */
-export type ExternalSystemsSetInput = {
+export interface ExternalSystemsSetInput {
   /** Timestamp when the system was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Description of the external system and its purpose */
@@ -5673,18 +5680,18 @@ export type ExternalSystemsSetInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** URL endpoint for the external system */
   url?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** Streaming cursor of the table "externalSystems" */
-export type ExternalSystemsStreamCursorInput = {
+export interface ExternalSystemsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: ExternalSystemsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type ExternalSystemsStreamCursorValueInput = {
+export interface ExternalSystemsStreamCursorValueInput {
   /** Timestamp when the system was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Description of the external system and its purpose */
@@ -5699,7 +5706,7 @@ export type ExternalSystemsStreamCursorValueInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** URL endpoint for the external system */
   url?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** update columns of table "external_systems" */
 export enum ExternalSystemsUpdateColumn {
@@ -5719,15 +5726,15 @@ export enum ExternalSystemsUpdateColumn {
   url = 'url'
 }
 
-export type ExternalSystemsUpdates = {
+export interface ExternalSystemsUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<ExternalSystemsSetInput>;
   /** filter the rows which have to be updated */
   where: ExternalSystemsBoolExp;
-};
+}
 
 /** columns and relationships of "feature_flags" */
-export type FeatureFlags = {
+export interface FeatureFlags {
   __typename?: 'featureFlags';
   /** JSON array of roles that can access this feature */
   allowedRoles: Scalars['jsonb']['output'];
@@ -5739,7 +5746,7 @@ export type FeatureFlags = {
   isEnabled: Maybe<Scalars['Boolean']['output']>;
   /** Timestamp when the feature flag was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 
 /** columns and relationships of "feature_flags" */
@@ -5748,19 +5755,19 @@ export type FeatureFlagsAllowedRolesArgs = {
 };
 
 /** aggregated selection of "feature_flags" */
-export type FeatureFlagsAggregate = {
+export interface FeatureFlagsAggregate {
   __typename?: 'featureFlagsAggregate';
   aggregate: Maybe<FeatureFlagsAggregateFields>;
   nodes: Array<FeatureFlags>;
-};
+}
 
 /** aggregate fields of "feature_flags" */
-export type FeatureFlagsAggregateFields = {
+export interface FeatureFlagsAggregateFields {
   __typename?: 'featureFlagsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<FeatureFlagsMaxFields>;
   min: Maybe<FeatureFlagsMinFields>;
-};
+}
 
 
 /** aggregate fields of "feature_flags" */
@@ -5770,13 +5777,13 @@ export type FeatureFlagsAggregateFieldsCountArgs = {
 };
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type FeatureFlagsAppendInput = {
+export interface FeatureFlagsAppendInput {
   /** JSON array of roles that can access this feature */
   allowedRoles?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "feature_flags". All fields are combined with a logical 'AND'. */
-export type FeatureFlagsBoolExp = {
+export interface FeatureFlagsBoolExp {
   _and?: InputMaybe<Array<FeatureFlagsBoolExp>>;
   _not?: InputMaybe<FeatureFlagsBoolExp>;
   _or?: InputMaybe<Array<FeatureFlagsBoolExp>>;
@@ -5785,7 +5792,7 @@ export type FeatureFlagsBoolExp = {
   id?: InputMaybe<UuidComparisonExp>;
   isEnabled?: InputMaybe<BooleanComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "feature_flags" */
 export enum FeatureFlagsConstraint {
@@ -5796,25 +5803,25 @@ export enum FeatureFlagsConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type FeatureFlagsDeleteAtPathInput = {
+export interface FeatureFlagsDeleteAtPathInput {
   /** JSON array of roles that can access this feature */
   allowedRoles?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type FeatureFlagsDeleteElemInput = {
+export interface FeatureFlagsDeleteElemInput {
   /** JSON array of roles that can access this feature */
   allowedRoles?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type FeatureFlagsDeleteKeyInput = {
+export interface FeatureFlagsDeleteKeyInput {
   /** JSON array of roles that can access this feature */
   allowedRoles?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for inserting data into table "feature_flags" */
-export type FeatureFlagsInsertInput = {
+export interface FeatureFlagsInsertInput {
   /** JSON array of roles that can access this feature */
   allowedRoles?: InputMaybe<Scalars['jsonb']['input']>;
   /** Name of the feature controlled by this flag */
@@ -5825,10 +5832,10 @@ export type FeatureFlagsInsertInput = {
   isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Timestamp when the feature flag was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type FeatureFlagsMaxFields = {
+export interface FeatureFlagsMaxFields {
   __typename?: 'featureFlagsMaxFields';
   /** Name of the feature controlled by this flag */
   featureName: Maybe<Scalars['String']['output']>;
@@ -5836,10 +5843,10 @@ export type FeatureFlagsMaxFields = {
   id: Maybe<Scalars['uuid']['output']>;
   /** Timestamp when the feature flag was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type FeatureFlagsMinFields = {
+export interface FeatureFlagsMinFields {
   __typename?: 'featureFlagsMinFields';
   /** Name of the feature controlled by this flag */
   featureName: Maybe<Scalars['String']['output']>;
@@ -5847,44 +5854,44 @@ export type FeatureFlagsMinFields = {
   id: Maybe<Scalars['uuid']['output']>;
   /** Timestamp when the feature flag was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** response of any mutation on the table "feature_flags" */
-export type FeatureFlagsMutationResponse = {
+export interface FeatureFlagsMutationResponse {
   __typename?: 'featureFlagsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<FeatureFlags>;
-};
+}
 
 /** on_conflict condition type for table "feature_flags" */
-export type FeatureFlagsOnConflict = {
+export interface FeatureFlagsOnConflict {
   constraint: FeatureFlagsConstraint;
   updateColumns?: Array<FeatureFlagsUpdateColumn>;
   where?: InputMaybe<FeatureFlagsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "feature_flags". */
-export type FeatureFlagsOrderBy = {
+export interface FeatureFlagsOrderBy {
   allowedRoles?: InputMaybe<OrderBy>;
   featureName?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   isEnabled?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: feature_flags */
-export type FeatureFlagsPkColumnsInput = {
+export interface FeatureFlagsPkColumnsInput {
   /** Unique identifier for the feature flag */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type FeatureFlagsPrependInput = {
+export interface FeatureFlagsPrependInput {
   /** JSON array of roles that can access this feature */
   allowedRoles?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "feature_flags" */
 export enum FeatureFlagsSelectColumn {
@@ -5901,7 +5908,7 @@ export enum FeatureFlagsSelectColumn {
 }
 
 /** input type for updating data in table "feature_flags" */
-export type FeatureFlagsSetInput = {
+export interface FeatureFlagsSetInput {
   /** JSON array of roles that can access this feature */
   allowedRoles?: InputMaybe<Scalars['jsonb']['input']>;
   /** Name of the feature controlled by this flag */
@@ -5912,18 +5919,18 @@ export type FeatureFlagsSetInput = {
   isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Timestamp when the feature flag was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "featureFlags" */
-export type FeatureFlagsStreamCursorInput = {
+export interface FeatureFlagsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: FeatureFlagsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type FeatureFlagsStreamCursorValueInput = {
+export interface FeatureFlagsStreamCursorValueInput {
   /** JSON array of roles that can access this feature */
   allowedRoles?: InputMaybe<Scalars['jsonb']['input']>;
   /** Name of the feature controlled by this flag */
@@ -5934,7 +5941,7 @@ export type FeatureFlagsStreamCursorValueInput = {
   isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Timestamp when the feature flag was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "feature_flags" */
 export enum FeatureFlagsUpdateColumn {
@@ -5950,7 +5957,7 @@ export enum FeatureFlagsUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type FeatureFlagsUpdates = {
+export interface FeatureFlagsUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<FeatureFlagsAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -5965,25 +5972,25 @@ export type FeatureFlagsUpdates = {
   _set?: InputMaybe<FeatureFlagsSetInput>;
   /** filter the rows which have to be updated */
   where: FeatureFlagsBoolExp;
-};
+}
 
-export type GeneratePayrollDatesArgs = {
+export interface GeneratePayrollDatesArgs {
   p_end_date?: InputMaybe<Scalars['date']['input']>;
   p_max_dates?: InputMaybe<Scalars['Int']['input']>;
   p_payroll_id?: InputMaybe<Scalars['uuid']['input']>;
   p_start_date?: InputMaybe<Scalars['date']['input']>;
-};
+}
 
-export type GetLatestPayrollVersionArgs = {
+export interface GetLatestPayrollVersionArgs {
   payroll_id?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
-export type GetPayrollVersionHistoryArgs = {
+export interface GetPayrollVersionHistoryArgs {
   payroll_id?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** columns and relationships of "holidays" */
-export type Holidays = {
+export interface Holidays {
   __typename?: 'holidays';
   /** ISO country code where the holiday is observed */
   countryCode: Scalars['bpchar']['output'];
@@ -6009,17 +6016,17 @@ export type Holidays = {
   types: Array<Scalars['String']['output']>;
   /** Timestamp when the holiday record was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregated selection of "holidays" */
-export type HolidaysAggregate = {
+export interface HolidaysAggregate {
   __typename?: 'holidaysAggregate';
   aggregate: Maybe<HolidaysAggregateFields>;
   nodes: Array<Holidays>;
-};
+}
 
 /** aggregate fields of "holidays" */
-export type HolidaysAggregateFields = {
+export interface HolidaysAggregateFields {
   __typename?: 'holidaysAggregateFields';
   avg: Maybe<HolidaysAvgFields>;
   count: Scalars['Int']['output'];
@@ -6032,7 +6039,7 @@ export type HolidaysAggregateFields = {
   varPop: Maybe<HolidaysVarPopFields>;
   varSamp: Maybe<HolidaysVarSampFields>;
   variance: Maybe<HolidaysVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "holidays" */
@@ -6042,14 +6049,14 @@ export type HolidaysAggregateFieldsCountArgs = {
 };
 
 /** aggregate avg on columns */
-export type HolidaysAvgFields = {
+export interface HolidaysAvgFields {
   __typename?: 'holidaysAvgFields';
   /** First year when the holiday was observed */
   launchYear: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "holidays". All fields are combined with a logical 'AND'. */
-export type HolidaysBoolExp = {
+export interface HolidaysBoolExp {
   _and?: InputMaybe<Array<HolidaysBoolExp>>;
   _not?: InputMaybe<HolidaysBoolExp>;
   _or?: InputMaybe<Array<HolidaysBoolExp>>;
@@ -6065,7 +6072,7 @@ export type HolidaysBoolExp = {
   region?: InputMaybe<StringArrayComparisonExp>;
   types?: InputMaybe<StringArrayComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "holidays" */
 export enum HolidaysConstraint {
@@ -6074,13 +6081,13 @@ export enum HolidaysConstraint {
 }
 
 /** input type for incrementing numeric columns in table "holidays" */
-export type HolidaysIncInput = {
+export interface HolidaysIncInput {
   /** First year when the holiday was observed */
   launchYear?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** input type for inserting data into table "holidays" */
-export type HolidaysInsertInput = {
+export interface HolidaysInsertInput {
   /** ISO country code where the holiday is observed */
   countryCode?: InputMaybe<Scalars['bpchar']['input']>;
   /** Timestamp when the holiday record was created */
@@ -6105,10 +6112,10 @@ export type HolidaysInsertInput = {
   types?: InputMaybe<Array<Scalars['String']['input']>>;
   /** Timestamp when the holiday record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type HolidaysMaxFields = {
+export interface HolidaysMaxFields {
   __typename?: 'holidaysMaxFields';
   /** ISO country code where the holiday is observed */
   countryCode: Maybe<Scalars['bpchar']['output']>;
@@ -6130,10 +6137,10 @@ export type HolidaysMaxFields = {
   types: Maybe<Array<Scalars['String']['output']>>;
   /** Timestamp when the holiday record was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type HolidaysMinFields = {
+export interface HolidaysMinFields {
   __typename?: 'holidaysMinFields';
   /** ISO country code where the holiday is observed */
   countryCode: Maybe<Scalars['bpchar']['output']>;
@@ -6155,26 +6162,26 @@ export type HolidaysMinFields = {
   types: Maybe<Array<Scalars['String']['output']>>;
   /** Timestamp when the holiday record was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** response of any mutation on the table "holidays" */
-export type HolidaysMutationResponse = {
+export interface HolidaysMutationResponse {
   __typename?: 'holidaysMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<Holidays>;
-};
+}
 
 /** on_conflict condition type for table "holidays" */
-export type HolidaysOnConflict = {
+export interface HolidaysOnConflict {
   constraint: HolidaysConstraint;
   updateColumns?: Array<HolidaysUpdateColumn>;
   where?: InputMaybe<HolidaysBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "holidays". */
-export type HolidaysOrderBy = {
+export interface HolidaysOrderBy {
   countryCode?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   date?: InputMaybe<OrderBy>;
@@ -6187,13 +6194,13 @@ export type HolidaysOrderBy = {
   region?: InputMaybe<OrderBy>;
   types?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: holidays */
-export type HolidaysPkColumnsInput = {
+export interface HolidaysPkColumnsInput {
   /** Unique identifier for the holiday */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "holidays" */
 export enum HolidaysSelectColumn {
@@ -6224,7 +6231,7 @@ export enum HolidaysSelectColumn {
 }
 
 /** input type for updating data in table "holidays" */
-export type HolidaysSetInput = {
+export interface HolidaysSetInput {
   /** ISO country code where the holiday is observed */
   countryCode?: InputMaybe<Scalars['bpchar']['input']>;
   /** Timestamp when the holiday record was created */
@@ -6249,39 +6256,39 @@ export type HolidaysSetInput = {
   types?: InputMaybe<Array<Scalars['String']['input']>>;
   /** Timestamp when the holiday record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type HolidaysStddevFields = {
+export interface HolidaysStddevFields {
   __typename?: 'holidaysStddevFields';
   /** First year when the holiday was observed */
   launchYear: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type HolidaysStddevPopFields = {
+export interface HolidaysStddevPopFields {
   __typename?: 'holidaysStddevPopFields';
   /** First year when the holiday was observed */
   launchYear: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type HolidaysStddevSampFields = {
+export interface HolidaysStddevSampFields {
   __typename?: 'holidaysStddevSampFields';
   /** First year when the holiday was observed */
   launchYear: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "holidays" */
-export type HolidaysStreamCursorInput = {
+export interface HolidaysStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: HolidaysStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type HolidaysStreamCursorValueInput = {
+export interface HolidaysStreamCursorValueInput {
   /** ISO country code where the holiday is observed */
   countryCode?: InputMaybe<Scalars['bpchar']['input']>;
   /** Timestamp when the holiday record was created */
@@ -6306,14 +6313,14 @@ export type HolidaysStreamCursorValueInput = {
   types?: InputMaybe<Array<Scalars['String']['input']>>;
   /** Timestamp when the holiday record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type HolidaysSumFields = {
+export interface HolidaysSumFields {
   __typename?: 'holidaysSumFields';
   /** First year when the holiday was observed */
   launchYear: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** update columns of table "holidays" */
 export enum HolidaysUpdateColumn {
@@ -6343,38 +6350,38 @@ export enum HolidaysUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type HolidaysUpdates = {
+export interface HolidaysUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<HolidaysIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<HolidaysSetInput>;
   /** filter the rows which have to be updated */
   where: HolidaysBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type HolidaysVarPopFields = {
+export interface HolidaysVarPopFields {
   __typename?: 'holidaysVarPopFields';
   /** First year when the holiday was observed */
   launchYear: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type HolidaysVarSampFields = {
+export interface HolidaysVarSampFields {
   __typename?: 'holidaysVarSampFields';
   /** First year when the holiday was observed */
   launchYear: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type HolidaysVarianceFields = {
+export interface HolidaysVarianceFields {
   __typename?: 'holidaysVarianceFields';
   /** First year when the holiday was observed */
   launchYear: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "latest_payroll_version_results" */
-export type LatestPayrollVersionResults = {
+export interface LatestPayrollVersionResults {
   __typename?: 'latestPayrollVersionResults';
   active: Scalars['Boolean']['output'];
   goLiveDate: Maybe<Scalars['date']['output']>;
@@ -6383,16 +6390,16 @@ export type LatestPayrollVersionResults = {
   payrollId: Scalars['uuid']['output'];
   queriedAt: Maybe<Scalars['timestamptz']['output']>;
   versionNumber: Scalars['Int']['output'];
-};
+}
 
-export type LatestPayrollVersionResultsAggregate = {
+export interface LatestPayrollVersionResultsAggregate {
   __typename?: 'latestPayrollVersionResultsAggregate';
   aggregate: Maybe<LatestPayrollVersionResultsAggregateFields>;
   nodes: Array<LatestPayrollVersionResults>;
-};
+}
 
 /** aggregate fields of "latest_payroll_version_results" */
-export type LatestPayrollVersionResultsAggregateFields = {
+export interface LatestPayrollVersionResultsAggregateFields {
   __typename?: 'latestPayrollVersionResultsAggregateFields';
   avg: Maybe<LatestPayrollVersionResultsAvgFields>;
   count: Scalars['Int']['output'];
@@ -6405,7 +6412,7 @@ export type LatestPayrollVersionResultsAggregateFields = {
   varPop: Maybe<LatestPayrollVersionResultsVarPopFields>;
   varSamp: Maybe<LatestPayrollVersionResultsVarSampFields>;
   variance: Maybe<LatestPayrollVersionResultsVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "latest_payroll_version_results" */
@@ -6415,13 +6422,13 @@ export type LatestPayrollVersionResultsAggregateFieldsCountArgs = {
 };
 
 /** aggregate avg on columns */
-export type LatestPayrollVersionResultsAvgFields = {
+export interface LatestPayrollVersionResultsAvgFields {
   __typename?: 'latestPayrollVersionResultsAvgFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "latest_payroll_version_results". All fields are combined with a logical 'AND'. */
-export type LatestPayrollVersionResultsBoolExp = {
+export interface LatestPayrollVersionResultsBoolExp {
   _and?: InputMaybe<Array<LatestPayrollVersionResultsBoolExp>>;
   _not?: InputMaybe<LatestPayrollVersionResultsBoolExp>;
   _or?: InputMaybe<Array<LatestPayrollVersionResultsBoolExp>>;
@@ -6432,7 +6439,7 @@ export type LatestPayrollVersionResultsBoolExp = {
   payrollId?: InputMaybe<UuidComparisonExp>;
   queriedAt?: InputMaybe<TimestamptzComparisonExp>;
   versionNumber?: InputMaybe<IntComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "latest_payroll_version_results" */
 export enum LatestPayrollVersionResultsConstraint {
@@ -6441,12 +6448,12 @@ export enum LatestPayrollVersionResultsConstraint {
 }
 
 /** input type for incrementing numeric columns in table "latest_payroll_version_results" */
-export type LatestPayrollVersionResultsIncInput = {
+export interface LatestPayrollVersionResultsIncInput {
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** input type for inserting data into table "latest_payroll_version_results" */
-export type LatestPayrollVersionResultsInsertInput = {
+export interface LatestPayrollVersionResultsInsertInput {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -6454,10 +6461,10 @@ export type LatestPayrollVersionResultsInsertInput = {
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   queriedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type LatestPayrollVersionResultsMaxFields = {
+export interface LatestPayrollVersionResultsMaxFields {
   __typename?: 'latestPayrollVersionResultsMaxFields';
   goLiveDate: Maybe<Scalars['date']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
@@ -6465,10 +6472,10 @@ export type LatestPayrollVersionResultsMaxFields = {
   payrollId: Maybe<Scalars['uuid']['output']>;
   queriedAt: Maybe<Scalars['timestamptz']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type LatestPayrollVersionResultsMinFields = {
+export interface LatestPayrollVersionResultsMinFields {
   __typename?: 'latestPayrollVersionResultsMinFields';
   goLiveDate: Maybe<Scalars['date']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
@@ -6476,26 +6483,26 @@ export type LatestPayrollVersionResultsMinFields = {
   payrollId: Maybe<Scalars['uuid']['output']>;
   queriedAt: Maybe<Scalars['timestamptz']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** response of any mutation on the table "latest_payroll_version_results" */
-export type LatestPayrollVersionResultsMutationResponse = {
+export interface LatestPayrollVersionResultsMutationResponse {
   __typename?: 'latestPayrollVersionResultsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<LatestPayrollVersionResults>;
-};
+}
 
 /** on_conflict condition type for table "latest_payroll_version_results" */
-export type LatestPayrollVersionResultsOnConflict = {
+export interface LatestPayrollVersionResultsOnConflict {
   constraint: LatestPayrollVersionResultsConstraint;
   updateColumns?: Array<LatestPayrollVersionResultsUpdateColumn>;
   where?: InputMaybe<LatestPayrollVersionResultsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "latest_payroll_version_results". */
-export type LatestPayrollVersionResultsOrderBy = {
+export interface LatestPayrollVersionResultsOrderBy {
   active?: InputMaybe<OrderBy>;
   goLiveDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -6503,12 +6510,12 @@ export type LatestPayrollVersionResultsOrderBy = {
   payrollId?: InputMaybe<OrderBy>;
   queriedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: latest_payroll_version_results */
-export type LatestPayrollVersionResultsPkColumnsInput = {
+export interface LatestPayrollVersionResultsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "latest_payroll_version_results" */
 export enum LatestPayrollVersionResultsSelectColumn {
@@ -6529,7 +6536,7 @@ export enum LatestPayrollVersionResultsSelectColumn {
 }
 
 /** input type for updating data in table "latest_payroll_version_results" */
-export type LatestPayrollVersionResultsSetInput = {
+export interface LatestPayrollVersionResultsSetInput {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -6537,36 +6544,36 @@ export type LatestPayrollVersionResultsSetInput = {
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   queriedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type LatestPayrollVersionResultsStddevFields = {
+export interface LatestPayrollVersionResultsStddevFields {
   __typename?: 'latestPayrollVersionResultsStddevFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type LatestPayrollVersionResultsStddevPopFields = {
+export interface LatestPayrollVersionResultsStddevPopFields {
   __typename?: 'latestPayrollVersionResultsStddevPopFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type LatestPayrollVersionResultsStddevSampFields = {
+export interface LatestPayrollVersionResultsStddevSampFields {
   __typename?: 'latestPayrollVersionResultsStddevSampFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "latestPayrollVersionResults" */
-export type LatestPayrollVersionResultsStreamCursorInput = {
+export interface LatestPayrollVersionResultsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: LatestPayrollVersionResultsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type LatestPayrollVersionResultsStreamCursorValueInput = {
+export interface LatestPayrollVersionResultsStreamCursorValueInput {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -6574,13 +6581,13 @@ export type LatestPayrollVersionResultsStreamCursorValueInput = {
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   queriedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type LatestPayrollVersionResultsSumFields = {
+export interface LatestPayrollVersionResultsSumFields {
   __typename?: 'latestPayrollVersionResultsSumFields';
   versionNumber: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** update columns of table "latest_payroll_version_results" */
 export enum LatestPayrollVersionResultsUpdateColumn {
@@ -6600,35 +6607,35 @@ export enum LatestPayrollVersionResultsUpdateColumn {
   versionNumber = 'versionNumber'
 }
 
-export type LatestPayrollVersionResultsUpdates = {
+export interface LatestPayrollVersionResultsUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<LatestPayrollVersionResultsIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<LatestPayrollVersionResultsSetInput>;
   /** filter the rows which have to be updated */
   where: LatestPayrollVersionResultsBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type LatestPayrollVersionResultsVarPopFields = {
+export interface LatestPayrollVersionResultsVarPopFields {
   __typename?: 'latestPayrollVersionResultsVarPopFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type LatestPayrollVersionResultsVarSampFields = {
+export interface LatestPayrollVersionResultsVarSampFields {
   __typename?: 'latestPayrollVersionResultsVarSampFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type LatestPayrollVersionResultsVarianceFields = {
+export interface LatestPayrollVersionResultsVarianceFields {
   __typename?: 'latestPayrollVersionResultsVarianceFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "leave" */
-export type Leave = {
+export interface Leave {
   __typename?: 'leave';
   /** Last day of the leave period */
   endDate: Scalars['date']['output'];
@@ -6648,33 +6655,33 @@ export type Leave = {
   status: Maybe<Scalars['leave_status_enum']['output']>;
   /** Reference to the user taking leave */
   userId: Scalars['uuid']['output'];
-};
+}
 
 /** aggregated selection of "leave" */
-export type LeaveAggregate = {
+export interface LeaveAggregate {
   __typename?: 'leaveAggregate';
   aggregate: Maybe<LeaveAggregateFields>;
   nodes: Array<Leave>;
-};
+}
 
-export type LeaveAggregateBoolExp = {
+export interface LeaveAggregateBoolExp {
   count?: InputMaybe<LeaveAggregateBoolExpCount>;
-};
+}
 
-export type LeaveAggregateBoolExpCount = {
+export interface LeaveAggregateBoolExpCount {
   arguments?: InputMaybe<Array<LeaveSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<LeaveBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "leave" */
-export type LeaveAggregateFields = {
+export interface LeaveAggregateFields {
   __typename?: 'leaveAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<LeaveMaxFields>;
   min: Maybe<LeaveMinFields>;
-};
+}
 
 
 /** aggregate fields of "leave" */
@@ -6684,21 +6691,21 @@ export type LeaveAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "leave" */
-export type LeaveAggregateOrderBy = {
+export interface LeaveAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<LeaveMaxOrderBy>;
   min?: InputMaybe<LeaveMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "leave" */
-export type LeaveArrRelInsertInput = {
+export interface LeaveArrRelInsertInput {
   data: Array<LeaveInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<LeaveOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "leave". All fields are combined with a logical 'AND'. */
-export type LeaveBoolExp = {
+export interface LeaveBoolExp {
   _and?: InputMaybe<Array<LeaveBoolExp>>;
   _not?: InputMaybe<LeaveBoolExp>;
   _or?: InputMaybe<Array<LeaveBoolExp>>;
@@ -6711,7 +6718,7 @@ export type LeaveBoolExp = {
   startDate?: InputMaybe<DateComparisonExp>;
   status?: InputMaybe<LeaveStatusEnumComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "leave" */
 export enum LeaveConstraint {
@@ -6720,7 +6727,7 @@ export enum LeaveConstraint {
 }
 
 /** input type for inserting data into table "leave" */
-export type LeaveInsertInput = {
+export interface LeaveInsertInput {
   /** Last day of the leave period */
   endDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the leave record */
@@ -6737,10 +6744,10 @@ export type LeaveInsertInput = {
   status?: InputMaybe<Scalars['leave_status_enum']['input']>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type LeaveMaxFields = {
+export interface LeaveMaxFields {
   __typename?: 'leaveMaxFields';
   /** Last day of the leave period */
   endDate: Maybe<Scalars['date']['output']>;
@@ -6756,10 +6763,10 @@ export type LeaveMaxFields = {
   status: Maybe<Scalars['leave_status_enum']['output']>;
   /** Reference to the user taking leave */
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by max() on columns of table "leave" */
-export type LeaveMaxOrderBy = {
+export interface LeaveMaxOrderBy {
   /** Last day of the leave period */
   endDate?: InputMaybe<OrderBy>;
   /** Unique identifier for the leave record */
@@ -6774,10 +6781,10 @@ export type LeaveMaxOrderBy = {
   status?: InputMaybe<OrderBy>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type LeaveMinFields = {
+export interface LeaveMinFields {
   __typename?: 'leaveMinFields';
   /** Last day of the leave period */
   endDate: Maybe<Scalars['date']['output']>;
@@ -6793,10 +6800,10 @@ export type LeaveMinFields = {
   status: Maybe<Scalars['leave_status_enum']['output']>;
   /** Reference to the user taking leave */
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by min() on columns of table "leave" */
-export type LeaveMinOrderBy = {
+export interface LeaveMinOrderBy {
   /** Last day of the leave period */
   endDate?: InputMaybe<OrderBy>;
   /** Unique identifier for the leave record */
@@ -6811,26 +6818,26 @@ export type LeaveMinOrderBy = {
   status?: InputMaybe<OrderBy>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "leave" */
-export type LeaveMutationResponse = {
+export interface LeaveMutationResponse {
   __typename?: 'leaveMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<Leave>;
-};
+}
 
 /** on_conflict condition type for table "leave" */
-export type LeaveOnConflict = {
+export interface LeaveOnConflict {
   constraint: LeaveConstraint;
   updateColumns?: Array<LeaveUpdateColumn>;
   where?: InputMaybe<LeaveBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "leave". */
-export type LeaveOrderBy = {
+export interface LeaveOrderBy {
   endDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   leaveRequester?: InputMaybe<UsersOrderBy>;
@@ -6840,13 +6847,13 @@ export type LeaveOrderBy = {
   startDate?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: leave */
-export type LeavePkColumnsInput = {
+export interface LeavePkColumnsInput {
   /** Unique identifier for the leave record */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "leave" */
 export enum LeaveSelectColumn {
@@ -6867,7 +6874,7 @@ export enum LeaveSelectColumn {
 }
 
 /** input type for updating data in table "leave" */
-export type LeaveSetInput = {
+export interface LeaveSetInput {
   /** Last day of the leave period */
   endDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the leave record */
@@ -6882,18 +6889,18 @@ export type LeaveSetInput = {
   status?: InputMaybe<Scalars['leave_status_enum']['input']>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** Streaming cursor of the table "leave" */
-export type LeaveStreamCursorInput = {
+export interface LeaveStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: LeaveStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type LeaveStreamCursorValueInput = {
+export interface LeaveStreamCursorValueInput {
   /** Last day of the leave period */
   endDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the leave record */
@@ -6908,7 +6915,7 @@ export type LeaveStreamCursorValueInput = {
   status?: InputMaybe<Scalars['leave_status_enum']['input']>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** update columns of table "leave" */
 export enum LeaveUpdateColumn {
@@ -6928,15 +6935,15 @@ export enum LeaveUpdateColumn {
   userId = 'userId'
 }
 
-export type LeaveUpdates = {
+export interface LeaveUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<LeaveSetInput>;
   /** filter the rows which have to be updated */
   where: LeaveBoolExp;
-};
+}
 
 /** mutation root */
-export type MutationRoot = {
+export interface MutationRoot {
   __typename?: 'mutation_root';
   /** delete data from the table: "adjustment_rules" */
   bulkDeleteAdjustmentRules: Maybe<AdjustmentRulesMutationResponse>;
@@ -7539,7 +7546,7 @@ export type MutationRoot = {
   updateWorkScheduleById: Maybe<WorkSchedules>;
   /** update multiples rows of table: "work_schedule" */
   updateWorkSchedulesMany: Maybe<Array<Maybe<WorkSchedulesMutationResponse>>>;
-};
+}
 
 
 /** mutation root */
@@ -9651,7 +9658,7 @@ export type MutationRootUpdateWorkSchedulesManyArgs = {
 };
 
 /** columns and relationships of "notes" */
-export type Notes = {
+export interface Notes {
   __typename?: 'notes';
   /** An object relationship */
   authorUser: Maybe<Users>;
@@ -9679,7 +9686,7 @@ export type Notes = {
   updatedAt: Maybe<Scalars['timestamp']['output']>;
   /** User who created the note */
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 
 /** columns and relationships of "notes" */
@@ -9722,46 +9729,46 @@ export type NotesNotesByPayrollAggregateArgs = {
 };
 
 /** aggregated selection of "notes" */
-export type NotesAggregate = {
+export interface NotesAggregate {
   __typename?: 'notesAggregate';
   aggregate: Maybe<NotesAggregateFields>;
   nodes: Array<Notes>;
-};
+}
 
-export type NotesAggregateBoolExp = {
+export interface NotesAggregateBoolExp {
   bool_and?: InputMaybe<NotesAggregateBoolExpBoolAnd>;
   bool_or?: InputMaybe<NotesAggregateBoolExpBoolOr>;
   count?: InputMaybe<NotesAggregateBoolExpCount>;
-};
+}
 
-export type NotesAggregateBoolExpBoolAnd = {
+export interface NotesAggregateBoolExpBoolAnd {
   arguments: NotesSelectColumnNotesAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<NotesBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type NotesAggregateBoolExpBoolOr = {
+export interface NotesAggregateBoolExpBoolOr {
   arguments: NotesSelectColumnNotesAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<NotesBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type NotesAggregateBoolExpCount = {
+export interface NotesAggregateBoolExpCount {
   arguments?: InputMaybe<Array<NotesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<NotesBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "notes" */
-export type NotesAggregateFields = {
+export interface NotesAggregateFields {
   __typename?: 'notesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<NotesMaxFields>;
   min: Maybe<NotesMinFields>;
-};
+}
 
 
 /** aggregate fields of "notes" */
@@ -9771,21 +9778,21 @@ export type NotesAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "notes" */
-export type NotesAggregateOrderBy = {
+export interface NotesAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<NotesMaxOrderBy>;
   min?: InputMaybe<NotesMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "notes" */
-export type NotesArrRelInsertInput = {
+export interface NotesArrRelInsertInput {
   data: Array<NotesInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<NotesOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "notes". All fields are combined with a logical 'AND'. */
-export type NotesBoolExp = {
+export interface NotesBoolExp {
   _and?: InputMaybe<Array<NotesBoolExp>>;
   _not?: InputMaybe<NotesBoolExp>;
   _or?: InputMaybe<Array<NotesBoolExp>>;
@@ -9802,7 +9809,7 @@ export type NotesBoolExp = {
   notesByPayrollAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestampComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "notes" */
 export enum NotesConstraint {
@@ -9811,7 +9818,7 @@ export enum NotesConstraint {
 }
 
 /** input type for inserting data into table "notes" */
-export type NotesInsertInput = {
+export interface NotesInsertInput {
   authorUser?: InputMaybe<UsersObjRelInsertInput>;
   /** Content of the note */
   content?: InputMaybe<Scalars['String']['input']>;
@@ -9831,10 +9838,10 @@ export type NotesInsertInput = {
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** User who created the note */
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type NotesMaxFields = {
+export interface NotesMaxFields {
   __typename?: 'notesMaxFields';
   /** Content of the note */
   content: Maybe<Scalars['String']['output']>;
@@ -9850,10 +9857,10 @@ export type NotesMaxFields = {
   updatedAt: Maybe<Scalars['timestamp']['output']>;
   /** User who created the note */
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by max() on columns of table "notes" */
-export type NotesMaxOrderBy = {
+export interface NotesMaxOrderBy {
   /** Content of the note */
   content?: InputMaybe<OrderBy>;
   /** Timestamp when the note was created */
@@ -9868,10 +9875,10 @@ export type NotesMaxOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
   /** User who created the note */
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type NotesMinFields = {
+export interface NotesMinFields {
   __typename?: 'notesMinFields';
   /** Content of the note */
   content: Maybe<Scalars['String']['output']>;
@@ -9887,10 +9894,10 @@ export type NotesMinFields = {
   updatedAt: Maybe<Scalars['timestamp']['output']>;
   /** User who created the note */
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by min() on columns of table "notes" */
-export type NotesMinOrderBy = {
+export interface NotesMinOrderBy {
   /** Content of the note */
   content?: InputMaybe<OrderBy>;
   /** Timestamp when the note was created */
@@ -9905,26 +9912,26 @@ export type NotesMinOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
   /** User who created the note */
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "notes" */
-export type NotesMutationResponse = {
+export interface NotesMutationResponse {
   __typename?: 'notesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<Notes>;
-};
+}
 
 /** on_conflict condition type for table "notes" */
-export type NotesOnConflict = {
+export interface NotesOnConflict {
   constraint: NotesConstraint;
   updateColumns?: Array<NotesUpdateColumn>;
   where?: InputMaybe<NotesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "notes". */
-export type NotesOrderBy = {
+export interface NotesOrderBy {
   authorUser?: InputMaybe<UsersOrderBy>;
   content?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
@@ -9936,13 +9943,13 @@ export type NotesOrderBy = {
   notesByPayrollAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: notes */
-export type NotesPkColumnsInput = {
+export interface NotesPkColumnsInput {
   /** Unique identifier for the note */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "notes" */
 export enum NotesSelectColumn {
@@ -9977,7 +9984,7 @@ export enum NotesSelectColumnNotesAggregateBoolExpBoolOrArgumentsColumns {
 }
 
 /** input type for updating data in table "notes" */
-export type NotesSetInput = {
+export interface NotesSetInput {
   /** Content of the note */
   content?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the note was created */
@@ -9994,18 +10001,18 @@ export type NotesSetInput = {
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** User who created the note */
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** Streaming cursor of the table "notes" */
-export type NotesStreamCursorInput = {
+export interface NotesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: NotesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type NotesStreamCursorValueInput = {
+export interface NotesStreamCursorValueInput {
   /** Content of the note */
   content?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the note was created */
@@ -10022,7 +10029,7 @@ export type NotesStreamCursorValueInput = {
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** User who created the note */
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** update columns of table "notes" */
 export enum NotesUpdateColumn {
@@ -10044,31 +10051,31 @@ export enum NotesUpdateColumn {
   userId = 'userId'
 }
 
-export type NotesUpdates = {
+export interface NotesUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<NotesSetInput>;
   /** filter the rows which have to be updated */
   where: NotesBoolExp;
-};
+}
 
 /** columns and relationships of "payroll_activation_results" */
-export type PayrollActivationResults = {
+export interface PayrollActivationResults {
   __typename?: 'payrollActivationResults';
   actionTaken: Scalars['String']['output'];
   executedAt: Maybe<Scalars['timestamptz']['output']>;
   id: Scalars['uuid']['output'];
   payrollId: Scalars['uuid']['output'];
   versionNumber: Scalars['Int']['output'];
-};
+}
 
-export type PayrollActivationResultsAggregate = {
+export interface PayrollActivationResultsAggregate {
   __typename?: 'payrollActivationResultsAggregate';
   aggregate: Maybe<PayrollActivationResultsAggregateFields>;
   nodes: Array<PayrollActivationResults>;
-};
+}
 
 /** aggregate fields of "payroll_activation_results" */
-export type PayrollActivationResultsAggregateFields = {
+export interface PayrollActivationResultsAggregateFields {
   __typename?: 'payrollActivationResultsAggregateFields';
   avg: Maybe<PayrollActivationResultsAvgFields>;
   count: Scalars['Int']['output'];
@@ -10081,7 +10088,7 @@ export type PayrollActivationResultsAggregateFields = {
   varPop: Maybe<PayrollActivationResultsVarPopFields>;
   varSamp: Maybe<PayrollActivationResultsVarSampFields>;
   variance: Maybe<PayrollActivationResultsVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "payroll_activation_results" */
@@ -10091,13 +10098,13 @@ export type PayrollActivationResultsAggregateFieldsCountArgs = {
 };
 
 /** aggregate avg on columns */
-export type PayrollActivationResultsAvgFields = {
+export interface PayrollActivationResultsAvgFields {
   __typename?: 'payrollActivationResultsAvgFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "payroll_activation_results". All fields are combined with a logical 'AND'. */
-export type PayrollActivationResultsBoolExp = {
+export interface PayrollActivationResultsBoolExp {
   _and?: InputMaybe<Array<PayrollActivationResultsBoolExp>>;
   _not?: InputMaybe<PayrollActivationResultsBoolExp>;
   _or?: InputMaybe<Array<PayrollActivationResultsBoolExp>>;
@@ -10106,7 +10113,7 @@ export type PayrollActivationResultsBoolExp = {
   id?: InputMaybe<UuidComparisonExp>;
   payrollId?: InputMaybe<UuidComparisonExp>;
   versionNumber?: InputMaybe<IntComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "payroll_activation_results" */
 export enum PayrollActivationResultsConstraint {
@@ -10115,68 +10122,68 @@ export enum PayrollActivationResultsConstraint {
 }
 
 /** input type for incrementing numeric columns in table "payroll_activation_results" */
-export type PayrollActivationResultsIncInput = {
+export interface PayrollActivationResultsIncInput {
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** input type for inserting data into table "payroll_activation_results" */
-export type PayrollActivationResultsInsertInput = {
+export interface PayrollActivationResultsInsertInput {
   actionTaken?: InputMaybe<Scalars['String']['input']>;
   executedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollActivationResultsMaxFields = {
+export interface PayrollActivationResultsMaxFields {
   __typename?: 'payrollActivationResultsMaxFields';
   actionTaken: Maybe<Scalars['String']['output']>;
   executedAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   payrollId: Maybe<Scalars['uuid']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollActivationResultsMinFields = {
+export interface PayrollActivationResultsMinFields {
   __typename?: 'payrollActivationResultsMinFields';
   actionTaken: Maybe<Scalars['String']['output']>;
   executedAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   payrollId: Maybe<Scalars['uuid']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** response of any mutation on the table "payroll_activation_results" */
-export type PayrollActivationResultsMutationResponse = {
+export interface PayrollActivationResultsMutationResponse {
   __typename?: 'payrollActivationResultsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PayrollActivationResults>;
-};
+}
 
 /** on_conflict condition type for table "payroll_activation_results" */
-export type PayrollActivationResultsOnConflict = {
+export interface PayrollActivationResultsOnConflict {
   constraint: PayrollActivationResultsConstraint;
   updateColumns?: Array<PayrollActivationResultsUpdateColumn>;
   where?: InputMaybe<PayrollActivationResultsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "payroll_activation_results". */
-export type PayrollActivationResultsOrderBy = {
+export interface PayrollActivationResultsOrderBy {
   actionTaken?: InputMaybe<OrderBy>;
   executedAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   payrollId?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: payroll_activation_results */
-export type PayrollActivationResultsPkColumnsInput = {
+export interface PayrollActivationResultsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "payroll_activation_results" */
 export enum PayrollActivationResultsSelectColumn {
@@ -10193,54 +10200,54 @@ export enum PayrollActivationResultsSelectColumn {
 }
 
 /** input type for updating data in table "payroll_activation_results" */
-export type PayrollActivationResultsSetInput = {
+export interface PayrollActivationResultsSetInput {
   actionTaken?: InputMaybe<Scalars['String']['input']>;
   executedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type PayrollActivationResultsStddevFields = {
+export interface PayrollActivationResultsStddevFields {
   __typename?: 'payrollActivationResultsStddevFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type PayrollActivationResultsStddevPopFields = {
+export interface PayrollActivationResultsStddevPopFields {
   __typename?: 'payrollActivationResultsStddevPopFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type PayrollActivationResultsStddevSampFields = {
+export interface PayrollActivationResultsStddevSampFields {
   __typename?: 'payrollActivationResultsStddevSampFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "payrollActivationResults" */
-export type PayrollActivationResultsStreamCursorInput = {
+export interface PayrollActivationResultsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollActivationResultsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollActivationResultsStreamCursorValueInput = {
+export interface PayrollActivationResultsStreamCursorValueInput {
   actionTaken?: InputMaybe<Scalars['String']['input']>;
   executedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type PayrollActivationResultsSumFields = {
+export interface PayrollActivationResultsSumFields {
   __typename?: 'payrollActivationResultsSumFields';
   versionNumber: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** update columns of table "payroll_activation_results" */
 export enum PayrollActivationResultsUpdateColumn {
@@ -10256,35 +10263,35 @@ export enum PayrollActivationResultsUpdateColumn {
   versionNumber = 'versionNumber'
 }
 
-export type PayrollActivationResultsUpdates = {
+export interface PayrollActivationResultsUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<PayrollActivationResultsIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PayrollActivationResultsSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollActivationResultsBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type PayrollActivationResultsVarPopFields = {
+export interface PayrollActivationResultsVarPopFields {
   __typename?: 'payrollActivationResultsVarPopFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type PayrollActivationResultsVarSampFields = {
+export interface PayrollActivationResultsVarSampFields {
   __typename?: 'payrollActivationResultsVarSampFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type PayrollActivationResultsVarianceFields = {
+export interface PayrollActivationResultsVarianceFields {
   __typename?: 'payrollActivationResultsVarianceFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "payroll_assignment_audit" */
-export type PayrollAssignmentAudits = {
+export interface PayrollAssignmentAudits {
   __typename?: 'payrollAssignmentAudits';
   assignmentId: Maybe<Scalars['uuid']['output']>;
   changeReason: Maybe<Scalars['String']['output']>;
@@ -10304,33 +10311,33 @@ export type PayrollAssignmentAudits = {
   /** An object relationship */
   toConsultant: Users;
   toConsultantId: Scalars['uuid']['output'];
-};
+}
 
 /** aggregated selection of "payroll_assignment_audit" */
-export type PayrollAssignmentAuditsAggregate = {
+export interface PayrollAssignmentAuditsAggregate {
   __typename?: 'payrollAssignmentAuditsAggregate';
   aggregate: Maybe<PayrollAssignmentAuditsAggregateFields>;
   nodes: Array<PayrollAssignmentAudits>;
-};
+}
 
-export type PayrollAssignmentAuditsAggregateBoolExp = {
+export interface PayrollAssignmentAuditsAggregateBoolExp {
   count?: InputMaybe<PayrollAssignmentAuditsAggregateBoolExpCount>;
-};
+}
 
-export type PayrollAssignmentAuditsAggregateBoolExpCount = {
+export interface PayrollAssignmentAuditsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<PayrollAssignmentAuditsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollAssignmentAuditsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "payroll_assignment_audit" */
-export type PayrollAssignmentAuditsAggregateFields = {
+export interface PayrollAssignmentAuditsAggregateFields {
   __typename?: 'payrollAssignmentAuditsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<PayrollAssignmentAuditsMaxFields>;
   min: Maybe<PayrollAssignmentAuditsMinFields>;
-};
+}
 
 
 /** aggregate fields of "payroll_assignment_audit" */
@@ -10340,21 +10347,21 @@ export type PayrollAssignmentAuditsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "payroll_assignment_audit" */
-export type PayrollAssignmentAuditsAggregateOrderBy = {
+export interface PayrollAssignmentAuditsAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<PayrollAssignmentAuditsMaxOrderBy>;
   min?: InputMaybe<PayrollAssignmentAuditsMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "payroll_assignment_audit" */
-export type PayrollAssignmentAuditsArrRelInsertInput = {
+export interface PayrollAssignmentAuditsArrRelInsertInput {
   data: Array<PayrollAssignmentAuditsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<PayrollAssignmentAuditsOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "payroll_assignment_audit". All fields are combined with a logical 'AND'. */
-export type PayrollAssignmentAuditsBoolExp = {
+export interface PayrollAssignmentAuditsBoolExp {
   _and?: InputMaybe<Array<PayrollAssignmentAuditsBoolExp>>;
   _not?: InputMaybe<PayrollAssignmentAuditsBoolExp>;
   _or?: InputMaybe<Array<PayrollAssignmentAuditsBoolExp>>;
@@ -10371,7 +10378,7 @@ export type PayrollAssignmentAuditsBoolExp = {
   payrollDateId?: InputMaybe<UuidComparisonExp>;
   toConsultant?: InputMaybe<UsersBoolExp>;
   toConsultantId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "payroll_assignment_audit" */
 export enum PayrollAssignmentAuditsConstraint {
@@ -10380,7 +10387,7 @@ export enum PayrollAssignmentAuditsConstraint {
 }
 
 /** input type for inserting data into table "payroll_assignment_audit" */
-export type PayrollAssignmentAuditsInsertInput = {
+export interface PayrollAssignmentAuditsInsertInput {
   assignmentId?: InputMaybe<Scalars['uuid']['input']>;
   changeReason?: InputMaybe<Scalars['String']['input']>;
   changedBy?: InputMaybe<Scalars['uuid']['input']>;
@@ -10394,10 +10401,10 @@ export type PayrollAssignmentAuditsInsertInput = {
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   toConsultant?: InputMaybe<UsersObjRelInsertInput>;
   toConsultantId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollAssignmentAuditsMaxFields = {
+export interface PayrollAssignmentAuditsMaxFields {
   __typename?: 'payrollAssignmentAuditsMaxFields';
   assignmentId: Maybe<Scalars['uuid']['output']>;
   changeReason: Maybe<Scalars['String']['output']>;
@@ -10407,10 +10414,10 @@ export type PayrollAssignmentAuditsMaxFields = {
   id: Maybe<Scalars['uuid']['output']>;
   payrollDateId: Maybe<Scalars['uuid']['output']>;
   toConsultantId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by max() on columns of table "payroll_assignment_audit" */
-export type PayrollAssignmentAuditsMaxOrderBy = {
+export interface PayrollAssignmentAuditsMaxOrderBy {
   assignmentId?: InputMaybe<OrderBy>;
   changeReason?: InputMaybe<OrderBy>;
   changedBy?: InputMaybe<OrderBy>;
@@ -10419,10 +10426,10 @@ export type PayrollAssignmentAuditsMaxOrderBy = {
   id?: InputMaybe<OrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
   toConsultantId?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollAssignmentAuditsMinFields = {
+export interface PayrollAssignmentAuditsMinFields {
   __typename?: 'payrollAssignmentAuditsMinFields';
   assignmentId: Maybe<Scalars['uuid']['output']>;
   changeReason: Maybe<Scalars['String']['output']>;
@@ -10432,10 +10439,10 @@ export type PayrollAssignmentAuditsMinFields = {
   id: Maybe<Scalars['uuid']['output']>;
   payrollDateId: Maybe<Scalars['uuid']['output']>;
   toConsultantId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by min() on columns of table "payroll_assignment_audit" */
-export type PayrollAssignmentAuditsMinOrderBy = {
+export interface PayrollAssignmentAuditsMinOrderBy {
   assignmentId?: InputMaybe<OrderBy>;
   changeReason?: InputMaybe<OrderBy>;
   changedBy?: InputMaybe<OrderBy>;
@@ -10444,26 +10451,26 @@ export type PayrollAssignmentAuditsMinOrderBy = {
   id?: InputMaybe<OrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
   toConsultantId?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "payroll_assignment_audit" */
-export type PayrollAssignmentAuditsMutationResponse = {
+export interface PayrollAssignmentAuditsMutationResponse {
   __typename?: 'payrollAssignmentAuditsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PayrollAssignmentAudits>;
-};
+}
 
 /** on_conflict condition type for table "payroll_assignment_audit" */
-export type PayrollAssignmentAuditsOnConflict = {
+export interface PayrollAssignmentAuditsOnConflict {
   constraint: PayrollAssignmentAuditsConstraint;
   updateColumns?: Array<PayrollAssignmentAuditsUpdateColumn>;
   where?: InputMaybe<PayrollAssignmentAuditsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "payroll_assignment_audit". */
-export type PayrollAssignmentAuditsOrderBy = {
+export interface PayrollAssignmentAuditsOrderBy {
   assignmentId?: InputMaybe<OrderBy>;
   changeReason?: InputMaybe<OrderBy>;
   changedBy?: InputMaybe<OrderBy>;
@@ -10477,12 +10484,12 @@ export type PayrollAssignmentAuditsOrderBy = {
   payrollDateId?: InputMaybe<OrderBy>;
   toConsultant?: InputMaybe<UsersOrderBy>;
   toConsultantId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: payroll_assignment_audit */
-export type PayrollAssignmentAuditsPkColumnsInput = {
+export interface PayrollAssignmentAuditsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "payroll_assignment_audit" */
 export enum PayrollAssignmentAuditsSelectColumn {
@@ -10505,7 +10512,7 @@ export enum PayrollAssignmentAuditsSelectColumn {
 }
 
 /** input type for updating data in table "payroll_assignment_audit" */
-export type PayrollAssignmentAuditsSetInput = {
+export interface PayrollAssignmentAuditsSetInput {
   assignmentId?: InputMaybe<Scalars['uuid']['input']>;
   changeReason?: InputMaybe<Scalars['String']['input']>;
   changedBy?: InputMaybe<Scalars['uuid']['input']>;
@@ -10514,18 +10521,18 @@ export type PayrollAssignmentAuditsSetInput = {
   id?: InputMaybe<Scalars['uuid']['input']>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   toConsultantId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** Streaming cursor of the table "payrollAssignmentAudits" */
-export type PayrollAssignmentAuditsStreamCursorInput = {
+export interface PayrollAssignmentAuditsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollAssignmentAuditsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollAssignmentAuditsStreamCursorValueInput = {
+export interface PayrollAssignmentAuditsStreamCursorValueInput {
   assignmentId?: InputMaybe<Scalars['uuid']['input']>;
   changeReason?: InputMaybe<Scalars['String']['input']>;
   changedBy?: InputMaybe<Scalars['uuid']['input']>;
@@ -10534,7 +10541,7 @@ export type PayrollAssignmentAuditsStreamCursorValueInput = {
   id?: InputMaybe<Scalars['uuid']['input']>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   toConsultantId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** update columns of table "payroll_assignment_audit" */
 export enum PayrollAssignmentAuditsUpdateColumn {
@@ -10556,15 +10563,15 @@ export enum PayrollAssignmentAuditsUpdateColumn {
   toConsultantId = 'toConsultantId'
 }
 
-export type PayrollAssignmentAuditsUpdates = {
+export interface PayrollAssignmentAuditsUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PayrollAssignmentAuditsSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollAssignmentAuditsBoolExp;
-};
+}
 
 /** columns and relationships of "payroll_assignments" */
-export type PayrollAssignments = {
+export interface PayrollAssignments {
   __typename?: 'payrollAssignments';
   assignedBy: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
@@ -10587,7 +10594,7 @@ export type PayrollAssignments = {
   payrollDate: PayrollDates;
   payrollDateId: Scalars['uuid']['output'];
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 
 /** columns and relationships of "payroll_assignments" */
@@ -10610,46 +10617,46 @@ export type PayrollAssignmentsPayrollAssignmentAuditsAggregateArgs = {
 };
 
 /** aggregated selection of "payroll_assignments" */
-export type PayrollAssignmentsAggregate = {
+export interface PayrollAssignmentsAggregate {
   __typename?: 'payrollAssignmentsAggregate';
   aggregate: Maybe<PayrollAssignmentsAggregateFields>;
   nodes: Array<PayrollAssignments>;
-};
+}
 
-export type PayrollAssignmentsAggregateBoolExp = {
+export interface PayrollAssignmentsAggregateBoolExp {
   bool_and?: InputMaybe<PayrollAssignmentsAggregateBoolExpBoolAnd>;
   bool_or?: InputMaybe<PayrollAssignmentsAggregateBoolExpBoolOr>;
   count?: InputMaybe<PayrollAssignmentsAggregateBoolExpCount>;
-};
+}
 
-export type PayrollAssignmentsAggregateBoolExpBoolAnd = {
+export interface PayrollAssignmentsAggregateBoolExpBoolAnd {
   arguments: PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type PayrollAssignmentsAggregateBoolExpBoolOr = {
+export interface PayrollAssignmentsAggregateBoolExpBoolOr {
   arguments: PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type PayrollAssignmentsAggregateBoolExpCount = {
+export interface PayrollAssignmentsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<PayrollAssignmentsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollAssignmentsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "payroll_assignments" */
-export type PayrollAssignmentsAggregateFields = {
+export interface PayrollAssignmentsAggregateFields {
   __typename?: 'payrollAssignmentsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<PayrollAssignmentsMaxFields>;
   min: Maybe<PayrollAssignmentsMinFields>;
-};
+}
 
 
 /** aggregate fields of "payroll_assignments" */
@@ -10659,21 +10666,21 @@ export type PayrollAssignmentsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "payroll_assignments" */
-export type PayrollAssignmentsAggregateOrderBy = {
+export interface PayrollAssignmentsAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<PayrollAssignmentsMaxOrderBy>;
   min?: InputMaybe<PayrollAssignmentsMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "payroll_assignments" */
-export type PayrollAssignmentsArrRelInsertInput = {
+export interface PayrollAssignmentsArrRelInsertInput {
   data: Array<PayrollAssignmentsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<PayrollAssignmentsOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "payroll_assignments". All fields are combined with a logical 'AND'. */
-export type PayrollAssignmentsBoolExp = {
+export interface PayrollAssignmentsBoolExp {
   _and?: InputMaybe<Array<PayrollAssignmentsBoolExp>>;
   _not?: InputMaybe<PayrollAssignmentsBoolExp>;
   _or?: InputMaybe<Array<PayrollAssignmentsBoolExp>>;
@@ -10692,7 +10699,7 @@ export type PayrollAssignmentsBoolExp = {
   payrollDate?: InputMaybe<PayrollDatesBoolExp>;
   payrollDateId?: InputMaybe<UuidComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "payroll_assignments" */
 export enum PayrollAssignmentsConstraint {
@@ -10703,7 +10710,7 @@ export enum PayrollAssignmentsConstraint {
 }
 
 /** input type for inserting data into table "payroll_assignments" */
-export type PayrollAssignmentsInsertInput = {
+export interface PayrollAssignmentsInsertInput {
   assignedBy?: InputMaybe<Scalars['uuid']['input']>;
   assignedByUser?: InputMaybe<UsersObjRelInsertInput>;
   assignedConsultant?: InputMaybe<UsersObjRelInsertInput>;
@@ -10718,10 +10725,10 @@ export type PayrollAssignmentsInsertInput = {
   payrollDate?: InputMaybe<PayrollDatesObjRelInsertInput>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollAssignmentsMaxFields = {
+export interface PayrollAssignmentsMaxFields {
   __typename?: 'payrollAssignmentsMaxFields';
   assignedBy: Maybe<Scalars['uuid']['output']>;
   assignedDate: Maybe<Scalars['timestamptz']['output']>;
@@ -10731,10 +10738,10 @@ export type PayrollAssignmentsMaxFields = {
   originalConsultantId: Maybe<Scalars['uuid']['output']>;
   payrollDateId: Maybe<Scalars['uuid']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by max() on columns of table "payroll_assignments" */
-export type PayrollAssignmentsMaxOrderBy = {
+export interface PayrollAssignmentsMaxOrderBy {
   assignedBy?: InputMaybe<OrderBy>;
   assignedDate?: InputMaybe<OrderBy>;
   consultantId?: InputMaybe<OrderBy>;
@@ -10743,10 +10750,10 @@ export type PayrollAssignmentsMaxOrderBy = {
   originalConsultantId?: InputMaybe<OrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollAssignmentsMinFields = {
+export interface PayrollAssignmentsMinFields {
   __typename?: 'payrollAssignmentsMinFields';
   assignedBy: Maybe<Scalars['uuid']['output']>;
   assignedDate: Maybe<Scalars['timestamptz']['output']>;
@@ -10756,10 +10763,10 @@ export type PayrollAssignmentsMinFields = {
   originalConsultantId: Maybe<Scalars['uuid']['output']>;
   payrollDateId: Maybe<Scalars['uuid']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by min() on columns of table "payroll_assignments" */
-export type PayrollAssignmentsMinOrderBy = {
+export interface PayrollAssignmentsMinOrderBy {
   assignedBy?: InputMaybe<OrderBy>;
   assignedDate?: InputMaybe<OrderBy>;
   consultantId?: InputMaybe<OrderBy>;
@@ -10768,33 +10775,33 @@ export type PayrollAssignmentsMinOrderBy = {
   originalConsultantId?: InputMaybe<OrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "payroll_assignments" */
-export type PayrollAssignmentsMutationResponse = {
+export interface PayrollAssignmentsMutationResponse {
   __typename?: 'payrollAssignmentsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PayrollAssignments>;
-};
+}
 
 /** input type for inserting object relation for remote table "payroll_assignments" */
-export type PayrollAssignmentsObjRelInsertInput = {
+export interface PayrollAssignmentsObjRelInsertInput {
   data: PayrollAssignmentsInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<PayrollAssignmentsOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "payroll_assignments" */
-export type PayrollAssignmentsOnConflict = {
+export interface PayrollAssignmentsOnConflict {
   constraint: PayrollAssignmentsConstraint;
   updateColumns?: Array<PayrollAssignmentsUpdateColumn>;
   where?: InputMaybe<PayrollAssignmentsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "payroll_assignments". */
-export type PayrollAssignmentsOrderBy = {
+export interface PayrollAssignmentsOrderBy {
   assignedBy?: InputMaybe<OrderBy>;
   assignedByUser?: InputMaybe<UsersOrderBy>;
   assignedConsultant?: InputMaybe<UsersOrderBy>;
@@ -10809,12 +10816,12 @@ export type PayrollAssignmentsOrderBy = {
   payrollDate?: InputMaybe<PayrollDatesOrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: payroll_assignments */
-export type PayrollAssignmentsPkColumnsInput = {
+export interface PayrollAssignmentsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "payroll_assignments" */
 export enum PayrollAssignmentsSelectColumn {
@@ -10851,7 +10858,7 @@ export enum PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBool
 }
 
 /** input type for updating data in table "payroll_assignments" */
-export type PayrollAssignmentsSetInput = {
+export interface PayrollAssignmentsSetInput {
   assignedBy?: InputMaybe<Scalars['uuid']['input']>;
   assignedDate?: InputMaybe<Scalars['timestamptz']['input']>;
   consultantId?: InputMaybe<Scalars['uuid']['input']>;
@@ -10861,18 +10868,18 @@ export type PayrollAssignmentsSetInput = {
   originalConsultantId?: InputMaybe<Scalars['uuid']['input']>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "payrollAssignments" */
-export type PayrollAssignmentsStreamCursorInput = {
+export interface PayrollAssignmentsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollAssignmentsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollAssignmentsStreamCursorValueInput = {
+export interface PayrollAssignmentsStreamCursorValueInput {
   assignedBy?: InputMaybe<Scalars['uuid']['input']>;
   assignedDate?: InputMaybe<Scalars['timestamptz']['input']>;
   consultantId?: InputMaybe<Scalars['uuid']['input']>;
@@ -10882,7 +10889,7 @@ export type PayrollAssignmentsStreamCursorValueInput = {
   originalConsultantId?: InputMaybe<Scalars['uuid']['input']>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "payroll_assignments" */
 export enum PayrollAssignmentsUpdateColumn {
@@ -10906,15 +10913,15 @@ export enum PayrollAssignmentsUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type PayrollAssignmentsUpdates = {
+export interface PayrollAssignmentsUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PayrollAssignmentsSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollAssignmentsBoolExp;
-};
+}
 
 /** columns and relationships of "payroll_cycles" */
-export type PayrollCycles = {
+export interface PayrollCycles {
   __typename?: 'payrollCycles';
   /** An array relationship */
   adjustmentRules: Array<AdjustmentRules>;
@@ -10934,7 +10941,7 @@ export type PayrollCycles = {
   payrollsAggregate: PayrollsAggregate;
   /** Timestamp when the cycle was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 
 /** columns and relationships of "payroll_cycles" */
@@ -10977,19 +10984,19 @@ export type PayrollCyclesPayrollsAggregateArgs = {
 };
 
 /** aggregated selection of "payroll_cycles" */
-export type PayrollCyclesAggregate = {
+export interface PayrollCyclesAggregate {
   __typename?: 'payrollCyclesAggregate';
   aggregate: Maybe<PayrollCyclesAggregateFields>;
   nodes: Array<PayrollCycles>;
-};
+}
 
 /** aggregate fields of "payroll_cycles" */
-export type PayrollCyclesAggregateFields = {
+export interface PayrollCyclesAggregateFields {
   __typename?: 'payrollCyclesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<PayrollCyclesMaxFields>;
   min: Maybe<PayrollCyclesMinFields>;
-};
+}
 
 
 /** aggregate fields of "payroll_cycles" */
@@ -10999,7 +11006,7 @@ export type PayrollCyclesAggregateFieldsCountArgs = {
 };
 
 /** Boolean expression to filter rows from the table "payroll_cycles". All fields are combined with a logical 'AND'. */
-export type PayrollCyclesBoolExp = {
+export interface PayrollCyclesBoolExp {
   _and?: InputMaybe<Array<PayrollCyclesBoolExp>>;
   _not?: InputMaybe<PayrollCyclesBoolExp>;
   _or?: InputMaybe<Array<PayrollCyclesBoolExp>>;
@@ -11012,7 +11019,7 @@ export type PayrollCyclesBoolExp = {
   payrolls?: InputMaybe<PayrollsBoolExp>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "payroll_cycles" */
 export enum PayrollCyclesConstraint {
@@ -11023,7 +11030,7 @@ export enum PayrollCyclesConstraint {
 }
 
 /** input type for inserting data into table "payroll_cycles" */
-export type PayrollCyclesInsertInput = {
+export interface PayrollCyclesInsertInput {
   adjustmentRules?: InputMaybe<AdjustmentRulesArrRelInsertInput>;
   /** Timestamp when the cycle was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -11036,10 +11043,10 @@ export type PayrollCyclesInsertInput = {
   payrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** Timestamp when the cycle was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollCyclesMaxFields = {
+export interface PayrollCyclesMaxFields {
   __typename?: 'payrollCyclesMaxFields';
   /** Timestamp when the cycle was created */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -11051,10 +11058,10 @@ export type PayrollCyclesMaxFields = {
   name: Maybe<Scalars['payroll_cycle_type']['output']>;
   /** Timestamp when the cycle was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollCyclesMinFields = {
+export interface PayrollCyclesMinFields {
   __typename?: 'payrollCyclesMinFields';
   /** Timestamp when the cycle was created */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -11066,33 +11073,33 @@ export type PayrollCyclesMinFields = {
   name: Maybe<Scalars['payroll_cycle_type']['output']>;
   /** Timestamp when the cycle was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** response of any mutation on the table "payroll_cycles" */
-export type PayrollCyclesMutationResponse = {
+export interface PayrollCyclesMutationResponse {
   __typename?: 'payrollCyclesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PayrollCycles>;
-};
+}
 
 /** input type for inserting object relation for remote table "payroll_cycles" */
-export type PayrollCyclesObjRelInsertInput = {
+export interface PayrollCyclesObjRelInsertInput {
   data: PayrollCyclesInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<PayrollCyclesOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "payroll_cycles" */
-export type PayrollCyclesOnConflict = {
+export interface PayrollCyclesOnConflict {
   constraint: PayrollCyclesConstraint;
   updateColumns?: Array<PayrollCyclesUpdateColumn>;
   where?: InputMaybe<PayrollCyclesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "payroll_cycles". */
-export type PayrollCyclesOrderBy = {
+export interface PayrollCyclesOrderBy {
   adjustmentRulesAggregate?: InputMaybe<AdjustmentRulesAggregateOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
@@ -11100,13 +11107,13 @@ export type PayrollCyclesOrderBy = {
   name?: InputMaybe<OrderBy>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: payroll_cycles */
-export type PayrollCyclesPkColumnsInput = {
+export interface PayrollCyclesPkColumnsInput {
   /** Unique identifier for the payroll cycle */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "payroll_cycles" */
 export enum PayrollCyclesSelectColumn {
@@ -11123,7 +11130,7 @@ export enum PayrollCyclesSelectColumn {
 }
 
 /** input type for updating data in table "payroll_cycles" */
-export type PayrollCyclesSetInput = {
+export interface PayrollCyclesSetInput {
   /** Timestamp when the cycle was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Detailed description of the payroll cycle */
@@ -11134,18 +11141,18 @@ export type PayrollCyclesSetInput = {
   name?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
   /** Timestamp when the cycle was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "payrollCycles" */
-export type PayrollCyclesStreamCursorInput = {
+export interface PayrollCyclesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollCyclesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollCyclesStreamCursorValueInput = {
+export interface PayrollCyclesStreamCursorValueInput {
   /** Timestamp when the cycle was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Detailed description of the payroll cycle */
@@ -11156,7 +11163,7 @@ export type PayrollCyclesStreamCursorValueInput = {
   name?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
   /** Timestamp when the cycle was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "payroll_cycles" */
 export enum PayrollCyclesUpdateColumn {
@@ -11172,15 +11179,15 @@ export enum PayrollCyclesUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type PayrollCyclesUpdates = {
+export interface PayrollCyclesUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PayrollCyclesSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollCyclesBoolExp;
-};
+}
 
 /** columns and relationships of "payroll_dashboard_stats" */
-export type PayrollDashboardStats = {
+export interface PayrollDashboardStats {
   __typename?: 'payrollDashboardStats';
   backupConsultantUserId: Maybe<Scalars['uuid']['output']>;
   clientName: Maybe<Scalars['String']['output']>;
@@ -11194,17 +11201,17 @@ export type PayrollDashboardStats = {
   primaryConsultantUserId: Maybe<Scalars['uuid']['output']>;
   status: Maybe<Scalars['payroll_status']['output']>;
   totalDates: Maybe<Scalars['bigint']['output']>;
-};
+}
 
 /** aggregated selection of "payroll_dashboard_stats" */
-export type PayrollDashboardStatsAggregate = {
+export interface PayrollDashboardStatsAggregate {
   __typename?: 'payrollDashboardStatsAggregate';
   aggregate: Maybe<PayrollDashboardStatsAggregateFields>;
   nodes: Array<PayrollDashboardStats>;
-};
+}
 
 /** aggregate fields of "payroll_dashboard_stats" */
-export type PayrollDashboardStatsAggregateFields = {
+export interface PayrollDashboardStatsAggregateFields {
   __typename?: 'payrollDashboardStatsAggregateFields';
   avg: Maybe<PayrollDashboardStatsAvgFields>;
   count: Scalars['Int']['output'];
@@ -11217,7 +11224,7 @@ export type PayrollDashboardStatsAggregateFields = {
   varPop: Maybe<PayrollDashboardStatsVarPopFields>;
   varSamp: Maybe<PayrollDashboardStatsVarSampFields>;
   variance: Maybe<PayrollDashboardStatsVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "payroll_dashboard_stats" */
@@ -11227,15 +11234,15 @@ export type PayrollDashboardStatsAggregateFieldsCountArgs = {
 };
 
 /** aggregate avg on columns */
-export type PayrollDashboardStatsAvgFields = {
+export interface PayrollDashboardStatsAvgFields {
   __typename?: 'payrollDashboardStatsAvgFields';
   futureDates: Maybe<Scalars['Float']['output']>;
   pastDates: Maybe<Scalars['Float']['output']>;
   totalDates: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "payroll_dashboard_stats". All fields are combined with a logical 'AND'. */
-export type PayrollDashboardStatsBoolExp = {
+export interface PayrollDashboardStatsBoolExp {
   _and?: InputMaybe<Array<PayrollDashboardStatsBoolExp>>;
   _not?: InputMaybe<PayrollDashboardStatsBoolExp>;
   _or?: InputMaybe<Array<PayrollDashboardStatsBoolExp>>;
@@ -11251,10 +11258,10 @@ export type PayrollDashboardStatsBoolExp = {
   primaryConsultantUserId?: InputMaybe<UuidComparisonExp>;
   status?: InputMaybe<PayrollStatusComparisonExp>;
   totalDates?: InputMaybe<BigintComparisonExp>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollDashboardStatsMaxFields = {
+export interface PayrollDashboardStatsMaxFields {
   __typename?: 'payrollDashboardStatsMaxFields';
   backupConsultantUserId: Maybe<Scalars['uuid']['output']>;
   clientName: Maybe<Scalars['String']['output']>;
@@ -11268,10 +11275,10 @@ export type PayrollDashboardStatsMaxFields = {
   primaryConsultantUserId: Maybe<Scalars['uuid']['output']>;
   status: Maybe<Scalars['payroll_status']['output']>;
   totalDates: Maybe<Scalars['bigint']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollDashboardStatsMinFields = {
+export interface PayrollDashboardStatsMinFields {
   __typename?: 'payrollDashboardStatsMinFields';
   backupConsultantUserId: Maybe<Scalars['uuid']['output']>;
   clientName: Maybe<Scalars['String']['output']>;
@@ -11285,10 +11292,10 @@ export type PayrollDashboardStatsMinFields = {
   primaryConsultantUserId: Maybe<Scalars['uuid']['output']>;
   status: Maybe<Scalars['payroll_status']['output']>;
   totalDates: Maybe<Scalars['bigint']['output']>;
-};
+}
 
 /** Ordering options when selecting data from "payroll_dashboard_stats". */
-export type PayrollDashboardStatsOrderBy = {
+export interface PayrollDashboardStatsOrderBy {
   backupConsultantUserId?: InputMaybe<OrderBy>;
   clientName?: InputMaybe<OrderBy>;
   cycleName?: InputMaybe<OrderBy>;
@@ -11301,7 +11308,7 @@ export type PayrollDashboardStatsOrderBy = {
   primaryConsultantUserId?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   totalDates?: InputMaybe<OrderBy>;
-};
+}
 
 /** select columns of table "payroll_dashboard_stats" */
 export enum PayrollDashboardStatsSelectColumn {
@@ -11332,39 +11339,39 @@ export enum PayrollDashboardStatsSelectColumn {
 }
 
 /** aggregate stddev on columns */
-export type PayrollDashboardStatsStddevFields = {
+export interface PayrollDashboardStatsStddevFields {
   __typename?: 'payrollDashboardStatsStddevFields';
   futureDates: Maybe<Scalars['Float']['output']>;
   pastDates: Maybe<Scalars['Float']['output']>;
   totalDates: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type PayrollDashboardStatsStddevPopFields = {
+export interface PayrollDashboardStatsStddevPopFields {
   __typename?: 'payrollDashboardStatsStddevPopFields';
   futureDates: Maybe<Scalars['Float']['output']>;
   pastDates: Maybe<Scalars['Float']['output']>;
   totalDates: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type PayrollDashboardStatsStddevSampFields = {
+export interface PayrollDashboardStatsStddevSampFields {
   __typename?: 'payrollDashboardStatsStddevSampFields';
   futureDates: Maybe<Scalars['Float']['output']>;
   pastDates: Maybe<Scalars['Float']['output']>;
   totalDates: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "payrollDashboardStats" */
-export type PayrollDashboardStatsStreamCursorInput = {
+export interface PayrollDashboardStatsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollDashboardStatsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollDashboardStatsStreamCursorValueInput = {
+export interface PayrollDashboardStatsStreamCursorValueInput {
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   clientName?: InputMaybe<Scalars['String']['input']>;
   cycleName?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
@@ -11377,42 +11384,42 @@ export type PayrollDashboardStatsStreamCursorValueInput = {
   primaryConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   status?: InputMaybe<Scalars['payroll_status']['input']>;
   totalDates?: InputMaybe<Scalars['bigint']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type PayrollDashboardStatsSumFields = {
+export interface PayrollDashboardStatsSumFields {
   __typename?: 'payrollDashboardStatsSumFields';
   futureDates: Maybe<Scalars['bigint']['output']>;
   pastDates: Maybe<Scalars['bigint']['output']>;
   totalDates: Maybe<Scalars['bigint']['output']>;
-};
+}
 
 /** aggregate varPop on columns */
-export type PayrollDashboardStatsVarPopFields = {
+export interface PayrollDashboardStatsVarPopFields {
   __typename?: 'payrollDashboardStatsVarPopFields';
   futureDates: Maybe<Scalars['Float']['output']>;
   pastDates: Maybe<Scalars['Float']['output']>;
   totalDates: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type PayrollDashboardStatsVarSampFields = {
+export interface PayrollDashboardStatsVarSampFields {
   __typename?: 'payrollDashboardStatsVarSampFields';
   futureDates: Maybe<Scalars['Float']['output']>;
   pastDates: Maybe<Scalars['Float']['output']>;
   totalDates: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type PayrollDashboardStatsVarianceFields = {
+export interface PayrollDashboardStatsVarianceFields {
   __typename?: 'payrollDashboardStatsVarianceFields';
   futureDates: Maybe<Scalars['Float']['output']>;
   pastDates: Maybe<Scalars['Float']['output']>;
   totalDates: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "payroll_date_types" */
-export type PayrollDateTypes = {
+export interface PayrollDateTypes {
   __typename?: 'payrollDateTypes';
   /** An array relationship */
   adjustmentRules: Array<AdjustmentRules>;
@@ -11432,7 +11439,7 @@ export type PayrollDateTypes = {
   payrollsAggregate: PayrollsAggregate;
   /** Timestamp when the date type was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 
 /** columns and relationships of "payroll_date_types" */
@@ -11475,19 +11482,19 @@ export type PayrollDateTypesPayrollsAggregateArgs = {
 };
 
 /** aggregated selection of "payroll_date_types" */
-export type PayrollDateTypesAggregate = {
+export interface PayrollDateTypesAggregate {
   __typename?: 'payrollDateTypesAggregate';
   aggregate: Maybe<PayrollDateTypesAggregateFields>;
   nodes: Array<PayrollDateTypes>;
-};
+}
 
 /** aggregate fields of "payroll_date_types" */
-export type PayrollDateTypesAggregateFields = {
+export interface PayrollDateTypesAggregateFields {
   __typename?: 'payrollDateTypesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<PayrollDateTypesMaxFields>;
   min: Maybe<PayrollDateTypesMinFields>;
-};
+}
 
 
 /** aggregate fields of "payroll_date_types" */
@@ -11497,7 +11504,7 @@ export type PayrollDateTypesAggregateFieldsCountArgs = {
 };
 
 /** Boolean expression to filter rows from the table "payroll_date_types". All fields are combined with a logical 'AND'. */
-export type PayrollDateTypesBoolExp = {
+export interface PayrollDateTypesBoolExp {
   _and?: InputMaybe<Array<PayrollDateTypesBoolExp>>;
   _not?: InputMaybe<PayrollDateTypesBoolExp>;
   _or?: InputMaybe<Array<PayrollDateTypesBoolExp>>;
@@ -11510,7 +11517,7 @@ export type PayrollDateTypesBoolExp = {
   payrolls?: InputMaybe<PayrollsBoolExp>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "payroll_date_types" */
 export enum PayrollDateTypesConstraint {
@@ -11521,7 +11528,7 @@ export enum PayrollDateTypesConstraint {
 }
 
 /** input type for inserting data into table "payroll_date_types" */
-export type PayrollDateTypesInsertInput = {
+export interface PayrollDateTypesInsertInput {
   adjustmentRules?: InputMaybe<AdjustmentRulesArrRelInsertInput>;
   /** Timestamp when the date type was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -11534,10 +11541,10 @@ export type PayrollDateTypesInsertInput = {
   payrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** Timestamp when the date type was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollDateTypesMaxFields = {
+export interface PayrollDateTypesMaxFields {
   __typename?: 'payrollDateTypesMaxFields';
   /** Timestamp when the date type was created */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -11549,10 +11556,10 @@ export type PayrollDateTypesMaxFields = {
   name: Maybe<Scalars['payroll_date_type']['output']>;
   /** Timestamp when the date type was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollDateTypesMinFields = {
+export interface PayrollDateTypesMinFields {
   __typename?: 'payrollDateTypesMinFields';
   /** Timestamp when the date type was created */
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -11564,33 +11571,33 @@ export type PayrollDateTypesMinFields = {
   name: Maybe<Scalars['payroll_date_type']['output']>;
   /** Timestamp when the date type was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** response of any mutation on the table "payroll_date_types" */
-export type PayrollDateTypesMutationResponse = {
+export interface PayrollDateTypesMutationResponse {
   __typename?: 'payrollDateTypesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PayrollDateTypes>;
-};
+}
 
 /** input type for inserting object relation for remote table "payroll_date_types" */
-export type PayrollDateTypesObjRelInsertInput = {
+export interface PayrollDateTypesObjRelInsertInput {
   data: PayrollDateTypesInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<PayrollDateTypesOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "payroll_date_types" */
-export type PayrollDateTypesOnConflict = {
+export interface PayrollDateTypesOnConflict {
   constraint: PayrollDateTypesConstraint;
   updateColumns?: Array<PayrollDateTypesUpdateColumn>;
   where?: InputMaybe<PayrollDateTypesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "payroll_date_types". */
-export type PayrollDateTypesOrderBy = {
+export interface PayrollDateTypesOrderBy {
   adjustmentRulesAggregate?: InputMaybe<AdjustmentRulesAggregateOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
@@ -11598,13 +11605,13 @@ export type PayrollDateTypesOrderBy = {
   name?: InputMaybe<OrderBy>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: payroll_date_types */
-export type PayrollDateTypesPkColumnsInput = {
+export interface PayrollDateTypesPkColumnsInput {
   /** Unique identifier for the payroll date type */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "payroll_date_types" */
 export enum PayrollDateTypesSelectColumn {
@@ -11621,7 +11628,7 @@ export enum PayrollDateTypesSelectColumn {
 }
 
 /** input type for updating data in table "payroll_date_types" */
-export type PayrollDateTypesSetInput = {
+export interface PayrollDateTypesSetInput {
   /** Timestamp when the date type was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Detailed description of how this date type works */
@@ -11632,18 +11639,18 @@ export type PayrollDateTypesSetInput = {
   name?: InputMaybe<Scalars['payroll_date_type']['input']>;
   /** Timestamp when the date type was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "payrollDateTypes" */
-export type PayrollDateTypesStreamCursorInput = {
+export interface PayrollDateTypesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollDateTypesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollDateTypesStreamCursorValueInput = {
+export interface PayrollDateTypesStreamCursorValueInput {
   /** Timestamp when the date type was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Detailed description of how this date type works */
@@ -11654,7 +11661,7 @@ export type PayrollDateTypesStreamCursorValueInput = {
   name?: InputMaybe<Scalars['payroll_date_type']['input']>;
   /** Timestamp when the date type was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "payroll_date_types" */
 export enum PayrollDateTypesUpdateColumn {
@@ -11670,15 +11677,15 @@ export enum PayrollDateTypesUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type PayrollDateTypesUpdates = {
+export interface PayrollDateTypesUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PayrollDateTypesSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollDateTypesBoolExp;
-};
+}
 
 /** columns and relationships of "payroll_dates" */
-export type PayrollDates = {
+export interface PayrollDates {
   __typename?: 'payrollDates';
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate: Scalars['date']['output'];
@@ -11704,7 +11711,7 @@ export type PayrollDates = {
   relatedPayroll: Payrolls;
   /** Timestamp when the date record was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 
 /** columns and relationships of "payroll_dates" */
@@ -11727,30 +11734,30 @@ export type PayrollDatesPayrollAssignmentAuditsAggregateArgs = {
 };
 
 /** aggregated selection of "payroll_dates" */
-export type PayrollDatesAggregate = {
+export interface PayrollDatesAggregate {
   __typename?: 'payrollDatesAggregate';
   aggregate: Maybe<PayrollDatesAggregateFields>;
   nodes: Array<PayrollDates>;
-};
+}
 
-export type PayrollDatesAggregateBoolExp = {
+export interface PayrollDatesAggregateBoolExp {
   count?: InputMaybe<PayrollDatesAggregateBoolExpCount>;
-};
+}
 
-export type PayrollDatesAggregateBoolExpCount = {
+export interface PayrollDatesAggregateBoolExpCount {
   arguments?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollDatesBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "payroll_dates" */
-export type PayrollDatesAggregateFields = {
+export interface PayrollDatesAggregateFields {
   __typename?: 'payrollDatesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<PayrollDatesMaxFields>;
   min: Maybe<PayrollDatesMinFields>;
-};
+}
 
 
 /** aggregate fields of "payroll_dates" */
@@ -11760,21 +11767,21 @@ export type PayrollDatesAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "payroll_dates" */
-export type PayrollDatesAggregateOrderBy = {
+export interface PayrollDatesAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<PayrollDatesMaxOrderBy>;
   min?: InputMaybe<PayrollDatesMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "payroll_dates" */
-export type PayrollDatesArrRelInsertInput = {
+export interface PayrollDatesArrRelInsertInput {
   data: Array<PayrollDatesInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<PayrollDatesOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "payroll_dates". All fields are combined with a logical 'AND'. */
-export type PayrollDatesBoolExp = {
+export interface PayrollDatesBoolExp {
   _and?: InputMaybe<Array<PayrollDatesBoolExp>>;
   _not?: InputMaybe<PayrollDatesBoolExp>;
   _or?: InputMaybe<Array<PayrollDatesBoolExp>>;
@@ -11790,7 +11797,7 @@ export type PayrollDatesBoolExp = {
   processingDate?: InputMaybe<DateComparisonExp>;
   relatedPayroll?: InputMaybe<PayrollsBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "payroll_dates" */
 export enum PayrollDatesConstraint {
@@ -11801,7 +11808,7 @@ export enum PayrollDatesConstraint {
 }
 
 /** input type for inserting data into table "payroll_dates" */
-export type PayrollDatesInsertInput = {
+export interface PayrollDatesInsertInput {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<Scalars['date']['input']>;
   /** Timestamp when the date record was created */
@@ -11821,10 +11828,10 @@ export type PayrollDatesInsertInput = {
   relatedPayroll?: InputMaybe<PayrollsObjRelInsertInput>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollDatesMaxFields = {
+export interface PayrollDatesMaxFields {
   __typename?: 'payrollDatesMaxFields';
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate: Maybe<Scalars['date']['output']>;
@@ -11842,10 +11849,10 @@ export type PayrollDatesMaxFields = {
   processingDate: Maybe<Scalars['date']['output']>;
   /** Timestamp when the date record was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by max() on columns of table "payroll_dates" */
-export type PayrollDatesMaxOrderBy = {
+export interface PayrollDatesMaxOrderBy {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was created */
@@ -11862,10 +11869,10 @@ export type PayrollDatesMaxOrderBy = {
   processingDate?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollDatesMinFields = {
+export interface PayrollDatesMinFields {
   __typename?: 'payrollDatesMinFields';
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate: Maybe<Scalars['date']['output']>;
@@ -11883,10 +11890,10 @@ export type PayrollDatesMinFields = {
   processingDate: Maybe<Scalars['date']['output']>;
   /** Timestamp when the date record was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by min() on columns of table "payroll_dates" */
-export type PayrollDatesMinOrderBy = {
+export interface PayrollDatesMinOrderBy {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was created */
@@ -11903,33 +11910,33 @@ export type PayrollDatesMinOrderBy = {
   processingDate?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "payroll_dates" */
-export type PayrollDatesMutationResponse = {
+export interface PayrollDatesMutationResponse {
   __typename?: 'payrollDatesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PayrollDates>;
-};
+}
 
 /** input type for inserting object relation for remote table "payroll_dates" */
-export type PayrollDatesObjRelInsertInput = {
+export interface PayrollDatesObjRelInsertInput {
   data: PayrollDatesInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<PayrollDatesOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "payroll_dates" */
-export type PayrollDatesOnConflict = {
+export interface PayrollDatesOnConflict {
   constraint: PayrollDatesConstraint;
   updateColumns?: Array<PayrollDatesUpdateColumn>;
   where?: InputMaybe<PayrollDatesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "payroll_dates". */
-export type PayrollDatesOrderBy = {
+export interface PayrollDatesOrderBy {
   adjustedEftDate?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -11941,13 +11948,13 @@ export type PayrollDatesOrderBy = {
   processingDate?: InputMaybe<OrderBy>;
   relatedPayroll?: InputMaybe<PayrollsOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: payroll_dates */
-export type PayrollDatesPkColumnsInput = {
+export interface PayrollDatesPkColumnsInput {
   /** Unique identifier for the payroll date */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "payroll_dates" */
 export enum PayrollDatesSelectColumn {
@@ -11970,7 +11977,7 @@ export enum PayrollDatesSelectColumn {
 }
 
 /** input type for updating data in table "payroll_dates" */
-export type PayrollDatesSetInput = {
+export interface PayrollDatesSetInput {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<Scalars['date']['input']>;
   /** Timestamp when the date record was created */
@@ -11987,18 +11994,18 @@ export type PayrollDatesSetInput = {
   processingDate?: InputMaybe<Scalars['date']['input']>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "payrollDates" */
-export type PayrollDatesStreamCursorInput = {
+export interface PayrollDatesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollDatesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollDatesStreamCursorValueInput = {
+export interface PayrollDatesStreamCursorValueInput {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<Scalars['date']['input']>;
   /** Timestamp when the date record was created */
@@ -12015,7 +12022,7 @@ export type PayrollDatesStreamCursorValueInput = {
   processingDate?: InputMaybe<Scalars['date']['input']>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "payroll_dates" */
 export enum PayrollDatesUpdateColumn {
@@ -12037,37 +12044,37 @@ export enum PayrollDatesUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type PayrollDatesUpdates = {
+export interface PayrollDatesUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PayrollDatesSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollDatesBoolExp;
-};
+}
 
 /** columns and relationships of "payroll_triggers_status" */
-export type PayrollTriggersStatus = {
+export interface PayrollTriggersStatus {
   __typename?: 'payrollTriggersStatus';
   actionStatement: Maybe<Scalars['String']['output']>;
   actionTiming: Maybe<Scalars['String']['output']>;
   eventManipulation: Maybe<Scalars['String']['output']>;
   eventObjectTable: Maybe<Scalars['name']['output']>;
   triggerName: Maybe<Scalars['name']['output']>;
-};
+}
 
 /** aggregated selection of "payroll_triggers_status" */
-export type PayrollTriggersStatusAggregate = {
+export interface PayrollTriggersStatusAggregate {
   __typename?: 'payrollTriggersStatusAggregate';
   aggregate: Maybe<PayrollTriggersStatusAggregateFields>;
   nodes: Array<PayrollTriggersStatus>;
-};
+}
 
 /** aggregate fields of "payroll_triggers_status" */
-export type PayrollTriggersStatusAggregateFields = {
+export interface PayrollTriggersStatusAggregateFields {
   __typename?: 'payrollTriggersStatusAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<PayrollTriggersStatusMaxFields>;
   min: Maybe<PayrollTriggersStatusMinFields>;
-};
+}
 
 
 /** aggregate fields of "payroll_triggers_status" */
@@ -12077,7 +12084,7 @@ export type PayrollTriggersStatusAggregateFieldsCountArgs = {
 };
 
 /** Boolean expression to filter rows from the table "payroll_triggers_status". All fields are combined with a logical 'AND'. */
-export type PayrollTriggersStatusBoolExp = {
+export interface PayrollTriggersStatusBoolExp {
   _and?: InputMaybe<Array<PayrollTriggersStatusBoolExp>>;
   _not?: InputMaybe<PayrollTriggersStatusBoolExp>;
   _or?: InputMaybe<Array<PayrollTriggersStatusBoolExp>>;
@@ -12086,32 +12093,32 @@ export type PayrollTriggersStatusBoolExp = {
   eventManipulation?: InputMaybe<StringComparisonExp>;
   eventObjectTable?: InputMaybe<NameComparisonExp>;
   triggerName?: InputMaybe<NameComparisonExp>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollTriggersStatusMaxFields = {
+export interface PayrollTriggersStatusMaxFields {
   __typename?: 'payrollTriggersStatusMaxFields';
   actionStatement: Maybe<Scalars['String']['output']>;
   actionTiming: Maybe<Scalars['String']['output']>;
   eventManipulation: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollTriggersStatusMinFields = {
+export interface PayrollTriggersStatusMinFields {
   __typename?: 'payrollTriggersStatusMinFields';
   actionStatement: Maybe<Scalars['String']['output']>;
   actionTiming: Maybe<Scalars['String']['output']>;
   eventManipulation: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** Ordering options when selecting data from "payroll_triggers_status". */
-export type PayrollTriggersStatusOrderBy = {
+export interface PayrollTriggersStatusOrderBy {
   actionStatement?: InputMaybe<OrderBy>;
   actionTiming?: InputMaybe<OrderBy>;
   eventManipulation?: InputMaybe<OrderBy>;
   eventObjectTable?: InputMaybe<OrderBy>;
   triggerName?: InputMaybe<OrderBy>;
-};
+}
 
 /** select columns of table "payroll_triggers_status" */
 export enum PayrollTriggersStatusSelectColumn {
@@ -12128,24 +12135,24 @@ export enum PayrollTriggersStatusSelectColumn {
 }
 
 /** Streaming cursor of the table "payrollTriggersStatus" */
-export type PayrollTriggersStatusStreamCursorInput = {
+export interface PayrollTriggersStatusStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollTriggersStatusStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollTriggersStatusStreamCursorValueInput = {
+export interface PayrollTriggersStatusStreamCursorValueInput {
   actionStatement?: InputMaybe<Scalars['String']['input']>;
   actionTiming?: InputMaybe<Scalars['String']['input']>;
   eventManipulation?: InputMaybe<Scalars['String']['input']>;
   eventObjectTable?: InputMaybe<Scalars['name']['input']>;
   triggerName?: InputMaybe<Scalars['name']['input']>;
-};
+}
 
 /** columns and relationships of "payroll_version_history_results" */
-export type PayrollVersionHistoryResults = {
+export interface PayrollVersionHistoryResults {
   __typename?: 'payrollVersionHistoryResults';
   active: Scalars['Boolean']['output'];
   goLiveDate: Maybe<Scalars['date']['output']>;
@@ -12157,16 +12164,16 @@ export type PayrollVersionHistoryResults = {
   supersededDate: Maybe<Scalars['date']['output']>;
   versionNumber: Scalars['Int']['output'];
   versionReason: Maybe<Scalars['String']['output']>;
-};
+}
 
-export type PayrollVersionHistoryResultsAggregate = {
+export interface PayrollVersionHistoryResultsAggregate {
   __typename?: 'payrollVersionHistoryResultsAggregate';
   aggregate: Maybe<PayrollVersionHistoryResultsAggregateFields>;
   nodes: Array<PayrollVersionHistoryResults>;
-};
+}
 
 /** aggregate fields of "payroll_version_history_results" */
-export type PayrollVersionHistoryResultsAggregateFields = {
+export interface PayrollVersionHistoryResultsAggregateFields {
   __typename?: 'payrollVersionHistoryResultsAggregateFields';
   avg: Maybe<PayrollVersionHistoryResultsAvgFields>;
   count: Scalars['Int']['output'];
@@ -12179,7 +12186,7 @@ export type PayrollVersionHistoryResultsAggregateFields = {
   varPop: Maybe<PayrollVersionHistoryResultsVarPopFields>;
   varSamp: Maybe<PayrollVersionHistoryResultsVarSampFields>;
   variance: Maybe<PayrollVersionHistoryResultsVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "payroll_version_history_results" */
@@ -12189,13 +12196,13 @@ export type PayrollVersionHistoryResultsAggregateFieldsCountArgs = {
 };
 
 /** aggregate avg on columns */
-export type PayrollVersionHistoryResultsAvgFields = {
+export interface PayrollVersionHistoryResultsAvgFields {
   __typename?: 'payrollVersionHistoryResultsAvgFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "payroll_version_history_results". All fields are combined with a logical 'AND'. */
-export type PayrollVersionHistoryResultsBoolExp = {
+export interface PayrollVersionHistoryResultsBoolExp {
   _and?: InputMaybe<Array<PayrollVersionHistoryResultsBoolExp>>;
   _not?: InputMaybe<PayrollVersionHistoryResultsBoolExp>;
   _or?: InputMaybe<Array<PayrollVersionHistoryResultsBoolExp>>;
@@ -12209,7 +12216,7 @@ export type PayrollVersionHistoryResultsBoolExp = {
   supersededDate?: InputMaybe<DateComparisonExp>;
   versionNumber?: InputMaybe<IntComparisonExp>;
   versionReason?: InputMaybe<StringComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "payroll_version_history_results" */
 export enum PayrollVersionHistoryResultsConstraint {
@@ -12218,12 +12225,12 @@ export enum PayrollVersionHistoryResultsConstraint {
 }
 
 /** input type for incrementing numeric columns in table "payroll_version_history_results" */
-export type PayrollVersionHistoryResultsIncInput = {
+export interface PayrollVersionHistoryResultsIncInput {
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** input type for inserting data into table "payroll_version_history_results" */
-export type PayrollVersionHistoryResultsInsertInput = {
+export interface PayrollVersionHistoryResultsInsertInput {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -12234,10 +12241,10 @@ export type PayrollVersionHistoryResultsInsertInput = {
   supersededDate?: InputMaybe<Scalars['date']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
   versionReason?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollVersionHistoryResultsMaxFields = {
+export interface PayrollVersionHistoryResultsMaxFields {
   __typename?: 'payrollVersionHistoryResultsMaxFields';
   goLiveDate: Maybe<Scalars['date']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
@@ -12247,10 +12254,10 @@ export type PayrollVersionHistoryResultsMaxFields = {
   supersededDate: Maybe<Scalars['date']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
   versionReason: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollVersionHistoryResultsMinFields = {
+export interface PayrollVersionHistoryResultsMinFields {
   __typename?: 'payrollVersionHistoryResultsMinFields';
   goLiveDate: Maybe<Scalars['date']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
@@ -12260,26 +12267,26 @@ export type PayrollVersionHistoryResultsMinFields = {
   supersededDate: Maybe<Scalars['date']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
   versionReason: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** response of any mutation on the table "payroll_version_history_results" */
-export type PayrollVersionHistoryResultsMutationResponse = {
+export interface PayrollVersionHistoryResultsMutationResponse {
   __typename?: 'payrollVersionHistoryResultsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PayrollVersionHistoryResults>;
-};
+}
 
 /** on_conflict condition type for table "payroll_version_history_results" */
-export type PayrollVersionHistoryResultsOnConflict = {
+export interface PayrollVersionHistoryResultsOnConflict {
   constraint: PayrollVersionHistoryResultsConstraint;
   updateColumns?: Array<PayrollVersionHistoryResultsUpdateColumn>;
   where?: InputMaybe<PayrollVersionHistoryResultsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "payroll_version_history_results". */
-export type PayrollVersionHistoryResultsOrderBy = {
+export interface PayrollVersionHistoryResultsOrderBy {
   active?: InputMaybe<OrderBy>;
   goLiveDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -12290,12 +12297,12 @@ export type PayrollVersionHistoryResultsOrderBy = {
   supersededDate?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
   versionReason?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: payroll_version_history_results */
-export type PayrollVersionHistoryResultsPkColumnsInput = {
+export interface PayrollVersionHistoryResultsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "payroll_version_history_results" */
 export enum PayrollVersionHistoryResultsSelectColumn {
@@ -12322,7 +12329,7 @@ export enum PayrollVersionHistoryResultsSelectColumn {
 }
 
 /** input type for updating data in table "payroll_version_history_results" */
-export type PayrollVersionHistoryResultsSetInput = {
+export interface PayrollVersionHistoryResultsSetInput {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -12333,36 +12340,36 @@ export type PayrollVersionHistoryResultsSetInput = {
   supersededDate?: InputMaybe<Scalars['date']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
   versionReason?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type PayrollVersionHistoryResultsStddevFields = {
+export interface PayrollVersionHistoryResultsStddevFields {
   __typename?: 'payrollVersionHistoryResultsStddevFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type PayrollVersionHistoryResultsStddevPopFields = {
+export interface PayrollVersionHistoryResultsStddevPopFields {
   __typename?: 'payrollVersionHistoryResultsStddevPopFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type PayrollVersionHistoryResultsStddevSampFields = {
+export interface PayrollVersionHistoryResultsStddevSampFields {
   __typename?: 'payrollVersionHistoryResultsStddevSampFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "payrollVersionHistoryResults" */
-export type PayrollVersionHistoryResultsStreamCursorInput = {
+export interface PayrollVersionHistoryResultsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollVersionHistoryResultsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollVersionHistoryResultsStreamCursorValueInput = {
+export interface PayrollVersionHistoryResultsStreamCursorValueInput {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -12373,13 +12380,13 @@ export type PayrollVersionHistoryResultsStreamCursorValueInput = {
   supersededDate?: InputMaybe<Scalars['date']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
   versionReason?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type PayrollVersionHistoryResultsSumFields = {
+export interface PayrollVersionHistoryResultsSumFields {
   __typename?: 'payrollVersionHistoryResultsSumFields';
   versionNumber: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** update columns of table "payroll_version_history_results" */
 export enum PayrollVersionHistoryResultsUpdateColumn {
@@ -12405,35 +12412,35 @@ export enum PayrollVersionHistoryResultsUpdateColumn {
   versionReason = 'versionReason'
 }
 
-export type PayrollVersionHistoryResultsUpdates = {
+export interface PayrollVersionHistoryResultsUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<PayrollVersionHistoryResultsIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PayrollVersionHistoryResultsSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollVersionHistoryResultsBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type PayrollVersionHistoryResultsVarPopFields = {
+export interface PayrollVersionHistoryResultsVarPopFields {
   __typename?: 'payrollVersionHistoryResultsVarPopFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type PayrollVersionHistoryResultsVarSampFields = {
+export interface PayrollVersionHistoryResultsVarSampFields {
   __typename?: 'payrollVersionHistoryResultsVarSampFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type PayrollVersionHistoryResultsVarianceFields = {
+export interface PayrollVersionHistoryResultsVarianceFields {
   __typename?: 'payrollVersionHistoryResultsVarianceFields';
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "payroll_version_results" */
-export type PayrollVersionResults = {
+export interface PayrollVersionResults {
   __typename?: 'payrollVersionResults';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   createdByUserId: Maybe<Scalars['uuid']['output']>;
@@ -12443,16 +12450,16 @@ export type PayrollVersionResults = {
   newPayrollId: Scalars['uuid']['output'];
   newVersionNumber: Scalars['Int']['output'];
   oldPayrollId: Scalars['uuid']['output'];
-};
+}
 
-export type PayrollVersionResultsAggregate = {
+export interface PayrollVersionResultsAggregate {
   __typename?: 'payrollVersionResultsAggregate';
   aggregate: Maybe<PayrollVersionResultsAggregateFields>;
   nodes: Array<PayrollVersionResults>;
-};
+}
 
 /** aggregate fields of "payroll_version_results" */
-export type PayrollVersionResultsAggregateFields = {
+export interface PayrollVersionResultsAggregateFields {
   __typename?: 'payrollVersionResultsAggregateFields';
   avg: Maybe<PayrollVersionResultsAvgFields>;
   count: Scalars['Int']['output'];
@@ -12465,7 +12472,7 @@ export type PayrollVersionResultsAggregateFields = {
   varPop: Maybe<PayrollVersionResultsVarPopFields>;
   varSamp: Maybe<PayrollVersionResultsVarSampFields>;
   variance: Maybe<PayrollVersionResultsVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "payroll_version_results" */
@@ -12475,14 +12482,14 @@ export type PayrollVersionResultsAggregateFieldsCountArgs = {
 };
 
 /** aggregate avg on columns */
-export type PayrollVersionResultsAvgFields = {
+export interface PayrollVersionResultsAvgFields {
   __typename?: 'payrollVersionResultsAvgFields';
   datesDeleted: Maybe<Scalars['Float']['output']>;
   newVersionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "payroll_version_results". All fields are combined with a logical 'AND'. */
-export type PayrollVersionResultsBoolExp = {
+export interface PayrollVersionResultsBoolExp {
   _and?: InputMaybe<Array<PayrollVersionResultsBoolExp>>;
   _not?: InputMaybe<PayrollVersionResultsBoolExp>;
   _or?: InputMaybe<Array<PayrollVersionResultsBoolExp>>;
@@ -12494,7 +12501,7 @@ export type PayrollVersionResultsBoolExp = {
   newPayrollId?: InputMaybe<UuidComparisonExp>;
   newVersionNumber?: InputMaybe<IntComparisonExp>;
   oldPayrollId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "payroll_version_results" */
 export enum PayrollVersionResultsConstraint {
@@ -12503,13 +12510,13 @@ export enum PayrollVersionResultsConstraint {
 }
 
 /** input type for incrementing numeric columns in table "payroll_version_results" */
-export type PayrollVersionResultsIncInput = {
+export interface PayrollVersionResultsIncInput {
   datesDeleted?: InputMaybe<Scalars['Int']['input']>;
   newVersionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** input type for inserting data into table "payroll_version_results" */
-export type PayrollVersionResultsInsertInput = {
+export interface PayrollVersionResultsInsertInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdByUserId?: InputMaybe<Scalars['uuid']['input']>;
   datesDeleted?: InputMaybe<Scalars['Int']['input']>;
@@ -12518,10 +12525,10 @@ export type PayrollVersionResultsInsertInput = {
   newPayrollId?: InputMaybe<Scalars['uuid']['input']>;
   newVersionNumber?: InputMaybe<Scalars['Int']['input']>;
   oldPayrollId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollVersionResultsMaxFields = {
+export interface PayrollVersionResultsMaxFields {
   __typename?: 'payrollVersionResultsMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   createdByUserId: Maybe<Scalars['uuid']['output']>;
@@ -12531,10 +12538,10 @@ export type PayrollVersionResultsMaxFields = {
   newPayrollId: Maybe<Scalars['uuid']['output']>;
   newVersionNumber: Maybe<Scalars['Int']['output']>;
   oldPayrollId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollVersionResultsMinFields = {
+export interface PayrollVersionResultsMinFields {
   __typename?: 'payrollVersionResultsMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   createdByUserId: Maybe<Scalars['uuid']['output']>;
@@ -12544,26 +12551,26 @@ export type PayrollVersionResultsMinFields = {
   newPayrollId: Maybe<Scalars['uuid']['output']>;
   newVersionNumber: Maybe<Scalars['Int']['output']>;
   oldPayrollId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** response of any mutation on the table "payroll_version_results" */
-export type PayrollVersionResultsMutationResponse = {
+export interface PayrollVersionResultsMutationResponse {
   __typename?: 'payrollVersionResultsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PayrollVersionResults>;
-};
+}
 
 /** on_conflict condition type for table "payroll_version_results" */
-export type PayrollVersionResultsOnConflict = {
+export interface PayrollVersionResultsOnConflict {
   constraint: PayrollVersionResultsConstraint;
   updateColumns?: Array<PayrollVersionResultsUpdateColumn>;
   where?: InputMaybe<PayrollVersionResultsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "payroll_version_results". */
-export type PayrollVersionResultsOrderBy = {
+export interface PayrollVersionResultsOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   createdByUserId?: InputMaybe<OrderBy>;
   datesDeleted?: InputMaybe<OrderBy>;
@@ -12572,12 +12579,12 @@ export type PayrollVersionResultsOrderBy = {
   newPayrollId?: InputMaybe<OrderBy>;
   newVersionNumber?: InputMaybe<OrderBy>;
   oldPayrollId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: payroll_version_results */
-export type PayrollVersionResultsPkColumnsInput = {
+export interface PayrollVersionResultsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "payroll_version_results" */
 export enum PayrollVersionResultsSelectColumn {
@@ -12600,7 +12607,7 @@ export enum PayrollVersionResultsSelectColumn {
 }
 
 /** input type for updating data in table "payroll_version_results" */
-export type PayrollVersionResultsSetInput = {
+export interface PayrollVersionResultsSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdByUserId?: InputMaybe<Scalars['uuid']['input']>;
   datesDeleted?: InputMaybe<Scalars['Int']['input']>;
@@ -12609,39 +12616,39 @@ export type PayrollVersionResultsSetInput = {
   newPayrollId?: InputMaybe<Scalars['uuid']['input']>;
   newVersionNumber?: InputMaybe<Scalars['Int']['input']>;
   oldPayrollId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type PayrollVersionResultsStddevFields = {
+export interface PayrollVersionResultsStddevFields {
   __typename?: 'payrollVersionResultsStddevFields';
   datesDeleted: Maybe<Scalars['Float']['output']>;
   newVersionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type PayrollVersionResultsStddevPopFields = {
+export interface PayrollVersionResultsStddevPopFields {
   __typename?: 'payrollVersionResultsStddevPopFields';
   datesDeleted: Maybe<Scalars['Float']['output']>;
   newVersionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type PayrollVersionResultsStddevSampFields = {
+export interface PayrollVersionResultsStddevSampFields {
   __typename?: 'payrollVersionResultsStddevSampFields';
   datesDeleted: Maybe<Scalars['Float']['output']>;
   newVersionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "payrollVersionResults" */
-export type PayrollVersionResultsStreamCursorInput = {
+export interface PayrollVersionResultsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollVersionResultsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollVersionResultsStreamCursorValueInput = {
+export interface PayrollVersionResultsStreamCursorValueInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdByUserId?: InputMaybe<Scalars['uuid']['input']>;
   datesDeleted?: InputMaybe<Scalars['Int']['input']>;
@@ -12650,14 +12657,14 @@ export type PayrollVersionResultsStreamCursorValueInput = {
   newPayrollId?: InputMaybe<Scalars['uuid']['input']>;
   newVersionNumber?: InputMaybe<Scalars['Int']['input']>;
   oldPayrollId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type PayrollVersionResultsSumFields = {
+export interface PayrollVersionResultsSumFields {
   __typename?: 'payrollVersionResultsSumFields';
   datesDeleted: Maybe<Scalars['Int']['output']>;
   newVersionNumber: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** update columns of table "payroll_version_results" */
 export enum PayrollVersionResultsUpdateColumn {
@@ -12679,38 +12686,38 @@ export enum PayrollVersionResultsUpdateColumn {
   oldPayrollId = 'oldPayrollId'
 }
 
-export type PayrollVersionResultsUpdates = {
+export interface PayrollVersionResultsUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<PayrollVersionResultsIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PayrollVersionResultsSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollVersionResultsBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type PayrollVersionResultsVarPopFields = {
+export interface PayrollVersionResultsVarPopFields {
   __typename?: 'payrollVersionResultsVarPopFields';
   datesDeleted: Maybe<Scalars['Float']['output']>;
   newVersionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type PayrollVersionResultsVarSampFields = {
+export interface PayrollVersionResultsVarSampFields {
   __typename?: 'payrollVersionResultsVarSampFields';
   datesDeleted: Maybe<Scalars['Float']['output']>;
   newVersionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type PayrollVersionResultsVarianceFields = {
+export interface PayrollVersionResultsVarianceFields {
   __typename?: 'payrollVersionResultsVarianceFields';
   datesDeleted: Maybe<Scalars['Float']['output']>;
   newVersionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "payrolls" */
-export type Payrolls = {
+export interface Payrolls {
   __typename?: 'payrolls';
   /** An object relationship */
   backupConsultant: Maybe<Users>;
@@ -12777,7 +12784,7 @@ export type Payrolls = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
   versionReason: Maybe<Scalars['String']['output']>;
-};
+}
 
 
 /** columns and relationships of "payrolls" */
@@ -12840,25 +12847,25 @@ export type PayrollsPayrollDatesAggregateArgs = {
 };
 
 /** aggregated selection of "payrolls" */
-export type PayrollsAggregate = {
+export interface PayrollsAggregate {
   __typename?: 'payrollsAggregate';
   aggregate: Maybe<PayrollsAggregateFields>;
   nodes: Array<Payrolls>;
-};
+}
 
-export type PayrollsAggregateBoolExp = {
+export interface PayrollsAggregateBoolExp {
   count?: InputMaybe<PayrollsAggregateBoolExpCount>;
-};
+}
 
-export type PayrollsAggregateBoolExpCount = {
+export interface PayrollsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<PayrollsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "payrolls" */
-export type PayrollsAggregateFields = {
+export interface PayrollsAggregateFields {
   __typename?: 'payrollsAggregateFields';
   avg: Maybe<PayrollsAvgFields>;
   count: Scalars['Int']['output'];
@@ -12871,7 +12878,7 @@ export type PayrollsAggregateFields = {
   varPop: Maybe<PayrollsVarPopFields>;
   varSamp: Maybe<PayrollsVarSampFields>;
   variance: Maybe<PayrollsVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "payrolls" */
@@ -12881,7 +12888,7 @@ export type PayrollsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "payrolls" */
-export type PayrollsAggregateOrderBy = {
+export interface PayrollsAggregateOrderBy {
   avg?: InputMaybe<PayrollsAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<PayrollsMaxOrderBy>;
@@ -12893,17 +12900,17 @@ export type PayrollsAggregateOrderBy = {
   varPop?: InputMaybe<PayrollsVarPopOrderBy>;
   varSamp?: InputMaybe<PayrollsVarSampOrderBy>;
   variance?: InputMaybe<PayrollsVarianceOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "payrolls" */
-export type PayrollsArrRelInsertInput = {
+export interface PayrollsArrRelInsertInput {
   data: Array<PayrollsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<PayrollsOnConflict>;
-};
+}
 
 /** aggregate avg on columns */
-export type PayrollsAvgFields = {
+export interface PayrollsAvgFields {
   __typename?: 'payrollsAvgFields';
   /** Specific value for date calculation (e.g., day of month) */
   dateValue: Maybe<Scalars['Float']['output']>;
@@ -12914,10 +12921,10 @@ export type PayrollsAvgFields = {
   /** Number of hours required to process this payroll */
   processingTime: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by avg() on columns of table "payrolls" */
-export type PayrollsAvgOrderBy = {
+export interface PayrollsAvgOrderBy {
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
@@ -12927,10 +12934,10 @@ export type PayrollsAvgOrderBy = {
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
-};
+}
 
 /** Boolean expression to filter rows from the table "payrolls". All fields are combined with a logical 'AND'. */
-export type PayrollsBoolExp = {
+export interface PayrollsBoolExp {
   _and?: InputMaybe<Array<PayrollsBoolExp>>;
   _not?: InputMaybe<PayrollsBoolExp>;
   _or?: InputMaybe<Array<PayrollsBoolExp>>;
@@ -12969,7 +12976,7 @@ export type PayrollsBoolExp = {
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   versionNumber?: InputMaybe<IntComparisonExp>;
   versionReason?: InputMaybe<StringComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "payrolls" */
 export enum PayrollsConstraint {
@@ -12980,7 +12987,7 @@ export enum PayrollsConstraint {
 }
 
 /** input type for incrementing numeric columns in table "payrolls" */
-export type PayrollsIncInput = {
+export interface PayrollsIncInput {
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<Scalars['Int']['input']>;
   /** Number of employees in this payroll */
@@ -12990,10 +12997,10 @@ export type PayrollsIncInput = {
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<Scalars['Int']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** input type for inserting data into table "payrolls" */
-export type PayrollsInsertInput = {
+export interface PayrollsInsertInput {
   backupConsultant?: InputMaybe<UsersObjRelInsertInput>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
@@ -13043,10 +13050,10 @@ export type PayrollsInsertInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
   versionReason?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PayrollsMaxFields = {
+export interface PayrollsMaxFields {
   __typename?: 'payrollsMaxFields';
   /** Backup consultant for this payroll */
   backupConsultantUserId: Maybe<Scalars['uuid']['output']>;
@@ -13087,10 +13094,10 @@ export type PayrollsMaxFields = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
   versionReason: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** order by max() on columns of table "payrolls" */
-export type PayrollsMaxOrderBy = {
+export interface PayrollsMaxOrderBy {
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<OrderBy>;
   /** Reference to the client this payroll belongs to */
@@ -13130,10 +13137,10 @@ export type PayrollsMaxOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
   versionReason?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type PayrollsMinFields = {
+export interface PayrollsMinFields {
   __typename?: 'payrollsMinFields';
   /** Backup consultant for this payroll */
   backupConsultantUserId: Maybe<Scalars['uuid']['output']>;
@@ -13174,10 +13181,10 @@ export type PayrollsMinFields = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
   versionReason: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** order by min() on columns of table "payrolls" */
-export type PayrollsMinOrderBy = {
+export interface PayrollsMinOrderBy {
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<OrderBy>;
   /** Reference to the client this payroll belongs to */
@@ -13217,33 +13224,33 @@ export type PayrollsMinOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
   versionReason?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "payrolls" */
-export type PayrollsMutationResponse = {
+export interface PayrollsMutationResponse {
   __typename?: 'payrollsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<Payrolls>;
-};
+}
 
 /** input type for inserting object relation for remote table "payrolls" */
-export type PayrollsObjRelInsertInput = {
+export interface PayrollsObjRelInsertInput {
   data: PayrollsInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<PayrollsOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "payrolls" */
-export type PayrollsOnConflict = {
+export interface PayrollsOnConflict {
   constraint: PayrollsConstraint;
   updateColumns?: Array<PayrollsUpdateColumn>;
   where?: InputMaybe<PayrollsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "payrolls". */
-export type PayrollsOrderBy = {
+export interface PayrollsOrderBy {
   backupConsultant?: InputMaybe<UsersOrderBy>;
   backupConsultantUserId?: InputMaybe<OrderBy>;
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
@@ -13276,13 +13283,13 @@ export type PayrollsOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
   versionReason?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: payrolls */
-export type PayrollsPkColumnsInput = {
+export interface PayrollsPkColumnsInput {
   /** Unique identifier for the payroll */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "payrolls" */
 export enum PayrollsSelectColumn {
@@ -13333,7 +13340,7 @@ export enum PayrollsSelectColumn {
 }
 
 /** input type for updating data in table "payrolls" */
-export type PayrollsSetInput = {
+export interface PayrollsSetInput {
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Reference to the client this payroll belongs to */
@@ -13373,10 +13380,10 @@ export type PayrollsSetInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
   versionReason?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type PayrollsStddevFields = {
+export interface PayrollsStddevFields {
   __typename?: 'payrollsStddevFields';
   /** Specific value for date calculation (e.g., day of month) */
   dateValue: Maybe<Scalars['Float']['output']>;
@@ -13387,10 +13394,10 @@ export type PayrollsStddevFields = {
   /** Number of hours required to process this payroll */
   processingTime: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddev() on columns of table "payrolls" */
-export type PayrollsStddevOrderBy = {
+export interface PayrollsStddevOrderBy {
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
@@ -13400,10 +13407,10 @@ export type PayrollsStddevOrderBy = {
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type PayrollsStddevPopFields = {
+export interface PayrollsStddevPopFields {
   __typename?: 'payrollsStddevPopFields';
   /** Specific value for date calculation (e.g., day of month) */
   dateValue: Maybe<Scalars['Float']['output']>;
@@ -13414,10 +13421,10 @@ export type PayrollsStddevPopFields = {
   /** Number of hours required to process this payroll */
   processingTime: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddevPop() on columns of table "payrolls" */
-export type PayrollsStddevPopOrderBy = {
+export interface PayrollsStddevPopOrderBy {
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
@@ -13427,10 +13434,10 @@ export type PayrollsStddevPopOrderBy = {
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type PayrollsStddevSampFields = {
+export interface PayrollsStddevSampFields {
   __typename?: 'payrollsStddevSampFields';
   /** Specific value for date calculation (e.g., day of month) */
   dateValue: Maybe<Scalars['Float']['output']>;
@@ -13441,10 +13448,10 @@ export type PayrollsStddevSampFields = {
   /** Number of hours required to process this payroll */
   processingTime: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddevSamp() on columns of table "payrolls" */
-export type PayrollsStddevSampOrderBy = {
+export interface PayrollsStddevSampOrderBy {
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
@@ -13454,18 +13461,18 @@ export type PayrollsStddevSampOrderBy = {
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
-};
+}
 
 /** Streaming cursor of the table "payrolls" */
-export type PayrollsStreamCursorInput = {
+export interface PayrollsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PayrollsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PayrollsStreamCursorValueInput = {
+export interface PayrollsStreamCursorValueInput {
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Reference to the client this payroll belongs to */
@@ -13505,10 +13512,10 @@ export type PayrollsStreamCursorValueInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
   versionReason?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type PayrollsSumFields = {
+export interface PayrollsSumFields {
   __typename?: 'payrollsSumFields';
   /** Specific value for date calculation (e.g., day of month) */
   dateValue: Maybe<Scalars['Int']['output']>;
@@ -13519,10 +13526,10 @@ export type PayrollsSumFields = {
   /** Number of hours required to process this payroll */
   processingTime: Maybe<Scalars['Int']['output']>;
   versionNumber: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** order by sum() on columns of table "payrolls" */
-export type PayrollsSumOrderBy = {
+export interface PayrollsSumOrderBy {
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
@@ -13532,7 +13539,7 @@ export type PayrollsSumOrderBy = {
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
-};
+}
 
 /** update columns of table "payrolls" */
 export enum PayrollsUpdateColumn {
@@ -13582,17 +13589,17 @@ export enum PayrollsUpdateColumn {
   versionReason = 'versionReason'
 }
 
-export type PayrollsUpdates = {
+export interface PayrollsUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<PayrollsIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PayrollsSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollsBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type PayrollsVarPopFields = {
+export interface PayrollsVarPopFields {
   __typename?: 'payrollsVarPopFields';
   /** Specific value for date calculation (e.g., day of month) */
   dateValue: Maybe<Scalars['Float']['output']>;
@@ -13603,10 +13610,10 @@ export type PayrollsVarPopFields = {
   /** Number of hours required to process this payroll */
   processingTime: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by varPop() on columns of table "payrolls" */
-export type PayrollsVarPopOrderBy = {
+export interface PayrollsVarPopOrderBy {
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
@@ -13616,10 +13623,10 @@ export type PayrollsVarPopOrderBy = {
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type PayrollsVarSampFields = {
+export interface PayrollsVarSampFields {
   __typename?: 'payrollsVarSampFields';
   /** Specific value for date calculation (e.g., day of month) */
   dateValue: Maybe<Scalars['Float']['output']>;
@@ -13630,10 +13637,10 @@ export type PayrollsVarSampFields = {
   /** Number of hours required to process this payroll */
   processingTime: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by varSamp() on columns of table "payrolls" */
-export type PayrollsVarSampOrderBy = {
+export interface PayrollsVarSampOrderBy {
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
@@ -13643,10 +13650,10 @@ export type PayrollsVarSampOrderBy = {
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate variance on columns */
-export type PayrollsVarianceFields = {
+export interface PayrollsVarianceFields {
   __typename?: 'payrollsVarianceFields';
   /** Specific value for date calculation (e.g., day of month) */
   dateValue: Maybe<Scalars['Float']['output']>;
@@ -13657,10 +13664,10 @@ export type PayrollsVarianceFields = {
   /** Number of hours required to process this payroll */
   processingTime: Maybe<Scalars['Float']['output']>;
   versionNumber: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by variance() on columns of table "payrolls" */
-export type PayrollsVarianceOrderBy = {
+export interface PayrollsVarianceOrderBy {
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
@@ -13670,10 +13677,10 @@ export type PayrollsVarianceOrderBy = {
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
-};
+}
 
 /** Audit log for permission changes and access attempts */
-export type PermissionAuditLogs = {
+export interface PermissionAuditLogs {
   __typename?: 'permissionAuditLogs';
   action: Scalars['String']['output'];
   createdAt: Scalars['timestamptz']['output'];
@@ -13691,7 +13698,7 @@ export type PermissionAuditLogs = {
   targetUserId: Maybe<Scalars['uuid']['output']>;
   timestamp: Scalars['timestamptz']['output'];
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 
 /** Audit log for permission changes and access attempts */
@@ -13706,30 +13713,30 @@ export type PermissionAuditLogsPreviousValueArgs = {
 };
 
 /** aggregated selection of "permission_audit_log" */
-export type PermissionAuditLogsAggregate = {
+export interface PermissionAuditLogsAggregate {
   __typename?: 'permissionAuditLogsAggregate';
   aggregate: Maybe<PermissionAuditLogsAggregateFields>;
   nodes: Array<PermissionAuditLogs>;
-};
+}
 
-export type PermissionAuditLogsAggregateBoolExp = {
+export interface PermissionAuditLogsAggregateBoolExp {
   count?: InputMaybe<PermissionAuditLogsAggregateBoolExpCount>;
-};
+}
 
-export type PermissionAuditLogsAggregateBoolExpCount = {
+export interface PermissionAuditLogsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<PermissionAuditLogsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PermissionAuditLogsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "permission_audit_log" */
-export type PermissionAuditLogsAggregateFields = {
+export interface PermissionAuditLogsAggregateFields {
   __typename?: 'permissionAuditLogsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<PermissionAuditLogsMaxFields>;
   min: Maybe<PermissionAuditLogsMinFields>;
-};
+}
 
 
 /** aggregate fields of "permission_audit_log" */
@@ -13739,27 +13746,27 @@ export type PermissionAuditLogsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "permission_audit_log" */
-export type PermissionAuditLogsAggregateOrderBy = {
+export interface PermissionAuditLogsAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<PermissionAuditLogsMaxOrderBy>;
   min?: InputMaybe<PermissionAuditLogsMinOrderBy>;
-};
+}
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type PermissionAuditLogsAppendInput = {
+export interface PermissionAuditLogsAppendInput {
   newValue?: InputMaybe<Scalars['jsonb']['input']>;
   previousValue?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** input type for inserting array relation for remote table "permission_audit_log" */
-export type PermissionAuditLogsArrRelInsertInput = {
+export interface PermissionAuditLogsArrRelInsertInput {
   data: Array<PermissionAuditLogsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<PermissionAuditLogsOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "permission_audit_log". All fields are combined with a logical 'AND'. */
-export type PermissionAuditLogsBoolExp = {
+export interface PermissionAuditLogsBoolExp {
   _and?: InputMaybe<Array<PermissionAuditLogsBoolExp>>;
   _not?: InputMaybe<PermissionAuditLogsBoolExp>;
   _or?: InputMaybe<Array<PermissionAuditLogsBoolExp>>;
@@ -13777,7 +13784,7 @@ export type PermissionAuditLogsBoolExp = {
   targetUserId?: InputMaybe<UuidComparisonExp>;
   timestamp?: InputMaybe<TimestamptzComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "permission_audit_log" */
 export enum PermissionAuditLogsConstraint {
@@ -13786,25 +13793,25 @@ export enum PermissionAuditLogsConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type PermissionAuditLogsDeleteAtPathInput = {
+export interface PermissionAuditLogsDeleteAtPathInput {
   newValue?: InputMaybe<Array<Scalars['String']['input']>>;
   previousValue?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type PermissionAuditLogsDeleteElemInput = {
+export interface PermissionAuditLogsDeleteElemInput {
   newValue?: InputMaybe<Scalars['Int']['input']>;
   previousValue?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type PermissionAuditLogsDeleteKeyInput = {
+export interface PermissionAuditLogsDeleteKeyInput {
   newValue?: InputMaybe<Scalars['String']['input']>;
   previousValue?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for inserting data into table "permission_audit_log" */
-export type PermissionAuditLogsInsertInput = {
+export interface PermissionAuditLogsInsertInput {
   action?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -13819,10 +13826,10 @@ export type PermissionAuditLogsInsertInput = {
   targetUserId?: InputMaybe<Scalars['uuid']['input']>;
   timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PermissionAuditLogsMaxFields = {
+export interface PermissionAuditLogsMaxFields {
   __typename?: 'permissionAuditLogsMaxFields';
   action: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -13834,10 +13841,10 @@ export type PermissionAuditLogsMaxFields = {
   targetUserId: Maybe<Scalars['uuid']['output']>;
   timestamp: Maybe<Scalars['timestamptz']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by max() on columns of table "permission_audit_log" */
-export type PermissionAuditLogsMaxOrderBy = {
+export interface PermissionAuditLogsMaxOrderBy {
   action?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -13848,10 +13855,10 @@ export type PermissionAuditLogsMaxOrderBy = {
   targetUserId?: InputMaybe<OrderBy>;
   timestamp?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type PermissionAuditLogsMinFields = {
+export interface PermissionAuditLogsMinFields {
   __typename?: 'permissionAuditLogsMinFields';
   action: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -13863,10 +13870,10 @@ export type PermissionAuditLogsMinFields = {
   targetUserId: Maybe<Scalars['uuid']['output']>;
   timestamp: Maybe<Scalars['timestamptz']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by min() on columns of table "permission_audit_log" */
-export type PermissionAuditLogsMinOrderBy = {
+export interface PermissionAuditLogsMinOrderBy {
   action?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -13877,26 +13884,26 @@ export type PermissionAuditLogsMinOrderBy = {
   targetUserId?: InputMaybe<OrderBy>;
   timestamp?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "permission_audit_log" */
-export type PermissionAuditLogsMutationResponse = {
+export interface PermissionAuditLogsMutationResponse {
   __typename?: 'permissionAuditLogsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PermissionAuditLogs>;
-};
+}
 
 /** on_conflict condition type for table "permission_audit_log" */
-export type PermissionAuditLogsOnConflict = {
+export interface PermissionAuditLogsOnConflict {
   constraint: PermissionAuditLogsConstraint;
   updateColumns?: Array<PermissionAuditLogsUpdateColumn>;
   where?: InputMaybe<PermissionAuditLogsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "permission_audit_log". */
-export type PermissionAuditLogsOrderBy = {
+export interface PermissionAuditLogsOrderBy {
   action?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -13911,18 +13918,18 @@ export type PermissionAuditLogsOrderBy = {
   targetUserId?: InputMaybe<OrderBy>;
   timestamp?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: permission_audit_log */
-export type PermissionAuditLogsPkColumnsInput = {
+export interface PermissionAuditLogsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type PermissionAuditLogsPrependInput = {
+export interface PermissionAuditLogsPrependInput {
   newValue?: InputMaybe<Scalars['jsonb']['input']>;
   previousValue?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "permission_audit_log" */
 export enum PermissionAuditLogsSelectColumn {
@@ -13953,7 +13960,7 @@ export enum PermissionAuditLogsSelectColumn {
 }
 
 /** input type for updating data in table "permission_audit_log" */
-export type PermissionAuditLogsSetInput = {
+export interface PermissionAuditLogsSetInput {
   action?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -13966,18 +13973,18 @@ export type PermissionAuditLogsSetInput = {
   targetUserId?: InputMaybe<Scalars['uuid']['input']>;
   timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** Streaming cursor of the table "permissionAuditLogs" */
-export type PermissionAuditLogsStreamCursorInput = {
+export interface PermissionAuditLogsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PermissionAuditLogsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PermissionAuditLogsStreamCursorValueInput = {
+export interface PermissionAuditLogsStreamCursorValueInput {
   action?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -13990,7 +13997,7 @@ export type PermissionAuditLogsStreamCursorValueInput = {
   targetUserId?: InputMaybe<Scalars['uuid']['input']>;
   timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** update columns of table "permission_audit_log" */
 export enum PermissionAuditLogsUpdateColumn {
@@ -14020,7 +14027,7 @@ export enum PermissionAuditLogsUpdateColumn {
   userId = 'userId'
 }
 
-export type PermissionAuditLogsUpdates = {
+export interface PermissionAuditLogsUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<PermissionAuditLogsAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -14035,10 +14042,10 @@ export type PermissionAuditLogsUpdates = {
   _set?: InputMaybe<PermissionAuditLogsSetInput>;
   /** filter the rows which have to be updated */
   where: PermissionAuditLogsBoolExp;
-};
+}
 
 /** columns and relationships of "audit.permission_changes" */
-export type PermissionChanges = {
+export interface PermissionChanges {
   __typename?: 'permissionChanges';
   approvedByUserId: Maybe<Scalars['uuid']['output']>;
   changeType: Scalars['String']['output'];
@@ -14052,7 +14059,7 @@ export type PermissionChanges = {
   reason: Maybe<Scalars['String']['output']>;
   targetRoleId: Maybe<Scalars['uuid']['output']>;
   targetUserId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 
 /** columns and relationships of "audit.permission_changes" */
@@ -14073,19 +14080,19 @@ export type PermissionChangesOldPermissionsArgs = {
 };
 
 /** aggregated selection of "audit.permission_changes" */
-export type PermissionChangesAggregate = {
+export interface PermissionChangesAggregate {
   __typename?: 'permissionChangesAggregate';
   aggregate: Maybe<PermissionChangesAggregateFields>;
   nodes: Array<PermissionChanges>;
-};
+}
 
 /** aggregate fields of "audit.permission_changes" */
-export type PermissionChangesAggregateFields = {
+export interface PermissionChangesAggregateFields {
   __typename?: 'permissionChangesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<PermissionChangesMaxFields>;
   min: Maybe<PermissionChangesMinFields>;
-};
+}
 
 
 /** aggregate fields of "audit.permission_changes" */
@@ -14095,14 +14102,14 @@ export type PermissionChangesAggregateFieldsCountArgs = {
 };
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type PermissionChangesAppendInput = {
+export interface PermissionChangesAppendInput {
   metadata?: InputMaybe<Scalars['jsonb']['input']>;
   newPermissions?: InputMaybe<Scalars['jsonb']['input']>;
   oldPermissions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "audit.permission_changes". All fields are combined with a logical 'AND'. */
-export type PermissionChangesBoolExp = {
+export interface PermissionChangesBoolExp {
   _and?: InputMaybe<Array<PermissionChangesBoolExp>>;
   _not?: InputMaybe<PermissionChangesBoolExp>;
   _or?: InputMaybe<Array<PermissionChangesBoolExp>>;
@@ -14118,7 +14125,7 @@ export type PermissionChangesBoolExp = {
   reason?: InputMaybe<StringComparisonExp>;
   targetRoleId?: InputMaybe<UuidComparisonExp>;
   targetUserId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "audit.permission_changes" */
 export enum PermissionChangesConstraint {
@@ -14127,28 +14134,28 @@ export enum PermissionChangesConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type PermissionChangesDeleteAtPathInput = {
+export interface PermissionChangesDeleteAtPathInput {
   metadata?: InputMaybe<Array<Scalars['String']['input']>>;
   newPermissions?: InputMaybe<Array<Scalars['String']['input']>>;
   oldPermissions?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type PermissionChangesDeleteElemInput = {
+export interface PermissionChangesDeleteElemInput {
   metadata?: InputMaybe<Scalars['Int']['input']>;
   newPermissions?: InputMaybe<Scalars['Int']['input']>;
   oldPermissions?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type PermissionChangesDeleteKeyInput = {
+export interface PermissionChangesDeleteKeyInput {
   metadata?: InputMaybe<Scalars['String']['input']>;
   newPermissions?: InputMaybe<Scalars['String']['input']>;
   oldPermissions?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for inserting data into table "audit.permission_changes" */
-export type PermissionChangesInsertInput = {
+export interface PermissionChangesInsertInput {
   approvedByUserId?: InputMaybe<Scalars['uuid']['input']>;
   changeType?: InputMaybe<Scalars['String']['input']>;
   changedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -14161,10 +14168,10 @@ export type PermissionChangesInsertInput = {
   reason?: InputMaybe<Scalars['String']['input']>;
   targetRoleId?: InputMaybe<Scalars['uuid']['input']>;
   targetUserId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PermissionChangesMaxFields = {
+export interface PermissionChangesMaxFields {
   __typename?: 'permissionChangesMaxFields';
   approvedByUserId: Maybe<Scalars['uuid']['output']>;
   changeType: Maybe<Scalars['String']['output']>;
@@ -14175,10 +14182,10 @@ export type PermissionChangesMaxFields = {
   reason: Maybe<Scalars['String']['output']>;
   targetRoleId: Maybe<Scalars['uuid']['output']>;
   targetUserId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type PermissionChangesMinFields = {
+export interface PermissionChangesMinFields {
   __typename?: 'permissionChangesMinFields';
   approvedByUserId: Maybe<Scalars['uuid']['output']>;
   changeType: Maybe<Scalars['String']['output']>;
@@ -14189,26 +14196,26 @@ export type PermissionChangesMinFields = {
   reason: Maybe<Scalars['String']['output']>;
   targetRoleId: Maybe<Scalars['uuid']['output']>;
   targetUserId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** response of any mutation on the table "audit.permission_changes" */
-export type PermissionChangesMutationResponse = {
+export interface PermissionChangesMutationResponse {
   __typename?: 'permissionChangesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PermissionChanges>;
-};
+}
 
 /** on_conflict condition type for table "audit.permission_changes" */
-export type PermissionChangesOnConflict = {
+export interface PermissionChangesOnConflict {
   constraint: PermissionChangesConstraint;
   updateColumns?: Array<PermissionChangesUpdateColumn>;
   where?: InputMaybe<PermissionChangesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "audit.permission_changes". */
-export type PermissionChangesOrderBy = {
+export interface PermissionChangesOrderBy {
   approvedByUserId?: InputMaybe<OrderBy>;
   changeType?: InputMaybe<OrderBy>;
   changedAt?: InputMaybe<OrderBy>;
@@ -14221,19 +14228,19 @@ export type PermissionChangesOrderBy = {
   reason?: InputMaybe<OrderBy>;
   targetRoleId?: InputMaybe<OrderBy>;
   targetUserId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: audit.permission_changes */
-export type PermissionChangesPkColumnsInput = {
+export interface PermissionChangesPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type PermissionChangesPrependInput = {
+export interface PermissionChangesPrependInput {
   metadata?: InputMaybe<Scalars['jsonb']['input']>;
   newPermissions?: InputMaybe<Scalars['jsonb']['input']>;
   oldPermissions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "audit.permission_changes" */
 export enum PermissionChangesSelectColumn {
@@ -14264,7 +14271,7 @@ export enum PermissionChangesSelectColumn {
 }
 
 /** input type for updating data in table "audit.permission_changes" */
-export type PermissionChangesSetInput = {
+export interface PermissionChangesSetInput {
   approvedByUserId?: InputMaybe<Scalars['uuid']['input']>;
   changeType?: InputMaybe<Scalars['String']['input']>;
   changedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -14277,18 +14284,18 @@ export type PermissionChangesSetInput = {
   reason?: InputMaybe<Scalars['String']['input']>;
   targetRoleId?: InputMaybe<Scalars['uuid']['input']>;
   targetUserId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** Streaming cursor of the table "permissionChanges" */
-export type PermissionChangesStreamCursorInput = {
+export interface PermissionChangesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PermissionChangesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PermissionChangesStreamCursorValueInput = {
+export interface PermissionChangesStreamCursorValueInput {
   approvedByUserId?: InputMaybe<Scalars['uuid']['input']>;
   changeType?: InputMaybe<Scalars['String']['input']>;
   changedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -14301,7 +14308,7 @@ export type PermissionChangesStreamCursorValueInput = {
   reason?: InputMaybe<Scalars['String']['input']>;
   targetRoleId?: InputMaybe<Scalars['uuid']['input']>;
   targetUserId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** update columns of table "audit.permission_changes" */
 export enum PermissionChangesUpdateColumn {
@@ -14331,7 +14338,7 @@ export enum PermissionChangesUpdateColumn {
   targetUserId = 'targetUserId'
 }
 
-export type PermissionChangesUpdates = {
+export interface PermissionChangesUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<PermissionChangesAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -14346,10 +14353,10 @@ export type PermissionChangesUpdates = {
   _set?: InputMaybe<PermissionChangesSetInput>;
   /** filter the rows which have to be updated */
   where: PermissionChangesBoolExp;
-};
+}
 
 /** User-specific and role-specific permission overrides */
-export type PermissionOverrides = {
+export interface PermissionOverrides {
   __typename?: 'permissionOverrides';
   /** JSON conditions for conditional permissions */
   conditions: Maybe<Scalars['jsonb']['output']>;
@@ -14372,7 +14379,7 @@ export type PermissionOverrides = {
   updatedAt: Scalars['timestamptz']['output'];
   /** User ID for user-specific overrides (mutually exclusive with role) */
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 
 /** User-specific and role-specific permission overrides */
@@ -14381,46 +14388,46 @@ export type PermissionOverridesConditionsArgs = {
 };
 
 /** aggregated selection of "permission_overrides" */
-export type PermissionOverridesAggregate = {
+export interface PermissionOverridesAggregate {
   __typename?: 'permissionOverridesAggregate';
   aggregate: Maybe<PermissionOverridesAggregateFields>;
   nodes: Array<PermissionOverrides>;
-};
+}
 
-export type PermissionOverridesAggregateBoolExp = {
+export interface PermissionOverridesAggregateBoolExp {
   bool_and?: InputMaybe<PermissionOverridesAggregateBoolExpBoolAnd>;
   bool_or?: InputMaybe<PermissionOverridesAggregateBoolExpBoolOr>;
   count?: InputMaybe<PermissionOverridesAggregateBoolExpCount>;
-};
+}
 
-export type PermissionOverridesAggregateBoolExpBoolAnd = {
+export interface PermissionOverridesAggregateBoolExpBoolAnd {
   arguments: PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PermissionOverridesBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type PermissionOverridesAggregateBoolExpBoolOr = {
+export interface PermissionOverridesAggregateBoolExpBoolOr {
   arguments: PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PermissionOverridesBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type PermissionOverridesAggregateBoolExpCount = {
+export interface PermissionOverridesAggregateBoolExpCount {
   arguments?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PermissionOverridesBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "permission_overrides" */
-export type PermissionOverridesAggregateFields = {
+export interface PermissionOverridesAggregateFields {
   __typename?: 'permissionOverridesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<PermissionOverridesMaxFields>;
   min: Maybe<PermissionOverridesMinFields>;
-};
+}
 
 
 /** aggregate fields of "permission_overrides" */
@@ -14430,27 +14437,27 @@ export type PermissionOverridesAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "permission_overrides" */
-export type PermissionOverridesAggregateOrderBy = {
+export interface PermissionOverridesAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<PermissionOverridesMaxOrderBy>;
   min?: InputMaybe<PermissionOverridesMinOrderBy>;
-};
+}
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type PermissionOverridesAppendInput = {
+export interface PermissionOverridesAppendInput {
   /** JSON conditions for conditional permissions */
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** input type for inserting array relation for remote table "permission_overrides" */
-export type PermissionOverridesArrRelInsertInput = {
+export interface PermissionOverridesArrRelInsertInput {
   data: Array<PermissionOverridesInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<PermissionOverridesOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "permission_overrides". All fields are combined with a logical 'AND'. */
-export type PermissionOverridesBoolExp = {
+export interface PermissionOverridesBoolExp {
   _and?: InputMaybe<Array<PermissionOverridesBoolExp>>;
   _not?: InputMaybe<PermissionOverridesBoolExp>;
   _or?: InputMaybe<Array<PermissionOverridesBoolExp>>;
@@ -14468,7 +14475,7 @@ export type PermissionOverridesBoolExp = {
   targetUser?: InputMaybe<UsersBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "permission_overrides" */
 export enum PermissionOverridesConstraint {
@@ -14477,25 +14484,25 @@ export enum PermissionOverridesConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type PermissionOverridesDeleteAtPathInput = {
+export interface PermissionOverridesDeleteAtPathInput {
   /** JSON conditions for conditional permissions */
   conditions?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type PermissionOverridesDeleteElemInput = {
+export interface PermissionOverridesDeleteElemInput {
   /** JSON conditions for conditional permissions */
   conditions?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type PermissionOverridesDeleteKeyInput = {
+export interface PermissionOverridesDeleteKeyInput {
   /** JSON conditions for conditional permissions */
   conditions?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for inserting data into table "permission_overrides" */
-export type PermissionOverridesInsertInput = {
+export interface PermissionOverridesInsertInput {
   /** JSON conditions for conditional permissions */
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -14515,10 +14522,10 @@ export type PermissionOverridesInsertInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User ID for user-specific overrides (mutually exclusive with role) */
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PermissionOverridesMaxFields = {
+export interface PermissionOverridesMaxFields {
   __typename?: 'permissionOverridesMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   createdBy: Maybe<Scalars['uuid']['output']>;
@@ -14533,10 +14540,10 @@ export type PermissionOverridesMaxFields = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   /** User ID for user-specific overrides (mutually exclusive with role) */
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by max() on columns of table "permission_overrides" */
-export type PermissionOverridesMaxOrderBy = {
+export interface PermissionOverridesMaxOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   createdBy?: InputMaybe<OrderBy>;
   /** When this override expires (NULL for permanent) */
@@ -14550,10 +14557,10 @@ export type PermissionOverridesMaxOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
   /** User ID for user-specific overrides (mutually exclusive with role) */
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type PermissionOverridesMinFields = {
+export interface PermissionOverridesMinFields {
   __typename?: 'permissionOverridesMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   createdBy: Maybe<Scalars['uuid']['output']>;
@@ -14568,10 +14575,10 @@ export type PermissionOverridesMinFields = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   /** User ID for user-specific overrides (mutually exclusive with role) */
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by min() on columns of table "permission_overrides" */
-export type PermissionOverridesMinOrderBy = {
+export interface PermissionOverridesMinOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   createdBy?: InputMaybe<OrderBy>;
   /** When this override expires (NULL for permanent) */
@@ -14585,26 +14592,26 @@ export type PermissionOverridesMinOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
   /** User ID for user-specific overrides (mutually exclusive with role) */
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "permission_overrides" */
-export type PermissionOverridesMutationResponse = {
+export interface PermissionOverridesMutationResponse {
   __typename?: 'permissionOverridesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<PermissionOverrides>;
-};
+}
 
 /** on_conflict condition type for table "permission_overrides" */
-export type PermissionOverridesOnConflict = {
+export interface PermissionOverridesOnConflict {
   constraint: PermissionOverridesConstraint;
   updateColumns?: Array<PermissionOverridesUpdateColumn>;
   where?: InputMaybe<PermissionOverridesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "permission_overrides". */
-export type PermissionOverridesOrderBy = {
+export interface PermissionOverridesOrderBy {
   conditions?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   createdBy?: InputMaybe<OrderBy>;
@@ -14619,18 +14626,18 @@ export type PermissionOverridesOrderBy = {
   targetUser?: InputMaybe<UsersOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: permission_overrides */
-export type PermissionOverridesPkColumnsInput = {
+export interface PermissionOverridesPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type PermissionOverridesPrependInput = {
+export interface PermissionOverridesPrependInput {
   /** JSON conditions for conditional permissions */
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "permission_overrides" */
 export enum PermissionOverridesSelectColumn {
@@ -14673,7 +14680,7 @@ export enum PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBo
 }
 
 /** input type for updating data in table "permission_overrides" */
-export type PermissionOverridesSetInput = {
+export interface PermissionOverridesSetInput {
   /** JSON conditions for conditional permissions */
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -14691,18 +14698,18 @@ export type PermissionOverridesSetInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User ID for user-specific overrides (mutually exclusive with role) */
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** Streaming cursor of the table "permissionOverrides" */
-export type PermissionOverridesStreamCursorInput = {
+export interface PermissionOverridesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PermissionOverridesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PermissionOverridesStreamCursorValueInput = {
+export interface PermissionOverridesStreamCursorValueInput {
   /** JSON conditions for conditional permissions */
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -14720,7 +14727,7 @@ export type PermissionOverridesStreamCursorValueInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User ID for user-specific overrides (mutually exclusive with role) */
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** update columns of table "permission_overrides" */
 export enum PermissionOverridesUpdateColumn {
@@ -14750,7 +14757,7 @@ export enum PermissionOverridesUpdateColumn {
   userId = 'userId'
 }
 
-export type PermissionOverridesUpdates = {
+export interface PermissionOverridesUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<PermissionOverridesAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -14765,10 +14772,10 @@ export type PermissionOverridesUpdates = {
   _set?: InputMaybe<PermissionOverridesSetInput>;
   /** filter the rows which have to be updated */
   where: PermissionOverridesBoolExp;
-};
+}
 
 /** columns and relationships of "audit.permission_usage_report" */
-export type PermissionUsageReports = {
+export interface PermissionUsageReports {
   __typename?: 'permissionUsageReports';
   action: Maybe<Scalars['permission_action']['output']>;
   lastUsed: Maybe<Scalars['timestamptz']['output']>;
@@ -14777,17 +14784,17 @@ export type PermissionUsageReports = {
   totalUsageCount: Maybe<Scalars['bigint']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['bigint']['output']>;
   usersWithPermission: Maybe<Scalars['bigint']['output']>;
-};
+}
 
 /** aggregated selection of "audit.permission_usage_report" */
-export type PermissionUsageReportsAggregate = {
+export interface PermissionUsageReportsAggregate {
   __typename?: 'permissionUsageReportsAggregate';
   aggregate: Maybe<PermissionUsageReportsAggregateFields>;
   nodes: Array<PermissionUsageReports>;
-};
+}
 
 /** aggregate fields of "audit.permission_usage_report" */
-export type PermissionUsageReportsAggregateFields = {
+export interface PermissionUsageReportsAggregateFields {
   __typename?: 'permissionUsageReportsAggregateFields';
   avg: Maybe<PermissionUsageReportsAvgFields>;
   count: Scalars['Int']['output'];
@@ -14800,7 +14807,7 @@ export type PermissionUsageReportsAggregateFields = {
   varPop: Maybe<PermissionUsageReportsVarPopFields>;
   varSamp: Maybe<PermissionUsageReportsVarSampFields>;
   variance: Maybe<PermissionUsageReportsVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "audit.permission_usage_report" */
@@ -14810,15 +14817,15 @@ export type PermissionUsageReportsAggregateFieldsCountArgs = {
 };
 
 /** aggregate avg on columns */
-export type PermissionUsageReportsAvgFields = {
+export interface PermissionUsageReportsAvgFields {
   __typename?: 'permissionUsageReportsAvgFields';
   totalUsageCount: Maybe<Scalars['Float']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['Float']['output']>;
   usersWithPermission: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "audit.permission_usage_report". All fields are combined with a logical 'AND'. */
-export type PermissionUsageReportsBoolExp = {
+export interface PermissionUsageReportsBoolExp {
   _and?: InputMaybe<Array<PermissionUsageReportsBoolExp>>;
   _not?: InputMaybe<PermissionUsageReportsBoolExp>;
   _or?: InputMaybe<Array<PermissionUsageReportsBoolExp>>;
@@ -14829,10 +14836,10 @@ export type PermissionUsageReportsBoolExp = {
   totalUsageCount?: InputMaybe<BigintComparisonExp>;
   usersWhoUsedPermission?: InputMaybe<BigintComparisonExp>;
   usersWithPermission?: InputMaybe<BigintComparisonExp>;
-};
+}
 
 /** aggregate max on columns */
-export type PermissionUsageReportsMaxFields = {
+export interface PermissionUsageReportsMaxFields {
   __typename?: 'permissionUsageReportsMaxFields';
   action: Maybe<Scalars['permission_action']['output']>;
   lastUsed: Maybe<Scalars['timestamptz']['output']>;
@@ -14841,10 +14848,10 @@ export type PermissionUsageReportsMaxFields = {
   totalUsageCount: Maybe<Scalars['bigint']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['bigint']['output']>;
   usersWithPermission: Maybe<Scalars['bigint']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type PermissionUsageReportsMinFields = {
+export interface PermissionUsageReportsMinFields {
   __typename?: 'permissionUsageReportsMinFields';
   action: Maybe<Scalars['permission_action']['output']>;
   lastUsed: Maybe<Scalars['timestamptz']['output']>;
@@ -14853,10 +14860,10 @@ export type PermissionUsageReportsMinFields = {
   totalUsageCount: Maybe<Scalars['bigint']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['bigint']['output']>;
   usersWithPermission: Maybe<Scalars['bigint']['output']>;
-};
+}
 
 /** Ordering options when selecting data from "audit.permission_usage_report". */
-export type PermissionUsageReportsOrderBy = {
+export interface PermissionUsageReportsOrderBy {
   action?: InputMaybe<OrderBy>;
   lastUsed?: InputMaybe<OrderBy>;
   resourceName?: InputMaybe<OrderBy>;
@@ -14864,7 +14871,7 @@ export type PermissionUsageReportsOrderBy = {
   totalUsageCount?: InputMaybe<OrderBy>;
   usersWhoUsedPermission?: InputMaybe<OrderBy>;
   usersWithPermission?: InputMaybe<OrderBy>;
-};
+}
 
 /** select columns of table "audit.permission_usage_report" */
 export enum PermissionUsageReportsSelectColumn {
@@ -14885,39 +14892,39 @@ export enum PermissionUsageReportsSelectColumn {
 }
 
 /** aggregate stddev on columns */
-export type PermissionUsageReportsStddevFields = {
+export interface PermissionUsageReportsStddevFields {
   __typename?: 'permissionUsageReportsStddevFields';
   totalUsageCount: Maybe<Scalars['Float']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['Float']['output']>;
   usersWithPermission: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type PermissionUsageReportsStddevPopFields = {
+export interface PermissionUsageReportsStddevPopFields {
   __typename?: 'permissionUsageReportsStddevPopFields';
   totalUsageCount: Maybe<Scalars['Float']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['Float']['output']>;
   usersWithPermission: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type PermissionUsageReportsStddevSampFields = {
+export interface PermissionUsageReportsStddevSampFields {
   __typename?: 'permissionUsageReportsStddevSampFields';
   totalUsageCount: Maybe<Scalars['Float']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['Float']['output']>;
   usersWithPermission: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "permissionUsageReports" */
-export type PermissionUsageReportsStreamCursorInput = {
+export interface PermissionUsageReportsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PermissionUsageReportsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PermissionUsageReportsStreamCursorValueInput = {
+export interface PermissionUsageReportsStreamCursorValueInput {
   action?: InputMaybe<Scalars['permission_action']['input']>;
   lastUsed?: InputMaybe<Scalars['timestamptz']['input']>;
   resourceName?: InputMaybe<Scalars['String']['input']>;
@@ -14925,42 +14932,42 @@ export type PermissionUsageReportsStreamCursorValueInput = {
   totalUsageCount?: InputMaybe<Scalars['bigint']['input']>;
   usersWhoUsedPermission?: InputMaybe<Scalars['bigint']['input']>;
   usersWithPermission?: InputMaybe<Scalars['bigint']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type PermissionUsageReportsSumFields = {
+export interface PermissionUsageReportsSumFields {
   __typename?: 'permissionUsageReportsSumFields';
   totalUsageCount: Maybe<Scalars['bigint']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['bigint']['output']>;
   usersWithPermission: Maybe<Scalars['bigint']['output']>;
-};
+}
 
 /** aggregate varPop on columns */
-export type PermissionUsageReportsVarPopFields = {
+export interface PermissionUsageReportsVarPopFields {
   __typename?: 'permissionUsageReportsVarPopFields';
   totalUsageCount: Maybe<Scalars['Float']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['Float']['output']>;
   usersWithPermission: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type PermissionUsageReportsVarSampFields = {
+export interface PermissionUsageReportsVarSampFields {
   __typename?: 'permissionUsageReportsVarSampFields';
   totalUsageCount: Maybe<Scalars['Float']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['Float']['output']>;
   usersWithPermission: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type PermissionUsageReportsVarianceFields = {
+export interface PermissionUsageReportsVarianceFields {
   __typename?: 'permissionUsageReportsVarianceFields';
   totalUsageCount: Maybe<Scalars['Float']['output']>;
   usersWhoUsedPermission: Maybe<Scalars['Float']['output']>;
   usersWithPermission: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "permissions" */
-export type Permissions = {
+export interface Permissions {
   __typename?: 'permissions';
   action: Scalars['permission_action']['output'];
   /** An array relationship */
@@ -14975,7 +14982,7 @@ export type Permissions = {
   relatedResource: Resources;
   resourceId: Scalars['uuid']['output'];
   updatedAt: Scalars['timestamptz']['output'];
-};
+}
 
 
 /** columns and relationships of "permissions" */
@@ -14998,30 +15005,30 @@ export type PermissionsAssignedToRolesAggregateArgs = {
 };
 
 /** aggregated selection of "permissions" */
-export type PermissionsAggregate = {
+export interface PermissionsAggregate {
   __typename?: 'permissionsAggregate';
   aggregate: Maybe<PermissionsAggregateFields>;
   nodes: Array<Permissions>;
-};
+}
 
-export type PermissionsAggregateBoolExp = {
+export interface PermissionsAggregateBoolExp {
   count?: InputMaybe<PermissionsAggregateBoolExpCount>;
-};
+}
 
-export type PermissionsAggregateBoolExpCount = {
+export interface PermissionsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<PermissionsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PermissionsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "permissions" */
-export type PermissionsAggregateFields = {
+export interface PermissionsAggregateFields {
   __typename?: 'permissionsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<PermissionsMaxFields>;
   min: Maybe<PermissionsMinFields>;
-};
+}
 
 
 /** aggregate fields of "permissions" */
@@ -15031,21 +15038,21 @@ export type PermissionsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "permissions" */
-export type PermissionsAggregateOrderBy = {
+export interface PermissionsAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<PermissionsMaxOrderBy>;
   min?: InputMaybe<PermissionsMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "permissions" */
-export type PermissionsArrRelInsertInput = {
+export interface PermissionsArrRelInsertInput {
   data: Array<PermissionsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<PermissionsOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "permissions". All fields are combined with a logical 'AND'. */
-export type PermissionsBoolExp = {
+export interface PermissionsBoolExp {
   _and?: InputMaybe<Array<PermissionsBoolExp>>;
   _not?: InputMaybe<PermissionsBoolExp>;
   _or?: InputMaybe<Array<PermissionsBoolExp>>;
@@ -15059,7 +15066,7 @@ export type PermissionsBoolExp = {
   relatedResource?: InputMaybe<ResourcesBoolExp>;
   resourceId?: InputMaybe<UuidComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "permissions" */
 export enum PermissionsConstraint {
@@ -15070,7 +15077,7 @@ export enum PermissionsConstraint {
 }
 
 /** input type for inserting data into table "permissions" */
-export type PermissionsInsertInput = {
+export interface PermissionsInsertInput {
   action?: InputMaybe<Scalars['permission_action']['input']>;
   assignedToRoles?: InputMaybe<RolePermissionsArrRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -15080,10 +15087,10 @@ export type PermissionsInsertInput = {
   relatedResource?: InputMaybe<ResourcesObjRelInsertInput>;
   resourceId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type PermissionsMaxFields = {
+export interface PermissionsMaxFields {
   __typename?: 'permissionsMaxFields';
   action: Maybe<Scalars['permission_action']['output']>;
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -15092,10 +15099,10 @@ export type PermissionsMaxFields = {
   legacyPermissionName: Maybe<Scalars['String']['output']>;
   resourceId: Maybe<Scalars['uuid']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by max() on columns of table "permissions" */
-export type PermissionsMaxOrderBy = {
+export interface PermissionsMaxOrderBy {
   action?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
@@ -15103,10 +15110,10 @@ export type PermissionsMaxOrderBy = {
   legacyPermissionName?: InputMaybe<OrderBy>;
   resourceId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type PermissionsMinFields = {
+export interface PermissionsMinFields {
   __typename?: 'permissionsMinFields';
   action: Maybe<Scalars['permission_action']['output']>;
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -15115,10 +15122,10 @@ export type PermissionsMinFields = {
   legacyPermissionName: Maybe<Scalars['String']['output']>;
   resourceId: Maybe<Scalars['uuid']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by min() on columns of table "permissions" */
-export type PermissionsMinOrderBy = {
+export interface PermissionsMinOrderBy {
   action?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
@@ -15126,33 +15133,33 @@ export type PermissionsMinOrderBy = {
   legacyPermissionName?: InputMaybe<OrderBy>;
   resourceId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "permissions" */
-export type PermissionsMutationResponse = {
+export interface PermissionsMutationResponse {
   __typename?: 'permissionsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<Permissions>;
-};
+}
 
 /** input type for inserting object relation for remote table "permissions" */
-export type PermissionsObjRelInsertInput = {
+export interface PermissionsObjRelInsertInput {
   data: PermissionsInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<PermissionsOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "permissions" */
-export type PermissionsOnConflict = {
+export interface PermissionsOnConflict {
   constraint: PermissionsConstraint;
   updateColumns?: Array<PermissionsUpdateColumn>;
   where?: InputMaybe<PermissionsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "permissions". */
-export type PermissionsOrderBy = {
+export interface PermissionsOrderBy {
   action?: InputMaybe<OrderBy>;
   assignedToRolesAggregate?: InputMaybe<RolePermissionsAggregateOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
@@ -15162,12 +15169,12 @@ export type PermissionsOrderBy = {
   relatedResource?: InputMaybe<ResourcesOrderBy>;
   resourceId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: permissions */
-export type PermissionsPkColumnsInput = {
+export interface PermissionsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "permissions" */
 export enum PermissionsSelectColumn {
@@ -15188,7 +15195,7 @@ export enum PermissionsSelectColumn {
 }
 
 /** input type for updating data in table "permissions" */
-export type PermissionsSetInput = {
+export interface PermissionsSetInput {
   action?: InputMaybe<Scalars['permission_action']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -15196,18 +15203,18 @@ export type PermissionsSetInput = {
   legacyPermissionName?: InputMaybe<Scalars['String']['input']>;
   resourceId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "permissions" */
-export type PermissionsStreamCursorInput = {
+export interface PermissionsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: PermissionsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type PermissionsStreamCursorValueInput = {
+export interface PermissionsStreamCursorValueInput {
   action?: InputMaybe<Scalars['permission_action']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -15215,7 +15222,7 @@ export type PermissionsStreamCursorValueInput = {
   legacyPermissionName?: InputMaybe<Scalars['String']['input']>;
   resourceId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "permissions" */
 export enum PermissionsUpdateColumn {
@@ -15235,14 +15242,14 @@ export enum PermissionsUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type PermissionsUpdates = {
+export interface PermissionsUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PermissionsSetInput>;
   /** filter the rows which have to be updated */
   where: PermissionsBoolExp;
-};
+}
 
-export type QueryRoot = {
+export interface QueryRoot {
   __typename?: 'query_root';
   /** query _Entity union */
   _entities: Maybe<Entity>;
@@ -15541,7 +15548,7 @@ export type QueryRoot = {
   workSchedules: Array<WorkSchedules>;
   /** fetch aggregated fields from the table: "work_schedule" */
   workSchedulesAggregate: WorkSchedulesAggregate;
-};
+}
 
 
 export type QueryRootEntitiesArgs = {
@@ -16718,7 +16725,7 @@ export type QueryRootWorkSchedulesAggregateArgs = {
 };
 
 /** columns and relationships of "resources" */
-export type Resources = {
+export interface Resources {
   __typename?: 'resources';
   /** An array relationship */
   availablePermissions: Array<Permissions>;
@@ -16730,7 +16737,7 @@ export type Resources = {
   id: Scalars['uuid']['output'];
   name: Scalars['String']['output'];
   updatedAt: Scalars['timestamptz']['output'];
-};
+}
 
 
 /** columns and relationships of "resources" */
@@ -16753,19 +16760,19 @@ export type ResourcesAvailablePermissionsAggregateArgs = {
 };
 
 /** aggregated selection of "resources" */
-export type ResourcesAggregate = {
+export interface ResourcesAggregate {
   __typename?: 'resourcesAggregate';
   aggregate: Maybe<ResourcesAggregateFields>;
   nodes: Array<Resources>;
-};
+}
 
 /** aggregate fields of "resources" */
-export type ResourcesAggregateFields = {
+export interface ResourcesAggregateFields {
   __typename?: 'resourcesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<ResourcesMaxFields>;
   min: Maybe<ResourcesMinFields>;
-};
+}
 
 
 /** aggregate fields of "resources" */
@@ -16775,7 +16782,7 @@ export type ResourcesAggregateFieldsCountArgs = {
 };
 
 /** Boolean expression to filter rows from the table "resources". All fields are combined with a logical 'AND'. */
-export type ResourcesBoolExp = {
+export interface ResourcesBoolExp {
   _and?: InputMaybe<Array<ResourcesBoolExp>>;
   _not?: InputMaybe<ResourcesBoolExp>;
   _or?: InputMaybe<Array<ResourcesBoolExp>>;
@@ -16787,7 +16794,7 @@ export type ResourcesBoolExp = {
   id?: InputMaybe<UuidComparisonExp>;
   name?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "resources" */
 export enum ResourcesConstraint {
@@ -16798,7 +16805,7 @@ export enum ResourcesConstraint {
 }
 
 /** input type for inserting data into table "resources" */
-export type ResourcesInsertInput = {
+export interface ResourcesInsertInput {
   availablePermissions?: InputMaybe<PermissionsArrRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -16806,10 +16813,10 @@ export type ResourcesInsertInput = {
   id?: InputMaybe<Scalars['uuid']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type ResourcesMaxFields = {
+export interface ResourcesMaxFields {
   __typename?: 'resourcesMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   description: Maybe<Scalars['String']['output']>;
@@ -16817,10 +16824,10 @@ export type ResourcesMaxFields = {
   id: Maybe<Scalars['uuid']['output']>;
   name: Maybe<Scalars['String']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type ResourcesMinFields = {
+export interface ResourcesMinFields {
   __typename?: 'resourcesMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   description: Maybe<Scalars['String']['output']>;
@@ -16828,33 +16835,33 @@ export type ResourcesMinFields = {
   id: Maybe<Scalars['uuid']['output']>;
   name: Maybe<Scalars['String']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** response of any mutation on the table "resources" */
-export type ResourcesMutationResponse = {
+export interface ResourcesMutationResponse {
   __typename?: 'resourcesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<Resources>;
-};
+}
 
 /** input type for inserting object relation for remote table "resources" */
-export type ResourcesObjRelInsertInput = {
+export interface ResourcesObjRelInsertInput {
   data: ResourcesInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<ResourcesOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "resources" */
-export type ResourcesOnConflict = {
+export interface ResourcesOnConflict {
   constraint: ResourcesConstraint;
   updateColumns?: Array<ResourcesUpdateColumn>;
   where?: InputMaybe<ResourcesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "resources". */
-export type ResourcesOrderBy = {
+export interface ResourcesOrderBy {
   availablePermissionsAggregate?: InputMaybe<PermissionsAggregateOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
@@ -16862,12 +16869,12 @@ export type ResourcesOrderBy = {
   id?: InputMaybe<OrderBy>;
   name?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: resources */
-export type ResourcesPkColumnsInput = {
+export interface ResourcesPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "resources" */
 export enum ResourcesSelectColumn {
@@ -16886,32 +16893,32 @@ export enum ResourcesSelectColumn {
 }
 
 /** input type for updating data in table "resources" */
-export type ResourcesSetInput = {
+export interface ResourcesSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "resources" */
-export type ResourcesStreamCursorInput = {
+export interface ResourcesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: ResourcesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type ResourcesStreamCursorValueInput = {
+export interface ResourcesStreamCursorValueInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "resources" */
 export enum ResourcesUpdateColumn {
@@ -16929,15 +16936,15 @@ export enum ResourcesUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type ResourcesUpdates = {
+export interface ResourcesUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<ResourcesSetInput>;
   /** filter the rows which have to be updated */
   where: ResourcesBoolExp;
-};
+}
 
 /** columns and relationships of "role_permissions" */
-export type RolePermissions = {
+export interface RolePermissions {
   __typename?: 'rolePermissions';
   conditions: Maybe<Scalars['jsonb']['output']>;
   createdAt: Scalars['timestamptz']['output'];
@@ -16949,7 +16956,7 @@ export type RolePermissions = {
   permissionId: Scalars['uuid']['output'];
   roleId: Scalars['uuid']['output'];
   updatedAt: Scalars['timestamptz']['output'];
-};
+}
 
 
 /** columns and relationships of "role_permissions" */
@@ -16958,30 +16965,30 @@ export type RolePermissionsConditionsArgs = {
 };
 
 /** aggregated selection of "role_permissions" */
-export type RolePermissionsAggregate = {
+export interface RolePermissionsAggregate {
   __typename?: 'rolePermissionsAggregate';
   aggregate: Maybe<RolePermissionsAggregateFields>;
   nodes: Array<RolePermissions>;
-};
+}
 
-export type RolePermissionsAggregateBoolExp = {
+export interface RolePermissionsAggregateBoolExp {
   count?: InputMaybe<RolePermissionsAggregateBoolExpCount>;
-};
+}
 
-export type RolePermissionsAggregateBoolExpCount = {
+export interface RolePermissionsAggregateBoolExpCount {
   arguments?: InputMaybe<Array<RolePermissionsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<RolePermissionsBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "role_permissions" */
-export type RolePermissionsAggregateFields = {
+export interface RolePermissionsAggregateFields {
   __typename?: 'rolePermissionsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<RolePermissionsMaxFields>;
   min: Maybe<RolePermissionsMinFields>;
-};
+}
 
 
 /** aggregate fields of "role_permissions" */
@@ -16991,26 +16998,26 @@ export type RolePermissionsAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "role_permissions" */
-export type RolePermissionsAggregateOrderBy = {
+export interface RolePermissionsAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<RolePermissionsMaxOrderBy>;
   min?: InputMaybe<RolePermissionsMinOrderBy>;
-};
+}
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type RolePermissionsAppendInput = {
+export interface RolePermissionsAppendInput {
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** input type for inserting array relation for remote table "role_permissions" */
-export type RolePermissionsArrRelInsertInput = {
+export interface RolePermissionsArrRelInsertInput {
   data: Array<RolePermissionsInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<RolePermissionsOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "role_permissions". All fields are combined with a logical 'AND'. */
-export type RolePermissionsBoolExp = {
+export interface RolePermissionsBoolExp {
   _and?: InputMaybe<Array<RolePermissionsBoolExp>>;
   _not?: InputMaybe<RolePermissionsBoolExp>;
   _or?: InputMaybe<Array<RolePermissionsBoolExp>>;
@@ -17022,7 +17029,7 @@ export type RolePermissionsBoolExp = {
   permissionId?: InputMaybe<UuidComparisonExp>;
   roleId?: InputMaybe<UuidComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "role_permissions" */
 export enum RolePermissionsConstraint {
@@ -17033,22 +17040,22 @@ export enum RolePermissionsConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type RolePermissionsDeleteAtPathInput = {
+export interface RolePermissionsDeleteAtPathInput {
   conditions?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type RolePermissionsDeleteElemInput = {
+export interface RolePermissionsDeleteElemInput {
   conditions?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type RolePermissionsDeleteKeyInput = {
+export interface RolePermissionsDeleteKeyInput {
   conditions?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for inserting data into table "role_permissions" */
-export type RolePermissionsInsertInput = {
+export interface RolePermissionsInsertInput {
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   grantedPermission?: InputMaybe<PermissionsObjRelInsertInput>;
@@ -17057,64 +17064,64 @@ export type RolePermissionsInsertInput = {
   permissionId?: InputMaybe<Scalars['uuid']['input']>;
   roleId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type RolePermissionsMaxFields = {
+export interface RolePermissionsMaxFields {
   __typename?: 'rolePermissionsMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   permissionId: Maybe<Scalars['uuid']['output']>;
   roleId: Maybe<Scalars['uuid']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by max() on columns of table "role_permissions" */
-export type RolePermissionsMaxOrderBy = {
+export interface RolePermissionsMaxOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   permissionId?: InputMaybe<OrderBy>;
   roleId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type RolePermissionsMinFields = {
+export interface RolePermissionsMinFields {
   __typename?: 'rolePermissionsMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   permissionId: Maybe<Scalars['uuid']['output']>;
   roleId: Maybe<Scalars['uuid']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** order by min() on columns of table "role_permissions" */
-export type RolePermissionsMinOrderBy = {
+export interface RolePermissionsMinOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   permissionId?: InputMaybe<OrderBy>;
   roleId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "role_permissions" */
-export type RolePermissionsMutationResponse = {
+export interface RolePermissionsMutationResponse {
   __typename?: 'rolePermissionsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<RolePermissions>;
-};
+}
 
 /** on_conflict condition type for table "role_permissions" */
-export type RolePermissionsOnConflict = {
+export interface RolePermissionsOnConflict {
   constraint: RolePermissionsConstraint;
   updateColumns?: Array<RolePermissionsUpdateColumn>;
   where?: InputMaybe<RolePermissionsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "role_permissions". */
-export type RolePermissionsOrderBy = {
+export interface RolePermissionsOrderBy {
   conditions?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   grantedPermission?: InputMaybe<PermissionsOrderBy>;
@@ -17123,17 +17130,17 @@ export type RolePermissionsOrderBy = {
   permissionId?: InputMaybe<OrderBy>;
   roleId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: role_permissions */
-export type RolePermissionsPkColumnsInput = {
+export interface RolePermissionsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type RolePermissionsPrependInput = {
+export interface RolePermissionsPrependInput {
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "role_permissions" */
 export enum RolePermissionsSelectColumn {
@@ -17152,32 +17159,32 @@ export enum RolePermissionsSelectColumn {
 }
 
 /** input type for updating data in table "role_permissions" */
-export type RolePermissionsSetInput = {
+export interface RolePermissionsSetInput {
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   permissionId?: InputMaybe<Scalars['uuid']['input']>;
   roleId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "rolePermissions" */
-export type RolePermissionsStreamCursorInput = {
+export interface RolePermissionsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: RolePermissionsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type RolePermissionsStreamCursorValueInput = {
+export interface RolePermissionsStreamCursorValueInput {
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   permissionId?: InputMaybe<Scalars['uuid']['input']>;
   roleId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "role_permissions" */
 export enum RolePermissionsUpdateColumn {
@@ -17195,7 +17202,7 @@ export enum RolePermissionsUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type RolePermissionsUpdates = {
+export interface RolePermissionsUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<RolePermissionsAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -17210,10 +17217,10 @@ export type RolePermissionsUpdates = {
   _set?: InputMaybe<RolePermissionsSetInput>;
   /** filter the rows which have to be updated */
   where: RolePermissionsBoolExp;
-};
+}
 
 /** columns and relationships of "roles" */
-export type Roles = {
+export interface Roles {
   __typename?: 'roles';
   /** An array relationship */
   assignedPermissions: Array<RolePermissions>;
@@ -17231,7 +17238,7 @@ export type Roles = {
   name: Scalars['String']['output'];
   priority: Scalars['Int']['output'];
   updatedAt: Scalars['timestamptz']['output'];
-};
+}
 
 
 /** columns and relationships of "roles" */
@@ -17274,14 +17281,14 @@ export type RolesAssignedToUsersAggregateArgs = {
 };
 
 /** aggregated selection of "roles" */
-export type RolesAggregate = {
+export interface RolesAggregate {
   __typename?: 'rolesAggregate';
   aggregate: Maybe<RolesAggregateFields>;
   nodes: Array<Roles>;
-};
+}
 
 /** aggregate fields of "roles" */
-export type RolesAggregateFields = {
+export interface RolesAggregateFields {
   __typename?: 'rolesAggregateFields';
   avg: Maybe<RolesAvgFields>;
   count: Scalars['Int']['output'];
@@ -17294,7 +17301,7 @@ export type RolesAggregateFields = {
   varPop: Maybe<RolesVarPopFields>;
   varSamp: Maybe<RolesVarSampFields>;
   variance: Maybe<RolesVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "roles" */
@@ -17304,13 +17311,13 @@ export type RolesAggregateFieldsCountArgs = {
 };
 
 /** aggregate avg on columns */
-export type RolesAvgFields = {
+export interface RolesAvgFields {
   __typename?: 'rolesAvgFields';
   priority: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "roles". All fields are combined with a logical 'AND'. */
-export type RolesBoolExp = {
+export interface RolesBoolExp {
   _and?: InputMaybe<Array<RolesBoolExp>>;
   _not?: InputMaybe<RolesBoolExp>;
   _or?: InputMaybe<Array<RolesBoolExp>>;
@@ -17326,7 +17333,7 @@ export type RolesBoolExp = {
   name?: InputMaybe<StringComparisonExp>;
   priority?: InputMaybe<IntComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "roles" */
 export enum RolesConstraint {
@@ -17337,12 +17344,12 @@ export enum RolesConstraint {
 }
 
 /** input type for incrementing numeric columns in table "roles" */
-export type RolesIncInput = {
+export interface RolesIncInput {
   priority?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** input type for inserting data into table "roles" */
-export type RolesInsertInput = {
+export interface RolesInsertInput {
   assignedPermissions?: InputMaybe<RolePermissionsArrRelInsertInput>;
   assignedToUsers?: InputMaybe<UserRolesArrRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -17353,10 +17360,10 @@ export type RolesInsertInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   priority?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type RolesMaxFields = {
+export interface RolesMaxFields {
   __typename?: 'rolesMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   description: Maybe<Scalars['String']['output']>;
@@ -17365,10 +17372,10 @@ export type RolesMaxFields = {
   name: Maybe<Scalars['String']['output']>;
   priority: Maybe<Scalars['Int']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type RolesMinFields = {
+export interface RolesMinFields {
   __typename?: 'rolesMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   description: Maybe<Scalars['String']['output']>;
@@ -17377,33 +17384,33 @@ export type RolesMinFields = {
   name: Maybe<Scalars['String']['output']>;
   priority: Maybe<Scalars['Int']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** response of any mutation on the table "roles" */
-export type RolesMutationResponse = {
+export interface RolesMutationResponse {
   __typename?: 'rolesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<Roles>;
-};
+}
 
 /** input type for inserting object relation for remote table "roles" */
-export type RolesObjRelInsertInput = {
+export interface RolesObjRelInsertInput {
   data: RolesInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<RolesOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "roles" */
-export type RolesOnConflict = {
+export interface RolesOnConflict {
   constraint: RolesConstraint;
   updateColumns?: Array<RolesUpdateColumn>;
   where?: InputMaybe<RolesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "roles". */
-export type RolesOrderBy = {
+export interface RolesOrderBy {
   assignedPermissionsAggregate?: InputMaybe<RolePermissionsAggregateOrderBy>;
   assignedToUsersAggregate?: InputMaybe<UserRolesAggregateOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
@@ -17414,12 +17421,12 @@ export type RolesOrderBy = {
   name?: InputMaybe<OrderBy>;
   priority?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: roles */
-export type RolesPkColumnsInput = {
+export interface RolesPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "roles" */
 export enum RolesSelectColumn {
@@ -17442,7 +17449,7 @@ export enum RolesSelectColumn {
 }
 
 /** input type for updating data in table "roles" */
-export type RolesSetInput = {
+export interface RolesSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
@@ -17451,36 +17458,36 @@ export type RolesSetInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   priority?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type RolesStddevFields = {
+export interface RolesStddevFields {
   __typename?: 'rolesStddevFields';
   priority: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type RolesStddevPopFields = {
+export interface RolesStddevPopFields {
   __typename?: 'rolesStddevPopFields';
   priority: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type RolesStddevSampFields = {
+export interface RolesStddevSampFields {
   __typename?: 'rolesStddevSampFields';
   priority: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** Streaming cursor of the table "roles" */
-export type RolesStreamCursorInput = {
+export interface RolesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: RolesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type RolesStreamCursorValueInput = {
+export interface RolesStreamCursorValueInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
@@ -17489,13 +17496,13 @@ export type RolesStreamCursorValueInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   priority?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type RolesSumFields = {
+export interface RolesSumFields {
   __typename?: 'rolesSumFields';
   priority: Maybe<Scalars['Int']['output']>;
-};
+}
 
 /** update columns of table "roles" */
 export enum RolesUpdateColumn {
@@ -17517,35 +17524,35 @@ export enum RolesUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type RolesUpdates = {
+export interface RolesUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<RolesIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<RolesSetInput>;
   /** filter the rows which have to be updated */
   where: RolesBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type RolesVarPopFields = {
+export interface RolesVarPopFields {
   __typename?: 'rolesVarPopFields';
   priority: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type RolesVarSampFields = {
+export interface RolesVarSampFields {
   __typename?: 'rolesVarSampFields';
   priority: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** aggregate variance on columns */
-export type RolesVarianceFields = {
+export interface RolesVarianceFields {
   __typename?: 'rolesVarianceFields';
   priority: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** columns and relationships of "audit.slow_queries" */
-export type SlowQueries = {
+export interface SlowQueries {
   __typename?: 'slowQueries';
   applicationName: Maybe<Scalars['String']['output']>;
   clientAddr: Maybe<Scalars['inet']['output']>;
@@ -17555,22 +17562,22 @@ export type SlowQueries = {
   queryDuration: Scalars['interval']['output'];
   queryStart: Scalars['timestamptz']['output'];
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** aggregated selection of "audit.slow_queries" */
-export type SlowQueriesAggregate = {
+export interface SlowQueriesAggregate {
   __typename?: 'slowQueriesAggregate';
   aggregate: Maybe<SlowQueriesAggregateFields>;
   nodes: Array<SlowQueries>;
-};
+}
 
 /** aggregate fields of "audit.slow_queries" */
-export type SlowQueriesAggregateFields = {
+export interface SlowQueriesAggregateFields {
   __typename?: 'slowQueriesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<SlowQueriesMaxFields>;
   min: Maybe<SlowQueriesMinFields>;
-};
+}
 
 
 /** aggregate fields of "audit.slow_queries" */
@@ -17580,7 +17587,7 @@ export type SlowQueriesAggregateFieldsCountArgs = {
 };
 
 /** Boolean expression to filter rows from the table "audit.slow_queries". All fields are combined with a logical 'AND'. */
-export type SlowQueriesBoolExp = {
+export interface SlowQueriesBoolExp {
   _and?: InputMaybe<Array<SlowQueriesBoolExp>>;
   _not?: InputMaybe<SlowQueriesBoolExp>;
   _or?: InputMaybe<Array<SlowQueriesBoolExp>>;
@@ -17592,7 +17599,7 @@ export type SlowQueriesBoolExp = {
   queryDuration?: InputMaybe<IntervalComparisonExp>;
   queryStart?: InputMaybe<TimestamptzComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "audit.slow_queries" */
 export enum SlowQueriesConstraint {
@@ -17601,7 +17608,7 @@ export enum SlowQueriesConstraint {
 }
 
 /** input type for inserting data into table "audit.slow_queries" */
-export type SlowQueriesInsertInput = {
+export interface SlowQueriesInsertInput {
   applicationName?: InputMaybe<Scalars['String']['input']>;
   clientAddr?: InputMaybe<Scalars['inet']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -17610,10 +17617,10 @@ export type SlowQueriesInsertInput = {
   queryDuration?: InputMaybe<Scalars['interval']['input']>;
   queryStart?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type SlowQueriesMaxFields = {
+export interface SlowQueriesMaxFields {
   __typename?: 'slowQueriesMaxFields';
   applicationName: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -17621,10 +17628,10 @@ export type SlowQueriesMaxFields = {
   query: Maybe<Scalars['String']['output']>;
   queryStart: Maybe<Scalars['timestamptz']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type SlowQueriesMinFields = {
+export interface SlowQueriesMinFields {
   __typename?: 'slowQueriesMinFields';
   applicationName: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['timestamptz']['output']>;
@@ -17632,26 +17639,26 @@ export type SlowQueriesMinFields = {
   query: Maybe<Scalars['String']['output']>;
   queryStart: Maybe<Scalars['timestamptz']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** response of any mutation on the table "audit.slow_queries" */
-export type SlowQueriesMutationResponse = {
+export interface SlowQueriesMutationResponse {
   __typename?: 'slowQueriesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<SlowQueries>;
-};
+}
 
 /** on_conflict condition type for table "audit.slow_queries" */
-export type SlowQueriesOnConflict = {
+export interface SlowQueriesOnConflict {
   constraint: SlowQueriesConstraint;
   updateColumns?: Array<SlowQueriesUpdateColumn>;
   where?: InputMaybe<SlowQueriesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "audit.slow_queries". */
-export type SlowQueriesOrderBy = {
+export interface SlowQueriesOrderBy {
   applicationName?: InputMaybe<OrderBy>;
   clientAddr?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
@@ -17660,12 +17667,12 @@ export type SlowQueriesOrderBy = {
   queryDuration?: InputMaybe<OrderBy>;
   queryStart?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: audit.slow_queries */
-export type SlowQueriesPkColumnsInput = {
+export interface SlowQueriesPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "audit.slow_queries" */
 export enum SlowQueriesSelectColumn {
@@ -17688,7 +17695,7 @@ export enum SlowQueriesSelectColumn {
 }
 
 /** input type for updating data in table "audit.slow_queries" */
-export type SlowQueriesSetInput = {
+export interface SlowQueriesSetInput {
   applicationName?: InputMaybe<Scalars['String']['input']>;
   clientAddr?: InputMaybe<Scalars['inet']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -17697,18 +17704,18 @@ export type SlowQueriesSetInput = {
   queryDuration?: InputMaybe<Scalars['interval']['input']>;
   queryStart?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** Streaming cursor of the table "slowQueries" */
-export type SlowQueriesStreamCursorInput = {
+export interface SlowQueriesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: SlowQueriesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type SlowQueriesStreamCursorValueInput = {
+export interface SlowQueriesStreamCursorValueInput {
   applicationName?: InputMaybe<Scalars['String']['input']>;
   clientAddr?: InputMaybe<Scalars['inet']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -17717,7 +17724,7 @@ export type SlowQueriesStreamCursorValueInput = {
   queryDuration?: InputMaybe<Scalars['interval']['input']>;
   queryStart?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** update columns of table "audit.slow_queries" */
 export enum SlowQueriesUpdateColumn {
@@ -17739,14 +17746,14 @@ export enum SlowQueriesUpdateColumn {
   userId = 'userId'
 }
 
-export type SlowQueriesUpdates = {
+export interface SlowQueriesUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<SlowQueriesSetInput>;
   /** filter the rows which have to be updated */
   where: SlowQueriesBoolExp;
-};
+}
 
-export type SubscriptionRoot = {
+export interface SubscriptionRoot {
   __typename?: 'subscription_root';
   /** execute function "activate_payroll_versions" which returns "payroll_activation_results" */
   activatePayrollVersions: Array<PayrollActivationResults>;
@@ -18136,7 +18143,7 @@ export type SubscriptionRoot = {
   workSchedulesAggregate: WorkSchedulesAggregate;
   /** fetch data from the table in a streaming manner: "work_schedule" */
   workSchedulesStream: Array<WorkSchedules>;
-};
+}
 
 
 export type SubscriptionRootActivatePayrollVersionsArgs = {
@@ -19637,7 +19644,7 @@ export type SubscriptionRootWorkSchedulesStreamArgs = {
 };
 
 /** columns and relationships of "audit.user_access_summary" */
-export type UserAccessSummaries = {
+export interface UserAccessSummaries {
   __typename?: 'userAccessSummaries';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   email: Maybe<Scalars['String']['output']>;
@@ -19647,22 +19654,22 @@ export type UserAccessSummaries = {
   name: Maybe<Scalars['String']['output']>;
   role: Maybe<Scalars['user_role']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregated selection of "audit.user_access_summary" */
-export type UserAccessSummariesAggregate = {
+export interface UserAccessSummariesAggregate {
   __typename?: 'userAccessSummariesAggregate';
   aggregate: Maybe<UserAccessSummariesAggregateFields>;
   nodes: Array<UserAccessSummaries>;
-};
+}
 
 /** aggregate fields of "audit.user_access_summary" */
-export type UserAccessSummariesAggregateFields = {
+export interface UserAccessSummariesAggregateFields {
   __typename?: 'userAccessSummariesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<UserAccessSummariesMaxFields>;
   min: Maybe<UserAccessSummariesMinFields>;
-};
+}
 
 
 /** aggregate fields of "audit.user_access_summary" */
@@ -19672,7 +19679,7 @@ export type UserAccessSummariesAggregateFieldsCountArgs = {
 };
 
 /** Boolean expression to filter rows from the table "audit.user_access_summary". All fields are combined with a logical 'AND'. */
-export type UserAccessSummariesBoolExp = {
+export interface UserAccessSummariesBoolExp {
   _and?: InputMaybe<Array<UserAccessSummariesBoolExp>>;
   _not?: InputMaybe<UserAccessSummariesBoolExp>;
   _or?: InputMaybe<Array<UserAccessSummariesBoolExp>>;
@@ -19684,10 +19691,10 @@ export type UserAccessSummariesBoolExp = {
   name?: InputMaybe<StringComparisonExp>;
   role?: InputMaybe<UserRoleComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** input type for inserting data into table "audit.user_access_summary" */
-export type UserAccessSummariesInsertInput = {
+export interface UserAccessSummariesInsertInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -19696,10 +19703,10 @@ export type UserAccessSummariesInsertInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<Scalars['user_role']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type UserAccessSummariesMaxFields = {
+export interface UserAccessSummariesMaxFields {
   __typename?: 'userAccessSummariesMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   email: Maybe<Scalars['String']['output']>;
@@ -19707,10 +19714,10 @@ export type UserAccessSummariesMaxFields = {
   name: Maybe<Scalars['String']['output']>;
   role: Maybe<Scalars['user_role']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type UserAccessSummariesMinFields = {
+export interface UserAccessSummariesMinFields {
   __typename?: 'userAccessSummariesMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   email: Maybe<Scalars['String']['output']>;
@@ -19718,19 +19725,19 @@ export type UserAccessSummariesMinFields = {
   name: Maybe<Scalars['String']['output']>;
   role: Maybe<Scalars['user_role']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** response of any mutation on the table "audit.user_access_summary" */
-export type UserAccessSummariesMutationResponse = {
+export interface UserAccessSummariesMutationResponse {
   __typename?: 'userAccessSummariesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<UserAccessSummaries>;
-};
+}
 
 /** Ordering options when selecting data from "audit.user_access_summary". */
-export type UserAccessSummariesOrderBy = {
+export interface UserAccessSummariesOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   email?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -19739,7 +19746,7 @@ export type UserAccessSummariesOrderBy = {
   name?: InputMaybe<OrderBy>;
   role?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** select columns of table "audit.user_access_summary" */
 export enum UserAccessSummariesSelectColumn {
@@ -19762,7 +19769,7 @@ export enum UserAccessSummariesSelectColumn {
 }
 
 /** input type for updating data in table "audit.user_access_summary" */
-export type UserAccessSummariesSetInput = {
+export interface UserAccessSummariesSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -19771,18 +19778,18 @@ export type UserAccessSummariesSetInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<Scalars['user_role']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "userAccessSummaries" */
-export type UserAccessSummariesStreamCursorInput = {
+export interface UserAccessSummariesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: UserAccessSummariesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type UserAccessSummariesStreamCursorValueInput = {
+export interface UserAccessSummariesStreamCursorValueInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -19791,17 +19798,17 @@ export type UserAccessSummariesStreamCursorValueInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<Scalars['user_role']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
-export type UserAccessSummariesUpdates = {
+export interface UserAccessSummariesUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<UserAccessSummariesSetInput>;
   /** filter the rows which have to be updated */
   where: UserAccessSummariesBoolExp;
-};
+}
 
 /** Stores invitation metadata for two-stage user invitation flow with role-based access control */
-export type UserInvitations = {
+export interface UserInvitations {
   __typename?: 'userInvitations';
   acceptedAt: Maybe<Scalars['timestamptz']['output']>;
   acceptedBy: Maybe<Scalars['uuid']['output']>;
@@ -19826,7 +19833,7 @@ export type UserInvitations = {
   managerUser: Maybe<Users>;
   status: Scalars['String']['output'];
   updatedAt: Scalars['timestamptz']['output'];
-};
+}
 
 
 /** Stores invitation metadata for two-stage user invitation flow with role-based access control */
@@ -19835,19 +19842,19 @@ export type UserInvitationsInvitationMetadataArgs = {
 };
 
 /** aggregated selection of "user_invitations" */
-export type UserInvitationsAggregate = {
+export interface UserInvitationsAggregate {
   __typename?: 'userInvitationsAggregate';
   aggregate: Maybe<UserInvitationsAggregateFields>;
   nodes: Array<UserInvitations>;
-};
+}
 
 /** aggregate fields of "user_invitations" */
-export type UserInvitationsAggregateFields = {
+export interface UserInvitationsAggregateFields {
   __typename?: 'userInvitationsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<UserInvitationsMaxFields>;
   min: Maybe<UserInvitationsMinFields>;
-};
+}
 
 
 /** aggregate fields of "user_invitations" */
@@ -19857,12 +19864,12 @@ export type UserInvitationsAggregateFieldsCountArgs = {
 };
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type UserInvitationsAppendInput = {
+export interface UserInvitationsAppendInput {
   invitationMetadata?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** Boolean expression to filter rows from the table "user_invitations". All fields are combined with a logical 'AND'. */
-export type UserInvitationsBoolExp = {
+export interface UserInvitationsBoolExp {
   _and?: InputMaybe<Array<UserInvitationsBoolExp>>;
   _not?: InputMaybe<UserInvitationsBoolExp>;
   _or?: InputMaybe<Array<UserInvitationsBoolExp>>;
@@ -19886,7 +19893,7 @@ export type UserInvitationsBoolExp = {
   managerUser?: InputMaybe<UsersBoolExp>;
   status?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "user_invitations" */
 export enum UserInvitationsConstraint {
@@ -19895,22 +19902,22 @@ export enum UserInvitationsConstraint {
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type UserInvitationsDeleteAtPathInput = {
+export interface UserInvitationsDeleteAtPathInput {
   invitationMetadata?: InputMaybe<Array<Scalars['String']['input']>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type UserInvitationsDeleteElemInput = {
+export interface UserInvitationsDeleteElemInput {
   invitationMetadata?: InputMaybe<Scalars['Int']['input']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type UserInvitationsDeleteKeyInput = {
+export interface UserInvitationsDeleteKeyInput {
   invitationMetadata?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** input type for inserting data into table "user_invitations" */
-export type UserInvitationsInsertInput = {
+export interface UserInvitationsInsertInput {
   acceptedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   acceptedBy?: InputMaybe<Scalars['uuid']['input']>;
   acceptedByUser?: InputMaybe<UsersObjRelInsertInput>;
@@ -19931,10 +19938,10 @@ export type UserInvitationsInsertInput = {
   managerUser?: InputMaybe<UsersObjRelInsertInput>;
   status?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type UserInvitationsMaxFields = {
+export interface UserInvitationsMaxFields {
   __typename?: 'userInvitationsMaxFields';
   acceptedAt: Maybe<Scalars['timestamptz']['output']>;
   acceptedBy: Maybe<Scalars['uuid']['output']>;
@@ -19952,10 +19959,10 @@ export type UserInvitationsMaxFields = {
   managerId: Maybe<Scalars['uuid']['output']>;
   status: Maybe<Scalars['String']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type UserInvitationsMinFields = {
+export interface UserInvitationsMinFields {
   __typename?: 'userInvitationsMinFields';
   acceptedAt: Maybe<Scalars['timestamptz']['output']>;
   acceptedBy: Maybe<Scalars['uuid']['output']>;
@@ -19973,26 +19980,26 @@ export type UserInvitationsMinFields = {
   managerId: Maybe<Scalars['uuid']['output']>;
   status: Maybe<Scalars['String']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
-};
+}
 
 /** response of any mutation on the table "user_invitations" */
-export type UserInvitationsMutationResponse = {
+export interface UserInvitationsMutationResponse {
   __typename?: 'userInvitationsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<UserInvitations>;
-};
+}
 
 /** on_conflict condition type for table "user_invitations" */
-export type UserInvitationsOnConflict = {
+export interface UserInvitationsOnConflict {
   constraint: UserInvitationsConstraint;
   updateColumns?: Array<UserInvitationsUpdateColumn>;
   where?: InputMaybe<UserInvitationsBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "user_invitations". */
-export type UserInvitationsOrderBy = {
+export interface UserInvitationsOrderBy {
   acceptedAt?: InputMaybe<OrderBy>;
   acceptedBy?: InputMaybe<OrderBy>;
   acceptedByUser?: InputMaybe<UsersOrderBy>;
@@ -20013,17 +20020,17 @@ export type UserInvitationsOrderBy = {
   managerUser?: InputMaybe<UsersOrderBy>;
   status?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: user_invitations */
-export type UserInvitationsPkColumnsInput = {
+export interface UserInvitationsPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** prepend existing jsonb value of filtered columns with new jsonb value */
-export type UserInvitationsPrependInput = {
+export interface UserInvitationsPrependInput {
   invitationMetadata?: InputMaybe<Scalars['jsonb']['input']>;
-};
+}
 
 /** select columns of table "user_invitations" */
 export enum UserInvitationsSelectColumn {
@@ -20064,7 +20071,7 @@ export enum UserInvitationsSelectColumn {
 }
 
 /** input type for updating data in table "user_invitations" */
-export type UserInvitationsSetInput = {
+export interface UserInvitationsSetInput {
   acceptedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   acceptedBy?: InputMaybe<Scalars['uuid']['input']>;
   clerkInvitationId?: InputMaybe<Scalars['String']['input']>;
@@ -20082,18 +20089,18 @@ export type UserInvitationsSetInput = {
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** Streaming cursor of the table "userInvitations" */
-export type UserInvitationsStreamCursorInput = {
+export interface UserInvitationsStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: UserInvitationsStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type UserInvitationsStreamCursorValueInput = {
+export interface UserInvitationsStreamCursorValueInput {
   acceptedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   acceptedBy?: InputMaybe<Scalars['uuid']['input']>;
   clerkInvitationId?: InputMaybe<Scalars['String']['input']>;
@@ -20111,7 +20118,7 @@ export type UserInvitationsStreamCursorValueInput = {
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
+}
 
 /** update columns of table "user_invitations" */
 export enum UserInvitationsUpdateColumn {
@@ -20151,7 +20158,7 @@ export enum UserInvitationsUpdateColumn {
   updatedAt = 'updatedAt'
 }
 
-export type UserInvitationsUpdates = {
+export interface UserInvitationsUpdates {
   /** append existing jsonb value of filtered columns with new jsonb value */
   _append?: InputMaybe<UserInvitationsAppendInput>;
   /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -20166,10 +20173,10 @@ export type UserInvitationsUpdates = {
   _set?: InputMaybe<UserInvitationsSetInput>;
   /** filter the rows which have to be updated */
   where: UserInvitationsBoolExp;
-};
+}
 
 /** columns and relationships of "user_roles" */
-export type UserRoles = {
+export interface UserRoles {
   __typename?: 'userRoles';
   /** An object relationship */
   assignedRole: Roles;
@@ -20180,33 +20187,33 @@ export type UserRoles = {
   roleUser: Users;
   updatedAt: Scalars['timestamptz']['output'];
   userId: Scalars['uuid']['output'];
-};
+}
 
 /** aggregated selection of "user_roles" */
-export type UserRolesAggregate = {
+export interface UserRolesAggregate {
   __typename?: 'userRolesAggregate';
   aggregate: Maybe<UserRolesAggregateFields>;
   nodes: Array<UserRoles>;
-};
+}
 
-export type UserRolesAggregateBoolExp = {
+export interface UserRolesAggregateBoolExp {
   count?: InputMaybe<UserRolesAggregateBoolExpCount>;
-};
+}
 
-export type UserRolesAggregateBoolExpCount = {
+export interface UserRolesAggregateBoolExpCount {
   arguments?: InputMaybe<Array<UserRolesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<UserRolesBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "user_roles" */
-export type UserRolesAggregateFields = {
+export interface UserRolesAggregateFields {
   __typename?: 'userRolesAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<UserRolesMaxFields>;
   min: Maybe<UserRolesMinFields>;
-};
+}
 
 
 /** aggregate fields of "user_roles" */
@@ -20216,21 +20223,21 @@ export type UserRolesAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "user_roles" */
-export type UserRolesAggregateOrderBy = {
+export interface UserRolesAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<UserRolesMaxOrderBy>;
   min?: InputMaybe<UserRolesMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "user_roles" */
-export type UserRolesArrRelInsertInput = {
+export interface UserRolesArrRelInsertInput {
   data: Array<UserRolesInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<UserRolesOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "user_roles". All fields are combined with a logical 'AND'. */
-export type UserRolesBoolExp = {
+export interface UserRolesBoolExp {
   _and?: InputMaybe<Array<UserRolesBoolExp>>;
   _not?: InputMaybe<UserRolesBoolExp>;
   _or?: InputMaybe<Array<UserRolesBoolExp>>;
@@ -20241,7 +20248,7 @@ export type UserRolesBoolExp = {
   roleUser?: InputMaybe<UsersBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "user_roles" */
 export enum UserRolesConstraint {
@@ -20252,7 +20259,7 @@ export enum UserRolesConstraint {
 }
 
 /** input type for inserting data into table "user_roles" */
-export type UserRolesInsertInput = {
+export interface UserRolesInsertInput {
   assignedRole?: InputMaybe<RolesObjRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -20260,64 +20267,64 @@ export type UserRolesInsertInput = {
   roleUser?: InputMaybe<UsersObjRelInsertInput>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type UserRolesMaxFields = {
+export interface UserRolesMaxFields {
   __typename?: 'userRolesMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   roleId: Maybe<Scalars['uuid']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by max() on columns of table "user_roles" */
-export type UserRolesMaxOrderBy = {
+export interface UserRolesMaxOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   roleId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type UserRolesMinFields = {
+export interface UserRolesMinFields {
   __typename?: 'userRolesMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   roleId: Maybe<Scalars['uuid']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   userId: Maybe<Scalars['uuid']['output']>;
-};
+}
 
 /** order by min() on columns of table "user_roles" */
-export type UserRolesMinOrderBy = {
+export interface UserRolesMinOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   roleId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "user_roles" */
-export type UserRolesMutationResponse = {
+export interface UserRolesMutationResponse {
   __typename?: 'userRolesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<UserRoles>;
-};
+}
 
 /** on_conflict condition type for table "user_roles" */
-export type UserRolesOnConflict = {
+export interface UserRolesOnConflict {
   constraint: UserRolesConstraint;
   updateColumns?: Array<UserRolesUpdateColumn>;
   where?: InputMaybe<UserRolesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "user_roles". */
-export type UserRolesOrderBy = {
+export interface UserRolesOrderBy {
   assignedRole?: InputMaybe<RolesOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -20325,12 +20332,12 @@ export type UserRolesOrderBy = {
   roleUser?: InputMaybe<UsersOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: user_roles */
-export type UserRolesPkColumnsInput = {
+export interface UserRolesPkColumnsInput {
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "user_roles" */
 export enum UserRolesSelectColumn {
@@ -20347,30 +20354,30 @@ export enum UserRolesSelectColumn {
 }
 
 /** input type for updating data in table "user_roles" */
-export type UserRolesSetInput = {
+export interface UserRolesSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   roleId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** Streaming cursor of the table "userRoles" */
-export type UserRolesStreamCursorInput = {
+export interface UserRolesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: UserRolesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type UserRolesStreamCursorValueInput = {
+export interface UserRolesStreamCursorValueInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   roleId?: InputMaybe<Scalars['uuid']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
-};
+}
 
 /** update columns of table "user_roles" */
 export enum UserRolesUpdateColumn {
@@ -20386,15 +20393,15 @@ export enum UserRolesUpdateColumn {
   userId = 'userId'
 }
 
-export type UserRolesUpdates = {
+export interface UserRolesUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<UserRolesSetInput>;
   /** filter the rows which have to be updated */
   where: UserRolesBoolExp;
-};
+}
 
 /** columns and relationships of "users" */
-export type Users = {
+export interface Users {
   __typename?: 'users';
   /** An array relationship */
   assignedRoles: Array<UserRoles>;
@@ -20503,7 +20510,7 @@ export type Users = {
   userWorkSchedulesAggregate: WorkSchedulesAggregate;
   /** User's unique username for login */
   username: Maybe<Scalars['String']['output']>;
-};
+}
 
 
 /** columns and relationships of "users" */
@@ -20906,46 +20913,46 @@ export type UsersUserWorkSchedulesAggregateArgs = {
 };
 
 /** aggregated selection of "users" */
-export type UsersAggregate = {
+export interface UsersAggregate {
   __typename?: 'usersAggregate';
   aggregate: Maybe<UsersAggregateFields>;
   nodes: Array<Users>;
-};
+}
 
-export type UsersAggregateBoolExp = {
+export interface UsersAggregateBoolExp {
   bool_and?: InputMaybe<UsersAggregateBoolExpBoolAnd>;
   bool_or?: InputMaybe<UsersAggregateBoolExpBoolOr>;
   count?: InputMaybe<UsersAggregateBoolExpCount>;
-};
+}
 
-export type UsersAggregateBoolExpBoolAnd = {
+export interface UsersAggregateBoolExpBoolAnd {
   arguments: UsersSelectColumnUsersAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<UsersBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type UsersAggregateBoolExpBoolOr = {
+export interface UsersAggregateBoolExpBoolOr {
   arguments: UsersSelectColumnUsersAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<UsersBoolExp>;
   predicate: BooleanComparisonExp;
-};
+}
 
-export type UsersAggregateBoolExpCount = {
+export interface UsersAggregateBoolExpCount {
   arguments?: InputMaybe<Array<UsersSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<UsersBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "users" */
-export type UsersAggregateFields = {
+export interface UsersAggregateFields {
   __typename?: 'usersAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<UsersMaxFields>;
   min: Maybe<UsersMinFields>;
-};
+}
 
 
 /** aggregate fields of "users" */
@@ -20955,21 +20962,21 @@ export type UsersAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "users" */
-export type UsersAggregateOrderBy = {
+export interface UsersAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<UsersMaxOrderBy>;
   min?: InputMaybe<UsersMinOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "users" */
-export type UsersArrRelInsertInput = {
+export interface UsersArrRelInsertInput {
   data: Array<UsersInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<UsersOnConflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "users". All fields are combined with a logical 'AND'. */
-export type UsersBoolExp = {
+export interface UsersBoolExp {
   _and?: InputMaybe<Array<UsersBoolExp>>;
   _not?: InputMaybe<UsersBoolExp>;
   _or?: InputMaybe<Array<UsersBoolExp>>;
@@ -21028,7 +21035,7 @@ export type UsersBoolExp = {
   userWorkSchedules?: InputMaybe<WorkSchedulesBoolExp>;
   userWorkSchedulesAggregate?: InputMaybe<WorkSchedulesAggregateBoolExp>;
   username?: InputMaybe<StringComparisonExp>;
-};
+}
 
 /** unique or primary key constraints on table "users" */
 export enum UsersConstraint {
@@ -21043,7 +21050,7 @@ export enum UsersConstraint {
 }
 
 /** input type for inserting data into table "users" */
-export type UsersInsertInput = {
+export interface UsersInsertInput {
   assignedRoles?: InputMaybe<UserRolesArrRelInsertInput>;
   authoredNotes?: InputMaybe<NotesArrRelInsertInput>;
   backupConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
@@ -21090,10 +21097,10 @@ export type UsersInsertInput = {
   userWorkSchedules?: InputMaybe<WorkSchedulesArrRelInsertInput>;
   /** User's unique username for login */
   username?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type UsersMaxFields = {
+export interface UsersMaxFields {
   __typename?: 'usersMaxFields';
   /** External identifier from Clerk authentication service */
   clerkUserId: Maybe<Scalars['String']['output']>;
@@ -21117,10 +21124,10 @@ export type UsersMaxFields = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   /** User's unique username for login */
   username: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** order by max() on columns of table "users" */
-export type UsersMaxOrderBy = {
+export interface UsersMaxOrderBy {
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<OrderBy>;
   /** Timestamp when the user was created */
@@ -21143,10 +21150,10 @@ export type UsersMaxOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
   /** User's unique username for login */
   username?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type UsersMinFields = {
+export interface UsersMinFields {
   __typename?: 'usersMinFields';
   /** External identifier from Clerk authentication service */
   clerkUserId: Maybe<Scalars['String']['output']>;
@@ -21170,10 +21177,10 @@ export type UsersMinFields = {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   /** User's unique username for login */
   username: Maybe<Scalars['String']['output']>;
-};
+}
 
 /** order by min() on columns of table "users" */
-export type UsersMinOrderBy = {
+export interface UsersMinOrderBy {
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<OrderBy>;
   /** Timestamp when the user was created */
@@ -21196,33 +21203,33 @@ export type UsersMinOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
   /** User's unique username for login */
   username?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "users" */
-export type UsersMutationResponse = {
+export interface UsersMutationResponse {
   __typename?: 'usersMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<Users>;
-};
+}
 
 /** input type for inserting object relation for remote table "users" */
-export type UsersObjRelInsertInput = {
+export interface UsersObjRelInsertInput {
   data: UsersInsertInput;
   /** upsert condition */
   onConflict?: InputMaybe<UsersOnConflict>;
-};
+}
 
 /** on_conflict condition type for table "users" */
-export type UsersOnConflict = {
+export interface UsersOnConflict {
   constraint: UsersConstraint;
   updateColumns?: Array<UsersUpdateColumn>;
   where?: InputMaybe<UsersBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "users". */
-export type UsersOrderBy = {
+export interface UsersOrderBy {
   assignedRolesAggregate?: InputMaybe<UserRolesAggregateOrderBy>;
   authoredNotesAggregate?: InputMaybe<NotesAggregateOrderBy>;
   backupConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
@@ -21258,37 +21265,37 @@ export type UsersOrderBy = {
   userPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
   userWorkSchedulesAggregate?: InputMaybe<WorkSchedulesAggregateOrderBy>;
   username?: InputMaybe<OrderBy>;
-};
+}
 
 /** primary key columns input for table: users */
-export type UsersPkColumnsInput = {
+export interface UsersPkColumnsInput {
   /** Unique identifier for the user */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** columns and relationships of "users_role_backup" */
-export type UsersRoleBackup = {
+export interface UsersRoleBackup {
   __typename?: 'usersRoleBackup';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   email: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   role: Maybe<Scalars['user_role']['output']>;
-};
+}
 
 /** aggregated selection of "users_role_backup" */
-export type UsersRoleBackupAggregate = {
+export interface UsersRoleBackupAggregate {
   __typename?: 'usersRoleBackupAggregate';
   aggregate: Maybe<UsersRoleBackupAggregateFields>;
   nodes: Array<UsersRoleBackup>;
-};
+}
 
 /** aggregate fields of "users_role_backup" */
-export type UsersRoleBackupAggregateFields = {
+export interface UsersRoleBackupAggregateFields {
   __typename?: 'usersRoleBackupAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<UsersRoleBackupMaxFields>;
   min: Maybe<UsersRoleBackupMinFields>;
-};
+}
 
 
 /** aggregate fields of "users_role_backup" */
@@ -21298,7 +21305,7 @@ export type UsersRoleBackupAggregateFieldsCountArgs = {
 };
 
 /** Boolean expression to filter rows from the table "users_role_backup". All fields are combined with a logical 'AND'. */
-export type UsersRoleBackupBoolExp = {
+export interface UsersRoleBackupBoolExp {
   _and?: InputMaybe<Array<UsersRoleBackupBoolExp>>;
   _not?: InputMaybe<UsersRoleBackupBoolExp>;
   _or?: InputMaybe<Array<UsersRoleBackupBoolExp>>;
@@ -21306,50 +21313,50 @@ export type UsersRoleBackupBoolExp = {
   email?: InputMaybe<StringComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   role?: InputMaybe<UserRoleComparisonExp>;
-};
+}
 
 /** input type for inserting data into table "users_role_backup" */
-export type UsersRoleBackupInsertInput = {
+export interface UsersRoleBackupInsertInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   role?: InputMaybe<Scalars['user_role']['input']>;
-};
+}
 
 /** aggregate max on columns */
-export type UsersRoleBackupMaxFields = {
+export interface UsersRoleBackupMaxFields {
   __typename?: 'usersRoleBackupMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   email: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   role: Maybe<Scalars['user_role']['output']>;
-};
+}
 
 /** aggregate min on columns */
-export type UsersRoleBackupMinFields = {
+export interface UsersRoleBackupMinFields {
   __typename?: 'usersRoleBackupMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   email: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   role: Maybe<Scalars['user_role']['output']>;
-};
+}
 
 /** response of any mutation on the table "users_role_backup" */
-export type UsersRoleBackupMutationResponse = {
+export interface UsersRoleBackupMutationResponse {
   __typename?: 'usersRoleBackupMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<UsersRoleBackup>;
-};
+}
 
 /** Ordering options when selecting data from "users_role_backup". */
-export type UsersRoleBackupOrderBy = {
+export interface UsersRoleBackupOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   email?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   role?: InputMaybe<OrderBy>;
-};
+}
 
 /** select columns of table "users_role_backup" */
 export enum UsersRoleBackupSelectColumn {
@@ -21364,35 +21371,35 @@ export enum UsersRoleBackupSelectColumn {
 }
 
 /** input type for updating data in table "users_role_backup" */
-export type UsersRoleBackupSetInput = {
+export interface UsersRoleBackupSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   role?: InputMaybe<Scalars['user_role']['input']>;
-};
+}
 
 /** Streaming cursor of the table "usersRoleBackup" */
-export type UsersRoleBackupStreamCursorInput = {
+export interface UsersRoleBackupStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: UsersRoleBackupStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type UsersRoleBackupStreamCursorValueInput = {
+export interface UsersRoleBackupStreamCursorValueInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   role?: InputMaybe<Scalars['user_role']['input']>;
-};
+}
 
-export type UsersRoleBackupUpdates = {
+export interface UsersRoleBackupUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<UsersRoleBackupSetInput>;
   /** filter the rows which have to be updated */
   where: UsersRoleBackupBoolExp;
-};
+}
 
 /** select columns of table "users" */
 export enum UsersSelectColumn {
@@ -21443,7 +21450,7 @@ export enum UsersSelectColumnUsersAggregateBoolExpBoolOrArgumentsColumns {
 }
 
 /** input type for updating data in table "users" */
-export type UsersSetInput = {
+export interface UsersSetInput {
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the user was created */
@@ -21469,18 +21476,18 @@ export type UsersSetInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User's unique username for login */
   username?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** Streaming cursor of the table "users" */
-export type UsersStreamCursorInput = {
+export interface UsersStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: UsersStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type UsersStreamCursorValueInput = {
+export interface UsersStreamCursorValueInput {
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the user was created */
@@ -21506,7 +21513,7 @@ export type UsersStreamCursorValueInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User's unique username for login */
   username?: InputMaybe<Scalars['String']['input']>;
-};
+}
 
 /** update columns of table "users" */
 export enum UsersUpdateColumn {
@@ -21540,15 +21547,15 @@ export enum UsersUpdateColumn {
   username = 'username'
 }
 
-export type UsersUpdates = {
+export interface UsersUpdates {
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<UsersSetInput>;
   /** filter the rows which have to be updated */
   where: UsersBoolExp;
-};
+}
 
 /** columns and relationships of "work_schedule" */
-export type WorkSchedules = {
+export interface WorkSchedules {
   __typename?: 'workSchedules';
   /** Timestamp when the schedule entry was created */
   createdAt: Maybe<Scalars['timestamp']['output']>;
@@ -21566,28 +21573,28 @@ export type WorkSchedules = {
   workHours: Scalars['numeric']['output'];
   /** An object relationship */
   workScheduleUser: Users;
-};
+}
 
 /** aggregated selection of "work_schedule" */
-export type WorkSchedulesAggregate = {
+export interface WorkSchedulesAggregate {
   __typename?: 'workSchedulesAggregate';
   aggregate: Maybe<WorkSchedulesAggregateFields>;
   nodes: Array<WorkSchedules>;
-};
+}
 
-export type WorkSchedulesAggregateBoolExp = {
+export interface WorkSchedulesAggregateBoolExp {
   count?: InputMaybe<WorkSchedulesAggregateBoolExpCount>;
-};
+}
 
-export type WorkSchedulesAggregateBoolExpCount = {
+export interface WorkSchedulesAggregateBoolExpCount {
   arguments?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<WorkSchedulesBoolExp>;
   predicate: IntComparisonExp;
-};
+}
 
 /** aggregate fields of "work_schedule" */
-export type WorkSchedulesAggregateFields = {
+export interface WorkSchedulesAggregateFields {
   __typename?: 'workSchedulesAggregateFields';
   avg: Maybe<WorkSchedulesAvgFields>;
   count: Scalars['Int']['output'];
@@ -21600,7 +21607,7 @@ export type WorkSchedulesAggregateFields = {
   varPop: Maybe<WorkSchedulesVarPopFields>;
   varSamp: Maybe<WorkSchedulesVarSampFields>;
   variance: Maybe<WorkSchedulesVarianceFields>;
-};
+}
 
 
 /** aggregate fields of "work_schedule" */
@@ -21610,7 +21617,7 @@ export type WorkSchedulesAggregateFieldsCountArgs = {
 };
 
 /** order by aggregate values of table "work_schedule" */
-export type WorkSchedulesAggregateOrderBy = {
+export interface WorkSchedulesAggregateOrderBy {
   avg?: InputMaybe<WorkSchedulesAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<WorkSchedulesMaxOrderBy>;
@@ -21622,30 +21629,30 @@ export type WorkSchedulesAggregateOrderBy = {
   varPop?: InputMaybe<WorkSchedulesVarPopOrderBy>;
   varSamp?: InputMaybe<WorkSchedulesVarSampOrderBy>;
   variance?: InputMaybe<WorkSchedulesVarianceOrderBy>;
-};
+}
 
 /** input type for inserting array relation for remote table "work_schedule" */
-export type WorkSchedulesArrRelInsertInput = {
+export interface WorkSchedulesArrRelInsertInput {
   data: Array<WorkSchedulesInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<WorkSchedulesOnConflict>;
-};
+}
 
 /** aggregate avg on columns */
-export type WorkSchedulesAvgFields = {
+export interface WorkSchedulesAvgFields {
   __typename?: 'workSchedulesAvgFields';
   /** Number of hours worked on this day */
   workHours: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by avg() on columns of table "work_schedule" */
-export type WorkSchedulesAvgOrderBy = {
+export interface WorkSchedulesAvgOrderBy {
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
-};
+}
 
 /** Boolean expression to filter rows from the table "work_schedule". All fields are combined with a logical 'AND'. */
-export type WorkSchedulesBoolExp = {
+export interface WorkSchedulesBoolExp {
   _and?: InputMaybe<Array<WorkSchedulesBoolExp>>;
   _not?: InputMaybe<WorkSchedulesBoolExp>;
   _or?: InputMaybe<Array<WorkSchedulesBoolExp>>;
@@ -21657,7 +21664,7 @@ export type WorkSchedulesBoolExp = {
   workDay?: InputMaybe<StringComparisonExp>;
   workHours?: InputMaybe<NumericComparisonExp>;
   workScheduleUser?: InputMaybe<UsersBoolExp>;
-};
+}
 
 /** unique or primary key constraints on table "work_schedule" */
 export enum WorkSchedulesConstraint {
@@ -21668,13 +21675,13 @@ export enum WorkSchedulesConstraint {
 }
 
 /** input type for incrementing numeric columns in table "work_schedule" */
-export type WorkSchedulesIncInput = {
+export interface WorkSchedulesIncInput {
   /** Number of hours worked on this day */
   workHours?: InputMaybe<Scalars['numeric']['input']>;
-};
+}
 
 /** input type for inserting data into table "work_schedule" */
-export type WorkSchedulesInsertInput = {
+export interface WorkSchedulesInsertInput {
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Unique identifier for the work schedule entry */
@@ -21689,10 +21696,10 @@ export type WorkSchedulesInsertInput = {
   /** Number of hours worked on this day */
   workHours?: InputMaybe<Scalars['numeric']['input']>;
   workScheduleUser?: InputMaybe<UsersObjRelInsertInput>;
-};
+}
 
 /** aggregate max on columns */
-export type WorkSchedulesMaxFields = {
+export interface WorkSchedulesMaxFields {
   __typename?: 'workSchedulesMaxFields';
   /** Timestamp when the schedule entry was created */
   createdAt: Maybe<Scalars['timestamp']['output']>;
@@ -21706,10 +21713,10 @@ export type WorkSchedulesMaxFields = {
   workDay: Maybe<Scalars['String']['output']>;
   /** Number of hours worked on this day */
   workHours: Maybe<Scalars['numeric']['output']>;
-};
+}
 
 /** order by max() on columns of table "work_schedule" */
-export type WorkSchedulesMaxOrderBy = {
+export interface WorkSchedulesMaxOrderBy {
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Unique identifier for the work schedule entry */
@@ -21722,10 +21729,10 @@ export type WorkSchedulesMaxOrderBy = {
   workDay?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate min on columns */
-export type WorkSchedulesMinFields = {
+export interface WorkSchedulesMinFields {
   __typename?: 'workSchedulesMinFields';
   /** Timestamp when the schedule entry was created */
   createdAt: Maybe<Scalars['timestamp']['output']>;
@@ -21739,10 +21746,10 @@ export type WorkSchedulesMinFields = {
   workDay: Maybe<Scalars['String']['output']>;
   /** Number of hours worked on this day */
   workHours: Maybe<Scalars['numeric']['output']>;
-};
+}
 
 /** order by min() on columns of table "work_schedule" */
-export type WorkSchedulesMinOrderBy = {
+export interface WorkSchedulesMinOrderBy {
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Unique identifier for the work schedule entry */
@@ -21755,26 +21762,26 @@ export type WorkSchedulesMinOrderBy = {
   workDay?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
-};
+}
 
 /** response of any mutation on the table "work_schedule" */
-export type WorkSchedulesMutationResponse = {
+export interface WorkSchedulesMutationResponse {
   __typename?: 'workSchedulesMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<WorkSchedules>;
-};
+}
 
 /** on_conflict condition type for table "work_schedule" */
-export type WorkSchedulesOnConflict = {
+export interface WorkSchedulesOnConflict {
   constraint: WorkSchedulesConstraint;
   updateColumns?: Array<WorkSchedulesUpdateColumn>;
   where?: InputMaybe<WorkSchedulesBoolExp>;
-};
+}
 
 /** Ordering options when selecting data from "work_schedule". */
-export type WorkSchedulesOrderBy = {
+export interface WorkSchedulesOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   scheduleOwner?: InputMaybe<UsersOrderBy>;
@@ -21783,13 +21790,13 @@ export type WorkSchedulesOrderBy = {
   workDay?: InputMaybe<OrderBy>;
   workHours?: InputMaybe<OrderBy>;
   workScheduleUser?: InputMaybe<UsersOrderBy>;
-};
+}
 
 /** primary key columns input for table: work_schedule */
-export type WorkSchedulesPkColumnsInput = {
+export interface WorkSchedulesPkColumnsInput {
   /** Unique identifier for the work schedule entry */
   id: Scalars['uuid']['input'];
-};
+}
 
 /** select columns of table "work_schedule" */
 export enum WorkSchedulesSelectColumn {
@@ -21808,7 +21815,7 @@ export enum WorkSchedulesSelectColumn {
 }
 
 /** input type for updating data in table "work_schedule" */
-export type WorkSchedulesSetInput = {
+export interface WorkSchedulesSetInput {
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Unique identifier for the work schedule entry */
@@ -21821,57 +21828,57 @@ export type WorkSchedulesSetInput = {
   workDay?: InputMaybe<Scalars['String']['input']>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<Scalars['numeric']['input']>;
-};
+}
 
 /** aggregate stddev on columns */
-export type WorkSchedulesStddevFields = {
+export interface WorkSchedulesStddevFields {
   __typename?: 'workSchedulesStddevFields';
   /** Number of hours worked on this day */
   workHours: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddev() on columns of table "work_schedule" */
-export type WorkSchedulesStddevOrderBy = {
+export interface WorkSchedulesStddevOrderBy {
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate stddevPop on columns */
-export type WorkSchedulesStddevPopFields = {
+export interface WorkSchedulesStddevPopFields {
   __typename?: 'workSchedulesStddevPopFields';
   /** Number of hours worked on this day */
   workHours: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddevPop() on columns of table "work_schedule" */
-export type WorkSchedulesStddevPopOrderBy = {
+export interface WorkSchedulesStddevPopOrderBy {
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate stddevSamp on columns */
-export type WorkSchedulesStddevSampFields = {
+export interface WorkSchedulesStddevSampFields {
   __typename?: 'workSchedulesStddevSampFields';
   /** Number of hours worked on this day */
   workHours: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by stddevSamp() on columns of table "work_schedule" */
-export type WorkSchedulesStddevSampOrderBy = {
+export interface WorkSchedulesStddevSampOrderBy {
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
-};
+}
 
 /** Streaming cursor of the table "workSchedules" */
-export type WorkSchedulesStreamCursorInput = {
+export interface WorkSchedulesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: WorkSchedulesStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
-};
+}
 
 /** Initial value of the column from where the streaming should start */
-export type WorkSchedulesStreamCursorValueInput = {
+export interface WorkSchedulesStreamCursorValueInput {
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Unique identifier for the work schedule entry */
@@ -21884,20 +21891,20 @@ export type WorkSchedulesStreamCursorValueInput = {
   workDay?: InputMaybe<Scalars['String']['input']>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<Scalars['numeric']['input']>;
-};
+}
 
 /** aggregate sum on columns */
-export type WorkSchedulesSumFields = {
+export interface WorkSchedulesSumFields {
   __typename?: 'workSchedulesSumFields';
   /** Number of hours worked on this day */
   workHours: Maybe<Scalars['numeric']['output']>;
-};
+}
 
 /** order by sum() on columns of table "work_schedule" */
-export type WorkSchedulesSumOrderBy = {
+export interface WorkSchedulesSumOrderBy {
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
-};
+}
 
 /** update columns of table "work_schedule" */
 export enum WorkSchedulesUpdateColumn {
@@ -21915,50 +21922,50 @@ export enum WorkSchedulesUpdateColumn {
   workHours = 'workHours'
 }
 
-export type WorkSchedulesUpdates = {
+export interface WorkSchedulesUpdates {
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<WorkSchedulesIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<WorkSchedulesSetInput>;
   /** filter the rows which have to be updated */
   where: WorkSchedulesBoolExp;
-};
+}
 
 /** aggregate varPop on columns */
-export type WorkSchedulesVarPopFields = {
+export interface WorkSchedulesVarPopFields {
   __typename?: 'workSchedulesVarPopFields';
   /** Number of hours worked on this day */
   workHours: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by varPop() on columns of table "work_schedule" */
-export type WorkSchedulesVarPopOrderBy = {
+export interface WorkSchedulesVarPopOrderBy {
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate varSamp on columns */
-export type WorkSchedulesVarSampFields = {
+export interface WorkSchedulesVarSampFields {
   __typename?: 'workSchedulesVarSampFields';
   /** Number of hours worked on this day */
   workHours: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by varSamp() on columns of table "work_schedule" */
-export type WorkSchedulesVarSampOrderBy = {
+export interface WorkSchedulesVarSampOrderBy {
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
-};
+}
 
 /** aggregate variance on columns */
-export type WorkSchedulesVarianceFields = {
+export interface WorkSchedulesVarianceFields {
   __typename?: 'workSchedulesVarianceFields';
   /** Number of hours worked on this day */
   workHours: Maybe<Scalars['Float']['output']>;
-};
+}
 
 /** order by variance() on columns of table "work_schedule" */
-export type WorkSchedulesVarianceOrderBy = {
+export interface WorkSchedulesVarianceOrderBy {
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
-};
+}

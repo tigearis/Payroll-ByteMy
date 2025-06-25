@@ -9,8 +9,6 @@ configuration:
       custom_name: changeReason
     changed_by:
       custom_name: changedBy
-    created_at:
-      custom_name: createdAt
     from_consultant_id:
       custom_name: fromConsultantId
     payroll_date_id:
@@ -21,7 +19,6 @@ configuration:
     assignment_id: assignmentId
     change_reason: changeReason
     changed_by: changedBy
-    created_at: createdAt
     from_consultant_id: fromConsultantId
     payroll_date_id: payrollDateId
     to_consultant_id: toConsultantId
@@ -89,9 +86,7 @@ select_permissions:
         - assignment_id
         - change_reason
         - changed_by
-        - created_at
         - from_consultant_id
-        - id
         - payroll_date_id
         - to_consultant_id
       filter:
@@ -113,9 +108,7 @@ select_permissions:
         - assignment_id
         - change_reason
         - changed_by
-        - created_at
         - from_consultant_id
-        - id
         - payroll_date_id
         - to_consultant_id
       filter: {}
@@ -127,9 +120,7 @@ select_permissions:
         - assignment_id
         - change_reason
         - changed_by
-        - created_at
         - from_consultant_id
-        - id
         - payroll_date_id
         - to_consultant_id
       filter: {}
@@ -141,9 +132,7 @@ select_permissions:
         - assignment_id
         - change_reason
         - changed_by
-        - created_at
         - from_consultant_id
-        - id
         - payroll_date_id
         - to_consultant_id
       filter: {}

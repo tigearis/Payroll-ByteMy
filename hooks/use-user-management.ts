@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { useUserRole } from "@/hooks/use-user-role";
 
 import {
   GetUsersDocument,
@@ -65,6 +66,7 @@ export interface UserPermissions {
 
 export function useUserManagement() {
   const { getToken, userId } = useAuth();
+  const { hasPermission } = useUserRole();
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
 
   // GraphQL queries and mutations
@@ -93,30 +95,33 @@ export function useUserManagement() {
 
   // Permissions based on role
   const permissions: UserPermissions = {
-    canCreate: currentUserRole === "developer" || currentUserRole === "org_admin",
-    canManageUsers: currentUserRole === "developer" || currentUserRole === "org_admin" || currentUserRole === "manager",
+    canCreate: hasPermission("staff:invite"),
+    canManageUsers: hasPermission("staff:write"),
   };
 
   // Permission checking functions
   const canAssignRole = useCallback((targetRole: string): boolean => {
-    if (currentUserRole === "developer") return true;
-    if (currentUserRole === "org_admin") return targetRole !== "developer";
-    if (currentUserRole === "manager") return ["consultant", "viewer"].includes(targetRole);
+    // Use permission-based checks instead of hardcoded roles
+    if (hasPermission("admin:manage")) return true; // Developer level
+    if (hasPermission("settings:write")) return targetRole !== "developer"; // Org admin level
+    if (hasPermission("staff:write")) return ["consultant", "viewer"].includes(targetRole); // Manager level
     return false;
-  }, [currentUserRole]);
+  }, [hasPermission]);
 
   const canEditUser = useCallback((user: User): boolean => {
-    if (currentUserRole === "developer") return true;
-    if (currentUserRole === "org_admin") return user.role !== "developer";
-    if (currentUserRole === "manager") return ["consultant", "viewer"].includes(user.role);
+    // Use permission-based checks instead of hardcoded roles
+    if (hasPermission("admin:manage")) return true; // Developer level
+    if (hasPermission("settings:write")) return user.role !== "developer"; // Org admin level  
+    if (hasPermission("staff:write")) return ["consultant", "viewer"].includes(user.role); // Manager level
     return false;
-  }, [currentUserRole]);
+  }, [hasPermission]);
 
   const canDeleteUser = useCallback((user: User): boolean => {
-    if (currentUserRole === "developer") return true;
-    if (currentUserRole === "org_admin") return user.role !== "developer";
+    // Use permission-based checks instead of hardcoded roles
+    if (hasPermission("admin:manage")) return true; // Developer level
+    if (hasPermission("settings:write")) return user.role !== "developer"; // Org admin level
     return false;
-  }, [currentUserRole]);
+  }, [hasPermission]);
 
   // Actions
   const fetchUsers = useCallback(async (filters: UserFilters = {}) => {

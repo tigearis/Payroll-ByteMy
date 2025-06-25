@@ -2,10 +2,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
-// Note: The following documents require custom Hasura action implementation:
-// - ProcessPayrollBatchDocument
-// - ApprovePayrollBatchDocument  
-// - GeneratePayrollReportDocument
+import { 
+  ProcessPayrollBatchDocument,
+  ApprovePayrollBatchDocument,
+  GeneratePayrollReportDocument 
+} from "@/domains/payrolls/graphql/generated/graphql";
 import { withSignatureValidation } from "@/lib/security/api-signing";
 import { PersistentAPIKeyManager } from "@/lib/security/persistent-api-keys";
 import {
@@ -53,17 +54,16 @@ const handlePayrollOperations = withSignatureValidation(
             );
           }
 
-          // TODO: Implement ProcessPayrollBatchDocument in GraphQL schema
-          // const result = await adminApolloClient.mutate({
-          //   mutation: ProcessPayrollBatchDocument,
-          //   variables: { payrollIds, processedBy },
-          // });
+          const result = await adminApolloClient.mutate({
+            mutation: ProcessPayrollBatchDocument,
+            variables: { payrollIds, processedBy },
+          });
 
           return NextResponse.json({
             success: true,
             operation: "process_batch",
-            affected_rows: 0, // TODO: Return actual affected rows from mutation
-            payrolls: [], // TODO: Return actual payrolls from mutation
+            affected_rows: result.data?.bulkUpdatePayrolls?.affectedRows || 0,
+            payrolls: result.data?.bulkUpdatePayrolls?.returning || [],
           });
         }
 
@@ -77,17 +77,16 @@ const handlePayrollOperations = withSignatureValidation(
             );
           }
 
-          // TODO: Implement ApprovePayrollBatchDocument in GraphQL schema
-          // const result = await adminApolloClient.mutate({
-          //   mutation: ApprovePayrollBatchDocument,
-          //   variables: { payrollIds, approvedBy },
-          // });
+          const result = await adminApolloClient.mutate({
+            mutation: ApprovePayrollBatchDocument,
+            variables: { payrollIds, approvedBy },
+          });
 
           return NextResponse.json({
             success: true,
             operation: "approve_batch",
-            affected_rows: 0, // TODO: Return actual affected rows from mutation
-            payrolls: [], // TODO: Return actual payrolls from mutation
+            affected_rows: result.data?.bulkUpdatePayrolls?.affectedRows || 0,
+            payrolls: result.data?.bulkUpdatePayrolls?.returning || [],
           });
         }
 
@@ -101,12 +100,14 @@ const handlePayrollOperations = withSignatureValidation(
             );
           }
 
-          // TODO: Implement GeneratePayrollReportDocument in GraphQL schema
-          // const result = await adminApolloClient.query({
-          //   query: GeneratePayrollReportDocument,
-          //   variables: { startDate, endDate },
-          //   fetchPolicy: "no-cache",
-          // });
+          const result = await adminApolloClient.query({
+            query: GeneratePayrollReportDocument,
+            variables: { startDate, endDate },
+            fetchPolicy: "no-cache",
+          });
+
+          const payrolls = result.data?.payrolls || [];
+          const recordCount = result.data?.reportMetadata?.aggregate?.count || 0;
 
           // Log data access for compliance
           const clientInfo = auditLogger.extractClientInfo(request);
@@ -122,7 +123,7 @@ const handlePayrollOperations = withSignatureValidation(
             metadata: {
               startDate,
               endDate,
-              recordCount: 0, // TODO: Return actual record count from query
+              recordCount,
               exportFormat: "json",
             },
             complianceNote: "Payroll report generated via signed API",
@@ -131,11 +132,11 @@ const handlePayrollOperations = withSignatureValidation(
           return NextResponse.json({
             success: true,
             operation: "generate_report",
-            data: [], // TODO: Return actual payrolls from query
+            data: payrolls,
             metadata: {
               startDate,
               endDate,
-              recordCount: 0, // TODO: Return actual record count from query
+              recordCount,
               generatedAt: new Date().toISOString(),
             },
           });

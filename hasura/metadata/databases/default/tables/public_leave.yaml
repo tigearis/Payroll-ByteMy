@@ -91,7 +91,6 @@ select_permissions:
     permission:
       columns:
         - end_date
-        - id
         - leave_type
         - reason
         - start_date
@@ -111,7 +110,6 @@ select_permissions:
     permission:
       columns:
         - end_date
-        - id
         - leave_type
         - reason
         - start_date
@@ -130,7 +128,6 @@ select_permissions:
     permission:
       columns:
         - end_date
-        - id
         - leave_type
         - reason
         - start_date
@@ -143,7 +140,6 @@ select_permissions:
     permission:
       columns:
         - end_date
-        - id
         - leave_type
         - reason
         - start_date

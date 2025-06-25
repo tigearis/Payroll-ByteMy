@@ -2,11 +2,8 @@ table:
   name: users_role_backup
   schema: public
 configuration:
-  column_config:
-    created_at:
-      custom_name: createdAt
-  custom_column_names:
-    created_at: createdAt
+  column_config: {}
+  custom_column_names: {}
   custom_name: usersRoleBackup
   custom_root_fields:
     delete: bulkDeleteUsersRoleBackups
@@ -27,9 +24,7 @@ insert_permissions:
 select_permissions:
   - role: consultant
     permission:
-      columns:
-        - created_at
-        - id
+      columns: []
       filter: {}
     comment: Consultants can view relevant data
   - role: developer
@@ -40,25 +35,19 @@ select_permissions:
     comment: Developer role has full select access
   - role: manager
     permission:
-      columns:
-        - created_at
-        - id
+      columns: []
       filter: {}
       allow_aggregations: true
     comment: Managers can view all data
   - role: org_admin
     permission:
-      columns:
-        - created_at
-        - id
+      columns: []
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all data
   - role: viewer
     permission:
-      columns:
-        - created_at
-        - id
+      columns: []
       filter: {}
     comment: Viewers can see basic information
 update_permissions:

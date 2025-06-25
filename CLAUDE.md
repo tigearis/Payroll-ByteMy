@@ -107,25 +107,221 @@ The `scripts/` directory contains powerful maintenance and development utilities
 - **Authentication:** Clerk for user management
 - **Hosting:** Vercel with serverless functions
 
-### Authentication System
+### Authentication & Permission System
 
-This is a streamlined authentication system leveraging Clerk's native enterprise capabilities:
+This is a streamlined authentication system leveraging Clerk's native enterprise capabilities with a clean, hierarchical permission model:
 
+#### **Core Architecture**
 - **Pure Clerk Native Integration**: No custom token management - uses `getToken({ template: "hasura" })` and `sessionClaims` directly
-- **RBAC Implementation**: Hierarchical roles (`developer` > `org_admin` > `manager` > `consultant` > `viewer`) with 18 granular permissions across 5 categories
-- **JWT Template Configuration**: Custom Hasura JWT template with proper claims mapping for database UUID integration
-- **Security Features**: Automatic token refresh, session management, MFA support (feature-flagged), SOC2 compliance
-- **Optimized Architecture**: Eliminated 1,200+ lines of custom token management code by leveraging Clerk's built-in features
-- **Enhanced User Experience**: Smart caching and loading state management to prevent authentication flicker on page refresh
-- **Key Files**:
+- **Clean Permission Format**: Uses simple `"resource:action"` syntax (e.g., `"payroll:read"`, `"staff:write"`)
+- **5-Level Role Hierarchy**: `developer(5)` > `org_admin(4)` > `manager(3)` > `consultant(2)` > `viewer(1)`
+- **18 Granular Permissions**: Organized across 5 categories (Payroll, Staff, Client, Admin, Reporting)
+- **Multi-Layer Security**: Client-side guards + Database row-level security + API protection
+
+#### **Permission Flow**
+```
+User Login → Clerk Auth → Database Validation → Role Assignment → Permission Calculation → Access Control
+```
+
+#### **Permission Categories & Examples**
+```typescript
+PAYROLL: ["payroll:read", "payroll:write", "payroll:delete", "payroll:assign"]
+STAFF: ["staff:read", "staff:write", "staff:delete", "staff:invite"]  
+CLIENT: ["client:read", "client:write", "client:delete"]
+ADMIN: ["admin:manage", "settings:write", "billing:manage"]
+REPORTING: ["reports:read", "reports:export", "audit:read", "audit:write"]
+```
+
+#### **Usage Examples**
+
+**Basic Permission Check:**
+```typescript
+import { useAuthContext } from "@/lib/auth/auth-context";
+
+function PayrollManager() {
+  const { hasPermission } = useAuthContext();
+  
+  if (!hasPermission("payroll:write")) {
+    return <div>Access Denied</div>;
+  }
+  
+  return <PayrollForm />;
+}
+```
+
+**Permission Guards (3 Types):**
+```typescript
+// 1. Standard Guard (90% of cases)
+<PermissionGuard permission="staff:write" fallback={<AccessDenied />}>
+  <StaffForm />
+</PermissionGuard>
+
+// 2. Enhanced Guard (Complex scenarios with detailed feedback)
+<PermissionGuard resource="payroll" action="delete">
+  <DeleteButton />
+</PermissionGuard>
+
+// 3. Role Guard (Page-level protection with redirects)
+<RoleGuard requiredRole="manager" redirectTo="/dashboard">
+  <ManagerOnlyPage />
+</RoleGuard>
+```
+
+**Convenience Guards:**
+```typescript
+<AdminGuard>              // roles={["org_admin"]}
+<ManagerGuard>            // roles={["org_admin", "manager"]}
+<StaffManagerGuard>       // permission="staff:write"
+<PayrollProcessorGuard>   // permission="payroll:write"
+<DeveloperGuard>          // roles={["developer"]}
+```
+
+**Conditional Rendering:**
+```typescript
+// Show features based on permissions
+{hasPermission("client:delete") && <DeleteButton />}
+{hasRoleLevel(userRole, "manager") && <AdvancedFeatures />}
+
+// Navigation control
+const canAccessStaff = hasPermission("staff:read");
+const canAccessSettings = hasPermission("settings:write");
+```
+
+#### **Real-World Scenarios**
+
+**Scenario 1: Protecting a Button**
+```typescript
+function PayrollActions({ payroll }) {
+  const { hasPermission } = useAuthContext();
+  
+  return (
+    <div className="actions">
+      {/* Everyone with payroll:read can see details */}
+      <ViewButton />
+      
+      {/* Only users with payroll:write can edit */}
+      {hasPermission("payroll:write") && (
+        <EditButton onClick={() => editPayroll(payroll.id)} />
+      )}
+      
+      {/* Only users with payroll:delete can delete */}
+      {hasPermission("payroll:delete") && (
+        <DeleteButton onClick={() => deletePayroll(payroll.id)} />
+      )}
+    </div>
+  );
+}
+```
+
+**Scenario 2: Protecting a Page**
+```typescript
+// app/staff/page.tsx
+function StaffPage() {
+  return (
+    <RoleGuard requiredPermission="staff:read" redirectTo="/dashboard">
+      <div>
+        <h1>Staff Management</h1>
+        
+        {/* Only staff managers can add new staff */}
+        <StaffManagerGuard>
+          <AddStaffButton />
+        </StaffManagerGuard>
+        
+        <StaffList />
+      </div>
+    </RoleGuard>
+  );
+}
+```
+
+**Scenario 3: API Route Protection**
+```typescript
+// app/api/payrolls/route.ts
+import { hasPermission } from "@/lib/auth/permissions";
+
+export async function POST(request: Request) {
+  const { user } = await getCurrentUser();
+  
+  if (!user || !hasPermission(user.role, "payroll:write")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  
+  // Process payroll creation...
+}
+```
+
+**Scenario 4: Navigation Menu**
+```typescript
+function NavigationMenu() {
+  const { hasPermission, userRole } = useAuthContext();
+  
+  const menuItems = [
+    { path: "/dashboard", label: "Dashboard", show: true },
+    { path: "/staff", label: "Staff", show: hasPermission("staff:read") },
+    { path: "/payrolls", label: "Payrolls", show: hasPermission("payroll:read") },
+    { path: "/clients", label: "Clients", show: hasPermission("client:read") },
+    { path: "/settings", label: "Settings", show: hasPermission("settings:write") },
+    { path: "/developer", label: "Developer", show: userRole === "developer" },
+  ];
+  
+  return (
+    <nav>
+      {menuItems.filter(item => item.show).map(item => (
+        <NavLink key={item.path} to={item.path}>{item.label}</NavLink>
+      ))}
+    </nav>
+  );
+}
+```
+
+#### **Key Files**:
+  - `lib/auth/permissions.ts` - **Single source of truth** for all permissions and roles
+  - `lib/auth/auth-context.tsx` - Main authentication context with permission checking
+  - `components/auth/permission-guard.tsx` - Standard permission guard component
+  - `components/auth/enhanced-permission-guard.tsx` - Advanced guard with detailed feedback
+  - `components/auth/role-guard.tsx` - Simple role guard with redirects
+  - `hooks/use-enhanced-permissions.ts` - Advanced permission hook with context
   - `middleware.ts` - Auth middleware and route protection using `clerkMiddleware`
-  - `lib/auth/permissions.ts` - Role hierarchy and permission definitions (single source of truth)
-  - `lib/apollo/unified-client.ts` - Apollo client with native Clerk token integration
-  - `lib/utils/auth-error-utils.ts` - Authentication error utilities
   - `app/api/webhooks/clerk/` - Clerk webhook handlers for user synchronization
-  - `components/auth/strict-database-guard.tsx` - Security guard with 10-minute verification caching
   - `lib/auth/client-auth-logger.ts` - Client-side authentication event logging utility
   - `app/api/auth/log-event/route.ts` - SOC2-compliant authentication event logging endpoint
+
+#### **Quick Reference Guide**
+
+**Permission Naming Convention:**
+- Format: `"resource:action"`
+- Resources: `payroll`, `staff`, `client`, `admin`, `settings`, `billing`, `reports`, `audit`
+- Actions: `read`, `write`, `delete`, `assign`, `invite`, `manage`, `export`
+
+**Role Hierarchy (Higher numbers include lower permissions):**
+```
+developer(5)    → Full system access + dev tools
+org_admin(4)    → Organization management (all except dev tools)
+manager(3)      → Team and payroll management
+consultant(2)   → Basic payroll processing
+viewer(1)       → Read-only access
+```
+
+**Common Patterns:**
+```typescript
+// Check single permission
+hasPermission("payroll:write")
+
+// Check role level
+hasRoleLevel(userRole, "manager")
+
+// Multiple permissions (OR logic)
+hasAnyPermission(["staff:read", "client:read"])
+
+// Role-based check
+userRole === "developer"
+```
+
+**Guard Selection Guide:**
+- **PermissionGuard**: General purpose, most UI components
+- **Enhanced PermissionGuard**: Complex scenarios, need detailed feedback
+- **RoleGuard**: Page-level protection, automatic redirects
+- **Convenience Guards**: Common patterns (AdminGuard, ManagerGuard, etc.)
 
 #### JWT Template Configuration
 

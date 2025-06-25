@@ -212,9 +212,9 @@ export default function ClientDetailPage() {
   // Edit form state
   const [editFormData, setEditFormData] = useState({
     name: "",
-    contact_person: "",
-    contact_email: "",
-    contact_phone: "",
+    contactPerson: "",
+    contactEmail: "",
+    contactPhone: "",
     active: true,
   });
   const [isUpdating, setIsUpdating] = useState(false);
@@ -282,6 +282,16 @@ export default function ClientDetailPage() {
   }
 
   const client = data?.clientById;
+
+  // Debug: Log client data to see what we're getting
+  console.log("Client details data:", {
+    loading,
+    error,
+    client,
+    clientKeys: client ? Object.keys(client) : [],
+    payrolls: client?.payrolls,
+    payrollsLength: client?.payrolls?.length,
+  });
 
   if (!client) {
     return (
@@ -401,9 +411,9 @@ export default function ClientDetailPage() {
 
     setEditFormData({
       name: (client as any).name || "",
-      contact_person: (client as any).contactPerson || "",
-      contact_email: (client as any).contactEmail || "",
-      contact_phone: (client as any).contactPhone || "",
+      contactPerson: (client as any).contactPerson || "",
+      contactEmail: (client as any).contactEmail || "",
+      contactPhone: (client as any).contactPhone || "",
       active: (client as any).active ?? true,
     });
     setShowEditDialog(true);
@@ -414,9 +424,9 @@ export default function ClientDetailPage() {
     setShowEditDialog(false);
     setEditFormData({
       name: "",
-      contact_person: "",
-      contact_email: "",
-      contact_phone: "",
+      contactPerson: "",
+      contactEmail: "",
+      contactPhone: "",
       active: true,
     });
   };
@@ -442,9 +452,9 @@ export default function ClientDetailPage() {
         variables: {
           id,
           name: editFormData.name.trim(),
-          contactEmail: editFormData.contact_email.trim() || null,
-          contactPhone: editFormData.contact_phone.trim() || null,
-          contactName: editFormData.contact_person.trim() || null,
+          contactEmail: editFormData.contactEmail.trim() || null,
+          contactPhone: editFormData.contactPhone.trim() || null,
+          contactName: editFormData.contactPerson.trim() || null,
         },
       });
 
@@ -1034,9 +1044,9 @@ export default function ClientDetailPage() {
               <Input
                 id="contact-person"
                 placeholder="Enter contact person name..."
-                value={editFormData.contact_person}
+                value={editFormData.contactPerson}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange("contact_person", e.target.value)
+                  handleInputChange("contactPerson", e.target.value)
                 }
                 className="mt-1"
                 disabled={isUpdating}
@@ -1049,9 +1059,9 @@ export default function ClientDetailPage() {
                 id="contact-email"
                 type="email"
                 placeholder="Enter contact email..."
-                value={editFormData.contact_email}
+                value={editFormData.contactEmail}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange("contact_email", e.target.value)
+                  handleInputChange("contactEmail", e.target.value)
                 }
                 className="mt-1"
                 disabled={isUpdating}
@@ -1063,9 +1073,9 @@ export default function ClientDetailPage() {
               <Input
                 id="contact-phone"
                 placeholder="Enter contact phone..."
-                value={editFormData.contact_phone}
+                value={editFormData.contactPhone}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange("contact_phone", e.target.value)
+                  handleInputChange("contactPhone", e.target.value)
                 }
                 className="mt-1"
                 disabled={isUpdating}

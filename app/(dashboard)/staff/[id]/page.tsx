@@ -19,11 +19,7 @@ export default function UserInfoPage() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
-  const { hasPermission, userRole } = useUserRole();
-  const hasAdminAccess = hasPermission("custom:admin:manage");
-  const isManager = userRole === "manager" || userRole === "org_admin";
-  const isDeveloper = userRole === "developer";
-  const isConsultant = userRole === "consultant";
+  const { hasPermission } = useUserRole();
 
   const { loading, error, data } = useQuery(GetStaffByIdDocument, {
     variables: { id },
@@ -45,8 +41,7 @@ export default function UserInfoPage() {
     return <p>User not found.</p>;
   }
 
-  const canEditLeave =
-    hasAdminAccess || isManager || isDeveloper || isConsultant;
+  const canEditLeave = hasPermission("staff:write");
 
   return (
     <div className="max-w-3xl mx-auto mt-10">
