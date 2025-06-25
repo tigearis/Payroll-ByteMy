@@ -1,11 +1,40 @@
 table:
   name: client_external_systems
   schema: public
+configuration:
+  column_config:
+    client_id:
+      custom_name: clientId
+    created_at:
+      custom_name: createdAt
+    system_client_id:
+      custom_name: systemClientId
+    system_id:
+      custom_name: externalSystemId
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    client_id: clientId
+    created_at: createdAt
+    system_client_id: systemClientId
+    system_id: externalSystemId
+    updated_at: updatedAt
+  custom_name: clientExternalSystems
+  custom_root_fields:
+    delete: bulkDeleteClientExternalSystems
+    delete_by_pk: deleteClientExternalSystemById
+    insert: bulkInsertClientExternalSystems
+    insert_one: insertClientExternalSystem
+    select: clientExternalSystems
+    select_aggregate: clientExternalSystemsAggregate
+    select_by_pk: clientExternalSystemById
+    update: bulkUpdateClientExternalSystems
+    update_by_pk: updateClientExternalSystemById
 object_relationships:
-  - name: client
+  - name: linkedClient
     using:
       foreign_key_constraint_on: client_id
-  - name: external_system
+  - name: linkedExternalSystem
     using:
       foreign_key_constraint_on: system_id
 insert_permissions:

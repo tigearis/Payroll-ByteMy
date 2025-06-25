@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 type LayoutType = "sidebar" | "header";
-type ThemeType = "light" | "dark" | "system";
 
 interface LayoutPreferencesContextType {
   layoutType: LayoutType;
@@ -13,15 +12,17 @@ interface LayoutPreferencesContextType {
   toggleSidebar: () => void;
 }
 
-const LayoutPreferencesContext = createContext<LayoutPreferencesContextType | undefined>(
-  undefined
-);
+const LayoutPreferencesContext = createContext<
+  LayoutPreferencesContextType | undefined
+>(undefined);
 
 interface LayoutPreferencesProviderProps {
   children: React.ReactNode;
 }
 
-export function LayoutPreferencesProvider({ children }: LayoutPreferencesProviderProps) {
+export function LayoutPreferencesProvider({
+  children,
+}: LayoutPreferencesProviderProps) {
   const [layoutType, setLayoutTypeState] = useState<LayoutType>("sidebar");
   const [sidebarCollapsed, setSidebarCollapsedState] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -30,11 +31,14 @@ export function LayoutPreferencesProvider({ children }: LayoutPreferencesProvide
     setMounted(true);
     const storedLayout = localStorage.getItem("layout-preference");
     const storedSidebar = localStorage.getItem("sidebar-collapsed");
-    
-    if (storedLayout && (storedLayout === "sidebar" || storedLayout === "header")) {
+
+    if (
+      storedLayout &&
+      (storedLayout === "sidebar" || storedLayout === "header")
+    ) {
       setLayoutTypeState(storedLayout as LayoutType);
     }
-    
+
     if (storedSidebar === "true") {
       setSidebarCollapsedState(true);
     }
@@ -61,13 +65,13 @@ export function LayoutPreferencesProvider({ children }: LayoutPreferencesProvide
   }
 
   return (
-    <LayoutPreferencesContext.Provider 
-      value={{ 
-        layoutType, 
-        setLayoutType, 
-        sidebarCollapsed, 
-        setSidebarCollapsed, 
-        toggleSidebar 
+    <LayoutPreferencesContext.Provider
+      value={{
+        layoutType,
+        setLayoutType,
+        sidebarCollapsed,
+        setSidebarCollapsed,
+        toggleSidebar,
       }}
     >
       {children}
@@ -78,7 +82,9 @@ export function LayoutPreferencesProvider({ children }: LayoutPreferencesProvide
 export function useLayoutPreferences() {
   const context = useContext(LayoutPreferencesContext);
   if (context === undefined) {
-    throw new Error("useLayoutPreferences must be used within a LayoutPreferencesProvider");
+    throw new Error(
+      "useLayoutPreferences must be used within a LayoutPreferencesProvider"
+    );
   }
   return context;
 }

@@ -60,7 +60,7 @@ export function NotesList({
   const { data, loading, error, refetch } = useQuery<GetNotesExtractedQuery>(
     GetNotesExtractedDocument,
     {
-      variables: { entityType, entityId },
+      variables: { entity_type: entityType, entity_id: entityId },
       fetchPolicy: "cache-and-network",
     }
   );
@@ -100,7 +100,7 @@ export function NotesList({
   const handleEditNote = (note: NoteFromGraphQL) => {
     setEditingNote(note);
     setEditContent(note.content);
-    setEditIsImportant(note.is_important);
+    setEditIsImportant(note.isImportant);
     setShowEditModal(true);
   };
 
@@ -275,7 +275,7 @@ export function NotesList({
                 <div
                   key={note.id}
                   className={`group p-3 rounded-md border cursor-pointer transition-all hover:shadow-md hover:border-gray-300 ${
-                    note.is_important
+                    note.isImportant
                       ? "border-red-200 bg-red-50"
                       : "bg-gray-50"
                   }`}
@@ -291,8 +291,8 @@ export function NotesList({
                   </div>
                   <div className="mt-2 flex justify-between items-center text-xs text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <span>{note.user?.name || "Anonymous"}</span>
-                      {note.is_important && (
+                      <span>{note.authorUser?.name || "Anonymous"}</span>
+                      {note.isImportant && (
                         <div className="flex items-center gap-1 text-red-600">
                           <AlertTriangle className="w-3 h-3" />
                           <span className="text-xs font-medium">Important</span>
@@ -300,10 +300,10 @@ export function NotesList({
                       )}
                     </div>
                     <div className="text-right">
-                      <div>Created: {safeFormatDateTime(note.created_at)}</div>
-                      {note.updated_at !== note.created_at && (
+                      <div>Created: {safeFormatDateTime(note.createdAt)}</div>
+                      {note.updatedAt !== note.createdAt && (
                         <div className="text-xs text-gray-500 mt-1">
-                          Updated: {safeFormatDateTime(note.updated_at)}
+                          Updated: {safeFormatDateTime(note.updatedAt)}
                         </div>
                       )}
                     </div>
@@ -340,11 +340,11 @@ export function NotesList({
 
             {editingNote && (
               <div className="text-xs text-muted-foreground border-t pt-2">
-                <p>Created by: {editingNote.user?.name || "Anonymous"}</p>
-                <p>Created: {safeFormatDateTime(editingNote.created_at)}</p>
-                {editingNote.updated_at !== editingNote.created_at && (
+                <p>Created by: {editingNote.authorUser?.name || "Anonymous"}</p>
+                <p>Created: {safeFormatDateTime(editingNote.createdAt)}</p>
+                {editingNote.updatedAt !== editingNote.createdAt && (
                   <p>
-                    Last updated: {safeFormatDateTime(editingNote.updated_at)}
+                    Last updated: {safeFormatDateTime(editingNote.updatedAt)}
                   </p>
                 )}
               </div>

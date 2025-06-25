@@ -31,16 +31,17 @@ configuration:
     permission_type: permissionType
     target_role_id: targetRoleId
     target_user_id: targetUserId
+  custom_name: permissionChanges
   custom_root_fields:
-    delete: deletePermissionChanges
-    delete_by_pk: deletePermissionChange
-    insert: insertPermissionChanges
+    delete: bulkDeletePermissionChanges
+    delete_by_pk: deletePermissionChangeById
+    insert: bulkInsertPermissionChanges
     insert_one: insertPermissionChange
     select: permissionChanges
     select_aggregate: permissionChangesAggregate
-    select_by_pk: permissionChange
-    update: updatePermissionChanges
-    update_by_pk: updatePermissionChange
+    select_by_pk: permissionChangeById
+    update: bulkUpdatePermissionChanges
+    update_by_pk: updatePermissionChangeById
 insert_permissions:
   - role: developer
     permission:
@@ -96,3 +97,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

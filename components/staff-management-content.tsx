@@ -176,7 +176,7 @@ export function StaffManagementContent() {
                   <TableCell>
                     <Badge variant="outline">{member.role}</Badge>
                   </TableCell>
-                  <TableCell>{member.manager?.name || '-'}</TableCell>
+                  <TableCell>-</TableCell>
                   <TableCell>
                     <Badge variant={member.isStaff ? "default" : "secondary"}>
                       {member.isStaff ? "Active" : "Inactive"}

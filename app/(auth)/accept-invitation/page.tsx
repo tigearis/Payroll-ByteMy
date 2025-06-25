@@ -3,8 +3,7 @@
 import { useSignUp, useUser } from "@clerk/nextjs";
 import { useSearchParams, useRouter } from "next/navigation";
 import * as React from "react";
-import { Suspense } from "react";
-import { toast } from "sonner";
+import { Suspense, useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { clientAuthLogger } from "@/lib/auth/client-auth-logger";
+import { useInvitationAcceptance } from "@/domains/auth/hooks/use-invitation-acceptance";
 
 interface InvitationData {
   email?: string;
@@ -35,6 +36,13 @@ function AcceptInvitationContent() {
   const [password, setPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [, setInvitationData] = React.useState<InvitationData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [invitation, setInvitation] = useState<any>(null);
+  const [acceptanceStep, setAcceptanceStep] = useState<
+    "loading" | "form" | "accepting" | "success"
+  >("loading");
+
+  const { acceptInvitation, getInvitationByTicket } = useInvitationAcceptance();
 
   // Handle signed-in users visiting this page
   React.useEffect(() => {
@@ -45,7 +53,7 @@ function AcceptInvitationContent() {
 
   // Get parameters from the URL
   const searchParams = useSearchParams();
-  const token = searchParams.get("__clerk_ticket");
+  const ticket = searchParams.get("ticket");
   const prefilledFirstName = searchParams.get("firstName");
   const prefilledLastName = searchParams.get("lastName");
 
@@ -59,12 +67,41 @@ function AcceptInvitationContent() {
     }
   }, [prefilledFirstName, prefilledLastName]);
 
-  // Extract invitation metadata from JWT token
+  // Get invitation details by ticket
+  const {
+    data: invitationData,
+    loading: invitationLoading,
+    error: invitationError,
+  } = getInvitationByTicket(ticket || "");
+
+  useEffect(() => {
+    if (invitationData?.userInvitations?.[0]) {
+      setInvitation(invitationData.userInvitations[0]);
+      setAcceptanceStep("form");
+    } else if (invitationError) {
+      setError("Invalid or expired invitation");
+      setAcceptanceStep("form");
+    }
+  }, [invitationData, invitationError]);
+
+  // Extract invitation metadata from JWT token and log invitation attempt
   React.useEffect(() => {
-    if (token) {
+    if (ticket) {
+      // Log invitation acceptance page visit
+      clientAuthLogger.logAuthEvent({
+        eventType: "signup_attempt",
+        authMethod: "invitation_ticket",
+        success: true,
+        metadata: {
+          authFlow: "invitation_acceptance",
+          page: "accept_invitation",
+          hasInvitationToken: true,
+        },
+      });
+
       try {
         // Validate that the token has the expected JWT format (3 parts separated by dots)
-        const tokenParts = token.split(".");
+        const tokenParts = ticket.split(".");
         if (tokenParts.length !== 3) {
           console.error(
             "Invalid JWT token format - expected 3 parts, got:",
@@ -91,15 +128,15 @@ function AcceptInvitationContent() {
         // since the JWT might not contain the metadata directly
       } catch (error) {
         console.error("Error decoding invitation token:", error);
-        console.error("Token value:", token);
+        console.error("Token value:", ticket);
         // Don't block the user flow if token decoding fails
         // The actual invitation processing will happen in Clerk
       }
     }
-  }, [token]);
+  }, [ticket]);
 
   // If there is no invitation token, restrict access to this page
-  if (!token) {
+  if (!ticket) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <Card className="w-full max-w-md">
@@ -114,77 +151,35 @@ function AcceptInvitationContent() {
     );
   }
 
-  // Handle submission of the sign-up form
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleAcceptInvitation = async () => {
+    if (!user || !invitation) return;
 
-    if (!isLoaded) {
-      return;
-    }
+    setAcceptanceStep("accepting");
+    setError(null);
 
     try {
-      if (!token) {
-        return;
-      }
-
-      // Create a new sign-up with the supplied invitation token.
-      // The ticket strategy automatically verifies the email address.
-      const signUpAttempt = await signUp.create({
-        strategy: "ticket",
-        ticket: token,
-        firstName,
-        lastName,
-        password,
+      const result = await acceptInvitation({
+        invitationId: invitation.id,
+        clerkUserId: user.id,
+        userEmail: user.emailAddresses[0]?.emailAddress || "",
+        userName: user.fullName || user.firstName || "User",
+        roleId: invitation.invitedRole, // This might need to be mapped to role ID
       });
 
-      // If the sign-up was completed, set the session to active
-      if (signUpAttempt.status === "complete") {
-        await setActive({ session: signUpAttempt.createdSessionId });
-
-        // Mark onboarding as complete in user metadata
-        try {
-          const response = await fetch("/api/auth/complete-onboarding", {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-            },
-            body: JSON.stringify({
-              invitationToken: token,
-              completedAt: new Date().toISOString(),
-            }),
-          });
-
-          if (response.ok) {
-            console.log("✅ Onboarding marked as complete");
-          } else {
-            console.warn("⚠️ Failed to mark onboarding as complete");
-          }
-        } catch (onboardingError) {
-          console.error(
-            "❌ Error updating onboarding status:",
-            onboardingError
-          );
-        }
-
-        toast.success("Account created successfully!");
-        router.push("/dashboard");
+      if (result.success) {
+        setAcceptanceStep("success");
+        // Redirect to dashboard after success
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 2000);
       } else {
-        // If the status is not complete, check why. User may need to
-        // complete further steps.
-        console.error("Sign-up not complete:", signUpAttempt);
-        toast.error("Sign-up could not be completed. Please try again.");
+        setError("Failed to accept invitation. Please try again.");
+        setAcceptanceStep("form");
       }
-    } catch (err: unknown) {
-      console.error("Sign-up error:", err);
-      const errorMessage =
-        err && typeof err === "object" && "errors" in err
-          ? (err as { errors?: Array<{ message?: string }> }).errors?.[0]
-              ?.message
-          : "An error occurred during sign-up";
-      toast.error(errorMessage || "An error occurred during sign-up");
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.error("Accept invitation error:", error);
+      setError("An error occurred while accepting the invitation.");
+      setAcceptanceStep("form");
     }
   };
 
@@ -199,55 +194,69 @@ function AcceptInvitationContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
-              <Input
-                id="firstName"
-                type="text"
-                value={firstName}
-                onChange={e => setFirstName(e.target.value)}
-                required
-                disabled={!!prefilledFirstName}
-                placeholder={prefilledFirstName ? "" : "Enter your first name"}
-                className={
-                  prefilledFirstName ? "bg-gray-100 text-gray-700" : ""
-                }
-              />
-            </div>
+          {acceptanceStep === "loading" && (
+            <div>Loading invitation details...</div>
+          )}
+          {acceptanceStep === "form" && (
+            <form onSubmit={handleAcceptInvitation} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  value={firstName}
+                  onChange={e => setFirstName(e.target.value)}
+                  required
+                  disabled={!!prefilledFirstName}
+                  placeholder={
+                    prefilledFirstName ? "" : "Enter your first name"
+                  }
+                  className={
+                    prefilledFirstName ? "bg-gray-100 text-gray-700" : ""
+                  }
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                id="lastName"
-                type="text"
-                value={lastName}
-                onChange={e => setLastName(e.target.value)}
-                required
-                disabled={!!prefilledLastName}
-                placeholder={prefilledLastName ? "" : "Enter your last name"}
-                className={prefilledLastName ? "bg-gray-100 text-gray-700" : ""}
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  value={lastName}
+                  onChange={e => setLastName(e.target.value)}
+                  required
+                  disabled={!!prefilledLastName}
+                  placeholder={prefilledLastName ? "" : "Enter your last name"}
+                  className={
+                    prefilledLastName ? "bg-gray-100 text-gray-700" : ""
+                  }
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                placeholder="Create a secure password"
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  placeholder="Create a secure password"
+                />
+              </div>
 
-            <div id="clerk-captcha" />
+              <div id="clerk-captcha" />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating Account..." : "Complete Registration"}
-            </Button>
-          </form>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Accepting Invitation..." : "Accept Invitation"}
+              </Button>
+            </form>
+          )}
+          {acceptanceStep === "accepting" && <div>Accepting invitation...</div>}
+          {acceptanceStep === "success" && (
+            <div>Invitation accepted successfully!</div>
+          )}
+          {error && <div className="text-red-500">{error}</div>}
         </CardContent>
       </Card>
     </div>

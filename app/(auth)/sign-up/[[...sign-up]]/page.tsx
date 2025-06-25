@@ -3,8 +3,11 @@
 import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
 import Link from "next/link";
+import { useEffect, useCallback } from "react";
+import { useSignUp } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
+import { clientAuthLogger } from "@/lib/auth/client-auth-logger";
 import {
   Card,
   CardContent,
@@ -18,6 +21,76 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function SignUpPage() {
+  const { isLoaded, signUp } = useSignUp();
+
+  // Enhanced sign-up logging with Clerk Elements
+  useEffect(() => {
+    // Log sign-up page visit
+    clientAuthLogger.logAuthEvent({
+      eventType: "signup_attempt",
+      authMethod: "clerk_elements",
+      success: true,
+      metadata: {
+        authFlow: "clerk_elements",
+        page: "signup_start"
+      }
+    });
+  }, []);
+
+  // Monitor sign-up completion status
+  useEffect(() => {
+    if (isLoaded && signUp) {
+      if (signUp.status === "complete") {
+        // Log successful signup
+        clientAuthLogger.logSignup("clerk_elements", {
+          signUpId: signUp.id,
+          authFlow: "clerk_elements",
+          method: "email_password",
+          verificationStatus: signUp.verifications.emailAddress?.status
+        });
+      }
+    }
+  }, [isLoaded, signUp]);
+
+  // Handle Google OAuth signup
+  const handleGoogleSignUp = async () => {
+    await clientAuthLogger.logAuthEvent({
+      eventType: "signup_attempt",
+      authMethod: "google_oauth",
+      success: true,
+      metadata: {
+        authFlow: "oauth_redirect",
+        provider: "google",
+        page: "signup"
+      }
+    });
+  };
+
+  // Handle form submission logging
+  const handleFormSubmit = useCallback(async (e: React.FormEvent) => {
+    try {
+      await clientAuthLogger.logAuthEvent({
+        eventType: "signup_attempt",
+        authMethod: "email_password",
+        success: true,
+        metadata: {
+          authFlow: "clerk_elements",
+          method: "email_password",
+          page: "signup"
+        }
+      });
+    } catch (error) {
+      // Log signup failure
+      await clientAuthLogger.logSignupFailure("email_password", 
+        error instanceof Error ? error.message : "Unknown signup error", {
+          authFlow: "clerk_elements",
+          page: "signup",
+          clerkError: error
+        }
+      );
+    }
+  }, []);
+
   return (
     <div className="grid w-full grow items-center px-4 sm:justify-center">
       <div className="w-full max-w-md">
@@ -31,7 +104,9 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        <SignUp.Root>
+        <SignUp.Root 
+          fallback={<div>Loading...</div>}
+        >
           <Clerk.Loading>
             {(isGlobalLoading: boolean) => (
               <>
@@ -51,6 +126,7 @@ export default function SignUpPage() {
                             variant="outline"
                             type="button"
                             disabled={isGlobalLoading}
+                            onClick={handleGoogleSignUp}
                           >
                             <Icons.google className="mr-2 h-4 w-4" />
                             Continue with Google
@@ -116,7 +192,7 @@ export default function SignUpPage() {
                     <CardFooter>
                       <div className="grid w-full gap-y-4">
                         <SignUp.Action submit asChild>
-                          <Button disabled={isGlobalLoading}>
+                          <Button disabled={isGlobalLoading} onClick={handleFormSubmit}>
                             <Clerk.Loading>
                               {(isLoading: boolean) => {
                                 return isLoading ? (

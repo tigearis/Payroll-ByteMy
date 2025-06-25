@@ -16,8 +16,8 @@ fragment ClientWithContact on clients {
 fragment ClientForBilling on clients {
   id
   name
-  billing_contactPerson: contactPerson
-  billing_contact_email: contactEmail
+  contactPerson
+  contactEmail
 }
 
 fragment ClientForAudit on clients {
@@ -32,7 +32,7 @@ fragment ClientWithRelations on clients {
   contactPerson
   createdAt
   updatedAt
-  payrolls(where: { supersededDate: { _is_null: true } }) {
+  payrolls(where: { supersededDate: { _isNull: true } }) {
     id
     name
     status
@@ -67,7 +67,7 @@ fragment ClientListItem on clients {
   ...ClientSummary
   contactEmail
   contactPhone
-  payrollCount: payrolls_aggregate {
+  payrollCount: payrollsAggregate {
     aggregate {
       count
     }
@@ -76,8 +76,8 @@ fragment ClientListItem on clients {
 
 fragment ClientDashboardCard on clients {
   ...ClientSummary
-  activePayrolls: payrolls_aggregate(
-    where: { supersededDate: { _is_null: true } }
+  activePayrolls: payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
   ) {
     aggregate {
       count
@@ -98,20 +98,20 @@ fragment ClientMinimal on clients {
 
 fragment ClientWithMetrics on clients {
   ...ClientSummary
-  totalPayrolls: payrolls_aggregate {
+  totalPayrolls: payrollsAggregate {
     aggregate {
       count
     }
   }
-  activePayrolls: payrolls_aggregate(
-    where: { supersededDate: { _is_null: true } }
+  activePayrolls: payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
   ) {
     aggregate {
       count
     }
   }
   recentPayrolls: payrolls(
-    order_by: { updatedAt: desc }
+    orderBy: { updatedAt: DESC }
     limit: 3
   ) {
     id

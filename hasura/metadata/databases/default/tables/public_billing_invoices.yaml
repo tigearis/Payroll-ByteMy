@@ -1,12 +1,47 @@
 table:
   name: billing_invoices
   schema: public
+configuration:
+  column_config:
+    billing_period_end:
+      custom_name: billingPeriodEnd
+    billing_period_start:
+      custom_name: billingPeriodStart
+    client_id:
+      custom_name: clientId
+    created_at:
+      custom_name: createdAt
+    invoice_number:
+      custom_name: invoiceNumber
+    total_amount:
+      custom_name: totalAmount
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    billing_period_end: billingPeriodEnd
+    billing_period_start: billingPeriodStart
+    client_id: clientId
+    created_at: createdAt
+    invoice_number: invoiceNumber
+    total_amount: totalAmount
+    updated_at: updatedAt
+  custom_name: billingInvoices
+  custom_root_fields:
+    delete: bulkDeleteBillingInvoices
+    delete_by_pk: deleteBillingInvoicesById
+    insert: bulkInsertBillingInvoices
+    insert_one: insertBillingInvoices
+    select: billingInvoices
+    select_aggregate: billingInvoicesAggregate
+    select_by_pk: billingInvoicesById
+    update: bulkUpdateBillingInvoices
+    update_by_pk: updateBillingInvoicesById
 object_relationships:
   - name: client
     using:
       foreign_key_constraint_on: client_id
 array_relationships:
-  - name: billing_items
+  - name: billingItems
     using:
       foreign_key_constraint_on:
         column: invoice_id
@@ -96,3 +131,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

@@ -1,43 +1,299 @@
 # Work Schedule Domain Queries
+# Security Classification: MEDIUM - Employee scheduling and time management
+# SOC2 Compliance: Row-level security and audit logging enforced
 
-query GetWorkSchedules(
-  $where: work_schedule_bool_exp
-  $order_by: [work_schedule_order_by!]
-) {
-  workSchedules(where: $where, order_by: $order_by) {
-    ...WorkScheduleWithUser
-  }
-}
-
-query GetWorkScheduleByUser($user_id: uuid!) {
+# Core work schedule queries
+query GetWorkSchedules($limit: Int = 50, $offset: Int = 0, $where: workSchedulesBoolExp) {
   workSchedules(
-    where: { userId: { _eq: $user_id } }
-    order_by: { workDay: asc }
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { workDay: ASC }
   ) {
-    ...WorkScheduleCore
+    ...WorkScheduleListItem
+  }
+  workSchedulesAggregate(where: $where) {
+    aggregate {
+      count
+    }
   }
 }
 
 query GetWorkScheduleById($id: uuid!) {
-  workSchedule(id: $id) {
-    ...WorkScheduleWithUser
+  workScheduleById(id: $id) {
+    ...WorkScheduleComplete
   }
 }
 
-query GetTeamWorkSchedules($user_ids: [uuid!]!) {
+query GetWorkScheduleBasic($id: uuid!) {
+  workScheduleById(id: $id) {
+    ...WorkScheduleBasic
+  }
+}
+
+# User-specific schedule queries
+query GetUserWorkSchedule($userId: uuid!) {
   workSchedules(
-    where: { userId: { _in: $user_ids } }
-    order_by: [{ userId: asc }, { workDay: asc }]
+    where: { userId: { _eq: $userId } }
+    orderBy: { workDay: ASC }
   ) {
     ...WorkScheduleWithUser
   }
 }
 
-query GetWorkScheduleAnalytics {
-  total_hours_by_day: workSchedulesAggregate {
-    nodes {
-      workDay
+query GetMyWorkSchedule($userId: uuid!) {
+  workSchedules(
+    where: { userId: { _eq: $userId } }
+    orderBy: { workDay: ASC }
+  ) {
+    ...MyWorkSchedule
+  }
+}
+
+query GetUserScheduleByDay($userId: uuid!, $workDay: String!) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _eq: $workDay }
     }
+  ) {
+    ...WorkScheduleBasic
+  }
+}
+
+query GetUserScheduleForWeek($userId: uuid!, $startDate: String!, $endDate: String!) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: { workDay: ASC }
+  ) {
+    ...WorkScheduleWeeklyView
+  }
+}
+
+query GetUserScheduleForMonth($userId: uuid!, $startDate: String!, $endDate: String!) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: { workDay: ASC }
+  ) {
+    ...WorkScheduleMonthlyView
+  }
+}
+
+# Team and management queries
+query GetTeamWorkSchedules($managerUserId: uuid!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+    }
+    orderBy: { workDay: ASC }
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+query GetTeamScheduleByDay($managerUserId: uuid!, $workDay: String!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _eq: $workDay }
+    }
+    orderBy: { scheduleOwner: { name: ASC } }
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+query GetTeamScheduleForWeek($managerUserId: uuid!, $startDate: String!, $endDate: String!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+query GetManagerScheduleOverview($managerUserId: uuid!) {
+  # Manager's own schedule
+  mySchedule: workSchedules(
+    where: { userId: { _eq: $managerUserId } }
+    orderBy: { workDay: ASC }
+  ) {
+    ...ManagerWorkScheduleView
+  }
+  
+  # Team schedules
+  teamSchedules: workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+# Calendar and scheduling queries
+query GetSchedulesByDateRange($startDate: String!, $endDate: String!) {
+  workSchedules(
+    where: {
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...WorkScheduleCalendarItem
+  }
+}
+
+query GetSchedulesByDay($workDay: String!) {
+  workSchedules(
+    where: { workDay: { _eq: $workDay } }
+    orderBy: { scheduleOwner: { name: ASC } }
+  ) {
+    ...DailyWorkSchedule
+  }
+}
+
+query GetWeeklySchedulePattern($userId: uuid!) {
+  workSchedules(
+    where: { userId: { _eq: $userId } }
+    orderBy: { workDay: ASC }
+    limit: 7
+  ) {
+    ...WeeklyWorkPattern
+  }
+}
+
+query GetScheduleConflicts($workDay: String!, $excludeUserId: uuid) {
+  workSchedules(
+    where: {
+      workDay: { _eq: $workDay }
+      userId: { _neq: $excludeUserId }
+    }
+    orderBy: { workHours: DESC }
+  ) {
+    ...WorkScheduleConflictCheck
+  }
+}
+
+# Availability and capacity queries
+query GetAvailableUsers($workDay: String!, $minHours: numeric = 4.0) {
+  workSchedules(
+    where: {
+      workDay: { _eq: $workDay }
+      workHours: { _gte: $minHours }
+    }
+    orderBy: { workHours: DESC }
+  ) {
+    ...WorkScheduleAvailability
+  }
+}
+
+query GetTeamCapacity($managerUserId: uuid!, $workDay: String!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _eq: $workDay }
+    }
+    orderBy: { workHours: DESC }
+  ) {
+    ...WorkScheduleCapacity
+  }
+}
+
+query GetWeeklyTeamCapacity($managerUserId: uuid!, $startDate: String!, $endDate: String!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: [{ workDay: ASC }, { workHours: DESC }]
+  ) {
+    ...WorkScheduleCapacity
+  }
+}
+
+# Analytics and reporting queries
+query GetWorkScheduleStats {
+  totalSchedules: workSchedulesAggregate {
+    aggregate {
+      count
+    }
+  }
+  
+  avgWorkHours: workSchedulesAggregate {
+    aggregate {
+      avg {
+        workHours
+      }
+    }
+  }
+  
+  maxWorkHours: workSchedulesAggregate {
+    aggregate {
+      max {
+        workHours
+      }
+    }
+  }
+  
+  minWorkHours: workSchedulesAggregate {
+    aggregate {
+      min {
+        workHours
+      }
+    }
+  }
+}
+
+query GetUserWorkHoursTotals($userId: uuid!, $startDate: String!, $endDate: String!) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+  ) {
+    ...WorkScheduleTotals
+  }
+  
+  totalHours: workSchedulesAggregate(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+  ) {
+    aggregate {
+      sum {
+        workHours
+      }
+    }
+  }
+}
+
+query GetTeamWorkHoursSummary($managerUserId: uuid!, $startDate: String!, $endDate: String!) {
+  teamSchedules: workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+  ) {
+    ...WorkScheduleStats
+  }
+  
+  teamHoursTotals: workSchedulesAggregate(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+  ) {
     aggregate {
       sum {
         workHours
@@ -48,30 +304,243 @@ query GetWorkScheduleAnalytics {
       count
     }
   }
+}
 
-  users_by_workDay: workSchedules {
-    workDay
-    user {
-      id
-      name
-    }
-    workHours
-  }
-
-  average_hours_per_user: workSchedulesAggregate(order_by: { userId: asc }) {
+query GetWorkScheduleDashboardStats {
+  todaySchedules: workSchedulesAggregate(
+    where: { workDay: { _eq: "now()::date" } }
+  ) {
     aggregate {
+      count
       sum {
         workHours
       }
-      avg {
+    }
+  }
+  
+  thisWeekSchedules: workSchedulesAggregate(
+    where: {
+      workDay: { 
+        _gte: "date_trunc('week', now())::date"
+        _lte: "(date_trunc('week', now()) + interval '6 days')::date"
+      }
+    }
+  ) {
+    aggregate {
+      count
+      sum {
         workHours
       }
     }
-    nodes {
-      user {
-        id
-        name
+  }
+  
+  recentSchedules: workSchedules(
+    orderBy: { createdAt: DESC }
+    limit: 5
+  ) {
+    ...WorkScheduleDashboardCard
+  }
+}
+
+# Search and filtering queries
+query SearchWorkSchedules($searchTerm: String!, $limit: Int = 50) {
+  workSchedules(
+    where: {
+      scheduleOwner: {
+        _or: [
+          { name: { _ilike: $searchTerm } }
+          { email: { _ilike: $searchTerm } }
+        ]
       }
     }
+    orderBy: { workDay: DESC }
+    limit: $limit
+  ) {
+    ...WorkScheduleTableRow
+  }
+}
+
+query FilterSchedulesByHours($minHours: numeric!, $maxHours: numeric!) {
+  workSchedules(
+    where: {
+      workHours: { _gte: $minHours, _lte: $maxHours }
+    }
+    orderBy: { workHours: DESC }
+  ) {
+    ...WorkScheduleListItem
+  }
+}
+
+query GetSchedulesByRole($role: user_role!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { role: { _eq: $role } }
+    }
+    orderBy: { workDay: DESC }
+  ) {
+    ...WorkScheduleListItem
+  }
+}
+
+# Upcoming and recent schedules
+query GetUpcomingSchedules($userId: uuid!, $days: Int = 7) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: "now()::date", _lte: "(now() + interval '${days} days')::date" }
+    }
+    orderBy: { workDay: ASC }
+  ) {
+    ...WorkScheduleBasic
+  }
+}
+
+query GetRecentSchedules($userId: uuid!, $days: Int = 7) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: "(now() - interval '${days} days')::date", _lte: "now()::date" }
+    }
+    orderBy: { workDay: DESC }
+  ) {
+    ...WorkScheduleBasic
+  }
+}
+
+query GetTeamUpcomingSchedules($managerUserId: uuid!, $days: Int = 7) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: "now()::date", _lte: "(now() + interval '${days} days')::date" }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+# Pattern analysis queries
+query GetUserSchedulePatterns($userId: uuid!, $weeks: Int = 4) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: "(now() - interval '${weeks} weeks')::date" }
+    }
+    orderBy: { workDay: ASC }
+  ) {
+    ...WorkSchedulePattern
+  }
+}
+
+query GetTeamSchedulePatterns($managerUserId: uuid!, $weeks: Int = 4) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: "(now() - interval '${weeks} weeks')::date" }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...WorkSchedulePattern
+  }
+}
+
+# Audit and compliance queries
+query GetWorkSchedulesForAudit(
+  $limit: Int = 100
+  $offset: Int = 0
+  $where: workSchedulesBoolExp = {}
+) {
+  workSchedules(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { createdAt: DESC }
+  ) {
+    ...WorkScheduleForAudit
+  }
+}
+
+query GetScheduleChangeHistory($userId: uuid!, $limit: Int = 50) {
+  workSchedules(
+    where: { userId: { _eq: $userId } }
+    orderBy: { updatedAt: DESC }
+    limit: $limit
+  ) {
+    ...WorkScheduleChangeLog
+  }
+}
+
+# Performance-optimized paginated queries
+query GetWorkSchedulesPaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: workSchedulesBoolExp = {}
+  $orderBy: [workSchedulesOrderBy!] = [{ workDay: DESC }]
+) {
+  workSchedules(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: $orderBy
+  ) {
+    ...WorkScheduleTableRow
+  }
+
+  workSchedulesAggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetUserSchedulesPaginated(
+  $userId: uuid!
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: workSchedulesBoolExp = {}
+) {
+  workSchedules(
+    where: { _and: [{ userId: { _eq: $userId } }, $where] }
+    orderBy: { workDay: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...WorkScheduleTableRow
+  }
+
+  userSchedulesAggregate: workSchedulesAggregate(
+    where: { _and: [{ userId: { _eq: $userId } }, $where] }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Quick list queries for performance
+query GetWorkSchedulesQuickList($limit: Int = 100) {
+  workSchedules(
+    orderBy: { workDay: DESC }
+    limit: $limit
+  ) {
+    ...WorkScheduleMinimal
+  }
+}
+
+query GetUserSchedulesQuickList($userId: uuid!) {
+  workSchedules(
+    where: { userId: { _eq: $userId } }
+    orderBy: { workDay: DESC }
+  ) {
+    ...WorkScheduleMinimal
+  }
+}
+
+query GetTodaySchedulesQuickList {
+  workSchedules(
+    where: { workDay: { _eq: "now()::date" } }
+    orderBy: { scheduleOwner: { name: ASC } }
+  ) {
+    ...WorkScheduleMinimal
   }
 }

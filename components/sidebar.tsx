@@ -88,14 +88,14 @@ const allRoutes = [
     href: "/developer",
     label: "Developer",
     icon: Code,
-    checkAccess: (auth: any) => auth.userRole === "developer",
+    checkAccess: (auth: any) => auth.hasPermission("system:admin"),
     devOnly: true, // Only show in development
   },
   {
     href: "/security",
     label: "Security",
     icon: Shield,
-    checkAccess: (auth: any) => auth.userRole === "developer" || auth.userRole === "org_admin",
+    checkAccess: (auth: any) => auth.hasPermission("security:read"),
   },
 ];
 

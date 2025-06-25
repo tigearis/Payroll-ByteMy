@@ -1,34 +1,125 @@
 # Notes Domain Fragments
-# Security Classification: MEDIUM - Internal data with role-based access
-# SOC2 Compliance: Audit-ready with user tracking
+# Security Classification: MEDIUM - Contains business communication data
+# SOC2 Compliance: User-generated content with audit requirements
 
-fragment NoteBasicInfo on notes {
+fragment NoteCore on notes {
   id
   content
-  is_important
-  created_at
-  updated_at
-  entity_id
-  entity_type
-  user_id
+  isImportant
+  createdAt
+  updatedAt
+  userId
+  entityType
+  entityId
 }
 
-fragment NoteWithUser on notes {
-  ...NoteBasicInfo
-  user {
+fragment NoteBasic on notes {
+  ...NoteCore
+  authorUser {
     id
     name
     email
+    role
   }
+}
+
+fragment NoteDetailed on notes {
+  ...NoteBasic
+  # Additional fields if any exist in the schema
+}
+
+fragment NoteWithEntity on notes {
+  ...NoteBasic
+  # Entity relationships would go here based on entityType
+  # This is a polymorphic relationship pattern
+}
+
+# Performance-optimized fragments
+
+fragment NoteSummary on notes {
+  id
+  isImportant
+  createdAt
+  entityType
+  entityId
+  userId
+}
+
+fragment NoteListItem on notes {
+  ...NoteSummary
+  content
+  updatedAt
+  authorUser {
+    id
+    name
+    role
+  }
+}
+
+fragment NoteTableRow on notes {
+  ...NoteListItem
+  # Additional fields for table display if needed
+}
+
+fragment NoteMinimal on notes {
+  id
+  isImportant
+  createdAt
+  userId
 }
 
 fragment NoteForAudit on notes {
   id
-  is_important
-  created_at
-  updated_at
-  entity_id
-  entity_type
-  user_id
-  # Content excluded for audit logs - contains potentially sensitive info
+  isImportant
+  createdAt
+  updatedAt
+  userId
+  entityType
+  entityId
+  # Content excluded from audit for privacy
+}
+
+fragment NoteCard on notes {
+  ...NoteSummary
+  content
+  authorUser {
+    id
+    name
+    image
+  }
+}
+
+fragment NoteDashboard on notes {
+  ...NoteSummary
+  authorUser {
+    id
+    name
+  }
+}
+
+# Entity-specific note fragments
+
+fragment PayrollNote on notes {
+  ...NoteBasic
+  # When entityType = 'payroll'
+}
+
+fragment ClientNote on notes {
+  ...NoteBasic
+  # When entityType = 'client'  
+}
+
+fragment UserNote on notes {
+  ...NoteBasic
+  # When entityType = 'user'
+}
+
+fragment ImportantNote on notes {
+  ...NoteListItem
+  # For isImportant flagged notes
+}
+
+fragment RecentNote on notes {
+  ...NoteCard
+  # For recently created/updated notes
 }

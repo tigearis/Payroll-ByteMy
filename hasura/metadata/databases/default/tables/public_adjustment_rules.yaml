@@ -1,11 +1,43 @@
 table:
   name: adjustment_rules
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    cycle_id:
+      custom_name: cycleId
+    date_type_id:
+      custom_name: dateTypeId
+    rule_code:
+      custom_name: ruleCode
+    rule_description:
+      custom_name: ruleDescription
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    cycle_id: cycleId
+    date_type_id: dateTypeId
+    rule_code: ruleCode
+    rule_description: ruleDescription
+    updated_at: updatedAt
+  custom_name: adjustmentRules
+  custom_root_fields:
+    delete: bulkDeleteAdjustmentRules
+    delete_by_pk: deleteAdjustmentRuleById
+    insert: bulkInsertAdjustmentRules
+    insert_one: insertAdjustmentRule
+    select: adjustmentRules
+    select_aggregate: adjustmentRulesAggregate
+    select_by_pk: adjustmentRuleById
+    update: bulkUpdateAdjustmentRules
+    update_by_pk: updateAdjustmentRuleById
 object_relationships:
-  - name: payroll_cycle
+  - name: relatedPayrollCycle
     using:
       foreign_key_constraint_on: cycle_id
-  - name: payroll_date_type
+  - name: relatedPayrollDateType
     using:
       foreign_key_constraint_on: date_type_id
 insert_permissions:

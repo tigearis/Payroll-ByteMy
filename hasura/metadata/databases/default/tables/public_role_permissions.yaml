@@ -16,21 +16,22 @@ configuration:
     permission_id: permissionId
     role_id: roleId
     updated_at: updatedAt
+  custom_name: rolePermissions
   custom_root_fields:
-    delete: deleteRolePermissions
-    delete_by_pk: deleteRolePermission
-    insert: insertRolePermissions
+    delete: bulkDeleteRolePermissions
+    delete_by_pk: deleteRolePermissionById
+    insert: bulkInsertRolePermissions
     insert_one: insertRolePermission
     select: rolePermissions
     select_aggregate: rolePermissionsAggregate
-    select_by_pk: rolePermission
-    update: updateRolePermissions
-    update_by_pk: updateRolePermission
+    select_by_pk: rolePermissionById
+    update: bulkUpdateRolePermissions
+    update_by_pk: updateRolePermissionById
 object_relationships:
-  - name: permission
+  - name: grantedPermission
     using:
       foreign_key_constraint_on: permission_id
-  - name: role
+  - name: grantedToRole
     using:
       foreign_key_constraint_on: role_id
 insert_permissions:
@@ -100,3 +101,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

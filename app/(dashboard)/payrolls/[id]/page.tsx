@@ -70,25 +70,22 @@ import { PayrollVersionHistory } from "@/domains/payrolls/components/payroll-ver
 import {
   GetPayrollByIdDocument,
   GetPayrollDatesDocument,
-  GetPayrollFamilyDatesDocument,
   GetPayrollsDocument,
   UpdatePayrollDocument,
-  GetVersionCheckDocument,
-  GetLatestInFamilyDocument,
-  type GetVersionCheckQuery,
-  type GetLatestInFamilyQuery,
 } from "@/domains/payrolls/graphql/generated/graphql";
 
 // Import additional documents separately to avoid potential module resolution issues
 import { GetPayrollCyclesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generated/graphql";
-import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GetLatestPayrollVersionDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
   usePayrollVersioning,
   usePayrollStatusUpdate,
   getVersionReason,
 } from "@/hooks/use-payroll-versioning";
-import { payroll_cycle_type, payroll_date_type } from "@/types/enums";
+import { PayrollCycleType, PayrollDateType } from "@/types/enums";
+import { useFreshQuery } from "@/hooks/use-strategic-query";
 
 // Add error boundary component for debugging
 function ErrorBoundary({ children }: { children: React.ReactNode }) {
@@ -176,29 +173,29 @@ const getStatusConfig = (status: string) => {
 
 // Payroll cycle constants (from creation form)
 const PAYROLL_CYCLES = [
-  { id: payroll_cycle_type.Weekly, name: "Weekly" },
-  { id: payroll_cycle_type.Fortnightly, name: "Fortnightly" },
-  { id: payroll_cycle_type.BiMonthly, name: "Bi-Monthly" },
-  { id: payroll_cycle_type.Monthly, name: "Monthly" },
-  { id: payroll_cycle_type.Quarterly, name: "Quarterly" },
+  { id: PayrollCycleType.Weekly, name: "Weekly" },
+  { id: PayrollCycleType.Fortnightly, name: "Fortnightly" },
+  { id: PayrollCycleType.BiMonthly, name: "Bi-Monthly" },
+  { id: PayrollCycleType.Monthly, name: "Monthly" },
+  { id: PayrollCycleType.Quarterly, name: "Quarterly" },
 ];
 
 const PAYROLL_DATE_TYPES = {
-  [payroll_cycle_type.Weekly]: [],
-  [payroll_cycle_type.Fortnightly]: [],
-  [payroll_cycle_type.BiMonthly]: [
-    { id: payroll_date_type.SOM, name: "Start of Month" },
-    { id: payroll_date_type.EOM, name: "End of Month" },
+  [PayrollCycleType.Weekly]: [],
+  [PayrollCycleType.Fortnightly]: [],
+  [PayrollCycleType.BiMonthly]: [
+    { id: PayrollDateType.SOM, name: "Start of Month" },
+    { id: PayrollDateType.EOM, name: "End of Month" },
   ],
-  [payroll_cycle_type.Monthly]: [
-    { id: payroll_date_type.SOM, name: "Start of Month" },
-    { id: payroll_date_type.EOM, name: "End of Month" },
-    { id: payroll_date_type.FixedDate, name: "Fixed Date" },
+  [PayrollCycleType.Monthly]: [
+    { id: PayrollDateType.SOM, name: "Start of Month" },
+    { id: PayrollDateType.EOM, name: "End of Month" },
+    { id: PayrollDateType.FixedDate, name: "Fixed Date" },
   ],
-  [payroll_cycle_type.Quarterly]: [
-    { id: payroll_date_type.SOM, name: "Start of Month" },
-    { id: payroll_date_type.EOM, name: "End of Month" },
-    { id: payroll_date_type.FixedDate, name: "Fixed Date" },
+  [PayrollCycleType.Quarterly]: [
+    { id: PayrollDateType.SOM, name: "Start of Month" },
+    { id: PayrollDateType.EOM, name: "End of Month" },
+    { id: PayrollDateType.FixedDate, name: "Fixed Date" },
   ],
 };
 
@@ -940,7 +937,7 @@ export default function PayrollPage() {
 
   // Check if current payroll is superseded and get latest version - run immediately
   const { data: versionCheckData, loading: versionCheckLoading } =
-    useQuery<GetVersionCheckQuery>(GetVersionCheckDocument, {
+    useQuery(GetPayrollByIdDocument, {
       variables: { id },
       skip: !id,
       fetchPolicy: "network-only", // Always check for latest version info
@@ -948,22 +945,21 @@ export default function PayrollPage() {
   console.log("✅ Version check query loaded");
 
   // If current payroll is superseded, find the latest version
-  const currentPayroll = versionCheckData?.current?.[0];
+  const currentPayroll = versionCheckData?.payrollById as any;
   const rootId = currentPayroll?.parentPayrollId || id;
 
   const { data: latestVersionData, loading: latestVersionLoading } =
-    useQuery<GetLatestInFamilyQuery>(GetLatestInFamilyDocument, {
-      variables: { rootId },
-      skip: !rootId || !currentPayroll?.supersededDate,
-      fetchPolicy: "network-only", // Always get fresh version data
+    useFreshQuery(GetLatestPayrollVersionDocument, {
+      variables: { payrollId: rootId },
+      skip: !rootId || !(currentPayroll as any)?.supersededDate,
     });
   console.log("✅ Latest version query loaded");
 
   // Determine if we need to redirect and if so, show loading until redirect happens
   const needsRedirect =
-    currentPayroll?.supersededDate &&
-    latestVersionData?.latest?.[0]?.id &&
-    latestVersionData.latest[0].id !== id;
+    (currentPayroll as any)?.supersededDate &&
+    latestVersionData?.payrolls?.[0]?.id &&
+    latestVersionData.payrolls[0].id !== id;
 
   // Show loading if we're checking versions or about to redirect
   const isVersionCheckingOrRedirecting =
@@ -974,12 +970,14 @@ export default function PayrollPage() {
 
   // Get payroll data - use network-only to prevent flash of old cached data
   // Skip this query if we're still checking versions or about to redirect
-  const { data, loading, error, refetch } = useQuery(GetPayrollByIdDocument, {
-    variables: { id },
-    skip: !id || isVersionCheckingOrRedirecting,
-    fetchPolicy: "network-only", // Prevent flash of cached old data
-    notifyOnNetworkStatusChange: true,
-  });
+  const { data, loading, error, refetch } = useFreshQuery(
+    GetPayrollByIdDocument,
+    {
+      variables: { id },
+      skip: !id || isVersionCheckingOrRedirecting,
+      notifyOnNetworkStatusChange: true,
+    }
+  );
   console.log("✅ Main payroll query loaded");
 
   // Query for users (for consultant/manager assignments) - TODO: Move to users domain
@@ -1002,7 +1000,7 @@ export default function PayrollPage() {
 
   // Lazy query for regenerating payroll dates
   const [generatePayrollDates] = useLazyQuery(
-    GeneratePayrollDatesQueryDocument,
+    GeneratePayrollDatesDocument,
     {
       onCompleted: (data: any) => {
         const count = data?.generatePayrollDates?.length || 0;
@@ -1020,7 +1018,7 @@ export default function PayrollPage() {
     refetchQueries: [
       { query: GetPayrollByIdDocument, variables: { id } },
       { query: GetPayrollDatesDocument, variables: { id } },
-      { query: GetPayrollFamilyDatesDocument, variables: { payrollId: id } },
+      { query: GetPayrollDatesDocument, variables: { payrollId: id } },
       GetPayrollsDocument,
     ],
     awaitRefetchQueries: true,
@@ -1089,8 +1087,8 @@ export default function PayrollPage() {
       ...prev,
       cycle_id: value,
       date_type_id:
-        value === payroll_cycle_type.Weekly ||
-        value === payroll_cycle_type.Fortnightly
+        value === PayrollCycleType.Weekly ||
+        value === PayrollCycleType.Fortnightly
           ? "DOW"
           : "",
       date_value: "",
@@ -1137,7 +1135,7 @@ export default function PayrollPage() {
     }
 
     // Weekly: Only day of week selection
-    if (cycle_id === payroll_cycle_type.Weekly) {
+    if (cycle_id === PayrollCycleType.Weekly) {
       return (
         <div className="space-y-2">
           <Label htmlFor="weekday">Day of Week</Label>
@@ -1161,7 +1159,7 @@ export default function PayrollPage() {
     }
 
     // Fortnightly: Enhanced calendar selection for week type and day of week
-    if (cycle_id === payroll_cycle_type.Fortnightly) {
+    if (cycle_id === PayrollCycleType.Fortnightly) {
       return (
         <div className="space-y-2">
           <Label htmlFor="fortnightly-calendar">Select Week & Day</Label>
@@ -1177,13 +1175,13 @@ export default function PayrollPage() {
     }
 
     // Bi-Monthly: Only SOM/EOM selection (no date value needed)
-    if (cycle_id === payroll_cycle_type.BiMonthly) {
+    if (cycle_id === PayrollCycleType.BiMonthly) {
       return (
         <div className="mt-1">
           <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
-            {editedPayroll.date_type_id === payroll_date_type.SOM &&
+            {editedPayroll.date_type_id === PayrollDateType.SOM &&
               "1st and 15th of each month (14th in February)"}
-            {editedPayroll.date_type_id === payroll_date_type.EOM &&
+            {editedPayroll.date_type_id === PayrollDateType.EOM &&
               "30th and 15th of each month (14th & 28th in February)"}
             {!editedPayroll.date_type_id && "Select date type above"}
           </p>
@@ -1193,12 +1191,12 @@ export default function PayrollPage() {
 
     // Monthly/Quarterly: Handle SOM, EOM, or Fixed Date
     if (
-      cycle_id === payroll_cycle_type.Monthly ||
-      cycle_id === payroll_cycle_type.Quarterly
+      cycle_id === PayrollCycleType.Monthly ||
+      cycle_id === PayrollCycleType.Quarterly
     ) {
       const { date_type_id } = editedPayroll;
 
-      if (date_type_id === payroll_date_type.SOM) {
+      if (date_type_id === PayrollDateType.SOM) {
         return (
           <div className="mt-1">
             <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
@@ -1208,7 +1206,7 @@ export default function PayrollPage() {
         );
       }
 
-      if (date_type_id === payroll_date_type.EOM) {
+      if (date_type_id === PayrollDateType.EOM) {
         return (
           <div className="mt-1">
             <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
@@ -1218,7 +1216,7 @@ export default function PayrollPage() {
         );
       }
 
-      if (date_type_id === payroll_date_type.FixedDate) {
+      if (date_type_id === PayrollDateType.FixedDate) {
         return (
           <div className="space-y-2">
             <Label htmlFor="fixed-date-calendar">Select Day of Month</Label>
@@ -1524,7 +1522,7 @@ export default function PayrollPage() {
 
   // Helper functions to convert between display names and UUIDs
   const getCycleIdFromName = (cycleName: string) => {
-    const cycles = cyclesData?.payroll_cycles || [];
+    const cycles = cyclesData?.payrollCycles || [];
     const cycle = cycles.find((c: any) => c.name === cycleName);
     console.log("getCycleIdFromName:", {
       cycleName,
@@ -1549,7 +1547,7 @@ export default function PayrollPage() {
   };
 
   const getDateTypeIdFromName = (dateTypeName: string) => {
-    const dateTypes = dateTypesData?.payroll_date_types || [];
+    const dateTypes = dateTypesData?.payrollDateTypes || [];
     const dateType = dateTypes.find((dt: any) => dt.name === dateTypeName);
 
     if (!dateType?.id && dateTypeName) {
@@ -1570,7 +1568,7 @@ export default function PayrollPage() {
     <ErrorBoundary>
       <div className="space-y-6">
         {/* Version Warning Banner */}
-        {currentPayroll?.supersededDate && (
+        {(currentPayroll as any)?.supersededDate && (
           <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -1578,18 +1576,18 @@ export default function PayrollPage() {
                 <div>
                   <p className="text-amber-800 font-medium">
                     You are viewing an older version of this payroll (v
-                    {currentPayroll.versionNumber})
+                    {(currentPayroll as any).versionNumber})
                   </p>
                   <p className="text-amber-700 text-sm">
                     This version was superseded on{" "}
-                    {formatDate(currentPayroll.supersededDate)}
+                    {formatDate((currentPayroll as any).supersededDate)}
                   </p>
                 </div>
               </div>
-              {latestVersionData?.latest?.[0]?.id && (
+              {latestVersionData?.payrolls?.[0]?.id && (
                 <Button
                   onClick={() =>
-                    router.push(`/payrolls/${latestVersionData.latest[0].id}`)
+                    router.push(`/payrolls/${latestVersionData.payrolls[0].id}`)
                   }
                   className="bg-amber-600 hover:bg-amber-700 text-white"
                 >
@@ -1754,8 +1752,12 @@ export default function PayrollPage() {
                 </div>
                 <Progress value={statusConfig.progress} className="h-2" />
                 <div className="flex justify-between text-xs text-gray-500 mt-2">
-                  <span>Manager: {(payroll as any).manager?.name || "Not assigned"}</span>
-                  <span>Status: {(payroll as any).status || "Implementation"}</span>
+                  <span>
+                    Manager: {(payroll as any).manager?.name || "Not assigned"}
+                  </span>
+                  <span>
+                    Status: {(payroll as any).status || "Implementation"}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -2285,7 +2287,8 @@ export default function PayrollPage() {
                                 Primary Consultant
                               </Label>
                               <p className="mt-1">
-                                {(payroll as any).primaryConsultant?.name || "Not assigned"}
+                                {(payroll as any).primaryConsultant?.name ||
+                                  "Not assigned"}
                               </p>
                             </div>
                             <div>
@@ -2293,7 +2296,8 @@ export default function PayrollPage() {
                                 Backup Consultant
                               </Label>
                               <p className="mt-1">
-                                {(payroll as any).backupConsultant?.name || "Not assigned"}
+                                {(payroll as any).backupConsultant?.name ||
+                                  "Not assigned"}
                               </p>
                             </div>
                             <div>
@@ -2301,7 +2305,8 @@ export default function PayrollPage() {
                                 Manager
                               </Label>
                               <p className="mt-1">
-                                {(payroll as any).manager?.name || "Not assigned"}
+                                {(payroll as any).manager?.name ||
+                                  "Not assigned"}
                               </p>
                             </div>
                             <div>

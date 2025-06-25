@@ -1,8 +1,28 @@
 table:
   name: payroll_cycles
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    updated_at: updatedAt
+  custom_name: payrollCycles
+  custom_root_fields:
+    delete: bulkDeletePayrollCycles
+    delete_by_pk: deletePayrollCycleById
+    insert: bulkInsertPayrollCycles
+    insert_one: insertPayrollCycle
+    select: payrollCycles
+    select_aggregate: payrollCyclesAggregate
+    select_by_pk: payrollCycleById
+    update: bulkUpdatePayrollCycles
+    update_by_pk: updatePayrollCycleById
 array_relationships:
-  - name: adjustment_rules
+  - name: adjustmentRules
     using:
       foreign_key_constraint_on:
         column: cycle_id

@@ -1,27 +1,240 @@
 # External Systems Domain Fragments
+# Security Classification: MEDIUM - Integration and configuration data
+# SOC2 Compliance: Third-party system data with security controls
 
-fragment ExternalSystemCore on external_systems {
+fragment ExternalSystemCore on externalSystems {
   id
   name
+  description
+  icon
+  createdAt
+  updatedAt
+}
+
+fragment ExternalSystemBasic on externalSystems {
+  ...ExternalSystemCore
   url
+}
+
+fragment ExternalSystemDetailed on externalSystems {
+  ...ExternalSystemBasic
+}
+
+fragment ExternalSystemWithClients on externalSystems {
+  ...ExternalSystemBasic
+  clientExternalSystems {
+    id
+    clientId
+    externalSystemId
+    systemClientId
+    createdAt
+    updatedAt
+    linkedClient {
+      id
+      name
+    }
+  }
+}
+
+fragment ExternalSystemComplete on externalSystems {
+  ...ExternalSystemDetailed
+  clientExternalSystems {
+    id
+    clientId
+    externalSystemId
+    systemClientId
+    createdAt
+    updatedAt
+    linkedClient {
+      id
+      name
+      contactPerson
+      contactEmail
+    }
+  }
+}
+
+# Client External System Fragments
+fragment ClientExternalSystemCore on clientExternalSystems {
+  id
+  clientId
+  externalSystemId
+  systemClientId
+  createdAt
+  updatedAt
+}
+
+fragment ClientExternalSystemBasic on clientExternalSystems {
+  ...ClientExternalSystemCore
+}
+
+fragment ClientExternalSystemDetailed on clientExternalSystems {
+  ...ClientExternalSystemBasic
+}
+
+fragment ClientExternalSystemWithRelations on clientExternalSystems {
+  ...ClientExternalSystemBasic
+  linkedClient {
+    id
+    name
+    contactPerson
+    contactEmail
+  }
+  linkedExternalSystem {
+    id
+    name
+    description
+    url
+    icon
+  }
+}
+
+fragment ClientExternalSystemComplete on clientExternalSystems {
+  ...ClientExternalSystemDetailed
+  linkedClient {
+    id
+    name
+    contactPerson
+    contactEmail
+    contactPhone
+  }
+  linkedExternalSystem {
+    id
+    name
+    description
+    url
+    icon
+    createdAt
+    updatedAt
+  }
+}
+
+# Performance-optimized fragments
+fragment ExternalSystemSummary on externalSystems {
+  id
+  name
   description
   icon
 }
 
-fragment ClientExternalSystemCore on client_external_systems {
-  id
-  client_id
-  system_id
-  system_client_id
+fragment ExternalSystemListItem on externalSystems {
+  ...ExternalSystemSummary
+  url
+  createdAt
+  updatedAt
+  clientCount: clientExternalSystemsAggregate {
+    aggregate {
+      count
+    }
+  }
 }
 
-fragment ClientExternalSystemWithRelations on client_external_systems {
-  ...ClientExternalSystemCore
-  client {
+fragment ExternalSystemTableRow on externalSystems {
+  ...ExternalSystemListItem
+}
+
+fragment ExternalSystemDashboardCard on externalSystems {
+  ...ExternalSystemSummary
+  url
+  clientCount: clientExternalSystemsAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+fragment ClientExternalSystemSummary on clientExternalSystems {
+  id
+  clientId
+  externalSystemId
+  systemClientId
+  createdAt
+  updatedAt
+}
+
+fragment ClientExternalSystemListItem on clientExternalSystems {
+  ...ClientExternalSystemSummary
+  linkedClient {
     id
     name
   }
-  external_system {
-    ...ExternalSystemCore
+  linkedExternalSystem {
+    id
+    name
+    description
+    url
+    icon
+  }
+}
+
+fragment ClientExternalSystemTableRow on clientExternalSystems {
+  ...ClientExternalSystemListItem
+}
+
+fragment ExternalSystemMinimal on externalSystems {
+  id
+  name
+  url
+  icon
+}
+
+fragment ClientExternalSystemMinimal on clientExternalSystems {
+  id
+  clientId
+  externalSystemId
+  systemClientId
+}
+
+# Configuration and security fragments
+fragment ExternalSystemConfig on externalSystems {
+  id
+  name
+  description
+  url
+  icon
+  createdAt
+  updatedAt
+}
+
+fragment ClientExternalSystemConfig on clientExternalSystems {
+  id
+  clientId
+  externalSystemId
+  systemClientId
+  createdAt
+  updatedAt
+}
+
+# Audit and compliance fragments
+fragment ExternalSystemForAudit on externalSystems {
+  id
+  name
+  description
+  url
+  icon
+  createdAt
+  updatedAt
+}
+
+fragment ClientExternalSystemForAudit on clientExternalSystems {
+  id
+  clientId
+  externalSystemId
+  systemClientId
+  createdAt
+  updatedAt
+}
+
+# Integration monitoring fragments
+fragment ExternalSystemMonitoring on externalSystems {
+  id
+  name
+  description
+  url
+  icon
+  clientExternalSystemsAggregate {
+    aggregate {
+      count
+    }
   }
 }

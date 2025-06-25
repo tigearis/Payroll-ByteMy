@@ -1,6 +1,41 @@
 table:
   name: payroll_version_history_results
   schema: public
+configuration:
+  column_config:
+    go_live_date:
+      custom_name: goLiveDate
+    is_current:
+      custom_name: isCurrent
+    payroll_id:
+      custom_name: payrollId
+    queried_at:
+      custom_name: queriedAt
+    superseded_date:
+      custom_name: supersededDate
+    version_number:
+      custom_name: versionNumber
+    version_reason:
+      custom_name: versionReason
+  custom_column_names:
+    go_live_date: goLiveDate
+    is_current: isCurrent
+    payroll_id: payrollId
+    queried_at: queriedAt
+    superseded_date: supersededDate
+    version_number: versionNumber
+    version_reason: versionReason
+  custom_name: payrollVersionHistoryResults
+  custom_root_fields:
+    delete: bulkDeletePayrollVersionHistoryResults
+    delete_by_pk: deletePayrollVersionHistoryResultById
+    insert: bulkInsertPayrollVersionHistoryResults
+    insert_one: insertPayrollVersionHistoryResult
+    select: payrollVersionHistoryResults
+    select_aggregate: payrollVersionHistoryResultsAggregate
+    select_by_pk: payrollVersionHistoryResultById
+    update: bulkUpdatePayrollVersionHistoryResults
+    update_by_pk: updatePayrollVersionHistoryResultById
 insert_permissions:
   - role: developer
     permission:
@@ -88,3 +123,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

@@ -1,7 +1,6 @@
 // app/(dashboard)/payrolls/page.tsx - UPDATED VERSION
 "use client";
 
-import { useQuery } from "@apollo/client";
 import {
   PlusCircle,
   Search,
@@ -60,10 +59,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PayrollsTable } from "@/domains/payrolls/components/payrolls-table";
-import {
-  GetPayrollsDocument,
-} from "@/domains/payrolls/graphql/generated/graphql";
+import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useUserRole } from "@/hooks/use-user-role";
+import { useCachedQuery } from "@/hooks/use-strategic-query";
+import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
 
 type ViewMode = "cards" | "table" | "list";
 
@@ -414,20 +413,20 @@ export default function PayrollsPage() {
     COLUMN_DEFINITIONS.filter(col => col.defaultVisible).map(col => col.key)
   );
 
-  const {
-    hasPermission,
-    userRole,
-    isLoading: roleLoading,
-  } = useUserRole();
-  
-  const hasAdminAccess = hasPermission("custom:admin:manage");
-  const isManager = userRole === "manager" || userRole === "org_admin";
-  const isDeveloper = userRole === "developer";
+  const { hasPermission, userRole, isLoading: roleLoading } = useUserRole();
+  const { checkPermission } = useEnhancedPermissions();
 
-  const { data, loading, error, refetch } = useQuery(GetPayrollsDocument, {
-    fetchPolicy: "cache-and-network",
-    errorPolicy: "all",
-  });
+  const hasAdminAccess = hasPermission("custom:admin:manage");
+  const canManagePayrolls = checkPermission("payrolls", "write").granted;
+  const canViewAdvanced = checkPermission("system", "admin").granted;
+
+  const { data, loading, error, refetch } = useCachedQuery(
+    GetPayrollsDocument,
+    "payrolls",
+    {
+      errorPolicy: "all",
+    }
+  );
 
   const payrolls = data?.payrolls || [];
 
@@ -643,10 +642,7 @@ export default function PayrollsPage() {
     new Map(
       payrolls
         .filter((p: any) => p.primaryConsultant?.id)
-        .map((p: any) => [
-          p.primaryConsultant.id,
-          p.primaryConsultant,
-        ])
+        .map((p: any) => [p.primaryConsultant.id, p.primaryConsultant])
     ).values()
   ) as any[];
   const uniquePayCycles = Array.from(
@@ -962,7 +958,7 @@ export default function PayrollsPage() {
           </div>
 
           <div className="flex items-center space-x-2">
-            {(hasAdminAccess || isManager || isDeveloper) && (
+            {(hasAdminAccess || canManagePayrolls || canViewAdvanced) && (
               <Link href="/payrolls/new">
                 <Button>
                   <PlusCircle className="mr-2 h-4 w-4" />
@@ -1313,7 +1309,7 @@ export default function PayrollsPage() {
                     ? "Try adjusting your search criteria or filters"
                     : "Get started by adding your first payroll"}
                 </p>
-                {(hasAdminAccess || isManager || isDeveloper) &&
+                {(hasAdminAccess || canManagePayrolls || canViewAdvanced) &&
                   !searchTerm &&
                   !hasActiveFilters && (
                     <Link href="/payrolls/new">

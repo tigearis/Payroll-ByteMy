@@ -96,7 +96,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (error || !data?.user) {
+  if (error || !data?.userById) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
@@ -107,23 +107,23 @@ export default function ProfilePage() {
     );
   }
 
-  const user = data.user;
+  const user = data.userById as any; // Fragment masking requires type assertion
   const roleInfo =
     roleMapping[user.role as keyof typeof roleMapping] || roleMapping.viewer;
 
   // Calculate statistics
   const stats = {
     totalPayrolls:
-      user.primaryConsultantPayrolls.length +
-      user.backupConsultantPayrolls.length +
-      user.managedPayrolls.length,
-    primaryPayrolls: user.primaryConsultantPayrolls.length,
-    managedStaff: user.directReports.length,
-    notesWritten: user.notesWritten.length,
-    totalEmployees: user.primaryConsultantPayrolls.reduce(
+      (user.primaryConsultantPayrolls?.length || 0) +
+      (user.backupConsultantPayrolls?.length || 0) +
+      (user.managedPayrolls?.length || 0),
+    primaryPayrolls: user.primaryConsultantPayrolls?.length || 0,
+    managedStaff: user.directReports?.length || 0,
+    notesWritten: user.notesWritten?.length || 0,
+    totalEmployees: user.primaryConsultantPayrolls?.reduce(
       (sum: number, p: any) => sum + (p.employeeCount || 0),
       0
-    ),
+    ) || 0,
   };
 
   return (
@@ -305,7 +305,7 @@ export default function ProfilePage() {
             )}
 
             {/* Work Schedule */}
-            {user.workSchedules.length > 0 && (
+            {user.workSchedules?.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -315,7 +315,7 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {user.workSchedules.map(schedule => (
+                    {user.workSchedules.map((schedule: any) => (
                       <div
                         key={schedule.id}
                         className="flex justify-between items-center py-2 border-b last:border-b-0"
@@ -332,7 +332,7 @@ export default function ProfilePage() {
             )}
 
             {/* Recent Leave */}
-            {user.leaves.length > 0 && (
+            {user.leaves?.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -342,7 +342,7 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {user.leaves.slice(0, 3).map(leave => (
+                    {user.leaves?.slice(0, 3).map((leave: any) => (
                       <div key={leave.id} className="flex justify-between">
                         <div>
                           <p className="font-medium">{leave.leaveType}</p>
@@ -374,17 +374,17 @@ export default function ProfilePage() {
         <TabsContent value="payrolls" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Primary Consultant Payrolls */}
-            {user.primaryConsultantPayrolls.length > 0 && (
+            {user.primaryConsultantPayrolls?.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Briefcase className="w-5 h-5" />
-                    Primary Consultant ({user.primaryConsultantPayrolls.length})
+                    Primary Consultant ({user.primaryConsultantPayrolls?.length || 0})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {user.primaryConsultantPayrolls.map(payroll => (
+                    {user.primaryConsultantPayrolls?.map((payroll: any) => (
                       <div
                         key={payroll.id}
                         className="flex justify-between items-start"
@@ -419,17 +419,17 @@ export default function ProfilePage() {
             )}
 
             {/* Backup Consultant Payrolls */}
-            {user.backupConsultantPayrolls.length > 0 && (
+            {user.backupConsultantPayrolls?.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Users className="w-5 h-5" />
-                    Backup Consultant ({user.backupConsultantPayrolls.length})
+                    Backup Consultant ({user.backupConsultantPayrolls?.length || 0})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {user.backupConsultantPayrolls.map(payroll => (
+                    {user.backupConsultantPayrolls?.map((payroll: any) => (
                       <div
                         key={payroll.id}
                         className="flex justify-between items-start"
@@ -459,17 +459,17 @@ export default function ProfilePage() {
             )}
 
             {/* Managed Payrolls */}
-            {user.managedPayrolls.length > 0 && (
+            {user.managedPayrolls?.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Building className="w-5 h-5" />
-                    Managed Payrolls ({user.managedPayrolls.length})
+                    Managed Payrolls ({user.managedPayrolls?.length || 0})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {user.managedPayrolls.map(payroll => (
+                    {user.managedPayrolls?.map((payroll: any) => (
                       <div
                         key={payroll.id}
                         className="flex justify-between items-start"
@@ -502,17 +502,17 @@ export default function ProfilePage() {
 
         <TabsContent value="team" className="space-y-6">
           {/* Direct Reports */}
-          {user.directReports.length > 0 && (
+          {user.directReports?.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="w-5 h-5" />
-                  Direct Reports ({user.directReports.length})
+                  Direct Reports ({user.directReports?.length || 0})
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {user.directReports.map(report => (
+                  {user.directReports?.map((report: any) => (
                     <div
                       key={report.id}
                       className="flex items-center space-x-3 p-3 border rounded-lg"
@@ -553,17 +553,17 @@ export default function ProfilePage() {
 
         <TabsContent value="activity" className="space-y-6">
           {/* Recent Notes */}
-          {user.notesWritten.length > 0 && (
+          {user.notesWritten?.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="w-5 h-5" />
-                  Recent Notes ({user.notesWritten.length})
+                  Recent Notes ({user.notesWritten?.length || 0})
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {user.notesWritten.map(note => (
+                  {user.notesWritten?.map((note: any) => (
                     <div
                       key={note.id}
                       className="border-l-4 border-blue-200 pl-4 py-2"

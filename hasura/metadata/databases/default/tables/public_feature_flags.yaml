@@ -1,6 +1,32 @@
 table:
   name: feature_flags
   schema: public
+configuration:
+  column_config:
+    allowed_roles:
+      custom_name: allowedRoles
+    feature_name:
+      custom_name: featureName
+    is_enabled:
+      custom_name: isEnabled
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    allowed_roles: allowedRoles
+    feature_name: featureName
+    is_enabled: isEnabled
+    updated_at: updatedAt
+  custom_name: featureFlags
+  custom_root_fields:
+    delete: bulkDeleteFeatureFlags
+    delete_by_pk: deleteFeatureFlagById
+    insert: bulkInsertFeatureFlags
+    insert_one: insertFeatureFlag
+    select: featureFlags
+    select_aggregate: featureFlagsAggregate
+    select_by_pk: featureFlagById
+    update: bulkUpdateFeatureFlags
+    update_by_pk: updateFeatureFlagById
 insert_permissions:
   - role: developer
     permission:
@@ -74,3 +100,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

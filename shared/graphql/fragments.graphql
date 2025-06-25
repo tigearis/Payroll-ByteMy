@@ -26,12 +26,12 @@ fragment UserBasic on users {
 fragment UserWithManager on users {
   ...UserCore
   managerId
-  manager {
+  managerUser {
     ...UserBasic
   }
 }
 
-# Core Role fragments - Used across auth and permissions domains  
+# Core Role fragments - Used across auth and permissions domains
 fragment RoleCore on roles {
   id
   name
@@ -54,7 +54,7 @@ fragment PermissionCore on permissions {
 
 fragment PermissionWithResource on permissions {
   ...PermissionCore
-  resource {
+  relatedResource {
     id
     name
     description
@@ -79,24 +79,7 @@ fragment ClientBasic on clients {
   active
 }
 
-# Core Payroll fragments - Used across payrolls and related domains
-fragment PayrollCore on payrolls {
-  id
-  name
-  status
-  clientId
-  primaryConsultantUserId
-  managerUserId
-  createdAt
-  updatedAt
-}
-
-fragment PayrollBasic on payrolls {
-  id
-  name
-  status
-  clientId
-}
+# Core Payroll fragments - moved to domains/payrolls/graphql/fragments.graphql to avoid duplication
 
 # Core Resource fragments - Used across auth and permissions domains
 fragment ResourceCore on resources {
@@ -109,7 +92,7 @@ fragment ResourceCore on resources {
 }
 
 # Core User Role fragments - Used across auth and permissions domains
-fragment UserRoleCore on user_roles {
+fragment UserRoleCore on userRoles {
   id
   userId
   roleId
@@ -118,7 +101,7 @@ fragment UserRoleCore on user_roles {
 }
 
 # Core Role Permission fragments - Used across auth and permissions domains
-fragment RolePermissionCore on role_permissions {
+fragment RolePermissionCore on rolePermissions {
   id
   roleId
   permissionId
@@ -128,7 +111,7 @@ fragment RolePermissionCore on role_permissions {
 }
 
 # Audit and timestamp patterns
-fragment AuditFields on audit_audit_log {
+fragment AuditFields on auditLogs {
   id
   eventTime
   action

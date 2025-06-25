@@ -1,0 +1,414 @@
+# Auth Domain Subscriptions
+# Security Classification: CRITICAL - Authentication and authorization data
+# SOC2 Compliance: Real-time security monitoring with strict access controls
+
+# User authentication status subscriptions
+subscription UserAuthStatusUpdates($userId: uuid!) {
+  users(where: { id: { _eq: $userId } }) {
+    id
+    isActive
+    role
+    updatedAt
+    deactivatedAt
+    deactivatedBy
+  }
+}
+
+subscription UserSessionUpdates($clerkUserId: String!) {
+  users(where: { clerkUserId: { _eq: $clerkUserId } }) {
+    id
+    isActive
+    role
+    updatedAt
+    clerkUserId
+  }
+}
+
+subscription AuthEventsUpdates($userId: uuid!) {
+  authEvents(
+    where: { userId: { _eq: $userId } }
+    orderBy: { eventTime: DESC }
+    limit: 20
+  ) {
+    id
+    eventType
+    eventTime
+    ipAddress
+    userAgent
+    success
+    failureReason
+    userId
+  }
+}
+
+# Role and permission subscriptions
+subscription UserRoleUpdates($userId: uuid!) {
+  users(where: { id: { _eq: $userId } }) {
+    id
+    role
+    isStaff
+    isActive
+    assignedRoles {
+      id
+      roleId
+      assignedRole {
+        id
+        name
+        displayName
+        priority
+        isSystemRole
+      }
+    }
+    updatedAt
+  }
+}
+
+subscription UserPermissionUpdates($userId: uuid!) {
+  users(where: { id: { _eq: $userId } }) {
+    id
+    role
+    assignedRoles {
+      roleId
+      assignedRole {
+        name
+        assignedPermissions {
+          id
+          permissionId
+          conditions
+          grantedPermission {
+            id
+            action
+            description
+            relatedResource {
+              name
+              displayName
+            }
+          }
+        }
+      }
+    }
+    updatedAt
+  }
+}
+
+subscription RolePermissionChanges($roleId: uuid!) {
+  rolePermissions(where: { roleId: { _eq: $roleId } }) {
+    id
+    roleId
+    permissionId
+    conditions
+    createdAt
+    updatedAt
+    grantedPermission {
+      id
+      action
+      description
+      relatedResource {
+        name
+        displayName
+      }
+    }
+  }
+}
+
+# Security monitoring subscriptions
+subscription FailedAuthAttemptsUpdates {
+  authEvents(
+    where: { 
+      success: { _eq: false }
+      eventTime: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { eventTime: DESC }
+  ) {
+    id
+    eventType
+    eventTime
+    ipAddress
+    userAgent
+    failureReason
+    userId
+  }
+}
+
+subscription SuspiciousActivityUpdates {
+  authEvents(
+    where: {
+      _or: [
+        { eventType: { _eq: "multiple_failed_attempts" } }
+        { eventType: { _eq: "unusual_location" } }
+        { eventType: { _eq: "suspicious_activity" } }
+      ]
+      eventTime: { _gte: "now() - interval '24 hours'" }
+    }
+    orderBy: { eventTime: DESC }
+  ) {
+    id
+    eventType
+    eventTime
+    ipAddress
+    userAgent
+    userId
+    metadata
+  }
+}
+
+subscription SecurityAlertsUpdates {
+  authEvents(
+    where: {
+      eventType: { _in: [
+        "account_locked",
+        "unauthorized_access_attempt",
+        "privilege_escalation_attempt",
+        "suspicious_activity"
+      ] }
+      eventTime: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { eventTime: DESC }
+  ) {
+    id
+    eventType
+    eventTime
+    ipAddress
+    userId
+    metadata
+  }
+}
+
+# Permission audit subscriptions
+subscription PermissionChangesUpdates {
+  permissionAuditLogs(
+    orderBy: { timestamp: DESC }
+    limit: 50
+  ) {
+    id
+    action
+    resource
+    operation
+    previousValue
+    newValue
+    timestamp
+    userId
+    performedByUser {
+      name
+      email
+      role
+    }
+  }
+}
+
+subscription RoleAssignmentUpdates {
+  userRoles(orderBy: { createdAt: DESC }) {
+    id
+    userId
+    roleId
+    createdAt
+    updatedAt
+    roleUser {
+      id
+      name
+      email
+    }
+    assignedRole {
+      id
+      name
+      displayName
+      priority
+    }
+  }
+}
+
+# System-wide auth monitoring
+subscription AuthSystemHealthUpdates {
+  authEvents(
+    where: { 
+      eventType: { _eq: "login" }
+      success: { _eq: true }
+      eventTime: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { eventTime: DESC }
+    limit: 10
+  ) {
+    id
+    eventType
+    eventTime
+    userId
+    success
+  }
+}
+
+subscription ActiveSessionsUpdates {
+  authEvents(
+    where: { 
+      eventType: { _eq: "session_active" }
+      eventTime: { _gte: "now() - interval '30 minutes'" }
+    }
+    orderBy: { eventTime: DESC }
+  ) {
+    id
+    userId
+    eventTime
+    ipAddress
+  }
+}
+
+# User security status subscriptions
+subscription UserSecurityStatusUpdates($userId: uuid!) {
+  users(where: { id: { _eq: $userId } }) {
+    id
+    isActive
+    role
+    updatedAt
+  }
+}
+
+subscription MFAEventsUpdates($userId: uuid!) {
+  authEvents(
+    where: { 
+      userId: { _eq: $userId }
+      eventType: { _like: "mfa%" }
+    }
+    orderBy: { eventTime: DESC }
+    limit: 10
+  ) {
+    id
+    eventType
+    eventTime
+    success
+    failureReason
+    metadata
+  }
+}
+
+# Admin and compliance subscriptions
+subscription UserDeactivationUpdates {
+  users(
+    where: { 
+      isActive: { _eq: false }
+      deactivatedAt: { _gte: "now() - interval '24 hours'" }
+    }
+    orderBy: { deactivatedAt: DESC }
+  ) {
+    id
+    name
+    email
+    role
+    deactivatedAt
+    deactivatedBy
+    # deactivatedBy is a UUID field, not a relationship
+  }
+}
+
+subscription PrivilegeChangesUpdates {
+  users(
+    where: { 
+      role: { _in: ["org_admin", "manager", "developer"] }
+      updatedAt: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    id
+    name
+    email
+    role
+    updatedAt
+    assignedRoles {
+      assignedRole {
+        name
+        priority
+      }
+    }
+  }
+}
+
+# Real-time compliance monitoring
+subscription ComplianceEventsUpdates {
+  permissionAuditLogs(
+    where: { 
+      action: { _in: [
+        "role_assigned", 
+        "role_removed", 
+        "permission_granted", 
+        "permission_revoked",
+        "admin_access"
+      ] }
+      timestamp: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { timestamp: DESC }
+  ) {
+    id
+    action
+    resource
+    operation
+    previousValue
+    newValue
+    timestamp
+    userId
+    performedByUser {
+      name
+      email
+      role
+    }
+  }
+}
+
+subscription DataAccessMonitoring($userId: uuid!) {
+  dataAccessLogs(
+    where: { 
+      userId: { _eq: $userId }
+      accessedAt: { _gte: "now() - interval '24 hours'" }
+    }
+    orderBy: { accessedAt: DESC }
+    limit: 100
+  ) {
+    id
+    userId
+    resourceType
+    resourceId
+    accessType
+    accessedAt
+    ipAddress
+    dataClassification
+    rowCount
+  }
+}
+
+# Emergency and incident response subscriptions
+subscription SecurityIncidentsUpdates {
+  authEvents(
+    where: {
+      eventType: { _in: [
+        "security_incident",
+        "data_breach_attempt",
+        "unauthorized_admin_access",
+        "multiple_failed_mfa"
+      ] }
+      eventTime: { _gte: "now() - interval '24 hours'" }
+    }
+    orderBy: { eventTime: DESC }
+  ) {
+    id
+    eventType
+    eventTime
+    userId
+    ipAddress
+    userAgent
+    metadata
+  }
+}
+
+subscription EmergencyAuthUpdates {
+  authEvents(
+    where: {
+      eventType: { _eq: "emergency_access" }
+      eventTime: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { eventTime: DESC }
+  ) {
+    id
+    eventType
+    eventTime
+    userId
+    ipAddress
+    metadata
+  }
+}

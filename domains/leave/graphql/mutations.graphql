@@ -1,49 +1,359 @@
 # Leave Domain Mutations
+# Security Classification: MEDIUM - Employee leave and HR data
+# SOC2 Compliance: All mutations logged with audit trail
 
-mutation CreateLeaveRequest($object: leave_insert_input!) {
+# Core CRUD operations
+mutation CreateLeave($object: leaveInsertInput!) {
   insertLeave(object: $object) {
-    ...LeaveWithManager
+    ...LeaveDetailed
+    leaveUser {
+      id
+      name
+      email
+      managerUser {
+        id
+        name
+        email
+      }
+    }
   }
 }
 
-mutation UpdateLeaveRequest($id: uuid!, $set: leave_set_input!) {
-  updateLeave(pk_columns: { id: $id }, _set: $set) {
-    ...LeaveWithManager
+mutation UpdateLeave($id: uuid!, $set: leaveSetInput!) {
+  updateLeaveById(pkColumns: { id: $id }, _set: $set) {
+    ...LeaveDetailed
+    leaveUser {
+      id
+      name
+      email
+    }
   }
 }
 
-mutation ApproveLeaveRequest($id: uuid!) {
-  updateLeave(pk_columns: { id: $id }, _set: { status: "Approved" }) {
-    ...LeaveCore
-  }
-}
-
-mutation RejectLeaveRequest($id: uuid!, $reason: String) {
-  updateLeave(pk_columns: { id: $id }, _set: { reason: $reason }) {
-    ...LeaveCore
-  }
-}
-
-mutation DeleteLeaveRequest($id: uuid!) {
-  deleteLeave(id: $id) {
+mutation DeleteLeave($id: uuid!) {
+  deleteLeaveById(id: $id) {
     id
+    leaveType
+    startDate
+    endDate
   }
 }
 
-mutation BulkApproveLeaveRequests($ids: [uuid!]!) {
-  updateLeaves(where: { id: { _in: $ids } }, _set: { status: "Approved" }) {
-    affected_rows
-    returning {
-      ...LeaveCore
+# Quick create mutations for common leave types
+mutation CreateAnnualLeave(
+  $userId: uuid!
+  $startDate: date!
+  $endDate: date!
+  $reason: String
+) {
+  insertLeave(
+    object: {
+      userId: $userId
+      startDate: $startDate
+      endDate: $endDate
+      leaveType: "Annual"
+      reason: $reason
+      status: Pending
+    }
+  ) {
+    ...LeaveBasic
+    leaveUser {
+      id
+      name
+      email
     }
   }
 }
 
-mutation BulkRejectLeaveRequests($ids: [uuid!]!, $reason: String) {
-  updateLeaves(where: { id: { _in: $ids } }, _set: { reason: $reason }) {
-    affected_rows
-    returning {
-      ...LeaveCore
+mutation CreateSickLeave(
+  $userId: uuid!
+  $startDate: date!
+  $endDate: date!
+  $reason: String
+) {
+  insertLeave(
+    object: {
+      userId: $userId
+      startDate: $startDate
+      endDate: $endDate
+      leaveType: "Sick"
+      reason: $reason
+      status: Pending
     }
+  ) {
+    ...LeaveBasic
+    leaveUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation CreateUnpaidLeave(
+  $userId: uuid!
+  $startDate: date!
+  $endDate: date!
+  $reason: String
+) {
+  insertLeave(
+    object: {
+      userId: $userId
+      startDate: $startDate
+      endDate: $endDate
+      leaveType: "Unpaid"
+      reason: $reason
+      status: Pending
+    }
+  ) {
+    ...LeaveBasic
+    leaveUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation CreateOtherLeave(
+  $userId: uuid!
+  $startDate: date!
+  $endDate: date!
+  $reason: String!
+) {
+  insertLeave(
+    object: {
+      userId: $userId
+      startDate: $startDate
+      endDate: $endDate
+      leaveType: "Other"
+      reason: $reason
+      status: Pending
+    }
+  ) {
+    ...LeaveBasic
+    leaveUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+# Status management mutations
+mutation ApproveLeave($id: uuid!) {
+  updateLeaveById(
+    pkColumns: { id: $id }
+    _set: { status: Approved }
+  ) {
+    ...LeaveBasic
+    leaveUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation RejectLeave($id: uuid!) {
+  updateLeaveById(
+    pkColumns: { id: $id }
+    _set: { status: Rejected }
+  ) {
+    ...LeaveBasic
+    leaveUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation SetLeavePending($id: uuid!) {
+  updateLeaveById(
+    pkColumns: { id: $id }
+    _set: { status: Pending }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+# Bulk operations
+mutation BulkApproveLeave($leaveIds: [uuid!]!) {
+  bulkUpdateLeave(
+    where: { id: { _in: $leaveIds } }
+    _set: { status: Approved }
+  ) {
+    returning {
+      ...LeaveBasic
+    }
+    affectedRows
+  }
+}
+
+mutation BulkRejectLeave($leaveIds: [uuid!]!) {
+  bulkUpdateLeave(
+    where: { id: { _in: $leaveIds } }
+    _set: { status: Rejected }
+  ) {
+    returning {
+      ...LeaveBasic
+    }
+    affectedRows
+  }
+}
+
+mutation BulkDeleteLeave($leaveIds: [uuid!]!) {
+  bulkDeleteLeave(where: { id: { _in: $leaveIds } }) {
+    affectedRows
+    returning {
+      id
+      leaveType
+      startDate
+      endDate
+    }
+  }
+}
+
+# Update operations
+mutation UpdateLeaveDetails(
+  $id: uuid!
+  $startDate: date
+  $endDate: date
+  $leaveType: String
+  $reason: String
+) {
+  updateLeaveById(
+    pkColumns: { id: $id }
+    _set: {
+      startDate: $startDate
+      endDate: $endDate
+      leaveType: $leaveType
+      reason: $reason
+    }
+  ) {
+    ...LeaveBasic
+    leaveUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation UpdateLeaveDates(
+  $id: uuid!
+  $startDate: date!
+  $endDate: date!
+) {
+  updateLeaveById(
+    pkColumns: { id: $id }
+    _set: {
+      startDate: $startDate
+      endDate: $endDate
+    }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+mutation UpdateLeaveType($id: uuid!, $leaveType: String!) {
+  updateLeaveById(
+    pkColumns: { id: $id }
+    _set: { leaveType: $leaveType }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+mutation UpdateLeaveReason($id: uuid!, $reason: String) {
+  updateLeaveById(
+    pkColumns: { id: $id }
+    _set: { reason: $reason }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+# Administrative operations
+mutation CancelLeave($id: uuid!) {
+  deleteLeaveById(id: $id) {
+    id
+    leaveType
+    startDate
+    endDate
+    leaveUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation TransferLeave($id: uuid!, $newUserId: uuid!) {
+  updateLeaveById(
+    pkColumns: { id: $id }
+    _set: { userId: $newUserId }
+  ) {
+    ...LeaveBasic
+    leaveUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+# User-specific operations
+mutation CreateMyLeave(
+  $startDate: date!
+  $endDate: date!
+  $leaveType: String!
+  $reason: String
+) {
+  insertLeave(
+    object: {
+      startDate: $startDate
+      endDate: $endDate
+      leaveType: $leaveType
+      reason: $reason
+      status: Pending
+    }
+  ) {
+    ...LeaveBasic
+    leaveUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation UpdateMyLeave(
+  $id: uuid!
+  $startDate: date
+  $endDate: date
+  $leaveType: String
+  $reason: String
+) {
+  updateLeaveById(
+    pkColumns: { id: $id }
+    _set: {
+      startDate: $startDate
+      endDate: $endDate
+      leaveType: $leaveType
+      reason: $reason
+    }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+mutation CancelMyLeave($id: uuid!) {
+  deleteLeaveById(id: $id) {
+    id
+    leaveType
+    startDate
+    endDate
   }
 }

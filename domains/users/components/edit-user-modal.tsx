@@ -90,9 +90,9 @@ export function EditUserModal({
       form.reset({
         name: user.name,
         email: user.email,
-        role: user.role,
+        role: user.role as "manager" | "developer" | "org_admin" | "consultant" | "viewer",
         managerId: user.managerId || "",
-        isStaff: user.isStaff,
+        isStaff: user.isStaff ?? false,
       });
     }
   }, [user, form]);

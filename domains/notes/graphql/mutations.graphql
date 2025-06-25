@@ -1,94 +1,334 @@
 # Notes Domain Mutations
-# Security Classification: MEDIUM - Internal data with role-based access
-# SOC2 Compliance: User-based access control with audit logging
+# Security Classification: MEDIUM - Contains business communication data
+# SOC2 Compliance: All mutations logged with audit trail
+
+# Core CRUD operations
+mutation CreateNote($object: notesInsertInput!) {
+  insertNote(object: $object) {
+    ...NoteDetailed
+  }
+}
 
 mutation AddNote(
-  $entity_id: uuid!
-  $entity_type: String!
   $content: String!
-  $user_id: uuid!
+  $entityType: String!
+  $entityId: uuid!
+  $userId: uuid!
   $isImportant: Boolean = false
 ) {
-  insert_notes_one(object: { content: $content, is_important: $isImportant }) {
-    ...NoteWithUser
+  insertNote(
+    object: {
+      content: $content
+      entityType: $entityType
+      entityId: $entityId
+      userId: $userId
+      isImportant: $isImportant
+    }
+  ) {
+    ...NoteDetailed
   }
 }
 
-mutation UpdateNote($id: uuid!, $content: String!, $isImportant: Boolean) {
-  update_notes_by_pk(
-    pk_columns: { id: $id }
-    _set: { content: $content, is_important: $isImportant, updated_at: "now()" }
-  ) {
-    ...NoteWithUser
+mutation UpdateNote($id: uuid!, $set: notesSetInput!) {
+  updateNoteById(pkColumns: { id: $id }, _set: $set) {
+    ...NoteDetailed
   }
 }
 
-mutation UpdateNoteContent($id: uuid!, $content: String!) {
-  update_notes_by_pk(
-    pk_columns: { id: $id }
-    _set: { content: $content, updated_at: "now()" }
+mutation UpdateNoteContent(
+  $id: uuid!
+  $content: String
+  $isImportant: Boolean
+) {
+  updateNoteById(
+    pkColumns: { id: $id }
+    _set: {
+      content: $content
+      isImportant: $isImportant
+      updatedAt: "now()"
+    }
   ) {
-    ...NoteBasicInfo
+    ...NoteDetailed
   }
 }
 
 mutation DeleteNote($id: uuid!) {
-  delete_notes_by_pk(id: $id) {
+  deleteNoteById(id: $id) {
     id
-    # Return minimal info for audit trail
+    content
+    entityType
+    entityId
   }
 }
 
-mutation MarkNoteImportant($id: uuid!, $isImportant: Boolean!) {
-  update_notes_by_pk(
-    pk_columns: { id: $id }
-    _set: { is_important: $isImportant, updated_at: "now()" }
+# Quick operations
+mutation ToggleNoteImportance($id: uuid!, $isImportant: Boolean!) {
+  updateNoteById(
+    pkColumns: { id: $id }
+    _set: { isImportant: $isImportant, updatedAt: "now()" }
   ) {
-    ...NoteBasicInfo
+    ...NoteBasic
   }
 }
 
-# Bulk operations for efficiency
-mutation BulkDeleteNotes($entity_id: uuid!, $entity_type: String!) {
-  delete_notes(
-    where: {
-      entity_id: { _eq: $entity_id }
-      entity_type: { _eq: $entity_type }
+mutation MarkNoteAsImportant($id: uuid!) {
+  updateNoteById(
+    pkColumns: { id: $id }
+    _set: { isImportant: true, updatedAt: "now()" }
+  ) {
+    ...NoteBasic
+  }
+}
+
+mutation UnmarkNoteAsImportant($id: uuid!) {
+  updateNoteById(
+    pkColumns: { id: $id }
+    _set: { isImportant: false, updatedAt: "now()" }
+  ) {
+    ...NoteBasic
+  }
+}
+
+# Entity-specific note operations
+mutation AddPayrollNote(
+  $payrollId: uuid!
+  $content: String!
+  $userId: uuid!
+  $isImportant: Boolean = false
+) {
+  insertNote(
+    object: {
+      content: $content
+      entityType: "payroll"
+      entityId: $payrollId
+      userId: $userId
+      isImportant: $isImportant
     }
   ) {
-    affected_rows
+    ...PayrollNote
+  }
+}
+
+mutation AddClientNote(
+  $clientId: uuid!
+  $content: String!
+  $userId: uuid!
+  $isImportant: Boolean = false
+) {
+  insertNote(
+    object: {
+      content: $content
+      entityType: "client"
+      entityId: $clientId
+      userId: $userId
+      isImportant: $isImportant
+    }
+  ) {
+    ...ClientNote
+  }
+}
+
+mutation AddUserNote(
+  $userId: uuid!
+  $content: String!
+  $authorUserId: uuid!
+  $isImportant: Boolean = false
+) {
+  insertNote(
+    object: {
+      content: $content
+      entityType: "user"
+      entityId: $userId
+      userId: $authorUserId
+      isImportant: $isImportant
+    }
+  ) {
+    ...UserNote
+  }
+}
+
+# Bulk operations
+mutation BulkDeleteNotes($ids: [uuid!]!) {
+  bulkDeleteNotes(where: { id: { _in: $ids } }) {
     returning {
       id
+      content
+      entityType
+      entityId
     }
+    affectedRows
   }
 }
 
-mutation UpdateNoteWithSetInput($id: uuid!, $input: notes_set_input!) {
-  update_notes_by_pk(pk_columns: { id: $id }, _set: $input) {
-    id
-    content
-  }
-}
-
-# Extracted from inline GraphQL operations
-mutation AddNoteExtracted(
-  $entity_type: String!
-  $entity_id: uuid!
-  $content: String!
-) {
-  insert_notes_one(object: { content: $content, is_important: false }) {
-    id
-    content
-    is_important
-  }
-}
-
-mutation UpdateNoteExtracted($id: uuid!, $content: String!) {
-  update_notes_by_pk(
-    pk_columns: { id: $id }
-    _set: { content: $content, updated_at: "now()" }
+mutation BulkMarkNotesImportant($ids: [uuid!]!) {
+  bulkUpdateNotes(
+    where: { id: { _in: $ids } }
+    _set: { isImportant: true, updatedAt: "now()" }
   ) {
-    id
-    content
+    returning {
+      ...NoteBasic
+    }
+    affectedRows
+  }
+}
+
+mutation BulkUnmarkNotesImportant($ids: [uuid!]!) {
+  bulkUpdateNotes(
+    where: { id: { _in: $ids } }
+    _set: { isImportant: false, updatedAt: "now()" }
+  ) {
+    returning {
+      ...NoteBasic
+    }
+    affectedRows
+  }
+}
+
+mutation BulkUpdateNotes($where: notesBoolExp!, $set: notesSetInput!) {
+  bulkUpdateNotes(where: $where, _set: $set) {
+    returning {
+      ...NoteBasic
+    }
+    affectedRows
+  }
+}
+
+# Entity cleanup operations
+mutation DeleteNotesByEntity($entityType: String!, $entityId: uuid!) {
+  bulkDeleteNotes(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+    }
+  ) {
+    returning {
+      id
+      content
+    }
+    affectedRows
+  }
+}
+
+mutation DeleteNotesByAuthor($authorUserId: uuid!) {
+  bulkDeleteNotes(where: { userId: { _eq: $authorUserId } }) {
+    returning {
+      id
+      content
+      entityType
+      entityId
+    }
+    affectedRows
+  }
+}
+
+# Transfer operations (when users change or entities merge)
+mutation TransferNotesToNewAuthor(
+  $oldAuthorUserId: uuid!
+  $newAuthorUserId: uuid!
+) {
+  bulkUpdateNotes(
+    where: { userId: { _eq: $oldAuthorUserId } }
+    _set: { userId: $newAuthorUserId, updatedAt: "now()" }
+  ) {
+    returning {
+      ...NoteBasic
+    }
+    affectedRows
+  }
+}
+
+mutation TransferNotesToNewEntity(
+  $oldEntityType: String!
+  $oldEntityId: uuid!
+  $newEntityType: String!
+  $newEntityId: uuid!
+) {
+  bulkUpdateNotes(
+    where: {
+      entityType: { _eq: $oldEntityType }
+      entityId: { _eq: $oldEntityId }
+    }
+    _set: {
+      entityType: $newEntityType
+      entityId: $newEntityId
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      ...NoteBasic
+    }
+    affectedRows
+  }
+}
+
+# Archive operations (soft delete alternative)
+# Note: Archive functionality not available - no archived field in notes table
+# Archive notes by deletion instead:
+
+# mutation ArchiveNote($id: uuid!) {
+#   updateNoteById(
+#     pkColumns: { id: $id }
+#     _set: { archived: true, updatedAt: "now()" }
+#   ) {
+#     ...NoteBasic
+#   }
+# }
+
+# mutation UnarchiveNote($id: uuid!) {
+#   updateNoteById(
+#     pkColumns: { id: $id }
+#     _set: { archived: false, updatedAt: "now()" }
+#   ) {
+#     ...NoteBasic
+#   }
+# }
+
+# mutation BulkArchiveNotes($ids: [uuid!]!) {
+#   bulkUpdateNotes(
+#     where: { id: { _in: $ids } }
+#     _set: { archived: true, updatedAt: "now()" }
+#   ) {
+#     returning {
+#       ...NoteBasic
+#     }
+#     affectedRows
+#   }
+# }
+
+# Extracted from existing usage - matching notes-list.tsx patterns
+mutation AddNoteExtracted(
+  $content: String!
+  $entityType: String!
+  $entityId: uuid!
+  $userId: uuid!
+  $isImportant: Boolean = false
+) {
+  insertNote(
+    object: {
+      content: $content
+      entityType: $entityType
+      entityId: $entityId
+      userId: $userId
+      isImportant: $isImportant
+    }
+  ) {
+    ...NoteListItem
+  }
+}
+
+mutation UpdateNoteExtracted(
+  $id: uuid!
+  $content: String
+  $isImportant: Boolean
+) {
+  updateNoteById(
+    pkColumns: { id: $id }
+    _set: {
+      content: $content
+      isImportant: $isImportant
+      updatedAt: "now()"
+    }
+  ) {
+    ...NoteListItem
   }
 }

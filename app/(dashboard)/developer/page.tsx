@@ -27,7 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { DebugPermissions } from "@/components/debug-permissions";
 import { DebugPermissionInfo } from "@/components/debug-permission-info";
-import { useUserRole } from "@/hooks/use-user-role";
+import { DeveloperOnly } from "@/components/auth/developer-only";
 
 // Conditionally import ActorTokenManager only in development
 let ActorTokenManager: React.ComponentType | null = null;
@@ -86,10 +86,7 @@ interface OAuthStatus {
   needsFix: boolean;
 }
 
-export default function DeveloperPage() {
-  // SECURITY: Verify user has developer permissions
-  const { userRole, isLoading: roleLoading } = useUserRole();
-  const isDeveloper = userRole === "developer";
+function DeveloperPageContent() {
 
   const [enabledFeatures, setEnabledFeatures] = useState<string[]>([]);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
@@ -102,9 +99,8 @@ export default function DeveloperPage() {
     "user_2uCU9pKf7RP2FiORHJVM5IH0Pd1"
   );
 
-  // All hooks must be called before early returns
+  // Load developer data on mount
   useEffect(() => {
-    if (!roleLoading && isDeveloper) {
       const fetchData = async () => {
         try {
           // Fetch token
@@ -132,36 +128,7 @@ export default function DeveloperPage() {
       };
 
       fetchData();
-    }
-  }, [roleLoading, isDeveloper]);
-
-  // SECURITY: Block access for non-developers
-  if (!roleLoading && !isDeveloper) {
-    return (
-      <div className="container mx-auto p-6">
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Access Denied</AlertTitle>
-          <AlertDescription>
-            You need developer privileges to access this page. Only users with
-            the &apos;admin&apos; role can access developer tools.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
-  // Show loading state while checking permissions
-  if (roleLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <Shield className="h-12 w-12 animate-pulse mx-auto mb-4" />
-          <p>Verifying developer access...</p>
-        </div>
-      </div>
-    );
-  }
+  }, []);
 
   const checkOAuthStatus = async () => {
     setLoadingOAuth(true);
@@ -1167,5 +1134,13 @@ export default function DeveloperPage() {
       {/* Actor Token Manager */}
       {ActorTokenManager && <ActorTokenManager />}
     </div>
+  );
+}
+
+export default function DeveloperPage() {
+  return (
+    <DeveloperOnly>
+      <DeveloperPageContent />
+    </DeveloperOnly>
   );
 }

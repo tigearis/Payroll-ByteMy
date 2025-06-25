@@ -27,19 +27,6 @@ interface CommitPayrollAssignmentsInput {
   changes: PayrollAssignmentInput[];
 }
 
-interface CommitPayrollAssignmentsResponse {
-  success: boolean;
-  message?: string;
-  errors?: string[];
-  affected_assignments?: Array<{
-    id: string;
-    payroll_date_id: string;
-    original_consultant_id: string;
-    new_consultant_id: string;
-    adjusted_eft_date: string;
-  }>;
-}
-
 // PostgreSQL connection pool
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,

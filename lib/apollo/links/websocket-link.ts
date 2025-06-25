@@ -63,6 +63,30 @@ export function createWebSocketLink(
             const token = await (window as any).Clerk.session.getToken({
               template: "hasura",
             });
+            
+            // Validate token structure for security
+            if (token) {
+              try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const hasuraClaims = payload["https://hasura.io/jwt/claims"];
+                
+                if (!hasuraClaims || !hasuraClaims["x-hasura-user-id"]) {
+                  console.error("Invalid WebSocket token: missing required Hasura claims");
+                  return {};
+                }
+                
+                // Log connection for audit purposes
+                console.log("WebSocket connection authenticated", {
+                  userId: hasuraClaims["x-hasura-user-id"],
+                  role: hasuraClaims["x-hasura-role"],
+                  timestamp: new Date().toISOString()
+                });
+              } catch (tokenError) {
+                console.error("WebSocket token validation failed:", tokenError);
+                return {};
+              }
+            }
+            
             return {
               headers: {
                 ...(token && { authorization: `Bearer ${token}` }),

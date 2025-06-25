@@ -19,16 +19,17 @@ configuration:
     contact_phone: contactPhone
     created_at: createdAt
     updated_at: updatedAt
+  custom_name: clients
   custom_root_fields:
-    delete: deleteClients
-    delete_by_pk: deleteClient
-    insert: insertClients
+    delete: bulkDeleteClients
+    delete_by_pk: deleteClientById
+    insert: bulkInsertClients
     insert_one: insertClient
     select: clients
     select_aggregate: clientsAggregate
-    select_by_pk: client
-    update: updateClients
-    update_by_pk: updateClient
+    select_by_pk: clientById
+    update: bulkUpdateClients
+    update_by_pk: updateClientById
 array_relationships:
   - name: billingAssignments
     using:
@@ -42,14 +43,14 @@ array_relationships:
       foreign_key_constraint_on:
         column: client_id
         table:
-          name: billing_invoice
+          name: billing_invoices
           schema: public
-  - name: billingInvoicesList
+  - name: billing_invoices
     using:
       foreign_key_constraint_on:
         column: client_id
         table:
-          name: billing_invoices
+          name: billing_invoice
           schema: public
   - name: externalSystems
     using:

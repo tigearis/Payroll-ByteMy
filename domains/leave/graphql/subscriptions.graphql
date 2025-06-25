@@ -1,22 +1,407 @@
 # Leave Domain Subscriptions
+# Security Classification: MEDIUM - Employee leave and HR data
+# SOC2 Compliance: Real-time access controls with audit logging
 
-subscription SubscribeToLeaveRequests($userId: uuid!) {
-  leaves(where: { userId: { _eq: $userId } }, order_by: { startDate: desc }) {
-    ...LeaveWithManager
+# Core leave subscriptions
+subscription LeaveUpdates($userId: uuid!) {
+  leave(
+    where: { userId: { _eq: $userId } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveDetailed
   }
 }
 
-subscription SubscribeToPendingLeaveRequests($managerId: uuid!) {
-  leaves(
-    where: { user: { managerId: { _eq: $managerId } } }
-    order_by: { startDate: asc }
+subscription UserLeaveUpdates($userId: uuid!) {
+  leave(
+    where: { userId: { _eq: $userId } }
+    orderBy: { startDate: DESC }
   ) {
     ...LeaveWithUser
   }
 }
 
-subscription SubscribeToTeamLeave($user_ids: [uuid!]!) {
-  leaves(where: {}, order_by: { startDate: asc }) {
+subscription LeaveStatusUpdates($leaveId: uuid!) {
+  leave(where: { id: { _eq: $leaveId } }) {
+    id
+    status
+    leaveType
+    startDate
+    endDate
+    reason
+  }
+}
+
+# Approval workflow subscriptions
+subscription PendingLeaveUpdates {
+  leave(
+    where: { status: { _eq: Pending } }
+    orderBy: { startDate: ASC }
+  ) {
+    ...PendingLeave
+  }
+}
+
+subscription ManagerPendingApprovalsUpdates($managerUserId: uuid!) {
+  leave(
+    where: {
+      leaveUser: { managerId: { _eq: $managerUserId } }
+      status: { _eq: Pending }
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...PendingLeave
+  }
+}
+
+# Team and management subscriptions
+subscription TeamLeaveUpdates($managerUserId: uuid!) {
+  leave(
+    where: {
+      leaveUser: { managerId: { _eq: $managerUserId } }
+    }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+subscription ActiveTeamLeaveUpdates($managerUserId: uuid!) {
+  leave(
+    where: {
+      leaveUser: { managerId: { _eq: $managerUserId } }
+      status: { _eq: Approved }
+      startDate: { _lte: "now()" }
+      endDate: { _gte: "now()" }
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+subscription UpcomingTeamLeaveUpdates($managerUserId: uuid!) {
+  leave(
+    where: {
+      leaveUser: { managerId: { _eq: $managerUserId } }
+      status: { _eq: Approved }
+      startDate: { _gte: "now()" }
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+# Status-based subscriptions
+subscription ActiveLeaveUpdates {
+  leave(
+    where: {
+      status: { _eq: Approved }
+      startDate: { _lte: "now()" }
+      endDate: { _gte: "now()" }
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+subscription ApprovedLeaveUpdates {
+  leave(
+    where: { status: { _eq: Approved } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...ApprovedLeave
+  }
+}
+
+subscription RejectedLeaveUpdates {
+  leave(
+    where: { status: { _eq: Rejected } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...RejectedLeave
+  }
+}
+
+subscription UpcomingLeaveUpdates {
+  leave(
+    where: {
+      status: { _eq: Approved }
+      startDate: { _gte: "now()" }
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+# Type-based subscriptions
+subscription SickLeaveUpdates {
+  leave(
+    where: { leaveType: { _eq: "Sick" } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...SickLeave
+  }
+}
+
+subscription VacationLeaveUpdates {
+  leave(
+    where: { leaveType: { _eq: "Annual" } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...VacationLeave
+  }
+}
+
+subscription EmergencyLeaveUpdates {
+  leave(
+    where: { leaveType: { _eq: "Other" } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...EmergencyLeave
+  }
+}
+
+# Calendar subscriptions
+subscription LeaveCalendarUpdates($startDate: date!, $endDate: date!) {
+  leave(
+    where: {
+      _or: [
+        {
+          startDate: { _gte: $startDate, _lte: $endDate }
+        }
+        {
+          endDate: { _gte: $startDate, _lte: $endDate }
+        }
+        {
+          _and: [
+            { startDate: { _lte: $startDate } }
+            { endDate: { _gte: $endDate } }
+          ]
+        }
+      ]
+      status: { _eq: Approved }
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveCalendarItem
+  }
+}
+
+subscription TeamLeaveCalendarUpdates(
+  $managerUserId: uuid!
+  $startDate: date!
+  $endDate: date!
+) {
+  leave(
+    where: {
+      leaveUser: { managerId: { _eq: $managerUserId } }
+      _or: [
+        {
+          startDate: { _gte: $startDate, _lte: $endDate }
+        }
+        {
+          endDate: { _gte: $startDate, _lte: $endDate }
+        }
+        {
+          _and: [
+            { startDate: { _lte: $startDate } }
+            { endDate: { _gte: $endDate } }
+          ]
+        }
+      ]
+      status: { _eq: Approved }
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveCalendarItem
+  }
+}
+
+# Dashboard subscriptions
+subscription LeaveTotalCountUpdates {
+  leaveAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription PendingLeaveCountUpdates {
+  leaveAggregate(
+    where: { status: { _eq: Pending } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription ApprovedLeaveCountUpdates {
+  leaveAggregate(
+    where: { status: { _eq: Approved } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription ActiveLeaveCountUpdates {
+  leaveAggregate(
+    where: {
+      status: { _eq: Approved }
+      startDate: { _lte: "now()" }
+      endDate: { _gte: "now()" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription RecentLeaveActivityUpdates {
+  leave(
+    orderBy: { startDate: DESC }
+    limit: 10
+  ) {
+    ...LeaveDashboardCard
+  }
+}
+
+subscription SickLeaveCountUpdates {
+  leaveAggregate(where: { leaveType: { _eq: "Sick" } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription VacationLeaveCountUpdates {
+  leaveAggregate(where: { leaveType: { _eq: "Annual" } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription UnpaidLeaveCountUpdates {
+  leaveAggregate(where: { leaveType: { _eq: "Unpaid" } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription OtherLeaveCountUpdates {
+  leaveAggregate(where: { leaveType: { _eq: "Other" } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Notification subscriptions
+subscription TeamLeaveRequestsUpdates($userId: uuid!) {
+  leave(
+    where: {
+      leaveUser: { managerId: { _eq: $userId } }
+      status: { _eq: Pending }
+    }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+subscription MyLeaveRequestsUpdates($userId: uuid!) {
+  leave(
+    where: { userId: { _eq: $userId } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+subscription EmergencyLeaveRequestsUpdates {
+  leave(
+    where: {
+      leaveType: { _eq: "Other" }
+      status: { _eq: Pending }
+    }
+    orderBy: { startDate: DESC }
+  ) {
+    ...EmergencyLeave
+  }
+}
+
+subscription AllPendingRequestsUpdates {
+  leave(
+    where: { status: { _eq: Pending } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+# HR and administrative subscriptions
+subscription HRPendingLeaveUpdates {
+  leave(
+    where: { status: { _eq: Pending } }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+subscription HRRecentApprovalsUpdates {
+  leave(
+    where: { status: { _in: [Approved, Rejected] } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+subscription LeaveAuditUpdates {
+  leave(orderBy: { startDate: DESC }) {
+    ...LeaveForAudit
+  }
+}
+
+# System monitoring subscriptions
+subscription LeaveRecentActivityUpdates {
+  leave(
+    orderBy: { startDate: DESC }
+    limit: 5
+  ) {
+    id
+    status
+    leaveType
+    startDate
+    leaveUser {
+      name
+    }
+  }
+}
+
+subscription LeaveSystemMetricsUpdates {
+  leaveAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription NewLeaveRequestsUpdates {
+  leave(
+    orderBy: { startDate: DESC }
+    limit: 10
+  ) {
     ...LeaveWithUser
   }
 }

@@ -3,7 +3,7 @@
 # SOC2 Compliance: Customer data with audit trail requirements
 
 subscription ClientUpdates($id: uuid!) {
-  client(id: $id) {
+  clientById(id: $id) {
     ...ClientWithRelations
   }
 }
@@ -11,14 +11,14 @@ subscription ClientUpdates($id: uuid!) {
 subscription ClientListUpdates {
   clients(
     where: { active: { _eq: true } }
-    order_by: { name: asc }
+    orderBy: { name: ASC }
   ) {
     ...ClientBasicInfo
   }
 }
 
 subscription ClientStatusUpdates($id: uuid!) {
-  client(id: $id) {
+  clientById(id: $id) {
     id
     name
     active
@@ -30,9 +30,9 @@ subscription ClientPayrollUpdates($clientId: uuid!) {
   payrolls(
     where: { 
       clientId: { _eq: $clientId }
-      supersededDate: { _is_null: true }
+      supersededDate: { _isNull: true }
     }
-    order_by: { updatedAt: desc }
+    orderBy: { updatedAt: DESC }
   ) {
     id
     name
@@ -54,7 +54,7 @@ subscription ActiveClientsCount {
 subscription ClientDashboardUpdates {
   clients(
     where: { active: { _eq: true } }
-    order_by: { name: asc }
+    orderBy: { name: ASC }
     limit: 10
   ) {
     ...ClientDashboardCard
@@ -62,7 +62,7 @@ subscription ClientDashboardUpdates {
 }
 
 subscription ClientMetricsUpdates($id: uuid!) {
-  client(id: $id) {
+  clientById(id: $id) {
     ...ClientWithMetrics
   }
 }

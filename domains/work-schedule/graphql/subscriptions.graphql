@@ -1,28 +1,668 @@
 # Work Schedule Domain Subscriptions
+# Security Classification: MEDIUM - Employee scheduling and time management
+# SOC2 Compliance: Real-time access controls with audit logging
 
-# Subscribe to work schedule changes for a specific user
-subscription SubscribeToWorkSchedule($user_id: uuid!) {
+# Core work schedule subscriptions
+subscription WorkSchedulesUpdates {
   workSchedules(
-    where: { userId: { _eq: $user_id } }
-    order_by: { workDay: asc }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...WorkScheduleListItem
+  }
+}
+
+subscription WorkScheduleUpdates($id: uuid!) {
+  workSchedules(where: { id: { _eq: $id } }) {
+    ...WorkScheduleComplete
+  }
+}
+
+subscription UserWorkScheduleUpdates($userId: uuid!) {
+  workSchedules(
+    where: { userId: { _eq: $userId } }
+    orderBy: { workDay: DESC }
   ) {
     ...WorkScheduleWithUser
   }
 }
 
-# Subscribe to all work schedule changes
-subscription SubscribeToAllWorkSchedules {
-  workSchedules(order_by: { updatedAt: desc }, limit: 20) {
+# User-specific subscriptions
+subscription MyWorkScheduleUpdates($userId: uuid!) {
+  workSchedules(
+    where: { userId: { _eq: $userId } }
+    orderBy: { workDay: ASC }
+  ) {
+    ...MyWorkSchedule
+  }
+}
+
+subscription MyScheduleChanges($userId: uuid!) {
+  workSchedules(
+    where: { 
+      userId: { _eq: $userId }
+      updatedAt: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...WorkScheduleBasic
+  }
+}
+
+subscription MyUpcomingScheduleUpdates($userId: uuid!, $days: Int = 7) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: "now()::date", _lte: "(now() + interval '${days} days')::date" }
+    }
+    orderBy: { workDay: ASC }
+  ) {
+    ...WorkScheduleBasic
+  }
+}
+
+# Team and management subscriptions
+subscription TeamWorkScheduleUpdates($managerUserId: uuid!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+    }
+    orderBy: { workDay: DESC }
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+subscription TeamScheduleChanges($managerUserId: uuid!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      updatedAt: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+subscription TeamDailyScheduleUpdates($managerUserId: uuid!, $workDay: String!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _eq: $workDay }
+    }
+    orderBy: { scheduleOwner: { name: ASC } }
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+subscription TeamWeeklyScheduleUpdates(
+  $managerUserId: uuid!
+  $startDate: String!
+  $endDate: String!
+) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+# Calendar and daily view subscriptions
+subscription DailyScheduleUpdates($workDay: String!) {
+  workSchedules(
+    where: { workDay: { _eq: $workDay } }
+    orderBy: { scheduleOwner: { name: ASC } }
+  ) {
+    ...DailyWorkSchedule
+  }
+}
+
+subscription TodayScheduleUpdates {
+  workSchedules(
+    where: { workDay: { _eq: "now()::date" } }
+    orderBy: { scheduleOwner: { name: ASC } }
+  ) {
+    ...DailyWorkSchedule
+  }
+}
+
+subscription WeeklyScheduleUpdates($startDate: String!, $endDate: String!) {
+  workSchedules(
+    where: {
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...WorkScheduleCalendarItem
+  }
+}
+
+subscription MonthlyScheduleUpdates($startDate: String!, $endDate: String!) {
+  workSchedules(
+    where: {
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...WorkScheduleMonthlyView
+  }
+}
+
+# Schedule pattern and availability subscriptions
+subscription ScheduleAvailabilityUpdates($workDay: String!, $minHours: numeric = 4.0) {
+  workSchedules(
+    where: {
+      workDay: { _eq: $workDay }
+      workHours: { _gte: $minHours }
+    }
+    orderBy: { workHours: DESC }
+  ) {
+    ...WorkScheduleAvailability
+  }
+}
+
+subscription TeamCapacityUpdates($managerUserId: uuid!, $workDay: String!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _eq: $workDay }
+    }
+    orderBy: { workHours: DESC }
+  ) {
+    ...WorkScheduleCapacity
+  }
+}
+
+subscription ScheduleConflictUpdates($workDay: String!) {
+  workSchedules(
+    where: { workDay: { _eq: $workDay } }
+    orderBy: { workHours: DESC }
+  ) {
+    ...WorkScheduleConflictCheck
+  }
+}
+
+subscription WeeklyCapacityUpdates(
+  $managerUserId: uuid!
+  $startDate: String!
+  $endDate: String!
+) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: [{ workDay: ASC }, { workHours: DESC }]
+  ) {
+    ...WorkScheduleCapacity
+  }
+}
+
+# Dashboard and analytics subscriptions
+subscription TodaySchedulesUpdates {
+  workSchedulesAggregate(
+    where: { workDay: { _eq: "now()::date" } }
+  ) {
+    aggregate {
+      count
+      sum {
+        workHours
+      }
+    }
+  }
+}
+
+subscription ThisWeekSchedulesUpdates {
+  workSchedulesAggregate(
+    where: {
+      workDay: { 
+        _gte: "date_trunc('week', now())::date"
+        _lte: "(date_trunc('week', now()) + interval '6 days')::date"
+      }
+    }
+  ) {
+    aggregate {
+      count
+      sum {
+        workHours
+      }
+    }
+  }
+}
+
+subscription RecentSchedulesUpdates {
+  workSchedules(
+    orderBy: { createdAt: DESC }
+    limit: 5
+  ) {
+    ...WorkScheduleDashboardCard
+  }
+}
+
+subscription TotalSchedulesUpdates {
+  workSchedulesAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription AvgWorkHoursUpdates {
+  workSchedulesAggregate {
+    aggregate {
+      avg {
+        workHours
+      }
+    }
+  }
+}
+
+subscription TodayTotalHoursUpdates {
+  workSchedulesAggregate(
+    where: { workDay: { _eq: "now()::date" } }
+  ) {
+    aggregate {
+      sum {
+        workHours
+      }
+    }
+  }
+}
+
+subscription UserWorkSchedulesUpdates(
+  $userId: uuid!
+  $startDate: String!
+  $endDate: String!
+) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+  ) {
+    ...WorkScheduleTotals
+  }
+}
+
+subscription UserTotalHoursUpdates(
+  $userId: uuid!
+  $startDate: String!
+  $endDate: String!
+) {
+  workSchedulesAggregate(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+  ) {
+    aggregate {
+      sum {
+        workHours
+      }
+    }
+  }
+}
+
+subscription TeamSchedulesUpdates(
+  $managerUserId: uuid!
+  $startDate: String!
+  $endDate: String!
+) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+  ) {
+    ...WorkScheduleStats
+  }
+}
+
+subscription TeamHoursTotalsUpdates(
+  $managerUserId: uuid!
+  $startDate: String!
+  $endDate: String!
+) {
+  workSchedulesAggregate(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+  ) {
+    aggregate {
+      sum {
+        workHours
+      }
+      avg {
+        workHours
+      }
+      count
+    }
+  }
+}
+
+# Role-based subscriptions
+subscription SchedulesByRoleUpdates($role: user_role!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { role: { _eq: $role } }
+    }
+    orderBy: { workDay: DESC }
+  ) {
+    ...WorkScheduleListItem
+  }
+}
+
+subscription ConsultantScheduleUpdates {
+  workSchedules(
+    where: {
+      scheduleOwner: { role: { _eq: "consultant" } }
+    }
+    orderBy: { workDay: DESC }
+  ) {
+    ...WorkScheduleListItem
+  }
+}
+
+subscription ManagerScheduleUpdates {
+  workSchedules(
+    where: {
+      scheduleOwner: { role: { _eq: "manager" } }
+    }
+    orderBy: { workDay: DESC }
+  ) {
+    ...WorkScheduleListItem
+  }
+}
+
+# Real-time schedule changes subscriptions
+subscription RecentScheduleChangesUpdates($minutes: Int = 30) {
+  workSchedules(
+    where: {
+      updatedAt: { _gte: "now() - interval '${minutes} minutes'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...WorkScheduleChangeLog
+  }
+}
+
+subscription NewScheduleCreationsUpdates {
+  workSchedules(
+    where: { createdAt: { _gte: "now() - interval '5 minutes'" } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...WorkScheduleWithUser
+    createdAt
+  }
+}
+
+# Deletion tracking would require custom trigger or event tracking
+# as GraphQL subscriptions don't naturally track deletions
+
+# Notification subscriptions
+subscription TeamScheduleChangesUpdates($userId: uuid!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $userId } }
+      updatedAt: { _gte: "now() - interval '24 hours'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+subscription MyScheduleChangesUpdates($userId: uuid!) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      updatedAt: { _gte: "now() - interval '24 hours'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...WorkScheduleBasic
+  }
+}
+
+subscription OvertimeSchedulesUpdates {
+  workSchedules(
+    where: {
+      workHours: { _gt: 8.0 }
+      workDay: { _gte: "now()::date" }
+    }
+    orderBy: { workHours: DESC }
+  ) {
     ...WorkScheduleWithUser
   }
 }
 
-# Subscribe to team work schedule changes
-subscription SubscribeToTeamWorkSchedules($user_ids: [uuid!]!) {
+subscription UnderScheduledUpdates {
   workSchedules(
-    where: { userId: { _in: $user_ids } }
-    order_by: { updatedAt: desc }
+    where: {
+      workHours: { _lt: 4.0, _gt: 0.0 }
+      workDay: { _gte: "now()::date" }
+    }
+    orderBy: { workHours: ASC }
   ) {
     ...WorkScheduleWithUser
+  }
+}
+
+# Performance monitoring subscriptions
+subscription HeavilyScheduledUsersUpdates {
+  workSchedules(
+    where: {
+      workHours: { _gte: 10.0 }
+      workDay: { _gte: "now()::date", _lte: "(now() + interval '7 days')::date" }
+    }
+    orderBy: { workHours: DESC }
+  ) {
+    ...WorkScheduleWithUser
+  }
+}
+
+subscription RecentScheduleVolumeUpdates {
+  workSchedulesAggregate(
+    where: {
+      createdAt: { _gte: "now() - interval '1 hour'" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription ScheduleRecentActivityUpdates {
+  workSchedules(
+    orderBy: { updatedAt: DESC }
+    limit: 5
+  ) {
+    id
+    workDay
+    workHours
+    updatedAt
+    scheduleOwner {
+      name
+    }
+  }
+}
+
+subscription ScheduleSystemMetricsUpdates {
+  workSchedulesAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription TodayScheduleCountUpdates {
+  workSchedulesAggregate(
+    where: { workDay: { _eq: "now()::date" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Audit and compliance subscriptions
+subscription WorkScheduleAuditUpdates {
+  workSchedules(
+    where: {
+      updatedAt: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...WorkScheduleForAudit
+  }
+}
+
+subscription ScheduleChangeAuditUpdates($userId: uuid!) {
+  workSchedules(
+    where: { 
+      userId: { _eq: $userId }
+      updatedAt: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...WorkScheduleChangeLog
+  }
+}
+
+subscription TeamScheduleAuditUpdates($managerUserId: uuid!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      updatedAt: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...WorkScheduleForAudit
+  }
+}
+
+# Pattern analysis subscriptions
+subscription SchedulePatternUpdates($userId: uuid!) {
+  workSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: "(now() - interval '4 weeks')::date" }
+    }
+    orderBy: { workDay: ASC }
+  ) {
+    ...WorkSchedulePattern
+  }
+}
+
+subscription TeamSchedulePatternUpdates($managerUserId: uuid!) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: "(now() - interval '4 weeks')::date" }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...WorkSchedulePattern
+  }
+}
+
+# Upcoming and planning subscriptions
+subscription UpcomingScheduleUpdates($days: Int = 7) {
+  workSchedules(
+    where: {
+      workDay: { _gte: "now()::date", _lte: "(now() + interval '${days} days')::date" }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...WorkScheduleCalendarItem
+  }
+}
+
+subscription TeamUpcomingScheduleUpdates($managerUserId: uuid!, $days: Int = 7) {
+  workSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _gte: "now()::date", _lte: "(now() + interval '${days} days')::date" }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...TeamWorkSchedule
+  }
+}
+
+subscription NextWeekScheduleUpdates {
+  workSchedules(
+    where: {
+      workDay: { 
+        _gte: "(date_trunc('week', now()) + interval '1 week')::date"
+        _lte: "(date_trunc('week', now()) + interval '1 week 6 days')::date"
+      }
+    }
+    orderBy: [{ workDay: ASC }, { scheduleOwner: { name: ASC } }]
+  ) {
+    ...WorkScheduleCalendarItem
+  }
+}
+
+# Summary and overview subscriptions
+subscription ScheduleCountUpdates {
+  workSchedulesAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription TotalHoursUpdates {
+  workSchedulesAggregate(
+    where: { workDay: { _gte: "now()::date" } }
+  ) {
+    aggregate {
+      sum {
+        workHours
+      }
+    }
+  }
+}
+
+subscription AvgHoursPerDayUpdates {
+  workSchedulesAggregate(
+    where: { workDay: { _gte: "now()::date" } }
+  ) {
+    aggregate {
+      avg {
+        workHours
+      }
+    }
+  }
+}
+
+subscription UserSchedulesUpdates($userId: uuid!) {
+  workSchedules(
+    where: { userId: { _eq: $userId } }
+  ) {
+    ...UserWorkScheduleSummary
+  }
+}
+
+subscription UserFutureTotalHoursUpdates($userId: uuid!) {
+  workSchedulesAggregate(
+    where: { 
+      userId: { _eq: $userId }
+      workDay: { _gte: "now()::date" }
+    }
+  ) {
+    aggregate {
+      sum {
+        workHours
+      }
+    }
   }
 }

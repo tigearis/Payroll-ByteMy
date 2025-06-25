@@ -271,7 +271,7 @@ export function isValidDate(date: Date | string | null | undefined): boolean {
       return isValid(date);
     }
     return false;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }

@@ -1,114 +1,501 @@
 # Leave Domain Queries
+# Security Classification: MEDIUM - Employee leave and HR data
+# SOC2 Compliance: Row-level security and audit logging enforced
 
-query GetLeaveRequests(
-  $where: leave_bool_exp
-  $order_by: [leave_order_by!]
-  $limit: Int
-  $offset: Int
+# Core leave queries
+query GetLeave($limit: Int = 50, $offset: Int = 0, $where: leaveBoolExp) {
+  leave(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveListItem
+  }
+  leaveAggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetLeaveById($id: uuid!) {
+  leaveById(id: $id) {
+    ...LeaveComplete
+  }
+}
+
+query GetLeaveBasic($id: uuid!) {
+  leaveById(id: $id) {
+    ...LeaveBasic
+  }
+}
+
+# User-specific leave queries
+query GetUserLeave($userId: uuid!) {
+  leave(
+    where: { userId: { _eq: $userId } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+query GetMyLeave($userId: uuid!) {
+  leave(
+    where: { userId: { _eq: $userId } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveDetailed
+  }
+}
+
+query GetUserLeaveById($id: uuid!, $userId: uuid!) {
+  leaveById(id: $id) {
+    ...LeaveWithUser
+  }
+}
+
+query GetUserLeaveHistory($userId: uuid!, $limit: Int = 100) {
+  leave(
+    where: { userId: { _eq: $userId } }
+    orderBy: { startDate: DESC }
+    limit: $limit
+  ) {
+    ...LeaveListItem
+  }
+}
+
+# Status-based queries
+query GetPendingLeave {
+  leave(
+    where: { status: { _eq: Pending } }
+    orderBy: { startDate: ASC }
+  ) {
+    ...PendingLeave
+  }
+}
+
+query GetApprovedLeave {
+  leave(
+    where: { status: { _eq: Approved } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...ApprovedLeave
+  }
+}
+
+query GetRejectedLeave {
+  leave(
+    where: { status: { _eq: Rejected } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...RejectedLeave
+  }
+}
+
+query GetLeaveByStatus($status: leave_status_enum!) {
+  leave(
+    where: { status: { _eq: $status } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+query GetUserPendingLeave($userId: uuid!) {
+  leave(
+    where: {
+      userId: { _eq: $userId }
+      status: { _eq: Pending }
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+query GetUserApprovedLeave($userId: uuid!) {
+  leave(
+    where: {
+      userId: { _eq: $userId }
+      status: { _eq: Approved }
+    }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+# Leave type queries
+query GetLeaveByType($leaveType: String!) {
+  leave(
+    where: { leaveType: { _eq: $leaveType } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveListItem
+  }
+}
+
+query GetAnnualLeave {
+  leave(
+    where: { leaveType: { _eq: "Annual" } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...VacationLeave
+  }
+}
+
+query GetSickLeave {
+  leave(
+    where: { leaveType: { _eq: "Sick" } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...SickLeave
+  }
+}
+
+query GetUnpaidLeave {
+  leave(
+    where: { leaveType: { _eq: "Unpaid" } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+query GetOtherLeave {
+  leave(
+    where: { leaveType: { _eq: "Other" } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...EmergencyLeave
+  }
+}
+
+# Date range queries
+query GetLeaveByDateRange($startDate: date!, $endDate: date!) {
+  leave(
+    where: {
+      _and: [
+        { startDate: { _gte: $startDate } }
+        { endDate: { _lte: $endDate } }
+      ]
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveCalendarItem
+  }
+}
+
+query GetLeaveInPeriod($startDate: date!, $endDate: date!) {
+  leave(
+    where: {
+      _or: [
+        {
+          _and: [
+            { startDate: { _gte: $startDate, _lte: $endDate } }
+          ]
+        }
+        {
+          _and: [
+            { endDate: { _gte: $startDate, _lte: $endDate } }
+          ]
+        }
+        {
+          _and: [
+            { startDate: { _lte: $startDate } }
+            { endDate: { _gte: $endDate } }
+          ]
+        }
+      ]
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveCalendarItem
+  }
+}
+
+query GetUpcomingLeave($limit: Int = 20) {
+  leave(
+    where: {
+      startDate: { _gte: "now()" }
+      status: { _eq: Approved }
+    }
+    orderBy: { startDate: ASC }
+    limit: $limit
+  ) {
+    ...LeaveListItem
+  }
+}
+
+query GetCurrentLeave {
+  leave(
+    where: {
+      startDate: { _lte: "now()" }
+      endDate: { _gte: "now()" }
+      status: { _eq: Approved }
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+# Manager and team queries
+query GetTeamLeave($managerUserId: uuid!) {
+  leave(
+    where: {
+      leaveUser: {
+        managerId: { _eq: $managerUserId }
+      }
+    }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+query GetTeamPendingLeave($managerUserId: uuid!) {
+  leave(
+    where: {
+      leaveUser: {
+        managerId: { _eq: $managerUserId }
+      }
+      status: { _eq: Pending }
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveWithUser
+  }
+}
+
+# Dashboard and overview queries
+query GetLeaveDashboardStats {
+  totalLeave: leaveAggregate {
+    aggregate {
+      count
+    }
+  }
+  
+  pendingLeave: leaveAggregate(
+    where: { status: { _eq: Pending } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  approvedLeave: leaveAggregate(
+    where: { status: { _eq: Approved } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  currentLeave: leaveAggregate(
+    where: {
+      startDate: { _lte: "now()" }
+      endDate: { _gte: "now()" }
+      status: { _eq: Approved }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  upcomingLeave: leave(
+    where: {
+      startDate: { _gte: "now()" }
+      status: { _eq: Approved }
+    }
+    orderBy: { startDate: ASC }
+    limit: 5
+  ) {
+    ...LeaveDashboardCard
+  }
+}
+
+query GetLeaveOverview {
+  leave(orderBy: { startDate: DESC }) {
+    ...LeaveListItem
+  }
+}
+
+# Search and filtering queries
+query SearchLeave($searchTerm: String!, $limit: Int = 50) {
+  leave(
+    where: {
+      _or: [
+        { reason: { _ilike: $searchTerm } }
+        { leaveType: { _ilike: $searchTerm } }
+        { leaveUser: { name: { _ilike: $searchTerm } } }
+      ]
+    }
+    orderBy: { startDate: DESC }
+    limit: $limit
+  ) {
+    ...LeaveListItem
+  }
+}
+
+query FilterLeaveByUser($userId: uuid!, $status: leave_status_enum) {
+  leave(
+    where: {
+      userId: { _eq: $userId }
+      status: { _eq: $status }
+    }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveBasic
+  }
+}
+
+query FilterLeaveByDateAndType(
+  $startDate: date!
+  $endDate: date!
+  $leaveType: String
 ) {
-  leaves(where: $where, order_by: $order_by, limit: $limit, offset: $offset) {
-    ...LeaveWithManager
+  leave(
+    where: {
+      _and: [
+        { startDate: { _gte: $startDate, _lte: $endDate } }
+        { leaveType: { _eq: $leaveType } }
+      ]
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveListItem
   }
-  leavesAggregate(where: $where) {
+}
+
+# Audit and compliance queries
+query GetLeaveForAudit(
+  $limit: Int = 100
+  $offset: Int = 0
+  $where: leaveBoolExp = {}
+) {
+  leave(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveForAudit
+  }
+}
+
+query GetLeaveApprovalAudit($limit: Int = 50) {
+  leave(
+    where: { status: { _neq: Pending } }
+    orderBy: { startDate: DESC }
+    limit: $limit
+  ) {
+    ...LeaveApprovalAudit
+  }
+}
+
+query GetUserLeaveAudit($userId: uuid!, $limit: Int = 50) {
+  leave(
+    where: { userId: { _eq: $userId } }
+    orderBy: { startDate: DESC }
+    limit: $limit
+  ) {
+    ...LeaveForAudit
+  }
+}
+
+# Performance-optimized paginated queries
+query GetLeavePaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: leaveBoolExp = {}
+  $orderBy: [leaveOrderBy!] = [{ startDate: DESC }]
+) {
+  leave(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: $orderBy
+  ) {
+    ...LeaveTableRow
+  }
+
+  leaveAggregate(where: $where) {
     aggregate {
       count
     }
   }
 }
 
-query GetLeaveRequestById($id: uuid!) {
-  leave(id: $id) {
-    ...LeaveWithManager
-  }
-}
-
-query GetLeaveRequestsByUser($userId: uuid!, $startDate: date, $endDate: date) {
-  leaves(
-    where: {
-      _and: [
-        { userId: { _eq: $userId } }
-        { startDate: { _lte: $endDate } }
-        { endDate: { _gte: $startDate } }
-      ]
-    }
-    order_by: { startDate: desc }
+query GetUserLeavePaginated(
+  $userId: uuid!
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: leaveBoolExp = {}
+) {
+  leave(
+    where: { _and: [{ userId: { _eq: $userId } }, $where] }
+    orderBy: { startDate: DESC }
+    limit: $limit
+    offset: $offset
   ) {
-    ...LeaveCore
+    ...LeaveTableRow
   }
-}
 
-query GetPendingLeaveRequests($managerId: uuid) {
-  leaves(
-    where: {
-      _and: [
-        { status: { _eq: "Pending" } }
-        { user: { managerId: { _eq: $managerId } } }
-      ]
-    }
-    order_by: { startDate: asc }
+  userLeaveAggregate: leaveAggregate(
+    where: { _and: [{ userId: { _eq: $userId } }, $where] }
   ) {
-    ...LeaveWithUser
-  }
-}
-
-query GetLeaveOverlaps($startDate: date!, $endDate: date!, $excludeId: uuid) {
-  leaves(
-    where: {
-      _and: [
-        { startDate: { _lte: $endDate } }
-        { endDate: { _gte: $startDate } }
-        { status: { _neq: "Rejected" } }
-        { id: { _neq: $excludeId } }
-      ]
-    }
-  ) {
-    ...LeaveWithUser
-  }
-}
-
-query GetLeaveCalendar($startDate: date!, $endDate: date!, $userIds: [uuid!]) {
-  leaves(
-    where: {
-      _and: [
-        { startDate: { _lte: $endDate } }
-        { endDate: { _gte: $startDate } }
-        { status: { _eq: "Approved" } }
-        { userId: { _in: $userIds } }
-      ]
-    }
-    order_by: { startDate: asc }
-  ) {
-    ...LeaveWithUser
-  }
-}
-
-query GetLeaveAnalytics($startDate: date!, $endDate: date!) {
-  leave_by_type: leavesAggregate(
-    where: { startDate: { _gte: $startDate, _lte: $endDate } }
-  ) {
-    nodes {
-      leaveType
-    }
     aggregate {
       count
     }
   }
+}
 
-  leave_by_status: leavesAggregate(
-    where: { startDate: { _gte: $startDate, _lte: $endDate } }
-  ) {
-    nodes {
-      status
-    }
-    aggregate {
-      count
-    }
+# Quick list queries for performance
+query GetLeaveQuickList {
+  leave(orderBy: { startDate: DESC }) {
+    ...LeaveMinimal
   }
+}
 
-  leave_by_user: leaves(where: {}) {
-    user {
-      id
-      name
+query GetMyLeaveQuickList($userId: uuid!) {
+  leave(
+    where: { userId: { _eq: $userId } }
+    orderBy: { startDate: DESC }
+  ) {
+    ...LeaveMinimal
+  }
+}
+
+# Calendar view queries
+query GetLeaveCalendar($startDate: date!, $endDate: date!) {
+  leave(
+    where: {
+      _and: [
+        { startDate: { _lte: $endDate } }
+        { endDate: { _gte: $startDate } }
+      ]
     }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveCalendarItem
+  }
+}
+
+query GetTeamLeaveCalendar($managerUserId: uuid!, $startDate: date!, $endDate: date!) {
+  leave(
+    where: {
+      _and: [
+        { startDate: { _lte: $endDate } }
+        { endDate: { _gte: $startDate } }
+        { leaveUser: { managerId: { _eq: $managerUserId } } }
+      ]
+    }
+    orderBy: { startDate: ASC }
+  ) {
+    ...LeaveCalendarItem
   }
 }

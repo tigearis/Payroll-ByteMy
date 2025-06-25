@@ -5,30 +5,34 @@ configuration:
   column_config:
     created_at:
       custom_name: createdAt
+    legacy_permission_name:
+      custom_name: legacyPermissionName
     resource_id:
       custom_name: resourceId
     updated_at:
       custom_name: updatedAt
   custom_column_names:
     created_at: createdAt
+    legacy_permission_name: legacyPermissionName
     resource_id: resourceId
     updated_at: updatedAt
+  custom_name: permissions
   custom_root_fields:
-    delete: deletePermissions
-    delete_by_pk: deletePermission
-    insert: insertPermissions
+    delete: bulkDeletePermissions
+    delete_by_pk: deletePermissionById
+    insert: bulkInsertPermissions
     insert_one: insertPermission
     select: permissions
     select_aggregate: permissionsAggregate
-    select_by_pk: permission
-    update: updatePermissions
-    update_by_pk: updatePermission
+    select_by_pk: permissionById
+    update: bulkUpdatePermissions
+    update_by_pk: updatePermissionById
 object_relationships:
-  - name: resource
+  - name: relatedResource
     using:
       foreign_key_constraint_on: resource_id
 array_relationships:
-  - name: rolePermissions
+  - name: assignedToRoles
     using:
       foreign_key_constraint_on:
         column: permission_id
@@ -110,3 +114,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

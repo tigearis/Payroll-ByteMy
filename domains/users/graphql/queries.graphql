@@ -2,18 +2,17 @@
 # Security Classification: CRITICAL - Employee PII and authentication data
 # SOC2 Compliance: Strict access controls with audit logging
 
-query GetUsers {
-  users(where: { isActive: { _eq: true } }, order_by: { name: asc }) {
-    id
-    name
-    email
-    role
+query GetUsers($limit: Int = 50, $offset: Int = 0, $where: usersBoolExp) {
+  users(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { name: ASC }
+  ) {
+    ...UsersUserCore
     username
     image
-    isStaff
-    isActive
     managerId
-    clerkUserId
   }
 }
 
@@ -27,14 +26,33 @@ query GetUsersForDropdown {
   }
 }
 
+# Managers query for user management
+query GetManagers {
+  users(where: { role: { _in: ["manager", "org_admin"] }, isActive: { _eq: true } }) {
+    ...UsersUserCore
+    username
+    image
+    managerId
+  }
+}
+
+# User statistics for dashboard - simple count
+query GetUserCount {
+  usersAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
 query GetActiveUsers {
-  users(where: { isActive: { _eq: true } }, order_by: { name: asc }) {
+  users(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
     ...UserBasicInfo
   }
 }
 
 query GetUserById($id: uuid!) {
-  user(id: $id) {
+  userById(id: $id) {
     id
     name
     email
@@ -45,7 +63,7 @@ query GetUserById($id: uuid!) {
     isActive
     managerId
     clerkUserId
-    manager {
+    managerUser {
       id
       name
       email
@@ -81,7 +99,7 @@ query GetUserByEmail($email: String!) {
     isActive
     managerId
     clerkUserId
-    manager {
+    managerUser {
       id
       name
       email
@@ -97,7 +115,7 @@ query GetStaffList {
       isActive: { _eq: true }
       role: { _in: ["consultant", "manager", "org_admin"] }
     }
-    order_by: { name: asc }
+    orderBy: { name: ASC }
   ) {
     id
     name
@@ -109,7 +127,7 @@ query GetStaffList {
     isActive
     managerId
     clerkUserId
-    manager {
+    managerUser {
       id
       name
       email
@@ -119,7 +137,7 @@ query GetStaffList {
 }
 
 query GetStaffById($id: uuid!) {
-  user(id: $id) {
+  userById(id: $id) {
     id
     name
     email
@@ -131,19 +149,12 @@ query GetStaffById($id: uuid!) {
     clerkUserId
     createdAt
     updatedAt
-    leaves {
-      id
-      startDate
-      endDate
-      leaveType
-      status
-      reason
-    }
+    # leaves removed - relationship not available
   }
 }
 
 query GetAllUsersList {
-  users(where: { isActive: { _eq: true } }, order_by: { name: asc }) {
+  users(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
     id
     name
     email
@@ -158,19 +169,19 @@ query GetAllUsersList {
 }
 
 query GetUserProfile($id: uuid!) {
-  user(id: $id) {
+  userById(id: $id) {
     ...UserWithProfile
   }
 }
 
 query GetUsersWithRoles {
-  users(where: { isActive: { _eq: true } }, order_by: { name: asc }) {
+  users(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
     ...UserRoleInfo
   }
 }
 
 query GetUserPermissions($id: uuid!) {
-  user(id: $id) {
+  userById(id: $id) {
     ...UserPermissionsInfo
   }
 }
@@ -189,7 +200,7 @@ query SearchUsers($searchTerm: String!) {
         }
       ]
     }
-    order_by: { name: asc }
+    orderBy: { name: ASC }
     limit: 50
   ) {
     ...UserWithProfile
@@ -198,7 +209,7 @@ query SearchUsers($searchTerm: String!) {
 
 # Audit queries - limited fields for compliance
 query GetUsersForAudit {
-  users(order_by: { createdAt: desc }) {
+  users(orderBy: { createdAt: DESC }) {
     ...UserForAudit
   }
 }
@@ -226,7 +237,7 @@ query GetUserStats {
 
 # Authentication helper queries
 query GetUserSessionInfo($id: uuid!) {
-  user(id: $id) {
+  userById(id: $id) {
     id
     name
     email
@@ -237,7 +248,7 @@ query GetUserSessionInfo($id: uuid!) {
 
 # Extracted from inline GraphQL operations
 query GetCurrentUser($currentUserId: uuid!) {
-  user(id: $currentUserId) {
+  userById(id: $currentUserId) {
     id
     name
     role
@@ -251,7 +262,7 @@ query GetCurrentUser($currentUserId: uuid!) {
 }
 
 query GetUserRole($userId: uuid!) {
-  user(id: $userId) {
+  userById(id: $userId) {
     id
     role
     isStaff
@@ -260,7 +271,7 @@ query GetUserRole($userId: uuid!) {
 }
 
 query GetUserRoleFallback($userId: uuid!) {
-  user(id: $userId) {
+  userById(id: $userId) {
     id
     role
     isStaff
@@ -281,7 +292,7 @@ query GetUsersWithLimit($limit: Int = 10) {
 }
 
 query GetUserProfileSettings($id: uuid!) {
-  user(id: $id) {
+  userById(id: $id) {
     id
     name
     email
@@ -289,7 +300,7 @@ query GetUserProfileSettings($id: uuid!) {
     isStaff
     isActive
     clerkUserId
-    manager {
+    managerUser {
       id
       name
       email
@@ -302,13 +313,13 @@ query GetUserProfileSettings($id: uuid!) {
 query GetUsersWithFiltering(
   $limit: Int = 50
   $offset: Int = 0
-  $where: users_bool_exp
+  $where: usersBoolExp
 ) {
   users(
     limit: $limit
     offset: $offset
     where: $where
-    order_by: { createdAt: desc }
+    orderBy: { createdAt: DESC }
   ) {
     id
     name
@@ -320,7 +331,7 @@ query GetUsersWithFiltering(
     isActive
     managerId
     clerkUserId
-    manager {
+    managerUser {
       id
       name
       email
@@ -333,10 +344,10 @@ query GetUsersWithFiltering(
   }
 }
 
-query GetManagers {
+query GetDeveloperManagers {
   users(
     where: { role: { _in: ["developer", "manager"] } }
-    order_by: { name: asc }
+    orderBy: { name: ASC }
   ) {
     id
     name
@@ -346,7 +357,7 @@ query GetManagers {
 }
 
 query GetUserRoleSecure($userId: uuid!) {
-  user(id: $userId) {
+  userById(id: $userId) {
     id
     role
     isStaff
@@ -355,7 +366,7 @@ query GetUserRoleSecure($userId: uuid!) {
 }
 
 query GetUserRoleFallbackSecure($userId: uuid!) {
-  user(id: $userId) {
+  userById(id: $userId) {
     id
     role
     isStaff
@@ -367,7 +378,7 @@ query GetUserRoleFallbackSecure($userId: uuid!) {
 # Migrated from inline operations - Priority 1 fixes
 
 query GetUserProfileComplete($id: uuid!) {
-  user(id: $id) {
+  userById(id: $id) {
     id
     name
     email
@@ -379,19 +390,13 @@ query GetUserProfileComplete($id: uuid!) {
     createdAt
     updatedAt
     clerkUserId
-    manager {
+    managerUser {
       id
       name
       email
       image
     }
-    directReports {
-      id
-      name
-      email
-      role
-      image
-    }
+    # directReports removed - relationship not available
     primaryConsultantPayrolls {
       id
       name
@@ -417,35 +422,15 @@ query GetUserProfileComplete($id: uuid!) {
         name
       }
     }
-    leaves(order_by: { startDate: desc }, limit: 5) {
-      id
-      startDate
-      endDate
-      leaveType
-      status
-      reason
-    }
-    notesWritten(order_by: { created_at: desc }, limit: 5) {
-      id
-      content
-      created_at
-      entity_type
-      entity_id
-      is_important
-    }
-    workSchedules(order_by: { createdAt: desc }, limit: 7) {
-      id
-      workDay
-      workHours
-      createdAt
-    }
+    # leaves removed - relationship not available
+    # userWorkSchedules needed instead of workSchedules
   }
 }
 
 # User deletion queries - migrated from app/api/staff/delete/route.ts
 
 query GetUserForDeletion($id: uuid!) {
-  user(id: $id) {
+  userById(id: $id) {
     id
     name
     email
@@ -454,13 +439,13 @@ query GetUserForDeletion($id: uuid!) {
     isStaff
     isActive
     createdAt
-    manager {
+    managerUser {
       id
       name
       email
     }
   }
-  
+
   payrolls(
     where: {
       _or: [
@@ -475,7 +460,7 @@ query GetUserForDeletion($id: uuid!) {
     name
     status
   }
-  
+
   subordinates: users(
     where: { managerId: { _eq: $id }, isActive: { _eq: true } }
   ) {
@@ -483,31 +468,16 @@ query GetUserForDeletion($id: uuid!) {
     name
     email
   }
-  
-  pendingLeaves: leaves(
-    where: {
-      _and: [
-        { user: { managerId: { _eq: $id } } }
-        { status: { _eq: "Pending" } }
-      ]
-    }
-  ) {
-    id
-    user {
-      name
-    }
-    leaveType
-    startDate
-    endDate
-  }
+
+  # pendingLeaves removed - should be in leave domain
 }
 
 query GetCurrentUserRole($clerkUserId: String!) {
   users(where: { clerkUserId: { _eq: $clerkUserId } }) {
     id
     role
-    name
-    email
+    isStaff
+    isActive
   }
 }
 
@@ -516,19 +486,36 @@ query GetCurrentUserRole($clerkUserId: String!) {
 query GetUsersPaginated(
   $limit: Int = 20
   $offset: Int = 0
-  $where: users_bool_exp = {}
-  $orderBy: [users_order_by!] = [{ name: asc }]
+  $where: usersBoolExp = {}
+  $orderBy: [usersOrderBy!] = [{ name: ASC }]
 ) {
   users(
     limit: $limit
     offset: $offset
-    where: $where
-    order_by: $orderBy
+    where: { _and: [{ isActive: { _eq: true } }, $where] }
+    orderBy: $orderBy
   ) {
     ...UserListItem
   }
-  
-  usersAggregate(where: $where) {
+
+  usersAggregate(where: { _and: [{ isActive: { _eq: true } }, $where] }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetAllUsersPaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: usersBoolExp = {}
+  $orderBy: [usersOrderBy!] = [{ name: ASC }]
+) {
+  users(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
+    ...UserTableRow
+  }
+
+  allUsersAggregate: usersAggregate(where: $where) {
     aggregate {
       count
     }
@@ -538,28 +525,28 @@ query GetUsersPaginated(
 query GetStaffPaginated(
   $limit: Int = 20
   $offset: Int = 0
-  $where: users_bool_exp = {}
+  $where: usersBoolExp = {}
 ) {
   users(
     limit: $limit
     offset: $offset
-    where: { 
+    where: {
       _and: [
         { isActive: { _eq: true } }
         { role: { _in: ["consultant", "manager", "org_admin"] } }
         $where
       ]
     }
-    order_by: { name: asc }
+    orderBy: { name: ASC }
   ) {
     ...UserListItem
-    manager {
+    managerUser {
       ...UserMinimal
     }
   }
-  
+
   staffAggregate: usersAggregate(
-    where: { 
+    where: {
       _and: [
         { isActive: { _eq: true } }
         { role: { _in: ["consultant", "manager", "org_admin"] } }
@@ -591,13 +578,13 @@ query SearchUsersPaginated(
         }
       ]
     }
-    order_by: { name: asc }
+    orderBy: { name: ASC }
     limit: $limit
     offset: $offset
   ) {
     ...UserListItem
   }
-  
+
   searchAggregate: usersAggregate(
     where: {
       _and: [
@@ -621,7 +608,7 @@ query SearchUsersPaginated(
 # Enhanced user queries migrated from /app/api/users/[id]/route.ts
 
 query GetUserByIdComplete($id: uuid!) {
-  user(id: $id) {
+  userById(id: $id) {
     id
     name
     email
@@ -631,18 +618,13 @@ query GetUserByIdComplete($id: uuid!) {
     isStaff
     managerId
     clerkUserId
-    manager {
+    managerUser {
       id
       name
       email
       role
     }
-    directReports {
-      id
-      name
-      email
-      role
-    }
+    # directReports removed - relationship not available
   }
 }
 
@@ -657,25 +639,20 @@ query GetUserByClerkIdComplete($clerkId: String!) {
     isStaff
     managerId
     clerkUserId
-    manager {
+    managerUser {
       id
       name
       email
       role
     }
-    directReports {
-      id
-      name
-      email
-      role
-    }
+    # directReports removed - relationship not available
   }
 }
 
 # Migrated from app/api/staff/update-role/route.ts
 
 query GetUserClerkId($id: uuid!) {
-  user(id: $id) {
+  userById(id: $id) {
     id
     name
     email
@@ -688,10 +665,7 @@ query GetUserClerkId($id: uuid!) {
 
 query GetUsersQuickList {
   # Minimal user data for quick lists and dropdowns
-  users(
-    where: { isActive: { _eq: true } }
-    order_by: { name: asc }
-  ) {
+  users(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
     ...UserMinimal
   }
 }
@@ -699,11 +673,11 @@ query GetUsersQuickList {
 query GetStaffQuickList {
   # Minimal staff data for assignments and dropdowns
   users(
-    where: { 
+    where: {
       isActive: { _eq: true }
       role: { _in: ["consultant", "manager", "org_admin"] }
     }
-    order_by: { name: asc }
+    orderBy: { name: ASC }
   ) {
     ...UserMinimal
   }
@@ -712,11 +686,8 @@ query GetStaffQuickList {
 query GetManagersQuickList {
   # Minimal manager data for hierarchy views
   users(
-    where: { 
-      isActive: { _eq: true }
-      role: { _in: ["manager", "org_admin"] }
-    }
-    order_by: { name: asc }
+    where: { isActive: { _eq: true }, role: { _in: ["manager", "org_admin"] } }
+    orderBy: { name: ASC }
   ) {
     ...UserMinimal
   }
@@ -724,10 +695,10 @@ query GetManagersQuickList {
 
 query GetUserCard($id: uuid!) {
   # Minimal user data for user cards and preview
-  user(id: $id) {
+  userById(id: $id) {
     ...UserSummary
     email
-    manager {
+    managerUser {
       ...UserMinimal
     }
   }
@@ -735,18 +706,18 @@ query GetUserCard($id: uuid!) {
 
 query GetUserAssignmentData($id: uuid!) {
   # Essential data for assignment views (payrolls, clients)
-  user(id: $id) {
+  userById(id: $id) {
     ...UserSummary
     email
-    activePayrollCount: primaryConsultantPayrolls_aggregate(
-      where: { supersededDate: { _is_null: true } }
+    activePayrollCount: primaryConsultantPayrollsAggregate(
+      where: { supersededDate: { _isNull: true } }
     ) {
       aggregate {
         count
       }
     }
-    backupPayrollCount: backupConsultantPayrolls_aggregate(
-      where: { supersededDate: { _is_null: true } }
+    backupPayrollCount: backupConsultantPayrollsAggregate(
+      where: { supersededDate: { _isNull: true } }
     ) {
       aggregate {
         count
@@ -757,10 +728,10 @@ query GetUserAssignmentData($id: uuid!) {
 
 query GetUserWorkload($id: uuid!) {
   # Workload data without full details
-  user(id: $id) {
+  userById(id: $id) {
     ...UserSummary
     primaryPayrolls: primaryConsultantPayrolls(
-      where: { supersededDate: { _is_null: true } }
+      where: { supersededDate: { _isNull: true } }
       limit: 10
     ) {
       id
@@ -771,7 +742,7 @@ query GetUserWorkload($id: uuid!) {
       }
     }
     backupPayrolls: backupConsultantPayrolls(
-      where: { supersededDate: { _is_null: true } }
+      where: { supersededDate: { _isNull: true } }
       limit: 10
     ) {
       id

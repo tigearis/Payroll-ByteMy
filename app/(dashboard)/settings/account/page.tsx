@@ -48,7 +48,7 @@ import { useUserRole } from "@/hooks/use-user-role";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 import { 
   GetUserProfileSettingsDocument,
-  UpdateUserProfileSettingsDocument
+  UpdateUserProfileDocument
 } from "@/domains/users";
 
 interface ProfileForm {
@@ -99,7 +99,7 @@ export default function AccountSettings() {
     fetchPolicy: "cache-and-network",
   });
 
-  const [updateUserProfile] = useMutation(UpdateUserProfileSettingsDocument);
+  const [updateUserProfile] = useMutation(UpdateUserProfileDocument);
 
   // Helper function to get the correct avatar image
   const getAvatarImage = useCallback(() => {
@@ -126,8 +126,8 @@ export default function AccountSettings() {
 
   // Load user data when component mounts
   useEffect(() => {
-    if (isLoaded && clerkUser && userData?.user) {
-      const dbUser = userData.user;
+    if (isLoaded && clerkUser && userData?.userById) {
+      const dbUser = userData.userById;
       setProfileForm({
         firstName: clerkUser.firstName || "",
         lastName: clerkUser.lastName || "",
@@ -298,7 +298,7 @@ export default function AccountSettings() {
     );
   }
 
-  const dbUser = userData?.user;
+  const dbUser = userData?.userById;
 
   return (
     <div className="space-y-6">

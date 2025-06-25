@@ -1,69 +1,55 @@
 # Permissions Domain Queries
 
 # Resources
-query GetResources(
-  $where: resources_bool_exp
-  $order_by: [resources_order_by!]
-) {
-  resources(where: $where, order_by: $order_by) {
+query GetResources {
+  resources(orderBy: { name: ASC }) {
     ...ResourceCore
-    permissions {
-      ...PermissionCore
-    }
   }
 }
 
 query GetResourceById($id: uuid!) {
-  resource(id: $id) {
+  resourceById(id: $id) {
     ...ResourceCore
-    permissions(order_by: { action: asc }) {
-      ...PermissionCore
-    }
   }
 }
 
 # Permissions
-query GetPermissions(
-  $where: permissions_bool_exp
-  $order_by: [permissions_order_by!]
-) {
-  permissions(where: $where, order_by: $order_by) {
-    ...PermissionsPermissionWithResource
+query GetPermissions {
+  permissions(orderBy: { action: ASC }) {
+    ...PermissionWithResource
   }
 }
 
-query GetPermissionsByResource($resource_name: String!) {
-  permissions(
-    where: { resource: { name: { _eq: $resource_name } } }
-    order_by: { action: asc }
-  ) {
-    ...PermissionCore
+query GetPermissionById($id: uuid!) {
+  permissionById(id: $id) {
+    ...PermissionWithResource
   }
 }
 
 # Roles
-query GetRoles($where: roles_bool_exp, $order_by: [roles_order_by!]) {
-  roles(where: $where, order_by: $order_by) {
-    ...RoleWithPermissions
-    userRoles_aggregate {
-      aggregate {
-        count
-      }
-    }
+query GetRoles($where: rolesBoolExp, $orderBy: [rolesOrderBy!]) {
+  roles(where: $where, orderBy: $orderBy) {
+    ...RoleCore
   }
 }
 
 query GetRoleById($id: uuid!) {
-  role(id: $id) {
-    ...RoleWithPermissions
-    userRoles {
-      ...UserRoleWithDetails
+  roleById(id: $id) {
+    ...RoleCore
+    assignedPermissions {
+      ...RolePermissionWithDetails
     }
   }
 }
 
+query GetRolePermissions($roleId: uuid!) {
+  rolePermissions(where: { roleId: { _eq: $roleId } }) {
+    ...RolePermissionWithDetails
+  }
+}
+
 query GetSystemRoles {
-  roles(where: { isSystemRole: { _eq: true } }, order_by: { priority: asc }) {
+  roles(where: { isSystemRole: { _eq: true } }, orderBy: { priority: ASC }) {
     ...RoleCore
   }
 }
@@ -82,29 +68,21 @@ query GetUsersWithRole($roleId: uuid!) {
 }
 
 # Feature Flags
-query GetFeatureFlags($where: feature_flags_bool_exp) {
-  feature_flags(where: $where, order_by: { feature_name: asc }) {
+query GetFeatureFlags($where: featureFlagsBoolExp) {
+  featureFlags(where: $where) {
     ...FeatureFlagCore
   }
 }
 
-query GetEnabledFeatures($roles: jsonb!) {
-  feature_flags(
-    where: {
-      is_enabled: { _eq: true }
-      _or: [
-        { allowed_roles: { _eq: [] } }
-        { allowed_roles: { _contains: $roles } }
-      ]
-    }
-  ) {
+query GetFeatureFlagById($id: uuid!) {
+  featureFlagById(id: $id) {
     ...FeatureFlagCore
   }
 }
 
 # App Settings
 query GetAppSettings {
-  app_settings {
+  appSettings {
     ...AppSettingsCore
   }
 }
@@ -129,17 +107,17 @@ query GetPermissionAnalytics {
     }
   }
 
-  user_roles_count: userRolesAggregate {
+  userRoles_count: userRolesAggregate {
     aggregate {
       count
     }
   }
 
-  roles_by_priority: roles(order_by: { priority: asc }) {
+  roles_by_priority: roles(orderBy: { priority: ASC }) {
     name
     displayName
     priority
-    userRoles_aggregate {
+    assignedToUsersAggregate {
       aggregate {
         count
       }

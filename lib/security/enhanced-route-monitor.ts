@@ -86,7 +86,6 @@ class EnhancedRouteMonitor {
     responseData?: any
   ): Promise<void> {
     const route = this.normalizeRoute(request.nextUrl.pathname);
-    const ipAddress = this.getClientIP(request);
     const now = Date.now();
     const duration = startTime ? now - startTime : 0;
 
@@ -545,12 +544,16 @@ class EnhancedRouteMonitor {
           routesToDelete.forEach(route => this.routeMetrics.delete(route));
 
           // Clean up old alerts
-          this.alerts = this.alerts.filter(alert => alert.timestamp > oneDayAgo);
+          this.alerts = this.alerts.filter(
+            alert => alert.timestamp > oneDayAgo
+          );
 
           // Clean up suspicious IPs older than 7 days (implement tracking if needed)
           // For now, we'll limit the Set size
           if (this.suspiciousIPs.size > 1000) {
-            console.warn(`⚠️ [MEMORY WARNING] Suspicious IPs set size: ${this.suspiciousIPs.size}`);
+            console.warn(
+              `⚠️ [MEMORY WARNING] Suspicious IPs set size: ${this.suspiciousIPs.size}`
+            );
             // Keep only the most recent 500 entries (would need timestamps for proper implementation)
             const ipsArray = Array.from(this.suspiciousIPs);
             this.suspiciousIPs.clear();
@@ -570,11 +573,15 @@ class EnhancedRouteMonitor {
             alerts: initialStats.alerts - finalStats.alerts,
           };
 
-          console.log(`🧹 [ROUTE MONITOR CLEANUP] Cleaned: ${cleanedItems.routes} routes, ${cleanedItems.users} users, ${cleanedItems.alerts} alerts`);
-          
+          console.log(
+            `🧹 [ROUTE MONITOR CLEANUP] Cleaned: ${cleanedItems.routes} routes, ${cleanedItems.users} users, ${cleanedItems.alerts} alerts`
+          );
+
           // Memory warning if stores are growing too large
           if (finalStats.routes > 5000 || finalStats.users > 10000) {
-            console.warn(`⚠️ [MEMORY WARNING] Route monitor memory usage: ${JSON.stringify(finalStats)}`);
+            console.warn(
+              `⚠️ [MEMORY WARNING] Route monitor memory usage: ${JSON.stringify(finalStats)}`
+            );
           }
         } catch (error) {
           console.error("❌ [ROUTE MONITOR CLEANUP ERROR]:", error);
@@ -591,22 +598,27 @@ class EnhancedRouteMonitor {
         clearInterval(this.cleanupInterval);
         this.cleanupInterval = null;
       }
-      
+
       const stats = {
         routes: this.routeMetrics.size,
         users: this.userActivityCache.size,
         suspiciousIPs: this.suspiciousIPs.size,
         alerts: this.alerts.length,
       };
-      
+
       this.routeMetrics.clear();
       this.userActivityCache.clear();
       this.suspiciousIPs.clear();
       this.alerts = [];
-      
-      console.log(`🧹 [SHUTDOWN] Route monitor cleanup completed: ${JSON.stringify(stats)}`);
+
+      console.log(
+        `🧹 [SHUTDOWN] Route monitor cleanup completed: ${JSON.stringify(stats)}`
+      );
     } catch (error) {
-      console.error("❌ [SHUTDOWN ERROR] Failed to cleanup route monitor:", error);
+      console.error(
+        "❌ [SHUTDOWN ERROR] Failed to cleanup route monitor:",
+        error
+      );
     }
   }
 

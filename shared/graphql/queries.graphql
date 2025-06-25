@@ -11,7 +11,7 @@ query GetDashboardStats {
   }
 
   # Total payrolls count
-  payrolls_aggregate: payrollsAggregate {
+  payrollsAggregate: payrollsAggregate {
     aggregate {
       count
     }
@@ -19,7 +19,7 @@ query GetDashboardStats {
 
   # Active payrolls (non-superseded)
   active_payrolls: payrollsAggregate(
-    where: { supersededDate: { _is_null: true } }
+    where: { supersededDate: { _isNull: true } }
   ) {
     aggregate {
       count
@@ -29,7 +29,7 @@ query GetDashboardStats {
   # Processing queue (payrolls needing attention - can be refined later)
   processing_queue: payrollsAggregate(
     where: {
-      supersededDate: { _is_null: true }
+      supersededDate: { _isNull: true }
       status: { _in: ["Implementation"] }
     }
   ) {
@@ -63,10 +63,10 @@ query GetSystemStats {
 query GetUpcomingPayrolls($from_date: date!, $limit: Int = 10) {
   payrolls(
     where: {
-      supersededDate: { _is_null: true }
+      supersededDate: { _isNull: true }
       payrollDates: { adjustedEftDate: { _gte: $from_date } }
     }
-    order_by: { payrollDates_aggregate: { min: { adjustedEftDate: asc } } }
+    orderBy: { payrollDatesAggregate: { min: { adjustedEftDate: ASC } } }
     limit: $limit
   ) {
     id
@@ -78,7 +78,7 @@ query GetUpcomingPayrolls($from_date: date!, $limit: Int = 10) {
     }
     payrollDates(
       where: { adjustedEftDate: { _gte: $from_date } }
-      order_by: { adjustedEftDate: asc }
+      orderBy: { adjustedEftDate: ASC }
       limit: 1
     ) {
       id
@@ -98,14 +98,14 @@ query GetUnifiedDashboardData($from_date: date!, $limit: Int = 5) {
     }
   }
 
-  payrolls_aggregate: payrollsAggregate {
+  payrollsAggregate: payrollsAggregate {
     aggregate {
       count
     }
   }
 
   active_payrolls: payrollsAggregate(
-    where: { supersededDate: { _is_null: true } }
+    where: { supersededDate: { _isNull: true } }
   ) {
     aggregate {
       count
@@ -114,7 +114,7 @@ query GetUnifiedDashboardData($from_date: date!, $limit: Int = 5) {
 
   processing_queue: payrollsAggregate(
     where: {
-      supersededDate: { _is_null: true }
+      supersededDate: { _isNull: true }
       status: { _in: ["Implementation"] }
     }
   ) {
@@ -124,9 +124,7 @@ query GetUnifiedDashboardData($from_date: date!, $limit: Int = 5) {
   }
 
   # Recent user activity count for dashboard insights
-  active_users: usersAggregate(
-    where: { isActive: { _eq: true } }
-  ) {
+  active_users: usersAggregate(where: { isActive: { _eq: true } }) {
     aggregate {
       count
     }
@@ -135,10 +133,10 @@ query GetUnifiedDashboardData($from_date: date!, $limit: Int = 5) {
   # Upcoming payrolls with enhanced data for dashboard cards
   upcoming_payrolls: payrolls(
     where: {
-      supersededDate: { _is_null: true }
+      supersededDate: { _isNull: true }
       payrollDates: { adjustedEftDate: { _gte: $from_date } }
     }
-    order_by: { payrollDates_aggregate: { min: { adjustedEftDate: asc } } }
+    orderBy: { payrollDatesAggregate: { min: { adjustedEftDate: ASC } } }
     limit: $limit
   ) {
     id
@@ -155,7 +153,7 @@ query GetUnifiedDashboardData($from_date: date!, $limit: Int = 5) {
     }
     payrollDates(
       where: { adjustedEftDate: { _gte: $from_date } }
-      order_by: { adjustedEftDate: asc }
+      orderBy: { adjustedEftDate: ASC }
       limit: 1
     ) {
       id
@@ -166,8 +164,8 @@ query GetUnifiedDashboardData($from_date: date!, $limit: Int = 5) {
 
   # Recent activity summary for quick insights
   recent_payroll_updates: payrolls(
-    where: { supersededDate: { _is_null: true } }
-    order_by: { updatedAt: desc }
+    where: { supersededDate: { _isNull: true } }
+    orderBy: { updatedAt: DESC }
     limit: 3
   ) {
     id
@@ -189,18 +187,16 @@ query GetDashboardStatsMinimal {
       count
     }
   }
-  
+
   payrollCount: payrollsAggregate(
-    where: { supersededDate: { _is_null: true } }
+    where: { supersededDate: { _isNull: true } }
   ) {
     aggregate {
       count
     }
   }
-  
-  userCount: usersAggregate(
-    where: { isActive: { _eq: true } }
-  ) {
+
+  userCount: usersAggregate(where: { isActive: { _eq: true } }) {
     aggregate {
       count
     }
@@ -211,10 +207,10 @@ query GetUpcomingPayrollsMinimal($from_date: date!, $limit: Int = 5) {
   # Minimal data for dashboard upcoming payrolls widget
   payrolls(
     where: {
-      supersededDate: { _is_null: true }
+      supersededDate: { _isNull: true }
       payrollDates: { adjustedEftDate: { _gte: $from_date } }
     }
-    order_by: { payrollDates_aggregate: { min: { adjustedEftDate: asc } } }
+    orderBy: { payrollDatesAggregate: { min: { adjustedEftDate: ASC } } }
     limit: $limit
   ) {
     id
@@ -225,7 +221,7 @@ query GetUpcomingPayrollsMinimal($from_date: date!, $limit: Int = 5) {
     }
     nextDate: payrollDates(
       where: { adjustedEftDate: { _gte: $from_date } }
-      order_by: { adjustedEftDate: asc }
+      orderBy: { adjustedEftDate: ASC }
       limit: 1
     ) {
       adjustedEftDate
@@ -236,8 +232,8 @@ query GetUpcomingPayrollsMinimal($from_date: date!, $limit: Int = 5) {
 query GetRecentActivityMinimal($limit: Int = 10) {
   # Minimal recent activity for activity feed
   payrolls(
-    where: { supersededDate: { _is_null: true } }
-    order_by: { updatedAt: desc }
+    where: { supersededDate: { _isNull: true } }
+    orderBy: { updatedAt: DESC }
     limit: $limit
   ) {
     id
@@ -252,18 +248,18 @@ query GetRecentActivityMinimal($limit: Int = 10) {
 
 query GetQuickStatsOnly {
   # Only aggregated counts for very fast loading
-  totals: payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
+  totals: payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
     aggregate {
       count
     }
   }
-  
+
   activeClients: clientsAggregate(where: { active: { _eq: true } }) {
     aggregate {
       count
     }
   }
-  
+
   activeUsers: usersAggregate(where: { isActive: { _eq: true } }) {
     aggregate {
       count

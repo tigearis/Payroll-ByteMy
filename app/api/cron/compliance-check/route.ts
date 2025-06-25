@@ -10,6 +10,9 @@ import {
   SOC2EventType,
 } from "@/lib/security/audit/logger";
 
+// NOTE: This query uses raw GraphQL for system compliance checking
+// It references audit/compliance tables that may not be in the main schema
+// This is intentional for SOC2 compliance operations
 const COMPLIANCE_CHECKS = gql`
   query RunComplianceChecks(
     $ninetyDaysAgo: timestamptz!

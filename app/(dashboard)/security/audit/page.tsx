@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@apollo/client";
+import { useSubscription } from "@apollo/client";
 import { format } from "date-fns";
 import {
   Download,
@@ -41,7 +41,9 @@ import {
 import {
   AuditLogDocument,
   OrderBy,
+  SubscribeToAuditLogsDocument,
 } from "@/domains/audit/graphql/generated/graphql";
+import { useStrategicQuery } from "@/hooks/use-strategic-query";
 
 const ITEMS_PER_PAGE = 50;
 
@@ -86,12 +88,30 @@ export default function AuditLogPage() {
     where.created_at = { ...where.created_at, _lte: dateTo };
   }
 
-  const { data, loading, error } = useQuery(AuditLogDocument, {
-    variables: {
-      limit: ITEMS_PER_PAGE,
-      offset: page * ITEMS_PER_PAGE,
-      where,
-      orderBy: [{ eventTime: OrderBy.desc }],
+  // Use strategic query for audit logs with real-time capabilities
+  const { data, loading, error, refetch } = useStrategicQuery(
+    AuditLogDocument,
+    "auditLogs",
+    {
+      variables: {
+        limit: ITEMS_PER_PAGE,
+        offset: page * ITEMS_PER_PAGE,
+        where,
+        orderBy: [{ eventTime: OrderBy.DESC }],
+      },
+    }
+  );
+
+  // Real-time audit logs subscription for immediate updates
+  const { data: realtimeData } = useSubscription(SubscribeToAuditLogsDocument, {
+    onData: ({ data: subscriptionData }) => {
+      if (subscriptionData.data) {
+        // Refetch the current page to include new data
+        refetch();
+      }
+    },
+    onError: (error) => {
+      console.warn("Audit logs subscription error:", error);
     },
   });
 

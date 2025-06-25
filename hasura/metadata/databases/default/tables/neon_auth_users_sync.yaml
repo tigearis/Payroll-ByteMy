@@ -1,6 +1,29 @@
 table:
   name: users_sync
   schema: neon_auth
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    deleted_at:
+      custom_name: deletedAt
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    deleted_at: deletedAt
+    updated_at: updatedAt
+  custom_name: authUsersSync
+  custom_root_fields:
+    delete: bulkDeleteUsersSync
+    delete_by_pk: deleteUserSyncById
+    insert: bulkInsertUsersSync
+    insert_one: insertUserSync
+    select: usersSync
+    select_aggregate: usersSyncAggregate
+    select_by_pk: userSyncById
+    update: bulkUpdateUsersSync
+    update_by_pk: updateUserSyncById
 insert_permissions:
   - role: developer
     permission:

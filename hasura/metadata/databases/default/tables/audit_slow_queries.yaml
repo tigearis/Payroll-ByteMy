@@ -22,7 +22,17 @@ configuration:
     query_duration: queryDuration
     query_start: queryStart
     user_id: userId
-  custom_root_fields: {}
+  custom_name: slowQueries
+  custom_root_fields:
+    delete: bulkDeleteSlowQueries
+    delete_by_pk: deleteSlowQueryById
+    insert: bulkInsertSlowQueries
+    insert_one: insertSlowQuery
+    select: slowQueries
+    select_aggregate: slowQueriesAggregate
+    select_by_pk: slowQueryById
+    update: bulkUpdateSlowQueries
+    update_by_pk: updateSlowQueryById
 insert_permissions:
   - role: developer
     permission:
@@ -48,3 +58,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

@@ -13,18 +13,19 @@ configuration:
     created_at: createdAt
     display_name: displayName
     updated_at: updatedAt
+  custom_name: resources
   custom_root_fields:
-    delete: deleteResources
-    delete_by_pk: deleteResource
-    insert: insertResources
+    delete: bulkDeleteResources
+    delete_by_pk: deleteResourceById
+    insert: bulkInsertResources
     insert_one: insertResource
     select: resources
     select_aggregate: resourcesAggregate
-    select_by_pk: resource
-    update: updateResources
-    update_by_pk: updateResource
+    select_by_pk: resourceById
+    update: bulkUpdateResources
+    update_by_pk: updateResourceById
 array_relationships:
-  - name: permissions
+  - name: availablePermissions
     using:
       foreign_key_constraint_on:
         column: resource_id
@@ -94,3 +95,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

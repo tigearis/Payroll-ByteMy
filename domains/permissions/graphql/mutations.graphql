@@ -1,150 +1,131 @@
 # Permissions Domain Mutations
 
 # Resources
-mutation CreateResource($object: resources_insert_input!) {
+mutation CreateSystemResource($object: resourcesInsertInput!) {
   insertResource(object: $object) {
     ...ResourceCore
   }
 }
 
-mutation UpdateResource($id: uuid!, $set: resources_set_input!) {
-  updateResource(pk_columns: { id: $id }, _set: $set) {
+mutation UpdateSystemResource($id: uuid!, $set: resourcesSetInput!) {
+  updateResourceById(pkColumns: { id: $id }, _set: $set) {
     ...ResourceCore
   }
 }
 
-mutation DeleteResource($id: uuid!) {
-  deleteResource(id: $id) {
+mutation DeleteSystemResource($id: uuid!) {
+  deleteResourceById(id: $id) {
     id
+    name
   }
 }
 
 # Permissions
-mutation CreatePermission($object: permissions_insert_input!) {
+mutation CreateSystemPermission($object: permissionsInsertInput!) {
   insertPermission(object: $object) {
     ...PermissionCore
   }
 }
 
-mutation UpdatePermission($id: uuid!, $set: permissions_set_input!) {
-  updatePermission(pk_columns: { id: $id }, _set: $set) {
+mutation UpdateSystemPermission($id: uuid!, $set: permissionsSetInput!) {
+  updatePermissionById(pkColumns: { id: $id }, _set: $set) {
     ...PermissionCore
   }
 }
 
-mutation DeletePermission($id: uuid!) {
-  deletePermission(id: $id) {
+mutation DeleteSystemPermission($id: uuid!) {
+  deletePermissionById(id: $id) {
     id
+    action
   }
 }
 
 # Roles
-mutation CreateRole($object: roles_insert_input!) {
+mutation CreateSystemRole($object: rolesInsertInput!) {
   insertRole(object: $object) {
     ...RoleCore
   }
 }
 
-mutation UpdateRole($id: uuid!, $set: roles_set_input!) {
-  updateRole(pk_columns: { id: $id }, _set: $set) {
+mutation UpdateSystemRole($id: uuid!, $set: rolesSetInput!) {
+  updateRoleById(pkColumns: { id: $id }, _set: $set) {
     ...RoleCore
   }
 }
 
-mutation DeleteRole($id: uuid!) {
-  deleteRole(id: $id) {
+mutation DeleteSystemRole($id: uuid!) {
+  deleteRoleById(id: $id) {
     id
+    name
   }
 }
 
 # Role Permissions
-mutation AssignPermissionToRole($object: role_permissions_insert_input!) {
+mutation AssignPermissionToRole($object: rolePermissionsInsertInput!) {
   insertRolePermission(object: $object) {
-    ...RolePermissionCore
+    ...RolePermissionWithDetails
   }
 }
 
-mutation RemovePermissionFromRole($roleId: uuid!, $permissionId: uuid!) {
-  deleteRolePermissions(
-    where: { roleId: { _eq: $roleId }, permissionId: { _eq: $permissionId } }
-  ) {
-    affected_rows
+mutation RemovePermissionFromRole($id: uuid!) {
+  deleteRolePermissionById(id: $id) {
+    id
+    roleId
+    permissionId
   }
 }
 
-mutation UpdateRolePermission($id: uuid!, $set: role_permissions_set_input!) {
-  updateRolePermission(pk_columns: { id: $id }, _set: $set) {
-    ...RolePermissionCore
+mutation UpdateSystemRolePermission($id: uuid!, $set: rolePermissionsSetInput!) {
+  updateRolePermissionById(pkColumns: { id: $id }, _set: $set) {
+    ...RolePermissionWithDetails
   }
 }
 
 # User Roles
-mutation AssignRoleToUser($userId: uuid!, $roleId: uuid!) {
-  insertUserRole(object: { userId: $userId, roleId: $roleId }) {
+mutation AssignSystemRoleToUser($object: userRolesInsertInput!) {
+  insertUserRole(object: $object) {
     ...UserRoleWithDetails
   }
 }
 
-mutation RemoveRoleFromUser($userId: uuid!, $roleId: uuid!) {
-  deleteUserRoles(
-    where: { userId: { _eq: $userId }, roleId: { _eq: $roleId } }
-  ) {
-    affected_rows
+mutation RemoveSystemRoleFromUser($id: uuid!) {
+  deleteUserRoleById(id: $id) {
+    id
+    userId
+    roleId
   }
 }
 
-mutation RemoveAllRolesFromUser($userId: uuid!) {
-  deleteUserRoles(where: { userId: { _eq: $userId } }) {
-    affected_rows
-  }
-}
-
-mutation ReplaceUserRoles(
-  $userId: uuid!
-  $objects: [user_roles_insert_input!]!
-) {
-  deleteUserRoles(where: { userId: { _eq: $userId } }) {
-    affected_rows
-  }
-  insertUserRoles(objects: $objects) {
-    returning {
-      ...UserRoleWithDetails
-    }
+mutation UpdateSystemUserRole($id: uuid!, $set: userRolesSetInput!) {
+  updateUserRoleById(pkColumns: { id: $id }, _set: $set) {
+    ...UserRoleWithDetails
   }
 }
 
 # Feature Flags
-mutation CreateFeatureFlag($object: feature_flags_insert_input!) {
-  insert_feature_flags_one(object: $object) {
+mutation CreateFeatureFlag($object: featureFlagsInsertInput!) {
+  insertFeatureFlag(object: $object) {
     ...FeatureFlagCore
   }
 }
 
-mutation UpdateFeatureFlag($id: uuid!, $set: feature_flags_set_input!) {
-  update_feature_flags_by_pk(pk_columns: { id: $id }, _set: $set) {
-    ...FeatureFlagCore
-  }
-}
-
-mutation ToggleFeatureFlag($id: uuid!, $is_enabled: Boolean!) {
-  update_feature_flags_by_pk(
-    pk_columns: { id: $id }
-    _set: { is_enabled: $is_enabled }
-  ) {
+mutation UpdateFeatureFlag($id: uuid!, $set: featureFlagsSetInput!) {
+  updateFeatureFlagById(pkColumns: { id: $id }, _set: $set) {
     ...FeatureFlagCore
   }
 }
 
 mutation DeleteFeatureFlag($id: uuid!) {
-  delete_feature_flags_by_pk(id: $id) {
+  deleteFeatureFlagById(id: $id) {
     id
+    featureName
   }
 }
 
 # App Settings
 mutation UpdateAppSettings($id: String!, $permissions: jsonb!) {
-  update_app_settings_by_pk(
-    pk_columns: { id: $id }
+  updateAppSettingById(
+    pkColumns: { id: $id }
     _set: { permissions: $permissions }
   ) {
     ...AppSettingsCore

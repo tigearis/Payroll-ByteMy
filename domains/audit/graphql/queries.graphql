@@ -2,14 +2,14 @@
 
 # Audit Logs
 query GetAuditLogs(
-  $where: audit_audit_log_bool_exp
-  $order_by: [audit_audit_log_order_by!]
+  $where: auditLogsBoolExp
+  $orderBy: [auditLogsOrderBy!]
   $limit: Int
   $offset: Int
 ) {
   auditLogs(
     where: $where
-    order_by: $order_by
+    orderBy: $orderBy
     limit: $limit
     offset: $offset
   ) {
@@ -23,16 +23,16 @@ query GetAuditLogs(
 }
 
 query GetAuditLogsByEntity(
-  $entity_type: String!
-  $entity_id: String!
+  $entityType: String!
+  $entityId: String!
   $limit: Int = 50
 ) {
   auditLogs(
     where: {
-      resourceType: { _eq: $entity_type }
-      resourceId: { _eq: $entity_id }
+      resourceType: { _eq: $entityType }
+      resourceId: { _eq: $entityId }
     }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
     limit: $limit
   ) {
     ...AuditLogWithUser
@@ -40,28 +40,28 @@ query GetAuditLogsByEntity(
 }
 
 query GetAuditLogsByUser(
-  $user_id: uuid!
-  $start_date: timestamptz
-  $end_date: timestamptz
+  $userId: uuid!
+  $startDate: timestamptz
+  $endDate: timestamptz
 ) {
   auditLogs(
     where: {
-      userId: { _eq: $user_id }
-      eventTime: { _gte: $start_date, _lte: $end_date }
+      userId: { _eq: $userId }
+      eventTime: { _gte: $startDate, _lte: $endDate }
     }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
   ) {
     ...AuditLogCore
   }
 }
 
-query GetFailedAuditLogs($start_date: timestamptz!, $end_date: timestamptz!) {
+query GetFailedAuditLogs($startDate: timestamptz!, $endDate: timestamptz!) {
   auditLogs(
     where: {
       success: { _eq: false }
-      eventTime: { _gte: $start_date, _lte: $end_date }
+      eventTime: { _gte: $startDate, _lte: $endDate }
     }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
   ) {
     ...AuditLogWithUser
   }
@@ -69,14 +69,14 @@ query GetFailedAuditLogs($start_date: timestamptz!, $end_date: timestamptz!) {
 
 # Data Access Logs
 query GetDataAccessLogs(
-  $where: audit_data_access_log_bool_exp
-  $order_by: [audit_data_access_log_order_by!]
+  $where: dataAccessLogsBoolExp
+  $orderBy: [dataAccessLogsOrderBy!]
   $limit: Int
   $offset: Int
 ) {
   dataAccessLogs(
     where: $where
-    order_by: $order_by
+    orderBy: $orderBy
     limit: $limit
     offset: $offset
   ) {
@@ -92,13 +92,13 @@ query GetDataAccessLogs(
   }
 }
 
-query GetDataExports($start_date: timestamptz!, $end_date: timestamptz!) {
+query GetDataExports($startDate: timestamptz!, $endDate: timestamptz!) {
   dataAccessLogs(
     where: {
       accessType: { _eq: "export" }
-      accessedAt: { _gte: $start_date, _lte: $end_date }
+      accessedAt: { _gte: $startDate, _lte: $endDate }
     }
-    order_by: { accessedAt: desc }
+    orderBy: { accessedAt: DESC }
   ) {
     ...DataAccessLogCore
   }
@@ -106,14 +106,14 @@ query GetDataExports($start_date: timestamptz!, $end_date: timestamptz!) {
 
 # Auth Events
 query GetAuthEvents(
-  $where: audit_auth_events_bool_exp
-  $order_by: [audit_auth_events_order_by!]
+  $where: authEventsBoolExp
+  $orderBy: [authEventsOrderBy!]
   $limit: Int
   $offset: Int
 ) {
   authEvents(
     where: $where
-    order_by: $order_by
+    orderBy: $orderBy
     limit: $limit
     offset: $offset
   ) {
@@ -121,13 +121,13 @@ query GetAuthEvents(
   }
 }
 
-query GetFailedAuthEvents($start_date: timestamptz!, $end_date: timestamptz!) {
+query GetFailedAuthEvents($startDate: timestamptz!, $endDate: timestamptz!) {
   authEvents(
     where: {
       success: { _eq: false }
-      eventTime: { _gte: $start_date, _lte: $end_date }
+      eventTime: { _gte: $startDate, _lte: $endDate }
     }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
   ) {
     ...AuthEventCore
   }
@@ -135,14 +135,14 @@ query GetFailedAuthEvents($start_date: timestamptz!, $end_date: timestamptz!) {
 
 # Permission Changes
 query GetPermissionChanges(
-  $where: audit_permission_changes_bool_exp
-  $order_by: [audit_permission_changes_order_by!]
+  $where: permissionChangesBoolExp
+  $orderBy: [permissionChangesOrderBy!]
   $limit: Int
   $offset: Int
 ) {
   permissionChanges(
     where: $where
-    order_by: $order_by
+    orderBy: $orderBy
     limit: $limit
     offset: $offset
   ) {
@@ -156,9 +156,9 @@ query SecurityOverview(
   $sevenDaysAgo: timestamptz!
 ) {
   # Recent audit logs (last 24 hours)
-  recent_audit_logs: auditLogs(
+  recentAuditLogs: auditLogs(
     where: { eventTime: { _gte: $twentyFourHoursAgo } }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
     limit: 100
   ) {
     id
@@ -170,13 +170,13 @@ query SecurityOverview(
     resourceType
     resourceId
     success
-    error_message
+    errorMessage
     ipAddress
     metadata
   }
 
   # Audit log count for metrics
-  audit_log_count: auditLogsAggregate(
+  auditLogCount: auditLogsAggregate(
     where: { eventTime: { _gte: $twentyFourHoursAgo } }
   ) {
     aggregate {
@@ -185,9 +185,9 @@ query SecurityOverview(
   }
 
   # Failed operations in last 24 hours
-  failed_operations: auditLogs(
+  failedOperations: auditLogs(
     where: { success: { _eq: false }, eventTime: { _gte: $twentyFourHoursAgo } }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
     limit: 50
   ) {
     id
@@ -197,14 +197,14 @@ query SecurityOverview(
     userRole
     action
     resourceType
-    error_message
+    errorMessage
     ipAddress
   }
 
   # Data access in last 7 days
-  data_access_summary: dataAccessLogs(
+  dataAccessSummary: dataAccessLogs(
     where: { accessedAt: { _gte: $sevenDaysAgo } }
-    order_by: { accessedAt: desc }
+    orderBy: { accessedAt: DESC }
     limit: 100
   ) {
     id
@@ -218,9 +218,9 @@ query SecurityOverview(
   }
 
   # Auth events summary
-  auth_events_summary: authEvents(
+  authEventsSummary: authEvents(
     where: { eventTime: { _gte: $sevenDaysAgo } }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
     limit: 50
   ) {
     id
@@ -237,8 +237,8 @@ query SecurityOverview(
 # Comprehensive Compliance Report for SOC2
 query ComplianceReport($startDate: timestamptz!, $endDate: timestamptz!) {
   # Overall metrics
-  audit_metrics: auditLogsAggregate(
-    where: { created_at: { _gte: $startDate, _lte: $endDate } }
+  auditMetrics: auditLogsAggregate(
+    where: { eventTime: { _gte: $startDate, _lte: $endDate } }
   ) {
     aggregate {
       count
@@ -250,13 +250,13 @@ query ComplianceReport($startDate: timestamptz!, $endDate: timestamptz!) {
   }
 
   # Failed operations by type
-  failed_by_type: auditLogs(where: { success: { _eq: false } }) {
+  failedByType: auditLogs(where: { success: { _eq: false } }) {
     action
-    error_message
+    errorMessage
   }
 
   # Data access by classification
-  data_access_stats: dataAccessLogsAggregate(
+  dataAccessStats: dataAccessLogsAggregate(
     where: { accessedAt: { _gte: $startDate, _lte: $endDate } }
   ) {
     aggregate {
@@ -271,9 +271,9 @@ query ComplianceReport($startDate: timestamptz!, $endDate: timestamptz!) {
   }
 
   # User activity
-  user_activity: auditLogs(
+  userActivity: auditLogs(
     where: { eventTime: { _gte: $startDate, _lte: $endDate } }
-    distinct_on: userId
+    distinctOn: [userId]
   ) {
     userId
     eventTime
@@ -284,7 +284,7 @@ query ComplianceReport($startDate: timestamptz!, $endDate: timestamptz!) {
 # Audit Analytics
 query GetAuditAnalytics($startDate: timestamptz!, $endDate: timestamptz!) {
   # Audit log summary
-  audit_summary: auditLogsAggregate(
+  auditSummary: auditLogsAggregate(
     where: { eventTime: { _gte: $startDate, _lte: $endDate } }
   ) {
     aggregate {
@@ -293,21 +293,21 @@ query GetAuditAnalytics($startDate: timestamptz!, $endDate: timestamptz!) {
   }
 
   # Failed operations by type
-  failed_by_type: auditLogs(
+  failedByType: auditLogs(
     where: {
       success: { _eq: false }
       eventTime: { _gte: $startDate, _lte: $endDate }
     }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
     limit: 100
   ) {
     action
     resourceType
-    error_message
+    errorMessage
   }
 
   # Data access by classification
-  data_access_stats: dataAccessLogsAggregate(
+  dataAccessStats: dataAccessLogsAggregate(
     where: { accessedAt: { _gte: $startDate, _lte: $endDate } }
   ) {
     aggregate {
@@ -319,10 +319,10 @@ query GetAuditAnalytics($startDate: timestamptz!, $endDate: timestamptz!) {
   }
 
   # User activity
-  user_activity: auditLogs(
+  userActivity: auditLogs(
     where: { eventTime: { _gte: $startDate, _lte: $endDate } }
-    distinct_on: userId
-    order_by: { userId: asc, eventTime: desc }
+    distinctOn: [userId]
+    orderBy: [{ userId: ASC }, { eventTime: DESC }]
     limit: 100
   ) {
     userId
@@ -364,7 +364,7 @@ query GetAuditAnalytics($startDate: timestamptz!, $endDate: timestamptz!) {
 query ComplianceAuditLogs($startDate: timestamptz!, $endDate: timestamptz!) {
   auditLogs(
     where: { eventTime: { _gte: $startDate, _lte: $endDate } }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
   ) {
     id
     eventTime
@@ -375,7 +375,7 @@ query ComplianceAuditLogs($startDate: timestamptz!, $endDate: timestamptz!) {
     success
     metadata
   }
-  
+
   auditLogsAggregate(
     where: { eventTime: { _gte: $startDate, _lte: $endDate } }
   ) {
@@ -390,10 +390,10 @@ query ComplianceAuditLogs($startDate: timestamptz!, $endDate: timestamptz!) {
 query AuditLog(
   $limit: Int!
   $offset: Int!
-  $where: audit_audit_log_bool_exp
-  $orderBy: [audit_audit_log_order_by!]
+  $where: auditLogsBoolExp
+  $orderBy: [auditLogsOrderBy!]
 ) {
-  auditLogs(limit: $limit, offset: $offset, where: $where, order_by: $orderBy) {
+  auditLogs(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
     id
     userId
     userEmail
@@ -402,7 +402,7 @@ query AuditLog(
     resourceType
     resourceId
     success
-    error_message
+    errorMessage
     ipAddress
     eventTime
   }

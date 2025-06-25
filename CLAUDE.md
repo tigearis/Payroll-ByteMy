@@ -37,10 +37,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Testing
 
-- Tests are located in `__tests__/` directory
-- Testing framework: Jest with React Testing Library
-- Dependencies: `@jest/globals`, `@testing-library/jest-dom`, `@testing-library/react`
-- No test runner script configured - tests should be run manually or via IDE integration
+- **Unit Tests**: Located in `__tests__/` directory using Jest with React Testing Library
+- **End-to-End Tests**: Located in `e2e/` directory using Playwright
+- **Test User Management**: 
+  - `pnpm test:users:create` - Create test users in Clerk
+  - `pnpm test:users:delete` - Delete test users
+  - `pnpm test:users:sync` - Sync test users with database
+- **E2E Testing**:
+  - `pnpm test:e2e` - Run Playwright tests
+  - `pnpm test:e2e:ui` - Run tests with UI
+  - `pnpm test:e2e:headed` - Run tests in headed mode
+- **Test Data Management**:
+  - `pnpm test:data:seed` - Seed minimal test data
+  - `pnpm test:data:clean` - Clean test data
+  - `pnpm test:setup` - Setup E2E test environment
 
 ### Hasura Operations
 
@@ -50,6 +60,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `cd hasura && hasura console` - Open Hasura console for development
 - `pnpm fix:permissions` - Automatically fix all permission issues across all tables
 - `pnpm fix:permissions:dry-run` - Preview permission fixes without applying changes
+
+### Developer Utilities & Scripts
+
+The `scripts/` directory contains powerful maintenance and development utilities:
+
+**Data Management:**
+- `pnpm test:data:seed` - Seed test data for development
+- `pnpm test:data:clean` - Clean test data
+- `pnpm test:data:generate` - Generate fake data for testing
+- `pnpm test:data:real` - Seed with real-world data patterns
+
+**Payroll System Management:**
+- `node scripts/developer/regenerate-all-dates.js` - Regenerate all payroll dates
+- `node scripts/developer/clean-all-dates.js` - Clean all generated dates
+- `node scripts/developer/reset-to-original.js` - Reset to original state
+
+**User Management Scripts:**
+- `node scripts/fix-user-sync.js` - Fix user synchronization issues
+- `node scripts/create-test-users.js` - Manage test user lifecycle
+- `node scripts/sync-test-users.js` - Sync test users with database
+
+**Holiday & External Data:**
+- `node scripts/tests/test-holiday-sync.js` - Test holiday synchronization
+- `pnpm api/holidays/sync` - Sync Australian public holidays
+
+**Code Quality Scripts:**
+- `node scripts/fix-codebase.js` - Automated codebase fixes
+- `node scripts/validate-case-conventions.ts` - Validate naming conventions
+- `node scripts/fix-hasura-permissions.js` - Fix GraphQL permissions
 
 ### Security Audit
 
@@ -85,6 +124,8 @@ This is a streamlined authentication system leveraging Clerk's native enterprise
   - `lib/utils/auth-error-utils.ts` - Authentication error utilities
   - `app/api/webhooks/clerk/` - Clerk webhook handlers for user synchronization
   - `components/auth/strict-database-guard.tsx` - Security guard with 10-minute verification caching
+  - `lib/auth/client-auth-logger.ts` - Client-side authentication event logging utility
+  - `app/api/auth/log-event/route.ts` - SOC2-compliant authentication event logging endpoint
 
 #### JWT Template Configuration
 
@@ -111,9 +152,34 @@ The authentication system uses a specific JWT template configured in Clerk Dashb
 
 This template ensures proper database UUID mapping and role-based access control for Hasura operations.
 
-### GraphQL & Domain Architecture
+#### Client-Side Audit Logging
 
-**🎯 85% Coverage Achieved** - Major GraphQL operations migration completed December 2024 with significant improvements in type safety and maintainability.
+Comprehensive authentication event logging system for SOC2 compliance and security monitoring:
+
+- **Event Coverage**: Login attempts/success/failure, signup events, invitation acceptance, OAuth flows, MFA events, logout, session timeout
+- **Authentication Methods**: Email/password, Google OAuth, Clerk Elements, invitation tickets, MFA, password reset
+- **Dual Logging**: Events logged to both security audit system and database for redundancy
+- **Rate Limited**: Auth logging endpoint protected with 20 requests/minute limit
+- **Client Logger**: Singleton pattern with convenience methods for different auth events
+- **Error Handling**: Graceful fallbacks - app continues functioning even if logging fails
+- **Security Headers**: Client information (user agent, IP) captured server-side from request headers
+- **SOC2 Compliance**: Proper event classification and audit trails for compliance requirements
+
+**Implementation Locations:**
+- `/app/(auth)/sign-in/[[...sign-in]]/page.tsx` - Email/password and Google OAuth login logging
+- `/app/(auth)/sign-up/[[...sign-up]]/page.tsx` - Clerk Elements signup flow logging with success/failure detection
+- `/app/(auth)/accept-invitation/page.tsx` - Invitation acceptance logging with role assignment tracking
+- `lib/auth/client-auth-logger.ts` - Central logging utility with typed event system
+- `app/api/auth/log-event/route.ts` - Server endpoint for processing client-side auth events
+
+**Event Types Supported:**
+```typescript
+login_attempt | login_success | login_failure | logout | signup_attempt | 
+signup_success | signup_failure | invitation_accepted | password_reset | 
+mfa_challenge | mfa_success | mfa_failure | session_timeout | oauth_login | oauth_failure
+```
+
+### GraphQL & Domain Architecture
 
 Domain-driven GraphQL setup with modular Apollo client architecture:
 
@@ -128,7 +194,7 @@ Domain-driven GraphQL setup with modular Apollo client architecture:
 - **Real-time Features**: WebSocket subscriptions with automatic Clerk authentication, real-time security monitoring, optimistic updates
 - **Hasura Integration**: JWT-based authentication with native Clerk token templates, row-level security, role-based permissions
 - **Performance Optimized**: Fragment-based queries, pagination support, unified dashboard queries (60%+ performance improvement)
-- **Migrated Operations**: Critical audit logging, user/client queries, payroll date generation successfully moved to domains
+- **Architectural Consistency**: All components now use GraphQL operations via domain hooks (completed December 2024)
 
 **Core Domains with Security Classifications:**
 
@@ -169,32 +235,6 @@ domains/{domain}/
 - **Search Operations**: Fuzzy search with pagination for all major entities
 - **CRUD Complete**: Full create, read, update, delete coverage with soft delete patterns
 
-**GraphQL Migration Status (December 2024):**
-
-**✅ Successfully Migrated to Domains:**
-- **Critical Security Operations**: `lib/security/audit/logger.ts` → `domains/audit/graphql/mutations.graphql`
-  - `LogAuditEvent`, `LogAuthEvent` mutations fully migrated and typed
-- **User Management**: `GetUsersForDropdown` → `domains/users/graphql/queries.graphql`
-- **Client Management**: `GetClientsSimple` → `domains/clients/graphql/queries.graphql`
-- **Payroll Operations**: `GeneratePayrollDates` → `domains/payrolls/graphql/queries.graphql`
-  - Updated `app/(dashboard)/payrolls/new/page.tsx` to use domain query with proper `useLazyQuery`
-
-**⚠️ Remaining Inline GraphQL (15% - Schema Limitations):**
-- **API Key Management**: `lib/security/persistent-api-keys.ts` (5 queries - `api_keys` table not in schema)
-- **Bulk Operations**: API routes in `app/api/cron/` (functions not exposed in GraphQL schema)
-- **Hasura Claims**: `app/api/auth/hasura-claims/route.ts` (`get_hasura_claims` function exists in DB but not exposed)
-- **User Sync**: `domains/users/services/user-sync.ts` (queries within domain but need extraction)
-- **Holiday Sync**: `domains/external-systems/services/holiday-sync-service.ts` (similar domain extraction needed)
-
-**🚀 Apollo Client Architecture Improvements (June 2025):**
-- **Eliminated Duplication**: Removed 1,249+ lines of duplicate code (including legacy `unified-client-old.ts`)
-- **Modular Structure**: Split monolithic client into maintainable modules across 15+ specialized files
-- **Consolidated Types**: Centralized all Apollo types in `types.ts` eliminating scattered definitions
-- **Clean Exports**: Single source of truth for error utilities and type definitions
-- **Comprehensive Documentation**: Critical link chain order documented to prevent architectural mistakes
-- **Type Safety**: All migrated operations have full TypeScript support
-- **Performance**: Reduced bundle size and improved maintainability significantly
-
 ### Security Layer
 
 Defense-in-depth architecture following SOC2 compliance:
@@ -203,9 +243,12 @@ Defense-in-depth architecture following SOC2 compliance:
 - **Enhanced Route Monitoring**: Real-time request monitoring, suspicious pattern detection, security alerting
 - **Security Middleware Stack**: Authentication, route protection, MFA enforcement, API signing
 - **Hasura Security**: Row-level security policies, GraphQL query restrictions, permission-based access
+- **Client-Side Audit Logging**: Comprehensive authentication event tracking with dual logging (security audit + database)
 - **Key Files**:
   - `lib/security/config.ts` - Security configuration
   - `lib/security/enhanced-route-monitor.ts` - Route monitoring
+  - `lib/auth/client-auth-logger.ts` - Client-side authentication event logging
+  - `app/api/auth/log-event/route.ts` - Authentication event processing endpoint
   - `hasura/metadata/` - Permission and role definitions
 
 ### Database Integration
@@ -224,9 +267,10 @@ GraphQL-first approach using Hasura over PostgreSQL:
 ```tree
 ├── middleware.ts                    # Primary auth middleware
 ├── app/api/webhooks/clerk/          # Clerk webhook handlers
-├── lib/apollo/                      # Modular Apollo Client (Optimized June 2025)
+├── app/api/auth/log-event/          # Client-side auth event logging endpoint (CRITICAL)
+├── lib/apollo/                      # Modular Apollo Client
 │   ├── unified-client.ts           # Main export point with backward compatibility
-│   ├── types.ts                    # Centralized type definitions (consolidated June 2025)
+│   ├── types.ts                    # Centralized type definitions
 │   ├── links/                      # Apollo link chain with documented order
 │   │   ├── error-link.ts          # Error handling (FIRST in chain)
 │   │   ├── retry-link.ts          # Retry logic (SECOND in chain)
@@ -238,6 +282,8 @@ GraphQL-first approach using Hasura over PostgreSQL:
 │   └── admin-operations.ts         # Admin service operations
 ├── lib/
 │   ├── auth/                       # Authentication utilities
+│   │   ├── permissions.ts          # Role hierarchy and permissions (CRITICAL)
+│   │   └── client-auth-logger.ts   # Client-side audit logging (CRITICAL)
 │   └── security/                   # Security configurations
 ├── domains/                        # Domain-based GraphQL operations
 │   ├── auth/graphql/               # Auth queries/mutations (CRITICAL)
@@ -253,10 +299,11 @@ GraphQL-first approach using Hasura over PostgreSQL:
 ### Authentication Flow
 
 1. **User Authentication**: Clerk handles sign-up/sign-in
-2. **JWT Generation**: Clerk issues JWT with custom claims
-3. **Token Forwarding**: Apollo Client forwards JWT to Hasura
-4. **Permission Enforcement**: Hasura applies row-level security
-5. **Audit Logging**: All security events logged for SOC2 compliance
+2. **Client-Side Logging**: Authentication events captured via `clientAuthLogger` for real-time monitoring
+3. **JWT Generation**: Clerk issues JWT with custom claims
+4. **Token Forwarding**: Apollo Client forwards JWT to Hasura
+5. **Permission Enforcement**: Hasura applies row-level security
+6. **Dual Audit Logging**: Events logged to both security audit system and database for SOC2 compliance
 
 ### Permission System
 
@@ -286,6 +333,67 @@ The project enforces strict case conventions across all code:
 - `Type-Case-Conventions.md` - Reference guide
 
 **Validation**: Run `pnpm validate:naming` to check compliance and `pnpm validate:naming:fix` for automatic fixes.
+
+## Development Standards & Cursor Rules
+
+The project includes comprehensive development standards defined in `.cursorrules` for consistency across the team:
+
+### Architecture Principles
+
+- **Domain-Driven Design**: Business logic organized by functional domains (`/domains`)
+- **Security-First Approach**: SOC2 compliance with comprehensive audit logging
+- **Native Clerk Integration**: Never implement custom JWT handling or token management
+
+### Authentication & Authorization Standards
+
+- **Always use Clerk's native hooks**: `useAuth()`, `useUser()`, `sessionClaims`
+- **Server-side authentication**: Use `auth()` from `@clerk/nextjs/server`
+- **Never manually decode JWTs** or implement custom token refresh
+- **Always validate permissions** using `usePermissions()` hook
+- **Use role guards** for component protection
+
+### Security Implementation Requirements
+
+- **All protected routes/components** must check authentication
+- **Role/permission validation** implemented everywhere
+- **Input validation** with Zod schemas required
+- **Audit logging** for all business operations
+- **No sensitive information** exposed in errors
+- **Type safety** enforced - no `any` types allowed
+
+### Component Development Standards
+
+- **Follow component hierarchy**: auth/ → ui/ → business-domain/ → error-boundary/
+- **Implement proper error boundaries** for all components
+- **Include loading states** and error handling
+- **Use proper memoization** for expensive calculations
+- **Lazy load heavy components** when appropriate
+
+### API Development Requirements
+
+- **Authenticate first** - all protected endpoints check authentication
+- **Validate role/permissions** before proceeding
+- **Validate input** with Zod schemas
+- **Include audit logging** for business operations
+- **Proper error sanitization** - no internal error exposure
+
+### Common Patterns Enforced
+
+```typescript
+// Authentication check pattern
+const { isSignedIn, isLoaded } = useAuth();
+if (!isLoaded) return <Loading />;
+if (!isSignedIn) return <SignIn />;
+
+// Error handling pattern
+try {
+  const result = await operation();
+  return { success: true, data: result };
+} catch (error) {
+  logger.error("Operation failed", { error, context });
+  return { success: false, error: "Operation failed" };
+}
+```
 
 ## Important Patterns
 
@@ -346,217 +454,6 @@ Key environment variables (see `.env.example` for full list):
 - **Security Features**: Automatic security level classification, audit logging integration, role-based access control
 - **Performance Optimizations**: Fragment masking, unified exports, duplicate elimination
 
-## Recent Performance Optimizations (2025-06-24)
-
-### Apollo Client Architecture Cleanup (June 24, 2025)
-
-**🎯 Major Achievement**: Complete elimination of duplicate code and optimization of Apollo Client architecture.
-
-#### Apollo Client Optimization (✅ COMPLETED)
-- **Issue**: 1,249+ lines of duplicate code across legacy and current implementations
-- **Solution**: Removed legacy file, consolidated types, documented link chain architecture
-- **Result**: Zero redundancy, comprehensive documentation, improved maintainability
-
-#### Key Improvements Implemented
-- **Legacy Code Removal**: Eliminated `unified-client-old.ts` (449 lines of duplicated logic)
-- **Type Consolidation**: Centralized all Apollo types in `types.ts` eliminating scattered definitions
-- **Error Export Cleanup**: Single source of truth for error utilities from `handle-graphql-error.ts`
-- **Link Chain Documentation**: Comprehensive inline documentation explaining critical link order
-- **Architecture Documentation**: Complete Apollo Client architecture guide created
-
-#### Technical Achievements
-- **Code Reduction**: Eliminated 1,249+ total lines of duplicate code
-- **Type Safety**: Centralized type definitions prevent inconsistencies
-- **Documentation**: Link chain order documented to prevent architectural mistakes
-- **Maintainability**: Modular structure with clear dependencies and responsibilities
-- **Build Performance**: Cleaner import chains and reduced compilation overhead
-
-#### Documentation Created
-- `/docs/architecture/APOLLO_CLIENT_ARCHITECTURE.md` - Comprehensive architecture guide
-- Updated `/docs/GRAPHQL_OPERATIONS_GUIDE.md` - Added Apollo Client architecture section
-- Updated `/docs/README.md` - Added Apollo Client architecture to developer quick start
-
-### API Response Utilities Consolidation (June 24, 2025)
-
-**🎯 Major Achievement**: Complete consolidation of API response utilities eliminating redundancy and improving maintainability.
-
-#### API Response Cleanup (✅ COMPLETED)
-- **Issue**: 3 separate API response implementations (~650 lines) across different directories
-- **Solution**: Consolidated all response utilities into single source of truth with enhanced security features
-- **Result**: Zero redundancy, unified error handling, enhanced security compliance
-
-#### Key Improvements Implemented
-- **File Consolidation**: Merged `/lib/shared/responses.ts`, `/lib/security/error-responses.ts`, and enhanced `/lib/api-responses.ts`
-- **Deprecated Code Removal**: Eliminated `APIKeyManager` class (70 lines) and outdated audit logging (~45 lines)
-- **Import Updates**: Fixed 8+ files across codebase to use consolidated imports
-- **Error Code Fixes**: Corrected typos `VALIDATIONerror` → `VALIDATION_ERROR`, `INTERNALerror` → `INTERNAL_ERROR`
-- **API Key Migration**: Updated to use `PersistentAPIKeyManager` for enhanced database-backed security
-
-#### Security Enhancements
-- **Enhanced Error Sanitization**: Production-safe error handling with secure error masking
-- **Permission Validation**: Unified permission checking with role-based access control
-- **Backward Compatibility**: Maintained existing API contracts while improving security
-- **SOC2 Compliance**: Enhanced audit logging integration for compliance requirements
-
-#### Technical Achievements
-- **Code Reduction**: Eliminated ~650 lines of duplicate/deprecated code
-- **Single Source of Truth**: All API responses now use centralized utilities from `/lib/api-responses.ts`
-- **Type Safety**: Enhanced TypeScript types for consistent error handling
-- **Build Verification**: Zero TypeScript compilation errors, all imports resolved correctly
-- **Security Migration**: Successfully migrated from in-memory to persistent API key management
-
-#### Files Updated
-- `app/api/auth/token/route.ts` - Updated error handling to use `ApiResponses`
-- `app/api/staff/delete/route.ts` - Migrated to consolidated response utilities
-- `app/api/admin/api-keys/route.ts` - Updated to use `PersistentAPIKeyManager` methods
-- `app/api/signed/payroll-operations/route.ts` - Enhanced API key validation
-- `lib/apollo/admin-operations.ts` - Unified error response handling
-- `lib/security/api-signing.ts` - Removed deprecated `APIKeyManager`, updated error methods
-
-#### Files Relocated for Better Organization
-- `/lib/optimistic-updates.ts` → `/lib/apollo/optimistic-updates.ts` - Moved to Apollo client directory
-- `/lib/session-monitor.tsx` → `/components/auth/session-monitor.tsx` - Moved to auth components
-
-#### Deleted Files
-- `/lib/shared/audit-logging.ts` - Deprecated console-only implementation
-- `/lib/shared/responses.ts` - Basic duplicate functionality
-- `/lib/security/error-responses.ts` - Security-focused duplicate merged into main file
-- `/lib/security/mfa-middleware.ts` - Unused MFA feature (309 lines) removed
-- `/lib/dev-only.ts` - Unused development utility (39 lines) removed
-
-#### Memory Management Improvements
-- **Enhanced nonce store cleanup** in `api-signing.ts` with monitoring and graceful shutdown
-- **Improved route monitor cleanup** in `enhanced-route-monitor.ts` with comprehensive memory management
-- **Added rate limit store utilities** in `security-utils.ts` with automatic cleanup mechanisms
-- **Memory usage warnings** added to prevent unbounded growth in production
-
-## Previous Performance Optimizations (2025-06-23)
-
-### Complete GraphQL Operations Audit & Optimization
-
-**🎯 Major Achievement**: Complete 4-phase GraphQL operations audit resulting in **100% frontend-to-backend alignment** and **60%+ performance improvements**.
-
-#### Phase 1: Frontend Analysis & Critical Fixes (✅ COMPLETED)
-- **Issue**: 78% GraphQL coverage with 4 API routes using inline GraphQL
-- **Solution**: Migrated all inline operations to domain structure, implemented missing CRUD operations
-- **Result**: 100% coverage achieved, zero technical debt
-
-#### Phase 2: Performance Optimization (✅ COMPLETED)  
-- **Issue**: Over-fetching data, no pagination, inefficient queries
-- **Solution**: Implemented fragment hierarchy, pagination patterns, unified dashboard queries
-- **Result**: 60%+ performance improvement in load times and data transfer
-
-#### Phase 3: Requirements Matching (✅ COMPLETED)
-- **Issue**: Incomplete alignment between frontend needs and GraphQL operations
-- **Solution**: Created comprehensive coverage matrix, implemented 25+ real-time subscriptions
-- **Result**: Perfect alignment achieved across all 48 critical operations
-
-#### Phase 4: Documentation & Reporting (✅ COMPLETED)
-- **Issue**: No comprehensive documentation for optimized operations
-- **Solution**: Created detailed audit report, operations guide, and best practices documentation
-- **Result**: Complete documentation suite for team adoption
-
-#### Key Performance Metrics Achieved
-- **Dashboard Load Time**: 2.3s → 0.9s (61% improvement)
-- **Data Transfer**: 450KB → 150KB (67% reduction)  
-- **Network Requests**: 3 → 1 query (67% reduction)
-- **Cache Hit Rate**: 45% → 85% (89% improvement)
-- **List Performance**: 68% average reduction in data transfer
-
-#### Documentation Created
-- `/docs/GRAPHQL_AUDIT_REPORT.md` - Comprehensive audit report with metrics
-- `/docs/GRAPHQL_OPERATIONS_GUIDE.md` - Developer guide for optimized operations
-- `/shared/schema/security-report.json` - SOC2 compliance verification
-- Updated domain exports with security classifications
-
-### GraphQL Real-time Architecture Overhaul
-
-**Problem Solved**: Security page was polling GraphQL every 2 minutes causing performance issues and unnecessary server load.
-
-**Solution Implemented**: Replaced aggressive polling with real-time GraphQL subscriptions using WebSocket connections.
-
-#### Key Changes Made
-
-1. **New Real-time Subscriptions** (`domains/audit/graphql/subscriptions.graphql`):
-   - `SecurityEventsStream` - Real-time audit events
-   - `FailedOperationsStream` - Failed operations monitoring
-   - `CriticalDataAccessStream` - Critical data access tracking
-
-2. **Optimized Apollo Cache Policies** (`lib/apollo/unified-client.ts`):
-   - Smart merge functions for audit logs
-   - Duplicate event prevention
-   - Efficient real-time data updates
-   - Background refresh without loading states
-
-3. **Hybrid Approach with Intelligent Fallback**:
-   - Primary: WebSocket subscriptions for real-time updates
-   - Fallback: 5-minute polling when WebSocket disconnected
-   - Connection status monitoring with visual indicators
-
-4. **Performance Improvements**:
-   - **Eliminated ~720 requests per day per user** (from 2-minute polling)
-   - **Real-time security monitoring** with instant updates
-   - **Reduced server load** by 95% for security page
-   - **Better user experience** - no loading interruptions
-
-### Authentication Loading State Optimization
-
-**Problem Solved**: "Verifying Access" loading screen appeared on every page refresh instead of only during initial login.
-
-**Solution Implemented**: Enhanced caching and state management in `components/auth/strict-database-guard.tsx`.
-
-#### Key Improvements
-
-1. **Smart Verification Caching**:
-   - 10-minute cache duration for successful verifications
-   - 8-minute stale duration with background refresh
-   - Immediate cache utilization on page refresh
-
-2. **Optimized Grace Period Logic**:
-   - Skip 500ms grace period when cached verification exists
-   - Immediate access granted with valid cache
-   - Silent background refresh after 8 minutes
-
-3. **Enhanced Loading Conditions**:
-   - Only show loading screen for genuine first-time verification
-   - Cached users bypass loading screen entirely
-   - Background verification happens transparently
-
-4. **User Experience Improvements**:
-   - **No authentication flicker** on page refresh
-   - **Faster page loads** for returning users
-   - **Seamless navigation** without verification delays
-   - **Security maintained** while improving UX
-
-## Security Audit Guidelines
-
-When performing security audits, focus on these integration points:
-
-### High-Priority Areas
-
-1. **Clerk ↔ Next.js Integration**: Middleware auth, webhook handling, token management
-2. **Next.js ↔ Hasura Integration**: JWT forwarding, Apollo Client configuration, error handling
-3. **Hasura Permission System**: Row-level security, role definitions, business logic rules
-4. **API Route Security**: Authentication, input validation, rate limiting
-
-### Common Vulnerability Points
-
-- Environment variable exposure
-- Webhook signature verification
-- Token refresh mechanisms
-- Permission boundary enforcement
-- GraphQL query depth/complexity limits
-- Client-side token storage
-- Error message information disclosure
-
-### Compliance Verification
-
-- SOC2 audit log completeness
-- User activity tracking
-- Failed authentication monitoring
-- Data access logging
-- Incident response procedures
-
 ## Development Notes
 
 - **Framework**: Next.js 15 with App Router (React 19)
@@ -567,135 +464,19 @@ When performing security audits, focus on these integration points:
 - **WIP Pages**: ai-assistant, calendar, tax-calculator are redirected to 404 in production
 - **Security**: All authenticated routes protected by middleware, comprehensive audit logging enabled
 - **Authentication**: Optimized to use pure Clerk native functions, eliminated 1,200+ lines of custom token management, enhanced with smart caching to prevent loading flicker
-- **GraphQL**: 85% migrated to domain-based organization with modular Apollo client (Dec 2024), real-time subscriptions for security monitoring, optimized cache policies for performance, Apollo Client updated to use modern `onData` API, critical audit logging and payroll operations fully migrated
+- **GraphQL**: Domain-driven organization with modular Apollo client architecture, real-time subscriptions for live updates, performance optimized with fragment-based queries and pagination
 - **Performance**: WebSocket-based real-time updates replace aggressive polling, reducing server load by 95% on security page
-- **Code Quality**: Deprecated Apollo Client APIs migrated to current standards, GraphQL property naming standardized to camelCase, API response utilities consolidated into single source of truth
-- **API Responses**: All error handling consolidated into `/lib/api-responses.ts` with enhanced security features, eliminated 650+ lines of duplicate code
-- **API Key Management**: Migrated to `PersistentAPIKeyManager` for database-backed security, removed deprecated in-memory implementations
+- **Code Quality**: Comprehensive case convention system enforced, automated codebase maintenance utilities, production build exclusions for test files
 
-## Comprehensive Development Dashboard
+### Production Build Configuration
 
-**🎯 Major Achievement (June 2025)**: Implemented a comprehensive development dashboard accessible in production for authorized developers.
+The project uses `next.config.js` with specific production optimizations:
 
-### Access & Navigation
-
-The development dashboard is accessible via:
-
-- **Primary Route**: `/developer/dev` - Direct access to comprehensive testing suite
-- **From Developer Page**: Navigate to `/developer` → Click "Open Development Dashboard"
-- **Production Access**: Available in production for users with `developer` role
-- **Security**: Full authentication guards with role verification
-
-### Dashboard Features
-
-#### **Overview Tab**
-- **System Architecture**: Visual overview of critical vs debugging tools
-- **Quick Access**: Direct links to essential testing components
-- **Production Warning**: Clear guidance on responsible production usage
-
-#### **Testing Suite Tab**
-Comprehensive testing tools organized by category:
-
-**Critical Tests (Production Safe)**
-- **JWT Test Panel** (`/lib/dev/test-components/jwt-test-panel.tsx`):
-  - Complete JWT and authentication testing dashboard
-  - Tests Clerk authentication integration with Hasura claims
-  - Database user sync verification and system health analysis
-  - **Usage**: Essential for debugging authentication issues
-
-- **WebSocket Testing** (`/lib/dev/test-components/hasura-websocket-test.tsx`):
-  - Hasura-specific WebSocket testing with authentication
-  - JWT token integration for Hasura GraphQL-over-WebSocket
-  - **Usage**: Critical for real-time subscription debugging
-
-**Debugging Tools**
-- **Direct WebSocket** (`/lib/dev/test-components/direct-websocket-test.tsx`):
-  - Manual WebSocket message handling and protocol implementation
-  - Raw WebSocket communication debugging
-  - **Usage**: Low-level debugging for complex WebSocket issues
-
-- **Apollo Subscriptions** (`/lib/dev/test-components/subscription-test.tsx`):
-  - GraphQL subscriptions through Apollo Client testing
-  - Real-time data updates verification and lifecycle management
-  - **Usage**: Debug Apollo Client subscription issues
-
-- **Simple WebSocket** (`/lib/dev/test-components/simple-websocket-test.tsx`):
-  - Basic WebSocket connectivity testing (echo server)
-  - **Usage**: Initial WebSocket functionality verification
-
-#### **Examples Tab**
-Reference implementations demonstrating production patterns:
-
-- **Enhanced Users List** (`/lib/dev/examples/enhanced-users-list.tsx`):
-  - Advanced GraphQL error handling patterns used in production
-  - **Real Implementations**: `/app/(dashboard)/staff/page.tsx:310-330`, `/lib/utils/handle-graphql-error.ts:150-200`
-  - **Patterns**: `isAuthError()` helper, toast notifications, graceful recovery
-
-- **Graceful Clients List** (`/lib/dev/examples/graceful-clients-list.tsx`):
-  - Permission-based graceful degradation patterns
-  - **Real Implementations**: `/hooks/use-graceful-query.ts:74-100`, `/components/graphql-error-boundary.tsx:73-157`
-  - **Patterns**: Permission-aware data fetching, fallback data, graceful boundaries
-
-#### **Documentation Tab**
-Comprehensive architecture documentation:
-
-- **Authentication Architecture**: Pure Clerk integration, JWT template configuration, RBAC implementation
-- **GraphQL Error Handling**: Enhanced error detection, graceful fallbacks, structured error processing
-- **WebSocket & Real-time**: Apollo Client WebSocket links, 25+ subscriptions, connection fallback
-- **Security Compliance**: SOC2 compliance, data classification, route monitoring
-
-### Development Toolkit Architecture
-
-**File Structure:**
-```bash
-lib/dev/
-├── index.ts                     # Enhanced unified exports and DevTools metadata
-├── dev-dashboard.tsx            # Comprehensive tabbed dashboard component
-├── test-components/             # Production-safe testing tools
-│   ├── index.ts                # Component exports
-│   ├── jwt-test-panel.tsx       # Authentication testing (372 lines)
-│   ├── hasura-websocket-test.tsx # WebSocket + Hasura testing (198 lines)
-│   ├── direct-websocket-test.tsx # Low-level WebSocket debugging (190 lines)
-│   ├── subscription-test.tsx    # Apollo subscriptions testing (86 lines)
-│   └── simple-websocket-test.tsx # Basic connectivity testing (125 lines)
-└── examples/                    # Reference implementations
-    ├── index.ts                # Example exports  
-    ├── enhanced-users-list.tsx  # Error handling patterns (148 lines)
-    └── graceful-clients-list.tsx # Permission fallback patterns (213 lines)
-```
-
-**Key Features:**
-- **DevTools Metadata**: Programmatic access to tool descriptions and categories
-- **DevCategories**: Organized by `critical`, `debugging`, and `reference`
-- **Production Ready**: All components include proper security guards and production warnings
-- **Comprehensive Documentation**: Each example includes links to real production implementations
-
-### Integration with Existing Developer Tools
-
-The comprehensive dashboard complements existing developer tools:
-
-- **Main Developer Page** (`/developer`): OAuth debugging, JWT inspection, database management
-- **Dev Dashboard** (`/developer/dev`): WebSocket testing, GraphQL debugging, error handling examples
-- **JWT Test Page** (`/jwt-test`): Standalone JWT testing (legacy)
-
-### Production Usage Guidelines
-
-**Authorized Access:**
-- Only users with `developer` role can access the dashboard
-- Production warning banner explains responsible usage
-- All testing tools include guidance on production safety
-
-**Recommended Usage:**
-- **Critical Tools**: Safe for production debugging of authentication and connectivity issues
-- **Debugging Tools**: Use cautiously in production, avoid tests that could impact performance
-- **Examples**: Reference only - demonstrate patterns used throughout production codebase
-
-### Performance & Security
-
-- **Build Verified**: Zero TypeScript compilation errors, successful production builds
-- **Security Compliant**: Full integration with Clerk authentication and role-based access
-- **Production Optimized**: All components properly optimized with security guards
-- **Documentation Complete**: Comprehensive inline documentation linking to real implementations
+- **Security Headers**: Comprehensive CSP, HSTS, XSS protection, and frame options
+- **Build Exclusions**: E2E tests, development files, and test utilities excluded from production bundles
+- **Route Protection**: Dev-only routes (`/api/dev/*`) automatically redirect to 404 in production
+- **Image Optimization**: Configured for Clerk domains with AVIF/WebP support
+- **Webpack Configuration**: Custom module resolution and build exclusions for production
 
 ## Common Authentication Issues & Solutions
 
@@ -715,48 +496,6 @@ If you encounter "field not found" errors in GraphQL queries (like `isActive`, `
 1. Check Hasura metadata permissions in `hasura/metadata/databases/default/tables/public_*.yaml`
 2. Ensure the field is included in the role's `select_permissions.columns` array
 3. Apply metadata changes and regenerate types
-
-### GraphQL Property Naming Issues
-
-If you encounter TypeScript errors about missing GraphQL properties:
-
-**Common Property Name Mappings:**
-
-- `users_by_pk` → `user` (singular)
-- `update_payrolls` → `updatePayrolls` (camelCase)
-- `clerk_user_id` → `clerkUserId` (camelCase)
-- Database fields use `snake_case`, TypeScript uses `camelCase`
-
-**Fix Process:**
-
-1. Check the generated GraphQL types in `domains/{domain}/graphql/generated/`
-2. Update property access to match the generated types
-3. Run `pnpm codegen` to regenerate types after schema changes
-4. Run `pnpm build` to verify TypeScript compilation
-
-### Apollo Client Subscription Issues
-
-**Deprecated `onSubscriptionData` Warning:**
-
-The Apollo Client deprecation warning for `onSubscriptionData` has been resolved by migrating to the new `onData` API:
-
-```typescript
-// OLD (deprecated)
-useSubscription(SUBSCRIPTION, {
-  onSubscriptionData: ({ subscriptionData }) => {
-    // Handle data
-  }
-});
-
-// NEW (current)
-useSubscription(SUBSCRIPTION, {
-  onData: ({ data }) => {
-    // Handle data
-  }
-});
-```
-
-All subscription components have been updated to use the new API.
 
 ### User Sync Issues
 
@@ -792,68 +531,29 @@ If "Verifying Access" appears on every page refresh:
 4. **Grace Period Bypass**: Cached users should skip the 500ms grace period
 5. **Background Refresh**: After 8 minutes, refresh happens silently in background
 
-### API Response Utilities Issues
+### Code Quality & Linting
 
-If you encounter import errors related to API responses:
+The project enforces strict code quality standards:
 
-**Common Error Messages:**
-- `Cannot find module '@/lib/security/error-responses'`
-- `Cannot find module '@/lib/shared/responses'`
-- `Property 'error' does not exist on type 'NextResponse'`
-
-**Solution:**
-
-1. **Update Import Statements**: All API response utilities are now in `/lib/api-responses.ts`
-   ```typescript
-   // OLD (deprecated)
-   import { SecureErrorHandler } from '@/lib/security/error-responses';
-   import { ApiResponses } from '@/lib/shared/responses';
-   
-   // NEW (current)
-   import { ApiResponses } from '@/lib/api-responses';
-   ```
-
-2. **Method Name Changes**: Some methods have been renamed for consistency
-   ```typescript
-   // OLD
-   SecureErrorHandler.authenticationError()
-   SecureErrorHandler.validationError("message")
-   SecureErrorHandler.sanitizeError(error, "context")
-   
-   // NEW
-   ApiResponses.authenticationRequired()
-   ApiResponses.badRequest("message")
-   ApiResponses.secureError(error, "context")
-   ```
-
-3. **API Key Management**: Use `PersistentAPIKeyManager` instead of deprecated `APIKeyManager`
-   ```typescript
-   // OLD (deprecated)
-   import { apiKeyManager } from '@/lib/security/api-signing';
-   apiKeyManager.generateKeyPair()
-   
-   // NEW (current)
-   import { PersistentAPIKeyManager } from '@/lib/security/persistent-api-keys';
-   PersistentAPIKeyManager.createAPIKey({...})
-   ```
-
-4. **Error Response Structure**: The consolidated responses return `NextResponse` objects
-   ```typescript
-   // Correct usage
-   const error = ApiResponses.badRequest("Invalid input");
-   return error; // This is already a NextResponse
-   
-   // Don't try to access .error property
-   // return NextResponse.json(error.error, { status: 400 }); // ❌ Wrong
-   ```
-
-### ESLint Configuration
-
-The project uses ES modules (`"type": "module"` in package.json):
-
+**ESLint Configuration:**
+- ES modules (`"type": "module"` in package.json)
 - Use `_dirname` and `_filename` instead of `__dirname` and `__filename`
 - Import statements must include file extensions for local files
 - All config files use ES module syntax
+
+**Quality Commands:**
+- `pnpm lint` - Run ESLint checks
+- `pnpm lint:fix` - Auto-fix ESLint issues
+- `pnpm lint:strict` - Run with zero warnings allowed
+- `pnpm format` - Format code with Prettier
+- `pnpm format:check` - Check code formatting
+- `pnpm type-check` - Run TypeScript type checking
+- `pnpm quality:check` - Run all quality checks (lint + format + types)
+- `pnpm quality:fix` - Auto-fix all quality issues
+
+**Production Build:**
+- TypeScript and ESLint checks are disabled in production builds for performance
+- Quality checks should be run during development and CI/CD
 
 ## Important Instruction Reminders
 

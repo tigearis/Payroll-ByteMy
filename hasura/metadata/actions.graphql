@@ -49,17 +49,17 @@ input ComplianceReportInput {
 
 type AffectedAssignment {
   id: String!
-  payroll_date_id: String!
-  original_consultant_id: String!
-  new_consultant_id: String!
-  adjusted_eft_date: String!
+  payrollDateId: String!
+  originalConsultantId: String!
+  newConsultantId: String!
+  adjustedEftDate: String!
 }
 
 type CommitPayrollAssignmentsOutput {
   success: Boolean!
   message: String
   errors: [String!]
-  affected_assignments: [AffectedAssignment!]
+  affectedAssignments: [AffectedAssignment!]
 }
 
 type AuditEventResponse {

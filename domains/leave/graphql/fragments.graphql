@@ -1,33 +1,157 @@
 # Leave Domain Fragments
+# Security Classification: MEDIUM - Employee leave and HR data
+# SOC2 Compliance: Personal data with privacy controls
 
 fragment LeaveCore on leave {
   id
-  userId
+  leaveType
   startDate
   endDate
-  leaveType
-  reason
   status
+  userId
+}
+
+fragment LeaveBasic on leave {
+  ...LeaveCore
+  reason
+}
+
+fragment LeaveDetailed on leave {
+  ...LeaveBasic
 }
 
 fragment LeaveWithUser on leave {
-  ...LeaveCore
-  user {
+  ...LeaveBasic
+  leaveUser {
     id
     name
     email
-    isStaff
-    managerId
-  }
-}
-
-fragment LeaveWithManager on leave {
-  ...LeaveWithUser
-  user {
-    manager {
+    role
+    managerUser {
       id
       name
       email
     }
   }
+}
+
+fragment LeaveComplete on leave {
+  ...LeaveDetailed
+  leaveUser {
+    id
+    name
+    email
+    role
+    managerUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+# Performance-optimized fragments
+fragment LeaveSummary on leave {
+  id
+  leaveType
+  startDate
+  endDate
+  status
+  userId
+}
+
+fragment LeaveListItem on leave {
+  ...LeaveSummary
+  reason
+  leaveUser {
+    id
+    name
+  }
+}
+
+fragment LeaveTableRow on leave {
+  ...LeaveListItem
+}
+
+fragment LeaveDashboardCard on leave {
+  ...LeaveSummary
+  leaveUser {
+    id
+    name
+  }
+}
+
+fragment LeaveCalendarItem on leave {
+  id
+  leaveType
+  startDate
+  endDate
+  status
+  leaveUser {
+    id
+    name
+    role
+  }
+}
+
+fragment LeaveMinimal on leave {
+  id
+  leaveType
+  startDate
+  endDate
+  status
+  userId
+}
+
+# Status-specific fragments
+fragment PendingLeave on leave {
+  ...LeaveWithUser
+  # For pending approval requests
+}
+
+fragment ApprovedLeave on leave {
+  ...LeaveBasic
+  # For approved leave requests
+}
+
+fragment RejectedLeave on leave {
+  ...LeaveBasic
+  # For rejected leave requests
+}
+
+# Type-specific fragments
+fragment SickLeave on leave {
+  ...LeaveDetailed
+  # For sick leave with medical details
+}
+
+fragment VacationLeave on leave {
+  ...LeaveBasic
+  # For vacation/annual leave
+}
+
+fragment EmergencyLeave on leave {
+  ...LeaveDetailed
+  # For emergency leave with contact details
+}
+
+# Audit and compliance fragments
+fragment LeaveForAudit on leave {
+  id
+  leaveType
+  startDate
+  endDate
+  status
+  userId
+  # Personal details excluded for audit privacy
+}
+
+fragment LeaveApprovalAudit on leave {
+  id
+  leaveType
+  startDate
+  endDate
+  status
+  userId
+  # For approval audit trails
 }

@@ -1,6 +1,6 @@
 # Audit Domain Fragments
 
-fragment AuditLogCore on audit_audit_log {
+fragment AuditLogCore on auditLogs {
   id
   userId
   eventTime
@@ -16,16 +16,15 @@ fragment AuditLogCore on audit_audit_log {
   metadata
 }
 
-fragment AuditLogWithUser on audit_audit_log {
+fragment AuditLogWithUser on auditLogs {
   ...AuditLogCore
   oldValues
   newValues
-  error_message
-  request_id
-  created_at
+  errorMessage
+  requestId
 }
 
-fragment DataAccessLogCore on audit_data_access_log {
+fragment DataAccessLogCore on dataAccessLogs {
   id
   userId
   accessedAt
@@ -41,7 +40,7 @@ fragment DataAccessLogCore on audit_data_access_log {
   metadata
 }
 
-fragment AuthEventCore on audit_auth_events {
+fragment AuthEventCore on authEvents {
   id
   eventTime
   eventType
@@ -52,10 +51,9 @@ fragment AuthEventCore on audit_auth_events {
   success
   failureReason
   metadata
-  createdAt
 }
 
-fragment PermissionChangeCore on audit_permission_changes {
+fragment PermissionChangeCore on permissionChanges {
   id
   changedAt
   changedByUserId

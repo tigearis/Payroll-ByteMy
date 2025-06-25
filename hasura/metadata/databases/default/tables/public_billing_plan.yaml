@@ -1,8 +1,28 @@
 table:
   name: billing_plan
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    updated_at: updatedAt
+  custom_name: billingPlans
+  custom_root_fields:
+    delete: bulkDeleteBillingPlans
+    delete_by_pk: deleteBillingPlanById
+    insert: bulkInsertBillingPlans
+    insert_one: insertBillingPlan
+    select: billingPlans
+    select_aggregate: billingPlansAggregate
+    select_by_pk: billingPlanById
+    update: bulkUpdateBillingPlans
+    update_by_pk: updateBillingPlanById
 array_relationships:
-  - name: client_billing_assignments
+  - name: clientBillingAssignments
     using:
       foreign_key_constraint_on:
         column: billing_plan_id
@@ -68,3 +88,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

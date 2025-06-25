@@ -1,8 +1,28 @@
 table:
   name: external_systems
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    updated_at: updatedAt
+  custom_name: externalSystems
+  custom_root_fields:
+    delete: bulkDeleteExternalSystems
+    delete_by_pk: deleteExternalSystemById
+    insert: bulkInsertExternalSystems
+    insert_one: insertExternalSystem
+    select: externalSystems
+    select_aggregate: externalSystemsAggregate
+    select_by_pk: externalSystemById
+    update: bulkUpdateExternalSystems
+    update_by_pk: updateExternalSystemById
 array_relationships:
-  - name: client_external_systems
+  - name: clientExternalSystems
     using:
       foreign_key_constraint_on:
         column: system_id

@@ -28,7 +28,7 @@ export interface Client {
   id: string;
   name: string;
   contactPerson?: string;
-  contact_email?: string;
+  contactEmail?: string;
   contactPhone?: string;
   active: boolean;
   createdAt: string;
@@ -59,16 +59,16 @@ export type ExternalSystem = {
 export interface Holiday {
   id: string;
   date: string;
-  local_name: string;
+  localName: string;
   name: string;
-  country_code: string;
+  countryCode: string;
   region?: string[];
-  is_fixed: boolean;
-  is_global: boolean;
-  launch_year?: number;
+  isFixed: boolean;
+  isGlobal: boolean;
+  launchYear?: number;
   types: string[];
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type Leave = {
@@ -86,14 +86,14 @@ export type Leave = {
 
 export interface Note {
   id: string;
-  entity_id: string;
-  entity_type: "payroll" | "client";
-  user_id?: string;
+  entityId: string;
+  entityType: "payroll" | "client";
+  userId?: string;
   content: string;
-  is_important: boolean;
+  isImportant: boolean;
   user?: any; // Using any to avoid circular dependency
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type PayrollCycle = {
@@ -131,14 +131,13 @@ export type PayrollDate = {
 export interface Payroll {
   dayValue:
     | {
-        original_eft_date?: string;
-        adjusted_eft_date?: string;
-        processing_date?: string;
+        originalEftDate?: string;
+        adjustedEftDate?: string;
+        processingDate?: string;
         id: string;
         notes?: string;
       }[]
     | undefined;
-  employee_count: undefined;
   id: string;
   name: string;
   clientId: string;
@@ -153,7 +152,7 @@ export interface Payroll {
   status: PayrollStatus;
   createdAt: string;
   updatedAt: string;
-  employeeCount?: number;
+  employeeCount: number;
 
   // Relationships
   client: Client;
@@ -182,8 +181,8 @@ export interface User {
 
 export interface WorkSchedule {
   id: string;
-  user_id: string;
-  work_day:
+  userId: string;
+  workDay:
     | "Monday"
     | "Tuesday"
     | "Wednesday"
@@ -191,11 +190,11 @@ export interface WorkSchedule {
     | "Friday"
     | "Saturday"
     | "Sunday";
-  work_hours: number;
+  workHours: number;
   user?: any; // Using any to avoid circular dependency
-  work_schedule_user?: any;
-  created_at: string;
-  updated_at: string;
+  workScheduleUser?: any;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type Session = {
@@ -219,15 +218,15 @@ export interface GeneratePayrollDatesArgs {
 export interface UserDetails {
   id: string;
   email: string;
-  is_staff: boolean;
+  isStaff: boolean;
   name: string;
   leaves?: Array<{
-    start_date?: string; // ISO date format
-    end_date?: string; // ISO date format
+    startDate?: string; // ISO date format
+    endDate?: string; // ISO date format
     id: string;
-    leave_type: "Annual" | "Sick" | "Other"; // Enum for leave types
+    leaveType: "Annual" | "Sick" | "Other"; // Enum for leave types
     reason?: string;
-    user_id: string;
+    userId: string;
     status?: "Approved" | "Pending" | "Rejected"; // Enum for leave status
   }>;
 }
@@ -242,10 +241,10 @@ export interface CalendarEvent {
 
 export interface FeatureFlag {
   id: string;
-  feature_name: string;
-  is_enabled: boolean;
-  allowedroles: string[]; // Using string[] to avoid circular dependency
-  updated_at: string;
+  featureName: string;
+  isEnabled: boolean;
+  allowedRoles: string[]; // Using string[] to avoid circular dependency
+  updatedAt: string;
 }
 
 export interface AppSettings {

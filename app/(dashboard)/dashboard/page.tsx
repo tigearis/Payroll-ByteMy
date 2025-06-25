@@ -9,9 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UrgentAlerts } from "@/components/urgent-alerts";
 import {
-  GetDashboardStatsDocument,
+  GetPayrollDashboardStatsDocument,
   GetUpcomingPayrollsDocument,
-} from "@/shared/types/generated/graphql";
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 interface DashboardStatsData {
   clients_aggregate: { aggregate: { count: number } };
@@ -46,7 +46,7 @@ export default function DashboardPage() {
     data: statsData,
     loading: statsLoading,
     error: statsError,
-  } = useQuery<DashboardStatsData>(GetDashboardStatsDocument, {
+  } = useQuery<DashboardStatsData>(GetPayrollDashboardStatsDocument, {
     errorPolicy: "all",
   });
 

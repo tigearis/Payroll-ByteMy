@@ -61,16 +61,17 @@ configuration:
     updated_at: updatedAt
     version_number: versionNumber
     version_reason: versionReason
+  custom_name: payrolls
   custom_root_fields:
-    delete: deletePayrolls
-    delete_by_pk: deletePayroll
-    insert: insertPayrolls
+    delete: bulkDeletePayrolls
+    delete_by_pk: deletePayrollById
+    insert: bulkInsertPayrolls
     insert_one: insertPayroll
     select: payrolls
     select_aggregate: payrollsAggregate
-    select_by_pk: payroll
-    update: updatePayrolls
-    update_by_pk: updatePayroll
+    select_by_pk: payrollById
+    update: bulkUpdatePayrolls
+    update_by_pk: updatePayrollById
 object_relationships:
   - name: backupConsultant
     using:

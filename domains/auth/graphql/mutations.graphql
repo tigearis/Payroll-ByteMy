@@ -1,15 +1,19 @@
+# Authentication Domain Mutations
+# Security Classification: CRITICAL - User authentication and authorization
+# SOC2 Compliance: User access control with audit logging
+
 # ================================
-# RBAC SYSTEM GRAPHQL MUTATIONS
-# Following project GraphQL standards
+# USER ROLE ASSIGNMENT MUTATIONS
+# Focus: User-centric role assignments
 # ================================
 
-# Assign role to user
+# Assign role to user (primary auth operation)
 mutation AssignRoleToUser($userId: uuid!, $roleId: uuid!) {
   insertUserRole(object: { userId: $userId, roleId: $roleId }) {
     id
     userId
     roleId
-    role {
+    assignedRole {
       name
       displayName
       priority
@@ -19,34 +23,50 @@ mutation AssignRoleToUser($userId: uuid!, $roleId: uuid!) {
 
 # Remove role from user
 mutation RemoveRoleFromUser($userRoleId: uuid!) {
-  deleteUserRole(id: $userRoleId) {
+  deleteUserRoleById(id: $userRoleId) {
     id
     roleId
   }
 }
 
-# Bulk assign roles to user (replace all existing roles)
-mutation SetUserRoles($userId: uuid!, $roleIds: [user_roles_insert_input!]!) {
-  # First remove existing roles
-  deleteUserRoles(where: { userId: { _eq: $userId } }) {
-    affected_rows
-  }
-
-  # Then insert new roles
-  insertUserRoles(objects: $roleIds) {
-    affected_rows
-    returning {
-      id
-      role {
-        name
-        displayName
-        priority
-      }
-    }
+# Update user role assignment
+mutation UpdateUserRoleAssignment($id: uuid!, $set: userRolesSetInput!) {
+  updateUserRoleById(pkColumns: { id: $id }, _set: $set) {
+    id
+    userId
+    roleId
+    updatedAt
   }
 }
 
-# Create permission override for user
+# Bulk assign roles to user (replace all existing roles)
+mutation SetUserRoles($userId: uuid!, $roleIds: [userRolesInsertInput!]!) {
+  # First remove existing roles
+  bulkDeleteUserRoles(where: { userId: { _eq: $userId } }) {
+    affectedRows
+  }
+
+  # Then insert new roles
+  bulkInsertUserRoles(objects: $roleIds) {
+    returning {
+      id
+      userId
+      roleId
+      assignedRole {
+        name
+        displayName
+      }
+    }
+    affectedRows
+  }
+}
+
+# ================================
+# USER PERMISSION OVERRIDES
+# Focus: Individual user permission exceptions
+# ================================
+
+# Create permission override for specific user
 mutation CreateUserPermissionOverride(
   $userId: uuid!
   $resource: String!
@@ -58,6 +78,7 @@ mutation CreateUserPermissionOverride(
 ) {
   insertPermissionOverride(
     object: {
+      userId: $userId
       resource: $resource
       operation: $operation
       granted: $granted
@@ -67,365 +88,239 @@ mutation CreateUserPermissionOverride(
     }
   ) {
     id
+    userId
     resource
     operation
     granted
     conditions
     expiresAt
     reason
+    createdAt
   }
 }
 
-# Create role-based permission override
-mutation CreateRolePermissionOverride(
-  $role: String!
-  $resource: String!
-  $operation: String!
-  $granted: Boolean!
-  $conditions: jsonb = null
-  $expiresAt: timestamptz = null
-  $reason: String = null
-) {
-  insertPermissionOverride(
-    object: {
-      role: $role
-      resource: $resource
-      operation: $operation
-      granted: $granted
-      conditions: $conditions
-      expiresAt: $expiresAt
-      reason: $reason
-    }
-  ) {
-    id
-    role
-    resource
-    operation
-    granted
-    conditions
-    expiresAt
-    reason
-  }
-}
-
-# Update permission override
-mutation UpdatePermissionOverride(
+# Update user permission override
+mutation UpdateUserPermissionOverride(
   $id: uuid!
-  $granted: Boolean = null
-  $conditions: jsonb = null
-  $expiresAt: timestamptz = null
-  $reason: String = null
+  $set: permissionOverridesSetInput!
 ) {
-  updatePermissionOverride(
-    pk_columns: { id: $id }
-    _set: {
-      granted: $granted
-      conditions: $conditions
-      expiresAt: $expiresAt
-      reason: $reason
-    }
-  ) {
+  updatePermissionOverrideById(pkColumns: { id: $id }, _set: $set) {
     id
-    role
+    userId
     resource
     operation
     granted
-    conditions
     expiresAt
     reason
+    updatedAt
   }
 }
 
-# Delete permission override
-mutation DeletePermissionOverride($id: uuid!) {
-  deletePermissionOverride(id: $id) {
+# Remove user permission override
+mutation RemoveUserPermissionOverride($id: uuid!) {
+  deletePermissionOverrideById(id: $id) {
     id
-    role
+    userId
     resource
     operation
   }
 }
 
-# Create custom role
-mutation CreateCustomRole(
-  $name: String!
-  $displayName: String!
-  $description: String!
-  $priority: Int!
+# ================================
+# USER INVITATION FLOW MUTATIONS
+# Focus: Two-stage invitation process
+# ================================
+
+# Create invitation record when invitation is sent
+mutation CreateUserInvitation(
+  $email: String!
+  $firstName: String!
+  $lastName: String!
+  $invitedRole: String!
+  $managerId: uuid
+  $clerkInvitationId: String
+  $clerkTicket: String
+  $invitationMetadata: jsonb
+  $invitedBy: uuid!
+  $expiresAt: timestamptz!
 ) {
-  insertRole(
+  insertUserInvitation(
     object: {
-      name: $name
-      displayName: $displayName
-      description: $description
-      priority: $priority
-      isSystemRole: false
+      email: $email
+      firstName: $firstName
+      lastName: $lastName
+      invitedRole: $invitedRole
+      managerId: $managerId
+      clerkInvitationId: $clerkInvitationId
+      clerkTicket: $clerkTicket
+      invitationMetadata: $invitationMetadata
+      invitedBy: $invitedBy
+      expiresAt: $expiresAt
+      status: "pending"
     }
   ) {
     id
-    name
-    displayName
-    description
-    priority
-    isSystemRole
-  }
-}
-
-# Update role
-mutation UpdateRole(
-  $id: uuid!
-  $displayName: String = null
-  $description: String = null
-  $priority: Int = null
-) {
-  updateRole(
-    pk_columns: { id: $id }
-    _set: {
-      displayName: $displayName
-      description: $description
-      priority: $priority
-    }
-  ) {
-    id
-    name
-    displayName
-    description
-    priority
-  }
-}
-
-# Delete custom role (only non-system roles)
-mutation DeleteCustomRole($id: uuid!) {
-  deleteRole(id: $id) {
-    id
-    name
-    displayName
-  }
-}
-
-# Assign permission to role
-mutation AssignPermissionToRole(
-  $roleId: uuid!
-  $permissionId: uuid!
-  $conditions: jsonb = null
-) {
-  insertRolePermission(
-    object: {
-      roleId: $roleId
-      permissionId: $permissionId
-      conditions: $conditions
-    }
-  ) {
-    id
-    roleId
-    permissionId
-    conditions
-    permission {
-      action
-      resource {
-        name
-        displayName
-      }
-    }
-    role {
+    email
+    firstName
+    lastName
+    invitedRole
+    managerId
+    clerkTicket
+    invitedAt
+    expiresAt
+    status
+    invitedByUser {
       name
-      displayName
+      email
+      role
     }
   }
 }
 
-# Remove permission from role
-mutation RemovePermissionFromRole($rolePermissionId: uuid!) {
-  deleteRolePermission(id: $rolePermissionId) {
-    id
-    roleId
-    permissionId
-  }
-}
-
-# Update role permission conditions
-mutation UpdateRolePermissionConditions(
-  $rolePermissionId: uuid!
-  $conditions: jsonb = null
+# Complete invitation acceptance (creates user and assigns role)
+mutation CompleteInvitationAcceptance(
+  $invitationId: uuid!
+  $clerkUserId: String!
+  $userEmail: String!
+  $userName: String!
 ) {
-  updateRolePermission(
-    pk_columns: { id: $rolePermissionId }
-    _set: { conditions: $conditions }
+  # Mark invitation as accepted
+  updateUserInvitationById(
+    pkColumns: { id: $invitationId }
+    _set: { 
+      status: "accepted"
+      acceptedAt: "now()"
+    }
   ) {
     id
-    conditions
-    permission {
-      action
-      resource {
-        name
-        displayName
-      }
+    email
+    firstName
+    lastName
+    invitedRole
+    managerId
+    status
+    acceptedAt
+  }
+
+  # Create the user record
+  insertUser(
+    object: {
+      clerkUserId: $clerkUserId
+      email: $userEmail
+      name: $userName
+      isActive: true
+      isStaff: true
     }
+  ) {
+    id
+    clerkUserId
+    email
+    name
+    isActive
   }
 }
 
-# Bulk update user roles with audit logging
-mutation BulkUpdateUserRoles(
+# Assign role to newly created user (separate mutation for role assignment)
+mutation AssignInvitationRole(
   $userId: uuid!
-  $newUserRoles: [user_roles_insert_input!]!
-  $reason: String = null
+  $roleId: uuid!
+  $invitationId: uuid!
 ) {
-  # This would typically be a custom function that handles:
-  # 1. Audit logging of the change
-  # 2. Atomic role replacement
-  # 3. Notification of the change
-
-  # For now, we'll do the basic operation
-  deleteUserRoles(where: { userId: { _eq: $userId } }) {
-    affected_rows
-  }
-
-  insertUserRoles(objects: $newUserRoles) {
-    affected_rows
-    returning {
-      id
-      role {
-        name
-        displayName
-        priority
-      }
-    }
-  }
-}
-
-# Emergency: Revoke all permissions for a user (security lockdown)
-mutation EmergencyRevokeUserAccess($userId: uuid!, $reason: String!) {
-  # Remove all role assignments
-  deleteUserRoles(where: { userId: { _eq: $userId } }) {
-    affected_rows
-  }
-
-  # Add explicit deny overrides for critical resources
-  insertPermissionOverrides(
-    objects: [
-      {
-        resource: "system_settings"
-        operation: "read"
-        granted: false
-        reason: $reason
-      }
-      {
-        resource: "user_management"
-        operation: "read"
-        granted: false
-        reason: $reason
-      }
-      {
-        resource: "billing"
-        operation: "read"
-        granted: false
-        reason: $reason
-      }
-    ]
-  ) {
-    affected_rows
-  }
-}
-
-# Restore user access (remove emergency restrictions)
-mutation RestoreUserAccess($userId: uuid!, $viewerRoleId: uuid!) {
-  # Remove deny overrides
-  deletePermissionOverrides(where: { granted: { _eq: false } }) {
-    affected_rows
-  }
-
-  # Assign default viewer role
-  insertUserRole(object: { userId: $userId, roleId: $viewerRoleId }) {
+  # Assign the role
+  insertUserRole(object: { userId: $userId, roleId: $roleId }) {
     id
     userId
     roleId
-    role {
+    assignedRole {
       name
       displayName
+      priority
+    }
+  }
+
+  # Update invitation with the created user
+  updateUserInvitationById(
+    pkColumns: { id: $invitationId }
+    _set: { acceptedBy: $userId }
+  ) {
+    id
+    acceptedBy
+  }
+
+  # Log the role assignment for audit
+  insertPermissionAuditLog(
+    object: {
+      userId: $userId
+      action: "role_assigned_from_invitation"
+      resource: "user_roles"
+      newValue: { roleId: $roleId, invitationId: $invitationId }
+      timestamp: "now()"
+    }
+  ) {
+    id
+    timestamp
+  }
+}
+
+# Cancel invitation
+mutation CancelUserInvitation($invitationId: uuid!) {
+  updateUserInvitationById(
+    pkColumns: { id: $invitationId }
+    _set: { status: "cancelled" }
+  ) {
+    id
+    status
+    updatedAt
+  }
+}
+
+# Resend invitation (update expiry and status)
+mutation ResendUserInvitation(
+  $invitationId: uuid!
+  $newExpiresAt: timestamptz!
+  $newClerkTicket: String
+  $newClerkInvitationId: String
+) {
+  updateUserInvitationById(
+    pkColumns: { id: $invitationId }
+    _set: { 
+      status: "pending"
+      expiresAt: $newExpiresAt
+      clerkTicket: $newClerkTicket
+      clerkInvitationId: $newClerkInvitationId
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitedRole
+    status
+    expiresAt
+    updatedAt
+    invitedByUser {
+      name
+      email
     }
   }
 }
 
-# Auth Domain Mutations
-
-# User Role Management
-mutation AssignUserRole($object: user_roles_insert_input!) {
-  insertUserRole(object: $object) {
-    ...AuthUserRoleWithDetails
+# Mark expired invitations as expired (bulk operation)
+mutation MarkExpiredInvitations {
+  bulkUpdateUserInvitations(
+    where: { 
+      status: { _eq: "pending" }
+      expiresAt: { _lt: "now()" }
+    }
+    _set: { status: "expired" }
+  ) {
+    affectedRows
+    returning {
+      id
+      email
+      status
+      expiresAt
+    }
   }
 }
-
-mutation RemoveUserRole($id: uuid!) {
-  deleteUserRole(id: $id) {
-    id
-  }
-}
-
-mutation UpdateUserRole($id: uuid!, $set: user_roles_set_input!) {
-  updateUserRole(pk_columns: { id: $id }, _set: $set) {
-    ...AuthUserRoleWithDetails
-  }
-}
-
-# Permission Overrides
-mutation CreatePermissionOverride($object: permission_overrides_insert_input!) {
-  insertPermissionOverride(object: $object) {
-    ...PermissionOverrideCore
-  }
-}
-
-mutation UpdatePermissionOverrideById(
-  $id: uuid!
-  $set: permission_overrides_set_input!
-) {
-  updatePermissionOverride(pk_columns: { id: $id }, _set: $set) {
-    ...PermissionOverrideCore
-  }
-}
-
-mutation DeletePermissionOverrideById($id: uuid!) {
-  deletePermissionOverride(id: $id) {
-    id
-  }
-}
-
-# Role Management
-mutation CreateRole($object: roles_insert_input!) {
-  insertRole(object: $object) {
-    ...AuthRoleCore
-  }
-}
-
-mutation UpdateRoleById($id: uuid!, $set: roles_set_input!) {
-  updateRole(pk_columns: { id: $id }, _set: $set) {
-    ...AuthRoleCore
-  }
-}
-
-mutation DeleteRole($id: uuid!) {
-  deleteRole(id: $id) {
-    id
-  }
-}
-
-# Role Permission Management
-mutation AssignRolePermission($object: role_permissions_insert_input!) {
-  insertRolePermission(object: $object) {
-    ...RolePermissionCore
-  }
-}
-
-mutation RemoveRolePermission($id: uuid!) {
-  deleteRolePermission(id: $id) {
-    id
-  }
-}
-
-mutation UpdateRolePermission($id: uuid!, $set: role_permissions_set_input!) {
-  updateRolePermission(pk_columns: { id: $id }, _set: $set) {
-    ...RolePermissionCore
-  }
-}
-
-# NOTE: API key management mutations removed - api_keys table not found in schema
-# File: lib/security/persistent-api-keys.ts still uses inline GraphQL

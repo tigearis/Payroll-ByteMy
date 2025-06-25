@@ -37,16 +37,17 @@ configuration:
     row_count: rowCount
     session_id: sessionId
     user_id: userId
+  custom_name: dataAccessLogs
   custom_root_fields:
-    delete: deleteDataAccessLogs
-    delete_by_pk: deleteDataAccessLog
-    insert: insertDataAccessLogs
+    delete: bulkDeleteDataAccessLogs
+    delete_by_pk: deleteDataAccessLogById
+    insert: bulkInsertDataAccessLogs
     insert_one: insertDataAccessLog
     select: dataAccessLogs
     select_aggregate: dataAccessLogsAggregate
-    select_by_pk: dataAccessLog
-    update: updateDataAccessLogs
-    update_by_pk: updateDataAccessLog
+    select_by_pk: dataAccessLogById
+    update: bulkUpdateDataAccessLogs
+    update_by_pk: updateDataAccessLogById
 insert_permissions:
   - role: system
     permission:
@@ -117,3 +118,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

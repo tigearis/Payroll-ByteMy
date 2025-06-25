@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useSubscription } from "@apollo/client";
+import { useSubscription } from "@apollo/client";
 import { formatDistanceToNow, format, subHours, subDays } from "date-fns";
 import { useMemo, useState, useEffect } from "react";
 import {
@@ -35,7 +35,9 @@ import {
   FailedOperationsStreamDocument,
   CriticalDataAccessStreamDocument
 } from "@/domains/audit/graphql/generated/graphql";
-import { useUserRole } from "@/hooks/use-user-role";
+import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
+import { useSecureSubscription } from "@/hooks/use-subscription-permissions";
+import { useStrategicQuery } from "@/hooks/use-strategic-query";
 
 export default function SecurityDashboard() {
   // State for WebSocket connection status
@@ -47,34 +49,41 @@ export default function SecurityDashboard() {
     sevenDaysAgo: subDays(new Date(), 7).toISOString(),
   }), []);
 
-  // Initial data load with cache-first policy
+  // Initial data load using strategic query for security events
   const {
     data: initialData,
     loading: queryLoading,
     error,
     refetch,
-  } = useQuery(SecurityOverviewDocument, {
-    variables: timeRanges,
-    fetchPolicy: "cache-and-network", // Load from cache first, then network
-    errorPolicy: "all",
-    // No polling - subscriptions handle real-time updates
-    pollInterval: 0,
-  });
+  } = useStrategicQuery(
+    SecurityOverviewDocument,
+    "securityEvents",
+    {
+      variables: timeRanges,
+      // No polling - subscriptions handle real-time updates
+      pollInterval: 0,
+    }
+  );
 
-  // Real-time security events subscription
-  const { 
-    data: securityEventsData,
-    error: securityEventsError 
-  } = useSubscription(SecurityEventsStreamDocument, {
-    variables: { twentyFourHoursAgo: timeRanges.twentyFourHoursAgo },
-    onError: (error) => {
-      console.warn("Security events subscription error:", error);
-      setIsWebSocketConnected(false);
-    },
-    onComplete: () => {
-      console.log("Security events subscription completed");
-    },
-  });
+  // Real-time security events subscription with permission validation
+  const securityEventsResult = useSecureSubscription(
+    () => useSubscription(SecurityEventsStreamDocument, {
+      variables: { twentyFourHoursAgo: timeRanges.twentyFourHoursAgo },
+      onError: (error) => {
+        console.warn("Security events subscription error:", error);
+        setIsWebSocketConnected(false);
+      },
+      onComplete: () => {
+        console.log("Security events subscription completed");
+      },
+    }),
+    { 
+      resource: "security", 
+      action: "read",
+      onPermissionDenied: () => setIsWebSocketConnected(false),
+    }
+  );
+  const { data: securityEventsData, error: securityEventsError, permissionError: securityPermissionError } = securityEventsResult;
 
   // Real-time failed operations subscription
   const { 
@@ -104,14 +113,17 @@ export default function SecurityDashboard() {
   const { 
     data: fallbackData,
     loading: fallbackLoading 
-  } = useQuery(SecurityOverviewDocument, {
-    variables: timeRanges,
-    // Only poll if WebSocket is disconnected
-    skip: isWebSocketConnected,
-    pollInterval: isWebSocketConnected ? 0 : 300000, // 5 minutes fallback
-    errorPolicy: "all",
-    fetchPolicy: "network-only", // Always fetch fresh data for fallback
-  });
+  } = useStrategicQuery(
+    SecurityOverviewDocument,
+    "auditLogs", // Use auditLogs strategy for fallback
+    {
+      variables: timeRanges,
+      // Only poll if WebSocket is disconnected
+      skip: isWebSocketConnected,
+      pollInterval: isWebSocketConnected ? 0 : 300000, // 5 minutes fallback
+      fetchPolicy: "network-only", // Always fetch fresh data for fallback
+    }
+  );
 
   // Monitor WebSocket connection status
   useEffect(() => {
@@ -132,21 +144,32 @@ export default function SecurityDashboard() {
     return {
       ...baseData,
       // Use real-time data when available, fallback to initial data
-      recent_audit_logs: securityEventsData?.auditLogs || baseData.recent_audit_logs,
-      failed_operations: failedOpsData?.auditLogs || baseData.failed_operations,
-      data_access_summary: criticalDataAccessData?.dataAccessLogs || baseData.data_access_summary,
+      recentAuditLogs: securityEventsData?.auditLogs || baseData.recentAuditLogs,
+      failedOperations: failedOpsData?.auditLogs || baseData.failedOperations,
+      dataAccessSummary: criticalDataAccessData?.dataAccessLogs || baseData.dataAccessSummary,
     };
   }, [initialData, fallbackData, securityEventsData, failedOpsData, criticalDataAccessData, isWebSocketConnected]);
 
-  const {
-    hasPermission,
-    isLoading: roleLoading,
-    userRole,
-  } = useUserRole();
+  const { checkPermission, userRole } = useEnhancedPermissions();
   
-  const isDeveloper = userRole === "developer";
-  const isAdministrator = userRole === "org_admin";
-  const hasAdminAccess = hasPermission("custom:admin:manage");
+  const securityReadPermission = checkPermission("security", "read");
+  const securityManagePermission = checkPermission("security", "manage");
+  const auditReadPermission = checkPermission("audit", "read");
+  
+  if (!securityReadPermission.granted) {
+    return (
+      <div className="container mx-auto py-6">
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Access Denied</AlertTitle>
+          <AlertDescription>
+            You don't have permission to view security information. 
+            Required role: {securityReadPermission.requiredRole}. Current role: {securityReadPermission.currentRole}.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
   const router = useRouter();
 
   // Enhanced loading state considering subscriptions
@@ -155,7 +178,6 @@ export default function SecurityDashboard() {
   // Debug loading states with subscription info
   console.log("🔍 Security Dashboard States:", {
     queryLoading,
-    roleLoading,
     fallbackLoading,
     hasData: !!data,
     hasError: !!error,
@@ -168,48 +190,18 @@ export default function SecurityDashboard() {
     }
   });
 
-  // Check if user has access to security features
-  if (!roleLoading && !hasAdminAccess && !isDeveloper && !isAdministrator) {
-    console.log("🚨 Security page access denied:", {
-      roleLoading,
-      hasAdminAccess,
-      isDeveloper,
-      isAdministrator,
-      userRole,
-    });
-    return (
-      <div className="container mx-auto p-6">
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Access Denied</AlertTitle>
-          <AlertDescription>
-            You need administrator privileges to access the security dashboard.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
-  // Show loading state only if we're still loading role information
-  // or if we have access and are loading initial data
-  if (roleLoading || (hasAdminAccess && loading && !data)) {
+  // Enhanced loading state considering subscriptions
+  if (loading && !data) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <Shield className="h-12 w-12 animate-pulse mx-auto mb-4" />
           <p>Loading security dashboard...</p>
-          {roleLoading && (
-            <p className="text-sm text-muted-foreground">
-              Verifying access permissions...
-            </p>
-          )}
-          {loading && !roleLoading && (
-            <p className="text-sm text-muted-foreground">
-              {!isWebSocketConnected 
-                ? "Loading security data (fallback mode)..."
-                : "Loading security data..."}
-            </p>
-          )}
+          <p className="text-sm text-muted-foreground">
+            {!isWebSocketConnected 
+              ? "Loading security data (fallback mode)..."
+              : "Loading security data..."}
+          </p>
         </div>
       </div>
     );
@@ -237,13 +229,13 @@ export default function SecurityDashboard() {
   }
 
   // Calculate security metrics
-  const totalOps = data?.audit_log_count?.aggregate?.count || 0;
-  const failedOps = data?.failed_operations?.length || 0;
+  const totalOps = data?.auditLogCount?.aggregate?.count || 0;
+  const failedOps = data?.failedOperations?.length || 0;
   const successRate =
     totalOps > 0
       ? (((totalOps - failedOps) / totalOps) * 100).toFixed(1)
       : "100.0";
-  const criticalAccess = data?.data_access_summary?.length || 0;
+  const criticalAccess = data?.dataAccessSummary?.length || 0;
 
   // Mock compliance status (in production, this would come from a real compliance check)
   const complianceStatus = failedOps > 0 ? "warning" : "passed";
@@ -377,7 +369,7 @@ export default function SecurityDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {data?.auth_events_summary?.length || 0}
+              {data?.authEventsSummary?.length || 0}
             </div>
             <p className="text-xs text-muted-foreground">With access</p>
           </CardContent>
@@ -409,14 +401,14 @@ export default function SecurityDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              {!data?.failed_operations?.length ? (
+              {!data?.failedOperations?.length ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <CheckCircle className="h-12 w-12 mx-auto mb-2 text-green-500" />
                   <p>No failed operations in the last 24 hours</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {data.failed_operations.map((op: any) => (
+                  {data.failedOperations.map((op: any) => (
                     <div
                       key={op.id}
                       className="flex items-center justify-between p-4 border rounded-lg"
@@ -424,16 +416,16 @@ export default function SecurityDashboard() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">
-                            {op.action} {op.entity_type}
+                            {op.action} {op.entityType}
                           </span>
                           <Badge variant="destructive">Failed</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          User: {op.user_id} ({op.userrole}) •{" "}
-                          {formatDistanceToNow(new Date(op.created_at))} ago
+                          User: {op.userId} ({op.userRole}) •{" "}
+                          {formatDistanceToNow(new Date(op.createdAt))} ago
                         </p>
                         <p className="text-sm text-destructive">
-                          {op.error_message}
+                          {op.errorMessage}
                         </p>
                       </div>
                     </div>
@@ -458,14 +450,14 @@ export default function SecurityDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              {!data?.data_access_summary?.length ? (
+              {!data?.dataAccessSummary?.length ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Shield className="h-12 w-12 mx-auto mb-2" />
                   <p>No critical data access in the last 7 days</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {data.data_access_summary.map((access: any) => (
+                  {data.dataAccessSummary.map((access: any) => (
                     <div
                       key={access.id}
                       className="flex items-center justify-between p-4 border rounded-lg"
@@ -473,16 +465,16 @@ export default function SecurityDashboard() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">
-                            {access.action} {access.entity_type}
+                            {access.action} {access.entityType}
                           </span>
                           <Badge variant="destructive">CRITICAL</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          User: {access.user_id} ({access.userrole}) •{" "}
-                          {formatDistanceToNow(new Date(access.created_at))} ago
+                          User: {access.userId} ({access.userRole}) •{" "}
+                          {formatDistanceToNow(new Date(access.createdAt))} ago
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          Entity ID: {access.entity_id}
+                          Entity ID: {access.entityId}
                         </p>
                       </div>
                     </div>

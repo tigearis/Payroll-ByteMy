@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// GraphQL query for cleanup
+// NOTE: This query calls a database function for system maintenance
+// cleanup_old_payroll_dates is a PostgreSQL function, not a GraphQL operation
+// This is intentional for cron job database maintenance operations
 const CLEANUP_OLD_DATES_QUERY = `
   query CleanupOldPayrollDates {
     cleanup_old_payroll_dates {

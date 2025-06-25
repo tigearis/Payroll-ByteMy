@@ -3,6 +3,8 @@ table:
   schema: audit
 configuration:
   column_config:
+    error_message:
+      custom_name: errorMessage
     event_time:
       custom_name: eventTime
     ip_address:
@@ -11,6 +13,8 @@ configuration:
       custom_name: newValues
     old_values:
       custom_name: oldValues
+    request_id:
+      custom_name: requestId
     resource_id:
       custom_name: resourceId
     resource_type:
@@ -26,10 +30,12 @@ configuration:
     user_role:
       custom_name: userRole
   custom_column_names:
+    error_message: errorMessage
     event_time: eventTime
     ip_address: ipAddress
     new_values: newValues
     old_values: oldValues
+    request_id: requestId
     resource_id: resourceId
     resource_type: resourceType
     session_id: sessionId
@@ -37,16 +43,17 @@ configuration:
     user_email: userEmail
     user_id: userId
     user_role: userRole
+  custom_name: auditLogs
   custom_root_fields:
-    delete: deleteAuditLogs
-    delete_by_pk: deleteAuditLog
-    insert: insertAuditLogs
+    delete: bulkDeleteAuditLogs
+    delete_by_pk: deleteAuditLogById
+    insert: bulkInsertAuditLogs
     insert_one: insertAuditLog
     select: auditLogs
     select_aggregate: auditLogsAggregate
-    select_by_pk: auditLog
-    update: updateAuditLogs
-    update_by_pk: updateAuditLog
+    select_by_pk: auditLogById
+    update: bulkUpdateAuditLogs
+    update_by_pk: updateAuditLogById
 insert_permissions:
   - role: system
     permission:
@@ -163,3 +170,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

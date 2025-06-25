@@ -469,10 +469,12 @@ export class PersistentAPIKeyManager {
    * Get API secret for signature validation (legacy support)
    * Note: This method exists for compatibility but returns null since we don't store plain secrets
    */
-  static async getAPISecret(apiKey: string): Promise<string | null> {
+  static async getAPISecret(_apiKey: string): Promise<string | null> {
     // For security, we don't store plain text secrets
     // The signature validation should use validateAPIKeyWithSignature instead
-    console.warn("getAPISecret called - use validateAPIKeyWithSignature for better security");
+    console.warn(
+      "getAPISecret called - use validateAPIKeyWithSignature for better security"
+    );
     return null;
   }
 
@@ -512,7 +514,7 @@ export class PersistentAPIKeyManager {
       // Since we can't get the plain secret, we can't validate the signature here
       // This would require a different approach where signatures are pre-computed
       // or the validation happens differently
-      
+
       const config: APIKeyConfig = {
         id: keyData.id,
         name: keyData.name,

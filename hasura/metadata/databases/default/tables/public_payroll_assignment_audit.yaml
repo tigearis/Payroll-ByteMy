@@ -1,20 +1,55 @@
 table:
   name: payroll_assignment_audit
   schema: public
+configuration:
+  column_config:
+    assignment_id:
+      custom_name: assignmentId
+    change_reason:
+      custom_name: changeReason
+    changed_by:
+      custom_name: changedBy
+    created_at:
+      custom_name: createdAt
+    from_consultant_id:
+      custom_name: fromConsultantId
+    payroll_date_id:
+      custom_name: payrollDateId
+    to_consultant_id:
+      custom_name: toConsultantId
+  custom_column_names:
+    assignment_id: assignmentId
+    change_reason: changeReason
+    changed_by: changedBy
+    created_at: createdAt
+    from_consultant_id: fromConsultantId
+    payroll_date_id: payrollDateId
+    to_consultant_id: toConsultantId
+  custom_name: payrollAssignmentAudits
+  custom_root_fields:
+    delete: bulkDeletePayrollAssignmentAudits
+    delete_by_pk: deletePayrollAssignmentAuditById
+    insert: bulkInsertPayrollAssignmentAudits
+    insert_one: insertPayrollAssignmentAudit
+    select: payrollAssignmentAudits
+    select_aggregate: payrollAssignmentAuditsAggregate
+    select_by_pk: payrollAssignmentAuditById
+    update: bulkUpdatePayrollAssignmentAudits
+    update_by_pk: updatePayrollAssignmentAuditById
 object_relationships:
-  - name: payroll_assignment
-    using:
-      foreign_key_constraint_on: assignment_id
-  - name: payroll_date
-    using:
-      foreign_key_constraint_on: payroll_date_id
-  - name: user
+  - name: changedByUser
     using:
       foreign_key_constraint_on: changed_by
-  - name: userByFromConsultantId
+  - name: fromConsultant
     using:
       foreign_key_constraint_on: from_consultant_id
-  - name: userByToConsultantId
+  - name: payrollAssignment
+    using:
+      foreign_key_constraint_on: assignment_id
+  - name: payrollDate
+    using:
+      foreign_key_constraint_on: payroll_date_id
+  - name: toConsultant
     using:
       foreign_key_constraint_on: to_consultant_id
 insert_permissions:
@@ -129,3 +164,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Org admins can delete audit records if needed
+apollo_federation_config:
+  enable: v1

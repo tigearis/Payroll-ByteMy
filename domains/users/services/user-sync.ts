@@ -22,16 +22,16 @@ const GET_USER_BY_EMAIL = gql`
   query GetUserByEmail($email: String!) {
     users(where: { email: { _eq: $email } }) {
       id
-      clerk_user_id
+      clerkUserId
       role
       name
       email
-      is_staff
-      manager_id
+      isStaff
+      managerId
       image
-      created_at
-      updated_at
-      manager {
+      createdAt
+      updatedAt
+      managerUser {
         id
         name
         email
@@ -44,18 +44,18 @@ const GET_USER_BY_EMAIL = gql`
 // Query to find a user by Clerk ID
 const GET_USER_BY_CLERK_ID = gql`
   query GetUserByClerkId($clerkId: String!) {
-    users(where: { clerk_user_id: { _eq: $clerkId } }) {
+    users(where: { clerkUserId: { _eq: $clerkId } }) {
       id
-      clerk_user_id
+      clerkUserId
       role
       name
       email
-      is_staff
-      manager_id
+      isStaff
+      managerId
       image
-      created_at
-      updated_at
-      manager {
+      createdAt
+      updatedAt
+      managerUser {
         id
         name
         email
@@ -76,31 +76,31 @@ const UPSERT_USER = gql`
     $managerId: uuid
     $image: String
   ) {
-    insert_users_one(
+insertUsersOne(
       object: {
-        clerk_user_id: $clerkId
+        clerkUserId: $clerkId
         name: $name
         email: $email
         role: $role
-        is_staff: $isStaff
-        manager_id: $managerId
+        isStaff: $isStaff
+        managerId: $managerId
         image: $image
       }
-      on_conflict: {
+      onConflict: {
         constraint: users_clerk_user_id_key
-        update_columns: [name, email, image, updated_at]
+        updateColumns: [name, email, image, updatedAt]
       }
     ) {
       id
       name
       email
       role
-      clerk_user_id
-      is_staff
-      manager_id
+      clerkUserId
+      isStaff
+      managerId
       image
-      created_at
-      updated_at
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -113,23 +113,23 @@ const UPDATE_USER_ROLE = gql`
     $managerId: uuid
     $isStaff: Boolean
   ) {
-    update_users_by_pk(
-      pk_columns: { id: $id }
+    updateUsersByPk(
+      pkColumns: { id: $id }
       _set: {
         role: $role
-        manager_id: $managerId
-        is_staff: $isStaff
-        updated_at: "now()"
+        managerId: $managerId
+        isStaff: $isStaff
+        updatedAt: "now()"
       }
     ) {
       id
       name
       email
       role
-      is_staff
-      manager_id
-      updated_at
-      manager {
+      isStaff
+      managerId
+      updatedAt
+      managerUser {
         id
         name
         email
@@ -141,18 +141,18 @@ const UPDATE_USER_ROLE = gql`
 // Update user with Clerk ID
 const UPDATE_USER_CLERK_ID = gql`
   mutation UpdateUserClerkId($id: uuid!, $clerkId: String!) {
-    update_users_by_pk(
-      pk_columns: { id: $id }
-      _set: { clerk_user_id: $clerkId, updated_at: "now()" }
+    updateUsersByPk(
+      pkColumns: { id: $id }
+      _set: { clerkUserId: $clerkId, updatedAt: "now()" }
     ) {
       id
       name
       email
       role
-      clerk_user_id
-      is_staff
-      manager_id
-      updated_at
+      clerkUserId
+      isStaff
+      managerId
+      updatedAt
     }
   }
 `;
@@ -160,19 +160,19 @@ const UPDATE_USER_CLERK_ID = gql`
 // Update user image mutation
 const UPDATE_USER_IMAGE = gql`
   mutation UpdateUserImage($id: uuid!, $image: String!) {
-    update_users_by_pk(
-      pk_columns: { id: $id }
-      _set: { image: $image, updated_at: "now()" }
+    updateUsersByPk(
+      pkColumns: { id: $id }
+      _set: { image: $image, updatedAt: "now()" }
     ) {
       id
       name
       email
       role
-      clerk_user_id
-      is_staff
-      manager_id
+      clerkUserId
+      isStaff
+      managerId
       image
-      updated_at
+      updatedAt
     }
   }
 `;
@@ -259,7 +259,7 @@ export async function syncUserWithDatabase(
           );
         }
 
-        databaseUser = updateData?.update_users_by_pk;
+        databaseUser = updateData?.updateUsersByPk;
         console.log("✅ Updated existing user with Clerk ID:", databaseUser);
       }
     }
@@ -294,7 +294,7 @@ export async function syncUserWithDatabase(
         );
       }
 
-      databaseUser = newUserData?.insert_users_one;
+      databaseUser = newUserData?.insertUsersOne;
       console.log("✅ Created new user in database:", databaseUser);
     } else if (
       databaseUser &&
@@ -317,7 +317,7 @@ export async function syncUserWithDatabase(
       if (updateImageErrors) {
         console.warn("Image update errors:", updateImageErrors);
       } else {
-        databaseUser = updateImageData?.update_users_by_pk || databaseUser;
+        databaseUser = updateImageData?.updateUsersByPk || databaseUser;
         console.log("✅ Updated user image in database");
       }
     } else if (databaseUser) {
@@ -434,7 +434,7 @@ export async function updateUserRole(
       );
     }
 
-    const updatedUser = updateData?.update_users_by_pk;
+    const updatedUser = updateData?.updateUsersByPk;
 
     // Update Clerk metadata
     if (updatedUser) {
@@ -471,13 +471,13 @@ export async function updateUserRole(
 export async function deleteUserFromDatabase(clerkId: string) {
   const DELETE_USER = gql`
     mutation DeleteUserByClerkId($clerkId: String!) {
-      delete_users(where: { clerk_user_id: { _eq: $clerkId } }) {
-        affected_rows
+      deleteUsers(where: { clerkUserId: { _eq: $clerkId } }) {
+        affectedRows
         returning {
           id
           name
           email
-          clerk_user_id
+          clerkUserId
         }
       }
     }
@@ -499,10 +499,10 @@ export async function deleteUserFromDatabase(clerkId: string) {
       );
     }
 
-    const deletedUsers = data?.delete_users?.returning || [];
+    const deletedUsers = data?.deleteUsers?.returning || [];
     console.log(`✅ Deleted ${deletedUsers.length} user(s) from database`);
 
-    return data?.delete_users?.affected_rows > 0;
+    return data?.deleteUsers?.affectedRows > 0;
   } catch (error) {
     console.error("❌ Error deleting user from database:", error);
     throw error;

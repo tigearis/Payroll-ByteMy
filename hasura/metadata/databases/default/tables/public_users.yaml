@@ -28,18 +28,19 @@ configuration:
     is_staff: isStaff
     manager_id: managerId
     updated_at: updatedAt
+  custom_name: users
   custom_root_fields:
-    delete: deleteUsers
-    delete_by_pk: deleteUser
-    insert: insertUsers
+    delete: bulkDeleteUsers
+    delete_by_pk: deleteUserById
+    insert: bulkInsertUsers
     insert_one: insertUser
     select: users
     select_aggregate: usersAggregate
-    select_by_pk: user
-    update: updateUsers
-    update_by_pk: updateUser
+    select_by_pk: userById
+    update: bulkUpdateUsers
+    update_by_pk: updateUserById
 object_relationships:
-  - name: manager
+  - name: managerUser
     using:
       manual_configuration:
         column_mapping:
@@ -49,84 +50,14 @@ object_relationships:
           name: users
           schema: public
 array_relationships:
-  - name: assignmentAuditsAsFromConsultant
-    using:
-      foreign_key_constraint_on:
-        column: from_consultant_id
-        table:
-          name: payroll_assignment_audit
-          schema: public
-  - name: assignmentAuditsAsToConsultant
-    using:
-      foreign_key_constraint_on:
-        column: to_consultant_id
-        table:
-          name: payroll_assignment_audit
-          schema: public
-  - name: assignmentAuditsCreated
-    using:
-      foreign_key_constraint_on:
-        column: changed_by
-        table:
-          name: payroll_assignment_audit
-          schema: public
-  - name: assignmentsAsConsultant
-    using:
-      foreign_key_constraint_on:
-        column: consultant_id
-        table:
-          name: payroll_assignments
-          schema: public
-  - name: assignmentsAsOriginalConsultant
-    using:
-      foreign_key_constraint_on:
-        column: original_consultant_id
-        table:
-          name: payroll_assignments
-          schema: public
-  - name: assignmentsCreated
-    using:
-      foreign_key_constraint_on:
-        column: assigned_by
-        table:
-          name: payroll_assignments
-          schema: public
-  - name: backupConsultantPayrolls
-    using:
-      foreign_key_constraint_on:
-        column: backup_consultant_user_id
-        table:
-          name: payrolls
-          schema: public
-  - name: billingEventLogs
-    using:
-      foreign_key_constraint_on:
-        column: created_by
-        table:
-          name: billing_event_log
-          schema: public
-  - name: directReports
-    using:
-      foreign_key_constraint_on:
-        column: manager_id
-        table:
-          name: users
-          schema: public
-  - name: leaves
+  - name: assignedRoles
     using:
       foreign_key_constraint_on:
         column: user_id
         table:
-          name: leave
+          name: user_roles
           schema: public
-  - name: managedPayrolls
-    using:
-      foreign_key_constraint_on:
-        column: manager_user_id
-        table:
-          name: payrolls
-          schema: public
-  - name: notesWritten
+  - name: authoredNotes
     using:
       manual_configuration:
         column_mapping:
@@ -135,42 +66,63 @@ array_relationships:
         remote_table:
           name: notes
           schema: public
-  - name: permissionAuditLogs
+  - name: backupConsultantPayrolls
     using:
       foreign_key_constraint_on:
-        column: user_id
+        column: backup_consultant_user_id
         table:
-          name: permission_audit_log
+          name: payrolls
           schema: public
-  - name: permissionAuditLogsAsTarget
+  - name: consultantAssignments
     using:
       foreign_key_constraint_on:
-        column: target_user_id
+        column: consultant_id
         table:
-          name: permission_audit_log
+          name: payroll_assignments
           schema: public
-  - name: permissionOverrides
+  - name: createdAssignmentAudits
     using:
       foreign_key_constraint_on:
-        column: user_id
+        column: changed_by
         table:
-          name: permission_overrides
+          name: payroll_assignment_audit
           schema: public
-  - name: permissionOverridesCreated
+  - name: createdAssignments
+    using:
+      foreign_key_constraint_on:
+        column: assigned_by
+        table:
+          name: payroll_assignments
+          schema: public
+  - name: createdBillingEvents
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: billing_event_log
+          schema: public
+  - name: createdPermissionOverrides
     using:
       foreign_key_constraint_on:
         column: created_by
         table:
           name: permission_overrides
           schema: public
-  - name: primaryConsultantPayrolls
+  - name: managedPayrolls
     using:
       foreign_key_constraint_on:
-        column: primary_consultant_user_id
+        column: manager_user_id
         table:
           name: payrolls
           schema: public
-  - name: teamMembers
+  - name: managedTeamMembers
+    using:
+      foreign_key_constraint_on:
+        column: manager_id
+        table:
+          name: users
+          schema: public
+  - name: managedUsers
     using:
       manual_configuration:
         column_mapping:
@@ -179,14 +131,63 @@ array_relationships:
         remote_table:
           name: users
           schema: public
-  - name: userRoles
+  - name: newConsultantAuditTrail
+    using:
+      foreign_key_constraint_on:
+        column: to_consultant_id
+        table:
+          name: payroll_assignment_audit
+          schema: public
+  - name: originalConsultantAssignments
+    using:
+      foreign_key_constraint_on:
+        column: original_consultant_id
+        table:
+          name: payroll_assignments
+          schema: public
+  - name: originalConsultantAuditTrail
+    using:
+      foreign_key_constraint_on:
+        column: from_consultant_id
+        table:
+          name: payroll_assignment_audit
+          schema: public
+  - name: primaryConsultantPayrolls
+    using:
+      foreign_key_constraint_on:
+        column: primary_consultant_user_id
+        table:
+          name: payrolls
+          schema: public
+  - name: targetedPermissionAudits
+    using:
+      foreign_key_constraint_on:
+        column: target_user_id
+        table:
+          name: permission_audit_log
+          schema: public
+  - name: userLeaveRecords
     using:
       foreign_key_constraint_on:
         column: user_id
         table:
-          name: user_roles
+          name: leave
           schema: public
-  - name: workSchedules
+  - name: userPermissionAudits
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: permission_audit_log
+          schema: public
+  - name: userPermissionOverrides
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: permission_overrides
+          schema: public
+  - name: userWorkSchedules
     using:
       foreign_key_constraint_on:
         column: user_id
@@ -250,10 +251,10 @@ select_permissions:
               _eq: X-Hasura-User-Id
           - manager_id:
               _eq: X-Hasura-User-Id
-          - assignmentsAsConsultant:
+          - consultantAssignments:
               consultant_id:
                 _eq: X-Hasura-User-Id
-          - assignmentsAsOriginalConsultant:
+          - originalConsultantAssignments:
               original_consultant_id:
                 _eq: X-Hasura-User-Id
     comment: Consultants can view their own profile, their team members, and users from assigned payrolls - no email access for security

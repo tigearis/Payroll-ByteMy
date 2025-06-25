@@ -4,7 +4,7 @@ import { toast } from "sonner";
 // Import GraphQL operations from domains
 import { 
   CreatePayrollDocument,
-  GeneratePayrollDatesQueryDocument 
+  GeneratePayrollDatesDocument 
 } from "@/domains/payrolls/graphql/generated/graphql";
 
 interface CreatePayrollInput {
@@ -26,7 +26,7 @@ export function usePayrollCreation() {
   );
 
   const [generateDates, { loading: generatingDates }] = useLazyQuery(
-    GeneratePayrollDatesQueryDocument
+    GeneratePayrollDatesDocument
   );
 
   const createPayrollWithDates = async (input: CreatePayrollInput) => {
@@ -125,7 +125,7 @@ export function usePayrollCreation() {
 // Helper function for manual date generation (used in edit scenarios)
 export function usePayrollDateGeneration() {
   const [generateDates, { loading }] = useLazyQuery(
-    GeneratePayrollDatesQueryDocument
+    GeneratePayrollDatesDocument
   );
 
   const generateTwoYearsOfDates = async (

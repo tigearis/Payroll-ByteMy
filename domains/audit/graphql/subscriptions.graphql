@@ -2,7 +2,7 @@
 
 # Subscribe to new audit logs
 subscription SubscribeToAuditLogs {
-  auditLogs(order_by: { eventTime: desc }, limit: 1) {
+  auditLogs(orderBy: { eventTime: DESC }, limit: 1) {
     ...AuditLogWithUser
   }
 }
@@ -11,7 +11,7 @@ subscription SubscribeToAuditLogs {
 subscription SubscribeToFailedOperations {
   auditLogs(
     where: { success: { _eq: false } }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
     limit: 10
   ) {
     ...AuditLogCore
@@ -22,7 +22,7 @@ subscription SubscribeToFailedOperations {
 subscription SubscribeToUserAuditActivity($user_id: uuid!) {
   auditLogs(
     where: { userId: { _eq: $user_id } }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
     limit: 20
   ) {
     ...AuditLogCore
@@ -31,7 +31,7 @@ subscription SubscribeToUserAuditActivity($user_id: uuid!) {
 
 # Subscribe to data access logs
 subscription SubscribeToDataAccessLogs {
-  dataAccessLogs(order_by: { accessedAt: desc }, limit: 10) {
+  dataAccessLogs(orderBy: { accessedAt: DESC }, limit: 10) {
     ...DataAccessLogCore
   }
 }
@@ -40,7 +40,7 @@ subscription SubscribeToDataAccessLogs {
 subscription SecurityEventsStream($twentyFourHoursAgo: timestamptz!) {
   auditLogs(
     where: { eventTime: { _gte: $twentyFourHoursAgo } }
-    order_by: { eventTime: desc }
+    orderBy: { eventTime: DESC }
     limit: 50
   ) {
     id
@@ -52,7 +52,7 @@ subscription SecurityEventsStream($twentyFourHoursAgo: timestamptz!) {
     resourceType
     resourceId
     success
-    error_message
+    errorMessage
     ipAddress
     metadata
   }
@@ -61,11 +61,8 @@ subscription SecurityEventsStream($twentyFourHoursAgo: timestamptz!) {
 # Real-time failed operations stream
 subscription FailedOperationsStream($twentyFourHoursAgo: timestamptz!) {
   auditLogs(
-    where: { 
-      success: { _eq: false }
-      eventTime: { _gte: $twentyFourHoursAgo } 
-    }
-    order_by: { eventTime: desc }
+    where: { success: { _eq: false }, eventTime: { _gte: $twentyFourHoursAgo } }
+    orderBy: { eventTime: DESC }
     limit: 20
   ) {
     id
@@ -75,7 +72,7 @@ subscription FailedOperationsStream($twentyFourHoursAgo: timestamptz!) {
     userRole
     action
     resourceType
-    error_message
+    errorMessage
     ipAddress
   }
 }
@@ -83,11 +80,11 @@ subscription FailedOperationsStream($twentyFourHoursAgo: timestamptz!) {
 # Real-time critical data access stream
 subscription CriticalDataAccessStream($sevenDaysAgo: timestamptz!) {
   dataAccessLogs(
-    where: { 
+    where: {
       accessedAt: { _gte: $sevenDaysAgo }
       dataClassification: { _eq: "CRITICAL" }
     }
-    order_by: { accessedAt: desc }
+    orderBy: { accessedAt: DESC }
     limit: 30
   ) {
     id
