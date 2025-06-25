@@ -10,20 +10,20 @@ query GetCurrentUserRoles {
     email
     isActive
     isStaff
-    userRoles {
-      role {
+    assignedRoles {
+      assignedRole {
         id
         name
         displayName
         description
         priority
         isSystemRole
-        rolePermissions {
-          permission {
+        assignedPermissions {
+          grantedPermission {
             id
             action
             description
-            resource {
+            relatedResource {
               id
               name
               displayName
@@ -39,21 +39,21 @@ query GetCurrentUserRoles {
 
 # Get all available roles (for admin interfaces)
 query GetAllRoles {
-  roles(order_by: { priority: desc }) {
+  roles(orderBy: { priority: DESC }) {
     id
     name
     displayName
     description
     priority
     isSystemRole
-    rolePermissions {
+    assignedPermissions {
       id
       conditions
-      permission {
+      grantedPermission {
         id
         action
         description
-        resource {
+        relatedResource {
           id
           name
           displayName
@@ -66,12 +66,12 @@ query GetAllRoles {
 
 # Get all resources and their permissions
 query GetResourcesAndPermissions {
-  resources(order_by: { name: asc }) {
+  resources(orderBy: { name: ASC }) {
     id
     name
     displayName
     description
-    permissions {
+    availablePermissions {
       id
       action
       description
@@ -81,14 +81,14 @@ query GetResourcesAndPermissions {
 
 # Get users with their role assignments (admin view)
 query GetUsersWithRoles($limit: Int = 50, $offset: Int = 0) {
-  users(limit: $limit, offset: $offset, order_by: { createdAt: desc }) {
+  users(limit: $limit, offset: $offset, orderBy: { createdAt: DESC }) {
     id
     email
     isActive
     isStaff
-    userRoles {
+    assignedRoles {
       id
-      role {
+      assignedRole {
         id
         name
         displayName
@@ -102,7 +102,7 @@ query GetUsersWithRoles($limit: Int = 50, $offset: Int = 0) {
 query GetUserPermissionOverrides($userId: uuid!) {
   permissionOverrides(
     where: { userId: { _eq: $userId } }
-    order_by: { createdAt: desc }
+    orderBy: { createdAt: DESC }
   ) {
     id
     resource
@@ -117,7 +117,7 @@ query GetUserPermissionOverrides($userId: uuid!) {
 query GetRolePermissionOverrides($roleName: String!) {
   permissionOverrides(
     where: { role: { _eq: $roleName } }
-    order_by: { createdAt: desc }
+    orderBy: { createdAt: DESC }
   ) {
     id
     resource
@@ -133,13 +133,13 @@ query SearchUsersByEmail($emailPattern: String!) {
   users(
     where: { email: { _ilike: $emailPattern } }
     limit: 10
-    order_by: { email: asc }
+    orderBy: { email: ASC }
   ) {
     id
     email
     isActive
-    userRoles {
-      role {
+    assignedRoles {
+      assignedRole {
         name
         displayName
       }
@@ -149,7 +149,7 @@ query SearchUsersByEmail($emailPattern: String!) {
 
 # Get role hierarchy with inheritance visualization
 query GetRoleHierarchy {
-  roles(order_by: { priority: desc }) {
+  roles(orderBy: { priority: DESC }) {
     id
     name
     displayName
@@ -157,13 +157,13 @@ query GetRoleHierarchy {
     priority
     isSystemRole
     # Count of direct permissions
-    rolePermissions_aggregate {
+    assignedPermissionsAggregate {
       aggregate {
         count
       }
     }
     # Count of users with this role
-    userRoles_aggregate {
+    assignedToUsersAggregate {
       aggregate {
         count
       }
@@ -180,7 +180,7 @@ query GetPermissionAuditLogs(
 ) {
   permissionAuditLogs(
     where: { timestamp: { _gte: $startDate, _lte: $endDate } }
-    order_by: { timestamp: desc }
+    orderBy: { timestamp: DESC }
     limit: $limit
     offset: $offset
   ) {
@@ -189,16 +189,232 @@ query GetPermissionAuditLogs(
     targetUserId
     action
     resource
-    previous_value
-    new_value
+    previousValue
+    newValue
     timestamp
-    created_at
+    createdAt
   }
 }
 
-# NOTE: GetHasuraClaimsForUser query cannot be added yet because 
-# get_hasura_claims function is not exposed in GraphQL schema.
-# This needs to be added to Hasura metadata first.
+# ================================
+# USER INVITATION QUERIES
+# Focus: Invitation management and validation
+# ================================
+
+# Get pending invitations (admin view)
+query GetPendingInvitations($limit: Int = 50, $offset: Int = 0) {
+  userInvitations(
+    where: { status: { _eq: "pending" } }
+    orderBy: { invitedAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitedRole
+    managerId
+    invitedAt
+    expiresAt
+    status
+    invitedByUser {
+      name
+      email
+      role
+    }
+    managerUser {
+      name
+      email
+    }
+  }
+}
+
+# Get invitation by Clerk ticket (for acceptance flow)
+query GetInvitationByTicket($clerkTicket: String!) {
+  userInvitations(
+    where: { 
+      clerkTicket: { _eq: $clerkTicket }
+      status: { _eq: "pending" }
+      expiresAt: { _gt: "now()" }
+    }
+    limit: 1
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitedRole
+    managerId
+    invitationMetadata
+    invitedAt
+    expiresAt
+    invitedByUser {
+      name
+      email
+      role
+    }
+    managerUser {
+      name
+      email
+    }
+  }
+}
+
+# Get invitation history for a user (admin view)
+query GetInvitationHistory($email: String!, $limit: Int = 10) {
+  userInvitations(
+    where: { email: { _eq: $email } }
+    orderBy: { invitedAt: DESC }
+    limit: $limit
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitedRole
+    status
+    invitedAt
+    acceptedAt
+    expiresAt
+    invitedByUser {
+      name
+      email
+    }
+    acceptedByUser {
+      name
+      email
+      clerkUserId
+    }
+  }
+}
+
+# Get all invitations sent by a user
+query GetInvitationsBySender($invitedBy: uuid!, $limit: Int = 50) {
+  userInvitations(
+    where: { invitedBy: { _eq: $invitedBy } }
+    orderBy: { invitedAt: DESC }
+    limit: $limit
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitedRole
+    status
+    invitedAt
+    acceptedAt
+    expiresAt
+    acceptedByUser {
+      name
+      email
+    }
+  }
+}
+
+# Get expired invitations for cleanup
+query GetExpiredInvitations($limit: Int = 100) {
+  userInvitations(
+    where: { 
+      status: { _eq: "pending" }
+      expiresAt: { _lt: "now()" }
+    }
+    orderBy: { expiresAt: ASC }
+    limit: $limit
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitedRole
+    invitedAt
+    expiresAt
+  }
+}
+
+# Validate invitation role assignment permissions
+query ValidateInvitationRolePermissions($invitedRole: String!, $invitedBy: uuid!) {
+  # Get the inviter's roles and permissions
+  users(where: { id: { _eq: $invitedBy } }) {
+    id
+    role
+    assignedRoles {
+      assignedRole {
+        name
+        priority
+        assignedPermissions {
+          grantedPermission {
+            action
+            relatedResource {
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  # Get the target role details
+  roles(where: { name: { _eq: $invitedRole } }) {
+    id
+    name
+    priority
+    isSystemRole
+  }
+}
+
+# Get invitation by ID for resending
+query GetInvitationById($invitationId: uuid!) {
+  userInvitations(where: { id: { _eq: $invitationId } }) {
+    id
+    email
+    firstName
+    lastName
+    invitedRole
+    managerId
+    clerkInvitationId
+    clerkTicket
+    invitationMetadata
+    invitedBy
+    invitedAt
+    acceptedAt
+    expiresAt
+    status
+    invitedByUser {
+      id
+      name
+      email
+      role
+    }
+    managerUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+# Get resendable invitations (pending or expired, not accepted)
+query GetResendableInvitations($invitedBy: uuid!, $limit: Int = 50) {
+  userInvitations(
+    where: { 
+      invitedBy: { _eq: $invitedBy }
+      status: { _in: ["pending", "expired"] }
+    }
+    orderBy: { invitedAt: DESC }
+    limit: $limit
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitedRole
+    status
+    invitedAt
+    expiresAt
+    acceptedAt
+  }
+}
 
 # NOTE: API key management queries removed - api_keys table not found in schema
 # File: lib/security/persistent-api-keys.ts still uses inline GraphQL

@@ -33,8 +33,8 @@ export const POST = withAuth(
       });
 
       const deletedDates =
-        result.data?.deletePayrollDates?.affected_rows || 0;
-      const resetPayrolls = result.data?.updatePayrolls?.affected_rows || 0;
+        result.data?.bulkDeletePayrollDates?.affectedRows || 0;
+      const resetPayrolls = result.data?.bulkUpdatePayrolls?.affectedRows || 0;
 
       console.log(
         `✅ Clean complete: ${deletedDates} dates deleted, ${resetPayrolls} payrolls reset`

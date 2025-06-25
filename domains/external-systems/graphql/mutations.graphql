@@ -1,55 +1,164 @@
 # External Systems Domain Mutations
+# Security Classification: MEDIUM - Integration and configuration data
+# SOC2 Compliance: All mutations logged with comprehensive audit trail
 
-# External Systems
-mutation CreateExternalSystem($object: external_systems_insert_input!) {
-  insert_external_systems_one(object: $object) {
-    ...ExternalSystemCore
+# External system CRUD operations
+mutation CreateExternalSystem($object: externalSystemsInsertInput!) {
+  insertExternalSystem(object: $object) {
+    ...ExternalSystemDetailed
   }
 }
 
-mutation UpdateExternalSystem($id: uuid!, $set: external_systems_set_input!) {
-  update_external_systems_by_pk(pk_columns: { id: $id }, _set: $set) {
-    ...ExternalSystemCore
+mutation UpdateExternalSystem($id: uuid!, $set: externalSystemsSetInput!) {
+  updateExternalSystemById(pkColumns: { id: $id }, _set: $set) {
+    ...ExternalSystemDetailed
   }
 }
 
 mutation DeleteExternalSystem($id: uuid!) {
-  delete_external_systems_by_pk(id: $id) {
+  deleteExternalSystemById(id: $id) {
     id
+    name
   }
 }
 
-# Client External Systems
-mutation LinkClientToExternalSystem(
-  $object: client_external_systems_insert_input!
-) {
-  insert_client_external_systems_one(object: $object) {
-    ...ClientExternalSystemWithRelations
+# Client external system operations
+mutation CreateClientExternalSystem($object: clientExternalSystemsInsertInput!) {
+  insertClientExternalSystem(object: $object) {
+    ...ClientExternalSystemComplete
   }
 }
 
-mutation UpdateClientExternalSystem(
-  $id: uuid!
-  $set: client_external_systems_set_input!
-) {
-  update_client_external_systems_by_pk(pk_columns: { id: $id }, _set: $set) {
-    ...ClientExternalSystemWithRelations
+mutation UpdateClientExternalSystem($id: uuid!, $set: clientExternalSystemsSetInput!) {
+  updateClientExternalSystemById(pkColumns: { id: $id }, _set: $set) {
+    ...ClientExternalSystemComplete
   }
 }
 
-mutation UnlinkClientFromExternalSystem($id: uuid!) {
-  delete_client_external_systems_by_pk(id: $id) {
+mutation DeleteClientExternalSystem($id: uuid!) {
+  deleteClientExternalSystemById(id: $id) {
     id
+    clientId
+    externalSystemId
   }
 }
 
-mutation BulkLinkClientsToExternalSystem(
-  $objects: [client_external_systems_insert_input!]!
+mutation ConnectClientToSystem(
+  $clientId: uuid!
+  $externalSystemId: uuid!
+  $systemClientId: String
 ) {
-  insert_client_external_systems(objects: $objects) {
-    returning {
-      ...ClientExternalSystemWithRelations
+  insertClientExternalSystem(
+    object: {
+      clientId: $clientId
+      externalSystemId: $externalSystemId
+      systemClientId: $systemClientId
     }
-    affected_rows
+  ) {
+    ...ClientExternalSystemComplete
+  }
+}
+
+mutation DisconnectClientFromSystem($id: uuid!) {
+  deleteClientExternalSystemById(id: $id) {
+    id
+    clientId
+    externalSystemId
+  }
+}
+
+# Bulk operations
+mutation BulkDeleteExternalSystems($systemIds: [uuid!]!) {
+  bulkDeleteExternalSystems(where: { id: { _in: $systemIds } }) {
+    affectedRows
+    returning {
+      id
+      name
+    }
+  }
+}
+
+mutation BulkDeleteClientExternalSystems($clientSystemIds: [uuid!]!) {
+  bulkDeleteClientExternalSystems(where: { id: { _in: $clientSystemIds } }) {
+    affectedRows
+    returning {
+      id
+      clientId
+      externalSystemId
+    }
+  }
+}
+
+# Administrative operations
+mutation DisconnectAllClientSystemsBySystem($externalSystemId: uuid!) {
+  bulkDeleteClientExternalSystems(where: { externalSystemId: { _eq: $externalSystemId } }) {
+    affectedRows
+    returning {
+      id
+      clientId
+      externalSystemId
+    }
+  }
+}
+
+mutation DisconnectAllClientSystemsByClient($clientId: uuid!) {
+  bulkDeleteClientExternalSystems(where: { clientId: { _eq: $clientId } }) {
+    affectedRows
+    returning {
+      id
+      clientId
+      externalSystemId
+    }
+  }
+}
+
+mutation TransferClientSystemConnections($oldClientId: uuid!, $newClientId: uuid!) {
+  bulkUpdateClientExternalSystems(
+    where: { clientId: { _eq: $oldClientId } }
+    _set: { clientId: $newClientId, updatedAt: "now()" }
+  ) {
+    affectedRows
+    returning {
+      id
+      clientId
+      externalSystemId
+    }
+  }
+}
+
+# Maintenance operations
+mutation UpdateExternalSystemDetails(
+  $id: uuid!
+  $name: String
+  $description: String
+  $url: String
+  $icon: String
+) {
+  updateExternalSystemById(
+    pkColumns: { id: $id }
+    _set: {
+      name: $name
+      description: $description
+      url: $url
+      icon: $icon
+      updatedAt: "now()"
+    }
+  ) {
+    ...ExternalSystemBasic
+  }
+}
+
+mutation UpdateClientSystemMapping(
+  $id: uuid!
+  $systemClientId: String
+) {
+  updateClientExternalSystemById(
+    pkColumns: { id: $id }
+    _set: {
+      systemClientId: $systemClientId
+      updatedAt: "now()"
+    }
+  ) {
+    ...ClientExternalSystemBasic
   }
 }

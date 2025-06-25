@@ -1,17 +1,262 @@
 # Work Schedule Domain Fragments
+# Security Classification: MEDIUM - Employee scheduling and time management
+# SOC2 Compliance: Employee work hour data with privacy controls
 
-fragment WorkScheduleCore on work_schedule {
+fragment WorkScheduleCore on workSchedules {
   id
+  userId
+  workDay
+  workHours
+  createdAt
+  updatedAt
+}
+
+fragment WorkScheduleBasic on workSchedules {
+  ...WorkScheduleCore
+}
+
+fragment WorkScheduleDetailed on workSchedules {
+  ...WorkScheduleBasic
+}
+
+fragment WorkScheduleWithUser on workSchedules {
+  ...WorkScheduleBasic
+  scheduleOwner {
+    id
+    name
+    email
+    role
+  }
+}
+
+fragment WorkScheduleWithUserComplete on workSchedules {
+  ...WorkScheduleBasic
+  workScheduleUser {
+    id
+    name
+    email
+    role
+    managerId
+    managerUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+fragment WorkScheduleComplete on workSchedules {
+  ...WorkScheduleWithUserComplete
+}
+
+# Performance-optimized fragments
+fragment WorkScheduleSummary on workSchedules {
+  id
+  userId
   workDay
   workHours
 }
 
-fragment WorkScheduleWithUser on work_schedule {
-  ...WorkScheduleCore
-  user {
+fragment WorkScheduleListItem on workSchedules {
+  ...WorkScheduleSummary
+  createdAt
+  updatedAt
+  scheduleOwner {
+    id
+    name
+    role
+  }
+}
+
+fragment WorkScheduleTableRow on workSchedules {
+  ...WorkScheduleListItem
+}
+
+fragment WorkScheduleDashboardCard on workSchedules {
+  ...WorkScheduleSummary
+  scheduleOwner {
+    id
+    name
+  }
+}
+
+fragment WorkScheduleMinimal on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+}
+
+# Calendar and scheduling fragments
+fragment WorkScheduleCalendarItem on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+  scheduleOwner {
+    id
+    name
+  }
+}
+
+fragment WorkScheduleWeeklyView on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+  createdAt
+  updatedAt
+}
+
+fragment WorkScheduleMonthlyView on workSchedules {
+  id
+  workDay
+  workHours
+  scheduleOwner {
+    id
+    name
+  }
+}
+
+# Team and management fragments
+fragment TeamWorkSchedule on workSchedules {
+  ...WorkScheduleBasic
+  scheduleOwner {
     id
     name
     email
-    isStaff
+    role
+    managerId
   }
+}
+
+fragment ManagerWorkScheduleView on workSchedules {
+  ...WorkScheduleBasic
+  workScheduleUser {
+    id
+    name
+    email
+    role
+  }
+}
+
+# Analytics and reporting fragments
+fragment WorkScheduleStats on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+}
+
+fragment WorkScheduleReport on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+  createdAt
+  scheduleOwner {
+    id
+    name
+    role
+  }
+}
+
+# Audit and compliance fragments
+fragment WorkScheduleForAudit on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+  createdAt
+  updatedAt
+  # User details excluded for audit privacy
+}
+
+fragment WorkScheduleChangeLog on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+  updatedAt
+}
+
+# Specialized use case fragments
+fragment WorkScheduleConflictCheck on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+  scheduleOwner {
+    id
+    name
+  }
+}
+
+fragment WorkScheduleAvailability on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+}
+
+fragment WorkScheduleCapacity on workSchedules {
+  id
+  workDay
+  workHours
+  scheduleOwner {
+    id
+    name
+    role
+  }
+}
+
+# User-specific fragments
+fragment MyWorkSchedule on workSchedules {
+  ...WorkScheduleBasic
+}
+
+fragment TeamMemberSchedule on workSchedules {
+  ...WorkScheduleBasic
+  scheduleOwner {
+    id
+    name
+    role
+  }
+}
+
+# Time period fragments
+fragment DailyWorkSchedule on workSchedules {
+  id
+  userId
+  workHours
+  scheduleOwner {
+    id
+    name
+  }
+}
+
+fragment WeeklyWorkPattern on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+}
+
+fragment WorkSchedulePattern on workSchedules {
+  workDay
+  workHours
+}
+
+# Summary and aggregate fragments
+fragment WorkScheduleTotals on workSchedules {
+  userId
+  workHours
+  workDay
+}
+
+fragment UserWorkScheduleSummary on workSchedules {
+  id
+  workDay
+  workHours
+  updatedAt
 }

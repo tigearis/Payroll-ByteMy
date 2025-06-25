@@ -2,7 +2,7 @@
 
 # Subscribe to role changes
 subscription RolesUpdated {
-  roles(order_by: { updatedAt: desc }) {
+  roles(orderBy: { updatedAt: DESC }) {
     ...RoleCore
   }
 }
@@ -23,13 +23,13 @@ subscription RolePermissionsUpdated($roleId: uuid!) {
 
 # Subscribe to feature flag changes
 subscription PermissionsUpdated {
-  permissions(order_by: { updatedAt: desc }) {
-    ...PermissionsPermissionWithResource
+  permissions(orderBy: { updatedAt: DESC }) {
+    ...PermissionWithResource
   }
 }
 
 subscription ResourcesUpdated {
-  resources(order_by: { updatedAt: desc }) {
+  resources(orderBy: { updatedAt: DESC }) {
     ...ResourceCore
   }
 }

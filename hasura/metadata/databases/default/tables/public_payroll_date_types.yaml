@@ -1,8 +1,28 @@
 table:
   name: payroll_date_types
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    updated_at: updatedAt
+  custom_name: payrollDateTypes
+  custom_root_fields:
+    delete: bulkDeletePayrollDateTypes
+    delete_by_pk: deletePayrollDateTypeById
+    insert: bulkInsertPayrollDateTypes
+    insert_one: insertPayrollDateType
+    select: payrollDateTypes
+    select_aggregate: payrollDateTypesAggregate
+    select_by_pk: payrollDateTypeById
+    update: bulkUpdatePayrollDateTypes
+    update_by_pk: updatePayrollDateTypeById
 array_relationships:
-  - name: adjustment_rules
+  - name: adjustmentRules
     using:
       foreign_key_constraint_on:
         column: date_type_id

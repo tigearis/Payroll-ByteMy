@@ -3,6 +3,14 @@ table:
   schema: public
 configuration:
   column_config:
+    created_at:
+      custom_name: createdAt
+    new_value:
+      custom_name: newValue
+    previous_value:
+      custom_name: previousValue
+    target_role:
+      custom_name: targetRole
     target_user_id:
       custom_name: targetUserId
     timestamp:
@@ -10,19 +18,24 @@ configuration:
     user_id:
       custom_name: userId
   custom_column_names:
+    created_at: createdAt
+    new_value: newValue
+    previous_value: previousValue
+    target_role: targetRole
     target_user_id: targetUserId
     timestamp: timestamp
     user_id: userId
+  custom_name: permissionAuditLogs
   custom_root_fields:
-    delete: deletePermissionAuditLogs
-    delete_by_pk: deletePermissionAuditLog
-    insert: insertPermissionAuditLogs
+    delete: bulkDeletePermissionAuditLogs
+    delete_by_pk: deletePermissionAuditLogById
+    insert: bulkInsertPermissionAuditLogs
     insert_one: insertPermissionAuditLog
     select: permissionAuditLogs
     select_aggregate: permissionAuditLogsAggregate
-    select_by_pk: permissionAuditLog
-    update: updatePermissionAuditLogs
-    update_by_pk: updatePermissionAuditLog
+    select_by_pk: permissionAuditLogById
+    update: bulkUpdatePermissionAuditLogs
+    update_by_pk: updatePermissionAuditLogById
 object_relationships:
   - name: performedByUser
     using:
@@ -124,3 +137,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

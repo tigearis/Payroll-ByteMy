@@ -1,12 +1,44 @@
 table:
   name: notes
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    entity_id:
+      custom_name: entityId
+    entity_type:
+      custom_name: entityType
+    is_important:
+      custom_name: isImportant
+    updated_at:
+      custom_name: updatedAt
+    user_id:
+      custom_name: userId
+  custom_column_names:
+    created_at: createdAt
+    entity_id: entityId
+    entity_type: entityType
+    is_important: isImportant
+    updated_at: updatedAt
+    user_id: userId
+  custom_name: notes
+  custom_root_fields:
+    delete: bulkDeleteNotes
+    delete_by_pk: deleteNoteById
+    insert: bulkInsertNotes
+    insert_one: insertNote
+    select: notes
+    select_aggregate: notesAggregate
+    select_by_pk: noteById
+    update: bulkUpdateNotes
+    update_by_pk: updateNoteById
 object_relationships:
-  - name: user
+  - name: authorUser
     using:
       foreign_key_constraint_on: user_id
 array_relationships:
-  - name: notes_by_client
+  - name: notesByClient
     using:
       manual_configuration:
         column_mapping:
@@ -15,7 +47,7 @@ array_relationships:
         remote_table:
           name: clients
           schema: public
-  - name: notes_by_payroll
+  - name: notesByPayroll
     using:
       manual_configuration:
         column_mapping:

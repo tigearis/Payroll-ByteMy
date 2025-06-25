@@ -13,7 +13,7 @@ subscription StaffSubscription {
 }
 
 subscription UserUpdates($id: uuid!) {
-  user(id: $id) {
+  users(where: { id: { _eq: $id } }) {
     ...UserBasicInfo
   }
 }
@@ -21,7 +21,7 @@ subscription UserUpdates($id: uuid!) {
 subscription StaffListUpdates {
   users(
     where: { role: { _in: ["consultant", "manager", "org_admin"] } }
-    order_by: { name: asc }
+    orderBy: { name: ASC }
   ) {
     ...UserBasicInfo
   }
@@ -30,7 +30,7 @@ subscription StaffListUpdates {
 # Real-time authentication and user status subscriptions
 
 subscription UserRoleChanges($userId: uuid!) {
-  user(id: $userId) {
+  users(where: { id: { _eq: $userId } }) {
     id
     role
     isActive
@@ -41,7 +41,7 @@ subscription UserRoleChanges($userId: uuid!) {
 }
 
 subscription UserStatusUpdates($userId: uuid!) {
-  user(id: $userId) {
+  users(where: { id: { _eq: $userId } }) {
     id
     name
     role
@@ -81,18 +81,20 @@ subscription TeamMemberUpdates($managerId: uuid!) {
 }
 
 subscription UserPermissionUpdates($userId: uuid!) {
-  user(id: $userId) {
+  users(where: { id: { _eq: $userId } }) {
     id
     role
     isActive
-    userRoles {
-      role {
+    assignedRoles {
+      roleId
+      assignedRole {
         name
-        rolePermissions {
-          permission {
+        assignedPermissions {
+          permissionId
+          grantedPermission {
             action
             description
-            resource {
+            relatedResource {
               name
             }
           }

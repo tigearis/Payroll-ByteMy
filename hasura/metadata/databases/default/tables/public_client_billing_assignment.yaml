@@ -1,11 +1,37 @@
 table:
   name: client_billing_assignment
   schema: public
+configuration:
+  column_config:
+    billing_plan_id:
+      custom_name: billingPlanId
+    client_id:
+      custom_name: clientId
+    created_at:
+      custom_name: createdAt
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    billing_plan_id: billingPlanId
+    client_id: clientId
+    created_at: createdAt
+    updated_at: updatedAt
+  custom_name: clientBillingAssignments
+  custom_root_fields:
+    delete: bulkDeleteClientBillingAssignments
+    delete_by_pk: deleteClientBillingAssignmentById
+    insert: bulkInsertClientBillingAssignments
+    insert_one: insertClientBillingAssignment
+    select: clientBillingAssignments
+    select_aggregate: clientBillingAssignmentsAggregate
+    select_by_pk: clientBillingAssignmentById
+    update: bulkUpdateClientBillingAssignments
+    update_by_pk: updateClientBillingAssignmentById
 object_relationships:
-  - name: billing_plan
+  - name: assignedBillingPlan
     using:
       foreign_key_constraint_on: billing_plan_id
-  - name: client
+  - name: assignedClient
     using:
       foreign_key_constraint_on: client_id
 insert_permissions:
@@ -67,3 +93,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

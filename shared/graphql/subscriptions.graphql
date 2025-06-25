@@ -12,7 +12,7 @@ subscription ClientCountUpdates {
 }
 
 subscription PayrollCountUpdates {
-  payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
+  payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
     aggregate {
       count
     }
@@ -29,8 +29,8 @@ subscription UserCountUpdates {
 
 subscription RecentPayrollActivity {
   payrolls(
-    where: { supersededDate: { _is_null: true } }
-    order_by: { updatedAt: desc }
+    where: { supersededDate: { _isNull: true } }
+    orderBy: { updatedAt: DESC }
     limit: 5
   ) {
     id
@@ -46,7 +46,7 @@ subscription RecentPayrollActivity {
 subscription RecentUserActivity {
   users(
     where: { isActive: { _eq: true } }
-    order_by: { updatedAt: desc }
+    orderBy: { updatedAt: DESC }
     limit: 3
   ) {
     id
@@ -59,10 +59,10 @@ subscription RecentUserActivity {
 subscription CriticalPayrollNotifications {
   payrolls(
     where: {
-      supersededDate: { _is_null: true }
+      supersededDate: { _isNull: true }
       status: { _in: ["Issue", "Critical"] }
     }
-    order_by: { updatedAt: desc }
+    orderBy: { updatedAt: DESC }
     limit: 10
   ) {
     id
@@ -80,10 +80,10 @@ subscription CriticalPayrollNotifications {
 subscription UpcomingPayrollsUpdates($fromDate: date!) {
   payrolls(
     where: {
-      supersededDate: { _is_null: true }
+      supersededDate: { _isNull: true }
       payrollDates: { adjustedEftDate: { _gte: $fromDate } }
     }
-    order_by: { payrollDates_aggregate: { min: { adjustedEftDate: asc } } }
+    orderBy: { payrollDatesAggregate: { min: { adjustedEftDate: ASC } } }
     limit: 5
   ) {
     id
@@ -94,7 +94,7 @@ subscription UpcomingPayrollsUpdates($fromDate: date!) {
     }
     nextDate: payrollDates(
       where: { adjustedEftDate: { _gte: $fromDate } }
-      order_by: { adjustedEftDate: asc }
+      orderBy: { adjustedEftDate: ASC }
       limit: 1
     ) {
       adjustedEftDate

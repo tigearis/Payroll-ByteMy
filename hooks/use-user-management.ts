@@ -1,5 +1,16 @@
 import { useState, useCallback } from "react";
+import { useQuery, useMutation } from "@apollo/client";
 import { useAuth } from "@clerk/nextjs";
+import { toast } from "sonner";
+
+import {
+  GetUsersDocument,
+  GetManagersDocument,
+  CreateUserDocument,
+  UpdateUserDocument,
+  DeactivateUserDocument,
+  GetUserStatsDocument,
+} from "@/domains/users/graphql/generated/graphql";
 
 export type UserRole =
   | "developer"
@@ -12,14 +23,16 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
-  createdAt: string;
-  updatedAt: string;
-  isStaff: boolean;
-  isActive: boolean;
-  managerId?: string;
-  clerkUserId: string;
-  manager?: {
+  role: string;
+  createdAt?: string;
+  updatedAt?: string;
+  isStaff: boolean | null;
+  isActive: boolean | null;
+  managerId?: string | null;
+  clerkUserId: string | null;
+  username?: string | null;
+  image?: string | null;
+  managerUser?: {
     id: string;
     name: string;
     email: string;
@@ -48,383 +61,170 @@ export interface UserFilters {
 export interface UserPermissions {
   canCreate: boolean;
   canManageUsers: boolean;
-  canManagePayrolls: boolean;
-  canViewReports: boolean;
-  canManageClients: boolean;
-  canManageSystem: boolean;
 }
 
-export interface CreateUserData {
-  email: string;
-  firstName: string;
-  lastName: string;
-  role?: UserRole;
-  managerId?: string;
-}
+export function useUserManagement() {
+  const { getToken, userId } = useAuth();
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
 
-export interface UpdateUserData {
-  name?: string;
-  email?: string;
-  role?: UserRole;
-  managerId?: string;
-  isStaff?: boolean;
-}
+  // GraphQL queries and mutations
+  const { data: usersData, loading: usersLoading, refetch: refetchUsers } = useQuery(GetUsersDocument, {
+    fetchPolicy: "cache-and-network"
+  });
 
-interface UseUserManagementReturn {
-  // State
-  users: User[];
-  managers: Manager[];
-  totalCount: number;
-  currentUser: User | null;
-  permissions: UserPermissions | null;
-  currentUserRole: string | null;
-  loading: boolean;
-  error: string | null;
+  const { data: managersData, loading: managersLoading } = useQuery(GetManagersDocument, {
+    fetchPolicy: "cache-and-network"
+  });
+
+  const { data: statsData } = useQuery(GetUserStatsDocument, {
+    fetchPolicy: "cache-first"
+  });
+
+  const [createUserMutation] = useMutation(CreateUserDocument);
+  const [updateUserMutation] = useMutation(UpdateUserDocument);
+  const [deactivateUserMutation] = useMutation(DeactivateUserDocument);
+
+  // Computed state
+  const users = usersData?.users || [];
+  const managers = managersData?.users?.filter((u: any) => u.role === "manager" || u.role === "org_admin") || [];
+  const totalCount = statsData?.usersAggregate?.aggregate?.count || 0;
+  const currentUser = users.find((u: any) => u.clerkUserId === userId);
+  const loading = usersLoading || managersLoading;
+
+  // Permissions based on role
+  const permissions: UserPermissions = {
+    canCreate: currentUserRole === "developer" || currentUserRole === "org_admin",
+    canManageUsers: currentUserRole === "developer" || currentUserRole === "org_admin" || currentUserRole === "manager",
+  };
+
+  // Permission checking functions
+  const canAssignRole = useCallback((targetRole: string): boolean => {
+    if (currentUserRole === "developer") return true;
+    if (currentUserRole === "org_admin") return targetRole !== "developer";
+    if (currentUserRole === "manager") return ["consultant", "viewer"].includes(targetRole);
+    return false;
+  }, [currentUserRole]);
+
+  const canEditUser = useCallback((user: User): boolean => {
+    if (currentUserRole === "developer") return true;
+    if (currentUserRole === "org_admin") return user.role !== "developer";
+    if (currentUserRole === "manager") return ["consultant", "viewer"].includes(user.role);
+    return false;
+  }, [currentUserRole]);
+
+  const canDeleteUser = useCallback((user: User): boolean => {
+    if (currentUserRole === "developer") return true;
+    if (currentUserRole === "org_admin") return user.role !== "developer";
+    return false;
+  }, [currentUserRole]);
 
   // Actions
-  fetchUsers: (filters?: UserFilters) => Promise<void>;
-  fetchUserById: (id: string) => Promise<User | null>;
-  createUser: (userData: CreateUserData) => Promise<boolean>;
-  updateUser: (id: string, userData: UpdateUserData) => Promise<boolean>;
-  deleteUser: (id: string) => Promise<boolean>;
-  clearError: () => void;
+  const fetchUsers = useCallback(async (filters: UserFilters = {}) => {
+    try {
+      await refetchUsers();
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      toast.error("Failed to fetch users");
+    }
+  }, [refetchUsers]);
 
-  // Utility
-  canAssignRole: (targetRole: string) => boolean;
-  canEditUser: (user: User) => boolean;
-  canDeleteUser: (user: User) => boolean;
-}
-
-export function useUserManagement(): UseUserManagementReturn {
-  const { getToken, userId } = useAuth();
-
-  // State
-  const [users, setUsers] = useState<User[]>([]);
-  const [managers, setManagers] = useState<Manager[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [permissions, setPermissions] = useState<UserPermissions | null>(null);
-  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Helper function to make authenticated API requests
-  const makeRequest = useCallback(
-    async (url: string, options: RequestInit = {}) => {
-      try {
-        const token = await getToken({ template: "hasura" });
-        console.log("🔑 Making API request to:", url);
-        console.log("🔑 Token present:", !!token);
-        console.log("🔑 Token length:", token?.length || 0);
-
-        const response = await fetch(url, {
-          ...options,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            ...options.headers,
-          },
-        });
-
-        console.log("📡 Response status:", response.status);
-        console.log("📡 Response redirected:", response.redirected);
-        console.log("📡 Response URL:", response.url);
-
-        // Check if the response is a redirect (auth issue)
-        if (response.redirected) {
-          throw new Error("Authentication required. Please sign in again.");
-        }
-
-        // Check if the response is JSON
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          const text = await response.text();
-          throw new Error(`Unexpected response: ${text}`);
-        }
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.error || `HTTP ${response.status}: ${response.statusText}`
-          );
-        }
-
-        return data;
-      } catch (err) {
-        console.error("API request failed:", err);
-        throw err;
-      }
-    },
-    [getToken]
-  );
-
-  // Fetch users with filtering and pagination
-  const fetchUsers = useCallback(
-    async (filters: UserFilters = {}) => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const params = new URLSearchParams();
-
-        if (filters.role && filters.role !== "all")
-          params.append("role", filters.role);
-        if (filters.search) params.append("search", filters.search);
-        if (filters.managerId && filters.managerId !== "all")
-          params.append("managerId", filters.managerId);
-        if (filters.limit) params.append("limit", filters.limit.toString());
-        if (filters.offset) params.append("offset", filters.offset.toString());
-
-        const url = `/api/users${
-          params.toString() ? `?${params.toString()}` : ""
-        }`;
-        const data = await makeRequest(url);
-
-        if (data.success) {
-          setUsers(data.users || []);
-          setManagers(data.managers || []);
-          setTotalCount(data.totalCount || 0);
-          setPermissions(data.permissions || null);
-          setCurrentUserRole(data.currentUserRole || null);
-        } else {
-          throw new Error(data.error || "Failed to fetch users");
-        }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to fetch users";
-        setError(errorMessage);
-        console.error("Error fetching users:", err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [makeRequest]
-  );
-
-  // Fetch a specific user by ID
-  const fetchUserById = useCallback(
-    async (id: string): Promise<User | null> => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await makeRequest(`/api/users/${id}`);
-
-        if (data.success) {
-          const user = data.user;
-          setCurrentUser(user);
-          return user;
-        } else {
-          throw new Error(data.error || "Failed to fetch user");
-        }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to fetch user";
-        setError(errorMessage);
-        console.error("Error fetching user:", err);
-        return null;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [makeRequest]
-  );
-
-  // Create a new user
-  const createUser = useCallback(
-    async (userData: CreateUserData): Promise<boolean> => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        // Prepare data for staff creation endpoint
-        const requestData = {
-          name: `${userData.firstName} ${userData.lastName}`.trim(),
-          email: userData.email,
-          role: userData.role || "viewer", // Default to viewer
-          managerId: userData.managerId,
-          is_staff: true,
-          inviteToClerk: true,
-        };
-
-        const data = await makeRequest("/api/staff/create", {
-          method: "POST",
-          body: JSON.stringify(requestData),
-        });
-
-        if (data.success) {
-          // Refresh the users list
-          await fetchUsers();
-          return true;
-        } else {
-          throw new Error(data.error || "Failed to create user");
-        }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to create user";
-        setError(errorMessage);
-        console.error("Error creating user:", err);
-        return false;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [makeRequest, fetchUsers]
-  );
-
-  // Update a user
-  const updateUser = useCallback(
-    async (id: string, userData: UpdateUserData): Promise<boolean> => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await makeRequest(`/api/users/${id}`, {
-          method: "PUT",
-          body: JSON.stringify(userData),
-        });
-
-        if (data.success) {
-          // Update the user in local state
-          setUsers(prevUsers =>
-            prevUsers.map(user =>
-              user.id === id || user.clerkUserId === id
-                ? { ...user, ...userData, updatedAt: new Date().toISOString() }
-                : user
-            )
-          );
-
-          // Update current user if it's the same user
-          if (
-            currentUser &&
-            (currentUser.id === id || currentUser.clerkUserId === id)
-          ) {
-            setCurrentUser(prev => (prev ? { ...prev, ...userData } : null));
+  const createUser = useCallback(async (userData: Partial<User>) => {
+    try {
+      const result = await createUserMutation({
+        variables: {
+          object: {
+            name: userData.name!,
+            email: userData.email!,
+            role: userData.role!,
+            isStaff: userData.isStaff || false,
+            managerId: userData.managerId || null,
+            clerkUserId: userData.clerkUserId!,
           }
-
-          return true;
-        } else {
-          throw new Error(data.error || "Failed to update user");
         }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to update user";
-        setError(errorMessage);
-        console.error("Error updating user:", err);
-        return false;
-      } finally {
-        setLoading(false);
+      });
+
+      if (result.data?.insertUser) {
+        toast.success("User created successfully");
+        await refetchUsers();
+        return result.data.insertUser;
       }
-    },
-    [makeRequest, currentUser]
-  );
+    } catch (error) {
+      console.error("Error creating user:", error);
+      toast.error("Failed to create user");
+      throw error;
+    }
+    return null;
+  }, [createUserMutation, refetchUsers]);
 
-  // Delete a user
-  const deleteUser = useCallback(
-    async (id: string): Promise<boolean> => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await makeRequest(`/api/users/${id}`, {
-          method: "DELETE",
-        });
-
-        if (data.success) {
-          // Remove user from local state
-          setUsers(prevUsers =>
-            prevUsers.filter(
-              user => user.id !== id && user.clerkUserId !== id
-            )
-          );
-          setTotalCount(prev => Math.max(0, prev - 1));
-
-          return true;
-        } else {
-          throw new Error(data.error || "Failed to delete user");
+  const updateUser = useCallback(async (userId: string, updates: Partial<User>) => {
+    try {
+      const result = await updateUserMutation({
+        variables: {
+          id: userId,
+          set: {
+            ...(updates.name && { name: updates.name }),
+            ...(updates.email && { email: updates.email }),
+            ...(updates.role && { role: updates.role }),
+            ...(updates.managerId !== undefined && { managerId: updates.managerId }),
+            ...(updates.isStaff !== undefined && { isStaff: updates.isStaff }),
+            ...(updates.isActive !== undefined && { isActive: updates.isActive }),
+          }
         }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to delete user";
-        setError(errorMessage);
-        console.error("Error deleting user:", err);
-        return false;
-      } finally {
-        setLoading(false);
+      });
+
+      if (result.data?.updateUserById) {
+        toast.success("User updated successfully");
+        await refetchUsers();
+        return result.data.updateUserById;
       }
-    },
-    [makeRequest]
-  );
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("Failed to update user");
+      throw error;
+    }
+    return null;
+  }, [updateUserMutation, refetchUsers]);
 
-  // Clear error state
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
+  const updateUserRole = useCallback(async (userId: string, newRole: string) => {
+    try {
+      const result = await updateUserMutation({
+        variables: { 
+          id: userId, 
+          set: { role: newRole }
+        }
+      });
 
-  // Utility functions
-  const canAssignRole = useCallback(
-    (targetRole: string): boolean => {
-      if (!currentUserRole) return false;
-
-      // Role hierarchy levels
-      const roleHierarchy: Record<string, number> = {
-        developer: 5, // Developers
-        org_admin: 4, // Standard Admins
-        manager: 3,
-        consultant: 2,
-        viewer: 1,
-      };
-
-      const currentLevel = roleHierarchy[currentUserRole] || 0;
-      const targetLevel = roleHierarchy[targetRole] || 0;
-
-      // Developers (developer) and Standard Admins (org_admin) can assign any role
-      if (currentUserRole === "developer" || currentUserRole === "org_admin")
-        return true;
-
-      // Managers can assign consultant and viewer roles
-      if (
-        currentUserRole === "manager" &&
-        (targetRole === "consultant" || targetRole === "viewer")
-      ) {
-        return true;
+      if (result.data?.updateUserById) {
+        toast.success(`User role updated to ${newRole}`);
+        await refetchUsers();
+        return result.data.updateUserById;
       }
+    } catch (error) {
+      console.error("Error updating user role:", error);
+      toast.error("Failed to update user role");
+      throw error;
+    }
+    return null;
+  }, [updateUserMutation, refetchUsers]);
 
-      return currentLevel > targetLevel;
-    },
-    [currentUserRole]
-  );
+  const deleteUser = useCallback(async (userId: string) => {
+    try {
+      const result = await deactivateUserMutation({
+        variables: { id: userId }
+      });
 
-  const canEditUser = useCallback(
-    (user: User): boolean => {
-      if (!permissions || !userId) return false;
-
-      // Users can edit their own profile
-      if (user.clerkUserId === userId) return true;
-
-      // Admins and managers can edit others
-      return permissions.canManageUsers;
-    },
-    [permissions, userId]
-  );
-
-  const canDeleteUser = useCallback(
-    (user: User): boolean => {
-      if (!permissions || !userId) return false;
-
-      // Cannot delete yourself
-      if (user.clerkUserId === userId) return false;
-
-      // Only admins can delete other admins
-      if (user.role === "org_admin" && currentUserRole !== "org_admin")
-        return false;
-
-      // Must have user management permissions
-      return permissions.canManageUsers;
-    },
-    [permissions, userId, currentUserRole]
-  );
+      if (result.data?.updateUserById) {
+        toast.success("User deactivated successfully");
+        await refetchUsers();
+        return result.data.updateUserById;
+      }
+    } catch (error) {
+      console.error("Error deactivating user:", error);
+      toast.error("Failed to deactivate user");
+      throw error;
+    }
+    return null;
+  }, [deactivateUserMutation, refetchUsers]);
 
   return {
     // State
@@ -435,17 +235,16 @@ export function useUserManagement(): UseUserManagementReturn {
     permissions,
     currentUserRole,
     loading,
-    error,
+    error: null,
 
     // Actions
     fetchUsers,
-    fetchUserById,
-    createUser,
     updateUser,
     deleteUser,
-    clearError,
+    createUser,
+    updateUserRole,
 
-    // Utility
+    // Permissions
     canAssignRole,
     canEditUser,
     canDeleteUser,

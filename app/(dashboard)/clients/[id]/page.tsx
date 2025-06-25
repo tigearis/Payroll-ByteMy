@@ -87,7 +87,7 @@ import {
   UpdateClientStatusDocument,
   ArchiveClientDocument,
 } from "@/domains/clients/graphql/generated/graphql";
-import { type Payrolls } from "@/domains/payrolls/graphql/generated/graphql";
+import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import { useSmartPolling } from "@/hooks/use-polling";
 
@@ -277,7 +277,7 @@ export default function ClientDetailPage() {
     );
   }
 
-  const client = data?.client;
+  const client = data?.clientById;
 
   if (!client) {
     return (
@@ -308,7 +308,6 @@ export default function ClientDetailPage() {
     }).format(amount || 0);
   };
 
-
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "active":
@@ -336,13 +335,15 @@ export default function ClientDetailPage() {
   };
 
   // Transform payroll data (same as payrolls page)
-  const transformPayrollData = (payrolls: Payrolls[]) => {
-    return payrolls.map((payroll) => {
+  const transformPayrollData = (payrolls: PayrollListItemFragment[]) => {
+    return payrolls.map(payroll => {
       // PayrollDates don't have employeeCount - use payroll's employeeCount directly
       const payrollDatesTotal = 0;
 
       const totalEmployees =
-        payrollDatesTotal > 0 ? payrollDatesTotal : payroll.employeeCount || 0;
+        payrollDatesTotal > 0
+          ? payrollDatesTotal
+          : (payroll as any).employeeCount || 0;
 
       return {
         ...payroll,
@@ -350,17 +351,25 @@ export default function ClientDetailPage() {
         payrollSchedule: formatPayrollCycle(payroll),
         priority:
           totalEmployees > 50 ? "high" : totalEmployees > 20 ? "medium" : "low",
-        progress: getStatusConfig(payroll.status || "Implementation").progress,
-        lastUpdated: new Date(payroll.updatedAt || payroll.createdAt || new Date()),
-        lastUpdatedBy: payroll.backupConsultant?.name || "System",
+        progress: getStatusConfig((payroll as any).status || "Implementation")
+          .progress,
+        lastUpdated: new Date(
+          payroll.updatedAt || payroll.createdAt || new Date()
+        ),
+        // Store backup consultant name for easy access in UI
+        backupConsultantName:
+          (payroll as any).backupConsultant?.name || "Unassigned",
       };
     });
   };
 
   // Handle payroll selection
-  const handleSelectAll = (checked: boolean, payrolls: Payrolls[]) => {
+  const handleSelectAll = (
+    checked: boolean,
+    payrolls: PayrollListItemFragment[]
+  ) => {
     if (checked) {
-      setSelectedPayrolls(payrolls.map((p) => p.id));
+      setSelectedPayrolls(payrolls.map(p => (p as any).id));
     } else {
       setSelectedPayrolls([]);
     }
@@ -385,7 +394,7 @@ export default function ClientDetailPage() {
   // Handle opening edit dialog
   const handleEditClient = () => {
     if (!client) return;
-    
+
     setEditFormData({
       name: (client as any).name || "",
       contact_person: (client as any).contactPerson || "",
@@ -840,7 +849,7 @@ export default function ClientDetailPage() {
                                     </Link>
                                   </div>
                                 </TableCell>
-                                
+
                                 {/* Status */}
                                 <TableCell>
                                   <Badge className={statusConfig.color}>
@@ -848,7 +857,7 @@ export default function ClientDetailPage() {
                                     {payroll.status || "Implementation"}
                                   </Badge>
                                 </TableCell>
-                                
+
                                 {/* Payroll Schedule */}
                                 <TableCell>
                                   <div className="flex items-center gap-2">
@@ -858,7 +867,7 @@ export default function ClientDetailPage() {
                                     </span>
                                   </div>
                                 </TableCell>
-                                
+
                                 {/* Employees */}
                                 <TableCell>
                                   <div className="flex items-center gap-2">
@@ -872,27 +881,29 @@ export default function ClientDetailPage() {
                                     </span>
                                   </div>
                                 </TableCell>
-                                
+
                                 {/* Consultant */}
                                 <TableCell>
                                   <div className="flex items-center gap-2">
                                     <UserCheck className="w-4 h-4 text-gray-400" />
                                     <span>
-                                      {payroll.primaryConsultant?.name || "Unassigned"}
+                                      {payroll.primaryConsultant?.name ||
+                                        "Unassigned"}
                                     </span>
                                   </div>
                                 </TableCell>
-                                
+
                                 {/* Backup Consultant */}
                                 <TableCell>
                                   <div className="flex items-center gap-2">
                                     <UserCheck className="w-4 h-4 text-gray-500" />
                                     <span>
-                                      {payroll.backupConsultant?.name || "Unassigned"}
+                                      {payroll.backupConsultant?.name ||
+                                        "Unassigned"}
                                     </span>
                                   </div>
                                 </TableCell>
-                                
+
                                 {/* Manager */}
                                 <TableCell>
                                   <div className="flex items-center gap-2">

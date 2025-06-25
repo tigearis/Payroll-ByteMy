@@ -1,11 +1,34 @@
 table:
   name: billing_items
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    invoice_id:
+      custom_name: invoiceId
+    payroll_id:
+      custom_name: payrollId
+  custom_column_names:
+    created_at: createdAt
+    invoice_id: invoiceId
+    payroll_id: payrollId
+  custom_name: billingItems
+  custom_root_fields:
+    delete: bulkDeleteBillingItems
+    delete_by_pk: deleteBillingItemById
+    insert: bulkInsertBillingItems
+    insert_one: insertBillingItem
+    select: billingItems
+    select_aggregate: billingItemsAggregate
+    select_by_pk: billingItemById
+    update: bulkUpdateBillingItems
+    update_by_pk: updateBillingItemById
 object_relationships:
-  - name: invoice_reference
+  - name: relatedInvoice
     using:
       foreign_key_constraint_on: invoice_id
-  - name: payroll
+  - name: relatedPayroll
     using:
       foreign_key_constraint_on: payroll_id
 insert_permissions:
@@ -63,3 +86,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

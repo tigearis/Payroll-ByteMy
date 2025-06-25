@@ -210,7 +210,7 @@ class UnifiedAuditLogger {
           ...(entry.entityId && { resourceId: entry.entityId }),
           ...(entry.previousValues && { oldValues: entry.previousValues as any }),
           ...(entry.newValues && { newValues: entry.newValues as any }),
-          request_id: entry.requestId,
+          requestId: entry.requestId,
           success: entry.success,
           ...(entry.errorMessage && { error_message: entry.errorMessage }),
           ...(entry.userAgent && { userAgent: entry.userAgent }),

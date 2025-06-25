@@ -287,6 +287,9 @@ const generatePerDomain = domains
           // Domain-specific metadata for runtime security
           domainName: domain.name,
           securityLevel: domain.securityLevel,
+          // Only generate types for operations in this domain to prevent duplicates
+          onlyOperationTypes: true,
+          skipTypename: false,
         },
       };
 
@@ -318,13 +321,17 @@ const generatePerDomain = domains
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: {
-    [HASURA_URL]: {
-      headers: {
-        "x-hasura-admin-secret": HASURA_SECRET,
+  schema: [
+    {
+      [HASURA_URL]: {
+        headers: {
+          "x-hasura-admin-secret": HASURA_SECRET,
+        },
       },
     },
-  },
+    // Include Hasura actions.graphql for proper action type generation
+    "./hasura/metadata/actions.graphql",
+  ],
   generates: {
     // Base types with SOC2 compliance header - single source of truth
     "./shared/types/generated/graphql.ts": {
@@ -357,19 +364,17 @@ const config: CodegenConfig = {
       plugins: [
         {
           add: {
-            content:
-              generateSOC2Header() +
-              "\n" +
-              [
-                "/* ",
-                " * DOMAIN: SHARED",
-                " * SECURITY LEVEL: LOW",
-                " * ACCESS CONTROLS: Basic Authentication",
-                " * AUTO-EXPORTED: This file is automatically exported from domain index",
-                " */",
-                "",
-                "",
-              ].join("\n"),
+            content: [
+              generateSOC2Header(),
+              "/* ",
+              " * DOMAIN: SHARED",
+              " * SECURITY LEVEL: LOW",
+              " * ACCESS CONTROLS: Basic Authentication",
+              " * AUTO-EXPORTED: This file is automatically exported from domain index",
+              " */",
+              "",
+              "",
+            ].join("\n"),
           },
         },
       ],
@@ -377,6 +382,9 @@ const config: CodegenConfig = {
         ...sharedConfig,
         domainName: "shared",
         securityLevel: "LOW",
+        // Only generate types for operations in shared domain
+        onlyOperationTypes: true,
+        skipTypename: false,
       },
       presetConfig: {
         // Don't generate the default index.ts since we have a custom one below
@@ -392,39 +400,39 @@ const config: CodegenConfig = {
       plugins: [
         {
           add: {
-            placement: "content",
-            content: `/* AUTO-GENERATED - DO NOT EDIT MANUALLY
- *
- * SOC2 Compliant GraphQL Operations
- * Security Classifications Applied:
- * - CRITICAL: Auth, user roles, financial data - Requires admin access + MFA
- * - HIGH: PII, client data, employee info - Requires role-based access
- * - MEDIUM: Internal business data - Requires authentication
- * - LOW: Public/aggregate data - Basic access control
- *
- * Compliance Features:
- * ✓ Role-based access control (RBAC)
- * ✓ Audit logging integration
- * ✓ Data classification enforcement
- * ✓ Permission boundary validation
- * ✓ Automatic domain isolation and exports
- *
- * Generated: ${new Date().toISOString()}
- * Schema Version: Latest from Hasura
- * CodeGen Version: Unified v2.0
- */
-
-// Central export aggregator for GraphQL operations
-// GQL utilities and base types
-export * from './gql';
-export * from './graphql';
-
-// Domain-specific exports (import directly to avoid conflicts)
-// Example: import { GetCurrentUserDocument } from '../../../domains/users/graphql/generated/graphql';
-
-// Fragment masking utilities (if generated):
-// export * from './fragment-masking';
-`,
+            content: [
+              "/* AUTO-GENERATED - DO NOT EDIT MANUALLY",
+              " *",
+              " * SOC2 Compliant GraphQL Operations",
+              " * Security Classifications Applied:",
+              " * - CRITICAL: Auth, user roles, financial data - Requires admin access + MFA",
+              " * - HIGH: PII, client data, employee info - Requires role-based access",
+              " * - MEDIUM: Internal business data - Requires authentication",
+              " * - LOW: Public/aggregate data - Basic access control",
+              " *",
+              " * Compliance Features:",
+              " * ✓ Role-based access control (RBAC)",
+              " * ✓ Audit logging integration",
+              " * ✓ Data classification enforcement",
+              " * ✓ Permission boundary validation",
+              " * ✓ Automatic domain isolation and exports",
+              " *",
+              ` * Generated: ${new Date().toISOString()}`,
+              " * Schema Version: Latest from Hasura",
+              " * CodeGen Version: Unified v2.0",
+              " */",
+              "",
+              "// Central export aggregator for GraphQL operations",
+              "// GQL utilities and base types",
+              "export * from './gql';",
+              "export * from './graphql';",
+              "",
+              "// Domain-specific exports (import directly to avoid conflicts)",
+              "// Example: import { GetCurrentUserDocument } from '../../../domains/users/graphql/generated/graphql';",
+              "",
+              "// Fragment masking utilities (if generated):",
+              "// export * from './fragment-masking';",
+            ].join("\n"),
           },
         },
       ],
@@ -458,8 +466,8 @@ export * from './graphql';
       plugins: [
         {
           add: {
-            content: JSON.stringify(
-              {
+            content: (() => {
+              const reportData = {
                 generatedAt: new Date().toISOString(),
                 codegenVersion: "unified-v2.0",
                 domains: domains.map(d => ({
@@ -486,10 +494,9 @@ export * from './graphql';
                   securityClassification: true,
                   duplicateElimination: true,
                 },
-              },
-              null,
-              2
-            ),
+              };
+              return JSON.stringify(reportData, null, 2);
+            })(),
           },
         },
       ],

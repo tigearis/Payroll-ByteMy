@@ -1,11 +1,43 @@
 table:
   name: billing_event_log
   schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    created_by:
+      custom_name: createdBy
+    event_type:
+      custom_name: eventType
+    invoice_id:
+      custom_name: invoiceId
+  custom_column_names:
+    created_at: createdAt
+    created_by: createdBy
+    event_type: eventType
+    invoice_id: invoiceId
+  custom_name: billingEventLogs
+  custom_root_fields:
+    delete: bulkDeleteBillingEventLogs
+    delete_by_pk: deleteBillingEventLogById
+    insert: bulkInsertBillingEventLogs
+    insert_one: insertBillingEventLog
+    select: billingEventLogs
+    select_aggregate: billingEventLogsAggregate
+    select_by_pk: billingEventLogById
+    update: bulkUpdateBillingEventLogs
+    update_by_pk: updateBillingEventLogById
 object_relationships:
   - name: billingInvoice
     using:
-      foreign_key_constraint_on: invoice_id
-  - name: user
+      manual_configuration:
+        column_mapping:
+          invoice_id: id
+        insertion_order: null
+        remote_table:
+          name: billing_invoices
+          schema: public
+  - name: createdByUser
     using:
       foreign_key_constraint_on: created_by
 insert_permissions:
@@ -79,3 +111,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

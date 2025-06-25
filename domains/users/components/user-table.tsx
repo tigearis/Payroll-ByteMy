@@ -189,11 +189,11 @@ export function UserTable({
                 </Badge>
               </TableCell>
               <TableCell>
-                {user.manager ? (
+                {user.managerUser ? (
                   <div className="text-sm">
-                    <div className="font-medium">{user.manager.name}</div>
+                    <div className="font-medium">{user.managerUser.name}</div>
                     <div className="text-muted-foreground">
-                      {user.manager.email}
+                      {user.managerUser.email}
                     </div>
                   </div>
                 ) : (
@@ -221,7 +221,7 @@ export function UserTable({
               <TableCell>
                 <div className="text-sm flex items-center text-muted-foreground">
                   <Calendar className="h-3 w-3 mr-1" />
-                  {formatDate(user.createdAt)}
+                  {user.createdAt ? formatDate(user.createdAt) : '-'}
                 </div>
               </TableCell>
               <TableCell>
@@ -342,7 +342,7 @@ export function UserTable({
                   <div className="space-y-1 text-sm">
                     <div className="flex items-center">
                       <Calendar className="mr-2 h-4 w-4" />
-                      Joined {formatDate(selectedUser.createdAt)}
+                      Joined {selectedUser.createdAt ? formatDate(selectedUser.createdAt) : 'Unknown'}
                     </div>
                     <div className="flex items-center">
                       <Clock className="mr-2 h-4 w-4" />
@@ -374,13 +374,13 @@ export function UserTable({
                 </div>
               </div>
 
-              {selectedUser.manager && (
+              {selectedUser.managerUser && (
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium">Manager</h4>
                   <div className="flex items-center space-x-2">
                     <Avatar className="h-6 w-6">
                       <AvatarFallback className="text-xs">
-                        {selectedUser.manager.name
+                        {selectedUser.managerUser.name
                           .split(" ")
                           .map(n => n[0])
                           .join("")
@@ -389,10 +389,10 @@ export function UserTable({
                     </Avatar>
                     <div>
                       <div className="text-sm font-medium">
-                        {selectedUser.manager.name}
+                        {selectedUser.managerUser.name}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {selectedUser.manager.email}
+                        {selectedUser.managerUser.email}
                       </div>
                     </div>
                   </div>

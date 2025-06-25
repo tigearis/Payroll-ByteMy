@@ -1,7 +1,8 @@
 // app/(dashboard)/clients/page.tsx
 "use client";
 
-import { useQuery } from "@apollo/client";
+import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
+import { useStrategicQuery } from "@/hooks/use-strategic-query";
 import { useUser } from "@clerk/nextjs";
 import {
   PlusCircle,
@@ -124,7 +125,7 @@ function MultiSelect({
   );
 }
 
-export default function ClientsPage() {
+function ClientsPage() {
   const { user, isLoaded: userLoaded } = useUser();
   const { hasPermission, userRole, isLoading } = useUserRole();
   const canCreateClient = hasPermission("custom:client:write");
@@ -141,15 +142,14 @@ export default function ClientsPage() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // GraphQL operations - only execute when user is loaded and authenticated
-  const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(
+  const { loading, error, data, refetch, startPolling, stopPolling } = useStrategicQuery(
     GetAllClientsPaginatedDocument,
+    "clients",
     {
       variables: {
         limit: 1000, // Fetch all clients for now
         offset: 0,
       },
-      fetchPolicy: "cache-and-network",
-      nextFetchPolicy: "cache-first",
       pollInterval: 60000,
       skip: !userLoaded || !user, // Skip query if user is not loaded or not authenticated
     }
@@ -770,5 +770,14 @@ export default function ClientsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// Export component wrapped with GraphQL error boundary
+export default function ClientsPageWithErrorBoundary() {
+  return (
+    <GraphQLErrorBoundary>
+      <ClientsPage />
+    </GraphQLErrorBoundary>
   );
 }

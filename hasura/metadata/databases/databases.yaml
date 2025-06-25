@@ -6,5 +6,7 @@
         from_env: PG_DATABASE_URL
       isolation_level: read-committed
       use_prepared_statements: true
+  customization:
+    naming_convention: graphql-default
   tables: "!include default/tables/tables.yaml"
   functions: "!include default/functions/functions.yaml"

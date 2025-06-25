@@ -69,9 +69,9 @@ export type PayrollStatus = "Active" | "Inactive" | "Implementation";
 
 // Payroll Dates Interface (Matches Hasura Schema)
 export interface PayrollDate {
-  original_eft_date: string;
-  adjusted_eft_date: string;
-  processing_date: string;
+  originalEftDate: string;
+  adjustedEftDate: string;
+  processingDate: string;
   notes?: string;
 }
 
@@ -80,15 +80,15 @@ export interface Payroll {
   id: string;
   name: string;
   client: { name: string };
-  payroll_cycle?: { name: string };
-  payroll_date_type?: { name: string };
-  processing_days_before_eft: number;
-  payroll_system?: string;
+  payrollCycle?: { name: string };
+  payrollDateType?: { name: string };
+  processingDaysBeforeEft: number;
+  payrollSystem?: string;
   date_value?: number;
   status: PayrollStatus;
   payroll_dates?: PayrollDate[]; // ✅ Updated type reference
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Payroll Input for API Requests
@@ -110,18 +110,18 @@ export interface PayrollInput {
 export interface PayrollDB {
   id: string;
   name: string;
-  client_id: string;
-  cycle_id: string;
-  date_type_id: string;
-  date_value?: number;
-  primary_consultant_id?: string;
-  backup_consultant_id?: string;
-  manager_id?: string;
-  processing_days_before_eft: number;
-  payroll_system?: string;
+  clientId: string;
+  cycleId: string;
+  dateTypeId: string;
+  dateValue?: number;
+  primaryConsultantId?: string;
+  backupConsultantId?: string;
+  managerId?: string;
+  processingDaysBeforeEft: number;
+  payrollSystem?: string;
   status: PayrollStatus;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Notes for Payrolls or Clients
@@ -136,25 +136,25 @@ export interface NoteInput {
 // Notes in Database
 export interface Note {
   id: string;
-  entity_type: "payroll" | "client";
-  entity_id: string;
-  user_id?: string;
+  entityType: "payroll" | "client";
+  entityId: string;
+  userId?: string;
   content: string;
-  is_important: boolean;
-  created_at: string;
-  updated_at: string;
+  isImportant: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Client Interface
 export interface Client {
   id: string;
   name: string;
-  contact_person?: string;
-  contact_email?: string;
-  contact_phone?: string;
+  contactPerson?: string;
+  contactEmail?: string;
+  contactPhone?: string;
   active: boolean;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Staff Interface
@@ -165,8 +165,8 @@ export interface StaffMember {
   phone?: string;
   position?: string;
   active: boolean;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // User Interface (For Authentication & Role Management)

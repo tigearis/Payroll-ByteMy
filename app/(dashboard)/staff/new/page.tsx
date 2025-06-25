@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { CreateStaffDirectDocument } from "@/domains/users/graphql/generated/graphql";
+import { CreateUserDocument } from "@/domains/users/graphql/generated/graphql";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -36,7 +36,7 @@ export default function CreateUserPage() {
   const [error, setError] = useState("");
 
   // Use GraphQL mutation directly (like payrolls do)
-  const [createStaff, { loading }] = useMutation(CreateStaffDirectDocument, {
+  const [createStaff, { loading }] = useMutation(CreateUserDocument, {
     onCompleted: data => {
       toast.success(
         `Staff member ${form.firstName} ${form.lastName} created successfully!`

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { RegeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+// Note: RegeneratePayrollDatesDocument requires custom Hasura action implementation
 import { adminOperationsService } from "@/lib/apollo/admin-operations";
 import { withAuth, checkRateLimit } from "@/lib/auth/api-auth";
+import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 export const POST = withAuth(
   async (request: NextRequest, session) => {
@@ -48,7 +49,7 @@ export const POST = withAuth(
 
       // Use admin operations service to regenerate dates
       const result = await adminOperationsService.executeAdminMutation(
-        RegeneratePayrollDatesDocument,
+        GeneratePayrollDatesQueryDocument,
         { payrollId, startDate, endDate }
       );
 

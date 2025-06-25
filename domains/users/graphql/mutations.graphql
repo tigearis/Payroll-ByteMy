@@ -1,101 +1,56 @@
 # Users Domain Mutations
 # Security Classification: CRITICAL - Employee PII and authentication data
 
-mutation CreateUser($object: users_insert_input!) {
+mutation CreateUser($object: usersInsertInput!) {
   insertUser(object: $object) {
-    id
-    name
-    email
-    role
+    ...UsersUserCore
     username
     image
-    isStaff
-    isActive
     managerId
-    clerkUserId
   }
 }
 
-mutation UpdateUser($id: uuid!, $set: users_set_input!) {
-  updateUser(pk_columns: { id: $id }, _set: $set) {
-    id
-    name
-    email
-    role
+mutation UpdateUser($id: uuid!, $set: usersSetInput!) {
+  updateUserById(pkColumns: { id: $id }, _set: $set) {
+    ...UsersUserCore
     username
     image
-    isStaff
-    isActive
     managerId
-    clerkUserId
   }
 }
 
 mutation DeleteUser($id: uuid!) {
-  updateUser(
-    pk_columns: { id: $id }
+  updateUserById(
+    pkColumns: { id: $id }
     _set: { isActive: false, deactivatedAt: "now()" }
   ) {
-    id
-    name
-    email
-    isActive
-    deactivatedAt
+    ...UserCore
   }
 }
 
-# Staff mutations (for compatibility with existing code)
-mutation UpdateStaff($id: uuid!, $set: users_set_input!) {
-  updateUser(pk_columns: { id: $id }, _set: $set) {
-    id
-    name
-    email
-    role
-    username
-    image
-    isStaff
-    isActive
-    managerId
-    clerkUserId
-  }
-}
-
-mutation DeleteStaff($id: uuid!) {
-  updateUser(
-    pk_columns: { id: $id }
-    _set: { isActive: false, deactivatedAt: "now()" }
+mutation UpdateUserRole($id: uuid!, $role: user_role!) {
+  updateUserById(
+    pkColumns: { id: $id }
+    _set: { role: $role }
   ) {
-    id
-    name
-    email
-    isActive
-    deactivatedAt
+    ...UserCore
   }
 }
 
-# API Route Mutations - Migrated from inline GraphQL
-
-mutation UpdateUserRoleFromClerk($clerkId: String!, $role: user_role!) {
-  updateUsers(
-    where: { clerkUserId: { _eq: $clerkId } }
-    _set: { role: $role, updatedAt: "now()" }
-  ) {
-    affected_rows
+mutation BulkUpdateUsers($where: usersBoolExp!, $set: usersSetInput!) {
+  bulkUpdateUsers(where: $where, _set: $set) {
     returning {
-      id
-      name
-      email
-      role
-      clerkUserId
+      ...UserCore
     }
+    affectedRows
   }
 }
 
-mutation CreateUserInDatabase(
+mutation CreateUserFromClerk(
   $clerkId: String!
   $name: String!
   $email: String!
-  $role: user_role = viewer
+  $role: user_role = "viewer"
   $isStaff: Boolean = false
   $managerId: uuid
   $image: String
@@ -110,21 +65,12 @@ mutation CreateUserInDatabase(
       managerId: $managerId
       image: $image
     }
-    on_conflict: {
+    onConflict: {
       constraint: users_clerk_user_id_key
-      update_columns: [name, email, image, updatedAt]
+      updateColumns: [name, email, image, updatedAt]
     }
   ) {
-    id
-    name
-    email
-    role
-    clerkUserId
-    isStaff
-    managerId
-    image
-    createdAt
-    updatedAt
+    ...UserCore
   }
 }
 
@@ -132,135 +78,77 @@ mutation CreateUserByEmail(
   $name: String!
   $email: String!
   $role: user_role!
-  $isStaff: Boolean!
   $managerId: uuid
-  $clerkUserId: String
 ) {
   insertUser(
     object: {
       name: $name
       email: $email
       role: $role
-      isStaff: $isStaff
       managerId: $managerId
-      clerkUserId: $clerkUserId
-    }
-    on_conflict: {
-      constraint: users_email_key
-      update_columns: [name, role, isStaff, managerId, updatedAt]
+      isStaff: true
+      isActive: true
     }
   ) {
-    id
-    name
-    email
-    role
-    isStaff
-    managerId
-    clerkUserId
-    createdAt
-    updatedAt
+    ...UserCore
   }
 }
 
-# Migrated from inline operations - Priority 1 fixes
-
-mutation CreateStaffDirect($object: users_insert_input!) {
-  insertUser(object: $object) {
-    id
-    name
-    email
-    role
-  }
-}
-
-mutation UpdateUserProfile($id: uuid!, $set: users_set_input!) {
-  updateUser(pk_columns: { id: $id }, _set: $set) {
-    id
-    name
-    email
-    username
-    image
-    role
-    isStaff
-    isActive
-    managerId
-    clerkUserId
-    createdAt
-    updatedAt
-  }
-}
-
-# User deletion operations - migrated from app/api/staff/delete/route.ts
-
-mutation DeactivateUser($id: uuid!, $deactivatedBy: String!) {
-  updateUser(
-    pk_columns: { id: $id }
-    _set: {
-      isActive: false
-      isStaff: false
-      role: "viewer"
-      deactivatedAt: "now()"
-      deactivatedBy: $deactivatedBy
-      updatedAt: "now()"
-    }
+mutation UpdateUserProfile($id: uuid!, $name: String, $image: String) {
+  updateUserById(
+    pkColumns: { id: $id }
+    _set: { name: $name, image: $image }
   ) {
-    id
-    name
-    email
-    role
-    clerkUserId
-    isStaff
-    isActive
-    deactivatedAt
-    deactivatedBy
-    manager {
-      id
-      name
-      email
-    }
+    ...UserWithProfile
   }
 }
 
+mutation DeactivateUser($id: uuid!) {
+  updateUserById(
+    pkColumns: { id: $id }
+    _set: { isActive: false, deactivatedAt: "now()" }
+  ) {
+    ...UserCore
+  }
+}
+
+mutation ReactivateUser($id: uuid!) {
+  updateUserById(
+    pkColumns: { id: $id }
+    _set: { isActive: true, deactivatedAt: null }
+  ) {
+    ...UserCore
+  }
+}
+
+# Hard delete mutation (use with caution)
 mutation HardDeleteUser($id: uuid!) {
-  deleteUser(id: $id) {
+  deleteUserById(id: $id) {
     id
     name
     email
-    role
-    clerkUserId
   }
 }
 
-# Settings page operations - migrated from app/(dashboard)/settings/account/page.tsx
-
-mutation UpdateUserProfileSettings(
-  $id: uuid!
-  $name: String
-  $image: String
-) {
-  updateUser(
-    pk_columns: { id: $id }
-    _set: { name: $name, image: $image, updatedAt: "now()" }
-  ) {
-    id
-    name
-    image
-    updatedAt
-  }
-}
-
-# Migrated from app/api/staff/update-role/route.ts
-
+# Staff role management
 mutation UpdateStaffRole($id: uuid!, $role: user_role!) {
-  updateUser(
-    pk_columns: { id: $id }
-    _set: { role: $role, updatedAt: "now()" }
+  updateUserById(
+    pkColumns: { id: $id }
+    _set: { role: $role }
   ) {
-    id
-    name
-    email
-    role
-    clerkUserId
-    updatedAt
+    ...UserCore
+  }
+}
+
+# Clerk integration mutations
+mutation UpdateUserRoleFromClerk($clerkUserId: String!, $role: user_role!) {
+  bulkUpdateUsers(
+    where: { clerkUserId: { _eq: $clerkUserId } }
+    _set: { role: $role }
+  ) {
+    returning {
+      ...UserCore
+    }
+    affectedRows
   }
 }

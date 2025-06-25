@@ -80,8 +80,8 @@ export function useCurrentUser() {
       // Enhanced error handling and debugging
       onCompleted: result => {
         console.log("🔍 useCurrentUser: GraphQL query completed", {
-          hasUser: !!result?.user,
-          userData: result?.user,
+          hasUser: !!result?.userById,
+          userData: result?.userById,
           databaseUserId,
         });
       },
@@ -97,7 +97,7 @@ export function useCurrentUser() {
     }
   );
 
-  const currentUser = data?.user;
+  const currentUser = data?.userById;
   const isReady = isLoaded && userLoaded && !loading;
 
   return {

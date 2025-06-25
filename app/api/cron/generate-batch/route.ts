@@ -5,7 +5,7 @@ import { format, addMonths } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client"; // Updated import to use the unified client
-import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated";
+import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 export async function POST(req: NextRequest) {
   try {

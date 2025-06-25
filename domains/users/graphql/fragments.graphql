@@ -22,23 +22,25 @@ fragment UserWithProfile on users {
 
 fragment UserWithRoles on users {
   ...UsersUserCore
-  userRoles {
+  assignedRoles {
     id
-    role {
+    roleId
+    assignedRole {
       id
       name
       displayName
       description
       priority
       isSystemRole
-      rolePermissions {
+      assignedPermissions {
         id
         conditions
-        permission {
+        permissionId
+        grantedPermission {
           id
           action
           description
-          resource {
+          relatedResource {
             id
             name
             displayName
@@ -52,18 +54,12 @@ fragment UserWithRoles on users {
 
 fragment UserWithTeam on users {
   ...UsersUserCore
-  teamMembers {
-    id
-    name
-    email
-    isActive
-    role
-  }
+  # Team members not available in schema - removed
 }
 
 fragment UserWithWorkSchedule on users {
   ...UsersUserCore
-  workSchedules {
+  userWorkSchedules {
     id
     workDay
     workHours
@@ -78,9 +74,10 @@ fragment UserWithPayrolls on users {
 
 fragment UserWithAllRelations on users {
   ...UserWithProfile
-  userRoles {
+  assignedRoles {
     id
-    role {
+    roleId
+    assignedRole {
       id
       name
       displayName
@@ -88,13 +85,8 @@ fragment UserWithAllRelations on users {
       priority
     }
   }
-  teamMembers {
-    id
-    name
-    email
-    role
-  }
-  workSchedules {
+  # Team members not available in schema - removed
+  userWorkSchedules {
     id
     workDay
     workHours
@@ -146,8 +138,9 @@ fragment UserRoleInfo on users {
   email
   role
   isActive
-  userRoles {
-    role {
+  assignedRoles {
+    roleId
+    assignedRole {
       name
       description
     }
@@ -158,12 +151,14 @@ fragment UserPermissionsInfo on users {
   id
   name
   role
-  userRoles {
-    role {
+  assignedRoles {
+    roleId
+    assignedRole {
       name
-      rolePermissions {
-        permission {
-          resource {
+      assignedPermissions {
+        permissionId
+        grantedPermission {
+          relatedResource {
             name
           }
           action
@@ -194,7 +189,7 @@ fragment UserListItem on users {
 
 fragment UserDashboardCard on users {
   ...UserSummary
-  manager {
+  managerUser {
     id
     name
   }
@@ -203,20 +198,23 @@ fragment UserDashboardCard on users {
 fragment UserTeamSummary on users {
   ...UserSummary
   email
-  manager {
+  managerUser {
     id
     name
   }
-  directReports {
-    id
-    name
-    role
-    isActive
-  }
+  # directReports not available in schema - removed
 }
 
 fragment UserMinimal on users {
   id
   name
   role
+}
+
+fragment UserTableRow on users {
+  ...UserListItem
+  managerUser {
+    id
+    name
+  }
 }

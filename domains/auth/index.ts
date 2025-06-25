@@ -15,7 +15,7 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-24T11:35:03.174Z
+ * Generated: 2025-06-25T09:22:09.008Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v2.0
  */
@@ -33,6 +33,11 @@
 
 // Export domain-specific GraphQL operations and types
 export * from './graphql/generated/graphql';
+
+// Export invitation management hooks
+export { useInvitationManagement } from './hooks/use-invitation-management';
+export { useInvitationAcceptance } from './hooks/use-invitation-acceptance';
+export { useInvitationResend } from './hooks/use-invitation-resend';
 
 // Note: Fragment masking and gql utilities are exported from shared/types/generated
 // Import those directly when needed to avoid conflicts

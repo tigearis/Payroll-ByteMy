@@ -17,7 +17,7 @@ import {
   GetUserByClerkIdDocument,
   GetUserByEmailDocument,
 } from "@/domains/users/graphql/generated/graphql";
-import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 // Define allowed roles for admin operations
 const ADMIN_ROLES = ["developer", "org_admin"];
@@ -264,7 +264,7 @@ export class AdminOperationsService {
 
     // Then generate new dates using the generated document
     const { data: generateData, errors: generateErrors } =
-      await this.executeAdminQuery(GeneratePayrollDatesQueryDocument, {
+      await this.executeAdminQuery(GeneratePayrollDatesDocument, {
         payrollId,
         startDate,
         endDate,

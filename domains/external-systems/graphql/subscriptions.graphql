@@ -1,16 +1,147 @@
 # External Systems Domain Subscriptions
+# Security Classification: MEDIUM - Integration and configuration data
+# SOC2 Compliance: Real-time monitoring with audit logging
 
-subscription SubscribeToExternalSystems {
-  external_systems(order_by: { name: asc }) {
-    ...ExternalSystemCore
+# Core external system subscriptions
+subscription ExternalSystemsUpdates {
+  externalSystems(orderBy: { updatedAt: DESC }) {
+    ...ExternalSystemMonitoring
   }
 }
 
-subscription SubscribeToClientExternalSystems($clientId: uuid!) {
-  client_external_systems(
-    where: { client_id: { _eq: $clientId } }
-    order_by: { created_at: desc }
+subscription ExternalSystemUpdates($id: uuid!) {
+  externalSystems(where: { id: { _eq: $id } }) {
+    ...ExternalSystemComplete
+  }
+}
+
+# Client external system subscriptions
+subscription ClientExternalSystemsUpdates($clientId: uuid!) {
+  clientExternalSystems(
+    where: { clientId: { _eq: $clientId } }
+    orderBy: { updatedAt: DESC }
   ) {
     ...ClientExternalSystemWithRelations
+  }
+}
+
+subscription ClientSystemUpdates($id: uuid!) {
+  clientExternalSystems(where: { id: { _eq: $id } }) {
+    ...ClientExternalSystemComplete
+  }
+}
+
+subscription SystemClientConnectionsUpdates($externalSystemId: uuid!) {
+  clientExternalSystems(
+    where: { externalSystemId: { _eq: $externalSystemId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+# Dashboard and overview subscriptions
+subscription ExternalSystemsCountUpdates {
+  externalSystemsAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription ClientSystemConnectionsCountUpdates {
+  clientExternalSystemsAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription RecentExternalSystemsUpdates {
+  externalSystems(
+    orderBy: { createdAt: DESC }
+    limit: 5
+  ) {
+    ...ExternalSystemDashboardCard
+  }
+}
+
+subscription SystemIntegrationOverviewUpdates {
+  externalSystems(orderBy: { name: ASC }) {
+    ...ExternalSystemMonitoring
+  }
+}
+
+subscription SystemUsageStatsUpdates {
+  externalSystems {
+    id
+    name
+    description
+    totalClients: clientExternalSystemsAggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Audit and compliance subscriptions
+subscription ExternalSystemAuditUpdates {
+  externalSystems(
+    where: {
+      updatedAt: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...ExternalSystemForAudit
+  }
+}
+
+subscription ClientSystemAuditUpdates {
+  clientExternalSystems(
+    where: {
+      updatedAt: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...ClientExternalSystemForAudit
+  }
+}
+
+subscription SystemActivityAuditUpdates($externalSystemId: uuid!) {
+  clientExternalSystems(
+    where: { 
+      externalSystemId: { _eq: $externalSystemId }
+      updatedAt: { _gte: "now() - interval '1 hour'" }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...ClientExternalSystemForAudit
+  }
+}
+
+subscription NewSystemConnectionsUpdates {
+  clientExternalSystems(
+    where: { createdAt: { _gte: "now() - interval '5 minutes'" } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+# Real-time system metrics subscriptions
+subscription SystemCountMetricsUpdates {
+  externalSystemsAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription ConnectionCountMetricsUpdates {
+  clientExternalSystemsAggregate {
+    aggregate {
+      count
+    }
   }
 }

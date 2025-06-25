@@ -36,8 +36,8 @@ mutation UpdateClient(
   $postalCode: String
   $country: String
 ) {
-  updateClient(
-    pk_columns: { id: $id }
+  updateClientById(
+    pkColumns: { id: $id }
     _set: {
       name: $name
       contactEmail: $contactEmail
@@ -49,8 +49,8 @@ mutation UpdateClient(
 }
 
 mutation UpdateClientStatus($id: uuid!, $active: Boolean!) {
-  updateClient(
-    pk_columns: { id: $id }
+  updateClientById(
+    pkColumns: { id: $id }
     _set: { active: $active, updatedAt: "now()" }
   ) {
     ...ClientBasicInfo
@@ -58,8 +58,8 @@ mutation UpdateClientStatus($id: uuid!, $active: Boolean!) {
 }
 
 mutation DeactivateClient($id: uuid!) {
-  updateClient(
-    pk_columns: { id: $id }
+  updateClientById(
+    pkColumns: { id: $id }
     _set: { active: false, updatedAt: "now()" }
   ) {
     ...ClientBasicInfo
@@ -67,8 +67,8 @@ mutation DeactivateClient($id: uuid!) {
 }
 
 mutation ActivateClient($id: uuid!) {
-  updateClient(
-    pk_columns: { id: $id }
+  updateClientById(
+    pkColumns: { id: $id }
     _set: { active: true, updatedAt: "now()" }
   ) {
     ...ClientBasicInfo
@@ -77,8 +77,8 @@ mutation ActivateClient($id: uuid!) {
 
 # Soft delete - preserves audit trail
 mutation ArchiveClient($id: uuid!) {
-  updateClient(
-    pk_columns: { id: $id }
+  updateClientById(
+    pkColumns: { id: $id }
     _set: { active: false, updatedAt: "now()" }
   ) {
     id
@@ -88,11 +88,11 @@ mutation ArchiveClient($id: uuid!) {
 
 # Bulk operations for efficiency
 mutation BulkUpdateClientStatus($clientIds: [uuid!]!, $active: Boolean!) {
-  updateClients(
+  bulkUpdateClients(
     where: { id: { _in: $clientIds } }
     _set: { active: $active, updatedAt: "now()" }
   ) {
-    affected_rows
+    affectedRows
     returning {
       ...ClientBasicInfo
     }

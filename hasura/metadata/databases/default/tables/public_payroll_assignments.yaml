@@ -28,31 +28,32 @@ configuration:
     original_consultant_id: originalConsultantId
     payroll_date_id: payrollDateId
     updated_at: updatedAt
+  custom_name: payrollAssignments
   custom_root_fields:
-    delete: deletePayrollAssignments
-    delete_by_pk: deletePayrollAssignment
-    insert: insertPayrollAssignments
+    delete: bulkDeletePayrollAssignments
+    delete_by_pk: deletePayrollAssignmentById
+    insert: bulkInsertPayrollAssignments
     insert_one: insertPayrollAssignment
     select: payrollAssignments
     select_aggregate: payrollAssignmentsAggregate
-    select_by_pk: payrollAssignment
-    update: updatePayrollAssignments
-    update_by_pk: updatePayrollAssignment
+    select_by_pk: payrollAssignmentById
+    update: bulkUpdatePayrollAssignments
+    update_by_pk: updatePayrollAssignmentById
 object_relationships:
-  - name: payroll_date
-    using:
-      foreign_key_constraint_on: payroll_date_id
-  - name: user
+  - name: assignedByUser
     using:
       foreign_key_constraint_on: assigned_by
-  - name: userByConsultantId
+  - name: assignedConsultant
     using:
       foreign_key_constraint_on: consultant_id
-  - name: userByOriginalConsultantId
+  - name: originalConsultant
     using:
       foreign_key_constraint_on: original_consultant_id
+  - name: payrollDate
+    using:
+      foreign_key_constraint_on: payroll_date_id
 array_relationships:
-  - name: payroll_assignment_audits
+  - name: payrollAssignmentAudits
     using:
       foreign_key_constraint_on:
         column: assignment_id
@@ -193,3 +194,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Org admins can delete payroll assignments
+apollo_federation_config:
+  enable: v1

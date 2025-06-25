@@ -1,6 +1,41 @@
 table:
   name: holidays
   schema: public
+configuration:
+  column_config:
+    country_code:
+      custom_name: countryCode
+    created_at:
+      custom_name: createdAt
+    is_fixed:
+      custom_name: isFixed
+    is_global:
+      custom_name: isGlobal
+    launch_year:
+      custom_name: launchYear
+    local_name:
+      custom_name: localName
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    country_code: countryCode
+    created_at: createdAt
+    is_fixed: isFixed
+    is_global: isGlobal
+    launch_year: launchYear
+    local_name: localName
+    updated_at: updatedAt
+  custom_name: holidays
+  custom_root_fields:
+    delete: bulkDeleteHolidays
+    delete_by_pk: deleteHolidayById
+    insert: bulkInsertHolidays
+    insert_one: insertHoliday
+    select: holidays
+    select_aggregate: holidaysAggregate
+    select_by_pk: holidayById
+    update: bulkUpdateHolidays
+    update_by_pk: updateHolidayById
 insert_permissions:
   - role: developer
     permission:

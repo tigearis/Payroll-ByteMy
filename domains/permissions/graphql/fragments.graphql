@@ -1,24 +1,16 @@
 # Permissions Domain Fragments
 # Import shared fragments: ResourceCore, PermissionCore, RoleCore, UserRoleCore, RolePermissionCore
 
-fragment PermissionsPermissionWithResource on permissions {
-  ...PermissionCore
-  legacy_permission_name
-  resource {
-    ...ResourceCore
-  }
-}
-
 fragment RoleWithPermissions on roles {
   ...RoleCore
-  rolePermissions {
+  assignedPermissions {
     id
     conditions
-    permission {
-      ...PermissionsPermissionWithResource
+    grantedPermission {
+      ...PermissionWithResource
     }
   }
-  rolePermissions_aggregate {
+  assignedPermissionsAggregate {
     aggregate {
       count
     }
@@ -27,38 +19,47 @@ fragment RoleWithPermissions on roles {
 
 # RolePermissionCore and UserRoleCore now moved to shared/graphql/fragments.graphql
 
-fragment RolePermissionWithDetails on role_permissions {
-  ...RolePermissionCore
-  role {
+fragment RolePermissionWithDetails on rolePermissions {
+  id
+  roleId
+  permissionId
+  conditions
+  createdAt
+  updatedAt
+  grantedToRole {
     ...RoleCore
   }
-  permission {
-    ...PermissionsPermissionWithResource
+  grantedPermission {
+    ...PermissionCore
   }
 }
 
-fragment UserRoleWithDetails on user_roles {
-  ...UserRoleCore
-  role {
-    ...RoleWithPermissions
-  }
-  user {
+fragment UserRoleWithDetails on userRoles {
+  id
+  userId
+  roleId
+  createdAt
+  updatedAt
+  roleUser {
     id
     name
     email
-    isStaff
     isActive
+  }
+  assignedRole {
+    ...RoleCore
   }
 }
 
-fragment FeatureFlagCore on feature_flags {
+fragment FeatureFlagCore on featureFlags {
   id
-  feature_name
-  is_enabled
-  allowed_roles
+  featureName
+  isEnabled
+  allowedRoles
+  updatedAt
 }
 
-fragment AppSettingsCore on app_settings {
+fragment AppSettingsCore on appSettings {
   id
   permissions
 }

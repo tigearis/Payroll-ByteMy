@@ -13,9 +13,9 @@ export interface NotesListWithAddProps {
 export interface NoteFromGraphQL {
   id: string;
   content: string;
-  is_important: boolean;
-  created_at: string;
-  updated_at: string;
+  isImportant: boolean;
+  createdAt: string;
+  updatedAt: string;
   user?: {
     name: string;
   } | null;
@@ -38,10 +38,10 @@ export interface AddNoteProps {
 
 export interface NoteData {
   id: string;
-  entity_id: string;
-  entity_type: string;
+  entityId: string;
+  entityType: string;
   content: string;
-  is_important: boolean;
-  created_at: string;
-  updated_at: string;
+  isImportant: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -1,6 +1,38 @@
 table:
   name: permission_usage_report
   schema: audit
+configuration:
+  column_config:
+    last_used:
+      custom_name: lastUsed
+    resource_name:
+      custom_name: resourceName
+    role_name:
+      custom_name: roleName
+    total_usage_count:
+      custom_name: totalUsageCount
+    users_who_used_permission:
+      custom_name: usersWhoUsedPermission
+    users_with_permission:
+      custom_name: usersWithPermission
+  custom_column_names:
+    last_used: lastUsed
+    resource_name: resourceName
+    role_name: roleName
+    total_usage_count: totalUsageCount
+    users_who_used_permission: usersWhoUsedPermission
+    users_with_permission: usersWithPermission
+  custom_name: permissionUsageReports
+  custom_root_fields:
+    delete: bulkDeletePermissionUsageReports
+    delete_by_pk: deletePermissionUsageReportById
+    insert: bulkInsertPermissionUsageReports
+    insert_one: insertPermissionUsageReport
+    select: permissionUsageReports
+    select_aggregate: permissionUsageReportsAggregate
+    select_by_pk: permissionUsageReportById
+    update: bulkUpdatePermissionUsageReports
+    update_by_pk: updatePermissionUsageReportById
 insert_permissions:
   - role: developer
     permission:

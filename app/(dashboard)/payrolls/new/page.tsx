@@ -723,7 +723,7 @@ export default function NewPayrollPage() {
         },
       });
 
-      const newPayrollId = result.data?.insertPayroll?.id;
+      const newPayrollId = (result.data?.insertPayroll as any)?.id;
 
       if (newPayrollId) {
         // Show success message for payroll creation
@@ -740,11 +740,10 @@ export default function NewPayrollPage() {
         // Generate dates - this will handle loading state and redirect
         generatePayrollDates({
           variables: {
-            args: {
-              p_payroll_id: newPayrollId,
-              p_start_date: startDate,
-              p_end_date: endDate,
-            },
+            payrollId: newPayrollId,
+            startDate: startDate,
+            endDate: endDate,
+            maxDates: 100,
           },
         });
 

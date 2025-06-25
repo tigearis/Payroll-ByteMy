@@ -1,16 +1,33 @@
 # Auth Domain Fragments
+# Security Classification: CRITICAL - Authentication and authorization data
+# SOC2 Compliance: Strict access controls with audit logging
 # Import shared fragments: UserCore, RoleCore, PermissionCore, ResourceCore, UserRoleCore, RolePermissionCore
 
 fragment AuthUserCore on users {
   id
   name
   email
-  isActive
-  isStaff
   role
+  isActive
   clerkUserId
   createdAt
   updatedAt
+}
+
+fragment AuthUserWithRoles on users {
+  ...AuthUserCore
+  assignedRoles {
+    id
+    roleId
+    assignedRole {
+      id
+      name
+      displayName
+      description
+      priority
+      isSystemRole
+    }
+  }
 }
 
 fragment AuthRoleCore on roles {
@@ -29,32 +46,88 @@ fragment AuthPermissionCore on permissions {
   resourceId
   action
   description
-  legacy_permission_name
+  legacyPermissionName
   createdAt
   updatedAt
 }
 
-fragment AuthUserRoleWithDetails on user_roles {
-  ...UserRoleCore
-  user {
-    ...AuthUserCore
+fragment AuthUserRoleWithDetails on userRoles {
+  id
+  userId
+  roleId
+  createdAt
+  updatedAt
+  roleUser {
+    id
+    name
+    email
+    isActive
   }
-  role {
-    ...AuthRoleCore
+  assignedRole {
+    id
+    name
+    displayName
+    description
+    priority
   }
 }
 
 # RolePermissionCore now moved to shared/graphql/fragments.graphql
 
-fragment PermissionOverrideCore on permission_overrides {
+fragment PermissionOverrideCore on permissionOverrides {
   id
   userId
+  role
   resource
   operation
   granted
   conditions
-  expiresAt
   createdBy
+  expiresAt
   createdAt
   updatedAt
+}
+
+# Invitation management fragments
+fragment UserInvitationCore on userInvitations {
+  id
+  email
+  firstName
+  lastName
+  invitedRole
+  managerId
+  clerkInvitationId
+  clerkTicket
+  invitationMetadata
+  invitedBy
+  invitedAt
+  acceptedAt
+  acceptedBy
+  expiresAt
+  status
+  createdAt
+  updatedAt
+}
+
+fragment UserInvitationWithDetails on userInvitations {
+  ...UserInvitationCore
+  invitedByUser {
+    id
+    name
+    email
+    role
+  }
+  managerUser {
+    id
+    name
+    email
+    role
+  }
+  acceptedByUser {
+    id
+    name
+    email
+    clerkUserId
+    isActive
+  }
 }

@@ -4,21 +4,21 @@
 # These mutations are for administrative purposes only
 
 # Audit Log Management
-mutation CreateAuditLog($object: audit_audit_log_insert_input!) {
+mutation CreateAuditLog($object: auditLogsInsertInput!) {
   insertAuditLog(object: $object) {
     ...AuditLogCore
   }
 }
 
 # Data Access Log Management
-mutation CreateDataAccessLog($object: audit_data_access_log_insert_input!) {
+mutation CreateDataAccessLog($object: dataAccessLogsInsertInput!) {
   insertDataAccessLog(object: $object) {
     ...DataAccessLogCore
   }
 }
 
 # Auth Event Management
-mutation CreateAuthEvent($object: audit_auth_events_insert_input!) {
+mutation CreateAuthEvent($object: authEventsInsertInput!) {
   insertAuthEvent(object: $object) {
     ...AuthEventCore
   }
@@ -26,7 +26,7 @@ mutation CreateAuthEvent($object: audit_auth_events_insert_input!) {
 
 # Permission Change Management
 mutation CreatePermissionChange(
-  $object: audit_permission_changes_insert_input!
+  $object: permissionChangesInsertInput!
 ) {
   insertPermissionChange(object: $object) {
     ...PermissionChangeCore
@@ -34,50 +34,50 @@ mutation CreatePermissionChange(
 }
 
 # Bulk Operations
-mutation BulkCreateAuditLogs($objects: [audit_audit_log_insert_input!]!) {
-  insertAuditLogs(objects: $objects) {
+mutation BulkCreateAuditLogs($objects: [auditLogsInsertInput!]!) {
+  bulkInsertAuditLogs(objects: $objects) {
     returning {
       ...AuditLogCore
     }
-    affected_rows
+    affectedRows
   }
 }
 
-mutation UpdateAuditLog($id: uuid!, $set: audit_audit_log_set_input!) {
-  updateAuditLog(pk_columns: { id: $id }, _set: $set) {
+mutation UpdateAuditLog($id: uuid!, $set: auditLogsSetInput!) {
+  updateAuditLogById(pkColumns: { id: $id }, _set: $set) {
     ...AuditLogWithUser
   }
 }
 
 # Bulk operations for performance
-mutation CreateMultipleAuditLogs($objects: [audit_audit_log_insert_input!]!) {
-  insertAuditLogs(objects: $objects) {
+mutation CreateMultipleAuditLogs($objects: [auditLogsInsertInput!]!) {
+  bulkInsertAuditLogs(objects: $objects) {
     returning {
       ...AuditLogCore
     }
-    affected_rows
+    affectedRows
   }
 }
 
 mutation CreateMultipleDataAccessLogs(
-  $objects: [audit_data_access_log_insert_input!]!
+  $objects: [dataAccessLogsInsertInput!]!
 ) {
-  insertDataAccessLogs(objects: $objects) {
+  bulkInsertDataAccessLogs(objects: $objects) {
     returning {
       ...DataAccessLogCore
     }
-    affected_rows
+    affectedRows
   }
 }
 
 # Migrated from app/api/developer/clean-all-dates/route.ts
 
 mutation CleanAllPayrollDates {
-  deletePayrollDates(where: {}) {
-    affected_rows
+  bulkDeletePayrollDates(where: {}) {
+    affectedRows
   }
-  updatePayrolls(where: {}, _set: { versionNumber: 1 }) {
-    affected_rows
+  bulkUpdatePayrolls(where: {}, _set: { versionNumber: 1 }) {
+    affectedRows
   }
 }
 
@@ -87,9 +87,7 @@ mutation CleanAllPayrollDates {
 # ================================
 
 # Log general audit events
-mutation LogAuditEvent(
-  $object: audit_audit_log_insert_input!
-) {
+mutation LogAuditEvent($object: auditLogsInsertInput!) {
   insertAuditLog(object: $object) {
     id
     eventTime
@@ -97,9 +95,7 @@ mutation LogAuditEvent(
 }
 
 # Log authentication events
-mutation LogAuthEvent(
-  $object: audit_auth_events_insert_input!
-) {
+mutation LogAuthEvent($object: authEventsInsertInput!) {
   insertAuthEvent(object: $object) {
     id
     eventTime
@@ -107,9 +103,7 @@ mutation LogAuthEvent(
 }
 
 # SOC2 compliance logging using the custom function
-mutation LogSOC2ComplianceEvent(
-  $event: AuditEventInput!
-) {
+mutation LogSOC2ComplianceEvent($event: AuditEventInput!) {
   logAuditEvent(event: $event) {
     success
     message

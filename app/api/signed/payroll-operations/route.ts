@@ -2,11 +2,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
-import {
-  ProcessPayrollBatchDocument,
-  ApprovePayrollBatchDocument,
-  GeneratePayrollReportDocument
-} from "@/domains/payrolls/graphql/generated/graphql";
+// Note: The following documents require custom Hasura action implementation:
+// - ProcessPayrollBatchDocument
+// - ApprovePayrollBatchDocument  
+// - GeneratePayrollReportDocument
 import { withSignatureValidation } from "@/lib/security/api-signing";
 import { PersistentAPIKeyManager } from "@/lib/security/persistent-api-keys";
 import {

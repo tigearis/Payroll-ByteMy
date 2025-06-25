@@ -1,6 +1,32 @@
 table:
   name: user_access_summary
   schema: audit
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    is_active:
+      custom_name: isActive
+    is_staff:
+      custom_name: isStaff
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    is_active: isActive
+    is_staff: isStaff
+    updated_at: updatedAt
+  custom_name: userAccessSummaries
+  custom_root_fields:
+    delete: bulkDeleteUserAccessSummaries
+    delete_by_pk: deleteUserAccessSummaryById
+    insert: bulkInsertUserAccessSummaries
+    insert_one: insertUserAccessSummary
+    select: userAccessSummaries
+    select_aggregate: userAccessSummariesAggregate
+    select_by_pk: userAccessSummaryById
+    update: bulkUpdateUserAccessSummaries
+    update_by_pk: updateUserAccessSummaryById
 insert_permissions:
   - role: developer
     permission:

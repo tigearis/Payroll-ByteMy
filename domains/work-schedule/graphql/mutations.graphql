@@ -1,68 +1,334 @@
 # Work Schedule Domain Mutations
+# Security Classification: MEDIUM - Employee scheduling and time management
+# SOC2 Compliance: All mutations logged with audit trail
 
-# Create Work Schedule
-mutation CreateWorkSchedule($object: work_schedule_insert_input!) {
+# Core CRUD operations
+mutation CreateWorkSchedule($object: workSchedulesInsertInput!) {
   insertWorkSchedule(object: $object) {
-    ...WorkScheduleWithUser
+    ...WorkScheduleComplete
   }
 }
 
-mutation CreateWorkSchedules($objects: [work_schedule_insert_input!]!) {
-  insertWorkSchedules(objects: $objects) {
-    returning {
-      ...WorkScheduleWithUser
-    }
-    affected_rows
+mutation UpdateWorkSchedule($id: uuid!, $set: workSchedulesSetInput!) {
+  updateWorkScheduleById(pkColumns: { id: $id }, _set: $set) {
+    ...WorkScheduleComplete
   }
 }
 
-# Update Work Schedule
-mutation UpdateWorkSchedule($id: uuid!, $set: work_schedule_set_input!) {
-  updateWorkSchedule(pk_columns: { id: $id }, _set: $set) {
-    ...WorkScheduleWithUser
-  }
-}
-
-mutation UpdateWorkSchedules(
-  $where: work_schedule_bool_exp!
-  $set: work_schedule_set_input!
-) {
-  updateWorkSchedules(where: $where, _set: $set) {
-    returning {
-      ...WorkScheduleWithUser
-    }
-    affected_rows
-  }
-}
-
-# Delete Work Schedule
 mutation DeleteWorkSchedule($id: uuid!) {
-  deleteWorkSchedule(id: $id) {
+  deleteWorkScheduleById(id: $id) {
     id
+    userId
+    workDay
+    workHours
   }
 }
 
-mutation DeleteWorkSchedules($where: work_schedule_bool_exp!) {
-  deleteWorkSchedules(where: $where) {
-    affected_rows
-  }
-}
-
-# Bulk Operations
-mutation UpsertUserWorkSchedule(
+# Schedule creation operations
+mutation CreateDailySchedule(
   $userId: uuid!
-  $schedules: [work_schedule_insert_input!]!
+  $workDay: String!
+  $workHours: numeric!
 ) {
-  # First delete existing schedules for the user
-  deleteWorkSchedules(where: { userId: { _eq: $userId } }) {
-    affected_rows
+  insertWorkSchedule(
+    object: { userId: $userId, workDay: $workDay, workHours: $workHours }
+  ) {
+    ...WorkScheduleWithUser
+  }
+}
+
+mutation CreateWeeklySchedule(
+  $userId: uuid!
+  $schedules: [workSchedulesInsertInput!]!
+) {
+  bulkInsertWorkSchedules(objects: $schedules) {
+    returning {
+      ...WorkScheduleBasic
+    }
+    affectedRows
+  }
+}
+
+# Recurring schedule creation would require a custom Hasura function
+# which is not currently implemented in the database schema
+
+# Schedule updates
+mutation UpdateDailySchedule(
+  $userId: uuid!
+  $workDay: String!
+  $workHours: numeric!
+) {
+  bulkUpdateWorkSchedules(
+    where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
+    _set: { workHours: $workHours, updatedAt: "now()" }
+  ) {
+    returning {
+      ...WorkScheduleBasic
+    }
+    affectedRows
+  }
+}
+
+mutation UpdateUserScheduleHours(
+  $userId: uuid!
+  $workDay: String!
+  $newHours: numeric!
+) {
+  bulkUpdateWorkSchedules(
+    where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
+    _set: { workHours: $newHours, updatedAt: "now()" }
+  ) {
+    returning {
+      ...WorkScheduleBasic
+    }
+    affectedRows
+  }
+}
+
+mutation AdjustScheduleHours($id: uuid!, $adjustment: numeric!) {
+  updateWorkScheduleById(
+    pkColumns: { id: $id }
+    _inc: { workHours: $adjustment }
+    _set: { updatedAt: "now()" }
+  ) {
+    ...WorkScheduleBasic
+  }
+}
+
+mutation UpdateScheduleDateRange(
+  $userId: uuid!
+  $startDate: String!
+  $endDate: String!
+  $newHours: numeric!
+) {
+  bulkUpdateWorkSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+    _set: { workHours: $newHours, updatedAt: "now()" }
+  ) {
+    returning {
+      ...WorkScheduleBasic
+    }
+    affectedRows
+  }
+}
+
+# Schedule cancellation and modifications
+mutation CancelSchedule($id: uuid!) {
+  updateWorkScheduleById(
+    pkColumns: { id: $id }
+    _set: { workHours: 0, updatedAt: "now()" }
+  ) {
+    ...WorkScheduleBasic
+  }
+}
+
+mutation CancelDailySchedule($userId: uuid!, $workDay: String!) {
+  bulkUpdateWorkSchedules(
+    where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
+    _set: { workHours: 0, updatedAt: "now()" }
+  ) {
+    returning {
+      ...WorkScheduleBasic
+    }
+    affectedRows
+  }
+}
+
+mutation RemoveSchedule($id: uuid!) {
+  deleteWorkScheduleById(id: $id) {
+    id
+    userId
+    workDay
+    workHours
+  }
+}
+
+mutation RemoveDailySchedule($userId: uuid!, $workDay: String!) {
+  bulkDeleteWorkSchedules(
+    where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
+  ) {
+    affectedRows
+  }
+}
+
+# Weekly schedule operations
+mutation UpdateWeeklySchedule(
+  $userId: uuid!
+  $startDate: String!
+  $endDate: String!
+  $schedules: [workSchedulesInsertInput!]!
+) {
+  # First remove existing schedules for the week
+  bulkDeleteWorkSchedules(
+    where: {
+      userId: { _eq: $userId }
+      workDay: { _gte: $startDate, _lte: $endDate }
+    }
+  ) {
+    affectedRows
   }
 
   # Then insert new schedules
-  insertWorkSchedules(objects: $schedules) {
+  bulkInsertWorkSchedules(objects: $schedules) {
     returning {
-      ...WorkScheduleWithUser
+      ...WorkScheduleBasic
     }
-    affected_rows
+    affectedRows
   }
 }
+
+# Copy and template operations would require custom Hasura functions
+# which are not currently implemented in the database schema
+
+# Bulk operations
+mutation BulkUpdateScheduleHours(
+  $userIds: [uuid!]!
+  $workDay: String!
+  $workHours: numeric!
+) {
+  bulkUpdateWorkSchedules(
+    where: { userId: { _in: $userIds }, workDay: { _eq: $workDay } }
+    _set: { workHours: $workHours, updatedAt: "now()" }
+  ) {
+    returning {
+      ...WorkScheduleBasic
+    }
+    affectedRows
+  }
+}
+
+mutation BulkCreateSchedules($schedules: [workSchedulesInsertInput!]!) {
+  bulkInsertWorkSchedules(objects: $schedules) {
+    returning {
+      ...WorkScheduleBasic
+    }
+    affectedRows
+  }
+}
+
+mutation BulkDeleteSchedules($scheduleIds: [uuid!]!) {
+  bulkDeleteWorkSchedules(where: { id: { _in: $scheduleIds } }) {
+    affectedRows
+  }
+}
+
+mutation BulkCancelSchedules($scheduleIds: [uuid!]!) {
+  bulkUpdateWorkSchedules(
+    where: { id: { _in: $scheduleIds } }
+    _set: { workHours: 0, updatedAt: "now()" }
+  ) {
+    returning {
+      ...WorkScheduleBasic
+    }
+    affectedRows
+  }
+}
+
+# Team management operations
+mutation UpdateTeamSchedule(
+  $managerUserId: uuid!
+  $workDay: String!
+  $defaultHours: numeric!
+) {
+  bulkUpdateWorkSchedules(
+    where: {
+      scheduleOwner: { managerId: { _eq: $managerUserId } }
+      workDay: { _eq: $workDay }
+    }
+    _set: { workHours: $defaultHours, updatedAt: "now()" }
+  ) {
+    returning {
+      ...TeamWorkSchedule
+    }
+    affectedRows
+  }
+}
+
+# Team schedule creation functions would require custom Hasura functions
+# which are not currently implemented in the database schema
+
+# Schedule adjustment operations
+mutation AdjustScheduleForOvertime(
+  $id: uuid!
+  $overtimeHours: numeric!
+) {
+  updateWorkScheduleById(
+    pkColumns: { id: $id }
+    _inc: { workHours: $overtimeHours }
+    _set: { updatedAt: "now()" }
+  ) {
+    ...WorkScheduleBasic
+  }
+}
+
+mutation ReduceScheduleHours($id: uuid!, $reduction: numeric!) {
+  updateWorkScheduleById(
+    pkColumns: { id: $id }
+    _inc: { workHours: $reduction }
+    _set: { updatedAt: "now()" }
+  ) {
+    ...WorkScheduleBasic
+  }
+}
+
+# Schedule swapping would require a custom Hasura function
+# which is not currently implemented in the database schema
+
+# Schedule pattern and adjustment operations would require custom Hasura functions
+# which are not currently implemented in the database schema
+
+# Administrative operations
+mutation TransferSchedules($oldUserId: uuid!, $newUserId: uuid!) {
+  bulkUpdateWorkSchedules(
+    where: { userId: { _eq: $oldUserId } }
+    _set: { userId: $newUserId, updatedAt: "now()" }
+  ) {
+    returning {
+      ...WorkScheduleBasic
+    }
+    affectedRows
+  }
+}
+
+# Schedule archiving would require a custom Hasura function
+# which is not currently implemented in the database schema
+
+mutation PurgeOldSchedules($beforeDate: String!) {
+  bulkDeleteWorkSchedules(where: { workDay: { _lt: $beforeDate } }) {
+    affectedRows
+  }
+}
+
+mutation CleanupCancelledSchedules {
+  bulkDeleteWorkSchedules(
+    where: { workHours: { _eq: 0 }, workDay: { _lt: "now()::date" } }
+  ) {
+    affectedRows
+  }
+}
+
+# Integration and import operations would require custom Hasura functions
+# which are not currently implemented in the database schema
+
+# Emergency and exception handling
+mutation CreateEmergencySchedule(
+  $userId: uuid!
+  $workDay: String!
+  $workHours: numeric!
+) {
+  insertWorkSchedule(
+    object: {
+      userId: $userId
+      workDay: $workDay
+      workHours: $workHours
+    }
+  ) {
+    ...WorkScheduleWithUser
+  }
+}
+
+# Schedule conflict resolution, validation, and user preference operations 
+# would require custom Hasura functions which are not currently implemented

@@ -1,53 +1,279 @@
 # External Systems Domain Queries
+# Security Classification: MEDIUM - Integration and configuration data
+# SOC2 Compliance: Row-level security and audit logging enforced
 
-query GetExternalSystems(
-  $where: external_systems_bool_exp
-  $order_by: [external_systems_order_by!]
-) {
-  external_systems(where: $where, order_by: $order_by) {
-    ...ExternalSystemCore
-    client_external_systems_aggregate {
-      aggregate {
-        count
-      }
+# Core external system queries
+query GetExternalSystems($limit: Int = 50, $offset: Int = 0, $where: externalSystemsBoolExp) {
+  externalSystems(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { name: ASC }
+  ) {
+    ...ExternalSystemListItem
+  }
+  externalSystemsAggregate(where: $where) {
+    aggregate {
+      count
     }
   }
 }
 
 query GetExternalSystemById($id: uuid!) {
-  external_systems_by_pk(id: $id) {
-    ...ExternalSystemCore
-    client_external_systems {
-      ...ClientExternalSystemWithRelations
+  externalSystemById(id: $id) {
+    ...ExternalSystemComplete
+  }
+}
+
+query GetExternalSystemBasic($id: uuid!) {
+  externalSystemById(id: $id) {
+    ...ExternalSystemBasic
+  }
+}
+
+query GetExternalSystemConfig($id: uuid!) {
+  externalSystemById(id: $id) {
+    ...ExternalSystemConfig
+  }
+}
+
+query GetActiveExternalSystems {
+  externalSystems(orderBy: { name: ASC }) {
+    ...ExternalSystemBasic
+  }
+}
+
+query GetExternalSystemsSimple {
+  externalSystems(orderBy: { name: ASC }) {
+    ...ExternalSystemMinimal
+  }
+}
+
+# Client external system queries
+query GetClientExternalSystems($clientId: uuid!) {
+  clientExternalSystems(
+    where: { clientId: { _eq: $clientId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+query GetClientExternalSystemById($id: uuid!) {
+  clientExternalSystemById(id: $id) {
+    ...ClientExternalSystemComplete
+  }
+}
+
+query GetActiveClientExternalSystems($clientId: uuid!) {
+  clientExternalSystems(
+    where: { clientId: { _eq: $clientId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+query GetSystemClientConnections($externalSystemId: uuid!) {
+  clientExternalSystems(
+    where: { externalSystemId: { _eq: $externalSystemId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+query GetActiveSystemClientConnections($externalSystemId: uuid!) {
+  clientExternalSystems(
+    where: { externalSystemId: { _eq: $externalSystemId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+# Dashboard and overview queries
+query GetExternalSystemsDashboardStats {
+  totalSystems: externalSystemsAggregate {
+    aggregate {
+      count
     }
   }
-}
-
-query GetClientExternalSystems($clientId: uuid!) {
-  client_external_systems(
-    where: { client_id: { _eq: $clientId } }
-    order_by: { created_at: desc }
+  
+  totalConnections: clientExternalSystemsAggregate {
+    aggregate {
+      count
+    }
+  }
+  
+  recentSystems: externalSystems(
+    orderBy: { createdAt: DESC }
+    limit: 5
   ) {
-    ...ClientExternalSystemWithRelations
+    ...ExternalSystemDashboardCard
   }
 }
 
-query GetClientsByExternalSystem($system_id: uuid!) {
-  client_external_systems(
-    where: { system_id: { _eq: $system_id } }
-    order_by: { client: { name: asc } }
-  ) {
-    ...ClientExternalSystemWithRelations
+query GetSystemIntegrationOverview {
+  externalSystems(orderBy: { name: ASC }) {
+    ...ExternalSystemMonitoring
   }
 }
 
-query GetExternalSystemUsage {
-  external_systems {
-    ...ExternalSystemCore
-    client_count: client_external_systems_aggregate {
+query GetSystemUsageStats {
+  systemUsage: externalSystems {
+    id
+    name
+    description
+    totalClients: clientExternalSystemsAggregate {
       aggregate {
         count
       }
     }
+  }
+}
+
+# Search and filtering queries
+query SearchExternalSystems($searchTerm: String!, $limit: Int = 50) {
+  externalSystems(
+    where: {
+      _or: [
+        { name: { _ilike: $searchTerm } }
+        { description: { _ilike: $searchTerm } }
+        { url: { _ilike: $searchTerm } }
+      ]
+    }
+    orderBy: { name: ASC }
+    limit: $limit
+  ) {
+    ...ExternalSystemTableRow
+  }
+}
+
+query FilterExternalSystemsByDateRange(
+  $startDate: timestamptz!
+  $endDate: timestamptz!
+) {
+  externalSystems(
+    where: { createdAt: { _gte: $startDate, _lte: $endDate } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ExternalSystemListItem
+  }
+}
+
+query GetClientSystemsByDate($clientId: uuid!, $startDate: timestamptz!, $endDate: timestamptz!) {
+  clientExternalSystems(
+    where: {
+      clientId: { _eq: $clientId }
+      createdAt: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientExternalSystemWithRelations
+  }
+}
+
+# Audit and compliance queries
+query GetExternalSystemsForAudit(
+  $limit: Int = 100
+  $offset: Int = 0
+  $where: externalSystemsBoolExp = {}
+) {
+  externalSystems(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ExternalSystemForAudit
+  }
+}
+
+query GetClientExternalSystemsForAudit(
+  $limit: Int = 100
+  $offset: Int = 0
+  $where: clientExternalSystemsBoolExp = {}
+) {
+  clientExternalSystems(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientExternalSystemForAudit
+  }
+}
+
+query GetSystemActivityAudit($externalSystemId: uuid!, $limit: Int = 50) {
+  clientExternalSystems(
+    where: { externalSystemId: { _eq: $externalSystemId } }
+    orderBy: { updatedAt: DESC }
+    limit: $limit
+  ) {
+    ...ClientExternalSystemForAudit
+  }
+}
+
+# Performance-optimized paginated queries
+query GetExternalSystemsPaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: externalSystemsBoolExp = {}
+  $orderBy: [externalSystemsOrderBy!] = [{ name: ASC }]
+) {
+  externalSystems(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: $orderBy
+  ) {
+    ...ExternalSystemTableRow
+  }
+
+  externalSystemsAggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetClientExternalSystemsPaginated(
+  $clientId: uuid!
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: clientExternalSystemsBoolExp = {}
+) {
+  clientExternalSystems(
+    where: { _and: [{ clientId: { _eq: $clientId } }, $where] }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...ClientExternalSystemTableRow
+  }
+
+  clientSystemsAggregate: clientExternalSystemsAggregate(
+    where: { _and: [{ clientId: { _eq: $clientId } }, $where] }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Quick list queries for performance
+query GetExternalSystemsQuickList {
+  externalSystems(orderBy: { name: ASC }) {
+    ...ExternalSystemMinimal
+  }
+}
+
+query GetClientSystemsQuickList($clientId: uuid!) {
+  clientExternalSystems(
+    where: { clientId: { _eq: $clientId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientExternalSystemMinimal
   }
 }

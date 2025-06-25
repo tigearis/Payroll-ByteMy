@@ -1,7 +1,7 @@
 // components/payroll-list-card.tsx
 "use client";
 
-import { useQuery } from "@apollo/client";
+import { useCachedQuery } from "@/hooks/use-strategic-query";
 import { Search, Download } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -33,10 +33,7 @@ import {
 } from "@/components/ui/table";
 import { useSmartPolling } from "@/hooks/use-polling";
 
-import {
-  GetPayrollsDocument,
-  GetPayrollsQuery,
-} from "@/domains/payrolls/graphql/generated/graphql";
+import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 interface PayrollListCardProps {
   searchQuery: string;
@@ -53,12 +50,8 @@ export function PayrollListCard({
   const [selectedConsultant, setSelectedConsultant] = useState("all");
 
   // Use polling to periodically refresh data
-  const { loading, error, data, startPolling, stopPolling, refetch } = useQuery(
-    GetPayrollsDocument,
-    {
-      fetchPolicy: "cache-and-network",
-      nextFetchPolicy: "cache-first",
-      pollInterval: 45000, // Poll every 45 seconds
+  const { loading, error, data, startPolling, stopPolling, refetch } =
+    useCachedQuery(GetPayrollsDocument, "payrolls", {
       errorPolicy: "all", // Return partial data even if there are errors
       onError: error => {
         console.error("GraphQL Error in PayrollListCard:", error);
@@ -72,8 +65,7 @@ export function PayrollListCard({
           console.error("Network Error:", error.networkError);
         }
       },
-    }
-  );
+    });
 
   // Use our smart polling hook to manage polling
   useSmartPolling(

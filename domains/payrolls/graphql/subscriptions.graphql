@@ -1,158 +1,126 @@
-# Payroll Subscriptions
+# Payrolls Domain Subscriptions
+# Security Classification: MEDIUM - Business operational data
+# SOC2 Compliance: Row-level security and audit logging enforced
 
-subscription PayrollUpdates($id: uuid!) {
-  payroll(id: $id) {
-    ...PayrollWithDates
-  }
-}
-
-subscription PayrollListUpdates {
+# Core payroll subscriptions
+subscription PayrollsUpdates {
   payrolls(
-    where: { supersededDate: { _is_null: true } }
-    order_by: { updatedAt: desc }
-  ) {
-    ...PayrollBasicInfo
-  }
-}
-
-subscription PayrollDateUpdates($payrollId: uuid!) {
-  payrollDates(
-    where: { payrollId: { _eq: $payrollId } }
-    order_by: { adjustedEftDate: asc }
-  ) {
-    ...PayrollDate
-  }
-}
-
-# Extracted from inline GraphQL operations
-subscription PayrollSubscription {
-  payrolls {
-    id
-    name
-    status
-    updatedAt
-  }
-}
-
-subscription TestSubscription {
-  payrolls(limit: 1) {
-    id
-    name
-  }
-}
-
-# Phase 2: Enhanced real-time subscriptions
-
-subscription PayrollStatusUpdates($status: payroll_status!) {
-  payrolls(
-    where: { 
-      status: { _eq: $status }
-      supersededDate: { _is_null: true }
-    }
-    order_by: { updatedAt: desc }
+    where: { supersededDate: { _isNull: true } }
+    orderBy: { updatedAt: DESC }
   ) {
     ...PayrollListItem
   }
 }
 
-subscription UserPayrollUpdates($userId: uuid!) {
+subscription PayrollUpdates($id: uuid!) {
+  payrolls(where: { id: { _eq: $id } }) {
+    ...PayrollDetailed
+  }
+}
+
+# Active payrolls subscription
+subscription ActivePayrollsUpdates {
   payrolls(
     where: {
-      _and: [
-        { supersededDate: { _is_null: true } }
-        {
-          _or: [
-            { primaryConsultantUserId: { _eq: $userId } }
-            { backupConsultantUserId: { _eq: $userId } }
-            { managerUserId: { _eq: $userId } }
-          ]
-        }
-      ]
-    }
-    order_by: { updatedAt: desc }
-  ) {
-    ...PayrollDashboardCard
-  }
-}
-
-subscription PayrollTotalCount {
-  payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
-    aggregate {
-      count
-    }
-  }
-}
-
-subscription ActivePayrollCount {
-  payrollsAggregate(
-    where: { 
-      supersededDate: { _is_null: true }
+      supersededDate: { _isNull: true }
       status: { _eq: "Active" }
     }
+    orderBy: { name: ASC }
   ) {
-    aggregate {
-      count
-    }
-  }
-}
-
-subscription ImplementationPayrollCount {
-  payrollsAggregate(
-    where: { 
-      supersededDate: { _is_null: true }
-      status: { _eq: "Implementation" }
-    }
-  ) {
-    aggregate {
-      count
-    }
-  }
-}
-
-subscription UpcomingPayrollDates($fromDate: date!) {
-  payrollDates(
-    where: { adjustedEftDate: { _gte: $fromDate } }
-    order_by: { adjustedEftDate: asc }
-    limit: 10
-  ) {
-    id
-    adjustedEftDate
-    processingDate
-    payroll {
+    ...PayrollSummary
+    client {
       id
       name
-      status
-      client {
-        name
-      }
-      primaryConsultant {
-        name
-      }
     }
   }
 }
 
-subscription PayrollCalendarUpdates($startDate: date!, $endDate: date!) {
+# Dashboard stats subscription
+subscription PayrollStatsUpdates {
+  payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Assignment and workload subscriptions
+subscription UnassignedPayrollsUpdates {
   payrolls(
     where: {
-      supersededDate: { _is_null: true }
-      payrollDates: { 
-        adjustedEftDate: { _gte: $startDate, _lte: $endDate }
-      }
+      supersededDate: { _isNull: true }
+      _or: [
+        { primaryConsultantUserId: { _isNull: true } }
+        { backupConsultantUserId: { _isNull: true } }
+        { managerUserId: { _isNull: true } }
+      ]
     }
   ) {
+    ...PayrollForAssignment
+  }
+}
+
+# Payroll dates subscriptions
+subscription PayrollDatesUpdates($payrollId: uuid!) {
+  payrollDates(
+    where: { payrollId: { _eq: $payrollId } }
+    orderBy: { originalEftDate: ASC }
+  ) {
     id
-    name
-    status
-    client {
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+    updatedAt
+  }
+}
+
+subscription UpcomingPayrollDatesUpdates {
+  payrollDates(
+    where: { originalEftDate: { _gte: "now()" } }
+    orderBy: { originalEftDate: ASC }
+    limit: 20
+  ) {
+    id
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+    # Note: payrollAssignment relationship not available on payrollDates
+    # This would need to be handled differently based on actual schema
+    payrollId
+  }
+}
+
+# System monitoring subscriptions
+subscription PayrollSystemHealthUpdates {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _in: ["Pending Review", "Issue", "Processing"] }
+    }
+    orderBy: { updatedAt: ASC }
+  ) {
+    ...PayrollListItem
+    primaryConsultant {
+      id
       name
     }
-    payrollDates(
-      where: { adjustedEftDate: { _gte: $startDate, _lte: $endDate } }
-      order_by: { adjustedEftDate: asc }
-    ) {
-      adjustedEftDate
-      processingDate
+    manager {
+      id
+      name
     }
+  }
+}
+
+# Generic payroll subscription (alias for PayrollsUpdates)
+subscription PayrollSubscription {
+  payrolls(
+    where: { supersededDate: { _isNull: true } }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...PayrollListItem
   }
 }

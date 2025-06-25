@@ -1,6 +1,23 @@
 table:
   name: latest_payroll_version_results
   schema: public
+configuration:
+  column_config:
+    queried_at:
+      custom_name: queriedAt
+  custom_column_names:
+    queried_at: queriedAt
+  custom_name: latestPayrollVersionResults
+  custom_root_fields:
+    delete: bulkDeleteLatestPayrollVersionResults
+    delete_by_pk: deleteLatestPayrollVersionResultById
+    insert: bulkInsertLatestPayrollVersionResults
+    insert_one: insertLatestPayrollVersionResult
+    select: latestPayrollVersionResults
+    select_aggregate: latestPayrollVersionResultsAggregate
+    select_by_pk: latestPayrollVersionResultById
+    update: bulkUpdateLatestPayrollVersionResults
+    update_by_pk: updateLatestPayrollVersionResultById
 insert_permissions:
   - role: developer
     permission:
@@ -56,3 +73,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

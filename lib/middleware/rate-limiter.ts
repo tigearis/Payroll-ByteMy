@@ -34,8 +34,8 @@ export class RateLimiter {
       window: 60000,
       message: "Too many token requests",
     },
-    "/api/auth/hasura-claims": { requests: 5, window: 60000 },
     "/api/auth/debug-token": { requests: 3, window: 60000 },
+    "/api/auth/log-event": { requests: 20, window: 60000 }, // Higher limit for auth events
 
     // User management - strict limits
     "/api/users": { requests: 50, window: 60000 },

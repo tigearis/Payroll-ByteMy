@@ -1,96 +1,39 @@
-# Payroll Queries
+# Payrolls Domain Queries
+# Security Classification: MEDIUM - Business operational data
+# SOC2 Compliance: Row-level security and audit logging enforced
 
-# ================================
-# PAYROLL DATE GENERATION QUERIES
-# Migrated from app/(dashboard)/payrolls/new/page.tsx
-# ================================
-
-# Generate payroll dates for a specific payroll
-query GeneratePayrollDates(
-  $args: generate_payroll_dates_args!
-) {
-  generatePayrollDates(args: $args) {
-    id
-    originalEftDate
-    adjustedEftDate
-    processingDate
-    notes
-  }
-}
-
-query GetPayrolls {
+# Core payroll queries
+query GetPayrolls($limit: Int = 50, $offset: Int = 0, $where: payrollsBoolExp) {
   payrolls(
-    where: { supersededDate: { _is_null: true } }
-    order_by: { updatedAt: desc }
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { createdAt: DESC }
   ) {
-    id
-    name
-    clientId
-    cycleId
-    dateTypeId
-    primaryConsultantUserId
-    backupConsultantUserId
-    managerUserId
-    employeeCount
-    goLiveDate
-    status
-    dateValue
-    createdAt
-    updatedAt
-    client {
-      id
-      name
-    }
-    payrollCycle {
-      id
-      name
-    }
-    payrollDateType {
-      id
-      name
-    }
-    primaryConsultant {
-      id
-      name
-    }
-    backupConsultant {
-      id
-      name
-    }
-    manager {
-      id
-      name
-    }
-    payrollDates(order_by: { adjustedEftDate: asc }) {
-      id
-      originalEftDate
-      adjustedEftDate
-      processingDate
+    ...PayrollListItem
+  }
+  payrollsAggregate(where: $where) {
+    aggregate {
+      count
     }
   }
 }
-
 
 query GetPayrollById($id: uuid!) {
-  payroll(id: $id) {
-    id
-    name
-    clientId
-    cycleId
-    dateTypeId
-    primaryConsultantUserId
-    backupConsultantUserId
-    managerUserId
-    employeeCount
-    goLiveDate
-    status
-    dateValue
-    processingDaysBeforeEft
-    createdAt
-    updatedAt
-    supersededDate
-    versionNumber
-    parentPayrollId
+  payrollById(id: $id) {
+    ...PayrollWithAllRelations
+  }
+}
+
+query GetPayrollBasic($id: uuid!) {
+  payrollById(id: $id) {
+    ...PayrollBasic
+  }
+}
+
+query GetPayrollForEdit($id: uuid!) {
+  payrollById(id: $id) {
+    ...PayrollDetailed
     client {
       id
       name
@@ -98,161 +41,199 @@ query GetPayrollById($id: uuid!) {
     payrollCycle {
       id
       name
+      description
     }
     payrollDateType {
       id
       name
     }
-    primaryConsultant {
+  }
+}
+
+# List queries for dropdowns and selections
+query GetPayrollsSimple {
+  payrolls(
+    where: { supersededDate: { _isNull: true } }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollMinimal
+  }
+}
+
+query GetActivePayrolls {
+  payrolls(
+    where: { 
+      supersededDate: { _isNull: true }
+      status: { _neq: "Inactive" }
+    }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollSummary
+    client {
       id
       name
-    }
-    backupConsultant {
-      id
-      name
-    }
-    manager {
-      id
-      name
-    }
-    payrollDates(order_by: { adjustedEftDate: asc }) {
-      id
-      originalEftDate
-      adjustedEftDate
-      processingDate
     }
   }
 }
 
 query GetPayrollsByClient($clientId: uuid!) {
   payrolls(
-    where: { clientId: { _eq: $clientId }, supersededDate: { _is_null: true } }
-    order_by: { updatedAt: desc }
+    where: { 
+      clientId: { _eq: $clientId }
+      supersededDate: { _isNull: true }
+    }
+    orderBy: { createdAt: DESC }
   ) {
-    id
-    clientId
-    employeeCount
-    goLiveDate
+    ...PayrollListItem
   }
 }
 
-query GetPayrollsByMonth($startDate: date!, $endDate: date!) {
-  payrolls(
+query GetPayrollsByUser($userId: uuid!) {
+  primaryPayrolls: payrolls(
     where: {
-      supersededDate: { _is_null: true }
-      payrollDates: { adjustedEftDate: { _gte: $startDate, _lte: $endDate } }
+      primaryConsultantUserId: { _eq: $userId }
+      supersededDate: { _isNull: true }
     }
-    order_by: { updatedAt: desc }
+    orderBy: { name: ASC }
   ) {
-    id
-    name
-    status
-    employeeCount
-    processingTime
-    client {
-      id
-      name
+    ...PayrollWorkload
+  }
+  
+  backupPayrolls: payrolls(
+    where: {
+      backupConsultantUserId: { _eq: $userId }
+      supersededDate: { _isNull: true }
     }
-    payrollCycle {
-      id
-      name
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollWorkload
+  }
+  
+  managedPayrolls: payrolls(
+    where: {
+      managerUserId: { _eq: $userId }
+      supersededDate: { _isNull: true }
     }
-    userByPrimaryConsultantUserId: primaryConsultant {
-      id
-      name
-      email
-      leaves {
-        id
-        startDate
-        endDate
-        leaveType
-        reason
-        status
-      }
-    }
-    userByBackupConsultantUserId: backupConsultant {
-      id
-      name
-      email
-      leaves {
-        id
-        startDate
-        endDate
-        leaveType
-        reason
-        status
-      }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollWorkload
+  }
+}
+
+# Dashboard and overview queries
+query GetPayrollDashboardStats {
+  totalPayrolls: payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
+  ) {
+    aggregate {
+      count
     }
   }
   
-  payrollDates(
+  activePayrolls: payrollsAggregate(
+    where: { 
+      supersededDate: { _isNull: true }
+      status: { _eq: "Active" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  processingPayrolls: payrollsAggregate(
+    where: { 
+      supersededDate: { _isNull: true }
+      status: { _eq: "Processing" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  recentPayrolls: payrolls(
+    where: { supersededDate: { _isNull: true } }
+    orderBy: { updatedAt: DESC }
+    limit: 5
+  ) {
+    ...PayrollDashboardCard
+  }
+}
+
+query GetUpcomingPayrolls($limit: Int = 10) {
+  payrolls(
     where: {
-      payroll: {
-        supersededDate: { _is_null: true }
-        payrollDates: { adjustedEftDate: { _gte: $startDate, _lte: $endDate } }
+      supersededDate: { _isNull: true }
+      status: { _eq: "Active" }
+      payrollDates: {
+        originalEftDate: { _gte: "now()" }
       }
-      adjustedEftDate: { _gte: $startDate, _lte: $endDate }
     }
-    order_by: { adjustedEftDate: asc }
+    orderBy: { updatedAt: DESC }
+    limit: $limit
   ) {
-    id
-    payrollId
-    originalEftDate
-    adjustedEftDate
-    processingDate
-    payroll {
-      id
-      name
-      employeeCount
-      processingTime
-      client {
-        id
-        name
-      }
-      userByPrimaryConsultantUserId: primaryConsultant {
-        id
-        name
-        email
-        leaves {
-          id
-          startDate
-          endDate
-          leaveType
-          reason
-          status
-        }
-      }
-      userByBackupConsultantUserId: backupConsultant {
-        id
-        name
-        email
-        leaves {
-          id
-          startDate
-          endDate
-          leaveType
-          reason
-          status
-        }
-      }
+    ...PayrollDashboardCard
+    nextPayDate: payrollDates(
+      where: { originalEftDate: { _gte: "now()" } }
+      orderBy: { originalEftDate: ASC }
+      limit: 1
+    ) {
+      originalEftDate
+      adjustedEftDate
+      processingDate
     }
   }
 }
 
-query GetPayrollDates($payrollId: uuid!) {
-  payrollDates(
-    where: { payrollId: { _eq: $payrollId } }
-    order_by: { adjustedEftDate: asc }
+# Search and filtering
+query SearchPayrolls($searchTerm: String!, $limit: Int = 50) {
+  payrolls(
+    where: {
+      _and: [
+        { supersededDate: { _isNull: true } }
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } }
+            { client: { name: { _ilike: $searchTerm } } }
+            { primaryConsultant: { name: { _ilike: $searchTerm } } }
+          ]
+        }
+      ]
+    }
+    orderBy: { name: ASC }
+    limit: $limit
   ) {
-    id
-    payrollId
-    originalEftDate
-    adjustedEftDate
-    processingDate
+    ...PayrollTableRow
   }
 }
 
-query GetPayrollFamilyDates($payrollId: uuid!) {
+query GetPayrollsByStatus($status: payroll_status!) {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _eq: $status }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...PayrollListItem
+  }
+}
+
+query GetPayrollsByProcessingTime($processingTime: Int!) {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      processingTime: { _eq: $processingTime }
+    }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollProcessingInfo
+  }
+}
+
+# Version management queries
+query GetPayrollVersions($payrollId: uuid!) {
   payrolls(
     where: {
       _or: [
@@ -260,106 +241,25 @@ query GetPayrollFamilyDates($payrollId: uuid!) {
         { parentPayrollId: { _eq: $payrollId } }
       ]
     }
-    order_by: { versionNumber: asc }
+    orderBy: { versionNumber: DESC }
   ) {
-    id
-    versionNumber
-    payrollDates(order_by: { adjustedEftDate: asc }) {
-      ...PayrollDate
-    }
+    ...PayrollVersionInfo
   }
 }
 
-query GetPayrollsMissingDates {
-  payrolls(where: { supersededDate: { _is_null: true } }) {
-    id
-    name
+query GetPayrollHistory($payrollId: uuid!) {
+  payrolls(
+    where: {
+      _or: [
+        { id: { _eq: $payrollId } }
+        { parentPayrollId: { _eq: $payrollId } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...PayrollVersionInfo
     status
-    client {
-      id
-      name
-    }
-    payrollDates_aggregate {
-      aggregate {
-        count
-      }
-    }
-  }
-}
-
-query GetPayrollsSimple {
-  payrolls {
-    id
-    client {
-      id
-    }
-  }
-}
-
-query CheckPayrollVersion($id: uuid!) {
-  payroll(id: $id) {
-    id
     supersededDate
-    versionNumber
-  }
-  latest: payrolls(
-    where: { parentPayrollId: { _eq: $id }, supersededDate: { _is_null: true } }
-    limit: 1
-  ) {
-    id
-  }
-}
-
-query GetVersionCheck($id: uuid!) {
-  current: payrolls(where: { id: { _eq: $id } }) {
-    id
-    supersededDate
-    parentPayrollId
-    versionNumber
-  }
-}
-
-query GetLatestInFamily($rootId: uuid!) {
-  latest: payrolls(
-    where: {
-      _or: [{ id: { _eq: $rootId } }, { parentPayrollId: { _eq: $rootId } }]
-      supersededDate: { _is_null: true }
-    }
-    order_by: { versionNumber: desc }
-    limit: 1
-  ) {
-    id
-    versionNumber
-  }
-}
-
-# Extracted from inline GraphQL operations
-query GetPayrollDatesById($id: uuid!) {
-  payrollDates(
-    where: { payrollId: { _eq: $id } }
-    order_by: { adjustedEftDate: asc }
-  ) {
-    id
-    originalEftDate
-    adjustedEftDate
-    processingDate
-  }
-}
-
-query GetPayrollVersionHistory($payrollId: uuid!) {
-  payrolls(
-    where: {
-      _or: [
-        { id: { _eq: $payrollId } }
-        { parentPayrollId: { _eq: $payrollId } }
-      ]
-    }
-    order_by: { versionNumber: desc }
-  ) {
-    id
-    versionNumber
-    supersededDate
-    goLiveDate
   }
 }
 
@@ -370,83 +270,137 @@ query GetLatestPayrollVersion($payrollId: uuid!) {
         { id: { _eq: $payrollId } }
         { parentPayrollId: { _eq: $payrollId } }
       ]
-      supersededDate: { _is_null: true }
+      supersededDate: { _isNull: true }
     }
     limit: 1
   ) {
-    id
-    versionNumber
-    parentPayrollId
+    ...PayrollWithAllRelations
   }
 }
 
-query GeneratePayrollDatesQuery(
-  $payrollId: uuid!
-  $startDate: date
-  $endDate: date
-  $maxDates: Int
-) {
-  generatePayrollDates(
-    args: {
-      p_payroll_id: $payrollId
-      p_start_date: $startDate
-      p_end_date: $endDate
-      p_max_dates: $maxDates
-    }
+# Payroll cycles and configuration
+query GetPayrollCycles {
+  payrollCycles(orderBy: { name: ASC }) {
+    id
+    name
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+query GetPayrollDateTypes {
+  payrollDateTypes(orderBy: { name: ASC }) {
+    id
+    name
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+# Payroll dates management
+query GetPayrollDates($payrollId: uuid!) {
+  payrollDates(
+    where: { payrollId: { _eq: $payrollId } }
+    orderBy: { originalEftDate: ASC }
   ) {
     id
-    payrollId
     originalEftDate
     adjustedEftDate
     processingDate
     notes
+    createdAt
+    updatedAt
+    payrollId
   }
 }
 
-query GetUserUpcomingPayrolls(
-  $userId: uuid!
-  $from_date: date!
-  $limit: Int = 10
-) {
-  payrolls(
-    where: {
-      _and: [
-        { supersededDate: { _is_null: true } }
-        {
-          _or: [
-            { primaryConsultantUserId: { _eq: $userId } }
-            { backupConsultantUserId: { _eq: $userId } }
-            { managerUserId: { _eq: $userId } }
-          ]
-        }
-        { payrollDates: { adjustedEftDate: { _gte: $from_date } } }
-      ]
-    }
-    order_by: { payrollDates_aggregate: { min: { adjustedEftDate: asc } } }
+query GetUpcomingPayrollDates($limit: Int = 20) {
+  payrollDates(
+    where: { originalEftDate: { _gte: "now()" } }
+    orderBy: { originalEftDate: ASC }
     limit: $limit
   ) {
     id
-    name
-    status
-    client {
-      id
-      name
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+    payrollAssignment {
+      payrollDate {
+        relatedPayroll {
+          id
+          name
+          status
+          client {
+            id
+            name
+          }
+        }
+      }
     }
-    payrollDates(
-      where: { adjustedEftDate: { _gte: $from_date } }
-      order_by: { adjustedEftDate: asc }
-      limit: 3
-    ) {
-      id
-      adjustedEftDate
-      processingDate
-      originalEftDate
+  }
+}
+
+query GetPayrollDatesInRange(
+  $startDate: date!
+  $endDate: date!
+  $payrollId: uuid
+) {
+  payrollDates(
+    where: {
+      originalEftDate: { _gte: $startDate, _lte: $endDate }
+      payrollId: { _eq: $payrollId }
     }
+    orderBy: { originalEftDate: ASC }
+  ) {
+    id
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+    payrollAssignment {
+      payrollDate {
+        relatedPayroll {
+          id
+          name
+          client {
+            name
+          }
+        }
+      }
+    }
+  }
+}
+
+# Assignment and workload queries
+query GetUnassignedPayrolls {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      _or: [
+        { primaryConsultantUserId: { _isNull: true } }
+        { backupConsultantUserId: { _isNull: true } }
+        { managerUserId: { _isNull: true } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...PayrollForAssignment
+  }
+}
+
+query GetPayrollsNeedingAttention {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _in: ["Pending Review", "Issue", "Processing"] }
+    }
+    orderBy: { updatedAt: ASC }
+  ) {
+    ...PayrollListItem
     primaryConsultant {
-      id
-      name
-    }
-    backupConsultant {
       id
       name
     }
@@ -457,96 +411,70 @@ query GetUserUpcomingPayrolls(
   }
 }
 
-# Migrated from inline operations - Priority 1 fixes
-
-query GetPayrollCycles {
-  payroll_cycles {
-    id
-    name
-    description
+# Bulk operations support
+query GetPayrollsForBulkUpdate($ids: [uuid!]!) {
+  payrolls(where: { id: { _in: $ids } }) {
+    ...PayrollBasic
   }
 }
 
-query GetPayrollDateTypes {
-  payroll_date_types {
-    id
-    name
-    description
+query GetPayrollsForBulkAssignment($where: payrollsBoolExp!) {
+  payrolls(where: $where) {
+    ...PayrollForAssignment
   }
 }
 
-# Enhanced payroll report query migrated from app/api/signed/payroll-operations/route.ts
+# Audit and compliance queries
+query GetPayrollsForAudit(
+  $limit: Int = 100
+  $offset: Int = 0
+  $where: payrollsBoolExp = {}
+) {
+  payrolls(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...PayrollForAudit
+  }
+}
 
-query GeneratePayrollReport($startDate: timestamptz!, $endDate: timestamptz!) {
+query GetPayrollActivity($payrollId: uuid!, $limit: Int = 50) {
   payrolls(
     where: {
-      _and: [
-        { createdAt: { _gte: $startDate } }
-        { createdAt: { _lte: $endDate } }
-        { status: { _in: ["Approved", "Completed"] } }
+      _or: [
+        { id: { _eq: $payrollId } }
+        { parentPayrollId: { _eq: $payrollId } }
       ]
     }
-    order_by: { createdAt: desc }
+    orderBy: { updatedAt: DESC }
+    limit: $limit
   ) {
-    id
-    name
+    ...PayrollVersionInfo
     status
-    createdAt
-    updatedAt
-    client {
-      id
-      name
-    }
-    primaryConsultant {
-      id
-      name
-      email
-    }
+    supersededDate
   }
 }
 
-# Phase 2: Paginated payroll queries for performance optimization
-
+# Performance-optimized paginated queries
 query GetPayrollsPaginated(
   $limit: Int = 20
   $offset: Int = 0
-  $where: payrolls_bool_exp = {}
-  $orderBy: [payrolls_order_by!] = [{ updatedAt: desc }]
+  $where: payrollsBoolExp = {}
+  $orderBy: [payrollsOrderBy!] = [{ createdAt: DESC }]
 ) {
   payrolls(
     limit: $limit
     offset: $offset
-    where: { _and: [{ supersededDate: { _is_null: true } }, $where] }
-    order_by: $orderBy
-  ) {
-    ...PayrollListItem
-  }
-
-  payrollsAggregate(
-    where: { _and: [{ supersededDate: { _is_null: true } }, $where] }
-  ) {
-    aggregate {
-      count
-    }
-  }
-}
-
-query GetPayrollsByClientPaginated(
-  $clientId: uuid!
-  $limit: Int = 20
-  $offset: Int = 0
-) {
-  payrolls(
-    where: { clientId: { _eq: $clientId }, supersededDate: { _is_null: true } }
-    order_by: { updatedAt: desc }
-    limit: $limit
-    offset: $offset
+    where: { _and: [{ supersededDate: { _isNull: true } }, $where] }
+    orderBy: $orderBy
   ) {
     ...PayrollTableRow
   }
 
-  clientPayrollsAggregate: payrollsAggregate(
-    where: { clientId: { _eq: $clientId }, supersededDate: { _is_null: true } }
+  payrollsAggregate(
+    where: { _and: [{ supersededDate: { _isNull: true } }, $where] }
   ) {
     aggregate {
       count
@@ -562,30 +490,34 @@ query SearchPayrollsPaginated(
   payrolls(
     where: {
       _and: [
-        { supersededDate: { _is_null: true } }
+        { supersededDate: { _isNull: true } }
         {
           _or: [
             { name: { _ilike: $searchTerm } }
             { client: { name: { _ilike: $searchTerm } } }
+            { primaryConsultant: { name: { _ilike: $searchTerm } } }
+            { backupConsultant: { name: { _ilike: $searchTerm } } }
           ]
         }
       ]
     }
-    order_by: { updatedAt: desc }
+    orderBy: { name: ASC }
     limit: $limit
     offset: $offset
   ) {
-    ...PayrollListItem
+    ...PayrollTableRow
   }
 
   searchAggregate: payrollsAggregate(
     where: {
       _and: [
-        { supersededDate: { _is_null: true } }
+        { supersededDate: { _isNull: true } }
         {
           _or: [
             { name: { _ilike: $searchTerm } }
             { client: { name: { _ilike: $searchTerm } } }
+            { primaryConsultant: { name: { _ilike: $searchTerm } } }
+            { backupConsultant: { name: { _ilike: $searchTerm } } }
           ]
         }
       ]
@@ -597,139 +529,188 @@ query SearchPayrollsPaginated(
   }
 }
 
-query GetPayrollsByStatusPaginated(
-  $status: payroll_status!
-  $limit: Int = 20
-  $offset: Int = 0
-) {
-  payrolls(
-    where: { status: { _eq: $status }, supersededDate: { _is_null: true } }
-    order_by: { updatedAt: desc }
-    limit: $limit
-    offset: $offset
-  ) {
-    ...PayrollListItem
-  }
-
-  statusAggregate: payrollsAggregate(
-    where: { status: { _eq: $status }, supersededDate: { _is_null: true } }
-  ) {
-    aggregate {
-      count
-    }
-  }
-}
-
-# Phase 2: Optimized payroll queries to reduce over-fetching
-
+# Quick list queries for performance
 query GetPayrollsQuickList {
-  # Minimal payroll data for dropdowns and quick lists
   payrolls(
-    where: { supersededDate: { _is_null: true } }
-    order_by: { name: asc }
+    where: { supersededDate: { _isNull: true } }
+    orderBy: { name: ASC }
   ) {
     ...PayrollMinimal
   }
 }
 
-query GetPayrollCard($id: uuid!) {
-  # Essential payroll data for cards and previews
-  payroll(id: $id) {
-    ...PayrollSummary
-    client {
-      name
+query GetActivePayrollsQuickList {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _eq: "Active" }
     }
-    primaryConsultant {
-      name
-    }
-    nextDate: payrollDates(
-      where: { adjustedEftDate: { _gte: "now()" } }
-      order_by: { adjustedEftDate: asc }
-      limit: 1
-    ) {
-      adjustedEftDate
-    }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollMinimal
   }
 }
 
-query GetPayrollOptions {
-  # Ultra-minimal for form options and selectors
+query GetClientPayrollsQuickList($clientId: uuid!) {
   payrolls(
-    where: { supersededDate: { _is_null: true } }
-    order_by: { name: asc }
+    where: {
+      clientId: { _eq: $clientId }
+      supersededDate: { _isNull: true }
+    }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollMinimal
+  }
+}
+
+# Hasura function queries
+query GeneratePayrollDates(
+  $payrollId: uuid!
+  $startDate: date!
+  $endDate: date!
+  $maxDates: Int = 100
+) {
+  generatePayrollDates(
+    args: {
+      p_payroll_id: $payrollId
+      p_start_date: $startDate
+      p_end_date: $endDate
+      p_max_dates: $maxDates
+    }
   ) {
     id
-    name
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+    payrollId
+    createdAt
+    updatedAt
   }
 }
 
-query GetPayrollDashboardCards($limit: Int = 10) {
-  # Optimized for payroll dashboard grid
+# Alias for GeneratePayrollDates to match import expectations
+query GeneratePayrollDatesQuery(
+  $payrollId: uuid!
+  $startDate: date!
+  $endDate: date!
+  $maxDates: Int = 100
+) {
+  generatePayrollDates(
+    args: {
+      p_payroll_id: $payrollId
+      p_start_date: $startDate
+      p_end_date: $endDate
+      p_max_dates: $maxDates
+    }
+  ) {
+    id
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+    payrollId
+    createdAt
+    updatedAt
+  }
+}
+
+# User-specific upcoming payrolls query
+query GetUserUpcomingPayrolls($userId: uuid!, $limit: Int = 10) {
   payrolls(
-    where: { supersededDate: { _is_null: true } }
-    order_by: { updatedAt: desc }
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _eq: "Active" }
+      _or: [
+        { primaryConsultantUserId: { _eq: $userId } }
+        { backupConsultantUserId: { _eq: $userId } }
+        { managerUserId: { _eq: $userId } }
+      ]
+      payrollDates: {
+        originalEftDate: { _gte: "now()" }
+      }
+    }
+    orderBy: { updatedAt: DESC }
     limit: $limit
   ) {
     ...PayrollDashboardCard
-  }
-}
-
-query GetPayrollCalendarEvents($startDate: date!, $endDate: date!) {
-  # Minimal data for calendar view
-  payrolls(
-    where: {
-      supersededDate: { _is_null: true }
-      payrollDates: { adjustedEftDate: { _gte: $startDate, _lte: $endDate } }
-    }
-  ) {
-    id
-    name
-    status
-    client {
-      name
-    }
-    calendarDates: payrollDates(
-      where: { adjustedEftDate: { _gte: $startDate, _lte: $endDate } }
-      order_by: { adjustedEftDate: asc }
+    nextPayDate: payrollDates(
+      where: { originalEftDate: { _gte: "now()" } }
+      orderBy: { originalEftDate: ASC }
+      limit: 1
     ) {
+      originalEftDate
       adjustedEftDate
       processingDate
     }
   }
 }
 
-query GetPayrollStatusCounts {
-  # Quick status overview for dashboard
-  total: payrollsAggregate(where: { supersededDate: { _is_null: true } }) {
-    aggregate {
-      count
-    }
-  }
-
-  active: payrollsAggregate(
-    where: { supersededDate: { _is_null: true }, status: { _eq: "Active" } }
-  ) {
-    aggregate {
-      count
-    }
-  }
-
-  implementation: payrollsAggregate(
+# Monthly payroll overview query
+query GetPayrollsByMonth($startDate: date!, $endDate: date!) {
+  payrolls(
     where: {
-      supersededDate: { _is_null: true }
-      status: { _eq: "Implementation" }
+      supersededDate: { _isNull: true }
+      payrollDates: {
+        originalEftDate: {
+          _gte: $startDate
+          _lt: $endDate
+        }
+      }
     }
+    orderBy: { createdAt: DESC }
   ) {
-    aggregate {
-      count
+    ...PayrollWithDates
+    client {
+      id
+      name
     }
   }
+}
 
-  archived: payrollsAggregate(
-    where: { supersededDate: { _is_null: true }, status: { _eq: "Archived" } }
+# Payroll family dates query (related payrolls and their dates)
+query GetPayrollFamilyDates($payrollId: uuid!) {
+  payrolls(
+    where: {
+      _or: [
+        { id: { _eq: $payrollId } }
+        { parentPayrollId: { _eq: $payrollId } }
+      ]
+    }
+    orderBy: { versionNumber: DESC }
   ) {
-    aggregate {
-      count
+    id
+    name
+    versionNumber
+    status
+    payrollDates(orderBy: { originalEftDate: ASC }) {
+      ...PayrollDate
+    }
+  }
+}
+
+# Payrolls missing dates query
+query GetPayrollsMissingDates {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _eq: "Active" }
+      _not: {
+        payrollDates: {}
+      }
+    }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollListItem
+    payrollCycle {
+      id
+      name
+      description
+    }
+    payrollDateType {
+      id
+      name
+      description
     }
   }
 }

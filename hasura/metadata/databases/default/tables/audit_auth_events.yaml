@@ -28,16 +28,17 @@ configuration:
     user_agent: userAgent
     user_email: userEmail
     user_id: userId
+  custom_name: authEvents
   custom_root_fields:
-    delete: deleteAuthEvents
-    delete_by_pk: deleteAuthEvent
-    insert: insertAuthEvents
+    delete: bulkDeleteAuthEvents
+    delete_by_pk: deleteAuthEventById
+    insert: bulkInsertAuthEvents
     insert_one: insertAuthEvent
     select: authEvents
     select_aggregate: authEventsAggregate
-    select_by_pk: authEvent
-    update: updateAuthEvents
-    update_by_pk: updateAuthEvent
+    select_by_pk: authEventById
+    update: bulkUpdateAuthEvents
+    update_by_pk: updateAuthEventById
 insert_permissions:
   - role: system
     permission:
@@ -96,3 +97,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

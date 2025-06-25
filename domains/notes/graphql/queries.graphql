@@ -1,85 +1,456 @@
 # Notes Domain Queries
-# Security Classification: MEDIUM - Internal data with role-based access
-# SOC2 Compliance: Row-level security enforced by Hasura permissions
+# Security Classification: MEDIUM - Contains business communication data
+# SOC2 Compliance: Row-level security and audit logging enforced
 
-query GetNotes($entity_id: uuid!, $entity_type: String!) {
+# Core note queries
+query GetNotes($limit: Int = 50, $offset: Int = 0, $where: notesBoolExp) {
   notes(
-    where: {
-      entity_id: { _eq: $entity_id }
-      entity_type: { _eq: $entity_type }
-    }
-    order_by: { created_at: desc }
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { createdAt: DESC }
   ) {
-    ...NoteWithUser
+    ...NoteListItem
   }
-}
-
-query GetNotesBasic($entity_id: uuid!, $entity_type: String!) {
-  notes(
-    where: {
-      entity_id: { _eq: $entity_id }
-      entity_type: { _eq: $entity_type }
+  notesAggregate(where: $where) {
+    aggregate {
+      count
     }
-    order_by: { created_at: desc }
-  ) {
-    ...NoteBasicInfo
-  }
-}
-
-query GetImportantNotes($entity_id: uuid!, $entity_type: String!) {
-  notes(
-    where: { is_important: { _eq: true } }
-    order_by: { created_at: desc }
-  ) {
-    ...NoteWithUser
   }
 }
 
 query GetNoteById($id: uuid!) {
-  notes_by_pk(id: $id) {
-    ...NoteWithUser
+  noteById(id: $id) {
+    ...NoteDetailed
   }
 }
 
-# Audit query - limited fields for compliance logging
-query GetNotesForAudit($entity_id: uuid!, $entity_type: String!) {
+query GetNoteBasic($id: uuid!) {
+  noteById(id: $id) {
+    ...NoteBasic
+  }
+}
+
+# Entity-specific note queries
+query GetNotesByEntity($entityType: String!, $entityId: uuid!) {
   notes(
     where: {
-      entity_id: { _eq: $entity_id }
-      entity_type: { _eq: $entity_type }
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
     }
-    order_by: { created_at: desc }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+query GetPayrollNotes($payrollId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: "payroll" }
+      entityId: { _eq: $payrollId }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...PayrollNote
+  }
+}
+
+query GetClientNotes($clientId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: "client" }
+      entityId: { _eq: $clientId }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientNote
+  }
+}
+
+query GetUserNotes($userId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: "user" }
+      entityId: { _eq: $userId }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...UserNote
+  }
+}
+
+# User activity queries
+query GetNotesByAuthor($authorUserId: uuid!) {
+  notes(
+    where: { userId: { _eq: $authorUserId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+query GetMyNotes($userId: uuid!) {
+  notes(
+    where: { userId: { _eq: $userId } }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+# Important and priority queries
+query GetImportantNotes($limit: Int = 20) {
+  notes(
+    where: { isImportant: { _eq: true } }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+  ) {
+    ...ImportantNote
+  }
+}
+
+query GetImportantNotesByEntity($entityType: String!, $entityId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+      isImportant: { _eq: true }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ImportantNote
+  }
+}
+
+query GetRecentNotes($limit: Int = 10) {
+  notes(
+    orderBy: { createdAt: DESC }
+    limit: $limit
+  ) {
+    ...RecentNote
+  }
+}
+
+query GetRecentNotesByUser($userId: uuid!, $limit: Int = 10) {
+  notes(
+    where: { userId: { _eq: $userId } }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+  ) {
+    ...RecentNote
+  }
+}
+
+# Search and filtering
+query SearchNotes($searchTerm: String!, $limit: Int = 50) {
+  notes(
+    where: {
+      _or: [
+        { content: { _ilike: $searchTerm } }
+        { authorUser: { name: { _ilike: $searchTerm } } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+  ) {
+    ...NoteListItem
+  }
+}
+
+query SearchNotesByEntity(
+  $entityType: String!
+  $entityId: uuid!
+  $searchTerm: String!
+) {
+  notes(
+    where: {
+      _and: [
+        { entityType: { _eq: $entityType } }
+        { entityId: { _eq: $entityId } }
+        {
+          _or: [
+            { content: { _ilike: $searchTerm } }
+            { content: { _ilike: $searchTerm } }
+          ]
+        }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+query FilterNotesByDateRange(
+  $startDate: timestamp!
+  $endDate: timestamp!
+  $entityType: String
+  $entityId: uuid
+) {
+  notes(
+    where: {
+      _and: [
+        { createdAt: { _gte: $startDate } }
+        { createdAt: { _lte: $endDate } }
+        { entityType: { _eq: $entityType } }
+        { entityId: { _eq: $entityId } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+# Dashboard and overview queries
+query GetNoteDashboardStats($userId: uuid!) {
+  totalNotes: notesAggregate {
+    aggregate {
+      count
+    }
+  }
+  
+  importantNotes: notesAggregate(where: { isImportant: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+  
+  recentNotes: notes(
+    orderBy: { createdAt: DESC }
+    limit: 5
+  ) {
+    ...NoteDashboard
+  }
+  
+  myRecentNotes: notes(
+    where: { userId: { _eq: $userId } }
+    orderBy: { createdAt: DESC }
+    limit: 3
+  ) {
+    ...NoteDashboard
+  }
+}
+
+query GetNoteActivity($limit: Int = 20) {
+  notes(
+    orderBy: { updatedAt: DESC }
+    limit: $limit
+  ) {
+    ...NoteCard
+  }
+}
+
+query GetEntityNoteSummary($entityType: String!, $entityId: uuid!) {
+  totalCount: notesAggregate(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  importantCount: notesAggregate(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+      isImportant: { _eq: true }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  recentNotes: notes(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+    }
+    orderBy: { createdAt: DESC }
+    limit: 3
+  ) {
+    ...NoteCard
+  }
+}
+
+# Bulk and administrative queries
+query GetNotesForBulkUpdate($ids: [uuid!]!) {
+  notes(where: { id: { _in: $ids } }) {
+    ...NoteBasic
+  }
+}
+
+query GetNotesByAuthorAndDateRange(
+  $authorUserId: uuid!
+  $startDate: timestamp!
+  $endDate: timestamp!
+) {
+  notes(
+    where: {
+      _and: [
+        { userId: { _eq: $authorUserId } }
+        { createdAt: { _gte: $startDate } }
+        { createdAt: { _lte: $endDate } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+# Audit and compliance queries
+query GetNotesForAudit(
+  $limit: Int = 100
+  $offset: Int = 0
+  $where: notesBoolExp = {}
+) {
+  notes(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { createdAt: DESC }
   ) {
     ...NoteForAudit
   }
 }
 
-query GetNotesSimple {
-  notes {
-    id
-    content
+query GetNotesByEntityType($entityType: String!) {
+  notes(
+    where: { entityType: { _eq: $entityType } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
   }
 }
 
-# Extracted from inline GraphQL operations
-query GetNotesExtracted($entity_type: String!, $entity_id: uuid!) {
+# Performance-optimized paginated queries
+query GetNotesPaginated(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: notesBoolExp = {}
+  $orderBy: [notesOrderBy!] = [{ createdAt: DESC }]
+) {
+  notes(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: $orderBy
+  ) {
+    ...NoteListItem
+  }
+
+  notesAggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetEntityNotesPaginated(
+  $entityType: String!
+  $entityId: uuid!
+  $limit: Int = 20
+  $offset: Int = 0
+) {
   notes(
     where: {
-      entity_id: { _eq: $entity_id }
-      entity_type: { _eq: $entity_type }
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
     }
-    order_by: { created_at: desc }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+    offset: $offset
   ) {
-    id
-    content
-    is_important
-    created_at
-    updated_at
-    entity_type
-    entity_id
-    user {
-      id
-      name
+    ...NoteListItem
+  }
+
+  entityNotesAggregate: notesAggregate(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
     }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query SearchNotesPaginated(
+  $searchTerm: String!
+  $limit: Int = 20
+  $offset: Int = 0
+) {
+  notes(
+    where: {
+      _or: [
+        { content: { _ilike: $searchTerm } }
+        { authorUser: { name: { _ilike: $searchTerm } } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...NoteListItem
+  }
+
+  searchAggregate: notesAggregate(
+    where: {
+      _or: [
+        { content: { _ilike: $searchTerm } }
+        { authorUser: { name: { _ilike: $searchTerm } } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Quick access queries
+query GetNotesQuickList($entityType: String!, $entityId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+    }
+    orderBy: { createdAt: DESC }
+    limit: 5
+  ) {
+    ...NoteMinimal
+  }
+}
+
+query GetImportantNotesQuickList($entityType: String!, $entityId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+      isImportant: { _eq: true }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteMinimal
+  }
+}
+
+# Extracted from existing usage - matching notes-list.tsx patterns
+query GetNotesExtracted($entityType: String!, $entityId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
   }
 }

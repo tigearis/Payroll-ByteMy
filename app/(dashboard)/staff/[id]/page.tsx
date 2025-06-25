@@ -40,7 +40,7 @@ export default function UserInfoPage() {
     return <p>Error loading user data.</p>;
   }
 
-  const user = data?.user;
+  const user = data?.userById;
   if (!user) {
     return <p>User not found.</p>;
   }
@@ -68,8 +68,8 @@ export default function UserInfoPage() {
             <TableCell>{user.email}</TableCell>
             <TableCell>{user.role}</TableCell>
             <TableCell>
-              {user.leaves && user.leaves.length > 0
-                ? user.leaves.map(leaveRecord => (
+              {(user as any).leaves && (user as any).leaves.length > 0
+                ? (user as any).leaves.map((leaveRecord: any) => (
                     <p key={leaveRecord.id}>
                       {leaveRecord.startDate} - {leaveRecord.endDate}
                     </p>

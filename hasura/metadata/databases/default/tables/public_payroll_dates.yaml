@@ -22,29 +22,30 @@ configuration:
     payroll_id: payrollId
     processing_date: processingDate
     updated_at: updatedAt
+  custom_name: payrollDates
   custom_root_fields:
-    delete: deletePayrollDates
-    delete_by_pk: deletePayrollDate
-    insert: insertPayrollDates
+    delete: bulkDeletePayrollDates
+    delete_by_pk: deletePayrollDateById
+    insert: bulkInsertPayrollDates
     insert_one: insertPayrollDate
     select: payrollDates
     select_aggregate: payrollDatesAggregate
-    select_by_pk: payrollDate
-    update: updatePayrollDates
-    update_by_pk: updatePayrollDate
+    select_by_pk: payrollDateById
+    update: bulkUpdatePayrollDates
+    update_by_pk: updatePayrollDateById
 object_relationships:
-  - name: payroll
-    using:
-      foreign_key_constraint_on: payroll_id
-  - name: payroll_assignment
+  - name: payrollAssignment
     using:
       foreign_key_constraint_on:
         column: payroll_date_id
         table:
           name: payroll_assignments
           schema: public
+  - name: relatedPayroll
+    using:
+      foreign_key_constraint_on: payroll_id
 array_relationships:
-  - name: payroll_assignment_audits
+  - name: payrollAssignmentAudits
     using:
       foreign_key_constraint_on:
         column: payroll_date_id
@@ -60,7 +61,7 @@ insert_permissions:
   - role: manager
     permission:
       check:
-        payroll:
+        relatedPayroll:
           _or:
             - manager_user_id:
                 _eq: X-Hasura-User-Id
@@ -94,7 +95,7 @@ select_permissions:
         - created_at
         - updated_at
       filter:
-        payroll:
+        relatedPayroll:
           _or:
             - primary_consultant_user_id:
                 _eq: X-Hasura-User-Id
@@ -119,7 +120,7 @@ select_permissions:
         - created_at
         - updated_at
       filter:
-        payroll:
+        relatedPayroll:
           manager_user_id:
             _eq: X-Hasura-User-Id
       allow_aggregations: true
@@ -157,7 +158,7 @@ update_permissions:
       columns:
         - notes
       filter:
-        payroll:
+        relatedPayroll:
           _or:
             - primary_consultant_user_id:
                 _eq: X-Hasura-User-Id
@@ -179,7 +180,7 @@ update_permissions:
         - processing_date
         - notes
       filter:
-        payroll:
+        relatedPayroll:
           manager_user_id:
             _eq: X-Hasura-User-Id
       check: {}

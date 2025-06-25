@@ -3,8 +3,7 @@ import { useApolloClient, Reference, DocumentNode } from "@apollo/client";
 import { toast } from "sonner";
 import { 
   GetPayrollsDocument,
-  GetPayrollsByMonthDocument,
-  GetPayrollsMissingDatesDocument
+  GetPayrollDatesDocument
 } from "@/domains/payrolls/graphql/generated/graphql";
 
 /**

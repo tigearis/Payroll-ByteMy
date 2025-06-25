@@ -19,24 +19,22 @@ configuration:
     expires_at: expiresAt
     updated_at: updatedAt
     user_id: userId
+  custom_name: permissionOverrides
   custom_root_fields:
-    delete: deletePermissionOverrides
-    delete_by_pk: deletePermissionOverride
-    insert: insertPermissionOverrides
+    delete: bulkDeletePermissionOverrides
+    delete_by_pk: deletePermissionOverrideById
+    insert: bulkInsertPermissionOverrides
     insert_one: insertPermissionOverride
     select: permissionOverrides
     select_aggregate: permissionOverridesAggregate
-    select_by_pk: permissionOverride
-    update: updatePermissionOverrides
-    update_by_pk: updatePermissionOverride
+    select_by_pk: permissionOverrideById
+    update: bulkUpdatePermissionOverrides
+    update_by_pk: updatePermissionOverrideById
 object_relationships:
   - name: createdByUser
     using:
       foreign_key_constraint_on: created_by
-  - name: overrideUser
-    using:
-      foreign_key_constraint_on: user_id
-  - name: user
+  - name: targetUser
     using:
       foreign_key_constraint_on: user_id
 insert_permissions:
@@ -157,3 +155,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: Only org admins can delete permission overrides
+apollo_federation_config:
+  enable: v1

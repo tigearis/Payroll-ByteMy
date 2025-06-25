@@ -5,7 +5,7 @@ import {
   UpdatePayrollDocument,
   CreatePayrollDocument,
   UpdatePayrollStatusDocument,
-  GetPayrollVersionHistoryDocument,
+  GetPayrollVersionsDocument,
   GetLatestPayrollVersionDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 
@@ -259,7 +259,7 @@ export function usePayrollVersioning() {
         throw new Error("Failed to insert new payroll version");
       }
 
-      console.log(`✅ New payroll version created: ${newPayroll.id}`);
+      console.log(`✅ New payroll version created: ${newPayroll}`); // TODO: Fix this
       console.log(
         "✅ Database triggers handled date deletion and generation automatically"
       );
@@ -316,7 +316,7 @@ export function usePayrollVersioning() {
         },
       });
 
-      if (result.data?.updatePayroll) {
+      if (result.data?.updatePayrollById) {
         console.log(`✅ Status updated successfully to ${newStatus}`);
         toast.success(`Status changed to ${newStatus}`);
         return {
@@ -348,7 +348,7 @@ export function usePayrollVersioning() {
 // Hook for querying payroll version history
 export function usePayrollVersionHistory(payrollId: string) {
   const { data, loading, error, refetch } = useQuery(
-    GetPayrollVersionHistoryDocument,
+    GetPayrollVersionsDocument,
     {
       variables: { payrollId },
       skip: !payrollId,
@@ -437,7 +437,7 @@ export function usePayrollStatusUpdate() {
         awaitRefetchQueries: true,
       });
 
-      if (result.data?.updatePayroll) {
+      if (result.data?.updatePayrollById) {
         console.log(`✅ Status updated successfully to ${newStatus}`);
         toast.success(`Status changed to ${newStatus}`);
         return {
