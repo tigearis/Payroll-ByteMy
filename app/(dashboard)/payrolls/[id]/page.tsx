@@ -1,4 +1,4 @@
-// pages/payroll-page.tsx
+// app/(dashboard)/payrolls/[id]/page.tsx
 "use client";
 
 import { useParams, notFound, useRouter } from "next/navigation";
@@ -937,12 +937,14 @@ export default function PayrollPage() {
   console.log("✅ usePayrollStatusUpdate hook loaded");
 
   // Check if current payroll is superseded and get latest version - run immediately
-  const { data: versionCheckData, loading: versionCheckLoading } =
-    useQuery(GetPayrollByIdDocument, {
+  const { data: versionCheckData, loading: versionCheckLoading } = useQuery(
+    GetPayrollByIdDocument,
+    {
       variables: { id },
       skip: !id,
       fetchPolicy: "network-only", // Always check for latest version info
-    });
+    }
+  );
   console.log("✅ Version check query loaded");
 
   // If current payroll is superseded, find the latest version
@@ -999,19 +1001,16 @@ export default function PayrollPage() {
   console.log("✅ Date types query loaded");
 
   // Lazy query for regenerating payroll dates
-  const [generatePayrollDates] = useLazyQuery(
-    GeneratePayrollDatesDocument,
-    {
-      onCompleted: (data: any) => {
-        const count = data?.generatePayrollDates?.length || 0;
-        toast.success(`Successfully regenerated ${count} payroll dates`);
-        refetch(); // Refresh the payroll data to show updated dates
-      },
-      onError: (error: any) => {
-        toast.error(`Failed to regenerate dates: ${error.message}`);
-      },
-    }
-  );
+  const [generatePayrollDates] = useLazyQuery(GeneratePayrollDatesDocument, {
+    onCompleted: (data: any) => {
+      const count = data?.generatePayrollDates?.length || 0;
+      toast.success(`Successfully regenerated ${count} payroll dates`);
+      refetch(); // Refresh the payroll data to show updated dates
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to regenerate dates: ${error.message}`);
+    },
+  });
   console.log("✅ Generate dates query loaded");
 
   const [updatePayroll] = useMutation(UpdatePayrollDocument, {
@@ -1285,7 +1284,7 @@ export default function PayrollPage() {
 
   const payroll = data.payroll;
   const client = payroll.client;
-  
+
   // Debug: Log payroll data to see what we're getting
   console.log("Payroll details data:", {
     payroll,
@@ -1293,7 +1292,7 @@ export default function PayrollPage() {
     client,
     clientKeys: client ? Object.keys(client) : [],
   });
-  
+
   const statusConfig = getStatusConfig(
     (payroll as any).status || "Implementation"
   );
