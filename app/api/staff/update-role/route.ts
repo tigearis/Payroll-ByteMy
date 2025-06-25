@@ -42,7 +42,7 @@ export const POST = withAuth(
         fetchPolicy: "no-cache",
       });
 
-      const user = userData?.user;
+      const user = userData?.userById;
       if (!user) {
         return NextResponse.json(
           { error: "Staff member not found" },
@@ -60,7 +60,7 @@ export const POST = withAuth(
         },
       });
 
-      const updatedUser = updateData?.updateUser;
+      const updatedUser = updateData?.updateUserById;
       if (!updatedUser) {
         return NextResponse.json(
           { error: "Failed to update database" },

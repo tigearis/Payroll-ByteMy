@@ -19,7 +19,18 @@ const CreateInvitationSchema = z.object({
 });
 
 async function POST(request: NextRequest) {
-  return withAuth(async (authUser) => {
+  return withAuth(async (request, authUser) => {
+    // Extract database user ID from JWT claims first
+    const hasuraClaims = authUser.sessionClaims?.["https://hasura.io/jwt/claims"] as any;
+    const databaseUserId = hasuraClaims?.["x-hasura-user-id"];
+    
+    if (!databaseUserId) {
+      return NextResponse.json(
+        { error: "Database user ID not found in session" },
+        { status: 400 }
+      );
+    }
+
     try {
       const body = await request.json();
       const validatedData = CreateInvitationSchema.parse(body);
@@ -31,7 +42,7 @@ async function POST(request: NextRequest) {
         query: ValidateInvitationRolePermissionsDocument,
         variables: {
           invitedRole: role,
-          invitedBy: authUser.databaseId
+          invitedBy: databaseUserId
         }
       });
 
@@ -56,9 +67,9 @@ async function POST(request: NextRequest) {
           level: LogLevel.WARNING,
           eventType: SOC2EventType.SECURITY_VIOLATION,
           category: LogCategory.SECURITY_EVENT,
-          message: "User attempted to assign role with equal or higher priority",
+          complianceNote: "User attempted to assign role with equal or higher priority",
           success: false,
-          userId: authUser.databaseId,
+          userId: databaseUserId,
           resourceType: "role_assignment",
           action: "invalid_assignment",
           metadata: {
@@ -76,7 +87,8 @@ async function POST(request: NextRequest) {
       }
 
       // 2. Create Clerk invitation
-      const clerkInvitation = await clerkClient.invitations.createInvitation({
+      const clerk = await clerkClient();
+      const clerkInvitation = await clerk.invitations.createInvitation({
         emailAddress: email,
         redirectUrl: `${process.env.VERCEL_URL || 'http://localhost:3000'}/accept-invitation`,
         publicMetadata: {
@@ -84,7 +96,7 @@ async function POST(request: NextRequest) {
           lastName,
           role,
           managerId: managerId || null,
-          invitedBy: authUser.databaseId,
+          invitedBy: databaseUserId,
           invitationMetadata: metadata || {}
         }
       });
@@ -101,19 +113,23 @@ async function POST(request: NextRequest) {
           clerkInvitationId: clerkInvitation.id,
           clerkTicket: null, // Will be updated when user clicks the link
           invitationMetadata: metadata || {},
-          invitedBy: authUser.databaseId,
+          invitedBy: databaseUserId,
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
         }
       });
+
+      if (!invitationData?.insertUserInvitation) {
+        throw new Error("Failed to create invitation in database");
+      }
 
       // 4. Audit logging
       await auditLogger.logSOC2Event({
         level: LogLevel.INFO,
         eventType: SOC2EventType.USER_CREATED,
         category: LogCategory.AUTHENTICATION,
-        message: "User invitation created successfully",
+        complianceNote: "User invitation created successfully",
         success: true,
-        userId: authUser.databaseId,
+        userId: databaseUserId,
         resourceType: "invitation",
         action: "create",
         metadata: {
@@ -145,9 +161,9 @@ async function POST(request: NextRequest) {
         level: LogLevel.ERROR,
         eventType: SOC2EventType.SECURITY_VIOLATION,
         category: LogCategory.ERROR,
-        message: "Failed to create user invitation",
+        complianceNote: "Failed to create user invitation",
         success: false,
-        userId: authUser.databaseId,
+        userId: databaseUserId,
         resourceType: "invitation",
         action: "create_failure",
         errorMessage: error instanceof Error ? error.message : "Unknown error",

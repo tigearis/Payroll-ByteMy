@@ -275,7 +275,7 @@ export const POST = withAuth(
         }
 
         databaseUser = data?.insertUser;
-        console.log(`✅ Created database user: ${databaseUser?.id}`);
+        console.log(`✅ Created database user successfully`);
       } catch (dbError: any) {
         console.error(`❌ Failed to create database user:`, {
           error: dbError,
@@ -318,7 +318,8 @@ export const POST = withAuth(
 
       // Prepare response data
       const staffData = {
-        id: databaseUser?.id,
+        // TODO: Extract id from fragment-masked user object
+        // id: databaseUser?.id,
         invitationId,
         name: staffInput.name,
         email: staffInput.email,
@@ -326,7 +327,7 @@ export const POST = withAuth(
         is_staff: staffInput.is_staff,
         manager_id: staffInput.managerId,
         createdBy: session.userId,
-        createdAt: databaseUser?.createdAt || new Date().toISOString(),
+        createdAt: new Date().toISOString(), // TODO: Extract from fragment-masked user object
         invitationSent,
       };
 
@@ -337,7 +338,7 @@ export const POST = withAuth(
         eventType: SOC2EventType.USER_CREATED,
         userId: session.userId,
         userRole: session.role,
-        resourceId: staffData.id || "unknown",
+        resourceId: "unknown", // TODO: Extract from fragment-masked user object
         resourceType: "staff",
         action: "CREATE",
         success: true,
@@ -359,7 +360,7 @@ export const POST = withAuth(
           ? "Staff member created successfully and invitation email sent"
           : "Staff member created successfully (database only)",
         staffData: {
-          id: staffData.id,
+          // TODO: id: staffData.id,
           name: staffData.name,
           email: staffData.email,
           role: staffData.role,

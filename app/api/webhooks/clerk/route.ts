@@ -206,14 +206,14 @@ export async function POST(req: NextRequest) {
             const { data: updateResult } = await adminApolloClient.mutate({
               mutation: UpdateUserRoleFromClerkDocument,
               variables: {
-                clerkId: id,
+                clerkUserId: id,
                 role: updatedRole,
               },
             });
 
             if (
-              updateResult?.updateUsers?.affected_rows &&
-              updateResult.updateUsers.affected_rows > 0
+              updateResult?.bulkUpdateUsers?.affectedRows &&
+              updateResult.bulkUpdateUsers.affectedRows > 0
             ) {
               console.log(`✅ Database role synced from Clerk: ${updatedRole}`);
             } else {

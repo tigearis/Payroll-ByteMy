@@ -137,16 +137,16 @@ export async function POST(request: NextRequest) {
       level: LogLevel.INFO,
       eventType: SOC2EventType.USER_CREATED,
       category: LogCategory.AUTHENTICATION,
-      successMessage: "User invitation accepted successfully",
       success: true,
       userId: createdUser.id,
       resourceType: "invitation",
       action: "accept_success",
+      complianceNote: "User invitation accepted successfully",
       metadata: {
         invitationId: invitation.id,
         email: userEmail,
         assignedRole: invitation.invitedRole,
-        invitedByUser: invitation.invitedByUser?.id,
+        invitedByUser: invitation.invitedByUser?.email,
         clerkUserId,
       },
     });
@@ -174,13 +174,13 @@ export async function POST(request: NextRequest) {
       level: LogLevel.ERROR,
       eventType: SOC2EventType.SECURITY_VIOLATION,
       category: LogCategory.ERROR,
-      errorMessage: "Failed to accept user invitation",
+      errorMessage: error instanceof Error ? error.message : "Unknown error",
       success: false,
       resourceType: "invitation",
       action: "accept_failure",
-      errorMessage: error instanceof Error ? error.message : "Unknown error",
       metadata: {
         error: error instanceof Error ? error.message : "Unknown error",
+        context: "Failed to accept user invitation",
       },
     });
 
