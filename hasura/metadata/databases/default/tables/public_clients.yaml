@@ -38,13 +38,6 @@ array_relationships:
         table:
           name: client_billing_assignment
           schema: public
-  - name: billingInvoices
-    using:
-      foreign_key_constraint_on:
-        column: client_id
-        table:
-          name: billing_invoices
-          schema: public
   - name: billing_invoices
     using:
       foreign_key_constraint_on:

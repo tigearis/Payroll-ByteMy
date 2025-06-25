@@ -162,26 +162,25 @@ export async function logServiceAuth(
   
   // Send to audit logging service
   try {
-    await auditLogger.logAuditEvent({
+    const auditEntry: any = {
       userId: 'service',
       userRole: 'system',
       action: AuditAction.READ,
       entityType: 'service_auth',
-      entityId: operation,
+      entityId: String(operation),
       dataClassification: DataClassification.CRITICAL,
       success: logEntry.success,
-      errorMessage: logEntry.errorMessage,
-      metadata: {
-        operation: logEntry.operation,
-        clientIP: logEntry.clientIP,
-        userAgent: logEntry.userAgent,
-        timestamp: logEntry.timestamp,
-        duration: logEntry.duration,
-      },
+      requestId: `service-${Date.now()}`,
       method: 'SERVICE_AUTH',
       ipAddress: logEntry.clientIP,
       userAgent: logEntry.userAgent,
-    });
+    };
+    
+    if (logEntry.reason) {
+      auditEntry.errorMessage = logEntry.reason;
+    }
+    
+    await auditLogger.logAuditEvent(auditEntry);
   } catch (error) {
     console.error('Failed to log service authentication to audit service:', error);
   }

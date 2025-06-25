@@ -10,7 +10,6 @@
 - "!include public_app_settings.yaml"
 - "!include public_billing_event_log.yaml"
 - "!include public_billing_invoice.yaml"
-- "!include public_billing_invoices.yaml"
 - "!include public_billing_items.yaml"
 - "!include public_billing_plan.yaml"
 - "!include public_client_billing_assignment.yaml"

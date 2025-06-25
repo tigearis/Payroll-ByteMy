@@ -22,9 +22,6 @@ configuration:
     update: bulkUpdateBillingItems
     update_by_pk: updateBillingItemById
 object_relationships:
-  - name: relatedInvoice
-    using:
-      foreign_key_constraint_on: invoice_id
   - name: relatedPayroll
     using:
       foreign_key_constraint_on: payroll_id
