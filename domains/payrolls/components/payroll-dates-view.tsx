@@ -50,8 +50,7 @@ import {
   GetPayrollFamilyDatesDocument,
   GetPayrollDatesDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import { useFragment } from "@/domains/payrolls/graphql/generated/fragment-masking";
-import { PayrollDateFragmentDoc } from "@/domains/payrolls/graphql/generated/graphql";
+// Fragment masking disabled - no longer needed
 
 interface PayrollDate {
   id: string;
@@ -497,12 +496,10 @@ export function PayrollDatesView({
       return adjustedDate >= currentDate;
     });
   } else if (showFamilyDates && familyData) {
-    // Fallback to client-side filtering - this query uses fragments so we need useFragment
+    // Fallback to client-side filtering - direct access since fragment masking is disabled
     const familyDates =
       familyData.payrolls.flatMap(payroll =>
-        payroll.payrollDates.map(date =>
-          useFragment(PayrollDateFragmentDoc, date)
-        )
+        payroll.payrollDates.map(date => date)
       ) || [];
     // Convert to the expected format
     allDates = familyDates.map(date => ({

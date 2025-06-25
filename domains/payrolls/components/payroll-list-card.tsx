@@ -92,7 +92,7 @@ export function PayrollListCard({
   const payrolls = data?.payrolls || [];
 
   // Add safety check for incomplete data
-  const safePayrolls = payrolls.filter(payroll => {
+  const safePayrolls = payrolls.filter((payroll: any) => {
     if (!payroll) {
       return false;
     }
@@ -105,7 +105,7 @@ export function PayrollListCard({
   });
 
   // Get payrolls filtered by search term (used as base for other filters)
-  const searchFilteredPayrolls = safePayrolls.filter(payroll => {
+  const searchFilteredPayrolls = safePayrolls.filter((payroll: any) => {
     const searchTermLower = localSearchQuery.toLowerCase();
     return (
       payroll.name?.toLowerCase().includes(searchTermLower) ||
@@ -120,7 +120,7 @@ export function PayrollListCard({
   const availableClients = Array.from(
     new Map(
       searchFilteredPayrolls
-        .filter(p => {
+        .filter((p: any) => {
           // Include if payroll matches the selected consultant
           const isConsultantMatch =
             selectedConsultant === "all" ||
@@ -133,7 +133,10 @@ export function PayrollListCard({
 
           return isConsultantMatch && isPayrollMatch && p.client;
         })
-        .map(p => [p.client?.id, { id: p.client?.id, name: p.client?.name }])
+        .map((p: any) => [
+          p.client?.id,
+          { id: p.client?.id, name: p.client?.name },
+        ])
     ).values()
   );
 
@@ -141,7 +144,7 @@ export function PayrollListCard({
   const availableConsultants = Array.from(
     new Map(
       searchFilteredPayrolls
-        .filter(p => {
+        .filter((p: any) => {
           // Include if payroll matches the selected client
           const isClientMatch =
             selectedClient === "all" ||
@@ -153,7 +156,7 @@ export function PayrollListCard({
 
           return isClientMatch && isPayrollMatch && p.primaryConsultant;
         })
-        .map(p => [
+        .map((p: any) => [
           p.primaryConsultant?.id,
           {
             id: p.primaryConsultant?.id,
@@ -164,7 +167,7 @@ export function PayrollListCard({
   );
 
   // Extract unique payrolls based on current filters (excluding payroll filter itself)
-  const availablePayrolls = searchFilteredPayrolls.filter(p => {
+  const availablePayrolls = searchFilteredPayrolls.filter((p: any) => {
     // Include if payroll matches the selected client
     const isClientMatch =
       selectedClient === "all" ||
@@ -180,7 +183,7 @@ export function PayrollListCard({
   });
 
   // Filter payrolls based on criteria
-  const filteredPayrolls = safePayrolls.filter(payroll => {
+  const filteredPayrolls = safePayrolls.filter((payroll: any) => {
     // Text search filter - case insensitive
     const searchTermLower = localSearchQuery.toLowerCase();
     const textMatch =
@@ -321,7 +324,7 @@ export function PayrollListCard({
                 // Reset payroll filter if the selected client doesn't have the currently selected payroll
                 if (value !== "all" && selectedPayroll !== "all") {
                   const payrollBelongsToClient = payrolls.some(
-                    p =>
+                    (p: any) =>
                       p.id.toString() === selectedPayroll &&
                       p.client?.id.toString() === value
                   );
@@ -336,7 +339,7 @@ export function PayrollListCard({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Clients</SelectItem>
-                {availableClients.map(client => (
+                {availableClients.map((client: any) => (
                   <SelectItem key={client.id} value={client.id.toString()}>
                     {client.name}
                   </SelectItem>
@@ -350,7 +353,7 @@ export function PayrollListCard({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Payrolls</SelectItem>
-                {availablePayrolls.map(payroll => (
+                {availablePayrolls.map((payroll: any) => (
                   <SelectItem key={payroll.id} value={payroll.id.toString()}>
                     {payroll.name}
                   </SelectItem>
@@ -365,7 +368,7 @@ export function PayrollListCard({
                 // Reset payroll filter if the selected consultant doesn't work with the currently selected payroll
                 if (value !== "all" && selectedPayroll !== "all") {
                   const consultantWorksWithPayroll = payrolls.some(
-                    p =>
+                    (p: any) =>
                       p.id.toString() === selectedPayroll &&
                       p.primaryConsultant?.id.toString() === value
                   );
@@ -380,7 +383,7 @@ export function PayrollListCard({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Consultants</SelectItem>
-                {availableConsultants.map(consultant => (
+                {availableConsultants.map((consultant: any) => (
                   <SelectItem
                     key={consultant.id}
                     value={consultant.id?.toString() || ""}
@@ -413,7 +416,7 @@ export function PayrollListCard({
           </TableHeader>
           <TableBody>
             {filteredPayrolls.length > 0 ? (
-              filteredPayrolls.map(payroll => (
+              filteredPayrolls.map((payroll: any) => (
                 <TableRow key={payroll.id}>
                   <TableCell>
                     <Link

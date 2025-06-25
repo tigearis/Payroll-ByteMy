@@ -15,12 +15,6 @@ import {
   UpdatePayrollMutation,
   GetPayrollVersionsQuery,
 } from "../graphql/generated/graphql";
-import { useFragment } from "../graphql/generated/fragment-masking";
-
-// Export individual operations for backward compatibility
-export const CREATE_PAYROLL = CreatePayrollDocument;
-export const GET_PAYROLLS = GetPayrollsDocument;
-export const GET_PAYROLL_BY_ID = GetPayrollByIdDocument;
 
 export class PayrollService {
   constructor(private apolloClient: ApolloClient<NormalizedCacheObject>) {}
@@ -143,19 +137,19 @@ export class PayrollService {
   /**
    * Check if a payroll has been superseded
    */
-  async checkPayrollVersion(id: string) {
-    const { data } = await this.apolloClient.query<CheckPayrollVersionQuery>({
-      query: CheckPayrollVersionDocument,
-      variables: { id },
+  async checkPayrollVersion(payrollId: string): Promise<boolean> {
+    const { data } = await this.apolloClient.query<GetPayrollVersionsQuery>({
+      query: GetPayrollVersionsDocument,
+      variables: { payrollId },
     });
 
-    const payroll = data.payroll;
-    if (!payroll) return null;
+    const payroll = data.payrolls?.[0];
+    if (!payroll) return false;
 
-    return {
-      isSuperseded: !!payroll.supersededDate,
-      versionNumber: payroll.versionNumber,
-      supersededDate: payroll.supersededDate,
-    };
+    // Extract payroll version info via useFragment if available
+    const payrollData = payroll as any; // Cast to any to access dynamic properties
+
+    // Check if supersededDate exists which indicates it's been superseded
+    return !!payrollData.supersededDate;
   }
 }

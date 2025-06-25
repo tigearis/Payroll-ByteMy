@@ -82,7 +82,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  GetClientByIdDocument,
+  ClientsGetClientByIdDocument,
   UpdateClientDocument,
   UpdateClientStatusDocument,
   ArchiveClientDocument,
@@ -221,7 +221,7 @@ export default function ClientDetailPage() {
 
   // GraphQL operations
   const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(
-    GetClientByIdDocument,
+    ClientsGetClientByIdDocument,
     {
       variables: { id },
       skip: !id,
@@ -232,11 +232,15 @@ export default function ClientDetailPage() {
   );
 
   const [updateClient] = useMutation(UpdateClientDocument, {
-    refetchQueries: [{ query: GetClientByIdDocument, variables: { id } }],
+    refetchQueries: [
+      { query: ClientsGetClientByIdDocument, variables: { id } },
+    ],
   });
 
   const [updateClientStatus] = useMutation(UpdateClientStatusDocument, {
-    refetchQueries: [{ query: GetClientByIdDocument, variables: { id } }],
+    refetchQueries: [
+      { query: ClientsGetClientByIdDocument, variables: { id } },
+    ],
   });
 
   // Archive client functionality (soft delete)

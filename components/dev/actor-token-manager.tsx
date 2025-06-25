@@ -26,13 +26,14 @@ import { useActorTokens } from "@/hooks/use-actor-tokens";
 import { GetUsersWithFilteringDocument } from "@/domains/users/graphql/generated/graphql";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
 import { useQuery } from "@apollo/client";
+import { toast } from "sonner";
 
 interface User {
   id: string;
   name: string;
   email: string;
   role: string;
-  clerkUserId: string | null;
+  clerkUserId?: string | null;
 }
 
 /**
@@ -58,6 +59,7 @@ export function ActorTokenManager() {
   const [expiresInMinutes, setExpiresInMinutes] = useState(10);
   const [purpose, setPurpose] = useState("");
   const [activeTokens, setActiveTokens] = useState<any[]>([]);
+  const [isLoadingQuickImpersonate, setIsLoading] = useState(false);
 
   // Fetch users for selection
   const { data: usersData, loading: usersLoading } = useQuery(
@@ -141,13 +143,18 @@ export function ActorTokenManager() {
   };
 
   const handleQuickImpersonate = async (user: User) => {
+    if (!user.clerkUserId) {
+      toast.error("User doesn't have a Clerk ID");
+      return;
+    }
+
     const confirmed = confirm(
       `Impersonate ${user.name} (${user.email}) as ${user.role}?\n\nThis will open a new tab where you'll be signed in as this user.`
     );
 
     if (confirmed) {
       await impersonateUser(
-        user.clerkUserId || "",
+        user.clerkUserId,
         `quick_impersonate_${user.role}`,
         true
       );
@@ -203,7 +210,7 @@ export function ActorTokenManager() {
                         Loading users...
                       </SelectItem>
                     ) : (
-                      users.map((user: User) => (
+                      users.map(user => (
                         <SelectItem
                           key={user.id}
                           value={user.clerkUserId || ""}
@@ -265,7 +272,7 @@ export function ActorTokenManager() {
                 {usersLoading ? (
                   <div>Loading users...</div>
                 ) : (
-                  users.map((user: User) => (
+                  users.map(user => (
                     <div
                       key={user.id}
                       className="flex items-center justify-between p-2 border rounded"
@@ -283,7 +290,7 @@ export function ActorTokenManager() {
                         size="sm"
                         variant="outline"
                         onClick={() => handleQuickImpersonate(user)}
-                        disabled={isLoading}
+                        disabled={isLoadingQuickImpersonate}
                       >
                         Impersonate
                       </Button>

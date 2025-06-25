@@ -34,13 +34,22 @@ import {
 interface PayrollWithDateCount {
   id: string;
   name: string;
-  client: { name: string };
-  status: string;
-  payroll_dates_aggregate: {
-    aggregate: {
-      count: number;
-    };
+  client?: {
+    id: string;
+    name: string;
   };
+  status: string;
+  payrollCycle: {
+    id: string;
+    name: string;
+    description?: string | null;
+  };
+  payrollDateType: {
+    id: string;
+    name: string;
+    description?: string | null;
+  };
+  payrollDates?: Array<any>;
 }
 
 export function PayrollsMissingDates() {
@@ -81,14 +90,15 @@ export function PayrollsMissingDates() {
   }
 
   console.log("Payrolls data:", data);
-  const payrolls = data?.payrolls || [];
+  const payrolls = (data?.payrolls as PayrollWithDateCount[]) || [];
 
   const payrollsMissingDates = payrolls.filter(
-    payroll => payroll.payrollDates_aggregate?.aggregate?.count === 0
+    (payroll: PayrollWithDateCount) =>
+      !payroll.payrollDates || payroll.payrollDates.length === 0
   );
 
   const missingDatesPayrollIds = payrollsMissingDates.map(
-    payroll => payroll.id
+    (payroll: PayrollWithDateCount) => payroll.id
   );
 
   console.log("Missing payroll IDs:", missingDatesPayrollIds);
@@ -110,8 +120,8 @@ export function PayrollsMissingDates() {
         await generatePayrollDates({
           variables: {
             payrollId: id,
-            startDate: null,
-            endDate: null,
+            startDate: "",
+            endDate: "",
             maxDates: null,
           },
         });
@@ -143,7 +153,7 @@ export function PayrollsMissingDates() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {payrollsMissingDates.map(payroll => (
+            {payrollsMissingDates.map((payroll: PayrollWithDateCount) => (
               <TableRow key={payroll.id}>
                 <TableCell>{payroll.client?.name || "N/A"}</TableCell>
                 <TableCell>{payroll.name}</TableCell>

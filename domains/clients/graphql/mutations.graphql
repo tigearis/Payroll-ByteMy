@@ -98,3 +98,11 @@ mutation BulkUpdateClientStatus($clientIds: [uuid!]!, $active: Boolean!) {
     }
   }
 }
+
+mutation DeleteClient($id: uuid!) {
+  updateClientById(pkColumns: { id: $id }, _set: { active: false }) {
+    id
+    name
+    active
+  }
+}

@@ -254,15 +254,30 @@ export function usePayrollVersioning() {
         },
       });
 
-      const newPayroll = insertResult.data?.insertPayroll;
-      if (!newPayroll) {
+      const newPayrollData = insertResult.data?.insertPayroll;
+      if (!newPayrollData) {
         throw new Error("Failed to insert new payroll version");
       }
 
-      console.log(`✅ New payroll version created: ${newPayroll}`); // TODO: Fix this
+      // Cast to any to access properties that might not be in the fragment
+      const payrollInfo = newPayrollData as any;
+
+      console.log(`✅ New payroll version created: ${payrollInfo}`);
       console.log(
         "✅ Database triggers handled date deletion and generation automatically"
       );
+
+      // Create processing notes for the version - temporarily commenting out as createProcessingNotes needs to be implemented
+      // TODO: Implement createProcessingNotes functionality
+      /*
+      await createProcessingNotes({
+        variables: {
+          payrollId: payrollInfo.id,
+          note: `Version ${newVersionData.version_number} created for "${versionReason}"`,
+          createdBy: createdByUserId,
+        },
+      });
+      */
 
       // Success messages with more specific information
       const dateRegenerationMessage =
@@ -280,7 +295,7 @@ export function usePayrollVersioning() {
 
       return {
         success: true,
-        newVersionId: newPayroll.id,
+        newVersionId: payrollInfo.id || "unknown",
         versionNumber: newVersionData.version_number,
         oldPayrollId: currentPayroll.id,
         employeeCount: employeeCount,
