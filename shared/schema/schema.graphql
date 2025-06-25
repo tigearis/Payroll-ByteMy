@@ -503,7 +503,7 @@ input UuidComparisonExp {
 scalar _Any
 
 """A union of all types that use the @key directive"""
-union _Entity = adjustmentRules | appSettings | auditLogs | authEvents | billingEventLogs | billingInvoice | billingInvoices | billingItems | billingPlans | clientBillingAssignments | clientExternalSystems | clients | dataAccessLogs | externalSystems | featureFlags | holidays | latestPayrollVersionResults | leave | notes | payrollActivationResults | payrollAssignmentAudits | payrollAssignments | payrollCycles | payrollDateTypes | payrollDates | payrollVersionHistoryResults | payrollVersionResults | payrolls | permissionAuditLogs | permissionChanges | permissionOverrides | permissions | resources | rolePermissions | roles | slowQueries | userInvitations | userRoles | users | workSchedules
+union _Entity = adjustmentRules | appSettings | auditLogs | authEvents | billingEventLogs | billingInvoice | billingItems | billingPlans | clientBillingAssignments | clientExternalSystems | clients | dataAccessLogs | externalSystems | featureFlags | holidays | latestPayrollVersionResults | leave | notes | payrollActivationResults | payrollAssignmentAudits | payrollAssignments | payrollCycles | payrollDateTypes | payrollDates | payrollVersionHistoryResults | payrollVersionResults | payrolls | permissionAuditLogs | permissionChanges | permissionOverrides | permissions | resources | rolePermissions | roles | slowQueries | userInvitations | userRoles | users | workSchedules
 
 type _Service {
   """SDL representation of schema"""
@@ -2031,8 +2031,6 @@ scalar bigint
 columns and relationships of "billing_event_log"
 """
 type billingEventLogs {
-  """An object relationship"""
-  billingInvoice: billingInvoices
   createdAt: timestamptz
   createdBy: uuid
   """An object relationship"""
@@ -2096,7 +2094,6 @@ input billingEventLogsBoolExp {
   _and: [billingEventLogsBoolExp!]
   _not: billingEventLogsBoolExp
   _or: [billingEventLogsBoolExp!]
-  billingInvoice: billingInvoicesBoolExp
   createdAt: TimestamptzComparisonExp
   createdBy: UuidComparisonExp
   createdByUser: usersBoolExp
@@ -2120,7 +2117,6 @@ enum billingEventLogsConstraint {
 input type for inserting data into table "billing_event_log"
 """
 input billingEventLogsInsertInput {
-  billingInvoice: billingInvoicesObjRelInsertInput
   createdAt: timestamptz
   createdBy: uuid
   createdByUser: usersObjRelInsertInput
@@ -2195,7 +2191,6 @@ input billingEventLogsOnConflict {
 
 """Ordering options when selecting data from "billing_event_log"."""
 input billingEventLogsOrderBy {
-  billingInvoice: billingInvoicesOrderBy
   createdAt: OrderBy
   createdBy: OrderBy
   createdByUser: usersOrderBy
@@ -2774,465 +2769,6 @@ input billingInvoiceVarianceOrderBy {
 }
 
 """
-columns and relationships of "billing_invoices"
-"""
-type billingInvoices {
-  """An array relationship"""
-  billingItems(
-    """distinct select on columns"""
-    distinctOn: [billingItemsSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [billingItemsOrderBy!]
-    """filter the rows returned"""
-    where: billingItemsBoolExp
-  ): [billingItems!]!
-  """An aggregate relationship"""
-  billingItemsAggregate(
-    """distinct select on columns"""
-    distinctOn: [billingItemsSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [billingItemsOrderBy!]
-    """filter the rows returned"""
-    where: billingItemsBoolExp
-  ): billingItemsAggregate!
-  billingPeriodEnd: date!
-  billingPeriodStart: date!
-  """An object relationship"""
-  client: clients
-  clientId: uuid
-  createdAt: timestamp
-  id: uuid!
-  invoiceNumber: String!
-  status: String
-  totalAmount: numeric
-  updatedAt: timestamp
-}
-
-"""
-aggregated selection of "billing_invoices"
-"""
-type billingInvoicesAggregate {
-  aggregate: billingInvoicesAggregateFields
-  nodes: [billingInvoices!]!
-}
-
-input billingInvoicesAggregateBoolExp {
-  count: billingInvoicesAggregateBoolExpCount
-}
-
-input billingInvoicesAggregateBoolExpCount {
-  arguments: [billingInvoicesSelectColumn!]
-  distinct: Boolean
-  filter: billingInvoicesBoolExp
-  predicate: IntComparisonExp!
-}
-
-"""
-aggregate fields of "billing_invoices"
-"""
-type billingInvoicesAggregateFields {
-  avg: billingInvoicesAvgFields
-  count(columns: [billingInvoicesSelectColumn!], distinct: Boolean): Int!
-  max: billingInvoicesMaxFields
-  min: billingInvoicesMinFields
-  stddev: billingInvoicesStddevFields
-  stddevPop: billingInvoicesStddevPopFields
-  stddevSamp: billingInvoicesStddevSampFields
-  sum: billingInvoicesSumFields
-  varPop: billingInvoicesVarPopFields
-  varSamp: billingInvoicesVarSampFields
-  variance: billingInvoicesVarianceFields
-}
-
-"""
-order by aggregate values of table "billing_invoices"
-"""
-input billingInvoicesAggregateOrderBy {
-  avg: billingInvoicesAvgOrderBy
-  count: OrderBy
-  max: billingInvoicesMaxOrderBy
-  min: billingInvoicesMinOrderBy
-  stddev: billingInvoicesStddevOrderBy
-  stddevPop: billingInvoicesStddevPopOrderBy
-  stddevSamp: billingInvoicesStddevSampOrderBy
-  sum: billingInvoicesSumOrderBy
-  varPop: billingInvoicesVarPopOrderBy
-  varSamp: billingInvoicesVarSampOrderBy
-  variance: billingInvoicesVarianceOrderBy
-}
-
-"""
-input type for inserting array relation for remote table "billing_invoices"
-"""
-input billingInvoicesArrRelInsertInput {
-  data: [billingInvoicesInsertInput!]!
-  """upsert condition"""
-  onConflict: billingInvoicesOnConflict
-}
-
-"""aggregate avg on columns"""
-type billingInvoicesAvgFields {
-  totalAmount: Float
-}
-
-"""
-order by avg() on columns of table "billing_invoices"
-"""
-input billingInvoicesAvgOrderBy {
-  totalAmount: OrderBy
-}
-
-"""
-Boolean expression to filter rows from the table "billing_invoices". All fields are combined with a logical 'AND'.
-"""
-input billingInvoicesBoolExp {
-  _and: [billingInvoicesBoolExp!]
-  _not: billingInvoicesBoolExp
-  _or: [billingInvoicesBoolExp!]
-  billingItems: billingItemsBoolExp
-  billingItemsAggregate: billingItemsAggregateBoolExp
-  billingPeriodEnd: DateComparisonExp
-  billingPeriodStart: DateComparisonExp
-  client: clientsBoolExp
-  clientId: UuidComparisonExp
-  createdAt: TimestampComparisonExp
-  id: UuidComparisonExp
-  invoiceNumber: StringComparisonExp
-  status: StringComparisonExp
-  totalAmount: NumericComparisonExp
-  updatedAt: TimestampComparisonExp
-}
-
-"""
-unique or primary key constraints on table "billing_invoices"
-"""
-enum billingInvoicesConstraint {
-  """
-  unique or primary key constraint on columns "invoice_number"
-  """
-  billing_invoices_invoice_number_key
-  """
-  unique or primary key constraint on columns "id"
-  """
-  billing_invoices_pkey
-}
-
-"""
-input type for incrementing numeric columns in table "billing_invoices"
-"""
-input billingInvoicesIncInput {
-  totalAmount: numeric
-}
-
-"""
-input type for inserting data into table "billing_invoices"
-"""
-input billingInvoicesInsertInput {
-  billingItems: billingItemsArrRelInsertInput
-  billingPeriodEnd: date
-  billingPeriodStart: date
-  client: clientsObjRelInsertInput
-  clientId: uuid
-  createdAt: timestamp
-  id: uuid
-  invoiceNumber: String
-  status: String
-  totalAmount: numeric
-  updatedAt: timestamp
-}
-
-"""aggregate max on columns"""
-type billingInvoicesMaxFields {
-  billingPeriodEnd: date
-  billingPeriodStart: date
-  clientId: uuid
-  createdAt: timestamp
-  id: uuid
-  invoiceNumber: String
-  status: String
-  totalAmount: numeric
-  updatedAt: timestamp
-}
-
-"""
-order by max() on columns of table "billing_invoices"
-"""
-input billingInvoicesMaxOrderBy {
-  billingPeriodEnd: OrderBy
-  billingPeriodStart: OrderBy
-  clientId: OrderBy
-  createdAt: OrderBy
-  id: OrderBy
-  invoiceNumber: OrderBy
-  status: OrderBy
-  totalAmount: OrderBy
-  updatedAt: OrderBy
-}
-
-"""aggregate min on columns"""
-type billingInvoicesMinFields {
-  billingPeriodEnd: date
-  billingPeriodStart: date
-  clientId: uuid
-  createdAt: timestamp
-  id: uuid
-  invoiceNumber: String
-  status: String
-  totalAmount: numeric
-  updatedAt: timestamp
-}
-
-"""
-order by min() on columns of table "billing_invoices"
-"""
-input billingInvoicesMinOrderBy {
-  billingPeriodEnd: OrderBy
-  billingPeriodStart: OrderBy
-  clientId: OrderBy
-  createdAt: OrderBy
-  id: OrderBy
-  invoiceNumber: OrderBy
-  status: OrderBy
-  totalAmount: OrderBy
-  updatedAt: OrderBy
-}
-
-"""
-response of any mutation on the table "billing_invoices"
-"""
-type billingInvoicesMutationResponse {
-  """number of rows affected by the mutation"""
-  affectedRows: Int!
-  """data from the rows affected by the mutation"""
-  returning: [billingInvoices!]!
-}
-
-"""
-input type for inserting object relation for remote table "billing_invoices"
-"""
-input billingInvoicesObjRelInsertInput {
-  data: billingInvoicesInsertInput!
-  """upsert condition"""
-  onConflict: billingInvoicesOnConflict
-}
-
-"""
-on_conflict condition type for table "billing_invoices"
-"""
-input billingInvoicesOnConflict {
-  constraint: billingInvoicesConstraint!
-  updateColumns: [billingInvoicesUpdateColumn!]! = []
-  where: billingInvoicesBoolExp
-}
-
-"""Ordering options when selecting data from "billing_invoices"."""
-input billingInvoicesOrderBy {
-  billingItemsAggregate: billingItemsAggregateOrderBy
-  billingPeriodEnd: OrderBy
-  billingPeriodStart: OrderBy
-  client: clientsOrderBy
-  clientId: OrderBy
-  createdAt: OrderBy
-  id: OrderBy
-  invoiceNumber: OrderBy
-  status: OrderBy
-  totalAmount: OrderBy
-  updatedAt: OrderBy
-}
-
-"""primary key columns input for table: billing_invoices"""
-input billingInvoicesPkColumnsInput {
-  id: uuid!
-}
-
-"""
-select columns of table "billing_invoices"
-"""
-enum billingInvoicesSelectColumn {
-  """column name"""
-  billingPeriodEnd
-  """column name"""
-  billingPeriodStart
-  """column name"""
-  clientId
-  """column name"""
-  createdAt
-  """column name"""
-  id
-  """column name"""
-  invoiceNumber
-  """column name"""
-  status
-  """column name"""
-  totalAmount
-  """column name"""
-  updatedAt
-}
-
-"""
-input type for updating data in table "billing_invoices"
-"""
-input billingInvoicesSetInput {
-  billingPeriodEnd: date
-  billingPeriodStart: date
-  clientId: uuid
-  createdAt: timestamp
-  id: uuid
-  invoiceNumber: String
-  status: String
-  totalAmount: numeric
-  updatedAt: timestamp
-}
-
-"""aggregate stddev on columns"""
-type billingInvoicesStddevFields {
-  totalAmount: Float
-}
-
-"""
-order by stddev() on columns of table "billing_invoices"
-"""
-input billingInvoicesStddevOrderBy {
-  totalAmount: OrderBy
-}
-
-"""aggregate stddevPop on columns"""
-type billingInvoicesStddevPopFields {
-  totalAmount: Float
-}
-
-"""
-order by stddevPop() on columns of table "billing_invoices"
-"""
-input billingInvoicesStddevPopOrderBy {
-  totalAmount: OrderBy
-}
-
-"""aggregate stddevSamp on columns"""
-type billingInvoicesStddevSampFields {
-  totalAmount: Float
-}
-
-"""
-order by stddevSamp() on columns of table "billing_invoices"
-"""
-input billingInvoicesStddevSampOrderBy {
-  totalAmount: OrderBy
-}
-
-"""
-Streaming cursor of the table "billingInvoices"
-"""
-input billingInvoicesStreamCursorInput {
-  """Stream column input with initial value"""
-  initialValue: billingInvoicesStreamCursorValueInput!
-  """cursor ordering"""
-  ordering: CursorOrdering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input billingInvoicesStreamCursorValueInput {
-  billingPeriodEnd: date
-  billingPeriodStart: date
-  clientId: uuid
-  createdAt: timestamp
-  id: uuid
-  invoiceNumber: String
-  status: String
-  totalAmount: numeric
-  updatedAt: timestamp
-}
-
-"""aggregate sum on columns"""
-type billingInvoicesSumFields {
-  totalAmount: numeric
-}
-
-"""
-order by sum() on columns of table "billing_invoices"
-"""
-input billingInvoicesSumOrderBy {
-  totalAmount: OrderBy
-}
-
-"""
-update columns of table "billing_invoices"
-"""
-enum billingInvoicesUpdateColumn {
-  """column name"""
-  billingPeriodEnd
-  """column name"""
-  billingPeriodStart
-  """column name"""
-  clientId
-  """column name"""
-  createdAt
-  """column name"""
-  id
-  """column name"""
-  invoiceNumber
-  """column name"""
-  status
-  """column name"""
-  totalAmount
-  """column name"""
-  updatedAt
-}
-
-input billingInvoicesUpdates {
-  """increments the numeric columns with given value of the filtered values"""
-  _inc: billingInvoicesIncInput
-  """sets the columns of the filtered rows to the given values"""
-  _set: billingInvoicesSetInput
-  """filter the rows which have to be updated"""
-  where: billingInvoicesBoolExp!
-}
-
-"""aggregate varPop on columns"""
-type billingInvoicesVarPopFields {
-  totalAmount: Float
-}
-
-"""
-order by varPop() on columns of table "billing_invoices"
-"""
-input billingInvoicesVarPopOrderBy {
-  totalAmount: OrderBy
-}
-
-"""aggregate varSamp on columns"""
-type billingInvoicesVarSampFields {
-  totalAmount: Float
-}
-
-"""
-order by varSamp() on columns of table "billing_invoices"
-"""
-input billingInvoicesVarSampOrderBy {
-  totalAmount: OrderBy
-}
-
-"""aggregate variance on columns"""
-type billingInvoicesVarianceFields {
-  totalAmount: Float
-}
-
-"""
-order by variance() on columns of table "billing_invoices"
-"""
-input billingInvoicesVarianceOrderBy {
-  totalAmount: OrderBy
-}
-
-"""
 columns and relationships of "billing_items"
 """
 type billingItems {
@@ -3243,8 +2779,6 @@ type billingItems {
   invoiceId: uuid
   payrollId: uuid
   quantity: Int!
-  """An object relationship"""
-  relatedInvoice: billingInvoices
   """An object relationship"""
   relatedPayroll: payrolls
   unitPrice: numeric!
@@ -3342,7 +2876,6 @@ input billingItemsBoolExp {
   invoiceId: UuidComparisonExp
   payrollId: UuidComparisonExp
   quantity: IntComparisonExp
-  relatedInvoice: billingInvoicesBoolExp
   relatedPayroll: payrollsBoolExp
   unitPrice: NumericComparisonExp
 }
@@ -3375,7 +2908,6 @@ input billingItemsInsertInput {
   invoiceId: uuid
   payrollId: uuid
   quantity: Int
-  relatedInvoice: billingInvoicesObjRelInsertInput
   relatedPayroll: payrollsObjRelInsertInput
   unitPrice: numeric
 }
@@ -3460,7 +2992,6 @@ input billingItemsOrderBy {
   invoiceId: OrderBy
   payrollId: OrderBy
   quantity: OrderBy
-  relatedInvoice: billingInvoicesOrderBy
   relatedPayroll: payrollsOrderBy
   unitPrice: OrderBy
 }
@@ -4630,19 +4161,6 @@ type clients {
     """filter the rows returned"""
     where: clientBillingAssignmentsBoolExp
   ): clientBillingAssignmentsAggregate!
-  """An array relationship"""
-  billingInvoices(
-    """distinct select on columns"""
-    distinctOn: [billingInvoicesSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [billingInvoicesOrderBy!]
-    """filter the rows returned"""
-    where: billingInvoicesBoolExp
-  ): [billingInvoices!]!
   """An aggregate relationship"""
   billingInvoicesAggregate(
     """distinct select on columns"""
@@ -4809,8 +4327,6 @@ input clientsBoolExp {
   active: BooleanComparisonExp
   billingAssignments: clientBillingAssignmentsBoolExp
   billingAssignmentsAggregate: clientBillingAssignmentsAggregateBoolExp
-  billingInvoices: billingInvoicesBoolExp
-  billingInvoicesAggregate: billingInvoicesAggregateBoolExp
   billing_invoices: billingInvoiceBoolExp
   billing_invoicesAggregate: billingInvoiceAggregateBoolExp
   contactEmail: StringComparisonExp
@@ -4843,7 +4359,6 @@ input clientsInsertInput {
   """Whether the client is currently active"""
   active: Boolean
   billingAssignments: clientBillingAssignmentsArrRelInsertInput
-  billingInvoices: billingInvoicesArrRelInsertInput
   billing_invoices: billingInvoiceArrRelInsertInput
   """Email address for the client contact"""
   contactEmail: String
@@ -4971,7 +4486,6 @@ input clientsOnConflict {
 input clientsOrderBy {
   active: OrderBy
   billingAssignmentsAggregate: clientBillingAssignmentsAggregateOrderBy
-  billingInvoicesAggregate: billingInvoicesAggregateOrderBy
   billing_invoicesAggregate: billingInvoiceAggregateOrderBy
   contactEmail: OrderBy
   contactPerson: OrderBy
@@ -7397,13 +6911,6 @@ type mutation_root {
     where: billingInvoiceBoolExp!
   ): billingInvoiceMutationResponse
   """
-  delete data from the table: "billing_invoices"
-  """
-  bulkDeleteBillingInvoices(
-    """filter the rows which have to be deleted"""
-    where: billingInvoicesBoolExp!
-  ): billingInvoicesMutationResponse
-  """
   delete data from the table: "billing_items"
   """
   bulkDeleteBillingItems(
@@ -7709,15 +7216,6 @@ type mutation_root {
     """upsert condition"""
     onConflict: billingInvoiceOnConflict
   ): billingInvoiceMutationResponse
-  """
-  insert data into the table: "billing_invoices"
-  """
-  bulkInsertBillingInvoices(
-    """the rows to be inserted"""
-    objects: [billingInvoicesInsertInput!]!
-    """upsert condition"""
-    onConflict: billingInvoicesOnConflict
-  ): billingInvoicesMutationResponse
   """
   insert data into the table: "billing_items"
   """
@@ -8142,17 +7640,6 @@ type mutation_root {
     """filter the rows which have to be updated"""
     where: billingInvoiceBoolExp!
   ): billingInvoiceMutationResponse
-  """
-  update data of the table: "billing_invoices"
-  """
-  bulkUpdateBillingInvoices(
-    """increments the numeric columns with given value of the filtered values"""
-    _inc: billingInvoicesIncInput
-    """sets the columns of the filtered rows to the given values"""
-    _set: billingInvoicesSetInput
-    """filter the rows which have to be updated"""
-    where: billingInvoicesBoolExp!
-  ): billingInvoicesMutationResponse
   """
   update data of the table: "billing_items"
   """
@@ -8661,10 +8148,6 @@ type mutation_root {
   """
   deleteBillingInvoiceById(id: uuid!): billingInvoice
   """
-  delete single row from the table: "billing_invoices"
-  """
-  deleteBillingInvoicesById(id: uuid!): billingInvoices
-  """
   delete single row from the table: "billing_items"
   """
   deleteBillingItemById(id: uuid!): billingItems
@@ -8898,15 +8381,6 @@ type mutation_root {
     """upsert condition"""
     onConflict: billingInvoiceOnConflict
   ): billingInvoice
-  """
-  insert a single row into the table: "billing_invoices"
-  """
-  insertBillingInvoices(
-    """the row to be inserted"""
-    object: billingInvoicesInsertInput!
-    """upsert condition"""
-    onConflict: billingInvoicesOnConflict
-  ): billingInvoices
   """
   insert a single row into the table: "billing_items"
   """
@@ -9376,23 +8850,6 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [billingInvoiceUpdates!]!
   ): [billingInvoiceMutationResponse]
-  """
-  update single row of the table: "billing_invoices"
-  """
-  updateBillingInvoicesById(
-    """increments the numeric columns with given value of the filtered values"""
-    _inc: billingInvoicesIncInput
-    """sets the columns of the filtered rows to the given values"""
-    _set: billingInvoicesSetInput
-    pkColumns: billingInvoicesPkColumnsInput!
-  ): billingInvoices
-  """
-  update multiples rows of table: "billing_invoices"
-  """
-  updateBillingInvoicesMany(
-    """updates to execute, in order"""
-    updates: [billingInvoicesUpdates!]!
-  ): [billingInvoicesMutationResponse]
   """
   update single row of the table: "billing_items"
   """
@@ -16190,36 +15647,6 @@ type query_root {
   ): billingInvoiceAggregate!
   """fetch data from the table: "billing_invoice" using primary key columns"""
   billingInvoiceById(id: uuid!): billingInvoice
-  """An array relationship"""
-  billingInvoices(
-    """distinct select on columns"""
-    distinctOn: [billingInvoicesSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [billingInvoicesOrderBy!]
-    """filter the rows returned"""
-    where: billingInvoicesBoolExp
-  ): [billingInvoices!]!
-  """An aggregate relationship"""
-  billingInvoicesAggregate(
-    """distinct select on columns"""
-    distinctOn: [billingInvoicesSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [billingInvoicesOrderBy!]
-    """filter the rows returned"""
-    where: billingInvoicesBoolExp
-  ): billingInvoicesAggregate!
-  """
-  fetch data from the table: "billing_invoices" using primary key columns
-  """
-  billingInvoicesById(id: uuid!): billingInvoices
   """fetch data from the table: "billing_items" using primary key columns"""
   billingItemById(id: uuid!): billingItems
   """An array relationship"""
@@ -19146,47 +18573,6 @@ type subscription_root {
     """filter the rows returned"""
     where: billingInvoiceBoolExp
   ): [billingInvoice!]!
-  """An array relationship"""
-  billingInvoices(
-    """distinct select on columns"""
-    distinctOn: [billingInvoicesSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [billingInvoicesOrderBy!]
-    """filter the rows returned"""
-    where: billingInvoicesBoolExp
-  ): [billingInvoices!]!
-  """An aggregate relationship"""
-  billingInvoicesAggregate(
-    """distinct select on columns"""
-    distinctOn: [billingInvoicesSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [billingInvoicesOrderBy!]
-    """filter the rows returned"""
-    where: billingInvoicesBoolExp
-  ): billingInvoicesAggregate!
-  """
-  fetch data from the table: "billing_invoices" using primary key columns
-  """
-  billingInvoicesById(id: uuid!): billingInvoices
-  """
-  fetch data from the table in a streaming manner: "billing_invoices"
-  """
-  billingInvoicesStream(
-    """maximum number of rows returned in a single batch"""
-    batchSize: Int!
-    """cursor to stream the results returned by the query"""
-    cursor: [billingInvoicesStreamCursorInput]!
-    """filter the rows returned"""
-    where: billingInvoicesBoolExp
-  ): [billingInvoices!]!
   """fetch data from the table: "billing_items" using primary key columns"""
   billingItemById(id: uuid!): billingItems
   """An array relationship"""

@@ -163,16 +163,9 @@ query SecurityOverview(
   ) {
     id
     eventTime
-    userId
-    userEmail
-    userRole
     action
     resourceType
-    resourceId
     success
-    errorMessage
-    ipAddress
-    metadata
   }
 
   # Audit log count for metrics
@@ -192,13 +185,8 @@ query SecurityOverview(
   ) {
     id
     eventTime
-    userId
-    userEmail
-    userRole
     action
     resourceType
-    errorMessage
-    ipAddress
   }
 
   # Data access in last 7 days
@@ -209,12 +197,10 @@ query SecurityOverview(
   ) {
     id
     accessedAt
-    userId
     resourceType
     accessType
     dataClassification
     rowCount
-    ipAddress
   }
 
   # Auth events summary
@@ -226,11 +212,8 @@ query SecurityOverview(
     id
     eventTime
     eventType
-    userId
-    userEmail
     success
     failureReason
-    ipAddress
   }
 }
 

@@ -83,6 +83,7 @@ const allRoutes = [
     label: "Settings",
     icon: Settings,
     checkAccess: (auth: any) => auth.hasPermission("settings:write"),
+    hidden: true, // Temporarily hidden - may use in the future
   },
   {
     href: "/developer",
@@ -115,6 +116,11 @@ export function Sidebar() {
 
   // Filter routes based on auth context
   const accessibleRoutes = routes.filter(route => {
+    // Hide routes marked as hidden
+    if (route.hidden) {
+      return false;
+    }
+    
     if (!authContext.isLoading && authContext.isAuthenticated) {
       return route.checkAccess(authContext);
     }

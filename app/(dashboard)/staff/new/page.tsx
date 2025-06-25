@@ -96,10 +96,39 @@ export default function CreateUserPage() {
         }),
       });
 
-      const data = await response.json();
-
+      // Check if response is OK first
       if (!response.ok) {
-        throw new Error(data.error || data.details || "Failed to create staff member");
+        // Try to get error text, fallback to status text
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+          const errorText = await response.text();
+          if (errorText) {
+            // Try to parse as JSON for structured error
+            try {
+              const errorData = JSON.parse(errorText);
+              errorMessage = errorData.error || errorData.details || errorMessage;
+            } catch {
+              // If not JSON, use the text as is
+              errorMessage = errorText;
+            }
+          }
+        } catch {
+          // If we can't read the response, use the status
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Parse JSON response
+      let data;
+      try {
+        const responseText = await response.text();
+        if (!responseText) {
+          throw new Error("Empty response from server");
+        }
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("JSON parsing error:", parseError);
+        throw new Error("Invalid response format from server");
       }
 
       toast.success(

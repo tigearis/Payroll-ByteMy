@@ -38,6 +38,7 @@ import {
   Manager,
   UserPermissions,
 } from "@/hooks/use-user-management";
+import { useAuth } from "@clerk/nextjs";
 
 const createUserSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -67,7 +68,8 @@ export function CreateUserModal({
   currentUserRole,
 }: CreateUserModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { createUser, canAssignRole } = useUserManagement();
+  const { canAssignRole, refetchUsers } = useUserManagement();
+  const { getToken } = useAuth();
 
   const form = useForm<CreateUserFormData>({
     resolver: zodResolver(createUserSchema),
@@ -95,22 +97,76 @@ export function CreateUserModal({
 
     setIsSubmitting(true);
     try {
-      const userData = {
-        ...data,
-        managerId: data.managerId || "",
-      };
+      // Get Clerk token for API authentication
+      const token = await getToken({ template: "hasura" });
+      
+      // Call the API route which handles both Clerk invitation and database creation
+      const response = await fetch("/api/staff/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: `${data.firstName} ${data.lastName}`.trim(),
+          email: data.email,
+          role: data.role,
+          is_staff: true,
+          managerId: data.managerId || null,
+          inviteToClerk: true, // Send Clerk invitation
+        }),
+      });
 
-      const success = await createUser(userData);
-      if (success) {
-        toast.success(
-          `User ${data.firstName} ${data.lastName} created successfully`
-        );
-        form.reset();
-        onClose();
+      // Check if response is OK first
+      if (!response.ok) {
+        // Try to get error text, fallback to status text
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+          const errorText = await response.text();
+          if (errorText) {
+            // Try to parse as JSON for structured error
+            try {
+              const errorData = JSON.parse(errorText);
+              errorMessage = errorData.error || errorData.details || errorMessage;
+            } catch {
+              // If not JSON, use the text as is
+              errorMessage = errorText;
+            }
+          }
+        } catch {
+          // If we can't read the response, use the status
+        }
+        throw new Error(errorMessage);
       }
+
+      // Parse JSON response
+      let responseData;
+      try {
+        const responseText = await response.text();
+        if (!responseText) {
+          throw new Error("Empty response from server");
+        }
+        responseData = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("JSON parsing error:", parseError);
+        throw new Error("Invalid response format from server");
+      }
+
+      toast.success(
+        responseData.staffData?.invitationSent
+          ? `Staff member created and invitation sent to ${data.email}!`
+          : `Staff member ${data.firstName} ${data.lastName} created successfully!`
+      );
+      
+      // Refresh the staff list
+      await refetchUsers();
+      
+      form.reset();
+      onClose();
     } catch (error) {
       console.error("Failed to create user:", error);
-      toast.error("Failed to create user. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "Failed to create user";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

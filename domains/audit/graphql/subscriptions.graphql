@@ -45,16 +45,9 @@ subscription SecurityEventsStream($twentyFourHoursAgo: timestamptz!) {
   ) {
     id
     eventTime
-    userId
-    userEmail
-    userRole
     action
     resourceType
-    resourceId
     success
-    errorMessage
-    ipAddress
-    metadata
   }
 }
 
@@ -67,13 +60,8 @@ subscription FailedOperationsStream($twentyFourHoursAgo: timestamptz!) {
   ) {
     id
     eventTime
-    userId
-    userEmail
-    userRole
     action
     resourceType
-    errorMessage
-    ipAddress
   }
 }
 
@@ -89,11 +77,9 @@ subscription CriticalDataAccessStream($sevenDaysAgo: timestamptz!) {
   ) {
     id
     accessedAt
-    userId
     resourceType
     accessType
     dataClassification
     rowCount
-    ipAddress
   }
 }
