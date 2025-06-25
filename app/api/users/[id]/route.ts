@@ -101,7 +101,7 @@ export async function GET(
         fetchPolicy: "network-only",
         errorPolicy: "all",
       });
-      userData = result.data?.user;
+      userData = result.data?.userById;
       errors = result.errors;
     } else {
       // Clerk ID
@@ -228,7 +228,7 @@ export const PUT = withAuthParams(
           variables: { id: targetId },
           fetchPolicy: "network-only",
         });
-        targetUser = result.data?.user;
+        targetUser = result.data?.userById;
       } else {
         const result = await adminApolloClient.query({
           query: GetUserByClerkIdCompleteDocument,
@@ -362,7 +362,7 @@ export const DELETE = withAuthParams(
           variables: { id: targetId },
           fetchPolicy: "network-only",
         });
-        targetUser = result.data?.user;
+        targetUser = result.data?.userById;
       } else {
         const result = await adminApolloClient.query({
           query: GetUserByClerkIdCompleteDocument,

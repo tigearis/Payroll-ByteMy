@@ -208,7 +208,6 @@ export function useCacheInvalidation() {
         include: [
           GetPayrollsDocument,
           GetPayrollsByMonthDocument,
-          GetPayrollsMissingDatesDocument,
         ],
       });
 

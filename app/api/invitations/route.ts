@@ -11,7 +11,18 @@ import { withAuth } from "@/lib/auth/api-auth";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
 
 async function GET(request: NextRequest) {
-  return withAuth(async (authUser) => {
+  return withAuth(async (request, authUser) => {
+    // Extract database user ID from JWT claims first
+    const hasuraClaims = authUser.sessionClaims?.["https://hasura.io/jwt/claims"] as any;
+    const databaseUserId = hasuraClaims?.["x-hasura-user-id"];
+    
+    if (!databaseUserId) {
+      return NextResponse.json(
+        { error: "Database user ID not found in session" },
+        { status: 400 }
+      );
+    }
+
     try {
       const { searchParams } = new URL(request.url);
       const view = searchParams.get("view") || "pending"; // pending, resendable, sent, all
@@ -47,7 +58,7 @@ async function GET(request: NextRequest) {
           queryResult = await adminApolloClient.query({
             query: GetResendableInvitationsDocument,
             variables: { 
-              invitedBy: authUser.databaseId,
+              invitedBy: databaseUserId,
               limit 
             }
           });
@@ -64,7 +75,7 @@ async function GET(request: NextRequest) {
           queryResult = await adminApolloClient.query({
             query: GetInvitationsBySenderDocument,
             variables: { 
-              invitedBy: authUser.databaseId,
+              invitedBy: databaseUserId,
               limit 
             }
           });
@@ -93,21 +104,21 @@ async function GET(request: NextRequest) {
             level: LogLevel.INFO,
             eventType: SOC2EventType.USER_UPDATED,
             category: LogCategory.SYSTEM_ACCESS,
-            message: "Expired invitations marked as expired",
+            complianceNote: "Expired invitations marked as expired",
             success: true,
-            userId: authUser.databaseId,
+            userId: databaseUserId,
             resourceType: "invitation",
             action: "cleanup_expired",
             metadata: {
-              expiredCount: cleanupResult.data.bulkUpdateUserInvitations.affectedRows,
-              expiredInvitations: cleanupResult.data.bulkUpdateUserInvitations.returning
+              expiredCount: cleanupResult.data?.bulkUpdateUserInvitations?.affectedRows || 0,
+              expiredInvitations: cleanupResult.data?.bulkUpdateUserInvitations?.returning || []
             }
           });
 
           return NextResponse.json({
             success: true,
-            message: `Marked ${cleanupResult.data.bulkUpdateUserInvitations.affectedRows} expired invitations`,
-            expiredInvitations: cleanupResult.data.bulkUpdateUserInvitations.returning
+            complianceNote: `Marked ${cleanupResult.data?.bulkUpdateUserInvitations?.affectedRows || 0} expired invitations`,
+            expiredInvitations: cleanupResult.data?.bulkUpdateUserInvitations?.returning || []
           });
 
         default:
@@ -124,9 +135,9 @@ async function GET(request: NextRequest) {
         level: LogLevel.ERROR,
         eventType: SOC2EventType.SECURITY_VIOLATION,
         category: LogCategory.ERROR,
-        message: "Failed to retrieve invitations",
+        complianceNote: "Failed to retrieve invitations",
         success: false,
-        userId: authUser.databaseId,
+        userId: databaseUserId,
         resourceType: "invitation",
         action: "retrieve_failure",
         errorMessage: error instanceof Error ? error.message : "Unknown error",

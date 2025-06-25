@@ -32,11 +32,11 @@ export const GET = withAuthParams(
         context: { headers: { authorization: `Bearer ${token}` } },
       });
 
-      if (!data.payroll) {
+      if (!data.payrollById) {
         return NextResponse.json({ error: "Not Found" }, { status: 404 });
       }
 
-      return NextResponse.json(data.payroll);
+      return NextResponse.json(data.payrollById);
     } catch (error) {
       console.error("Payroll fetch error:", error);
       return NextResponse.json(

@@ -3,12 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
-import { ApiResponses } from "@/lib/api-responses";
-import { 
-  GetUserForDeletionDocument, 
+import {
+  GetUserForDeletionDocument,
   GetCurrentUserRoleDocument,
   DeactivateUserDocument,
-  HardDeleteUserDocument
+  HardDeleteUserDocument,
 } from "@/domains/users";
 
 async function checkUserPermissions(clerkUserId: string) {
@@ -83,7 +82,7 @@ export const POST = withAuth(
         fetchPolicy: "no-cache",
       });
 
-      const user = userData?.user;
+      const user = userData?.userById;
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
@@ -117,12 +116,6 @@ export const POST = withAuth(
       if (userData.subordinates?.length > 0) {
         blockingDependencies.push(
           `${userData.subordinates.length} direct reports`
-        );
-      }
-
-      if (userData.pendingLeaves?.length > 0) {
-        blockingDependencies.push(
-          `${userData.pendingLeaves.length} pending leave approvals`
         );
       }
 
@@ -175,7 +168,7 @@ export const POST = withAuth(
           variables: { id: staffId },
         });
 
-        result = deleteData?.deleteUser;
+        result = deleteData?.deleteUserById;
         if (!result) {
           return NextResponse.json(
             { error: "Failed to hard delete user from database" },
@@ -207,7 +200,7 @@ export const POST = withAuth(
           },
         });
 
-        result = deactivateData?.updateUser;
+        result = deactivateData?.updateUserById;
         if (!result) {
           return NextResponse.json(
             { error: "Failed to deactivate user in database" },
@@ -223,7 +216,7 @@ export const POST = withAuth(
           user: result,
           clerkDeleted,
           auditInfo: {
-            deactivatedAt: result.deactivatedAt,
+            deactivatedAt: new Date().toISOString(), // TODO: Extract from fragment-masked result
             deactivatedBy: userId,
             originalRole: user.role,
             hadClerkAccount: !!user.clerkUserId,
@@ -283,7 +276,7 @@ export async function GET(req: NextRequest) {
       fetchPolicy: "no-cache",
     });
 
-    const user = userData?.user;
+    const user = userData?.userById;
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -314,19 +307,8 @@ export async function GET(req: NextRequest) {
       warnings.push("User manages other staff members who need a new manager");
     }
 
-    if (userData.pendingLeaves?.length > 0) {
-      dependencies.push({
-        type: "pending_leaves",
-        count: userData.pendingLeaves.length,
-        items: userData.pendingLeaves.map((l: any) => ({
-          id: l.id,
-          user: l.user.name,
-          type: l.leaveType,
-          dates: `${l.startDate} to ${l.endDate}`,
-        })),
-      });
-      warnings.push("User has pending leave approvals to process");
-    }
+    // Note: pendingLeaves functionality removed as it's not part of the current GraphQL schema
+    // TODO: Re-implement when leave management domain is added
 
     return NextResponse.json({
       user: {
@@ -337,7 +319,7 @@ export async function GET(req: NextRequest) {
         isActive: user.isActive,
         hasClerkAccount: !!user.clerkUserId,
         createdAt: user.createdAt,
-        manager: user.manager,
+        manager: user.managerUser,
       },
       permissions: {
         canDeactivate: permissions.canDeactivate,

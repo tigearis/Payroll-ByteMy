@@ -19,12 +19,7 @@ export function DeveloperOnly({ children, fallback }: DeveloperOnlyProps) {
   if (!systemAdminPermission.granted) {
     return fallback || (
       <PermissionDenied 
-        requiredPermission="system:admin"
-        message="This page is only available to developers."
-        suggestions={[
-          "Contact your system administrator if you need developer access",
-          "Use the appropriate user interface for your role level",
-        ]}
+        result={systemAdminPermission}
       />
     );
   }

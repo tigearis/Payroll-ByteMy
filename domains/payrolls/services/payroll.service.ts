@@ -8,12 +8,12 @@ import {
   GetPayrollsByMonthDocument,
   UpdatePayrollStatusDocument,
   DeletePayrollDocument,
-  CheckPayrollVersionDocument,
+  GetPayrollVersionsDocument,
   GetPayrollsQuery,
   GetPayrollByIdQuery,
   CreatePayrollMutation,
   UpdatePayrollMutation,
-  CheckPayrollVersionQuery,
+  GetPayrollVersionsQuery,
 } from "../graphql/generated/graphql";
 import { useFragment } from "../graphql/generated/fragment-masking";
 
@@ -44,7 +44,7 @@ export class PayrollService {
       query: GetPayrollByIdDocument,
       variables: { id },
     });
-    return data.payroll;
+    return data.payrollById;
   }
 
   /**
@@ -115,7 +115,7 @@ export class PayrollService {
       mutation: UpdatePayrollDocument,
       variables: { id, ...input },
     });
-    return data?.updatePayroll;
+    return data?.updatePayrollById;
   }
 
   /**
@@ -126,7 +126,7 @@ export class PayrollService {
       mutation: UpdatePayrollStatusDocument,
       variables: { id, status },
     });
-    return data?.updatePayroll;
+    return data?.updatePayrollById;
   }
 
   /**
@@ -137,7 +137,7 @@ export class PayrollService {
       mutation: DeletePayrollDocument,
       variables: { id },
     });
-    return data?.deletePayroll;
+    return data?.updatePayrollById;
   }
 
   /**

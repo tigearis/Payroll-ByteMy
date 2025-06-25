@@ -17,7 +17,18 @@ const ResendInvitationSchema = z.object({
 });
 
 async function POST(request: NextRequest) {
-  return withAuth(async (authUser) => {
+  return withAuth(async (request, authUser) => {
+    // Extract database user ID from JWT claims first
+    const hasuraClaims = authUser.sessionClaims?.["https://hasura.io/jwt/claims"] as any;
+    const databaseUserId = hasuraClaims?.["x-hasura-user-id"];
+    
+    if (!databaseUserId) {
+      return NextResponse.json(
+        { error: "Database user ID not found in session" },
+        { status: 400 }
+      );
+    }
+
     try {
       const body = await request.json();
       const { invitationId, extendDays } = ResendInvitationSchema.parse(body);
@@ -38,7 +49,7 @@ async function POST(request: NextRequest) {
 
       // 2. Verify user has permission to resend this invitation
       const canResend = 
-        invitation.invitedBy === authUser.databaseId || // Original inviter
+        invitation.invitedBy === databaseUserId || // Original inviter
         authUser.role === "developer" || // Developer can resend any
         authUser.role === "org_admin"; // Org admin can resend any
 
@@ -47,9 +58,9 @@ async function POST(request: NextRequest) {
           level: LogLevel.WARNING,
           eventType: SOC2EventType.SECURITY_VIOLATION,
           category: LogCategory.SECURITY_EVENT,
-          message: "Unauthorized attempt to resend invitation",
+          complianceNote: "Unauthorized attempt to resend invitation",
           success: false,
-          userId: authUser.databaseId,
+          userId: databaseUserId,
           resourceType: "invitation",
           action: "unauthorized_resend",
           metadata: {
@@ -78,7 +89,7 @@ async function POST(request: NextRequest) {
         query: ValidateInvitationRolePermissionsDocument,
         variables: {
           invitedRole: invitation.invitedRole,
-          invitedBy: authUser.databaseId
+          invitedBy: databaseUserId
         }
       });
 
@@ -106,9 +117,10 @@ async function POST(request: NextRequest) {
       }
 
       // 5. Cancel the old Clerk invitation if it exists
+      const clerk = await clerkClient();
       if (invitation.clerkInvitationId) {
         try {
-          await clerkClient.invitations.revokeInvitation(invitation.clerkInvitationId);
+          await clerk.invitations.revokeInvitation(invitation.clerkInvitationId);
         } catch (clerkError) {
           console.warn("Failed to revoke old Clerk invitation:", clerkError);
           // Continue anyway - the old invitation might have already expired
@@ -116,7 +128,7 @@ async function POST(request: NextRequest) {
       }
 
       // 6. Create new Clerk invitation
-      const newClerkInvitation = await clerkClient.invitations.createInvitation({
+      const newClerkInvitation = await clerk.invitations.createInvitation({
         emailAddress: invitation.email,
         redirectUrl: `${process.env.VERCEL_URL || 'http://localhost:3000'}/accept-invitation`,
         publicMetadata: {
@@ -148,9 +160,9 @@ async function POST(request: NextRequest) {
         level: LogLevel.INFO,
         eventType: SOC2EventType.USER_CREATED,
         category: LogCategory.AUTHENTICATION,
-        message: "User invitation resent successfully",
+        complianceNote: "User invitation resent successfully",
         success: true,
-        userId: authUser.databaseId,
+        userId: databaseUserId,
         resourceType: "invitation",
         action: "resend",
         metadata: {
@@ -188,9 +200,9 @@ async function POST(request: NextRequest) {
         level: LogLevel.ERROR,
         eventType: SOC2EventType.SECURITY_VIOLATION,
         category: LogCategory.ERROR,
-        message: "Failed to resend user invitation",
+        complianceNote: "Failed to resend user invitation",
         success: false,
-        userId: authUser.databaseId,
+        userId: databaseUserId,
         resourceType: "invitation",
         action: "resend_failure",
         errorMessage: error instanceof Error ? error.message : "Unknown error",
