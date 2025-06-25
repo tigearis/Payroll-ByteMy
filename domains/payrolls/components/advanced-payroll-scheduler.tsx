@@ -234,61 +234,69 @@ export default function AdvancedPayrollScheduler() {
     if (!data?.payrolls) return [];
 
     const assignmentList: PayrollAssignment[] = [];
-    const payrollsMap = new Map();
 
-    // Create payrolls map for quick lookup
-    data.payrolls?.forEach((payroll: any) => {
-      payrollsMap.set(payroll.id, payroll);
+    console.log("🔄 Transforming data:", {
+      payrolls: data.payrolls.length,
+      samplePayroll: data.payrolls[0],
+      samplePayrollDates: data.payrolls[0]?.payrollDates?.length || 0,
     });
 
-    data.payrolls[0]?.payrollDates?.forEach((dateInfo: any) => {
-      const payroll = dateInfo.payroll || payrollsMap.get(dateInfo.payrollId);
-      if (!payroll) return;
-
-      const assignmentDate = new Date(dateInfo.adjustedEftDate);
-      const primaryConsultant = payroll.userByPrimaryConsultantUserId;
-      const backupConsultant = payroll.userByBackupConsultantUserId;
-
-      let finalConsultantId = primaryConsultant?.id || "unassigned";
-      let finalConsultantName = primaryConsultant?.name || "Unassigned";
-      let isBackup = false;
-      let originalConsultantId: string | undefined;
-      let originalConsultantName: string | undefined;
-
-      // Check if primary consultant is on leave
-      if (
-        primaryConsultant &&
-        isConsultantOnLeave(primaryConsultant, assignmentDate)
-      ) {
-        if (backupConsultant) {
-          originalConsultantId = primaryConsultant.id;
-          originalConsultantName = primaryConsultant.name;
-          finalConsultantId = backupConsultant.id;
-          finalConsultantName = backupConsultant.name;
-          isBackup = true;
-        }
+    // Iterate through each payroll and its dates
+    data.payrolls.forEach((payroll: any) => {
+      if (!payroll.payrollDates || payroll.payrollDates.length === 0) {
+        console.log(`⚠️ No payroll dates for payroll: ${payroll.name}`);
+        return;
       }
 
-      const assignment: PayrollAssignment = {
-        id: dateInfo.id,
-        payrollId: payroll.id,
-        payrollName: payroll.name,
-        clientName: payroll.client?.name || "Unknown Client",
-        originalEftDate: dateInfo.originalEftDate,
-        adjustedEftDate: dateInfo.adjustedEftDate,
-        processingDate: dateInfo.processingDate,
-        employeeCount: payroll.employeeCount || 0,
-        processingTime: payroll.processingTime || 1,
-        consultantId: finalConsultantId,
-        consultantName: finalConsultantName,
-        isBackup,
-        originalConsultantId: originalConsultantId || "",
-        originalConsultantName: originalConsultantName || "",
-      };
+      console.log(`📅 Processing payroll "${payroll.name}" with ${payroll.payrollDates.length} dates`);
 
-      assignmentList.push(assignment);
+      payroll.payrollDates.forEach((dateInfo: any) => {
+        const assignmentDate = new Date(dateInfo.adjustedEftDate);
+        const primaryConsultant = payroll.primaryConsultant;
+        const backupConsultant = payroll.backupConsultant;
+
+        let finalConsultantId = primaryConsultant?.id || "unassigned";
+        let finalConsultantName = primaryConsultant?.name || "Unassigned";
+        let isBackup = false;
+        let originalConsultantId: string | undefined;
+        let originalConsultantName: string | undefined;
+
+        // Check if primary consultant is on leave
+        if (
+          primaryConsultant &&
+          isConsultantOnLeave(primaryConsultant, assignmentDate)
+        ) {
+          if (backupConsultant) {
+            originalConsultantId = primaryConsultant.id;
+            originalConsultantName = primaryConsultant.name;
+            finalConsultantId = backupConsultant.id;
+            finalConsultantName = backupConsultant.name;
+            isBackup = true;
+          }
+        }
+
+        const assignment: PayrollAssignment = {
+          id: dateInfo.id,
+          payrollId: payroll.id,
+          payrollName: payroll.name,
+          clientName: payroll.client?.name || "Unknown Client",
+          originalEftDate: dateInfo.originalEftDate,
+          adjustedEftDate: dateInfo.adjustedEftDate,
+          processingDate: dateInfo.processingDate,
+          employeeCount: payroll.employeeCount || 0,
+          processingTime: payroll.processingTime || 1,
+          consultantId: finalConsultantId,
+          consultantName: finalConsultantName,
+          isBackup,
+          originalConsultantId: originalConsultantId || "",
+          originalConsultantName: originalConsultantName || "",
+        };
+
+        assignmentList.push(assignment);
+      });
     });
 
+    console.log(`✅ Transformed ${assignmentList.length} assignments from ${data.payrolls.length} payrolls`);
     return assignmentList;
   };
 
@@ -305,7 +313,11 @@ export default function AdvancedPayrollScheduler() {
       const freshAssignments = transformData(data);
       setAssignments(freshAssignments);
       setOriginalAssignments([...freshAssignments]);
-      console.log("📋 Assignments set:", freshAssignments.length);
+      console.log("📋 Assignments set:", {
+        assignmentsCount: freshAssignments.length,
+        payrollsCount: data.payrolls?.length || 0,
+        sampleAssignment: freshAssignments[0],
+      });
     }
   }, [data]);
 
@@ -316,20 +328,21 @@ export default function AdvancedPayrollScheduler() {
     const consultantMap = new Map();
 
     data.payrolls.forEach((payroll: any) => {
-      if (payroll.userByPrimaryConsultantUserId) {
+      if (payroll.primaryConsultant) {
         consultantMap.set(
-          payroll.userByPrimaryConsultantUserId.id,
-          payroll.userByPrimaryConsultantUserId
+          payroll.primaryConsultant.id,
+          payroll.primaryConsultant
         );
       }
-      if (payroll.userByBackupConsultantUserId) {
+      if (payroll.backupConsultant) {
         consultantMap.set(
-          payroll.userByBackupConsultantUserId.id,
-          payroll.userByBackupConsultantUserId
+          payroll.backupConsultant.id,
+          payroll.backupConsultant
         );
       }
     });
 
+    console.log(`👥 Found ${consultantMap.size} unique consultants:`, Array.from(consultantMap.values()).map(c => c.name));
     return Array.from(consultantMap.values());
   }, [data]);
 
@@ -976,7 +989,15 @@ export default function AdvancedPayrollScheduler() {
               </p>
               <p>
                 <strong>Raw PayrollDates Count:</strong>{" "}
-                {data?.payrolls?.[0]?.payrollDates?.length || 0}
+                {data?.payrolls?.reduce((total, payroll) => total + (payroll.payrollDates?.length || 0), 0) || 0}
+              </p>
+              <p>
+                <strong>Sample Payroll:</strong>{" "}
+                {data?.payrolls?.[0]?.name || "None"}
+              </p>
+              <p>
+                <strong>Has Consultant Data:</strong>{" "}
+                {data?.payrolls?.[0]?.primaryConsultant ? "Yes" : "No"}
               </p>
               <p>
                 <strong>Consultants Found:</strong> {consultants.length}
