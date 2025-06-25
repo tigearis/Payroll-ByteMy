@@ -1,15 +1,14 @@
 "use client";
 
-import { useMutation } from "@apollo/client";
 import { useAuth } from "@clerk/nextjs";
 import { UserPlus } from "lucide-react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Shield } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-
-import { CreateUserDocument } from "@/domains/users/graphql/generated/graphql";
+import { useAuthContext } from "@/lib/auth/auth-context";
+import { useUserManagement } from "@/hooks/use-user-management";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +24,11 @@ import {
 export default function CreateUserPage() {
   const router = useRouter();
   const { getToken } = useAuth();
+  const { hasPermission, userRole } = useAuthContext();
+  const { canAssignRole } = useUserManagement();
+
+  // Check if user has permission to create staff
+  const canCreateStaff = hasPermission("staff:invite") || hasPermission("staff:write");
 
   const [form, setForm] = useState({
     email: "",
@@ -34,22 +38,28 @@ export default function CreateUserPage() {
   });
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Use GraphQL mutation directly (like payrolls do)
-  const [createStaff, { loading }] = useMutation(CreateUserDocument, {
-    onCompleted: data => {
-      toast.success(
-        `Staff member ${form.firstName} ${form.lastName} created successfully!`
-      );
-      router.push("/staff");
-    },
-    onError: error => {
-      console.error("Staff creation error:", error);
-      const errorMessage = error.message || "Failed to create staff member";
-      setError(errorMessage);
-      toast.error(`Failed to create staff member: ${errorMessage}`);
-    },
-  });
+  // Check permission to access this page
+  if (!canCreateStaff) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] p-8 space-y-6">
+        <Shield className="w-16 h-16 text-red-500" />
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold">Access Denied</h2>
+          <p className="text-gray-600">
+            You don't have permission to create staff members
+          </p>
+          <p className="text-sm text-gray-500 mt-2">Current role: {userRole}</p>
+          <div className="mt-6">
+            <Button onClick={() => router.push("/staff")} variant="outline">
+              Back to Staff List
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -64,22 +74,48 @@ export default function CreateUserPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      // Use GraphQL mutation directly (same pattern as payrolls)
-      await createStaff({
-        variables: {
-          object: {
-            name: `${form.firstName} ${form.lastName}`.trim(),
-            email: form.email,
-            role: form.role,
-            isStaff: true,
-          },
+      // Get Clerk token for API authentication
+      const token = await getToken({ template: "hasura" });
+      
+      // Call the API route which handles both Clerk invitation and database creation
+      const response = await fetch("/api/staff/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({
+          name: `${form.firstName} ${form.lastName}`.trim(),
+          email: form.email,
+          role: form.role,
+          is_staff: true,
+          inviteToClerk: true, // Send Clerk invitation
+        }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.details || "Failed to create staff member");
+      }
+
+      toast.success(
+        data.staffData?.invitationSent
+          ? `Staff member created and invitation sent to ${form.email}!`
+          : `Staff member ${form.firstName} ${form.lastName} created successfully!`
+      );
+      
+      router.push("/staff");
     } catch (err: unknown) {
-      // Error handling is done in the onError callback
       console.error("Form submission error:", err);
+      const errorMessage = err instanceof Error ? err.message : "Failed to create staff member";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -168,11 +204,21 @@ export default function CreateUserPage() {
                     <SelectValue placeholder="Select a role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="developer">Developer</SelectItem>
-                    <SelectItem value="org_admin">Admin</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="consultant">Consultant</SelectItem>
-                    <SelectItem value="viewer">Viewer</SelectItem>
+                    {canAssignRole("developer") && (
+                      <SelectItem value="developer">Developer</SelectItem>
+                    )}
+                    {canAssignRole("org_admin") && (
+                      <SelectItem value="org_admin">Admin</SelectItem>
+                    )}
+                    {canAssignRole("manager") && (
+                      <SelectItem value="manager">Manager</SelectItem>
+                    )}
+                    {canAssignRole("consultant") && (
+                      <SelectItem value="consultant">Consultant</SelectItem>
+                    )}
+                    {canAssignRole("viewer") && (
+                      <SelectItem value="viewer">Viewer</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
