@@ -85,6 +85,7 @@ export function MainNav() {
       icon: Settings,
       active: pathname === "/settings",
       checkAccess: (auth: any) => auth.hasPermission("settings:write"),
+      hidden: true, // Temporarily hidden - may use in the future
     },
   ];
 
@@ -92,6 +93,11 @@ export function MainNav() {
   const routes = allRoutes.filter(route => {
     // Filter out dev-only routes in production
     if (route.devOnly && process.env.NODE_ENV === "production") {
+      return false;
+    }
+    
+    // Hide routes marked as hidden
+    if (route.hidden) {
       return false;
     }
     

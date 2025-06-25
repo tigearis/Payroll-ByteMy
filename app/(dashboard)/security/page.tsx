@@ -416,16 +416,12 @@ export default function SecurityDashboard() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">
-                            {op.action} {op.entityType}
+                            {op.action} {op.resourceType}
                           </span>
                           <Badge variant="destructive">Failed</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          User: {op.userId} ({op.userRole}) •{" "}
-                          {formatDistanceToNow(new Date(op.createdAt))} ago
-                        </p>
-                        <p className="text-sm text-destructive">
-                          {op.errorMessage}
+                          {formatDistanceToNow(new Date(op.eventTime))} ago
                         </p>
                       </div>
                     </div>
@@ -465,16 +461,17 @@ export default function SecurityDashboard() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">
-                            {access.action} {access.entityType}
+                            {access.accessType} {access.resourceType}
                           </span>
-                          <Badge variant="destructive">CRITICAL</Badge>
+                          <Badge variant="destructive">
+                            {access.dataClassification || "CRITICAL"}
+                          </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          User: {access.userId} ({access.userRole}) •{" "}
-                          {formatDistanceToNow(new Date(access.createdAt))} ago
+                          {formatDistanceToNow(new Date(access.accessedAt))} ago
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          Entity ID: {access.entityId}
+                          Rows accessed: {access.rowCount || 0}
                         </p>
                       </div>
                     </div>
