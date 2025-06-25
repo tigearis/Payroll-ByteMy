@@ -1,10 +1,7 @@
 // hooks/useCacheInvalidation.ts
-import { useApolloClient, Reference, DocumentNode } from "@apollo/client";
+import { useApolloClient, DocumentNode } from "@apollo/client";
 import { toast } from "sonner";
-import { 
-  GetPayrollsDocument,
-  GetPayrollDatesDocument
-} from "@/domains/payrolls/graphql/generated/graphql";
+import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 /**
  * Options for invalidating a specific entity
@@ -129,7 +126,10 @@ export function useCacheInvalidation() {
   /**
    * Refetch multiple queries by their DocumentNode references, optionally notifying the user
    */
-  const refetchQueriesByDocument = async (queryDocuments: DocumentNode[], notifyUser = false) => {
+  const refetchQueriesByDocument = async (
+    queryDocuments: DocumentNode[],
+    notifyUser = false
+  ) => {
     try {
       if (notifyUser) {
         toast.info("Refreshing data...");
@@ -205,10 +205,7 @@ export function useCacheInvalidation() {
 
       // Refetch payroll queries to get fresh data
       await client.refetchQueries({
-        include: [
-          GetPayrollsDocument,
-          GetPayrollsByMonthDocument,
-        ],
+        include: [GetPayrollsDocument],
       });
 
       if (showToast) {

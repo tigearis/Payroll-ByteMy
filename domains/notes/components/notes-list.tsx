@@ -5,6 +5,7 @@ import { useQuery, useMutation } from "@apollo/client";
 import { Edit, AlertTriangle, Save, X, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 import {
   Card,
@@ -43,6 +44,8 @@ export function NotesList({
   title = "Notes",
   description = "Notes and comments",
 }: NotesListWithAddProps) {
+  const { currentUser } = useCurrentUser();
+
   // State for edit modal
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingNote, setEditingNote] = useState<any>(null);
@@ -141,8 +144,9 @@ export function NotesList({
 
   // Handle adding new note
   const handleAddNote = async () => {
-    if (!addContent.trim()) {
-      toast.error("Note content cannot be empty");
+    if (!addContent.trim()) return;
+    if (!currentUser?.id) {
+      toast.error("You must be logged in to add notes");
       return;
     }
 
@@ -150,9 +154,10 @@ export function NotesList({
     try {
       await addNote({
         variables: {
-          entity_type: entityType,
-          entity_id: entityId,
+          entityType: entityType,
+          entityId: entityId,
           content: addContent.trim(),
+          userId: currentUser.id,
         },
       });
     } catch (error) {
@@ -275,9 +280,7 @@ export function NotesList({
                 <div
                   key={note.id}
                   className={`group p-3 rounded-md border cursor-pointer transition-all hover:shadow-md hover:border-gray-300 ${
-                    note.isImportant
-                      ? "border-red-200 bg-red-50"
-                      : "bg-gray-50"
+                    note.isImportant ? "border-red-200 bg-red-50" : "bg-gray-50"
                   }`}
                   onClick={() => handleEditNote(note)}
                 >

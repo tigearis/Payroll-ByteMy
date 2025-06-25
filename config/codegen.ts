@@ -24,7 +24,7 @@ if (
   );
 }
 
-// SOC2 Compliance Header - using function to avoid template literal issues
+// SOC2 Compliance Header
 const generateSOC2Header = () => {
   return [
     "/**",
@@ -46,37 +46,36 @@ const generateSOC2Header = () => {
     " * ",
     ` * Generated: ${new Date().toISOString()}`,
     " * Schema Version: Latest from Hasura",
-    " * CodeGen Version: Unified v2.0",
+    " * CodeGen Version: Unified v3.0",
     " */",
-    "",
     "",
   ].join("\n");
 };
 
-// Define domains with SOC2 compliance levels and auto-discovery
+// Define domains with SOC2 compliance levels
 const domains = [
-  // CRITICAL Security Level - Authentication and System Access
-  { name: "auth", securityLevel: "CRITICAL" }, // Re-enabled for fixing
-  { name: "audit", securityLevel: "CRITICAL" }, // Re-enabled for fixing
-  { name: "permissions", securityLevel: "CRITICAL" }, // Re-enabled for fixing
+  // CRITICAL Security Level
+  { name: "auth", securityLevel: "CRITICAL" },
+  { name: "audit", securityLevel: "CRITICAL" },
+  { name: "permissions", securityLevel: "CRITICAL" },
 
-  // HIGH Security Level - PII and Business Critical Data
-  { name: "users", securityLevel: "HIGH" }, // Schema mismatch - need to fix fields first
-  { name: "clients", securityLevel: "HIGH" }, // Temporarily disabled - schema mismatch
-  { name: "billing", securityLevel: "HIGH" }, // Re-enabled for fixing
+  // HIGH Security Level
+  { name: "users", securityLevel: "HIGH" },
+  { name: "clients", securityLevel: "HIGH" },
+  { name: "billing", securityLevel: "HIGH" },
 
-  // MEDIUM Security Level - Internal Business Data
-  { name: "payrolls", securityLevel: "MEDIUM" }, // Has validation errors - temporarily disabled
-  { name: "notes", securityLevel: "MEDIUM" }, // Internal communications - WORKING
-  { name: "leave", securityLevel: "MEDIUM" }, // WORKING
-  { name: "work-schedule", securityLevel: "MEDIUM" }, // Re-enabled for fixing
-  { name: "external-systems", securityLevel: "MEDIUM" }, // WORKING
+  // MEDIUM Security Level
+  { name: "payrolls", securityLevel: "MEDIUM" },
+  { name: "notes", securityLevel: "MEDIUM" },
+  { name: "leave", securityLevel: "MEDIUM" },
+  { name: "work-schedule", securityLevel: "MEDIUM" },
+  { name: "external-systems", securityLevel: "MEDIUM" },
 
-  // LOW Security Level - Configuration and Reference Data
-  { name: "shared", securityLevel: "LOW" }, // Dashboard stats and cross-domain aggregates - WORKING
+  // LOW Security Level
+  { name: "shared", securityLevel: "LOW" },
 ];
 
-// Unified scalar mappings - single source of truth
+// Unified scalar mappings
 const SHARED_SCALARS = {
   // PostgreSQL native types
   UUID: "string",
@@ -84,13 +83,13 @@ const SHARED_SCALARS = {
   timestamptz: "string",
   timestamp: "string",
   date: "string",
-  json: "any", // Fix for json scalar
+  json: "any",
   jsonb: "any",
   numeric: "number",
-  bigint: "number", // Fix for bigint scalar
-  inet: "string", // Fix for inet scalar (IP addresses)
-  interval: "string", // Fix for interval scalar (time intervals)
-  name: "string", // Fix for name scalar (PostgreSQL name type)
+  bigint: "number",
+  inet: "string",
+  interval: "string",
+  name: "string",
   bpchar: "string",
   text: "string",
   varchar: "string",
@@ -105,70 +104,18 @@ const SHARED_SCALARS = {
   Boolean: "boolean",
   ID: "string",
 
-  // Custom scalars - these are scalars in Hasura, not enums
+  // Custom scalars
   user_role: "string",
   payroll_status: "string",
   payroll_cycle_type: "string",
   payroll_date_type: "string",
   status: "string",
   leave_status_enum: "string",
-  permission_action: "string", // Fix for permission_action scalar
+  permission_action: "string",
 
   // Security-enhanced scalars
-  EncryptedString: "string", // For encrypted data fields
-  MaskedString: "string", // For display masking
-};
-
-// Unified configuration - single source of truth for all generated code
-const sharedConfig = {
-  // React hooks generation
-  withHooks: true,
-  withComponent: false,
-  withHOC: false,
-  withResultType: true,
-
-  // Type safety and optimization
-  enumsAsTypes: false, // Use proper enum types for better type safety
-  skipTypename: false,
-  preResolveTypes: true,
-  dedupeFragments: true,
-  strictScalars: true,
-  useTypeImports: true,
-
-  // Optional handling
-  avoidOptionals: {
-    field: true,
-    inputValue: false,
-    object: false,
-  },
-  nonOptionalTypename: true,
-  maybeValue: "T | null | undefined",
-
-  // Code generation options
-  emitLegacyCommonJSImports: false,
-  documentMode: "documentNode",
-  gqlTagName: "gql",
-  fragmentMasking: false,
-
-  // Prevent duplication and conflicts
-  dedupeOperationSuffix: true,
-  omitOperationSuffix: false,
-  operationResultSuffix: "Result",
-
-  // Scalars
-  scalars: SHARED_SCALARS,
-
-  // SOC2 Compliance features
-  addDocBlocks: true,
-  commentDescriptions: true,
-  includeDirectives: true,
-
-  // Naming conventions
-  namingConvention: {
-    typeNames: "pascal-case#pascalCase",
-    enumValues: "keep",
-    transformUnderscore: true,
-  },
+  EncryptedString: "string",
+  MaskedString: "string",
 };
 
 // Helper function to check if a GraphQL file has actual operations
@@ -176,16 +123,12 @@ const hasGraphQLContent = (filePath: string): boolean => {
   if (!existsSync(filePath)) return false;
 
   const content = readFileSync(filePath, "utf8");
-  // Remove comments and whitespace
   const cleanContent = content
-    .replace(/#[^\n\r]*/g, "") // Remove comments
-    .replace(/\s+/g, " ") // Normalize whitespace
+    .replace(/#[^\n\r]*/g, "")
+    .replace(/\s+/g, " ")
     .trim();
 
-  // Check if file is empty after removing comments
   if (cleanContent.length === 0) return false;
-
-  // Check if it has actual GraphQL operations (not just scalar/enum definitions)
   return /\b(query|mutation|subscription|fragment)\s+\w+/i.test(cleanContent);
 };
 
@@ -194,7 +137,6 @@ const domainHasValidOperations = (domainName: string): boolean => {
   const base = `./domains/${domainName}/graphql`;
   const sharedBase = `./shared/graphql`;
 
-  // Check shared operations
   if (domainName === "shared") {
     const sharedFiles = [
       `${sharedBase}/fragments.graphql`,
@@ -231,93 +173,32 @@ function getAccessControlDescription(level: string): string {
   }
 }
 
-// Generate security-classified domain configurations with automatic export management
-const generatePerDomain = domains
-  .filter(
-    domain => domainHasValidOperations(domain.name) && domain.name !== "shared"
-  )
-  .reduce(
-    (acc, domain) => {
-      const base = `./domains/${domain.name}/graphql`;
-      const outputDir = `./domains/${domain.name}/graphql/generated/`;
+// Get all GraphQL documents for a domain
+function getDomainDocuments(domainName: string): string[] {
+  const base =
+    domainName === "shared"
+      ? `./shared/graphql`
+      : `./domains/${domainName}/graphql`;
 
-      // Check which GraphQL files actually have content
-      const graphqlFiles = [
-        `${base}/fragments.graphql`,
-        `${base}/queries.graphql`,
-        `${base}/mutations.graphql`,
-        `${base}/subscriptions.graphql`,
-      ];
+  const graphqlFiles = [
+    `${base}/fragments.graphql`,
+    `${base}/queries.graphql`,
+    `${base}/mutations.graphql`,
+    `${base}/subscriptions.graphql`,
+  ];
 
-      const validFiles = graphqlFiles.filter(hasGraphQLContent);
-      
-      // Always include shared fragments to resolve dependencies
-      const allFiles = ["./shared/graphql/fragments.graphql", ...validFiles];
+  const validFiles = graphqlFiles.filter(hasGraphQLContent);
 
-      if (validFiles.length === 0) return acc;
+  // For non-shared domains, always include shared fragments for dependencies
+  if (domainName !== "shared" && validFiles.length > 0) {
+    const sharedFragments = "./shared/graphql/fragments.graphql";
+    if (hasGraphQLContent(sharedFragments)) {
+      return [sharedFragments, ...validFiles];
+    }
+  }
 
-      // Add security classification header based on domain level
-      const securityHeader = [
-        generateSOC2Header(),
-        "/* ",
-        ` * DOMAIN: ${domain.name.toUpperCase()}`,
-        ` * SECURITY LEVEL: ${domain.securityLevel}`,
-        ` * ACCESS CONTROLS: ${getAccessControlDescription(
-          domain.securityLevel
-        )}`,
-        " * AUTO-EXPORTED: This file is automatically exported from domain index",
-        " */",
-        "",
-        "",
-      ].join("\n");
-
-      // Generate TypeScript files with hooks for each domain
-      acc[outputDir] = {
-        documents: allFiles,
-        preset: "client",
-        plugins: [
-          {
-            add: {
-              content: securityHeader,
-            },
-          },
-        ],
-        config: {
-          ...sharedConfig,
-          // Domain-specific metadata for runtime security
-          domainName: domain.name,
-          securityLevel: domain.securityLevel,
-          // Only generate types for operations in this domain to prevent duplicates
-          onlyOperationTypes: true,
-          skipTypename: false,
-        },
-      };
-
-      // Generate domain index file for clean exports
-      acc[`./domains/${domain.name}/index.ts`] = {
-        plugins: [
-          {
-            add: {
-              content: [
-                securityHeader,
-                "// Auto-generated domain exports - isolated to prevent conflicts",
-                "",
-                "// Export domain-specific GraphQL operations and types",
-                "export * from './graphql/generated/graphql';",
-                "",
-                "// Note: Fragment masking and gql utilities are exported from shared/types/generated",
-                "// Import those directly when needed to avoid conflicts",
-                "",
-              ].join("\n"),
-            },
-          },
-        ],
-      };
-
-      return acc;
-    },
-    {} as CodegenConfig["generates"]
-  );
+  return validFiles;
+}
 
 const config: CodegenConfig = {
   overwrite: true,
@@ -329,12 +210,11 @@ const config: CodegenConfig = {
         },
       },
     },
-    // Include Hasura actions.graphql for proper action type generation
     "./hasura/metadata/actions.graphql",
   ],
   generates: {
-    // Base types with SOC2 compliance header - single source of truth
-    "./shared/types/generated/graphql.ts": {
+    // 1. SINGLE SOURCE OF TRUTH: Base TypeScript types only (no operations)
+    "./shared/types/base-types.ts": {
       plugins: [
         {
           add: {
@@ -344,101 +224,161 @@ const config: CodegenConfig = {
         "typescript",
       ],
       config: {
-        ...sharedConfig,
-        // Global type definitions only - no operations to prevent conflicts
+        scalars: SHARED_SCALARS,
         enumsAsTypes: false,
+        skipTypename: false,
+        strictScalars: true,
+        useTypeImports: true,
+        namingConvention: {
+          typeNames: "pascal-case#pascalCase",
+          enumValues: "keep",
+          transformUnderscore: true,
+        },
+        // IMPORTANT: Only generate base types, no operations
         onlyOperationTypes: false,
         exportFragmentSpreadSubTypes: false,
+        // Fix duplicate types by excluding problematic ones
+        skipDocumentsValidation: true,
+        avoidOptionals: {
+          field: true,
+          inputValue: false,
+          object: true,
+          defaultValue: false,
+        },
+        // Prevent duplicate type generation
+        declarationKind: {
+          type: 'interface',
+          input: 'interface',
+        },
+        dedupeOperationSuffix: true,
       },
     },
 
-    // Handle shared domain separately with proper hooks generation
+    // 2. SHARED DOMAIN: Operations with hooks (uses client preset correctly)
     "./shared/types/generated/": {
-      documents: [
-        "./shared/graphql/fragments.graphql",
-        "./shared/graphql/queries.graphql",
-        "./shared/graphql/mutations.graphql",
-        "./shared/graphql/subscriptions.graphql",
-      ].filter(hasGraphQLContent),
+      documents: getDomainDocuments("shared"),
       preset: "client",
       plugins: [
         {
           add: {
             content: [
               generateSOC2Header(),
-              "/* ",
-              " * DOMAIN: SHARED",
-              " * SECURITY LEVEL: LOW",
-              " * ACCESS CONTROLS: Basic Authentication",
-              " * AUTO-EXPORTED: This file is automatically exported from domain index",
-              " */",
-              "",
+              "/* DOMAIN: SHARED | SECURITY: LOW | ACCESS: Basic Authentication */",
               "",
             ].join("\n"),
           },
         },
       ],
       config: {
-        ...sharedConfig,
-        domainName: "shared",
-        securityLevel: "LOW",
-        // Only generate types for operations in shared domain
-        onlyOperationTypes: true,
+        scalars: SHARED_SCALARS,
+        useTypeImports: true,
+        // Import base types instead of generating them
+        typesPrefix: "",
+        typesSuffix: "",
+        // Client preset configuration
+        withHooks: true,
+        withComponent: false,
+        withHOC: false,
+        fragmentMasking: false,
+        enumsAsTypes: false,
+        strictScalars: true,
         skipTypename: false,
+        dedupeFragments: true,
+        documentMode: "documentNode",
+        gqlTagName: "gql",
       },
       presetConfig: {
-        // Don't generate the default index.ts since we have a custom one below
         fragmentMasking: false,
+        // Generate index.ts with proper exports
+        gqlTagName: "gql",
       },
     },
 
-    // Generate for each valid domain with security classification and auto-exports
-    ...generatePerDomain,
+    // 3. DOMAIN-SPECIFIC GENERATIONS: One per domain
+    ...domains
+      .filter(
+        domain =>
+          domain.name !== "shared" && domainHasValidOperations(domain.name)
+      )
+      .reduce(
+        (acc, domain) => {
+          const documents = getDomainDocuments(domain.name);
+          if (documents.length === 0) return acc;
 
-    // Root exports aggregator for clean imports (avoid conflicts)
-    "./shared/types/generated/index.ts": {
+          const outputDir = `./domains/${domain.name}/graphql/generated/`;
+
+          acc[outputDir] = {
+            documents,
+            preset: "client",
+            plugins: [
+              {
+                add: {
+                  content: [
+                    generateSOC2Header(),
+                    `/* DOMAIN: ${domain.name.toUpperCase()} | SECURITY: ${domain.securityLevel} | ACCESS: ${getAccessControlDescription(domain.securityLevel)} */`,
+                    "",
+                  ].join("\n"),
+                },
+              },
+            ],
+            config: {
+              scalars: SHARED_SCALARS,
+              useTypeImports: true,
+              // Import base types from shared
+              typesPrefix: "",
+              typesSuffix: "",
+              // Client preset configuration
+              withHooks: true,
+              withComponent: false,
+              withHOC: false,
+              fragmentMasking: false,
+              enumsAsTypes: false,
+              strictScalars: true,
+              skipTypename: false,
+              dedupeFragments: true,
+              documentMode: "documentNode",
+              gqlTagName: "gql",
+            },
+            presetConfig: {
+              fragmentMasking: false,
+              gqlTagName: "gql",
+            },
+          };
+
+          return acc;
+        },
+        {} as CodegenConfig["generates"]
+      ),
+
+    // 4. CLEAN EXPORTS: Root aggregator (no conflicts)
+    "./shared/types/index.ts": {
       plugins: [
         {
           add: {
             content: [
-              "/* AUTO-GENERATED - DO NOT EDIT MANUALLY",
-              " *",
-              " * SOC2 Compliant GraphQL Operations",
-              " * Security Classifications Applied:",
-              " * - CRITICAL: Auth, user roles, financial data - Requires admin access + MFA",
-              " * - HIGH: PII, client data, employee info - Requires role-based access",
-              " * - MEDIUM: Internal business data - Requires authentication",
-              " * - LOW: Public/aggregate data - Basic access control",
-              " *",
-              " * Compliance Features:",
-              " * ✓ Role-based access control (RBAC)",
-              " * ✓ Audit logging integration",
-              " * ✓ Data classification enforcement",
-              " * ✓ Permission boundary validation",
-              " * ✓ Automatic domain isolation and exports",
-              " *",
-              ` * Generated: ${new Date().toISOString()}`,
-              " * Schema Version: Latest from Hasura",
-              " * CodeGen Version: Unified v2.0",
-              " */",
-              "",
+              generateSOC2Header(),
               "// Central export aggregator for GraphQL operations",
-              "// GQL utilities and base types",
-              "export * from './gql';",
-              "export * from './graphql';",
               "",
-              "// Domain-specific exports (import directly to avoid conflicts)",
-              "// Example: import { GetCurrentUserDocument } from '../../../domains/users/graphql/generated/graphql';",
+              "// Base types (single source of truth)",
+              "export * from './base-types';",
               "",
-              "// Fragment masking utilities (if generated):",
-              "// export * from './fragment-masking';",
+              "// Shared operations and hooks",
+              "export * from './generated';",
+              "",
+              "// Domain-specific exports available at:",
+              "// import { useGetUserQuery } from '../../../domains/users/graphql/generated';",
+              "// import { useCreateNoteQuery } from '../../../domains/notes/graphql/generated';",
+              "",
+              "// Re-export commonly used utilities",
+              "export { gql } from './generated';",
+              "",
             ].join("\n"),
           },
         },
       ],
     },
 
-    // Enhanced schema documentation for compliance
+    // 5. SCHEMA DOCUMENTATION AND AUDITING
     "./shared/schema/schema.graphql": {
       plugins: ["schema-ast"],
       config: {
@@ -448,7 +388,6 @@ const config: CodegenConfig = {
       },
     },
 
-    // Comprehensive introspection for security auditing
     "./shared/schema/introspection.json": {
       plugins: ["introspection"],
       config: {
@@ -461,7 +400,7 @@ const config: CodegenConfig = {
       },
     },
 
-    // Security audit report generation with domain analysis
+    // 6. SECURITY AUDIT REPORT
     "./shared/schema/security-report.json": {
       plugins: [
         {
@@ -469,7 +408,7 @@ const config: CodegenConfig = {
             content: (() => {
               const reportData = {
                 generatedAt: new Date().toISOString(),
-                codegenVersion: "unified-v2.0",
+                codegenVersion: "unified-v3.0-fixed",
                 domains: domains.map(d => ({
                   name: d.name,
                   securityLevel: d.securityLevel,
@@ -479,6 +418,7 @@ const config: CodegenConfig = {
                     d.name === "shared"
                       ? "./shared/types/generated/"
                       : `./domains/${d.name}/graphql/generated/`,
+                  documents: getDomainDocuments(d.name),
                 })),
                 compliance: {
                   soc2: true,
@@ -486,13 +426,14 @@ const config: CodegenConfig = {
                   rbac: true,
                   dataClassification: true,
                   autoExports: true,
+                  duplicatePrevention: true,
                 },
-                features: {
-                  unifiedScalars: true,
-                  domainIsolation: true,
-                  automaticExports: true,
-                  securityClassification: true,
-                  duplicateElimination: true,
+                fixes: {
+                  separatedBaseTypes: true,
+                  properClientPreset: true,
+                  noFragmentMasking: true,
+                  cleanExports: true,
+                  noDuplicateGeneration: true,
                 },
               };
               return JSON.stringify(reportData, null, 2);
@@ -503,17 +444,30 @@ const config: CodegenConfig = {
     },
   },
 
-  // Post-generation hooks for optimization
+  // Post-generation cleanup
   hooks: {
     afterAllFileWrite: [
-      // Ensure domain index files have consistent exports
-      "node -e \"const fs = require('fs'); const path = require('path'); const domains = ['auth', 'audit', 'permissions', 'users', 'clients', 'billing', 'payrolls', 'notes', 'leave', 'work-schedule', 'external-systems']; domains.forEach(domain => { const indexPath = path.join('domains', domain, 'graphql', 'generated', 'index.ts'); if (fs.existsSync(indexPath)) { const content = '// Auto-generated exports - preventing conflicts\\\\nexport * from \\\"./fragment-masking\\\";\\\\nexport * from \\\"./gql\\\";\\\\nexport * from \\\"./graphql\\\";\\\\n'; try { fs.writeFileSync(indexPath, content, 'utf8'); } catch (e) { console.warn('Failed to write', indexPath, e.message); } } });\"",
+      // Clean up any potential duplicate exports in domain index files
+      'node -e "' +
+        "const fs = require('fs'); " +
+        "const path = require('path'); " +
+        "const glob = require('glob'); " +
+        "try { " +
+        "  const indexFiles = glob.sync('./domains/*/graphql/generated/index.ts'); " +
+        "  indexFiles.forEach(file => { " +
+        "    if (fs.existsSync(file)) { " +
+        '      const content = \'// Auto-generated domain exports\\\\nexport * from \\"./gql\\";\\\\nexport * from \\"./graphql\\";\\\\n\'; ' +
+        "      fs.writeFileSync(file, content, 'utf8'); " +
+        "    } " +
+        "  }); " +
+        "} catch (e) { " +
+        "  console.warn('Post-generation cleanup warning:', e.message); " +
+        "}" +
+        '"',
     ],
   },
 
   ignoreNoDocuments: true,
-
-  // Enhanced error handling for compliance
   config: {
     failOnInvalidType: true,
     maybeValue: "T | null | undefined",
@@ -523,4 +477,4 @@ const config: CodegenConfig = {
 export default config;
 
 // Export utilities for external use
-export { domains, SHARED_SCALARS, sharedConfig, domainHasValidOperations };
+export { domains, SHARED_SCALARS, domainHasValidOperations };

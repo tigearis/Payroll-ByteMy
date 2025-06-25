@@ -1,4 +1,3 @@
-// Auto-generated exports - preventing conflicts
-export * from "./fragment-masking";
+// Auto-generated domain exports
 export * from "./gql";
 export * from "./graphql";

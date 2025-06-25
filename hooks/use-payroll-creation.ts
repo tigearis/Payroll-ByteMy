@@ -2,9 +2,9 @@ import { useMutation, useLazyQuery } from "@apollo/client";
 import { toast } from "sonner";
 
 // Import GraphQL operations from domains
-import { 
+import {
   CreatePayrollDocument,
-  GeneratePayrollDatesDocument 
+  GeneratePayrollDatesDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 
 interface CreatePayrollInput {
@@ -52,10 +52,13 @@ export function usePayrollCreation() {
         throw new Error("Failed to create payroll");
       }
 
-      console.log(
-        `✅ Payroll created: ${newPayroll.name} (ID: ${newPayroll.id})`
-      );
-      toast.success(`Payroll "${newPayroll.name}" created successfully`);
+      // Extract data from payroll object safely
+      const payrollData = newPayroll as any;
+      const payrollId = payrollData.id || "unknown";
+      const payrollName = payrollData.name || "New Payroll";
+
+      console.log(`✅ Payroll created: ${payrollName} (ID: ${payrollId})`);
+      toast.success(`Payroll "${payrollName}" created successfully`);
 
       // Step 2: Generate 2 years of dates automatically
       console.log("📅 Generating 2 years of payroll dates...");
@@ -64,10 +67,10 @@ export function usePayrollCreation() {
       try {
         const datesResult = await generateDates({
           variables: {
-            payrollId: newPayroll.id,
+            payrollId: payrollId,
             startDate: input.start_date,
-            endDate: null, // Will use default 2 years
-            maxDates: 104 // ~2 years for weekly payrolls
+            endDate: "", // Will use default 2 years
+            maxDates: 104, // ~2 years for weekly payrolls
           },
         });
 
@@ -140,8 +143,8 @@ export function usePayrollDateGeneration() {
         variables: {
           payrollId: payrollId,
           startDate: startDate,
-          endDate: null, // Will use default 2 years
-          maxDates: 104 // ~2 years for weekly payrolls
+          endDate: "", // Will use default 2 years
+          maxDates: 104, // ~2 years for weekly payrolls
         },
       });
 

@@ -97,7 +97,7 @@ export default function AuditLogPage() {
         limit: ITEMS_PER_PAGE,
         offset: page * ITEMS_PER_PAGE,
         where,
-        orderBy: [{ eventTime: OrderBy.DESC }],
+        orderBy: [{ eventTime: OrderBy.Desc }],
       },
     }
   );
@@ -110,7 +110,7 @@ export default function AuditLogPage() {
         refetch();
       }
     },
-    onError: (error) => {
+    onError: error => {
       console.warn("Audit logs subscription error:", error);
     },
   });

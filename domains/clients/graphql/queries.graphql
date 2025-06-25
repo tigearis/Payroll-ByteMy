@@ -22,7 +22,7 @@ query GetClientsWithContact {
   }
 }
 
-query GetClientById($id: uuid!) {
+query ClientsGetClientById($id: uuid!) {
   clientById(id: $id) {
     ...ClientWithRelations
   }
@@ -221,7 +221,7 @@ query GetClientCard($id: uuid!) {
 
 # Migrated from app/api/developer/route.ts
 
-query GetAllClientsForDeveloper {
+query ClientsGetAllForDeveloper {
   clients {
     id
     name
@@ -280,5 +280,26 @@ query GetAllClientsForDeveloper {
     contactPerson
     contactEmail
     active
+  }
+}
+
+query ClientsGetPayrollsData {
+  clients(orderBy: { name: ASC }) {
+    ...ClientListItem
+    payrolls {
+      id
+      name
+      status
+      employeeCount
+      payrollCycle {
+        name
+      }
+      payrollDateType {
+        name
+      }
+      payrollDates(orderBy: { adjustedEftDate: DESC }, limit: 1) {
+        adjustedEftDate
+      }
+    }
   }
 }

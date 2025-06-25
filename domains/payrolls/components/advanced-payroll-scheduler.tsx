@@ -47,8 +47,9 @@ import {
 import { useQuery, useMutation } from "@apollo/client";
 import {
   GetPayrollsByMonthDocument,
+  GetPayrollsByMonthQuery,
   UpdatePayrollDocument,
-} from "../graphql/generated/graphql";
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 type ViewPeriod = "week" | "fortnight" | "month";
 type TableOrientation = "consultants-as-columns" | "consultants-as-rows";
@@ -149,6 +150,9 @@ export default function AdvancedPayrollScheduler() {
     dragOverCell: null,
   });
 
+  // Add state for debug mode
+  const [debugMode, setDebugMode] = useState(false);
+
   // Calculate date range
   const dateRange = useMemo(() => {
     let start: Date, end: Date;
@@ -185,8 +189,8 @@ export default function AdvancedPayrollScheduler() {
     return dateArray;
   }, [dateRange]);
 
-  // Real GraphQL data fetching
-  const { data, loading, error, refetch } = useQuery(
+  // Get payrolls for the selected month range
+  const { data, loading, error, refetch } = useQuery<GetPayrollsByMonthQuery>(
     GetPayrollsByMonthDocument,
     {
       variables: {
@@ -195,16 +199,16 @@ export default function AdvancedPayrollScheduler() {
       },
       errorPolicy: "all",
       skip: !isClient, // Skip query until client-side hydration is complete
-      onCompleted: (data) => {
+      onCompleted: data => {
         console.log("✅ Query completed successfully:", {
           dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
           payrollsCount: data.payrolls?.length || 0,
-          payrollDatesCount: data.payrollDates?.length || 0
+          payrollDatesCount: data.payrolls?.[0]?.payrollDates?.length || 0,
         });
       },
-      onError: (error) => {
-        console.error("❌ Query failed:", error);
-      }
+      onError: err => {
+        console.error("❌ Query failed:", err);
+      },
     }
   );
 
@@ -227,7 +231,7 @@ export default function AdvancedPayrollScheduler() {
 
   // Transform data into assignments
   const transformData = (data: any): PayrollAssignment[] => {
-    if (!data?.payrollDates) return [];
+    if (!data?.payrolls) return [];
 
     const assignmentList: PayrollAssignment[] = [];
     const payrollsMap = new Map();
@@ -237,7 +241,7 @@ export default function AdvancedPayrollScheduler() {
       payrollsMap.set(payroll.id, payroll);
     });
 
-    data.payrollDates.forEach((dateInfo: any) => {
+    data.payrolls[0]?.payrollDates?.forEach((dateInfo: any) => {
       const payroll = dateInfo.payroll || payrollsMap.get(dateInfo.payrollId);
       if (!payroll) return;
 
@@ -293,11 +297,11 @@ export default function AdvancedPayrollScheduler() {
     if (data) {
       console.log("🔍 Raw data received:", {
         payrolls: data.payrolls?.length || 0,
-        payrollDates: data.payrollDates?.length || 0,
+        payrollDates: data.payrolls?.[0]?.payrollDates?.length || 0,
         samplePayroll: data.payrolls?.[0],
-        samplePayrollDate: data.payrollDates?.[0]
+        samplePayrollDate: data.payrolls?.[0]?.payrollDates?.[0],
       });
-      
+
       const freshAssignments = transformData(data);
       setAssignments(freshAssignments);
       setOriginalAssignments([...freshAssignments]);
@@ -736,7 +740,7 @@ export default function AdvancedPayrollScheduler() {
 
       // Check if all updates were successful
       const successfulUpdates = results.filter(
-        result => result.data?.updatePayroll
+        result => result.data?.updatePayrollById
       );
       const totalAffectedRows = successfulUpdates.length;
 
@@ -954,15 +958,38 @@ export default function AdvancedPayrollScheduler() {
         {/* Debug Info Card */}
         <Card className="border-orange-200 bg-orange-50">
           <CardContent className="p-4">
-            <h4 className="font-semibold text-orange-800 mb-2">Debug Information</h4>
+            <h4 className="font-semibold text-orange-800 mb-2">
+              Debug Information
+            </h4>
             <div className="text-sm text-orange-700 space-y-1">
-              <p><strong>Date Range:</strong> {formatPeriodDisplay()}</p>
-              <p><strong>Query Variables:</strong> {format(dateRange.start, "yyyy-MM-dd")} to {format(dateRange.end, "yyyy-MM-dd")}</p>
-              <p><strong>Raw Payrolls Count:</strong> {data?.payrolls?.length || 0}</p>
-              <p><strong>Raw PayrollDates Count:</strong> {data?.payrollDates?.length || 0}</p>
-              <p><strong>Consultants Found:</strong> {consultants.length}</p>
-              <p><strong>Assignments Transformed:</strong> {assignments.length}</p>
-              {error && <p><strong>Error:</strong> {(error as any)?.message || "Unknown error"}</p>}
+              <p>
+                <strong>Date Range:</strong> {formatPeriodDisplay()}
+              </p>
+              <p>
+                <strong>Query Variables:</strong>{" "}
+                {format(dateRange.start, "yyyy-MM-dd")} to{" "}
+                {format(dateRange.end, "yyyy-MM-dd")}
+              </p>
+              <p>
+                <strong>Raw Payrolls Count:</strong>{" "}
+                {data?.payrolls?.length || 0}
+              </p>
+              <p>
+                <strong>Raw PayrollDates Count:</strong>{" "}
+                {data?.payrolls?.[0]?.payrollDates?.length || 0}
+              </p>
+              <p>
+                <strong>Consultants Found:</strong> {consultants.length}
+              </p>
+              <p>
+                <strong>Assignments Transformed:</strong> {assignments.length}
+              </p>
+              {error && (
+                <p>
+                  <strong>Error:</strong>{" "}
+                  {(error as any)?.message || "Unknown error"}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -984,7 +1011,10 @@ export default function AdvancedPayrollScheduler() {
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh Data
               </Button>
-              <Button variant="outline" onClick={() => setCurrentDate(new Date())}>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentDate(new Date())}
+              >
                 <Calendar className="w-4 h-4 mr-2" />
                 Go to Current Month
               </Button>
@@ -1969,6 +1999,39 @@ export default function AdvancedPayrollScheduler() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Debugging Info */}
+      {debugMode && (
+        <div className="mt-6 p-4 border rounded-md bg-gray-50">
+          <div className="text-xs font-mono space-y-1">
+            <p>
+              <strong>Debug Mode:</strong> Active
+            </p>
+            <p>
+              <strong>View Period:</strong> {viewPeriod}
+            </p>
+            <p>
+              <strong>Date Range:</strong>{" "}
+              {format(dateRange.start, "yyyy-MM-dd")} to{" "}
+              {format(dateRange.end, "yyyy-MM-dd")}
+            </p>
+            <p>
+              <strong>Dates Count:</strong> {dates.length}
+            </p>
+            <p>
+              <strong>Payrolls Count:</strong> {data?.payrolls?.length || 0}
+            </p>
+            <p>
+              <strong>Raw PayrollDates Count:</strong>{" "}
+              {data?.payrolls?.[0]?.payrollDates?.length || 0}
+            </p>
+            <p>
+              <strong>Assignments Count:</strong> {assignments.length}
+            </p>
+            {/* More debug info can be added here */}
+          </div>
+        </div>
       )}
     </div>
   );

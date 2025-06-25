@@ -15,11 +15,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { 
+import {
   UpdatePayrollDocument,
   GetPayrollsSimpleDocument,
   GetPayrollByIdDocument,
-  GetPayrollsDocument
+  GetPayrollsDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { handleGraphQLError } from "@/lib/utils/handle-graphql-error";
 
@@ -44,70 +44,88 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   // Set up the mutation with refetchQueries
-  const [updatePayroll, { loading, error }] = useMutation(UpdatePayrollDocument, {
-    refetchQueries: [
-      { query: GetPayrollsSimpleDocument },
-      { query: GetPayrollByIdDocument, variables: { id: payroll.id } },
-    ],
-    awaitRefetchQueries: true, // Wait for refetches to complete before considering the mutation done
-    onCompleted: data => {
-      toast.success("Payroll updated successfully");
-      setIsOpen(false);
-      if (onSuccess) {
-        onSuccess();
-      }
-    },
-    onError: error => {
-      const errorDetails = handleGraphQLError(error);
-      toast.error(`Failed to update payroll: ${errorDetails.userMessage}`);
-      console.error("Payroll update error:", errorDetails);
-    },
-    optimisticResponse: {
-      __typename: "mutation_root",
-      updatePayroll: {
-        __typename: "payrolls",
-        id: payroll.id,
-        name,
-        clientId: payroll.clientId,
-        cycleId: payroll.cycleId,
-        dateTypeId: payroll.dateTypeId,
-        primaryConsultantUserId: payroll.primaryConsultantUserId,
-        employeeCount: payroll.employeeCount,
-      },
-    },
-    update: (cache, { data }) => {
-      // We could also use the updatePayrollInCache utility here, but this way works too
-      if (!data?.updatePayroll) {
-        return;
-      }
-
-      // Manually update any related lists that might not be refetched immediately
-      try {
-        // Find the payroll in the GET_PAYROLLS query result
-        const existingPayrollsQuery = cache.readQuery<{ payrolls: any[] }>({
-          query: GetPayrollsDocument,
-        });
-
-        if (existingPayrollsQuery?.payrolls) {
-          const updatedPayrolls = existingPayrollsQuery.payrolls.map(
-            (p: any) => (p.id === payroll.id ? { ...p, name } : p)
-          );
-
-          // Write the updated list back to the cache
-          cache.writeQuery({
-            query: GetPayrollsDocument,
-            data: {
-              __typename: "query_root",
-              payrolls: updatedPayrolls,
-            },
-          });
+  const [updatePayroll, { loading, error }] = useMutation(
+    UpdatePayrollDocument,
+    {
+      refetchQueries: [
+        { query: GetPayrollsSimpleDocument },
+        { query: GetPayrollByIdDocument, variables: { id: payroll.id } },
+      ],
+      awaitRefetchQueries: true, // Wait for refetches to complete before considering the mutation done
+      onCompleted: data => {
+        toast.success("Payroll updated successfully");
+        setIsOpen(false);
+        if (onSuccess) {
+          onSuccess();
         }
-      } catch (err) {
-        // It's okay if this fails, the refetchQueries will eventually update the UI
-        console.warn("Failed to update payroll list in cache:", err);
-      }
-    },
-  });
+      },
+      onError: error => {
+        const errorDetails = handleGraphQLError(error);
+        toast.error(`Failed to update payroll: ${errorDetails.userMessage}`);
+        console.error("Payroll update error:", errorDetails);
+      },
+      optimisticResponse: {
+        __typename: "mutation_root",
+        updatePayrollById: {
+          __typename: "payrolls",
+          id: payroll.id,
+          name,
+          clientId: payroll.clientId,
+          cycleId: payroll.cycleId,
+          dateTypeId: payroll.dateTypeId,
+          primaryConsultantUserId: payroll.primaryConsultantUserId,
+          employeeCount: payroll.employeeCount,
+          client: {
+            __typename: "clients",
+            id: payroll.clientId,
+            name: "Loading...",
+          },
+          status: "Active",
+          processingDaysBeforeEft: 2,
+          processingTime: 1,
+        },
+      },
+      update: (cache, { data }) => {
+        // We could also use the updatePayrollInCache utility here, but this way works too
+        if (!data?.updatePayrollById) {
+          return;
+        }
+
+        // Manually update any related lists that might not be refetched immediately
+        try {
+          // Find the payroll in the GET_PAYROLLS query result
+          const existingPayrollsQuery = cache.readQuery<{ payrolls: any[] }>({
+            query: GetPayrollsDocument,
+          });
+
+          if (existingPayrollsQuery?.payrolls) {
+            const updatedPayrolls = existingPayrollsQuery.payrolls.map(
+              (p: any) => (p.id === payroll.id ? { ...p, name } : p)
+            );
+
+            // Write the updated list back to the cache
+            cache.writeQuery({
+              query: GetPayrollsDocument,
+              data: {
+                __typename: "query_root",
+                payrolls: updatedPayrolls,
+                payrollsAggregate: {
+                  __typename: "payrollsAggregate",
+                  aggregate: {
+                    __typename: "payrollsAggregateFields",
+                    count: updatedPayrolls.length,
+                  },
+                },
+              },
+            });
+          }
+        } catch (err) {
+          // It's okay if this fails, the refetchQueries will eventually update the UI
+          console.warn("Failed to update payroll list in cache:", err);
+        }
+      },
+    }
+  );
 
   const handleSave = async () => {
     try {
@@ -135,9 +153,7 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Payroll</DialogTitle>
-          <DialogDescription>
-            Update payroll details.
-          </DialogDescription>
+          <DialogDescription>Update payroll details.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
