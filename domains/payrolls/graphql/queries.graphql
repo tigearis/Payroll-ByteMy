@@ -665,6 +665,27 @@ query GetPayrollsByMonth($startDate: date!, $endDate: date!) {
       id
       name
     }
+    primaryConsultant {
+      id
+      name
+      email
+      role
+      isActive
+    }
+    backupConsultant {
+      id
+      name
+      email
+      role
+      isActive
+    }
+    manager {
+      id
+      name
+      email
+      role
+      isActive
+    }
   }
 }
 
