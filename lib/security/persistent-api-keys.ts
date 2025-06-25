@@ -1,5 +1,5 @@
 // lib/security/persistent-api-keys.ts - Persistent API key management with database storage
-import { createHmac, randomBytes, timingSafeEqual, createHash } from "crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 
 import { gql } from "@apollo/client";
 
@@ -535,26 +535,27 @@ export class PersistentAPIKeyManager {
       );
 
       // Validate signature if provided
-      if (signature) {
-        const expectedSignature = createHmac('sha256', config.secret || key)
+      if (expectedSignature) {
+        const computedSignature = createHmac("sha256", apiKey)
           .update(`${timestamp}.${method}.${path}`)
-          .digest('hex');
-        
+          .digest("hex");
+
         // Use timing-safe comparison to prevent timing attacks
-        const signatureBuffer = Buffer.from(signature);
-        const expectedBuffer = Buffer.from(expectedSignature);
-        
-        if (signatureBuffer.length !== expectedBuffer.length || 
-            !timingSafeEqual(signatureBuffer, expectedBuffer)) {
+        const signatureBuffer = Buffer.from(expectedSignature);
+        const expectedBuffer = Buffer.from(computedSignature);
+
+        if (
+          signatureBuffer.length !== expectedBuffer.length ||
+          !timingSafeEqual(signatureBuffer, expectedBuffer)
+        ) {
           await auditLogger.logSOC2Event({
             level: LogLevel.WARNING,
-            category: LogCategory.ACCESS_CONTROL,
-            eventType: SOC2EventType.SECURITY_INCIDENT,
-            resource: "api_key_validation",
-            resourceId: hashedKey,
+            category: LogCategory.SECURITY_EVENT,
+            eventType: SOC2EventType.SECURITY_VIOLATION,
+            resourceType: "api_key_validation",
+            resourceId: apiKey,
             userId: "system",
             success: false,
-            eventDescription: "Invalid API signature",
             metadata: {
               method,
               path,
@@ -564,7 +565,7 @@ export class PersistentAPIKeyManager {
           return { valid: false, reason: "Invalid signature" };
         }
       }
-      
+
       return { valid: true, config };
     } catch (error) {
       console.error("Failed to validate API key with signature:", error);

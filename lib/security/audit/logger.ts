@@ -9,6 +9,7 @@ import { NextRequest } from "next/server";
 import { extractClientInfo as getClientInfo } from "@/lib/utils/client-info";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { gql } from "@apollo/client";
 import { 
   LogAuditEventDocument, 
   LogAuthEventDocument, 
@@ -238,7 +239,7 @@ class UnifiedAuditLogger {
   async logSOC2Event(entry: SOC2LogEntry): Promise<void> {
     try {
       // Use the proper SOC2 compliance mutation
-      const { data, errors } = await this.client.mutate({
+      const { data, errors } = await adminApolloClient.mutate({
         mutation: gql`
           mutation LogSOC2ComplianceEvent($event: AuditEventInput!) {
             logAuditEvent(event: $event) {
@@ -263,10 +264,10 @@ class UnifiedAuditLogger {
             ipAddress: entry.ipAddress || null,
             metadata: {
               eventType: entry.eventType,
-              resource: entry.resource,
-              controlId: entry.controlId,
-              complianceArea: entry.complianceArea,
-              severity: entry.severity || "info",
+              resourceId: entry.resourceId,
+              resourceType: entry.resourceType,
+              level: entry.level,
+              category: entry.category,
               ...entry.metadata,
             },
           },

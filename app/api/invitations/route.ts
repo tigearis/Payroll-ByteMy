@@ -7,7 +7,7 @@ import {
   GetInvitationsBySenderDocument,
   MarkExpiredInvitationsDocument
 } from "@/domains/auth/graphql/generated/graphql";
-import { withAuth } from "@/lib/auth/api-auth";
+import { withAuth, hasPermission } from "@/lib/auth/api-auth";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
 
 async function GET(request: NextRequest) {
@@ -34,7 +34,7 @@ async function GET(request: NextRequest) {
       switch (view) {
         case "pending":
           // Get all pending invitations (admin/manager view)
-          if (!authUser.hasPermission("staff:read")) {
+          if (!hasPermission(authUser.role, "manager")) {
             return NextResponse.json(
               { error: "Insufficient permissions" },
               { status: 403 }
@@ -89,7 +89,7 @@ async function GET(request: NextRequest) {
 
         case "cleanup":
           // Mark expired invitations as expired (admin only)
-          if (!authUser.hasPermission("settings:write")) {
+          if (!hasPermission(authUser.role, "org_admin")) {
             return NextResponse.json(
               { error: "Insufficient permissions for cleanup operations" },
               { status: 403 }
