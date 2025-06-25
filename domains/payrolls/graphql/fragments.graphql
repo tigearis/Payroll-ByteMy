@@ -125,6 +125,10 @@ fragment PayrollWithAllRelations on payrolls {
     name
     description
   }
+  recentPayrollDates: payrollDates(limit: 10, orderBy: { adjustedEftDate: ASC }) {
+    id
+    adjustedEftDate
+  }
   # Note: createdByUser relationship not available, use createdByUserId instead
   createdByUserId
   parentPayroll {
@@ -154,9 +158,36 @@ fragment PayrollListItem on payrolls {
   managerUserId
   createdAt
   updatedAt
+  cycleId
+  dateTypeId
+  dateValue
   client {
     id
     name
+  }
+  primaryConsultant {
+    id
+    name
+  }
+  backupConsultant {
+    id
+    name
+  }
+  manager {
+    id
+    name
+  }
+  payrollCycle {
+    id
+    name
+  }
+  payrollDateType {
+    id
+    name
+  }
+  payrollDates(limit: 10, orderBy: { adjustedEftDate: ASC }) {
+    id
+    adjustedEftDate
   }
 }
 

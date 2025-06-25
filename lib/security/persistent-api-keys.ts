@@ -1,5 +1,5 @@
 // lib/security/persistent-api-keys.ts - Persistent API key management with database storage
-import { createHmac, randomBytes, timingSafeEqual } from "crypto";
+import { createHmac, randomBytes, timingSafeEqual, createHash } from "crypto";
 
 import { gql } from "@apollo/client";
 
@@ -534,8 +534,37 @@ export class PersistentAPIKeyManager {
         console.error("Failed to update API key last used:", error)
       );
 
-      // For now, just validate that the key exists and is active
-      // TODO: Implement proper signature validation with stored secrets
+      // Validate signature if provided
+      if (signature) {
+        const expectedSignature = createHmac('sha256', config.secret || key)
+          .update(`${timestamp}.${method}.${path}`)
+          .digest('hex');
+        
+        // Use timing-safe comparison to prevent timing attacks
+        const signatureBuffer = Buffer.from(signature);
+        const expectedBuffer = Buffer.from(expectedSignature);
+        
+        if (signatureBuffer.length !== expectedBuffer.length || 
+            !timingSafeEqual(signatureBuffer, expectedBuffer)) {
+          await auditLogger.logSOC2Event({
+            level: LogLevel.WARNING,
+            category: LogCategory.ACCESS_CONTROL,
+            eventType: SOC2EventType.SECURITY_INCIDENT,
+            resource: "api_key_validation",
+            resourceId: hashedKey,
+            userId: "system",
+            success: false,
+            eventDescription: "Invalid API signature",
+            metadata: {
+              method,
+              path,
+              timestamp,
+            },
+          });
+          return { valid: false, reason: "Invalid signature" };
+        }
+      }
+      
       return { valid: true, config };
     } catch (error) {
       console.error("Failed to validate API key with signature:", error);

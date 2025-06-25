@@ -416,9 +416,9 @@ export default function PayrollsPage() {
   const { hasPermission, userRole, isLoading: roleLoading } = useUserRole();
   const { checkPermission } = useEnhancedPermissions();
 
-  const hasAdminAccess = hasPermission("custom:admin:manage");
-  const canManagePayrolls = checkPermission("payrolls", "write").granted;
-  const canViewAdvanced = checkPermission("system", "admin").granted;
+  const hasAdminAccess = hasPermission("admin:manage");
+  const canManagePayrolls = checkPermission("payroll", "write").granted;
+  const canViewAdvanced = checkPermission("admin", "manage").granted;
 
   const { data, loading, error, refetch } = useCachedQuery(
     GetPayrollsDocument,
@@ -429,6 +429,16 @@ export default function PayrollsPage() {
   );
 
   const payrolls = data?.payrolls || [];
+
+  // Debug: Log payroll data to see what we're getting
+  console.log("Payrolls data:", {
+    loading,
+    error,
+    payrollsCount: payrolls.length,
+    firstPayroll: payrolls[0],
+    firstPayrollKeys: payrolls[0] ? Object.keys(payrolls[0]) : [],
+    rawData: data,
+  });
 
   useEffect(() => {
     if (roleLoading) {
@@ -512,7 +522,7 @@ export default function PayrollsPage() {
     return {
       ...payroll,
       employeeCount,
-      payrollCycle: formatPayrollCycle(payroll),
+      payrollCycleFormatted: formatPayrollCycle(payroll),
       priority:
         employeeCount > 50 ? "high" : employeeCount > 20 ? "medium" : "low",
       progress: getStatusConfig(payroll.status || "Implementation").progress,
@@ -531,7 +541,7 @@ export default function PayrollsPage() {
       payroll.primaryConsultant?.name
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      payroll.payrollCycle.toLowerCase().includes(searchTerm.toLowerCase());
+      payroll.payrollCycleFormatted?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       statusFilter.length === 0 || statusFilter.includes(payroll.status);
@@ -583,8 +593,8 @@ export default function PayrollsPage() {
       aValue = a.nextEftDate ? new Date(a.nextEftDate) : null;
       bValue = b.nextEftDate ? new Date(b.nextEftDate) : null;
     } else if (sortField === "payrollCycle") {
-      aValue = a.payrollCycle;
-      bValue = b.payrollCycle;
+      aValue = a.payrollCycleFormatted;
+      bValue = b.payrollCycleFormatted;
     }
 
     // Handle different data types

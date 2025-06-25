@@ -44,7 +44,6 @@ select_permissions:
         - client_name
         - cycle_name
         - future_dates
-        - id
         - manager_user_id
         - name
         - next_eft_date
@@ -72,7 +71,6 @@ select_permissions:
         - client_name
         - cycle_name
         - future_dates
-        - id
         - manager_user_id
         - name
         - next_eft_date
@@ -90,7 +88,6 @@ select_permissions:
         - client_name
         - cycle_name
         - future_dates
-        - id
         - manager_user_id
         - name
         - next_eft_date
@@ -108,7 +105,6 @@ select_permissions:
         - client_name
         - cycle_name
         - future_dates
-        - id
         - manager_user_id
         - name
         - next_eft_date

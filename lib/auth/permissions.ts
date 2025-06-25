@@ -2,35 +2,35 @@
 
 // Permission string literals
 export type PayrollPermission =
-  | "custom:payroll:read"
-  | "custom:payroll:write"
-  | "custom:payroll:delete"
-  | "custom:payroll:assign";
+  | "payroll:read"
+  | "payroll:write"
+  | "payroll:delete"
+  | "payroll:assign";
 
 export type StaffPermission =
-  | "custom:staff:read"
-  | "custom:staff:write"
-  | "custom:staff:delete"
-  | "custom:staff:invite";
+  | "staff:read"
+  | "staff:write"
+  | "staff:delete"
+  | "staff:invite";
 
 export type ClientPermission =
-  | "custom:client:read"
-  | "custom:client:write"
-  | "custom:client:delete";
+  | "client:read"
+  | "client:write"
+  | "client:delete";
 
 export type AdminPermission =
-  | "custom:admin:manage"
-  | "custom:settings:write"
-  | "custom:billing:manage";
+  | "admin:manage"
+  | "settings:write"
+  | "billing:manage";
 
 export type ReportingPermission =
-  | "custom:reports:read"
-  | "custom:reports:export"
-  | "custom:audit:read"
-  | "custom:audit:write";
+  | "reports:read"
+  | "reports:export"
+  | "audit:read"
+  | "audit:write";
 
 // Combined permission type
-export type CustomPermission =
+export type Permission =
   | PayrollPermission
   | StaffPermission
   | ClientPermission
@@ -48,7 +48,7 @@ export type Role =
 // Role permissions interface
 export interface RoleConfig {
   level: number;
-  permissions: CustomPermission[];
+  permissions: Permission[];
 }
 
 export interface RolePermissions {
@@ -60,34 +60,34 @@ export interface RolePermissions {
 // ================================
 
 // 18 specific permissions across 5 hierarchical roles
-export const CUSTOM_PERMISSIONS = [
+export const ALL_PERMISSIONS = [
   // Payroll permissions
-  "custom:payroll:read",
-  "custom:payroll:write",
-  "custom:payroll:delete",
-  "custom:payroll:assign",
+  "payroll:read",
+  "payroll:write",
+  "payroll:delete",
+  "payroll:assign",
 
   // Staff permissions
-  "custom:staff:read",
-  "custom:staff:write",
-  "custom:staff:delete",
-  "custom:staff:invite",
+  "staff:read",
+  "staff:write",
+  "staff:delete",
+  "staff:invite",
 
   // Client permissions
-  "custom:client:read",
-  "custom:client:write",
-  "custom:client:delete",
+  "client:read",
+  "client:write",
+  "client:delete",
 
   // Admin permissions
-  "custom:admin:manage",
-  "custom:settings:write",
-  "custom:billing:manage",
+  "admin:manage",
+  "settings:write",
+  "billing:manage",
 
   // Reporting permissions
-  "custom:reports:read",
-  "custom:reports:export",
-  "custom:audit:read",
-  "custom:audit:write",
+  "reports:read",
+  "reports:export",
+  "audit:read",
+  "audit:write",
 ] as const;
 
 // Role hierarchy: developer(5) > org_admin(4) > manager(3) > consultant(2) > viewer(1)
@@ -104,125 +104,125 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
 export const ROLE_PERMISSIONS: RolePermissions = {
   developer: {
     level: 5,
-    permissions: [...CUSTOM_PERMISSIONS] as CustomPermission[], // All permissions
+    permissions: [...ALL_PERMISSIONS] as Permission[], // All permissions
   },
   org_admin: {
     level: 4,
     permissions: [
-      // Payroll permissions - full access except assign
-      "custom:payroll:read",
-      "custom:payroll:write",
-      "custom:payroll:delete",
-      "custom:payroll:assign",
+      // Payroll permissions - full access
+      "payroll:read",
+      "payroll:write",
+      "payroll:delete",
+      "payroll:assign",
 
       // Staff permissions - full access
-      "custom:staff:read",
-      "custom:staff:write",
-      "custom:staff:delete",
-      "custom:staff:invite",
+      "staff:read",
+      "staff:write",
+      "staff:delete",
+      "staff:invite",
 
       // Client permissions - full access
-      "custom:client:read",
-      "custom:client:write",
-      "custom:client:delete",
+      "client:read",
+      "client:write",
+      "client:delete",
 
       // Admin permissions - full access
-      "custom:admin:manage",
-      "custom:settings:write",
-      "custom:billing:manage",
+      "admin:manage",
+      "settings:write",
+      "billing:manage",
 
       // Reporting permissions - full access
-      "custom:reports:read",
-      "custom:reports:export",
-      "custom:audit:read",
-      "custom:audit:write",
-    ] as CustomPermission[],
+      "reports:read",
+      "reports:export",
+      "audit:read",
+      "audit:write",
+    ] as Permission[],
   },
   manager: {
     level: 3,
     permissions: [
       // Payroll permissions - read and limited write
-      "custom:payroll:read",
-      "custom:payroll:write",
-      "custom:payroll:assign",
+      "payroll:read",
+      "payroll:write",
+      "payroll:assign",
 
       // Staff permissions - read and manage
-      "custom:staff:read",
-      "custom:staff:write",
-      "custom:staff:invite",
+      "staff:read",
+      "staff:write",
+      "staff:invite",
 
       // Client permissions - read and write
-      "custom:client:read",
-      "custom:client:write",
+      "client:read",
+      "client:write",
 
       // Reporting permissions - read and export
-      "custom:reports:read",
-      "custom:reports:export",
-      "custom:audit:read",
-    ] as CustomPermission[],
+      "reports:read",
+      "reports:export",
+      "audit:read",
+    ] as Permission[],
   },
   consultant: {
     level: 2,
     permissions: [
       // Payroll permissions - read only and assign
-      "custom:payroll:read",
-      "custom:payroll:assign",
+      "payroll:read",
+      "payroll:assign",
 
       // Staff permissions - read only
-      "custom:staff:read",
+      "staff:read",
 
       // Client permissions - read only
-      "custom:client:read",
+      "client:read",
 
       // Reporting permissions - read only
-      "custom:reports:read",
-    ] as CustomPermission[],
+      "reports:read",
+    ] as Permission[],
   },
   viewer: {
     level: 1,
     permissions: [
       // Very limited read access
-      "custom:payroll:read",
-      "custom:client:read",
-      "custom:reports:read",
-    ] as CustomPermission[],
+      "payroll:read",
+      "client:read",
+      "reports:read",
+    ] as Permission[],
   },
 };
 
 // Permission categories for easier management
 export const PERMISSION_CATEGORIES = {
   PAYROLL: [
-    "custom:payroll:read",
-    "custom:payroll:write",
-    "custom:payroll:delete",
-    "custom:payroll:assign",
-  ] as CustomPermission[],
+    "payroll:read",
+    "payroll:write",
+    "payroll:delete",
+    "payroll:assign",
+  ] as Permission[],
 
   STAFF: [
-    "custom:staff:read",
-    "custom:staff:write",
-    "custom:staff:delete",
-    "custom:staff:invite",
-  ] as CustomPermission[],
+    "staff:read",
+    "staff:write",
+    "staff:delete",
+    "staff:invite",
+  ] as Permission[],
 
   CLIENT: [
-    "custom:client:read",
-    "custom:client:write",
-    "custom:client:delete",
-  ] as CustomPermission[],
+    "client:read",
+    "client:write",
+    "client:delete",
+  ] as Permission[],
 
   ADMIN: [
-    "custom:admin:manage",
-    "custom:settings:write",
-    "custom:billing:manage",
-  ] as CustomPermission[],
+    "admin:manage",
+    "settings:write",
+    "billing:manage",
+  ] as Permission[],
 
   REPORTING: [
-    "custom:reports:read",
-    "custom:reports:export",
-    "custom:audit:read",
-    "custom:audit:write",
-  ] as CustomPermission[],
+    "reports:read",
+    "reports:export",
+    "audit:read",
+    "audit:write",
+  ] as Permission[],
 };
 
 // ================================
@@ -232,7 +232,7 @@ export const PERMISSION_CATEGORIES = {
 // Standardized user metadata interface - SINGLE SOURCE OF TRUTH
 export interface UserMetadata {
   role: Role;
-  permissions: CustomPermission[];
+  permissions: Permission[];
   databaseId?: string;
   assignedBy?: string;
   assignedAt?: string;
@@ -258,17 +258,17 @@ export function hasRoleLevel(userRole: Role, requiredRole: Role): boolean {
 }
 
 // Utility functions for permission management
-export function isValidCustomPermission(
+export function isValidPermission(
   permission: string
-): permission is CustomPermission {
-  return CUSTOM_PERMISSIONS.includes(permission as any);
+): permission is Permission {
+  return ALL_PERMISSIONS.includes(permission as any);
 }
 
 export function isValidUserRole(role: string): role is Role {
   return role in ROLE_HIERARCHY;
 }
 
-export function getPermissionsForRole(role: Role): CustomPermission[] {
+export function getPermissionsForRole(role: Role): Permission[] {
   return [...(ROLE_PERMISSIONS[role]?.permissions || [])];
 }
 
@@ -279,7 +279,7 @@ export function getRoleLevel(role: Role): number {
 // Check if a role has a specific permission
 export function roleHasPermission(
   role: Role,
-  permission: CustomPermission
+  permission: Permission
 ): boolean {
   return ROLE_PERMISSIONS[role]?.permissions.includes(permission) || false;
 }
@@ -326,16 +326,16 @@ export interface PermissionValidationResult {
 }
 
 // Route permissions mapping
-export const ROUTE_PERMISSIONS: Record<string, CustomPermission[]> = {
+export const ROUTE_PERMISSIONS: Record<string, Permission[]> = {
   "/dashboard": [], // All authenticated users can access dashboard
-  "/staff": ["custom:staff:read"],
-  "/staff/new": ["custom:staff:write"],
-  "/clients": ["custom:client:read"],
-  "/clients/new": ["custom:client:write"],
-  "/payrolls": ["custom:payroll:read"],
-  "/payroll-schedule": ["custom:payroll:write"],
-  "/settings": ["custom:settings:write"],
-  "/developer": ["custom:admin:manage"],
+  "/staff": ["staff:read"],
+  "/staff/new": ["staff:write"],
+  "/clients": ["client:read"],
+  "/clients/new": ["client:write"],
+  "/payrolls": ["payroll:read"],
+  "/payroll-schedule": ["payroll:write"],
+  "/settings": ["settings:write"],
+  "/developer": ["admin:manage"],
   "/ai-assistant": [], // All authenticated users
   "/calendar": [], // All authenticated users
   "/tax-calculator": [], // All authenticated users

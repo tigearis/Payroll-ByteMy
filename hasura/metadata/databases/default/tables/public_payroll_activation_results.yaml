@@ -39,7 +39,6 @@ select_permissions:
       columns:
         - action_taken
         - executed_at
-        - id
         - payroll_id
         - version_number
       filter: {}
@@ -55,7 +54,6 @@ select_permissions:
       columns:
         - action_taken
         - executed_at
-        - id
         - payroll_id
         - version_number
       filter: {}
@@ -66,7 +64,6 @@ select_permissions:
       columns:
         - action_taken
         - executed_at
-        - id
         - payroll_id
         - version_number
       filter: {}
@@ -77,7 +74,6 @@ select_permissions:
       columns:
         - action_taken
         - executed_at
-        - id
         - payroll_id
         - version_number
       filter: {}

@@ -1,0 +1,98 @@
+table:
+  name: payroll_activation_results
+  schema: public
+configuration:
+  column_config:
+    action_taken:
+      custom_name: actionTaken
+    executed_at:
+      custom_name: executedAt
+    payroll_id:
+      custom_name: payrollId
+    version_number:
+      custom_name: versionNumber
+  custom_column_names:
+    action_taken: actionTaken
+    executed_at: executedAt
+    payroll_id: payrollId
+    version_number: versionNumber
+  custom_name: payrollActivationResults
+  custom_root_fields:
+    delete: bulkDeletePayrollActivationResults
+    delete_by_pk: deletePayrollActivationResultById
+    insert: bulkInsertPayrollActivationResults
+    insert_one: insertPayrollActivationResult
+    select: payrollActivationResults
+    select_aggregate: payrollActivationResultsAggregate
+    select_by_pk: payrollActivationResultById
+    update: bulkUpdatePayrollActivationResults
+    update_by_pk: updatePayrollActivationResultById
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - action_taken
+        - executed_at
+        - id
+        - payroll_id
+        - version_number
+      filter: {}
+    comment: Consultants can view relevant data
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - action_taken
+        - executed_at
+        - id
+        - payroll_id
+        - version_number
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all data
+  - role: org_admin
+    permission:
+      columns:
+        - action_taken
+        - executed_at
+        - id
+        - payroll_id
+        - version_number
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all data
+  - role: viewer
+    permission:
+      columns:
+        - action_taken
+        - executed_at
+        - id
+        - payroll_id
+        - version_number
+      filter: {}
+    comment: Viewers can see basic information
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

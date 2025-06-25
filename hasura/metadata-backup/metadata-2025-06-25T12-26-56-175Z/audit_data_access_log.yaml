@@ -1,0 +1,122 @@
+table:
+  name: data_access_log
+  schema: audit
+configuration:
+  column_config:
+    access_type:
+      custom_name: accessType
+    accessed_at:
+      custom_name: accessedAt
+    data_classification:
+      custom_name: dataClassification
+    fields_accessed:
+      custom_name: fieldsAccessed
+    ip_address:
+      custom_name: ipAddress
+    query_executed:
+      custom_name: queryExecuted
+    resource_id:
+      custom_name: resourceId
+    resource_type:
+      custom_name: resourceType
+    row_count:
+      custom_name: rowCount
+    session_id:
+      custom_name: sessionId
+    user_id:
+      custom_name: userId
+  custom_column_names:
+    access_type: accessType
+    accessed_at: accessedAt
+    data_classification: dataClassification
+    fields_accessed: fieldsAccessed
+    ip_address: ipAddress
+    query_executed: queryExecuted
+    resource_id: resourceId
+    resource_type: resourceType
+    row_count: rowCount
+    session_id: sessionId
+    user_id: userId
+  custom_name: dataAccessLogs
+  custom_root_fields:
+    delete: bulkDeleteDataAccessLogs
+    delete_by_pk: deleteDataAccessLogById
+    insert: bulkInsertDataAccessLogs
+    insert_one: insertDataAccessLog
+    select: dataAccessLogs
+    select_aggregate: dataAccessLogsAggregate
+    select_by_pk: dataAccessLogById
+    update: bulkUpdateDataAccessLogs
+    update_by_pk: updateDataAccessLogById
+insert_permissions:
+  - role: system
+    permission:
+      check: {}
+      columns:
+        - user_id
+        - resource_type
+        - resource_id
+        - access_type
+        - data_classification
+        - fields_accessed
+        - query_executed
+        - row_count
+        - ip_address
+        - session_id
+        - metadata
+select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - accessed_at
+        - user_id
+        - resource_type
+        - access_type
+        - row_count
+      filter:
+        _and:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - data_classification:
+              _in:
+                - LOW
+                - MEDIUM
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - accessed_at
+        - user_id
+        - resource_type
+        - resource_id
+        - access_type
+        - data_classification
+        - fields_accessed
+        - query_executed
+        - row_count
+        - ip_address
+        - session_id
+        - metadata
+      filter: {}
+      allow_aggregations: true
+    comment: Organization admins can view all data access logs including CRITICAL
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
+apollo_federation_config:
+  enable: v1

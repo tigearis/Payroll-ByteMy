@@ -191,10 +191,10 @@ export function useUserRole() {
   const navigation = {
     canAccess: {
       dashboard: true,
-      staff: hasPermission("custom:staff:read"),
-      payrolls: hasPermission("custom:payroll:read"),
-      clients: hasPermission("custom:client:read"),
-      settings: hasPermission("custom:settings:write"),
+      staff: hasPermission("staff:read"),
+      payrolls: hasPermission("payroll:read"),
+      clients: hasPermission("client:read"),
+      settings: hasPermission("settings:write"),
       developer: userRole === "developer",
     }
   };

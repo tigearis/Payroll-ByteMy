@@ -119,6 +119,7 @@
     "fs": "0.0.1-security",
     "graphql": "^16.11.0",
     "graphql-ws": "^6.0.5",
+    "js-yaml": "^4.1.0",
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.479.0",

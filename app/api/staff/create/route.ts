@@ -318,8 +318,7 @@ export const POST = withAuth(
 
       // Prepare response data
       const staffData = {
-        // TODO: Extract id from fragment-masked user object
-        // id: databaseUser?.id,
+        id: databaseUser?.id,
         invitationId,
         name: staffInput.name,
         email: staffInput.email,
@@ -327,7 +326,7 @@ export const POST = withAuth(
         is_staff: staffInput.is_staff,
         manager_id: staffInput.managerId,
         createdBy: session.userId,
-        createdAt: new Date().toISOString(), // TODO: Extract from fragment-masked user object
+        createdAt: databaseUser?.createdAt || new Date().toISOString(),
         invitationSent,
       };
 
@@ -338,7 +337,7 @@ export const POST = withAuth(
         eventType: SOC2EventType.USER_CREATED,
         userId: session.userId,
         userRole: session.role,
-        resourceId: "unknown", // TODO: Extract from fragment-masked user object
+        resourceId: databaseUser?.id || "unknown",
         resourceType: "staff",
         action: "CREATE",
         success: true,
@@ -360,7 +359,7 @@ export const POST = withAuth(
           ? "Staff member created successfully and invitation email sent"
           : "Staff member created successfully (database only)",
         staffData: {
-          // TODO: id: staffData.id,
+          id: staffData.id,
           name: staffData.name,
           email: staffData.email,
           role: staffData.role,

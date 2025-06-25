@@ -44,6 +44,8 @@ select_permissions:
   - role: consultant
     permission:
       columns:
+        - billing_plan_id
+        - client_id
         - created_at
         - id
         - updated_at
@@ -58,6 +60,8 @@ select_permissions:
   - role: manager
     permission:
       columns:
+        - billing_plan_id
+        - client_id
         - created_at
         - id
         - updated_at
@@ -67,6 +71,8 @@ select_permissions:
   - role: org_admin
     permission:
       columns:
+        - billing_plan_id
+        - client_id
         - created_at
         - id
         - updated_at
@@ -76,6 +82,8 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - billing_plan_id
+        - client_id
         - created_at
         - id
         - updated_at

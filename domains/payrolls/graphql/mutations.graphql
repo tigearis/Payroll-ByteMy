@@ -455,6 +455,70 @@ mutation CommitPayrollAssignments($changes: [PayrollAssignmentInput!]!) {
   }
 }
 
-# Note: Payroll batch operations and report generation would require 
-# custom Hasura actions to be defined. For now, these operations
-# should be implemented via the API routes that handle the business logic.
+# Batch processing operations
+mutation ProcessPayrollBatch(
+  $payrollIds: [uuid!]!
+  $processedBy: uuid!
+) {
+  bulkUpdatePayrolls(
+    where: { id: { _in: $payrollIds } }
+    _set: {
+      status: "Processing"
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      ...PayrollBasic
+      client {
+        id
+        name
+      }
+    }
+    affectedRows
+  }
+}
+
+mutation ApprovePayrollBatch(
+  $payrollIds: [uuid!]!
+  $approvedBy: uuid!
+) {
+  bulkUpdatePayrolls(
+    where: { 
+      id: { _in: $payrollIds }
+      status: { _eq: "Processing" }
+    }
+    _set: {
+      status: "Approved"
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      ...PayrollBasic
+      client {
+        id
+        name
+      }
+    }
+    affectedRows
+  }
+}
+
+# Report generation - returns payroll data for report building
+query GeneratePayrollsByIds(
+  $payrollIds: [uuid!]!
+  $reportType: String!
+) {
+  payrolls(
+    where: { id: { _in: $payrollIds } }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollWithAllRelations
+    payrollDates(orderBy: { originalEftDate: ASC }) {
+      id
+      originalEftDate
+      adjustedEftDate
+      processingDate
+      notes
+    }
+  }
+}

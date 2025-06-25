@@ -2000,39 +2000,6 @@ export default function AdvancedPayrollScheduler() {
           </CardContent>
         </Card>
       )}
-
-      {/* Debugging Info */}
-      {debugMode && (
-        <div className="mt-6 p-4 border rounded-md bg-gray-50">
-          <div className="text-xs font-mono space-y-1">
-            <p>
-              <strong>Debug Mode:</strong> Active
-            </p>
-            <p>
-              <strong>View Period:</strong> {viewPeriod}
-            </p>
-            <p>
-              <strong>Date Range:</strong>{" "}
-              {format(dateRange.start, "yyyy-MM-dd")} to{" "}
-              {format(dateRange.end, "yyyy-MM-dd")}
-            </p>
-            <p>
-              <strong>Dates Count:</strong> {dates.length}
-            </p>
-            <p>
-              <strong>Payrolls Count:</strong> {data?.payrolls?.length || 0}
-            </p>
-            <p>
-              <strong>Raw PayrollDates Count:</strong>{" "}
-              {data?.payrolls?.[0]?.payrollDates?.length || 0}
-            </p>
-            <p>
-              <strong>Assignments Count:</strong> {assignments.length}
-            </p>
-            {/* More debug info can be added here */}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

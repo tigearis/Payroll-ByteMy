@@ -714,3 +714,68 @@ query GetPayrollsMissingDates {
     }
   }
 }
+
+# Payroll report generation query
+query GeneratePayrollReport($startDate: date!, $endDate: date!) {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      payrollDates: {
+        originalEftDate: {
+          _gte: $startDate
+          _lte: $endDate
+        }
+      }
+    }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollForAudit
+    client {
+      id
+      name
+    }
+    primaryConsultant {
+      id
+      name
+    }
+    backupConsultant {
+      id
+      name
+    }
+    manager {
+      id
+      name
+    }
+    payrollDates(
+      where: {
+        originalEftDate: {
+          _gte: $startDate
+          _lte: $endDate
+        }
+      }
+      orderBy: { originalEftDate: ASC }
+    ) {
+      id
+      originalEftDate
+      adjustedEftDate
+      processingDate
+      notes
+    }
+  }
+  
+  reportMetadata: payrollsAggregate(
+    where: {
+      supersededDate: { _isNull: true }
+      payrollDates: {
+        originalEftDate: {
+          _gte: $startDate
+          _lte: $endDate
+        }
+      }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

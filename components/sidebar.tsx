@@ -51,25 +51,25 @@ const allRoutes = [
     href: "/clients",
     label: "Clients",
     icon: Users,
-    checkAccess: (auth: any) => auth.hasPermission("custom:client:read"),
+    checkAccess: (auth: any) => auth.hasPermission("client:read"),
   },
   {
     href: "/payrolls",
     label: "Payrolls",
     icon: Calculator,
-    checkAccess: (auth: any) => auth.hasPermission("custom:payroll:read"),
+    checkAccess: (auth: any) => auth.hasPermission("payroll:read"),
   },
   {
     href: "/payroll-schedule",
     label: "Schedule",
     icon: CalendarDays,
-    checkAccess: (auth: any) => auth.hasPermission("custom:payroll:read"),
+    checkAccess: (auth: any) => auth.hasPermission("payroll:read"),
   },
   {
     href: "/staff",
     label: "Staff",
     icon: UserCog,
-    checkAccess: (auth: any) => auth.hasPermission("custom:staff:read"),
+    checkAccess: (auth: any) => auth.hasPermission("staff:read"),
   },
   {
     href: "/tax-calculator",
@@ -82,20 +82,20 @@ const allRoutes = [
     href: "/settings",
     label: "Settings",
     icon: Settings,
-    checkAccess: (auth: any) => auth.hasPermission("custom:settings:write"),
+    checkAccess: (auth: any) => auth.hasPermission("settings:write"),
   },
   {
     href: "/developer",
     label: "Developer",
     icon: Code,
-    checkAccess: (auth: any) => auth.hasPermission("system:admin"),
+    checkAccess: (auth: any) => auth.hasPermission("admin:manage"),
     devOnly: true, // Only show in development
   },
   {
     href: "/security",
     label: "Security",
     icon: Shield,
-    checkAccess: (auth: any) => auth.hasPermission("security:read"),
+    checkAccess: (auth: any) => auth.hasPermission("audit:read"),
   },
 ];
 

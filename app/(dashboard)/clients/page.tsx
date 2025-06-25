@@ -49,7 +49,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ClientsTable } from "@/domains/clients/components/clients-table";
-import { GetAllClientsPaginatedDocument } from "@/domains/clients/graphql/generated/graphql";
+import { GetAllClientsPaginatedDocument, GetClientsDocument } from "@/domains/clients/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useUserRole } from "@/hooks/use-user-role";
 
@@ -128,7 +128,18 @@ function MultiSelect({
 function ClientsPage() {
   const { user, isLoaded: userLoaded } = useUser();
   const { hasPermission, userRole, isLoading } = useUserRole();
-  const canCreateClient = hasPermission("custom:client:write");
+  const canCreateClient = hasPermission("client:write");
+  const canViewClients = hasPermission("client:read");
+  
+  // Debug user and permissions
+  console.log("User and permissions:", {
+    userLoaded,
+    user: user?.id,
+    userRole,
+    isLoading,
+    canCreateClient,
+    canViewClients,
+  });
 
   // State management
   const [searchTerm, setSearchTerm] = useState("");
@@ -141,7 +152,17 @@ function ClientsPage() {
   const [sortField, setSortField] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // GraphQL operations - only execute when user is loaded and authenticated
+  // Test with a simpler query first
+  const { loading: simpleLoading, error: simpleError, data: simpleData } = useStrategicQuery(
+    GetClientsDocument,
+    "simple-clients",
+    {
+      skip: !userLoaded || !user || !canViewClients,
+      errorPolicy: "all",
+    }
+  );
+
+  // Main GraphQL operations - only execute when user is loaded and authenticated
   const { loading, error, data, refetch, startPolling, stopPolling } = useStrategicQuery(
     GetAllClientsPaginatedDocument,
     "clients",
@@ -151,7 +172,8 @@ function ClientsPage() {
         offset: 0,
       },
       pollInterval: 60000,
-      skip: !userLoaded || !user, // Skip query if user is not loaded or not authenticated
+      skip: !userLoaded || !user || !canViewClients, // Skip query if user is not loaded, not authenticated, or lacks permission
+      errorPolicy: "all", // Show partial data even if there are errors
     }
   );
 
@@ -190,12 +212,36 @@ function ClientsPage() {
     );
   }
 
-  if (error) {
+  // Show permission error if user doesn't have client read access
+  if (!canViewClients) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-gray-500 mb-4">
+          You don't have permission to view clients
+        </div>
+        <p className="text-sm text-gray-400">
+          Current role: {userRole} | Required permission: client:read
+        </p>
+      </div>
+    );
+  }
+
+  if (error || simpleError) {
     return (
       <div className="text-center py-12">
         <div className="text-red-500 mb-4">
-          Error loading clients: {error.message}
+          Error loading clients: {error?.message || simpleError?.message}
         </div>
+        {error?.graphQLErrors && (
+          <div className="text-sm text-gray-600 mb-4">
+            GraphQL Errors: {error.graphQLErrors.map(e => e.message).join(", ")}
+          </div>
+        )}
+        {error?.networkError && (
+          <div className="text-sm text-gray-600 mb-4">
+            Network Error: {error.networkError.message}
+          </div>
+        )}
         <Button onClick={() => refetch()} variant="outline">
           <RefreshCw className="w-4 h-4 mr-2" />
           Try Again
@@ -208,11 +254,29 @@ function ClientsPage() {
 
   // Debug: Log the data to see what we're getting
   console.log("Clients data:", {
+    // Main query
     loading,
     error,
     clientsCount: clients.length,
     firstClient: clients[0],
-    data: data?.clients?.slice(0, 2), // First 2 clients for debugging
+    rawData: data,
+    aggregateCount: data?.allClientsAggregate?.aggregate?.count,
+    dataKeys: data ? Object.keys(data) : [],
+    
+    // Simple query for comparison
+    simpleLoading,
+    simpleError,
+    simpleData,
+    simpleClientsCount: simpleData?.clients?.length || 0,
+    simpleFirstClient: simpleData?.clients?.[0],
+    
+    // Query conditions
+    shouldSkipQuery: !userLoaded || !user || !canViewClients,
+    querySkipReasons: {
+      userNotLoaded: !userLoaded,
+      userNotAuthenticated: !user,
+      noPermission: !canViewClients,
+    },
   });
 
   // Get unique values for filters

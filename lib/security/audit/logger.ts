@@ -233,36 +233,65 @@ class UnifiedAuditLogger {
 
   /**
    * Log SOC2 compliance events
-   * NOTE: This uses a placeholder - SOC2 logging needs proper table/mutation setup
+   * Uses the logAuditEvent GraphQL mutation with SOC2-specific metadata
    */
   async logSOC2Event(entry: SOC2LogEntry): Promise<void> {
     try {
-      // TODO: Implement proper SOC2 compliance logging once the table is set up
-      // For now, log as a regular audit event
-      await this.logAuditEvent({
-        userId: entry.userId || "system",
-        ...(entry.userRole && { userRole: entry.userRole }),
-        action: AuditAction.CREATE,
-        entityType: "soc2_compliance",
-        ...(entry.resourceId && { entityId: entry.resourceId }),
-        dataClassification: entry.dataClassification || DataClassification.CRITICAL,
-        requestId: `soc2-${Date.now()}`,
-        success: entry.success,
-        ...(entry.errorMessage && { errorMessage: entry.errorMessage }),
-        method: "SOC2_LOG",
-        ...(entry.userAgent && { userAgent: entry.userAgent }),
-        ...(entry.ipAddress && { ipAddress: entry.ipAddress }),
-        ...(entry.sessionId && { sessionId: entry.sessionId }),
-        newValues: {
-          level: entry.level,
-          category: entry.category,
-          eventType: entry.eventType,
-          resourceType: entry.resourceType,
-          action: entry.action,
-          metadata: entry.metadata,
-          complianceNote: entry.complianceNote,
+      // Use the proper SOC2 compliance mutation
+      const { data, errors } = await this.client.mutate({
+        mutation: gql`
+          mutation LogSOC2ComplianceEvent($event: AuditEventInput!) {
+            logAuditEvent(event: $event) {
+              success
+              message
+            }
+          }
+        `,
+        variables: {
+          event: {
+            userId: entry.userId || "system",
+            userRole: entry.userRole || "system",
+            action: `SOC2_${entry.eventType}`,
+            entityType: "soc2_compliance",
+            entityId: entry.resourceId || null,
+            dataClassification: entry.dataClassification || DataClassification.CRITICAL,
+            requestId: `soc2-${Date.now()}`,
+            success: entry.success,
+            errorMessage: entry.errorMessage || null,
+            method: "SOC2_COMPLIANCE",
+            userAgent: entry.userAgent || null,
+            ipAddress: entry.ipAddress || null,
+            metadata: {
+              eventType: entry.eventType,
+              resource: entry.resource,
+              controlId: entry.controlId,
+              complianceArea: entry.complianceArea,
+              severity: entry.severity || "info",
+              ...entry.metadata,
+            },
+          },
         },
       });
+
+      if (errors) {
+        console.error("SOC2 compliance logging errors:", errors);
+        // Fallback to regular audit logging
+        await this.logAuditEvent({
+          userId: entry.userId || "system",
+          ...(entry.userRole && { userRole: entry.userRole }),
+          action: AuditAction.CREATE,
+          entityType: "soc2_compliance",
+          ...(entry.resourceId && { entityId: entry.resourceId }),
+          dataClassification: entry.dataClassification || DataClassification.CRITICAL,
+          requestId: `soc2-${Date.now()}`,
+          success: entry.success,
+          ...(entry.errorMessage && { errorMessage: entry.errorMessage }),
+          method: "SOC2_LOG",
+          ...(entry.userAgent && { userAgent: entry.userAgent }),
+          ...(entry.ipAddress && { ipAddress: entry.ipAddress }),
+          ...(entry.sessionId && { sessionId: entry.sessionId }),
+        });
+      }
     } catch (error) {
       console.error("Failed to log SOC2 event:", error);
     }

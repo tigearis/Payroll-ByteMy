@@ -8,6 +8,7 @@ import {
   GetPayrollVersionsDocument,
   GetLatestPayrollVersionDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
+import { AddPayrollNoteDocument } from "@/domains/notes/graphql/generated/graphql";
 
 /**
  * Payroll Versioning Hook - Complete Field Requirements
@@ -80,6 +81,7 @@ export function usePayrollVersioning() {
   const [supersedeCurrentPayroll] = useMutation(UpdatePayrollDocument);
   const [insertNewPayrollVersion] = useMutation(CreatePayrollDocument);
   const [updateStatus] = useMutation(UpdatePayrollStatusDocument);
+  const [createProcessingNotes] = useMutation(AddPayrollNoteDocument);
   const { currentUserId } = useCurrentUser();
 
   // Helper function to create a complete versioning input with current user
@@ -267,17 +269,21 @@ export function usePayrollVersioning() {
         "✅ Database triggers handled date deletion and generation automatically"
       );
 
-      // Create processing notes for the version - temporarily commenting out as createProcessingNotes needs to be implemented
-      // TODO: Implement createProcessingNotes functionality
-      /*
-      await createProcessingNotes({
-        variables: {
-          payrollId: payrollInfo.id,
-          note: `Version ${newVersionData.version_number} created for "${versionReason}"`,
-          createdBy: createdByUserId,
-        },
-      });
-      */
+      // Create processing notes for the version
+      try {
+        await createProcessingNotes({
+          variables: {
+            payrollId: payrollInfo.id,
+            content: `Version ${newVersionData.version_number} created for "${versionReason}"`,
+            userId: createdByUserId,
+            isImportant: true,
+          },
+        });
+        console.log("✅ Processing notes created successfully");
+      } catch (noteError) {
+        console.warn("⚠️ Failed to create processing notes:", noteError);
+        // Don't fail the entire operation if notes creation fails
+      }
 
       // Success messages with more specific information
       const dateRegenerationMessage =
@@ -351,10 +357,34 @@ export function usePayrollVersioning() {
     }
   };
 
+  // Helper function to create processing notes
+  const addProcessingNote = async (payrollId: string, content: string, isImportant = false) => {
+    if (!currentUserId) {
+      return { success: false, error: "User ID is required" };
+    }
+    
+    try {
+      const result = await createProcessingNotes({
+        variables: {
+          payrollId,
+          content,
+          userId: currentUserId,
+          isImportant,
+        },
+      });
+      console.log("✅ Processing note added successfully");
+      return { success: true, note: result.data?.insertNote };
+    } catch (error: any) {
+      console.error("❌ Failed to add processing note:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
   return {
     savePayrollEdit,
     createVersioningInput,
     updateStatusOnly,
+    addProcessingNote,
     currentUserId,
     loading: false, // Individual mutations handle their own loading states
   };

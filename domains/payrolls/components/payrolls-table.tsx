@@ -42,6 +42,63 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+// Helper functions
+const formatDate = (date: string | Date) => {
+  if (!date) {
+    return "Not set";
+  }
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleDateString("en-AU", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const getStatusColor = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case "active":
+      return "bg-green-100 text-green-800 border-green-200";
+    case "inactive":
+      return "bg-red-100 text-red-800 border-red-200";
+    case "draft":
+      return "bg-yellow-100 text-yellow-800 border-yellow-200";
+    case "data-entry":
+      return "bg-blue-100 text-blue-800 border-blue-200";
+    case "review":
+      return "bg-purple-100 text-purple-800 border-purple-200";
+    case "processing":
+      return "bg-indigo-100 text-indigo-800 border-indigo-200";
+    case "manager-review":
+      return "bg-orange-100 text-orange-800 border-orange-200";
+    case "approved":
+      return "bg-green-100 text-green-800 border-green-200";
+    case "submitted":
+      return "bg-teal-100 text-teal-800 border-teal-200";
+    case "paid":
+      return "bg-emerald-100 text-emerald-800 border-emerald-200";
+    case "on-hold":
+      return "bg-amber-100 text-amber-800 border-amber-200";
+    case "cancelled":
+      return "bg-red-100 text-red-800 border-red-200";
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-200";
+  }
+};
+
+const getPriorityColor = (priority: string) => {
+  switch (priority) {
+    case "high":
+      return "font-medium text-red-600";
+    case "medium":
+      return "font-medium text-orange-600";
+    case "low":
+      return "font-medium text-green-600";
+    default:
+      return "font-medium text-gray-600";
+  }
+};
+
 // Payroll status configuration
 const getStatusConfig = (status: string) => {
   const configs = {
@@ -383,7 +440,7 @@ export function PayrollsTable({
                           <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4 text-gray-500" />
                             <span className="font-medium">
-                              {payroll.payrollCycle}
+                              {payroll.payrollCycleFormatted || payroll.payrollCycle?.name || "Not configured"}
                             </span>
                           </div>
                         </TableCell>

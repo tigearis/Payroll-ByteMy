@@ -6,15 +6,7 @@ import { useUserRole } from "@/hooks/use-user-role";
 interface RoleGuardProps {
   children: React.ReactNode;
   requiredRole?: string;
-  requiredPermission?:
-    | "custom:staff:read"
-    | "custom:staff:write" 
-    | "custom:client:read"
-    | "custom:client:write"
-    | "custom:payroll:read"
-    | "custom:payroll:write"
-    | "custom:admin:manage"
-    | "custom:settings:write";
+  requiredPermission?: string;
   fallback?: React.ReactNode;
   redirectTo?: string;
 }
