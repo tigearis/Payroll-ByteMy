@@ -2,12 +2,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import {
-  useMutation,
-  useQuery,
-  useLazyQuery,
-  ApolloError,
-} from "@apollo/client";
+import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
 
 // Import role enums
 
@@ -941,47 +936,63 @@ export default function PayrollPage() {
   const { updatePayrollStatus } = usePayrollStatusUpdate();
   console.log("✅ usePayrollStatusUpdate hook loaded");
 
-  // Check if current payroll is superseded and get latest version - run immediately
+  // STEP 1: Always check for the latest version first (regardless of current payroll state)
+  // This will find the latest version of this payroll family
+  const { data: latestVersionData, loading: latestVersionLoading } =
+    useFreshQuery(GetLatestPayrollVersionDocument, {
+      variables: { payrollId: id }, // Use the current ID to find the latest in this family
+      skip: !id,
+      fetchPolicy: "network-only",
+    });
+  console.log("✅ Latest version query loaded first");
+
+  // STEP 2: Determine if we need to redirect to the latest version
+  const latestVersionId = latestVersionData?.payrolls?.[0]?.id;
+  const needsRedirect = latestVersionId && latestVersionId !== id;
+
+  // STEP 3: Perform redirect immediately if needed
+  useEffect(() => {
+    if (needsRedirect && latestVersionId) {
+      console.log(
+        "🔄 Redirecting from",
+        id,
+        "to latest version:",
+        latestVersionId
+      );
+      router.push(`/payrolls/${latestVersionId}`);
+    }
+  }, [needsRedirect, latestVersionId, id, router]);
+
+  // STEP 4: Only load current payroll data if we're not redirecting
+  const shouldLoadCurrentPayroll = !latestVersionLoading && !needsRedirect;
+
+  // Get current payroll data for version info (lighter query)
   const { data: versionCheckData, loading: versionCheckLoading } = useQuery(
     GetPayrollByIdDocument,
     {
       variables: { id },
-      skip: !id,
-      fetchPolicy: "network-only", // Always check for latest version info
+      skip: !id || !shouldLoadCurrentPayroll,
+      fetchPolicy: "network-only",
     }
   );
   console.log("✅ Version check query loaded");
 
-  // If current payroll is superseded, find the latest version
   const currentPayroll = versionCheckData?.payrollById as any;
-  const rootId = currentPayroll?.parentPayrollId || id;
-
-  const { data: latestVersionData, loading: latestVersionLoading } =
-    useFreshQuery(GetLatestPayrollVersionDocument, {
-      variables: { payrollId: rootId },
-      skip: !rootId || !(currentPayroll as any)?.supersededDate,
-    });
-  console.log("✅ Latest version query loaded");
-
-  // Determine if we need to redirect and if so, show loading until redirect happens
-  const needsRedirect =
-    (currentPayroll as any)?.supersededDate &&
-    latestVersionData?.payrolls?.[0]?.id &&
-    latestVersionData.payrolls[0].id !== id;
 
   // Show loading if we're checking versions or about to redirect
-  const isVersionCheckingOrRedirecting =
-    versionCheckLoading || latestVersionLoading || needsRedirect;
+  const isVersionCheckingOrRedirecting = latestVersionLoading || needsRedirect;
 
   // Add debugging for versioning logic
   useEffect(() => {
     console.log("🔍 VERSIONING DEBUG:", {
       id,
-      versionCheckLoading,
       latestVersionLoading,
+      versionCheckLoading,
       needsRedirect,
+      shouldLoadCurrentPayroll,
       hasVersionCheckData: !!versionCheckData,
       isVersionCheckingOrRedirecting,
+      latestVersionId,
       currentPayroll: currentPayroll
         ? {
             id: currentPayroll.id,
@@ -990,7 +1001,6 @@ export default function PayrollPage() {
             versionNumber: currentPayroll.versionNumber,
           }
         : null,
-      rootId,
       latestVersionData: latestVersionData
         ? {
             hasPayrolls: !!latestVersionData.payrolls,
@@ -1001,13 +1011,14 @@ export default function PayrollPage() {
     });
   }, [
     id,
-    versionCheckLoading,
     latestVersionLoading,
+    versionCheckLoading,
     needsRedirect,
+    shouldLoadCurrentPayroll,
     versionCheckData,
     isVersionCheckingOrRedirecting,
+    latestVersionId,
     currentPayroll,
-    rootId,
     latestVersionData,
   ]);
 
@@ -1342,27 +1353,12 @@ export default function PayrollPage() {
     return <PayrollDetailsLoading />;
   }
 
-  if (loading) {
+  // If we're not redirecting, we should have version check data
+  if (versionCheckLoading) {
     return <PayrollDetailsLoading />;
   }
 
-  if (error) {
-    toast.error(`Error: ${error.message}`);
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <AlertTriangle className="w-8 h-8 mx-auto text-red-600" />
-          <p className="text-red-600">Error: {error.message}</p>
-          <Button onClick={() => refetch()} variant="outline">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Try Again
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!data || !data.payrollById) {
+  if (!versionCheckData || !versionCheckData.payrollById) {
     // Show detailed error information instead of calling notFound()
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] p-8 space-y-6">
@@ -1373,47 +1369,15 @@ export default function PayrollPage() {
             The payroll with ID "{id}" could not be loaded
           </p>
 
-          {error ? (
-            <div className="bg-red-50 border border-red-200 p-4 rounded-md text-left max-w-lg mx-auto mt-4">
-              <p className="font-semibold">Error Details:</p>
-              <p className="text-red-700">
-                {(error as Error).message || "Unknown error"}
-              </p>
-
-              {(error as ApolloError).graphQLErrors?.length > 0 && (
-                <div className="mt-2">
-                  <p className="font-semibold">GraphQL Errors:</p>
-                  <ul className="list-disc pl-4">
-                    {(error as ApolloError).graphQLErrors.map(
-                      (e: any, i: number) => (
-                        <li key={i} className="text-sm text-red-600">
-                          {e.message}
-                        </li>
-                      )
-                    )}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md text-left max-w-lg mx-auto mt-4">
-              <p>No error was reported, but payrollById returned null.</p>
-              <p className="text-sm mt-2">
-                This usually happens when the record exists but you don't have
-                permission to view it, or the record doesn't exist.
-              </p>
-            </div>
-          )}
+          <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md text-left max-w-lg mx-auto mt-4">
+            <p>No error was reported, but payrollById returned null.</p>
+            <p className="text-sm mt-2">
+              This usually happens when the record exists but you don't have
+              permission to view it, or the record doesn't exist.
+            </p>
+          </div>
 
           <div className="mt-6">
-            <Button
-              onClick={() => refetch()}
-              variant="outline"
-              className="mr-2"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Try Again
-            </Button>
             <Button onClick={() => router.push("/payrolls")} variant="outline">
               Back to Payrolls List
             </Button>
@@ -1423,7 +1387,7 @@ export default function PayrollPage() {
     );
   }
 
-  const payroll = data.payrollById;
+  const payroll = versionCheckData.payrollById;
   const client = payroll.client;
 
   // Debug: Log payroll data to see what we're getting
@@ -1440,7 +1404,7 @@ export default function PayrollPage() {
   const StatusIcon = statusConfig.icon;
 
   // Calculate totals from payroll dates if available
-  const payrollDates = payroll.recentPayrollDates || payroll.payrollDates || [];
+  const payrollDates = payroll.recentPayrollDates || [];
   const totalEmployees = payroll.employeeCount || 0;
 
   const handleSave = async () => {
@@ -1609,9 +1573,6 @@ export default function PayrollPage() {
         setVersioningNote("");
         setIsEditing(false);
 
-        // Refresh the page data
-        refetch();
-
         toast.success(
           `Payroll version ${result.versionNumber} will go live on ${versioningGoLiveDate}`
         );
@@ -1738,7 +1699,7 @@ export default function PayrollPage() {
                   className="bg-amber-600 hover:bg-amber-700 text-white"
                 >
                   View Latest Version (v
-                  {latestVersionData.latest[0].versionNumber})
+                  {latestVersionData.payrolls[0].versionNumber})
                 </Button>
               )}
             </div>
