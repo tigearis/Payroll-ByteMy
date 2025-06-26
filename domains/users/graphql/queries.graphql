@@ -344,6 +344,7 @@ query GetUsersWithFiltering(
   }
 }
 
+
 query GetDeveloperManagers {
   users(
     where: { role: { _in: ["developer", "manager"] } }

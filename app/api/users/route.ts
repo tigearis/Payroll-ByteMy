@@ -106,7 +106,7 @@ export const GET = withAuth(
 
       console.log(`📋 Fetching users for ${session.role} with filters:`, where);
 
-      // Execute query
+      // Execute query with error handling for usersAggregate permissions
       const { data, errors } = await adminApolloClient.query({
         query: GetUsersWithFilteringDocument,
         variables: { limit, offset, where },
@@ -114,12 +114,22 @@ export const GET = withAuth(
         errorPolicy: "all",
       });
 
-      if (errors) {
+      // Check if there are permission-related errors specifically for usersAggregate
+      const hasAggregatePermissionError = errors?.some(error => 
+        error.message.includes('usersAggregate') && 
+        error.message.includes('not found')
+      );
+
+      if (errors && !hasAggregatePermissionError) {
         console.error("GraphQL errors:", errors);
         return NextResponse.json(
           { error: "Failed to fetch users", details: errors },
           { status: 500 }
         );
+      }
+
+      if (hasAggregatePermissionError) {
+        console.log("⚠️ usersAggregate not available for current user role, using estimated count");
       }
 
       // Also fetch managers for frontend dropdown
@@ -131,7 +141,7 @@ export const GET = withAuth(
       return NextResponse.json({
         success: true,
         users: data.users || [],
-        totalCount: data.usersAggregate?.aggregate?.count || 0,
+        totalCount: hasAggregatePermissionError ? (data.users?.length || 0) : (data.usersAggregate?.aggregate?.count || 0),
         managers: managersData?.users || [],
         pagination: {
           limit,
@@ -140,6 +150,7 @@ export const GET = withAuth(
         },
         currentUserRole: session.role,
         permissions,
+        hasExactCount: !hasAggregatePermissionError, // Let frontend know if count is exact or estimated
       });
     } catch (error) {
       console.error("❌ Error fetching users:", error);

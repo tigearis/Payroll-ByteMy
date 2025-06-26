@@ -1,24 +1,12 @@
-# Inherited Roles Configuration
-# This creates a hierarchical permission system where higher roles automatically inherit lower role permissions
-
-# Organization Admin inherits all manager, consultant, and viewer permissions
-- role_name: org_admin
-  role_set:
-    - manager
-    - consultant  
-    - viewer
-
-# Manager inherits all consultant and viewer permissions
-- role_name: manager
-  role_set:
-    - consultant
-    - viewer
-
-# Consultant inherits all viewer permissions
 - role_name: consultant
   role_set:
     - viewer
-
-# Base roles (no inheritance):
-# - developer: Standalone with full access (doesn't need inheritance)
-# - viewer: Base level, lowest permissions (foundation for hierarchy)
+- role_name: manager
+  role_set:
+    - viewer
+    - consultant
+- role_name: org_admin
+  role_set:
+    - viewer
+    - consultant
+    - manager

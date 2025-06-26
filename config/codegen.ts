@@ -64,7 +64,7 @@ const domains = {
   },
   audit: {
     name: "audit",
-    security: "CRITICAL", 
+    security: "CRITICAL",
     description: "SOC2 compliance and logging",
   },
   permissions: {
@@ -130,7 +130,7 @@ const SHARED_SCALARS = {
   uuid: "string",
   timestamptz: "string",
   numeric: "number",
-  bigint: "string", 
+  bigint: "string",
   date: "string",
   time: "string",
   timetz: "string",
@@ -147,16 +147,23 @@ const SHARED_SCALARS = {
 const domainHasValidOperations = (domainName: string): boolean => {
   const graphqlFiles = [
     `./domains/${domainName}/graphql/queries.graphql`,
-    `./domains/${domainName}/graphql/mutations.graphql`, 
+    `./domains/${domainName}/graphql/mutations.graphql`,
     `./domains/${domainName}/graphql/subscriptions.graphql`,
     `./domains/${domainName}/graphql/fragments.graphql`,
   ];
-  
+
   return graphqlFiles.some(file => {
     if (!existsSync(file)) return false;
     try {
-      const content = readFileSync(file, 'utf8').trim();
-      return content.length > 0 && !content.startsWith('#') && (content.includes('query') || content.includes('mutation') || content.includes('subscription') || content.includes('fragment'));
+      const content = readFileSync(file, "utf8").trim();
+      return (
+        content.length > 0 &&
+        !content.startsWith("#") &&
+        (content.includes("query") ||
+          content.includes("mutation") ||
+          content.includes("subscription") ||
+          content.includes("fragment"))
+      );
     } catch {
       return false;
     }
@@ -170,13 +177,13 @@ const generateDomainConfig = (domainName: string) => {
 
   return {
     [`./domains/${domainName}/graphql/generated/`]: {
-      preset: 'client',
+      preset: "client",
       documents: [
         `./domains/${domainName}/graphql/**/*.graphql`,
         `./domains/${domainName}/graphql/**/*.{ts,tsx}`,
       ],
       presetConfig: {
-        gqlTagName: 'gql',
+        gqlTagName: "gql",
         fragmentMasking: false, // Keep disabled for simpler DX
         enumsAsTypes: true,
         dedupeFragments: true,
@@ -226,7 +233,7 @@ const config: CodegenConfig = {
   generates: {
     // Shared types using client preset (only include shared documents)
     "./shared/types/generated/": {
-      preset: 'client',
+      preset: "client",
       documents: [
         "./shared/graphql/**/*.graphql",
         "./shared/graphql/**/*.{ts,tsx}",
@@ -234,7 +241,7 @@ const config: CodegenConfig = {
         "!./domains/*/graphql/**/*",
       ],
       presetConfig: {
-        gqlTagName: 'gql',
+        gqlTagName: "gql",
         fragmentMasking: false,
         enumsAsTypes: true,
         dedupeFragments: true,
@@ -281,39 +288,44 @@ const config: CodegenConfig = {
       plugins: [
         {
           add: {
-            content: JSON.stringify({
-              domains: Object.entries(domains).map(([name, config]) => ({
-                name,
-                security: config.security,
-                description: config.description,
-                hasOperations: domainHasValidOperations(name),
-                documentsPath: `./domains/${name}/graphql/generated/`,
-              })),
-              securityLevels: {
-                CRITICAL: "Auth, user roles, financial data - Requires admin access + MFA",
-                HIGH: "PII, client data, employee info - Requires role-based access", 
-                MEDIUM: "Internal business data - Requires authentication",
-                LOW: "Public/aggregate data - Basic access control",
+            content: JSON.stringify(
+              {
+                domains: Object.entries(domains).map(([name, config]) => ({
+                  name,
+                  security: config.security,
+                  description: config.description,
+                  hasOperations: domainHasValidOperations(name),
+                  documentsPath: `./domains/${name}/graphql/generated/`,
+                })),
+                securityLevels: {
+                  CRITICAL:
+                    "Auth, user roles, financial data - Requires admin access + MFA",
+                  HIGH: "PII, client data, employee info - Requires role-based access",
+                  MEDIUM: "Internal business data - Requires authentication",
+                  LOW: "Public/aggregate data - Basic access control",
+                },
+                complianceFeatures: [
+                  "Role-based access control (RBAC)",
+                  "Audit logging integration",
+                  "Data classification enforcement",
+                  "Permission boundary validation",
+                  "Automatic domain isolation and exports",
+                  "Client Preset v4.8+ for optimal type safety",
+                  "Zero type conflicts with modern codegen",
+                ],
+                generatedAt: new Date().toISOString(),
+                codegenVersion: "Client Preset v4.0",
+                architectureFixes: [
+                  "Migrated to client preset for better type safety",
+                  "Eliminated type export conflicts",
+                  "Simplified output directory structure",
+                  "Removed complex post-generation hooks",
+                  "Enhanced domain isolation",
+                ],
               },
-              complianceFeatures: [
-                "Role-based access control (RBAC)",
-                "Audit logging integration", 
-                "Data classification enforcement",
-                "Permission boundary validation",
-                "Automatic domain isolation and exports",
-                "Client Preset v4.8+ for optimal type safety",
-                "Zero type conflicts with modern codegen",
-              ],
-              generatedAt: new Date().toISOString(),
-              codegenVersion: "Client Preset v4.0",
-              architectureFixes: [
-                "Migrated to client preset for better type safety",
-                "Eliminated type export conflicts",
-                "Simplified output directory structure", 
-                "Removed complex post-generation hooks",
-                "Enhanced domain isolation",
-              ],
-            }, null, 2),
+              null,
+              2
+            ),
           },
         },
       ],
@@ -332,8 +344,8 @@ const config: CodegenConfig = {
   },
 
   // Enable watch mode for development
-  watch: true,
-  
+  watch: false,
+
   // Configuration options
   ignoreNoDocuments: true,
   config: {
