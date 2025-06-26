@@ -74,9 +74,13 @@ export default function SecurityDashboard() {
   };
 
   // Determine which query to use based on permissions
-  const securityQueryDocument = auditReadPermission.granted
-    ? SecurityOverviewWithDataAccessDocument
-    : SecurityOverviewDocument;
+  // For now, always use the basic query until JWT authentication is properly working
+  const securityQueryDocument = SecurityOverviewDocument;
+  
+  // TODO: Re-enable once JWT token passing is fixed
+  // const securityQueryDocument = auditReadPermission.granted
+  //   ? SecurityOverviewWithDataAccessDocument
+  //   : SecurityOverviewDocument;
 
   // Initial data load using strategic query for security events
   const {
@@ -88,6 +92,8 @@ export default function SecurityDashboard() {
     variables: timeRanges,
     // No polling - subscriptions handle real-time updates
     pollInterval: 0,
+    // Skip query if user doesn't have security read permission
+    skip: !securityReadPermission.granted,
   });
 
   // Real-time security events subscription with permission validation
@@ -267,6 +273,12 @@ export default function SecurityDashboard() {
 
   if (error) {
     console.error("🔒 Permission Error in SecurityOverview:", error);
+    
+    // Log specific dataAccessLogs permission error for debugging
+    if (error.message.includes("dataAccessLogs") || error.message.includes("field 'dataAccessLogs' not found")) {
+      console.warn("🔄 DataAccessLogs permission error detected - user may need different role or JWT authentication issue");
+    }
+    
     return (
       <div className="container mx-auto p-6">
         <Alert variant="destructive">
@@ -274,11 +286,10 @@ export default function SecurityDashboard() {
           <AlertTitle>Error Loading Security Data</AlertTitle>
           <AlertDescription>
             {error.message.includes("permission") ||
-            error.message.includes("field")
+            error.message.includes("field") ||
+            error.message.includes("dataAccessLogs")
               ? "You don't have permission to access some security data. Please contact your administrator if you need access to detailed audit logs."
-              : error.message.includes("dataAccessLogs")
-                ? "Some security data is not available. This may be due to missing permissions or empty audit logs."
-                : `Failed to load security data: ${error.message}`}
+              : `Failed to load security data: ${error.message}`}
           </AlertDescription>
           <Button onClick={() => refetch()} className="mt-2" variant="outline">
             <RefreshCcw className="mr-2 h-4 w-4" />
