@@ -188,25 +188,6 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     return { resource, action };
   }, []);
 
-  // Check if user has specific permission (unified approach)
-  const hasPermission = useCallback((permission: string): boolean => {
-    // SECURITY: ALWAYS deny if not authenticated
-    if (!isSignedIn || !isClerkLoaded) return false;
-    
-    // SECURITY: ALWAYS deny if user doesn't exist in database
-    if (!hasValidDatabaseUser) return false;
-
-    // First check database overrides if available
-    if (effectivePermissions.length > 0) {
-      const { resource, action } = parsePermission(permission as Permission);
-      return hasResourcePermission(resource, action);
-    }
-    
-    // Fallback to static permission system
-    const userPermissions = getPermissionsForRole(userRole);
-    return userPermissions.includes(permission as Permission);
-  }, [effectivePermissions, userRole, parsePermission, isSignedIn, isClerkLoaded, hasValidDatabaseUser, hasResourcePermission]);
-
   // Check resource-level permission
   const hasResourcePermission = useCallback((resource: string, action: string): boolean => {
     // Check if any effective permission grants this resource:action
@@ -232,6 +213,25 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     
     return hasGrant || matchingPermissions.some(perm => perm.granted);
   }, [effectivePermissions, userRole]);
+
+  // Check if user has specific permission (unified approach)
+  const hasPermission = useCallback((permission: string): boolean => {
+    // SECURITY: ALWAYS deny if not authenticated
+    if (!isSignedIn || !isClerkLoaded) return false;
+    
+    // SECURITY: ALWAYS deny if user doesn't exist in database
+    if (!hasValidDatabaseUser) return false;
+
+    // First check database overrides if available
+    if (effectivePermissions.length > 0) {
+      const { resource, action } = parsePermission(permission as Permission);
+      return hasResourcePermission(resource, action);
+    }
+    
+    // Fallback to static permission system
+    const userPermissions = getPermissionsForRole(userRole);
+    return userPermissions.includes(permission as Permission);
+  }, [effectivePermissions, userRole, parsePermission, isSignedIn, isClerkLoaded, hasValidDatabaseUser, hasResourcePermission]);
 
   // Check if user can access any operation on a resource
   const canAccessResource = useCallback((resource: string): boolean => {
@@ -437,5 +437,4 @@ export function useAuthContext(): EnhancedAuthContextType {
 export const AuthProvider = EnhancedAuthProvider;
 export type AuthContextType = EnhancedAuthContextType;
 
-// Export types for use in other components
-export type { EffectivePermission, UserPermissionOverride };
+// Types are already exported via interface declarations above

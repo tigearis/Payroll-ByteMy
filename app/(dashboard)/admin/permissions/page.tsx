@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Users, Shield, Search, Plus, Settings } from "lucide-react";
+import { Users, Shield, Search, Settings } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { useAuthContext } from '@/lib/auth/enhanced-auth-context';
 import { PermissionGuard } from '@/components/auth/permission-guard';
 
 export default function PermissionsAdminPage() {
-  const { hasPermission } = useAuthContext();
+  const { hasPermission: _hasPermission } = useAuthContext();
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
 

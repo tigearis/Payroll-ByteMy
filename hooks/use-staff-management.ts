@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { useUserManagement } from "./use-user-management";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useUserManagement } from "./use-user-management";
 
 interface UseStaffManagementOptions {
   autoFetch?: boolean;

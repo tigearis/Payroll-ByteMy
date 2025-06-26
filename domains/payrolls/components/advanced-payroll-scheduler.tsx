@@ -2,12 +2,6 @@
 
 import * as React from "react";
 import { useState, useMemo, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-// Import lucide-react icons with explicit typing
 import {
   ChevronLeft,
   ChevronRight,
@@ -20,15 +14,6 @@ import {
   UserX,
   Calendar,
 } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
   format,
   addDays,
@@ -45,6 +30,21 @@ import {
   isWeekend,
 } from "date-fns";
 import { useQuery, useMutation } from "@apollo/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+// Import lucide-react icons with explicit typing
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import {
   GetPayrollsByMonthDocument,
   GetPayrollsByMonthQuery,

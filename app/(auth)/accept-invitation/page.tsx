@@ -30,14 +30,14 @@ interface InvitationData {
 function AcceptInvitationContent() {
   const { user } = useUser();
   const router = useRouter();
-  const { isLoaded, signUp, setActive } = useSignUp();
+  const { isLoaded: _isLoaded, signUp: _signUp, setActive: _setActive } = useSignUp();
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, _setIsLoading] = React.useState(false);
   const [, setInvitationData] = React.useState<InvitationData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [invitation, setInvitation] = useState<any>(null);
+  const [invitation, setInvitation] = useState<{ id: string; invitedRole: string } | null>(null);
   const [acceptanceStep, setAcceptanceStep] = useState<
     "loading" | "form" | "accepting" | "success"
   >("loading");
@@ -70,7 +70,7 @@ function AcceptInvitationContent() {
   // Get invitation details by ticket
   const {
     data: invitationData,
-    loading: invitationLoading,
+    loading: _invitationLoading,
     error: invitationError,
   } = getInvitationByTicket(ticket || "");
 

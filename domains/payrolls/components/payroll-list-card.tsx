@@ -1,10 +1,10 @@
 // components/payroll-list-card.tsx
 "use client";
 
-import { useCachedQuery } from "@/hooks/use-strategic-query";
 import { Search, Download } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useCachedQuery } from "@/hooks/use-strategic-query";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

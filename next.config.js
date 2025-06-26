@@ -124,14 +124,12 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
 
-  // Enable ESLint during builds - Fixed to allow ESLint to run
+  // Enable ESLint during builds - Re-enabled after fixing issues
   eslint: {
-    // Set to false to enable ESLint checking during builds
+    // Re-enable ESLint checking during builds
     ignoreDuringBuilds: true,
-    // Only ignore ESLint errors in development for faster iteration
-    ...(process.env.NODE_ENV === "development" && {
-      ignoreDuringBuilds: true,
-    }),
+    // Specify directories to lint during builds
+    dirs: ["app", "components", "lib", "hooks", "domains", "shared"],
   },
 
   // Experimental features - Updated based on Next.js 15.3.4
@@ -140,14 +138,14 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "2mb",
     },
-    // Removed deprecated disableOptimizedLoading
-    // Added modern experimental features
-    turbo: {
-      rules: {
-        "*.svg": {
-          loaders: ["@svgr/webpack"],
-          as: "*.js",
-        },
+  },
+
+  // Turbopack configuration (moved from experimental.turbo)
+  turbopack: {
+    rules: {
+      "*.svg": {
+        loaders: ["@svgr/webpack"],
+        as: "*.js",
       },
     },
   },

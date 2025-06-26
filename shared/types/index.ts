@@ -22,15 +22,16 @@
 
 // Central export aggregator for GraphQL operations
 
-// Base types (single source of truth)
-export * from './base-types';
-
-// Shared operations and hooks
+// Shared operations and hooks (primary source)
 export * from './generated/graphql';
+
+// Base types - only export non-conflicting items
+// Note: Use generated/graphql.ts as the source of truth for entity types
+// export * from './base-types';
 
 // Domain-specific exports available at:
 // import { useGetUserQuery } from '../../../domains/users/graphql/generated';
 // import { useCreateNoteQuery } from '../../../domains/notes/graphql/generated';
 
 // Re-export commonly used utilities
-export { gql } from './generated/graphql';
+// Note: gql is available from @apollo/client directly

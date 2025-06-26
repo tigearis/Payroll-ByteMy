@@ -2,16 +2,6 @@
 
 import type React from "react";
 import { useState, useMemo, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ChevronLeft,
   ChevronRight,
@@ -32,9 +22,19 @@ import {
   endOfWeek,
 } from "date-fns";
 import { useQuery } from "@apollo/client";
+import { GetPayrollsByMonthDocument } from "../graphql/generated/graphql";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Import generated GraphQL operations from the payrolls domain
-import { GetPayrollsByMonthDocument } from "../graphql/generated/graphql";
 
 // Types
 type PayrollEvent = {

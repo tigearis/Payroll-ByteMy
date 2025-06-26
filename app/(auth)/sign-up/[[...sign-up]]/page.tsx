@@ -67,7 +67,7 @@ export default function SignUpPage() {
   };
 
   // Handle form submission logging
-  const handleFormSubmit = useCallback(async (e: React.FormEvent) => {
+  const handleFormSubmit = useCallback(async (_e: React.FormEvent) => {
     try {
       await clientAuthLogger.logAuthEvent({
         eventType: "signup_attempt",
