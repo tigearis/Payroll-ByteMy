@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-06-26T15:50:43.872Z
+ * Generated: 2025-06-26T21:32:54.183Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -97,6 +97,288 @@ export type BigintComparisonExp = {
   _lte?: InputMaybe<Scalars['bigint']['input']>;
   _neq?: InputMaybe<Scalars['bigint']['input']>;
   _nin?: InputMaybe<Array<Scalars['bigint']['input']>>;
+};
+
+/** columns and relationships of "billing_invoice_item" */
+export type BillingInvoiceItem = {
+  __typename?: 'BillingInvoiceItem';
+  amount?: Maybe<Scalars['numeric']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description: Scalars['String']['output'];
+  id: Scalars['uuid']['output'];
+  invoiceId: Scalars['uuid']['output'];
+  quantity: Scalars['Int']['output'];
+  unitPrice: Scalars['numeric']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** aggregated selection of "billing_invoice_item" */
+export type BillingInvoiceItemAggregate = {
+  __typename?: 'BillingInvoiceItemAggregate';
+  aggregate?: Maybe<BillingInvoiceItemAggregateFields>;
+  nodes: Array<BillingInvoiceItem>;
+};
+
+/** aggregate fields of "billing_invoice_item" */
+export type BillingInvoiceItemAggregateFields = {
+  __typename?: 'BillingInvoiceItemAggregateFields';
+  avg?: Maybe<BillingInvoiceItemAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<BillingInvoiceItemMaxFields>;
+  min?: Maybe<BillingInvoiceItemMinFields>;
+  stddev?: Maybe<BillingInvoiceItemStddevFields>;
+  stddevPop?: Maybe<BillingInvoiceItemStddevPopFields>;
+  stddevSamp?: Maybe<BillingInvoiceItemStddevSampFields>;
+  sum?: Maybe<BillingInvoiceItemSumFields>;
+  varPop?: Maybe<BillingInvoiceItemVarPopFields>;
+  varSamp?: Maybe<BillingInvoiceItemVarSampFields>;
+  variance?: Maybe<BillingInvoiceItemVarianceFields>;
+};
+
+
+/** aggregate fields of "billing_invoice_item" */
+export type BillingInvoiceItemAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type BillingInvoiceItemAvgFields = {
+  __typename?: 'BillingInvoiceItemAvgFields';
+  amount?: Maybe<Scalars['Float']['output']>;
+  quantity?: Maybe<Scalars['Float']['output']>;
+  unitPrice?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "billing_invoice_item". All fields are combined with a logical 'AND'. */
+export type BillingInvoiceItemBoolExp = {
+  _and?: InputMaybe<Array<BillingInvoiceItemBoolExp>>;
+  _not?: InputMaybe<BillingInvoiceItemBoolExp>;
+  _or?: InputMaybe<Array<BillingInvoiceItemBoolExp>>;
+  amount?: InputMaybe<NumericComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  invoiceId?: InputMaybe<UuidComparisonExp>;
+  quantity?: InputMaybe<IntComparisonExp>;
+  unitPrice?: InputMaybe<NumericComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "billing_invoice_item" */
+export type BillingInvoiceItemConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'billing_invoice_item_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "billing_invoice_item" */
+export type BillingInvoiceItemIncInput = {
+  quantity?: InputMaybe<Scalars['Int']['input']>;
+  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "billing_invoice_item" */
+export type BillingInvoiceItemInsertInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  quantity?: InputMaybe<Scalars['Int']['input']>;
+  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate max on columns */
+export type BillingInvoiceItemMaxFields = {
+  __typename?: 'BillingInvoiceItemMaxFields';
+  amount?: Maybe<Scalars['numeric']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  invoiceId?: Maybe<Scalars['uuid']['output']>;
+  quantity?: Maybe<Scalars['Int']['output']>;
+  unitPrice?: Maybe<Scalars['numeric']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** aggregate min on columns */
+export type BillingInvoiceItemMinFields = {
+  __typename?: 'BillingInvoiceItemMinFields';
+  amount?: Maybe<Scalars['numeric']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  invoiceId?: Maybe<Scalars['uuid']['output']>;
+  quantity?: Maybe<Scalars['Int']['output']>;
+  unitPrice?: Maybe<Scalars['numeric']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** response of any mutation on the table "billing_invoice_item" */
+export type BillingInvoiceItemMutationResponse = {
+  __typename?: 'BillingInvoiceItemMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<BillingInvoiceItem>;
+};
+
+/** on_conflict condition type for table "billing_invoice_item" */
+export type BillingInvoiceItemOnConflict = {
+  constraint: BillingInvoiceItemConstraint;
+  updateColumns?: Array<BillingInvoiceItemUpdateColumn>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+/** Ordering options when selecting data from "billing_invoice_item". */
+export type BillingInvoiceItemOrderBy = {
+  amount?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  invoiceId?: InputMaybe<OrderBy>;
+  quantity?: InputMaybe<OrderBy>;
+  unitPrice?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: billing_invoice_item */
+export type BillingInvoiceItemPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "billing_invoice_item" */
+export type BillingInvoiceItemSelectColumn =
+  /** column name */
+  | 'amount'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'invoiceId'
+  /** column name */
+  | 'quantity'
+  /** column name */
+  | 'unitPrice'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** input type for updating data in table "billing_invoice_item" */
+export type BillingInvoiceItemSetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  quantity?: InputMaybe<Scalars['Int']['input']>;
+  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type BillingInvoiceItemStddevFields = {
+  __typename?: 'BillingInvoiceItemStddevFields';
+  amount?: Maybe<Scalars['Float']['output']>;
+  quantity?: Maybe<Scalars['Float']['output']>;
+  unitPrice?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type BillingInvoiceItemStddevPopFields = {
+  __typename?: 'BillingInvoiceItemStddevPopFields';
+  amount?: Maybe<Scalars['Float']['output']>;
+  quantity?: Maybe<Scalars['Float']['output']>;
+  unitPrice?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type BillingInvoiceItemStddevSampFields = {
+  __typename?: 'BillingInvoiceItemStddevSampFields';
+  amount?: Maybe<Scalars['Float']['output']>;
+  quantity?: Maybe<Scalars['Float']['output']>;
+  unitPrice?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "billing_invoice_item" */
+export type BillingInvoiceItemStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: BillingInvoiceItemStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type BillingInvoiceItemStreamCursorValueInput = {
+  amount?: InputMaybe<Scalars['numeric']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  quantity?: InputMaybe<Scalars['Int']['input']>;
+  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate sum on columns */
+export type BillingInvoiceItemSumFields = {
+  __typename?: 'BillingInvoiceItemSumFields';
+  amount?: Maybe<Scalars['numeric']['output']>;
+  quantity?: Maybe<Scalars['Int']['output']>;
+  unitPrice?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** update columns of table "billing_invoice_item" */
+export type BillingInvoiceItemUpdateColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'invoiceId'
+  /** column name */
+  | 'quantity'
+  /** column name */
+  | 'unitPrice'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type BillingInvoiceItemUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<BillingInvoiceItemIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<BillingInvoiceItemSetInput>;
+  /** filter the rows which have to be updated */
+  where: BillingInvoiceItemBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type BillingInvoiceItemVarPopFields = {
+  __typename?: 'BillingInvoiceItemVarPopFields';
+  amount?: Maybe<Scalars['Float']['output']>;
+  quantity?: Maybe<Scalars['Float']['output']>;
+  unitPrice?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type BillingInvoiceItemVarSampFields = {
+  __typename?: 'BillingInvoiceItemVarSampFields';
+  amount?: Maybe<Scalars['Float']['output']>;
+  quantity?: Maybe<Scalars['Float']['output']>;
+  unitPrice?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type BillingInvoiceItemVarianceFields = {
+  __typename?: 'BillingInvoiceItemVarianceFields';
+  amount?: Maybe<Scalars['Float']['output']>;
+  quantity?: Maybe<Scalars['Float']['output']>;
+  unitPrice?: Maybe<Scalars['Float']['output']>;
 };
 
 /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
@@ -6739,6 +7021,10 @@ export type Mutation_Root = {
   deleteBillingEventLogById?: Maybe<BillingEventLogs>;
   /** delete single row from the table: "billing_invoice" */
   deleteBillingInvoiceById?: Maybe<BillingInvoice>;
+  /** delete data from the table: "billing_invoice_item" */
+  deleteBillingInvoiceItem?: Maybe<BillingInvoiceItemMutationResponse>;
+  /** delete single row from the table: "billing_invoice_item" */
+  deleteBillingInvoiceItemByPk?: Maybe<BillingInvoiceItem>;
   /** delete single row from the table: "billing_items" */
   deleteBillingItemById?: Maybe<BillingItems>;
   /** delete single row from the table: "billing_plan" */
@@ -6821,6 +7107,10 @@ export type Mutation_Root = {
   insertBillingEventLog?: Maybe<BillingEventLogs>;
   /** insert a single row into the table: "billing_invoice" */
   insertBillingInvoice?: Maybe<BillingInvoice>;
+  /** insert data into the table: "billing_invoice_item" */
+  insertBillingInvoiceItem?: Maybe<BillingInvoiceItemMutationResponse>;
+  /** insert a single row into the table: "billing_invoice_item" */
+  insertBillingInvoiceItemOne?: Maybe<BillingInvoiceItem>;
   /** insert a single row into the table: "billing_items" */
   insertBillingItem?: Maybe<BillingItems>;
   /** insert a single row into the table: "billing_plan" */
@@ -6919,6 +7209,12 @@ export type Mutation_Root = {
   updateBillingEventLogsMany?: Maybe<Array<Maybe<BillingEventLogsMutationResponse>>>;
   /** update single row of the table: "billing_invoice" */
   updateBillingInvoiceById?: Maybe<BillingInvoice>;
+  /** update data of the table: "billing_invoice_item" */
+  updateBillingInvoiceItem?: Maybe<BillingInvoiceItemMutationResponse>;
+  /** update single row of the table: "billing_invoice_item" */
+  updateBillingInvoiceItemByPk?: Maybe<BillingInvoiceItem>;
+  /** update multiples rows of table: "billing_invoice_item" */
+  updateBillingInvoiceItemMany?: Maybe<Array<Maybe<BillingInvoiceItemMutationResponse>>>;
   /** update multiples rows of table: "billing_invoice" */
   updateBillingInvoiceMany?: Maybe<Array<Maybe<BillingInvoiceMutationResponse>>>;
   /** update single row of the table: "billing_items" */
@@ -8017,6 +8313,18 @@ export type Mutation_RootDeleteBillingInvoiceByIdArgs = {
 
 
 /** mutation root */
+export type Mutation_RootDeleteBillingInvoiceItemArgs = {
+  where: BillingInvoiceItemBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteBillingInvoiceItemByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
 export type Mutation_RootDeleteBillingItemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
@@ -8265,6 +8573,20 @@ export type Mutation_RootInsertBillingEventLogArgs = {
 export type Mutation_RootInsertBillingInvoiceArgs = {
   object: BillingInvoiceInsertInput;
   onConflict?: InputMaybe<BillingInvoiceOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertBillingInvoiceItemArgs = {
+  objects: Array<BillingInvoiceItemInsertInput>;
+  onConflict?: InputMaybe<BillingInvoiceItemOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertBillingInvoiceItemOneArgs = {
+  object: BillingInvoiceItemInsertInput;
+  onConflict?: InputMaybe<BillingInvoiceItemOnConflict>;
 };
 
 
@@ -8615,6 +8937,28 @@ export type Mutation_RootUpdateBillingInvoiceByIdArgs = {
   _inc?: InputMaybe<BillingInvoiceIncInput>;
   _set?: InputMaybe<BillingInvoiceSetInput>;
   pkColumns: BillingInvoicePkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateBillingInvoiceItemArgs = {
+  _inc?: InputMaybe<BillingInvoiceItemIncInput>;
+  _set?: InputMaybe<BillingInvoiceItemSetInput>;
+  where: BillingInvoiceItemBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateBillingInvoiceItemByPkArgs = {
+  _inc?: InputMaybe<BillingInvoiceItemIncInput>;
+  _set?: InputMaybe<BillingInvoiceItemSetInput>;
+  pkColumns: BillingInvoiceItemPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateBillingInvoiceItemManyArgs = {
+  updates: Array<BillingInvoiceItemUpdates>;
 };
 
 
@@ -14759,6 +15103,12 @@ export type Query_Root = {
   billingInvoiceAggregate: BillingInvoiceAggregate;
   /** fetch data from the table: "billing_invoice" using primary key columns */
   billingInvoiceById?: Maybe<BillingInvoice>;
+  /** fetch data from the table: "billing_invoice_item" */
+  billingInvoiceItem: Array<BillingInvoiceItem>;
+  /** fetch aggregated fields from the table: "billing_invoice_item" */
+  billingInvoiceItemAggregate: BillingInvoiceItemAggregate;
+  /** fetch data from the table: "billing_invoice_item" using primary key columns */
+  billingInvoiceItemByPk?: Maybe<BillingInvoiceItem>;
   /** fetch data from the table: "billing_items" using primary key columns */
   billingItemById?: Maybe<BillingItems>;
   /** An array relationship */
@@ -15167,6 +15517,29 @@ export type Query_RootBillingInvoiceAggregateArgs = {
 
 
 export type Query_RootBillingInvoiceByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootBillingInvoiceItemArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+
+export type Query_RootBillingInvoiceItemAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+
+export type Query_RootBillingInvoiceItemByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -17243,6 +17616,14 @@ export type Subscription_Root = {
   billingInvoiceAggregate: BillingInvoiceAggregate;
   /** fetch data from the table: "billing_invoice" using primary key columns */
   billingInvoiceById?: Maybe<BillingInvoice>;
+  /** fetch data from the table: "billing_invoice_item" */
+  billingInvoiceItem: Array<BillingInvoiceItem>;
+  /** fetch aggregated fields from the table: "billing_invoice_item" */
+  billingInvoiceItemAggregate: BillingInvoiceItemAggregate;
+  /** fetch data from the table: "billing_invoice_item" using primary key columns */
+  billingInvoiceItemByPk?: Maybe<BillingInvoiceItem>;
+  /** fetch data from the table in a streaming manner: "billing_invoice_item" */
+  billingInvoiceItemStream: Array<BillingInvoiceItem>;
   /** fetch data from the table in a streaming manner: "billing_invoice" */
   billingInvoiceStream: Array<BillingInvoice>;
   /** fetch data from the table: "billing_items" using primary key columns */
@@ -17769,6 +18150,36 @@ export type Subscription_RootBillingInvoiceAggregateArgs = {
 
 export type Subscription_RootBillingInvoiceByIdArgs = {
   id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootBillingInvoiceItemArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+
+export type Subscription_RootBillingInvoiceItemAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+
+export type Subscription_RootBillingInvoiceItemByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootBillingInvoiceItemStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<BillingInvoiceItemStreamCursorInput>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
 };
 
 
@@ -19246,6 +19657,17 @@ export type UserInvitationsAggregate = {
   nodes: Array<UserInvitations>;
 };
 
+export type UserInvitationsAggregateBoolExp = {
+  count?: InputMaybe<UserInvitationsAggregateBoolExpCount>;
+};
+
+export type UserInvitationsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<UserInvitationsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<UserInvitationsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 /** aggregate fields of "user_invitations" */
 export type UserInvitationsAggregateFields = {
   __typename?: 'userInvitationsAggregateFields';
@@ -19261,9 +19683,23 @@ export type UserInvitationsAggregateFieldsCountArgs = {
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+/** order by aggregate values of table "user_invitations" */
+export type UserInvitationsAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<UserInvitationsMaxOrderBy>;
+  min?: InputMaybe<UserInvitationsMinOrderBy>;
+};
+
 /** append existing jsonb value of filtered columns with new jsonb value */
 export type UserInvitationsAppendInput = {
   invitationMetadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "user_invitations" */
+export type UserInvitationsArrRelInsertInput = {
+  data: Array<UserInvitationsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<UserInvitationsOnConflict>;
 };
 
 /** Boolean expression to filter rows from the table "user_invitations". All fields are combined with a logical 'AND'. */
@@ -19359,6 +19795,26 @@ export type UserInvitationsMaxFields = {
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
 
+/** order by max() on columns of table "user_invitations" */
+export type UserInvitationsMaxOrderBy = {
+  acceptedAt?: InputMaybe<OrderBy>;
+  acceptedBy?: InputMaybe<OrderBy>;
+  clerkInvitationId?: InputMaybe<OrderBy>;
+  clerkTicket?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  email?: InputMaybe<OrderBy>;
+  expiresAt?: InputMaybe<OrderBy>;
+  firstName?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  invitedAt?: InputMaybe<OrderBy>;
+  invitedBy?: InputMaybe<OrderBy>;
+  invitedRole?: InputMaybe<OrderBy>;
+  lastName?: InputMaybe<OrderBy>;
+  managerId?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
 /** aggregate min on columns */
 export type UserInvitationsMinFields = {
   __typename?: 'userInvitationsMinFields';
@@ -19378,6 +19834,26 @@ export type UserInvitationsMinFields = {
   managerId?: Maybe<Scalars['uuid']['output']>;
   status?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by min() on columns of table "user_invitations" */
+export type UserInvitationsMinOrderBy = {
+  acceptedAt?: InputMaybe<OrderBy>;
+  acceptedBy?: InputMaybe<OrderBy>;
+  clerkInvitationId?: InputMaybe<OrderBy>;
+  clerkTicket?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  email?: InputMaybe<OrderBy>;
+  expiresAt?: InputMaybe<OrderBy>;
+  firstName?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  invitedAt?: InputMaybe<OrderBy>;
+  invitedBy?: InputMaybe<OrderBy>;
+  invitedRole?: InputMaybe<OrderBy>;
+  lastName?: InputMaybe<OrderBy>;
+  managerId?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
 };
 
 /** response of any mutation on the table "user_invitations" */
@@ -19891,6 +20367,18 @@ export type Users = {
   /** Timestamp when the user was last updated */
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
   /** An array relationship */
+  userInvitationsAcceptedBy: Array<UserInvitations>;
+  /** An aggregate relationship */
+  userInvitationsAcceptedByAggregate: UserInvitationsAggregate;
+  /** An array relationship */
+  userInvitationsInvitedBy: Array<UserInvitations>;
+  /** An aggregate relationship */
+  userInvitationsInvitedByAggregate: UserInvitationsAggregate;
+  /** An array relationship */
+  userInvitationsMangerId: Array<UserInvitations>;
+  /** An aggregate relationship */
+  userInvitationsMangerIdAggregate: UserInvitationsAggregate;
+  /** An array relationship */
   userLeaveRecords: Array<Leave>;
   /** An aggregate relationship */
   userLeaveRecordsAggregate: LeaveAggregate;
@@ -20232,6 +20720,66 @@ export type UsersTargetedPermissionAuditsAggregateArgs = {
 
 
 /** columns and relationships of "users" */
+export type UsersUserInvitationsAcceptedByArgs = {
+  distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserInvitationsOrderBy>>;
+  where?: InputMaybe<UserInvitationsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserInvitationsAcceptedByAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserInvitationsOrderBy>>;
+  where?: InputMaybe<UserInvitationsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserInvitationsInvitedByArgs = {
+  distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserInvitationsOrderBy>>;
+  where?: InputMaybe<UserInvitationsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserInvitationsInvitedByAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserInvitationsOrderBy>>;
+  where?: InputMaybe<UserInvitationsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserInvitationsMangerIdArgs = {
+  distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserInvitationsOrderBy>>;
+  where?: InputMaybe<UserInvitationsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserInvitationsMangerIdAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserInvitationsOrderBy>>;
+  where?: InputMaybe<UserInvitationsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
 export type UsersUserLeaveRecordsArgs = {
   distinctOn?: InputMaybe<Array<LeaveSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -20424,6 +20972,12 @@ export type UsersBoolExp = {
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsBoolExp>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  userInvitationsAcceptedBy?: InputMaybe<UserInvitationsBoolExp>;
+  userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
+  userInvitationsInvitedBy?: InputMaybe<UserInvitationsBoolExp>;
+  userInvitationsInvitedByAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
+  userInvitationsMangerId?: InputMaybe<UserInvitationsBoolExp>;
+  userInvitationsMangerIdAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userLeaveRecords?: InputMaybe<LeaveBoolExp>;
   userLeaveRecordsAggregate?: InputMaybe<LeaveAggregateBoolExp>;
   userPermissionAudits?: InputMaybe<PermissionAuditLogsBoolExp>;
@@ -20489,6 +21043,9 @@ export type UsersInsertInput = {
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  userInvitationsAcceptedBy?: InputMaybe<UserInvitationsArrRelInsertInput>;
+  userInvitationsInvitedBy?: InputMaybe<UserInvitationsArrRelInsertInput>;
+  userInvitationsMangerId?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userLeaveRecords?: InputMaybe<LeaveArrRelInsertInput>;
   userPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
   userPermissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
@@ -20658,6 +21215,9 @@ export type UsersOrderBy = {
   role?: InputMaybe<OrderBy>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
+  userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
+  userInvitationsInvitedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
+  userInvitationsMangerIdAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userLeaveRecordsAggregate?: InputMaybe<LeaveAggregateOrderBy>;
   userPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateOrderBy>;
   userPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;

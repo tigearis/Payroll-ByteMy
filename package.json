@@ -51,6 +51,7 @@
     "test:hasura": "tsx scripts/test-hasura-operations.ts",
     "test:hasura:quick": "tsx scripts/quick-graphql-test.ts",
     "test:hasura:real": "tsx scripts/test-real-operations.ts",
+    "debug:auth": "tsx scripts/debug-auth.ts",
     "test:users:sync": "node scripts/sync-test-users.js sync",
     "test:users:sync:direct": "node scripts/sync-test-users.js direct",
     "test:users:sync:check": "node scripts/sync-test-users.js check",

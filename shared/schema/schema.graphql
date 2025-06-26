@@ -52,6 +52,295 @@ input BigintComparisonExp {
 }
 
 """
+columns and relationships of "billing_invoice_item"
+"""
+type BillingInvoiceItem {
+  amount: numeric
+  createdAt: timestamptz
+  description: String!
+  id: uuid!
+  invoiceId: uuid!
+  quantity: Int!
+  unitPrice: numeric!
+  updatedAt: timestamptz
+}
+
+"""
+aggregated selection of "billing_invoice_item"
+"""
+type BillingInvoiceItemAggregate {
+  aggregate: BillingInvoiceItemAggregateFields
+  nodes: [BillingInvoiceItem!]!
+}
+
+"""
+aggregate fields of "billing_invoice_item"
+"""
+type BillingInvoiceItemAggregateFields {
+  avg: BillingInvoiceItemAvgFields
+  count(columns: [BillingInvoiceItemSelectColumn!], distinct: Boolean): Int!
+  max: BillingInvoiceItemMaxFields
+  min: BillingInvoiceItemMinFields
+  stddev: BillingInvoiceItemStddevFields
+  stddevPop: BillingInvoiceItemStddevPopFields
+  stddevSamp: BillingInvoiceItemStddevSampFields
+  sum: BillingInvoiceItemSumFields
+  varPop: BillingInvoiceItemVarPopFields
+  varSamp: BillingInvoiceItemVarSampFields
+  variance: BillingInvoiceItemVarianceFields
+}
+
+"""aggregate avg on columns"""
+type BillingInvoiceItemAvgFields {
+  amount: Float
+  quantity: Float
+  unitPrice: Float
+}
+
+"""
+Boolean expression to filter rows from the table "billing_invoice_item". All fields are combined with a logical 'AND'.
+"""
+input BillingInvoiceItemBoolExp {
+  _and: [BillingInvoiceItemBoolExp!]
+  _not: BillingInvoiceItemBoolExp
+  _or: [BillingInvoiceItemBoolExp!]
+  amount: NumericComparisonExp
+  createdAt: TimestamptzComparisonExp
+  description: StringComparisonExp
+  id: UuidComparisonExp
+  invoiceId: UuidComparisonExp
+  quantity: IntComparisonExp
+  unitPrice: NumericComparisonExp
+  updatedAt: TimestamptzComparisonExp
+}
+
+"""
+unique or primary key constraints on table "billing_invoice_item"
+"""
+enum BillingInvoiceItemConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  billing_invoice_item_pkey
+}
+
+"""
+input type for incrementing numeric columns in table "billing_invoice_item"
+"""
+input BillingInvoiceItemIncInput {
+  quantity: Int
+  unitPrice: numeric
+}
+
+"""
+input type for inserting data into table "billing_invoice_item"
+"""
+input BillingInvoiceItemInsertInput {
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  invoiceId: uuid
+  quantity: Int
+  unitPrice: numeric
+  updatedAt: timestamptz
+}
+
+"""aggregate max on columns"""
+type BillingInvoiceItemMaxFields {
+  amount: numeric
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  invoiceId: uuid
+  quantity: Int
+  unitPrice: numeric
+  updatedAt: timestamptz
+}
+
+"""aggregate min on columns"""
+type BillingInvoiceItemMinFields {
+  amount: numeric
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  invoiceId: uuid
+  quantity: Int
+  unitPrice: numeric
+  updatedAt: timestamptz
+}
+
+"""
+response of any mutation on the table "billing_invoice_item"
+"""
+type BillingInvoiceItemMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [BillingInvoiceItem!]!
+}
+
+"""
+on_conflict condition type for table "billing_invoice_item"
+"""
+input BillingInvoiceItemOnConflict {
+  constraint: BillingInvoiceItemConstraint!
+  updateColumns: [BillingInvoiceItemUpdateColumn!]! = []
+  where: BillingInvoiceItemBoolExp
+}
+
+"""Ordering options when selecting data from "billing_invoice_item"."""
+input BillingInvoiceItemOrderBy {
+  amount: OrderBy
+  createdAt: OrderBy
+  description: OrderBy
+  id: OrderBy
+  invoiceId: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
+  updatedAt: OrderBy
+}
+
+"""primary key columns input for table: billing_invoice_item"""
+input BillingInvoiceItemPkColumnsInput {
+  id: uuid!
+}
+
+"""
+select columns of table "billing_invoice_item"
+"""
+enum BillingInvoiceItemSelectColumn {
+  """column name"""
+  amount
+  """column name"""
+  createdAt
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  invoiceId
+  """column name"""
+  quantity
+  """column name"""
+  unitPrice
+  """column name"""
+  updatedAt
+}
+
+"""
+input type for updating data in table "billing_invoice_item"
+"""
+input BillingInvoiceItemSetInput {
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  invoiceId: uuid
+  quantity: Int
+  unitPrice: numeric
+  updatedAt: timestamptz
+}
+
+"""aggregate stddev on columns"""
+type BillingInvoiceItemStddevFields {
+  amount: Float
+  quantity: Float
+  unitPrice: Float
+}
+
+"""aggregate stddevPop on columns"""
+type BillingInvoiceItemStddevPopFields {
+  amount: Float
+  quantity: Float
+  unitPrice: Float
+}
+
+"""aggregate stddevSamp on columns"""
+type BillingInvoiceItemStddevSampFields {
+  amount: Float
+  quantity: Float
+  unitPrice: Float
+}
+
+"""
+Streaming cursor of the table "billing_invoice_item"
+"""
+input BillingInvoiceItemStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: BillingInvoiceItemStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input BillingInvoiceItemStreamCursorValueInput {
+  amount: numeric
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  invoiceId: uuid
+  quantity: Int
+  unitPrice: numeric
+  updatedAt: timestamptz
+}
+
+"""aggregate sum on columns"""
+type BillingInvoiceItemSumFields {
+  amount: numeric
+  quantity: Int
+  unitPrice: numeric
+}
+
+"""
+update columns of table "billing_invoice_item"
+"""
+enum BillingInvoiceItemUpdateColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  invoiceId
+  """column name"""
+  quantity
+  """column name"""
+  unitPrice
+  """column name"""
+  updatedAt
+}
+
+input BillingInvoiceItemUpdates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: BillingInvoiceItemIncInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: BillingInvoiceItemSetInput
+  """filter the rows which have to be updated"""
+  where: BillingInvoiceItemBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type BillingInvoiceItemVarPopFields {
+  amount: Float
+  quantity: Float
+  unitPrice: Float
+}
+
+"""aggregate varSamp on columns"""
+type BillingInvoiceItemVarSampFields {
+  amount: Float
+  quantity: Float
+  unitPrice: Float
+}
+
+"""aggregate variance on columns"""
+type BillingInvoiceItemVarianceFields {
+  amount: Float
+  quantity: Float
+  unitPrice: Float
+}
+
+"""
 Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'.
 """
 input BooleanComparisonExp {
@@ -8141,6 +8430,17 @@ type mutation_root {
   """
   deleteBillingInvoiceById(id: uuid!): billingInvoice
   """
+  delete data from the table: "billing_invoice_item"
+  """
+  deleteBillingInvoiceItem(
+    """filter the rows which have to be deleted"""
+    where: BillingInvoiceItemBoolExp!
+  ): BillingInvoiceItemMutationResponse
+  """
+  delete single row from the table: "billing_invoice_item"
+  """
+  deleteBillingInvoiceItemByPk(id: uuid!): BillingInvoiceItem
+  """
   delete single row from the table: "billing_items"
   """
   deleteBillingItemById(id: uuid!): billingItems
@@ -8374,6 +8674,24 @@ type mutation_root {
     """upsert condition"""
     onConflict: billingInvoiceOnConflict
   ): billingInvoice
+  """
+  insert data into the table: "billing_invoice_item"
+  """
+  insertBillingInvoiceItem(
+    """the rows to be inserted"""
+    objects: [BillingInvoiceItemInsertInput!]!
+    """upsert condition"""
+    onConflict: BillingInvoiceItemOnConflict
+  ): BillingInvoiceItemMutationResponse
+  """
+  insert a single row into the table: "billing_invoice_item"
+  """
+  insertBillingInvoiceItemOne(
+    """the row to be inserted"""
+    object: BillingInvoiceItemInsertInput!
+    """upsert condition"""
+    onConflict: BillingInvoiceItemOnConflict
+  ): BillingInvoiceItem
   """
   insert a single row into the table: "billing_items"
   """
@@ -8836,6 +9154,34 @@ type mutation_root {
     _set: billingInvoiceSetInput
     pkColumns: billingInvoicePkColumnsInput!
   ): billingInvoice
+  """
+  update data of the table: "billing_invoice_item"
+  """
+  updateBillingInvoiceItem(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: BillingInvoiceItemIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: BillingInvoiceItemSetInput
+    """filter the rows which have to be updated"""
+    where: BillingInvoiceItemBoolExp!
+  ): BillingInvoiceItemMutationResponse
+  """
+  update single row of the table: "billing_invoice_item"
+  """
+  updateBillingInvoiceItemByPk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: BillingInvoiceItemIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: BillingInvoiceItemSetInput
+    pkColumns: BillingInvoiceItemPkColumnsInput!
+  ): BillingInvoiceItem
+  """
+  update multiples rows of table: "billing_invoice_item"
+  """
+  updateBillingInvoiceItemMany(
+    """updates to execute, in order"""
+    updates: [BillingInvoiceItemUpdates!]!
+  ): [BillingInvoiceItemMutationResponse]
   """
   update multiples rows of table: "billing_invoice"
   """
@@ -15640,6 +15986,40 @@ type query_root {
   ): billingInvoiceAggregate!
   """fetch data from the table: "billing_invoice" using primary key columns"""
   billingInvoiceById(id: uuid!): billingInvoice
+  """
+  fetch data from the table: "billing_invoice_item"
+  """
+  billingInvoiceItem(
+    """distinct select on columns"""
+    distinctOn: [BillingInvoiceItemSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingInvoiceItemOrderBy!]
+    """filter the rows returned"""
+    where: BillingInvoiceItemBoolExp
+  ): [BillingInvoiceItem!]!
+  """
+  fetch aggregated fields from the table: "billing_invoice_item"
+  """
+  billingInvoiceItemAggregate(
+    """distinct select on columns"""
+    distinctOn: [BillingInvoiceItemSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingInvoiceItemOrderBy!]
+    """filter the rows returned"""
+    where: BillingInvoiceItemBoolExp
+  ): BillingInvoiceItemAggregate!
+  """
+  fetch data from the table: "billing_invoice_item" using primary key columns
+  """
+  billingInvoiceItemByPk(id: uuid!): BillingInvoiceItem
   """fetch data from the table: "billing_items" using primary key columns"""
   billingItemById(id: uuid!): billingItems
   """An array relationship"""
@@ -18556,6 +18936,51 @@ type subscription_root {
   """fetch data from the table: "billing_invoice" using primary key columns"""
   billingInvoiceById(id: uuid!): billingInvoice
   """
+  fetch data from the table: "billing_invoice_item"
+  """
+  billingInvoiceItem(
+    """distinct select on columns"""
+    distinctOn: [BillingInvoiceItemSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingInvoiceItemOrderBy!]
+    """filter the rows returned"""
+    where: BillingInvoiceItemBoolExp
+  ): [BillingInvoiceItem!]!
+  """
+  fetch aggregated fields from the table: "billing_invoice_item"
+  """
+  billingInvoiceItemAggregate(
+    """distinct select on columns"""
+    distinctOn: [BillingInvoiceItemSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingInvoiceItemOrderBy!]
+    """filter the rows returned"""
+    where: BillingInvoiceItemBoolExp
+  ): BillingInvoiceItemAggregate!
+  """
+  fetch data from the table: "billing_invoice_item" using primary key columns
+  """
+  billingInvoiceItemByPk(id: uuid!): BillingInvoiceItem
+  """
+  fetch data from the table in a streaming manner: "billing_invoice_item"
+  """
+  billingInvoiceItemStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [BillingInvoiceItemStreamCursorInput]!
+    """filter the rows returned"""
+    where: BillingInvoiceItemBoolExp
+  ): [BillingInvoiceItem!]!
+  """
   fetch data from the table in a streaming manner: "billing_invoice"
   """
   billingInvoiceStream(
@@ -20722,6 +21147,17 @@ type userInvitationsAggregate {
   nodes: [userInvitations!]!
 }
 
+input userInvitationsAggregateBoolExp {
+  count: userInvitationsAggregateBoolExpCount
+}
+
+input userInvitationsAggregateBoolExpCount {
+  arguments: [userInvitationsSelectColumn!]
+  distinct: Boolean
+  filter: userInvitationsBoolExp
+  predicate: IntComparisonExp!
+}
+
 """
 aggregate fields of "user_invitations"
 """
@@ -20731,9 +21167,27 @@ type userInvitationsAggregateFields {
   min: userInvitationsMinFields
 }
 
+"""
+order by aggregate values of table "user_invitations"
+"""
+input userInvitationsAggregateOrderBy {
+  count: OrderBy
+  max: userInvitationsMaxOrderBy
+  min: userInvitationsMinOrderBy
+}
+
 """append existing jsonb value of filtered columns with new jsonb value"""
 input userInvitationsAppendInput {
   invitationMetadata: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "user_invitations"
+"""
+input userInvitationsArrRelInsertInput {
+  data: [userInvitationsInsertInput!]!
+  """upsert condition"""
+  onConflict: userInvitationsOnConflict
 }
 
 """
@@ -20842,6 +21296,28 @@ type userInvitationsMaxFields {
   updatedAt: timestamptz
 }
 
+"""
+order by max() on columns of table "user_invitations"
+"""
+input userInvitationsMaxOrderBy {
+  acceptedAt: OrderBy
+  acceptedBy: OrderBy
+  clerkInvitationId: OrderBy
+  clerkTicket: OrderBy
+  createdAt: OrderBy
+  email: OrderBy
+  expiresAt: OrderBy
+  firstName: OrderBy
+  id: OrderBy
+  invitedAt: OrderBy
+  invitedBy: OrderBy
+  invitedRole: OrderBy
+  lastName: OrderBy
+  managerId: OrderBy
+  status: OrderBy
+  updatedAt: OrderBy
+}
+
 """aggregate min on columns"""
 type userInvitationsMinFields {
   acceptedAt: timestamptz
@@ -20860,6 +21336,28 @@ type userInvitationsMinFields {
   managerId: uuid
   status: String
   updatedAt: timestamptz
+}
+
+"""
+order by min() on columns of table "user_invitations"
+"""
+input userInvitationsMinOrderBy {
+  acceptedAt: OrderBy
+  acceptedBy: OrderBy
+  clerkInvitationId: OrderBy
+  clerkTicket: OrderBy
+  createdAt: OrderBy
+  email: OrderBy
+  expiresAt: OrderBy
+  firstName: OrderBy
+  id: OrderBy
+  invitedAt: OrderBy
+  invitedBy: OrderBy
+  invitedRole: OrderBy
+  lastName: OrderBy
+  managerId: OrderBy
+  status: OrderBy
+  updatedAt: OrderBy
 }
 
 """
@@ -21768,6 +22266,84 @@ type users {
   """Timestamp when the user was last updated"""
   updatedAt: timestamptz
   """An array relationship"""
+  userInvitationsAcceptedBy(
+    """distinct select on columns"""
+    distinctOn: [userInvitationsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [userInvitationsOrderBy!]
+    """filter the rows returned"""
+    where: userInvitationsBoolExp
+  ): [userInvitations!]!
+  """An aggregate relationship"""
+  userInvitationsAcceptedByAggregate(
+    """distinct select on columns"""
+    distinctOn: [userInvitationsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [userInvitationsOrderBy!]
+    """filter the rows returned"""
+    where: userInvitationsBoolExp
+  ): userInvitationsAggregate!
+  """An array relationship"""
+  userInvitationsInvitedBy(
+    """distinct select on columns"""
+    distinctOn: [userInvitationsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [userInvitationsOrderBy!]
+    """filter the rows returned"""
+    where: userInvitationsBoolExp
+  ): [userInvitations!]!
+  """An aggregate relationship"""
+  userInvitationsInvitedByAggregate(
+    """distinct select on columns"""
+    distinctOn: [userInvitationsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [userInvitationsOrderBy!]
+    """filter the rows returned"""
+    where: userInvitationsBoolExp
+  ): userInvitationsAggregate!
+  """An array relationship"""
+  userInvitationsMangerId(
+    """distinct select on columns"""
+    distinctOn: [userInvitationsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [userInvitationsOrderBy!]
+    """filter the rows returned"""
+    where: userInvitationsBoolExp
+  ): [userInvitations!]!
+  """An aggregate relationship"""
+  userInvitationsMangerIdAggregate(
+    """distinct select on columns"""
+    distinctOn: [userInvitationsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [userInvitationsOrderBy!]
+    """filter the rows returned"""
+    where: userInvitationsBoolExp
+  ): userInvitationsAggregate!
+  """An array relationship"""
   userLeaveRecords(
     """distinct select on columns"""
     distinctOn: [leaveSelectColumn!]
@@ -21990,6 +22566,12 @@ input usersBoolExp {
   targetedPermissionAudits: permissionAuditLogsBoolExp
   targetedPermissionAuditsAggregate: permissionAuditLogsAggregateBoolExp
   updatedAt: TimestamptzComparisonExp
+  userInvitationsAcceptedBy: userInvitationsBoolExp
+  userInvitationsAcceptedByAggregate: userInvitationsAggregateBoolExp
+  userInvitationsInvitedBy: userInvitationsBoolExp
+  userInvitationsInvitedByAggregate: userInvitationsAggregateBoolExp
+  userInvitationsMangerId: userInvitationsBoolExp
+  userInvitationsMangerIdAggregate: userInvitationsAggregateBoolExp
   userLeaveRecords: leaveBoolExp
   userLeaveRecordsAggregate: leaveAggregateBoolExp
   userPermissionAudits: permissionAuditLogsBoolExp
@@ -22067,6 +22649,9 @@ input usersInsertInput {
   targetedPermissionAudits: permissionAuditLogsArrRelInsertInput
   """Timestamp when the user was last updated"""
   updatedAt: timestamptz
+  userInvitationsAcceptedBy: userInvitationsArrRelInsertInput
+  userInvitationsInvitedBy: userInvitationsArrRelInsertInput
+  userInvitationsMangerId: userInvitationsArrRelInsertInput
   userLeaveRecords: leaveArrRelInsertInput
   userPermissionAudits: permissionAuditLogsArrRelInsertInput
   userPermissionOverrides: permissionOverridesArrRelInsertInput
@@ -22243,6 +22828,9 @@ input usersOrderBy {
   role: OrderBy
   targetedPermissionAuditsAggregate: permissionAuditLogsAggregateOrderBy
   updatedAt: OrderBy
+  userInvitationsAcceptedByAggregate: userInvitationsAggregateOrderBy
+  userInvitationsInvitedByAggregate: userInvitationsAggregateOrderBy
+  userInvitationsMangerIdAggregate: userInvitationsAggregateOrderBy
   userLeaveRecordsAggregate: leaveAggregateOrderBy
   userPermissionAuditsAggregate: permissionAuditLogsAggregateOrderBy
   userPermissionOverridesAggregate: permissionOverridesAggregateOrderBy
