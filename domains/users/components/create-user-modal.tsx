@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
+import { useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -38,7 +39,6 @@ import {
   Manager,
   UserPermissions,
 } from "@/hooks/use-user-management";
-import { useAuth } from "@clerk/nextjs";
 
 const createUserSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
