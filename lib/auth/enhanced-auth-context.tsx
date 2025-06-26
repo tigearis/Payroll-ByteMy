@@ -27,7 +27,7 @@ export interface UserPermissionOverride {
   reason: string;
   expiresAt?: string;
   createdAt: string;
-  createdBy: string;
+  createdBy?: string;
 }
 
 export interface EnhancedAuthContextType {
@@ -87,11 +87,11 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
   const { 
     isLoaded: isClerkLoaded, 
     isSignedIn, 
-    user,
     userId,
     signOut: clerkSignOut,
     sessionClaims 
   } = useAuth();
+  const { user } = useUser();
   const {
     currentUser: databaseUser,
     loading: dbUserLoading,
@@ -124,7 +124,7 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     loading: permissionsLoading, 
     refetch: refetchPermissions 
   } = useGetUserEffectivePermissionsQuery({
-    variables: { userId: databaseId },
+    variables: { userId: databaseId || '' },
     skip: !databaseId,
     errorPolicy: 'all'
   });
@@ -134,7 +134,7 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     loading: overridesLoading,
     refetch: refetchOverrides 
   } = useGetUserPermissionOverridesQuery({
-    variables: { userId: databaseId },
+    variables: { userId: databaseId || '' },
     skip: !databaseId,
     errorPolicy: 'all'
   });
@@ -167,15 +167,15 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
   // Process permission overrides
   useEffect(() => {
     if (overridesData?.permissionOverrides) {
-      const overrides = overridesData.permissionOverrides.map(override => ({
+      const overrides = overridesData.permissionOverrides.map((override: any) => ({
         id: override.id,
         resource: override.resource,
         operation: override.operation,
         granted: override.granted,
         reason: override.reason || '',
-        expiresAt: override.expiresAt || undefined,
+        ...(override.expiresAt && { expiresAt: override.expiresAt }),
         createdAt: override.createdAt,
-        createdBy: override.createdBy
+        ...(override.createdBy && { createdBy: override.createdBy })
       }));
       
       setPermissionOverrides(overrides);

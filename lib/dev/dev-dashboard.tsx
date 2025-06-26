@@ -1,9 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, Shield, Zap, Code, TestTube, BookOpen } from 'lucide-react';
 
 // Import test components
@@ -16,6 +13,9 @@ import { SimpleWebSocketTest } from './test-components/simple-websocket-test';
 // Import examples
 import { EnhancedUsersList } from './examples/enhanced-users-list';
 import { GracefulClientsList } from './examples/graceful-clients-list';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export const UnifiedDevDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');

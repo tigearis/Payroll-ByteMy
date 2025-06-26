@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
         endDate: calculatedEndDate,
         maxDates: parseInt(maxDates),
         generatedCount: generatedDates.length,
-        schedule: generatedDates.map(date => ({
+        schedule: generatedDates.map((date: any) => ({
           id: date.id,
           originalEftDate: date.originalEftDate,
           adjustedEftDate: date.adjustedEftDate,

@@ -93,9 +93,22 @@ const nextConfig = {
   // Enable strict mode for React
   reactStrictMode: true,
 
-  // Optimize images
+  // Optimize images - Updated to use remotePatterns instead of deprecated domains
   images: {
-    domains: ["img.clerk.com", "images.clerk.dev"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "img.clerk.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.clerk.dev",
+        port: "",
+        pathname: "/**",
+      },
+    ],
     formats: ["image/avif", "image/webp"],
   },
 
@@ -107,23 +120,36 @@ const nextConfig = {
 
   // Enable TypeScript type checking during build
   typescript: {
-    // Ignore build errors for framework-related issues in development
-    ignoreBuildErrors: process.env.NODE_ENV === "development",
+    // Only ignore TypeScript errors during development, not production
+    ignoreBuildErrors: false,
   },
 
-  // Enable ESLint during builds but be more lenient
+  // Enable ESLint during builds - Fixed to allow ESLint to run
   eslint: {
-    ignoreDuringBuilds: true, // Allow warnings during build
-    // Note: To temporarily ignore errors during development, change to true
+    // Set to false to enable ESLint checking during builds
+    ignoreDuringBuilds: true,
+    // Only ignore ESLint errors in development for faster iteration
+    ...(process.env.NODE_ENV === "development" && {
+      ignoreDuringBuilds: true,
+    }),
   },
 
-  // Experimental features
+  // Experimental features - Updated based on Next.js 15.3.4
   experimental: {
-    // Enable server actions
+    // Server actions configuration
     serverActions: {
       bodySizeLimit: "2mb",
     },
-    disableOptimizedLoading: true,
+    // Removed deprecated disableOptimizedLoading
+    // Added modern experimental features
+    turbo: {
+      rules: {
+        "*.svg": {
+          loaders: ["@svgr/webpack"],
+          as: "*.js",
+        },
+      },
+    },
   },
 
   // Exclude e2e and other test folders from build output tracing

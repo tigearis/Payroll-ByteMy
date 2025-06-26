@@ -15,7 +15,7 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-26T06:06:24.062Z
+ * Generated: 2025-06-26T08:26:40.499Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v3.0
  */
@@ -26,11 +26,11 @@
 export * from './base-types';
 
 // Shared operations and hooks
-export * from './generated';
+export * from './generated/graphql';
 
 // Domain-specific exports available at:
 // import { useGetUserQuery } from '../../../domains/users/graphql/generated';
 // import { useCreateNoteQuery } from '../../../domains/notes/graphql/generated';
 
 // Re-export commonly used utilities
-export { gql } from './generated';
+export { gql } from './generated/graphql';

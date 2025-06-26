@@ -52,7 +52,7 @@ export function createWebSocketLink(
   // Enhanced connection management
   let reconnectAttempts = 0;
   const maxReconnectAttempts = 10;
-  let isIntentionalClose = false;
+  const isIntentionalClose = false;
 
   return new GraphQLWsLink(
     createClient({

@@ -1,5 +1,6 @@
 // app/api/invitations/accept/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import {
   GetInvitationByTicketDocument,
@@ -13,7 +14,6 @@ import {
   SOC2EventType,
   LogCategory,
 } from "@/lib/security/audit/logger";
-import { z } from "zod";
 
 const AcceptInvitationSchema = z.object({
   clerkTicket: z.string().min(1, "Invitation ticket is required"),
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     });
 
     const targetRole = rolesData.roles.find(
-      role => role.name === invitation.invitedRole
+      (role: any) => role.name === invitation.invitedRole
     );
     if (!targetRole) {
       return NextResponse.json(

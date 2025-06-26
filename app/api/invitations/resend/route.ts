@@ -1,6 +1,7 @@
 // app/api/invitations/resend/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
+import { z } from "zod";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { 
   GetInvitationByIdDocument,
@@ -9,7 +10,6 @@ import {
 } from "@/domains/auth/graphql/generated/graphql";
 import { withAuth } from "@/lib/auth/api-auth";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
-import { z } from "zod";
 
 const ResendInvitationSchema = z.object({
   invitationId: z.string().uuid("Invalid invitation ID"),
@@ -105,7 +105,7 @@ async function POST(request: NextRequest) {
       if (!["developer", "org_admin"].includes(authUser.role)) {
         const userRoles = permissionData.users[0]?.assignedRoles || [];
         const userHighestPriority = Math.max(
-          ...userRoles.map(ur => ur.assignedRole.priority)
+          ...userRoles.map((ur: any) => ur.assignedRole.priority)
         );
         
         if (targetRole.priority >= userHighestPriority) {

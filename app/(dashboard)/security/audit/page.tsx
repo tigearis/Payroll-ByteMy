@@ -97,7 +97,7 @@ export default function AuditLogPage() {
         limit: ITEMS_PER_PAGE,
         offset: page * ITEMS_PER_PAGE,
         where,
-        orderBy: [{ eventTime: OrderBy.Desc }],
+        orderBy: [{ eventTime: OrderBy.DESC }],
       },
     }
   );

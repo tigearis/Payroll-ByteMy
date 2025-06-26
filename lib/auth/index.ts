@@ -1,4 +1,4 @@
-// Authentication module barrel export
+// Authentication module barrel export - CLIENT SIDE ONLY
 // This provides a clean import interface for all authentication functionality
 
 export { 
@@ -13,10 +13,10 @@ export {
 export {
   type Role,
   type Permission,
-  ROLES,
-  PERMISSIONS,
+  ALL_PERMISSIONS,
   ROLE_HIERARCHY,
   ROLE_PERMISSIONS,
+  ROUTE_PERMISSIONS,
   getPermissionsForRole,
   hasRoleLevel,
   sanitizeUserRole
@@ -24,4 +24,3 @@ export {
 
 // Re-export commonly used Clerk hooks for convenience
 export { useAuth, useUser } from '@clerk/nextjs';
-export { auth } from '@clerk/nextjs/server';

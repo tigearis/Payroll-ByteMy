@@ -479,7 +479,7 @@ export function PayrollDatesView({
   if (showFamilyDates && splitData) {
     // Convert split data and do client-side filtering
     const splitDates = splitData.payrollDates || [];
-    allDates = splitDates.map(date => ({
+    allDates = splitDates.map((date: any) => ({
       id: date.id,
       original_eft_date: date.originalEftDate,
       adjusted_eft_date: date.adjustedEftDate,
@@ -498,11 +498,11 @@ export function PayrollDatesView({
   } else if (showFamilyDates && familyData) {
     // Fallback to client-side filtering - direct access since fragment masking is disabled
     const familyDates =
-      familyData.payrolls.flatMap(payroll =>
-        payroll.payrollDates.map(date => date)
+      familyData.payrolls.flatMap((payroll: any) =>
+        payroll.payrollDates.map((date: any) => date)
       ) || [];
     // Convert to the expected format
-    allDates = familyDates.map(date => ({
+    allDates = familyDates.map((date: any) => ({
       id: date.id,
       original_eft_date: date.originalEftDate,
       adjusted_eft_date: date.adjustedEftDate,
@@ -521,7 +521,7 @@ export function PayrollDatesView({
   } else if (singleData) {
     // Single payroll dates
     const singleDates = singleData.payrollDates || [];
-    allDates = singleDates.map(date => ({
+    allDates = singleDates.map((date: any) => ({
       id: date.id,
       original_eft_date: date.originalEftDate,
       adjusted_eft_date: date.adjustedEftDate,

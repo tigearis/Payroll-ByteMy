@@ -1,8 +1,8 @@
 "use client";
 
+import { ShieldX, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ShieldX, AlertTriangle } from "lucide-react";
 import type { PermissionResult } from "@/hooks/use-enhanced-permissions";
 
 interface PermissionDeniedProps {

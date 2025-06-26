@@ -2,9 +2,9 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
+import { Clock, AlertTriangle, UserCheck, Send, HelpCircle } from "lucide-react";
 import { InvitationManagementTable } from "@/components/invitations/invitation-management-table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, AlertTriangle, UserCheck, Send, HelpCircle } from "lucide-react";
 
 export default function InvitationsPage() {
   const { user } = useUser();
