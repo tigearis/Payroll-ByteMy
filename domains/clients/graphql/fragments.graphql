@@ -43,6 +43,10 @@ fragment ClientWithRelations on clients {
       id
       name
     }
+    backupConsultant {
+      id
+      name
+    }
     manager {
       id
       name
@@ -70,6 +74,15 @@ fragment ClientListItem on clients {
   payrollCount: payrollsAggregate {
     aggregate {
       count
+    }
+  }
+  totalEmployees: payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
+  ) {
+    aggregate {
+      sum {
+        employeeCount
+      }
     }
   }
 }

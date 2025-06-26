@@ -7,6 +7,7 @@ import { ErrorBoundaryWrapper } from "@/components/error-boundary";
 import { CreateUserModal } from "@/domains/users/components/create-user-modal";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { useUserManagement } from "@/hooks/use-user-management";
+import { Role } from "@/types/enums";
 
 export default function StaffManagementPage() {
   const router = useRouter();
@@ -24,13 +25,16 @@ export default function StaffManagementPage() {
   const handleCloseModal = () => {
     setIsCreateModalOpen(false);
   };
+  const currentUserRoleDisplayName = Role[currentUserRole as keyof typeof Role];
 
   return (
-    <PermissionGuard 
+    <PermissionGuard
       permission="staff:read"
       fallback={
         <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-6">
-          <h3 className="text-lg font-semibold text-destructive mb-2">Access Denied</h3>
+          <h3 className="text-lg font-semibold text-destructive mb-2">
+            Access Denied
+          </h3>
           <p className="text-sm text-destructive">
             You need staff management permissions to access this page.
           </p>
@@ -38,21 +42,18 @@ export default function StaffManagementPage() {
       }
     >
       <ErrorBoundaryWrapper>
-        <StaffManagementContent 
+        <StaffManagementContent
           onAddStaff={handleAddStaff}
           onEditStaff={handleEditStaff}
         />
-        
-        <PermissionGuard 
-          permission="staff:write"
-          fallback={null}
-        >
+
+        <PermissionGuard permission="staff:write" fallback={null}>
           <CreateUserModal
             isOpen={isCreateModalOpen}
             onClose={handleCloseModal}
             managers={managers}
             permissions={permissions}
-            currentUserRole={currentUserRole}
+            currentUserRole={currentUserRoleDisplayName}
           />
         </PermissionGuard>
       </ErrorBoundaryWrapper>

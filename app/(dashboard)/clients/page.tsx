@@ -395,8 +395,10 @@ function ClientsPage() {
     (sum: number, c: any) => sum + (c.payrollCount?.aggregate?.count || 0),
     0
   );
-  // We don't have employee count in this query, so we'll set it to 0 for now
-  const totalEmployees = 0;
+  const totalEmployees = clients.reduce(
+    (sum: number, c: any) => sum + (c.totalEmployees?.aggregate?.sum?.employeeCount || 0),
+    0
+  );
 
   // Render card view
   const renderCardView = () => (
@@ -626,7 +628,7 @@ function ClientsPage() {
                   Total Employees
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
-                  N/A
+                  {totalEmployees.toLocaleString()}
                 </p>
               </div>
               <Users className="w-8 h-8 text-orange-600" />

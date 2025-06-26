@@ -1416,7 +1416,7 @@ export default function PayrollPage() {
     );
   }
 
-  const payroll = versionCheckData.payrollById;
+  const payroll = data?.payrollById || versionCheckData.payrollById;
   const client = payroll.client;
 
   // Debug: Log payroll data to see what we're getting
@@ -1428,7 +1428,7 @@ export default function PayrollPage() {
   });
 
   const statusConfig = getStatusConfig(
-    (payroll as any).status || "Implementation"
+    payroll.status || "Implementation"
   );
   const StatusIcon = statusConfig.icon;
 
@@ -1947,7 +1947,7 @@ export default function PayrollPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div className="text-center p-4 bg-blue-50 rounded-lg">
                         <div className="text-2xl font-bold text-blue-700">
-                          {(payroll as any).employeeCount ||
+                          {payroll.employeeCount ||
                             totalEmployees ||
                             0}
                         </div>
@@ -1963,7 +1963,7 @@ export default function PayrollPage() {
                       </div>
                       <div className="text-center p-4 bg-orange-50 rounded-lg">
                         <div className="text-2xl font-bold text-orange-700">
-                          {(payroll as any).processingDaysBeforeEft || 3}
+                          {payroll.processingDaysBeforeEft || 3}
                         </div>
                         <div className="text-sm text-orange-600">
                           Processing Days
