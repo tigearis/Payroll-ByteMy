@@ -49,7 +49,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ClientsTable } from "@/domains/clients/components/clients-table";
-import { GetAllClientsPaginatedDocument, GetClientsDocument } from "@/domains/clients/graphql/generated/graphql";
+import { GetAllClientsPaginatedDocument, GetClientsDashboardStatsDocument } from "@/domains/clients/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useUserRole } from "@/hooks/use-user-role";
 
@@ -69,7 +69,6 @@ function MultiSelect({
   selected,
   onSelectionChange,
   placeholder,
-  label,
 }: MultiSelectProps) {
   const [open, setOpen] = useState(false);
 
@@ -152,10 +151,10 @@ function ClientsPage() {
   const [sortField, setSortField] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // Test with a simpler query first
-  const { loading: simpleLoading, error: simpleError, data: simpleData } = useStrategicQuery(
-    GetClientsDocument,
-    "simple-clients",
+  // Get dashboard stats efficiently
+  const { loading: statsLoading, error: statsError, data: statsData } = useStrategicQuery(
+    GetClientsDashboardStatsDocument,
+    "dashboard-stats",
     {
       skip: !userLoaded || !user || !canViewClients,
       errorPolicy: "all",
@@ -226,11 +225,11 @@ function ClientsPage() {
     );
   }
 
-  if (error || simpleError) {
+  if (error || statsError) {
     return (
       <div className="text-center py-12">
         <div className="text-red-500 mb-4">
-          Error loading clients: {error?.message || simpleError?.message}
+          Error loading clients: {error?.message || statsError?.message}
         </div>
         {error?.graphQLErrors && (
           <div className="text-sm text-gray-600 mb-4">
@@ -252,32 +251,6 @@ function ClientsPage() {
 
   const clients = data?.clients || [];
 
-  // Debug: Log the data to see what we're getting
-  console.log("Clients data:", {
-    // Main query
-    loading,
-    error,
-    clientsCount: clients.length,
-    firstClient: clients[0],
-    rawData: data,
-    aggregateCount: data?.allClientsAggregate?.aggregate?.count,
-    dataKeys: data ? Object.keys(data) : [],
-    
-    // Simple query for comparison
-    simpleLoading,
-    simpleError,
-    simpleData,
-    simpleClientsCount: simpleData?.clients?.length || 0,
-    simpleFirstClient: simpleData?.clients?.[0],
-    
-    // Query conditions
-    shouldSkipQuery: !userLoaded || !user || !canViewClients,
-    querySkipReasons: {
-      userNotLoaded: !userLoaded,
-      userNotAuthenticated: !user,
-      noPermission: !canViewClients,
-    },
-  });
 
   // Get unique values for filters
   const uniquePayrollCounts = Array.from(
@@ -364,7 +337,7 @@ function ClientsPage() {
   });
 
   // Helper functions
-  const formatCurrency = (amount: number) => {
+  const _formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-AU", {
       style: "currency",
       currency: "AUD",
@@ -388,17 +361,12 @@ function ClientsPage() {
   const hasActiveFilters =
     searchTerm || statusFilter.length > 0 || payrollCountFilter.length > 0;
 
-  // Calculate summary statistics (based on all clients, not filtered)
-  const totalClients = clients.length;
-  const activeClients = clients.filter((c: any) => c.active).length;
-  const totalPayrolls = clients.reduce(
-    (sum: number, c: any) => sum + (c.payrollCount?.aggregate?.count || 0),
-    0
-  );
-  const totalEmployees = clients.reduce(
-    (sum: number, c: any) => sum + (c.totalEmployees?.aggregate?.sum?.employeeCount || 0),
-    0
-  );
+  // Get summary statistics from dedicated stats query
+  const totalClients = statsData?.clientsAggregate?.aggregate?.count || 0;
+  const activeClients = totalClients; // This query already filters for active clients
+  const totalPayrolls = statsData?.payrollsAggregate?.aggregate?.count || 0;
+  const totalEmployees = statsData?.payrollsAggregate?.aggregate?.sum?.employeeCount || 0;
+
 
   // Render card view
   const renderCardView = () => (

@@ -60,7 +60,7 @@ query GetSystemStats {
   }
 }
 
-query GetUpcomingPayrolls($from_date: date!, $limit: Int = 10) {
+query GetUpcomingPayrollsShared($from_date: date!, $limit: Int = 10) {
   payrolls(
     where: {
       supersededDate: { _isNull: true }

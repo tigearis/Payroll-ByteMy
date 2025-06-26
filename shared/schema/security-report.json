@@ -4,77 +4,77 @@
       "name": "auth",
       "security": "CRITICAL",
       "description": "Authentication and JWT handling",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/auth/graphql/generated/"
     },
     {
       "name": "audit",
       "security": "CRITICAL",
       "description": "SOC2 compliance and logging",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/audit/graphql/generated/"
     },
     {
       "name": "permissions",
       "security": "CRITICAL",
       "description": "Role-based access control",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/permissions/graphql/generated/"
     },
     {
       "name": "users",
       "security": "HIGH",
       "description": "User management and staff lifecycle",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/users/graphql/generated/"
     },
     {
       "name": "clients",
       "security": "HIGH",
       "description": "Client relationship management",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/clients/graphql/generated/"
     },
     {
       "name": "billing",
       "security": "HIGH",
       "description": "Financial operations",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/billing/graphql/generated/"
     },
     {
       "name": "payrolls",
       "security": "MEDIUM",
       "description": "Payroll processing engine",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/payrolls/graphql/generated/"
     },
     {
       "name": "notes",
       "security": "MEDIUM",
       "description": "Documentation and communication",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/notes/graphql/generated/"
     },
     {
       "name": "leave",
       "security": "MEDIUM",
       "description": "Employee leave management",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/leave/graphql/generated/"
     },
     {
       "name": "work-schedule",
       "security": "MEDIUM",
       "description": "Staff scheduling",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/work-schedule/graphql/generated/"
     },
     {
       "name": "external-systems",
       "security": "MEDIUM",
       "description": "Third-party integrations",
-      "hasOperations": false,
+      "hasOperations": true,
       "documentsPath": "./domains/external-systems/graphql/generated/"
     },
     {
@@ -100,7 +100,7 @@
     "Client Preset v4.8+ for optimal type safety",
     "Zero type conflicts with modern codegen"
   ],
-  "generatedAt": "2025-06-26T21:32:54.196Z",
+  "generatedAt": "2025-06-26T22:47:06.711Z",
   "codegenVersion": "Client Preset v4.0",
   "architectureFixes": [
     "Migrated to client preset for better type safety",

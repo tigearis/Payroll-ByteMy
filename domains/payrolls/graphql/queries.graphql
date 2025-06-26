@@ -313,13 +313,6 @@ query GetPayrollDates($payrollId: uuid!) {
     createdAt
     updatedAt
     payrollId
-    payroll {
-      id
-      name
-      versionNumber
-      status
-      supersededDate
-    }
   }
 }
 

@@ -13,6 +13,14 @@ enum PayrollStatus {
   Active
   Implementation
   Inactive
+  Processing
+  Draft
+  PendingApproval
+  Approved
+  Completed
+  Failed
+  PendingReview
+  Issue
 }
 
 enum AuditEventType {
