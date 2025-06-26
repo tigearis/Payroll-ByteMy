@@ -90,7 +90,7 @@ async function POST(request: NextRequest) {
       const clerk = await clerkClient();
       const clerkInvitation = await clerk.invitations.createInvitation({
         emailAddress: email,
-        redirectUrl: `${process.env.VERCEL_URL || 'http://localhost:3000'}/accept-invitation`,
+        redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/accept-invitation`,
         publicMetadata: {
           firstName,
           lastName,
