@@ -428,7 +428,7 @@ export const POST = withAuth(
     }
   },
   {
-    allowedRoles: ["developer", "org_admin"], // Only admins can create staff
+    allowedRoles: ["developer", "org_admin", "manager"], // Admins and managers can create staff
   }
 );
 
