@@ -59,6 +59,7 @@ export function createAuthLink(options: UnifiedClientOptions): ApolloLink {
           try {
             token = await (window as any).Clerk.session.getToken({
               template: "hasura",
+              leewayInSeconds: 60, // Request token refresh 60 seconds before expiry
             });
             if (token) {
               console.log("✅ JWT token retrieved via Clerk.session.getToken");
@@ -78,6 +79,7 @@ export function createAuthLink(options: UnifiedClientOptions): ApolloLink {
             if (activeSession) {
               token = await activeSession.getToken({
                 template: "hasura",
+                leewayInSeconds: 60, // Request token refresh 60 seconds before expiry
               });
               if (token) {
                 console.log("✅ JWT token retrieved via active session fallback");
@@ -97,6 +99,7 @@ export function createAuthLink(options: UnifiedClientOptions): ApolloLink {
             if (clerkInstance.session) {
               token = await clerkInstance.session.getToken({
                 template: "hasura",
+                leewayInSeconds: 60, // Request token refresh 60 seconds before expiry
               });
               if (token) {
                 console.log("✅ JWT token retrieved via Clerk load fallback");

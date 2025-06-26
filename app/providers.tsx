@@ -5,6 +5,7 @@ import { ApolloProvider } from "@apollo/client";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 
 import { StrictDatabaseGuard } from "@/components/auth/strict-database-guard";
+import { TokenRefreshBoundary } from "@/components/auth/token-refresh-boundary";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
 import { AuthProvider } from "@/lib/auth/enhanced-auth-context";
@@ -49,9 +50,11 @@ export function Providers({ children }: ProvidersProps) {
       <ClerkProvider>
         <AuthenticatedApolloProvider>
           <AuthProvider>
-            <LayoutPreferencesProvider>
-              <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
-            </LayoutPreferencesProvider>
+            <TokenRefreshBoundary>
+              <LayoutPreferencesProvider>
+                <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
+              </LayoutPreferencesProvider>
+            </TokenRefreshBoundary>
           </AuthProvider>
         </AuthenticatedApolloProvider>
       </ClerkProvider>
