@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useEnhancedPermissions } from "./use-enhanced-permissions";
+import { useAuthContext } from "@/lib/auth";
 
 interface SubscriptionPermissionOptions {
   resource: string;
@@ -16,10 +16,15 @@ export function useSubscriptionPermissions({
   action,
   onPermissionDenied,
 }: SubscriptionPermissionOptions) {
-  const { checkPermission, userRole } = useEnhancedPermissions();
+  const { hasPermission, userRole } = useAuthContext();
   const permissionChecked = useRef(false);
 
-  const permission = checkPermission(resource, action);
+  // Create permission object for backward compatibility
+  const permission = {
+    granted: hasPermission(`${resource}:${action}`),
+    requiredRole: "org_admin", // Default required role for security features
+    reason: hasPermission(`${resource}:${action}`) ? undefined : `Insufficient permissions for ${resource}:${action}`
+  };
 
   useEffect(() => {
     if (!permissionChecked.current && !permission.granted) {

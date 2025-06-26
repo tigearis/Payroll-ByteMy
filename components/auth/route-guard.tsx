@@ -14,9 +14,9 @@ import {
 } from "@/components/ui/card";
 import {
   useAuthContext,
-  UserRole,
-} from "@/lib/auth/auth-context";
-import { ROUTE_PERMISSIONS } from "@/lib/auth/permissions";
+  type Role as UserRole,
+} from "@/lib/auth";
+import { ROUTE_PERMISSIONS } from "@/lib/auth";
 
 interface RouteGuardProps {
   children: React.ReactNode;

@@ -109,19 +109,29 @@ The `scripts/` directory contains powerful maintenance and development utilities
 
 ### Authentication & Permission System
 
-This is a streamlined authentication system leveraging Clerk's native enterprise capabilities with a clean, hierarchical permission model:
+**Unified Database-Driven Permission System** with role hierarchy and individual user overrides:
 
 #### **Core Architecture**
-- **Pure Clerk Native Integration**: No custom token management - uses `getToken({ template: "hasura" })` and `sessionClaims` directly
-- **Clean Permission Format**: Uses simple `"resource:action"` syntax (e.g., `"payroll:read"`, `"staff:write"`)
+- **Unified Auth Provider**: Single `useAuthContext` hook for all authentication needs
+- **Database-Driven Permissions**: Role-based permissions with individual user overrides
+- **Pure Clerk Integration**: Uses `getToken({ template: "hasura" })` and `sessionClaims` directly
+- **Permission Format**: Simple `"resource:action"` syntax (e.g., `"payroll:read"`, `"staff:write"`)
 - **5-Level Role Hierarchy**: `developer(5)` > `org_admin(4)` > `manager(3)` > `consultant(2)` > `viewer(1)`
-- **18 Granular Permissions**: Organized across 5 categories (Payroll, Staff, Client, Admin, Reporting)
-- **Multi-Layer Security**: Client-side guards + Database row-level security + API protection
+- **Individual Overrides**: Grant/restrict specific permissions beyond role permissions
+- **Multi-Layer Security**: Client-side guards + Database row-level security + API protection + Audit logging
 
 #### **Permission Flow**
 ```
-User Login → Clerk Auth → Database Validation → Role Assignment → Permission Calculation → Access Control
+User Login → Clerk Auth → Database Validation → Role Assignment → Permission Calculation → Override Resolution → Access Control
 ```
+
+#### **Permission System Features**
+- **Role-Based Foundation**: Each role has predefined permissions
+- **Individual Overrides**: Grant/restrict permissions per user with reasons and expiration
+- **Audit Trail**: All permission changes logged with timestamps and administrators
+- **Fallback Safety**: Graceful fallback to role permissions during override loading
+- **Admin Interface**: `/admin/permissions` for managing user overrides
+- **Real-time Updates**: Permission changes take effect immediately
 
 #### **Permission Categories & Examples**
 ```typescript
@@ -136,7 +146,7 @@ REPORTING: ["reports:read", "reports:export", "audit:read", "audit:write"]
 
 **Basic Permission Check:**
 ```typescript
-import { useAuthContext } from "@/lib/auth/auth-context";
+import { useAuthContext } from "@/lib/auth";
 
 function PayrollManager() {
   const { hasPermission } = useAuthContext();
@@ -146,6 +156,34 @@ function PayrollManager() {
   }
   
   return <PayrollForm />;
+}
+```
+
+**Enhanced Permission Check with Override Support:**
+```typescript
+import { useAuthContext } from "@/lib/auth";
+
+function AdvancedPermissionExample() {
+  const { 
+    hasPermission, 
+    userRole,
+    effectivePermissions,  // Shows role + override permissions
+    refreshPermissions     // Refresh after permission changes
+  } = useAuthContext();
+  
+  // Check standard permission (includes overrides automatically)
+  const canEdit = hasPermission("payroll:write");
+  
+  // Access detailed permission information
+  const permissions = effectivePermissions.filter(p => p.resource === "payroll");
+  
+  return (
+    <div>
+      <p>Role: {userRole}</p>
+      <p>Can Edit: {canEdit ? "Yes" : "No"}</p>
+      <p>Effective Permissions: {permissions.length}</p>
+    </div>
+  );
 }
 ```
 
@@ -213,6 +251,69 @@ function PayrollActions({ payroll }) {
 }
 ```
 
+**Scenario 4: Managing User Permission Overrides**
+```typescript
+// Admin interface for granting temporary permissions
+function GrantTemporaryPermission({ userId }) {
+  const { refreshPermissions } = useAuthContext();
+  
+  const handleGrantPermission = async () => {
+    await grantUserPermission({
+      variables: {
+        userId,
+        resource: "payroll",
+        operation: "write", 
+        reason: "Temporary access for month-end processing",
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+      }
+    });
+    
+    // Refresh permissions across the app
+    await refreshPermissions();
+  };
+  
+  return (
+    <Button onClick={handleGrantPermission}>
+      Grant Temporary Payroll Access
+    </Button>
+  );
+}
+```
+
+**Scenario 5: Permission Override Display**
+```typescript
+function UserPermissionStatus({ userId }) {
+  const { 
+    effectivePermissions, 
+    permissionOverrides,
+    getRolePermissions,
+    getOverridePermissions 
+  } = useAuthContext();
+  
+  const rolePerms = getRolePermissions();
+  const overridePerms = getOverridePermissions();
+  
+  return (
+    <div>
+      <h3>Role Permissions: {rolePerms.length}</h3>
+      <h3>Individual Overrides: {overridePerms.length}</h3>
+      
+      {overridePerms.map(override => (
+        <div key={override.id}>
+          <Badge variant={override.granted ? "default" : "destructive"}>
+            {override.granted ? "GRANTED" : "RESTRICTED"}
+          </Badge>
+          <span>{override.resource}:{override.operation}</span>
+          {override.expiresAt && (
+            <span>Expires: {format(new Date(override.expiresAt), 'MMM d, yyyy')}</span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
 **Scenario 2: Protecting a Page**
 ```typescript
 // app/staff/page.tsx
@@ -275,12 +376,15 @@ function NavigationMenu() {
 ```
 
 #### **Key Files**:
+  - `lib/auth/enhanced-auth-context.tsx` - **Unified authentication provider** with database permission support
+  - `lib/auth/index.ts` - **Barrel export** for clean imports across the app
   - `lib/auth/permissions.ts` - **Single source of truth** for all permissions and roles
-  - `lib/auth/auth-context.tsx` - Main authentication context with permission checking
   - `components/auth/permission-guard.tsx` - Standard permission guard component
   - `components/auth/enhanced-permission-guard.tsx` - Advanced guard with detailed feedback
   - `components/auth/role-guard.tsx` - Simple role guard with redirects
-  - `hooks/use-enhanced-permissions.ts` - Advanced permission hook with context
+  - `components/admin/permission-override-manager.tsx` - Admin interface for user overrides
+  - `app/(dashboard)/admin/permissions/page.tsx` - Admin permission management page
+  - `domains/permissions/graphql/` - GraphQL operations for permission overrides
   - `middleware.ts` - Auth middleware and route protection using `clerkMiddleware`
   - `app/api/webhooks/clerk/` - Clerk webhook handlers for user synchronization
   - `lib/auth/client-auth-logger.ts` - Client-side authentication event logging utility
@@ -288,15 +392,20 @@ function NavigationMenu() {
 
 #### **Quick Reference Guide**
 
+**Import Pattern:**
+```typescript
+import { useAuthContext } from "@/lib/auth";
+```
+
 **Permission Naming Convention:**
 - Format: `"resource:action"`
-- Resources: `payroll`, `staff`, `client`, `admin`, `settings`, `billing`, `reports`, `audit`
+- Resources: `payroll`, `staff`, `client`, `admin`, `settings`, `billing`, `reports`, `audit`, `security`
 - Actions: `read`, `write`, `delete`, `assign`, `invite`, `manage`, `export`
 
 **Role Hierarchy (Higher numbers include lower permissions):**
 ```
-developer(5)    → Full system access + dev tools
-org_admin(4)    → Organization management (all except dev tools)
+developer(5)    → Full system access + dev tools + permission management
+org_admin(4)    → Organization management + permission overrides
 manager(3)      → Team and payroll management
 consultant(2)   → Basic payroll processing
 viewer(1)       → Read-only access
@@ -304,24 +413,51 @@ viewer(1)       → Read-only access
 
 **Common Patterns:**
 ```typescript
-// Check single permission
+// Basic permission check (includes overrides automatically)
 hasPermission("payroll:write")
 
 // Check role level
 hasRoleLevel(userRole, "manager")
 
-// Multiple permissions (OR logic)
-hasAnyPermission(["staff:read", "client:read"])
+// Access effective permissions (role + overrides)
+effectivePermissions.filter(p => p.resource === "payroll")
 
-// Role-based check
-userRole === "developer"
+// Refresh permissions after changes
+await refreshPermissions()
+
+// Access permission overrides
+permissionOverrides.filter(o => o.granted && !o.expiresAt)
+```
+
+**Permission Override Management:**
+```typescript
+// Grant temporary permission
+await grantUserPermission({
+  userId, resource: "payroll", operation: "write",
+  reason: "Month-end processing", expiresAt: "2024-01-31T23:59:59Z"
+});
+
+// Restrict permission 
+await restrictUserPermission({
+  userId, resource: "client", operation: "delete",
+  reason: "Security precaution"
+});
+
+// Remove override
+await removePermissionOverride({ id: overrideId });
 ```
 
 **Guard Selection Guide:**
 - **PermissionGuard**: General purpose, most UI components
-- **Enhanced PermissionGuard**: Complex scenarios, need detailed feedback
+- **Enhanced PermissionGuard**: Complex scenarios, need detailed feedback  
 - **RoleGuard**: Page-level protection, automatic redirects
 - **Convenience Guards**: Common patterns (AdminGuard, ManagerGuard, etc.)
+
+**Admin Features:**
+- **Permission Management Page**: `/admin/permissions` - Manage user overrides
+- **Override Manager Component**: Grant/restrict individual permissions
+- **Audit Trail**: All permission changes logged automatically
+- **Expiration Handling**: Automatic cleanup of expired overrides
 
 #### JWT Template Configuration
 

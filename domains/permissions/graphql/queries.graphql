@@ -87,6 +87,246 @@ query GetAppSettings {
   }
 }
 
+# Enhanced Permission System Queries
+# Using existing database tables for dynamic permission resolution
+
+# Check user permissions by querying permission overrides and role permissions
+query GetUserEffectivePermissions($userId: uuid!) {
+  # Get user's role permissions through user_roles -> role_permissions
+  userRoles(where: { userId: { _eq: $userId } }) {
+    roleId
+    createdAt
+  }
+  
+  # Get user-specific permission overrides
+  permissionOverrides(
+    where: {
+      userId: { _eq: $userId }
+      _or: [
+        { expiresAt: { _isNull: true } }
+        { expiresAt: { _gt: "now()" } }
+      ]
+    }
+  ) {
+    resource
+    operation
+    granted
+    conditions
+  }
+}
+
+# Get all permission overrides for a user
+query GetUserPermissionOverrides($userId: uuid!) {
+  permissionOverrides(
+    where: { 
+      userId: { _eq: $userId }
+      _or: [
+        { expiresAt: { _isNull: true } }
+        { expiresAt: { _gt: "now()" } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    userId
+    role
+    resource
+    operation
+    granted
+    conditions
+    reason
+    createdBy
+    expiresAt
+    createdAt
+    updatedAt
+    createdByUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+# Get permission overrides by role
+query GetRolePermissionOverrides($role: String!) {
+  permissionOverrides(
+    where: { 
+      role: { _eq: $role }
+      _or: [
+        { expiresAt: { _isNull: true } }
+        { expiresAt: { _gt: "now()" } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    userId
+    role
+    resource
+    operation
+    granted
+    conditions
+    reason
+    createdBy
+    expiresAt
+    createdAt
+    updatedAt
+    createdByUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+# Get role by name with permissions
+query GetRoleByName($name: String!) {
+  roles(where: { name: { _eq: $name } }) {
+    id
+    name
+    displayName
+    description
+    priority
+    isSystemRole
+    assignedPermissions {
+      id
+      permissionId
+      conditions
+    }
+  }
+}
+
+# Get permissions by resource
+query GetPermissionsByResource($resourceId: uuid!) {
+  permissions(
+    where: { resourceId: { _eq: $resourceId } }
+    orderBy: { action: ASC }
+  ) {
+    id
+    action
+    description
+    legacyPermissionName
+    resourceId
+    createdAt
+    updatedAt
+  }
+}
+
+# Get permission audit log (simplified - using existing audit table)
+query GetPermissionAuditLog(
+  $limit: Int = 50
+  $offset: Int = 0
+  $userId: uuid
+  $targetUserId: uuid
+) {
+  # Note: This may need to be adjusted based on actual audit table structure
+  # For now, commenting out until we verify the exact table structure
+  
+  # Simple permission change tracking through overrides
+  permissionOverrides(
+    where: {
+      _or: [
+        { createdBy: { _eq: $userId } }
+        { userId: { _eq: $targetUserId } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    userId
+    role
+    resource
+    operation
+    granted
+    reason
+    createdAt
+    createdBy
+    createdByUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+# Search permission overrides
+query SearchPermissionOverrides(
+  $searchTerm: String!
+  $limit: Int = 50
+  $offset: Int = 0
+) {
+  permissionOverrides(
+    where: {
+      _or: [
+        { reason: { _ilike: $searchTerm } }
+        { resource: { _ilike: $searchTerm } }
+        { operation: { _ilike: $searchTerm } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    userId
+    role
+    resource
+    operation
+    granted
+    conditions
+    reason
+    createdBy
+    expiresAt
+    createdAt
+    updatedAt
+    createdByUser {
+      id
+      name
+      email
+    }
+    targetUser {
+      id
+      name
+      email
+    }
+  }
+}
+
+# Get expiring permissions (simplified - using basic date comparison)
+query GetExpiringPermissions {
+  permissionOverrides(
+    where: {
+      expiresAt: {
+        _isNull: false
+        _gt: "now()"
+      }
+    }
+    orderBy: { expiresAt: ASC }
+  ) {
+    id
+    userId
+    role
+    resource
+    operation
+    granted
+    reason
+    expiresAt
+    createdAt
+    createdByUser {
+      id
+      name
+      email
+    }
+    targetUser {
+      id
+      name
+      email
+    }
+  }
+}
+
 # Analytics
 query GetPermissionAnalytics {
   roles_count: rolesAggregate {
@@ -108,6 +348,33 @@ query GetPermissionAnalytics {
   }
 
   userRoles_count: userRolesAggregate {
+    aggregate {
+      count
+    }
+  }
+
+  totalOverrides: permissionOverridesAggregate {
+    aggregate {
+      count
+    }
+  }
+  
+  activeOverrides: permissionOverridesAggregate(
+    where: {
+      _or: [
+        { expiresAt: { _isNull: true } }
+        { expiresAt: { _gt: "now()" } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  expiredOverrides: permissionOverridesAggregate(
+    where: { expiresAt: { _lte: "now()" } }
+  ) {
     aggregate {
       count
     }
