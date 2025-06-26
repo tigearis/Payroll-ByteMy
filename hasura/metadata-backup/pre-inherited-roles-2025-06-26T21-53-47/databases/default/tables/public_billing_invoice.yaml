@@ -1,0 +1,120 @@
+table:
+  name: billing_invoice
+  schema: public
+configuration:
+  column_config:
+    billing_period_end:
+      custom_name: billingPeriodEnd
+    billing_period_start:
+      custom_name: billingPeriodStart
+    client_id:
+      custom_name: clientId
+    created_at:
+      custom_name: createdAt
+    due_date:
+      custom_name: dueDate
+    issued_date:
+      custom_name: issuedDate
+    total_amount:
+      custom_name: totalAmount
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    billing_period_end: billingPeriodEnd
+    billing_period_start: billingPeriodStart
+    client_id: clientId
+    created_at: createdAt
+    due_date: dueDate
+    issued_date: issuedDate
+    total_amount: totalAmount
+    updated_at: updatedAt
+  custom_name: billingInvoice
+  custom_root_fields:
+    delete: bulkDeleteBillingInvoice
+    delete_by_pk: deleteBillingInvoiceById
+    insert: bulkInsertBillingInvoice
+    insert_one: insertBillingInvoice
+    select: billingInvoice
+    select_aggregate: billingInvoiceAggregate
+    select_by_pk: billingInvoiceById
+    update: bulkUpdateBillingInvoice
+    update_by_pk: updateBillingInvoiceById
+object_relationships:
+  - name: client
+    using:
+      foreign_key_constraint_on: client_id
+array_relationships:
+  - name: billingEventLogs
+    using:
+      foreign_key_constraint_on:
+        column: invoice_id
+        table:
+          name: billing_event_log
+          schema: public
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - billing_period_end
+        - billing_period_start
+        - client_id
+        - created_at
+        - due_date
+        - id
+        - issued_date
+        - total_amount
+        - updated_at
+      filter: {}
+    comment: Consultants can view relevant data
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full system access
+  - role: manager
+    permission:
+      columns:
+        - billing_period_end
+        - billing_period_start
+        - client_id
+        - created_at
+        - due_date
+        - id
+        - issued_date
+        - total_amount
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all data
+  - role: org_admin
+    permission:
+      columns:
+        - billing_period_end
+        - billing_period_start
+        - client_id
+        - created_at
+        - due_date
+        - id
+        - issued_date
+        - total_amount
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all data
+  - role: viewer
+    permission:
+      columns:
+        - billing_period_end
+        - billing_period_start
+        - client_id
+        - created_at
+        - due_date
+        - id
+        - issued_date
+        - total_amount
+        - updated_at
+      filter: {}
+    comment: Viewers can see basic information
+apollo_federation_config:
+  enable: v1

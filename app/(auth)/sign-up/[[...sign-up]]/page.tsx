@@ -2,6 +2,7 @@
 
 import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useCallback } from "react";
 import { useSignUp } from "@clerk/nextjs";
@@ -31,7 +32,7 @@ export default function SignUpPage() {
           signUpId: signUp.id,
           authFlow: "clerk_elements",
           method: "email_password",
-          verificationStatus: signUp.verifications.emailAddress?.status
+          verificationStatus: signUp.verifications.emailAddress?.status,
         });
       }
     }
@@ -42,7 +43,7 @@ export default function SignUpPage() {
     console.log("Google OAuth sign-up attempt", {
       authFlow: "oauth_redirect",
       provider: "google",
-      page: "signup"
+      page: "signup",
     });
   };
 
@@ -52,14 +53,14 @@ export default function SignUpPage() {
       console.log("Email sign-up attempt", {
         authFlow: "clerk_elements",
         method: "email_password",
-        page: "signup"
+        page: "signup",
       });
     } catch (error) {
       // Log signup failure for debugging
       console.error("Sign-up failed", {
         authFlow: "clerk_elements",
         page: "signup",
-        error: error instanceof Error ? error.message : "Unknown signup error"
+        error: error instanceof Error ? error.message : "Unknown signup error",
       });
     }
   }, []);
@@ -69,6 +70,17 @@ export default function SignUpPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="mb-8 text-center">
+          {/* ByteMy Logo */}
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/bytemy-payroll-logo.png"
+              alt="ByteMy Logo"
+              width={200}
+              height={60}
+              priority
+              className="h-12 w-auto"
+            />
+          </div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">
             Payroll Matrix
           </h1>
@@ -77,9 +89,7 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        <SignUp.Root 
-          fallback={<div>Loading...</div>}
-        >
+        <SignUp.Root fallback={<div>Loading...</div>}>
           <Clerk.Loading>
             {(isGlobalLoading: boolean) => (
               <>
@@ -165,7 +175,10 @@ export default function SignUpPage() {
                     <CardFooter>
                       <div className="grid w-full gap-y-4">
                         <SignUp.Action submit asChild>
-                          <Button disabled={isGlobalLoading} onClick={handleFormSubmit}>
+                          <Button
+                            disabled={isGlobalLoading}
+                            onClick={handleFormSubmit}
+                          >
                             <Clerk.Loading>
                               {(isLoading: boolean) => {
                                 return isLoading ? (

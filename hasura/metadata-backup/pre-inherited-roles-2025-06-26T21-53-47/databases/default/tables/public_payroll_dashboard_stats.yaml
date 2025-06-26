@@ -1,0 +1,116 @@
+table:
+  name: payroll_dashboard_stats
+  schema: public
+configuration:
+  column_config:
+    backup_consultant_user_id:
+      custom_name: backupConsultantUserId
+    client_name:
+      custom_name: clientName
+    cycle_name:
+      custom_name: cycleName
+    future_dates:
+      custom_name: futureDates
+    manager_user_id:
+      custom_name: managerUserId
+    next_eft_date:
+      custom_name: nextEftDate
+    past_dates:
+      custom_name: pastDates
+    primary_consultant_user_id:
+      custom_name: primaryConsultantUserId
+    total_dates:
+      custom_name: totalDates
+  custom_column_names:
+    backup_consultant_user_id: backupConsultantUserId
+    client_name: clientName
+    cycle_name: cycleName
+    future_dates: futureDates
+    manager_user_id: managerUserId
+    next_eft_date: nextEftDate
+    past_dates: pastDates
+    primary_consultant_user_id: primaryConsultantUserId
+    total_dates: totalDates
+  custom_name: payrollDashboardStats
+  custom_root_fields:
+    select: payrollDashboardStats
+    select_aggregate: payrollDashboardStatsAggregate
+    select_by_pk: payrollDashboardStatById
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_name
+        - cycle_name
+        - future_dates
+        - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
+      filter:
+        _or:
+          - primary_consultant_user_id:
+              _eq: X-Hasura-User-Id
+          - backup_consultant_user_id:
+              _eq: X-Hasura-User-Id
+    comment: Consultants can view dashboard stats for their assigned payrolls
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_name
+        - cycle_name
+        - future_dates
+        - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all dashboard statistics
+  - role: org_admin
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_name
+        - cycle_name
+        - future_dates
+        - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all dashboard statistics including system health
+  - role: viewer
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_name
+        - cycle_name
+        - future_dates
+        - manager_user_id
+        - name
+        - next_eft_date
+        - past_dates
+        - primary_consultant_user_id
+        - status
+        - total_dates
+      filter: {}
+    comment: Viewers can see basic information

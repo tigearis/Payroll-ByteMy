@@ -1,0 +1,8 @@
+function:
+  name: create_payroll_version_simple
+  schema: public
+configuration:
+  custom_root_fields:
+    function: createPayrollVersionSimple
+    function_aggregate: createPayrollVersionSimpleAggregate
+  exposed_as: query

@@ -2,6 +2,7 @@
 "use client";
 
 import { useSignIn } from "@clerk/nextjs";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -37,7 +38,7 @@ export default function SignInPage() {
         console.log("Sign-in completed", {
           email: email,
           sessionId: result.createdSessionId,
-          authFlow: "manual_signin"
+          authFlow: "manual_signin",
         });
 
         await setActive({ session: result.createdSessionId });
@@ -52,12 +53,12 @@ export default function SignInPage() {
         Array.isArray((err as { errors?: Array<{ message?: string }> }).errors)
           ? (err as { errors: Array<{ message?: string }> }).errors[0]?.message
           : "Sign-in failed. Please try again.";
-      
+
       // Log failed sign-in attempt for debugging
       console.error("Sign-in failed", {
         email: email,
         authFlow: "manual_signin",
-        error: errorMessage || "Unknown error"
+        error: errorMessage || "Unknown error",
       });
 
       setError(errorMessage || "Sign-in failed. Please try again.");
@@ -79,11 +80,11 @@ export default function SignInPage() {
         redirectUrl: "/dashboard",
         redirectUrlComplete: "/dashboard",
       });
-      
+
       // Note: OAuth sign-in attempt (success logging will happen after redirect)
       console.log("Google OAuth sign-in attempt", {
         authFlow: "oauth_redirect",
-        provider: "google"
+        provider: "google",
       });
     } catch (err: unknown) {
       console.error("Google sign-in error:", err);
@@ -94,11 +95,11 @@ export default function SignInPage() {
         Array.isArray((err as { errors?: Array<{ message?: string }> }).errors)
           ? (err as { errors: Array<{ message?: string }> }).errors[0]?.message
           : "Google sign-in failed. Please try again.";
-      
+
       // Log failed OAuth attempt for debugging
       console.error("Google OAuth sign-in failed", {
         authFlow: "oauth_redirect",
-        error: errorMessage || "Unknown error"
+        error: errorMessage || "Unknown error",
       });
 
       setError(errorMessage || "Google sign-in failed. Please try again.");
@@ -111,6 +112,17 @@ export default function SignInPage() {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
+          {/* ByteMy Logo */}
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/bytemy-payroll-logo.png"
+              alt="ByteMy Logo"
+              width={200}
+              height={60}
+              priority
+              className="h-12 w-auto"
+            />
+          </div>
           <h1 className="text-4xl font-bold text-slate-900 mb-2">
             Payroll Matrix
           </h1>

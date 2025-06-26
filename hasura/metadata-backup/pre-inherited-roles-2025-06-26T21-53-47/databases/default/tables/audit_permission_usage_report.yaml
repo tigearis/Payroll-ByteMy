@@ -1,0 +1,75 @@
+table:
+  name: permission_usage_report
+  schema: audit
+configuration:
+  column_config:
+    last_used:
+      custom_name: lastUsed
+    resource_name:
+      custom_name: resourceName
+    role_name:
+      custom_name: roleName
+    total_usage_count:
+      custom_name: totalUsageCount
+    users_who_used_permission:
+      custom_name: usersWhoUsedPermission
+    users_with_permission:
+      custom_name: usersWithPermission
+  custom_column_names:
+    last_used: lastUsed
+    resource_name: resourceName
+    role_name: roleName
+    total_usage_count: totalUsageCount
+    users_who_used_permission: usersWhoUsedPermission
+    users_with_permission: usersWithPermission
+  custom_name: permissionUsageReports
+  custom_root_fields:
+    delete: bulkDeletePermissionUsageReports
+    delete_by_pk: deletePermissionUsageReportById
+    insert: bulkInsertPermissionUsageReports
+    insert_one: insertPermissionUsageReport
+    select: permissionUsageReports
+    select_aggregate: permissionUsageReportsAggregate
+    select_by_pk: permissionUsageReportById
+    update: bulkUpdatePermissionUsageReports
+    update_by_pk: updatePermissionUsageReportById
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: org_admin
+    permission:
+      columns:
+        - role_name
+        - resource_name
+        - action
+        - users_with_permission
+        - users_who_used_permission
+        - total_usage_count
+        - last_used
+      filter:
+        role_name:
+          _nin:
+            - developer
+      allow_aggregations: true
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
