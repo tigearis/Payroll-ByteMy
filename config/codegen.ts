@@ -144,6 +144,7 @@ const SHARED_SCALARS = {
 };
 
 // Check if domain has valid GraphQL operations
+// Updated to support GraphQL files with comment headers (# comments are valid)
 const domainHasValidOperations = (domainName: string): boolean => {
   const graphqlFiles = [
     `./domains/${domainName}/graphql/queries.graphql`,
@@ -158,7 +159,6 @@ const domainHasValidOperations = (domainName: string): boolean => {
       const content = readFileSync(file, "utf8").trim();
       return (
         content.length > 0 &&
-        !content.startsWith("#") &&
         (content.includes("query") ||
           content.includes("mutation") ||
           content.includes("subscription") ||
@@ -179,29 +179,27 @@ const generateDomainConfig = (domainName: string) => {
     [`./domains/${domainName}/graphql/generated/`]: {
       preset: "client",
       documents: [
-        `./domains/${domainName}/graphql/**/*.graphql`,
-        `./domains/${domainName}/graphql/**/*.{ts,tsx}`,
+        `./domains/${domainName}/graphql/*.graphql`,
+        `./shared/graphql/**/*.graphql`, // Include all shared GraphQL files
       ],
       presetConfig: {
         gqlTagName: "gql",
         fragmentMasking: false, // Keep disabled for simpler DX
         enumsAsTypes: true,
-        dedupeFragments: true,
+        dedupeFragments: true, // This should help reduce duplication
         omitOperationSuffix: false,
       },
       config: {
         scalars: SHARED_SCALARS,
         skipTypename: false,
-        withHooks: true,
-        withComponent: false,
-        withHOC: false,
         maybeValue: "T | null | undefined",
-        apolloReactCommonImportFrom: "@apollo/client",
-        apolloReactHooksImportFrom: "@apollo/client",
         enumsAsTypes: true,
         futureProofEnums: true,
         futureProofUnions: true,
         nonOptionalTypename: false,
+        // Client preset specific - import shared types
+        baseTypesPath: "../../shared/types/generated/graphql",
+        onlyOperationTypes: true,
         // SOC2 Compliance metadata
         security: {
           level: domain.security,

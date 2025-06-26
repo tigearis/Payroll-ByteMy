@@ -92,6 +92,22 @@ query GetClientStats {
   }
 }
 
+query GetClientsDashboardStats {
+  payrollsAggregate(where: {supersededDate: {_isNull: true}}) {
+    aggregate {
+      count
+      sum {
+        employeeCount
+      }
+    }
+  }
+  clientsAggregate(where: {active: {_eq: true}}) {
+    aggregate {
+      count
+    }
+  }
+}
+
 # Phase 2: Paginated client queries for performance optimization
 
 query GetClientsPaginated(
