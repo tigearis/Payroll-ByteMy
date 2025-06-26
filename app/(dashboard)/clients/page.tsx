@@ -1,8 +1,6 @@
 // app/(dashboard)/clients/page.tsx
 "use client";
 
-import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
-import { useStrategicQuery } from "@/hooks/use-strategic-query";
 import { useUser } from "@clerk/nextjs";
 import {
   PlusCircle,
@@ -23,6 +21,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useStrategicQuery } from "@/hooks/use-strategic-query";
+import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

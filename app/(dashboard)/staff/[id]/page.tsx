@@ -2,8 +2,8 @@
 
 import { useRouter, useParams } from "next/navigation";
 
-import { GetStaffByIdDocument } from "@/domains/users/graphql/generated/graphql";
 import { useQuery } from "@apollo/client";
+import { GetStaffByIdDocument } from "@/domains/users/graphql/generated/graphql";
 
 import { Button } from "@/components/ui/button";
 import {

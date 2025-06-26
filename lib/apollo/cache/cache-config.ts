@@ -10,8 +10,8 @@
  */
 
 import { InMemoryCache } from "@apollo/client";
-import { typePolicies, generateDataId } from "./type-policies";
 import type { CacheOptions } from "../types";
+import { typePolicies, generateDataId } from "./type-policies";
 
 /**
  * Create optimized cache configuration with enhanced type policies

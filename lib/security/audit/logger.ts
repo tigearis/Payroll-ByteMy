@@ -6,10 +6,10 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
+import { gql } from "@apollo/client";
 import { extractClientInfo as getClientInfo } from "@/lib/utils/client-info";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { gql } from "@apollo/client";
 import { 
   LogAuditEventDocument, 
   LogAuthEventDocument, 

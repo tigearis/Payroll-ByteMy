@@ -1,4 +1,3 @@
-/* eslint-disable */
 /**
  * THIS FILE IS AUTO-GENERATED - DO NOT EDIT MANUALLY
  * 
@@ -16,21 +15,23 @@
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
  * 
- * Generated: 2025-06-26T06:06:24.031Z
+ * Generated: 2025-06-26T08:26:40.466Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Unified v3.0
  */
 
 /* DOMAIN: PERMISSIONS | SECURITY: CRITICAL | ACCESS: Admin + MFA + Full Audit */
 
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
+import type { DocumentNode } from 'graphql';
+import * as Apollo from '@apollo/client';
+export type Maybe<T> = T | null | undefined;
+export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -171,9 +172,9 @@ export type ComplianceReportResponse = {
 /** ordering argument of a cursor */
 export enum CursorOrdering {
   /** ascending ordering of the cursor */
-  Asc = 'ASC',
+  ASC = 'ASC',
   /** descending ordering of the cursor */
-  Desc = 'DESC'
+  DESC = 'DESC'
 }
 
 /** Boolean expression to compare columns of type "date". All fields are combined with logical 'AND'. */
@@ -327,17 +328,17 @@ export type NumericComparisonExp = {
 /** column ordering options */
 export enum OrderBy {
   /** in ascending order, nulls last */
-  Asc = 'ASC',
+  ASC = 'ASC',
   /** in ascending order, nulls first */
-  AscNullsFirst = 'ASC_NULLS_FIRST',
+  ASC_NULLS_FIRST = 'ASC_NULLS_FIRST',
   /** in ascending order, nulls last */
-  AscNullsLast = 'ASC_NULLS_LAST',
+  ASC_NULLS_LAST = 'ASC_NULLS_LAST',
   /** in descending order, nulls first */
-  Desc = 'DESC',
+  DESC = 'DESC',
   /** in descending order, nulls first */
-  DescNullsFirst = 'DESC_NULLS_FIRST',
+  DESC_NULLS_FIRST = 'DESC_NULLS_FIRST',
   /** in descending order, nulls last */
-  DescNullsLast = 'DESC_NULLS_LAST'
+  DESC_NULLS_LAST = 'DESC_NULLS_LAST'
 }
 
 export type PayrollAssignmentInput = {
@@ -518,9 +519,9 @@ export type UuidComparisonExp = {
 };
 
 /** A union of all types that use the @key directive */
-export type _Entity = AdjustmentRules | AppSettings | AuditLogs | AuthEvents | BillingEventLogs | BillingInvoice | BillingItems | BillingPlans | ClientBillingAssignments | ClientExternalSystems | Clients | DataAccessLogs | ExternalSystems | FeatureFlags | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudits | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLogs | PermissionChanges | PermissionOverrides | Permissions | Resources | RolePermissions | Roles | SlowQueries | UserInvitations | UserRoles | Users | WorkSchedules;
+export type Entity = AdjustmentRules | AppSettings | AuditLogs | AuthEvents | BillingEventLogs | BillingInvoice | BillingItems | BillingPlans | ClientBillingAssignments | ClientExternalSystems | Clients | DataAccessLogs | ExternalSystems | FeatureFlags | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudits | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLogs | PermissionChanges | PermissionOverrides | Permissions | Resources | RolePermissions | Roles | SlowQueries | UserInvitations | UserRoles | Users | WorkSchedules;
 
-export type _Service = {
+export type Service = {
   __typename?: '_Service';
   /** SDL representation of schema */
   sdl: Scalars['String']['output'];
@@ -615,9 +616,9 @@ export type AdjustmentRulesBoolExp = {
 /** unique or primary key constraints on table "adjustment_rules" */
 export enum AdjustmentRulesConstraint {
   /** unique or primary key constraint on columns "date_type_id", "cycle_id" */
-  AdjustmentRulesCycleIdDateTypeIdKey = 'adjustment_rules_cycle_id_date_type_id_key',
+  adjustment_rules_cycle_id_date_type_id_key = 'adjustment_rules_cycle_id_date_type_id_key',
   /** unique or primary key constraint on columns "id" */
-  AdjustmentRulesPkey = 'adjustment_rules_pkey'
+  adjustment_rules_pkey = 'adjustment_rules_pkey'
 }
 
 /** input type for inserting data into table "adjustment_rules" */
@@ -752,19 +753,19 @@ export type AdjustmentRulesPkColumnsInput = {
 /** select columns of table "adjustment_rules" */
 export enum AdjustmentRulesSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CycleId = 'cycleId',
+  cycleId = 'cycleId',
   /** column name */
-  DateTypeId = 'dateTypeId',
+  dateTypeId = 'dateTypeId',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  RuleCode = 'ruleCode',
+  ruleCode = 'ruleCode',
   /** column name */
-  RuleDescription = 'ruleDescription',
+  ruleDescription = 'ruleDescription',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "adjustment_rules" */
@@ -814,19 +815,19 @@ export type AdjustmentRulesStreamCursorValueInput = {
 /** update columns of table "adjustment_rules" */
 export enum AdjustmentRulesUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CycleId = 'cycleId',
+  cycleId = 'cycleId',
   /** column name */
-  DateTypeId = 'dateTypeId',
+  dateTypeId = 'dateTypeId',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  RuleCode = 'ruleCode',
+  ruleCode = 'ruleCode',
   /** column name */
-  RuleDescription = 'ruleDescription',
+  ruleDescription = 'ruleDescription',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type AdjustmentRulesUpdates = {
@@ -891,7 +892,7 @@ export type AppSettingsBoolExp = {
 /** unique or primary key constraints on table "app_settings" */
 export enum AppSettingsConstraint {
   /** unique or primary key constraint on columns "id" */
-  AppSettingsPkey = 'app_settings_pkey'
+  app_settings_pkey = 'app_settings_pkey'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -971,9 +972,9 @@ export type AppSettingsPrependInput = {
 /** select columns of table "app_settings" */
 export enum AppSettingsSelectColumn {
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Permissions = 'permissions'
+  permissions = 'permissions'
 }
 
 /** input type for updating data in table "app_settings" */
@@ -1003,9 +1004,9 @@ export type AppSettingsStreamCursorValueInput = {
 /** update columns of table "app_settings" */
 export enum AppSettingsUpdateColumn {
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Permissions = 'permissions'
+  permissions = 'permissions'
 }
 
 export type AppSettingsUpdates = {
@@ -1123,7 +1124,7 @@ export type AuditLogsBoolExp = {
 /** unique or primary key constraints on table "audit.audit_log" */
 export enum AuditLogsConstraint {
   /** unique or primary key constraint on columns "id" */
-  AuditLogPkey = 'audit_log_pkey'
+  audit_log_pkey = 'audit_log_pkey'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -1258,41 +1259,41 @@ export type AuditLogsPrependInput = {
 /** select columns of table "audit.audit_log" */
 export enum AuditLogsSelectColumn {
   /** column name */
-  Action = 'action',
+  action = 'action',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  ErrorMessage = 'errorMessage',
+  errorMessage = 'errorMessage',
   /** column name */
-  EventTime = 'eventTime',
+  eventTime = 'eventTime',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IpAddress = 'ipAddress',
+  ipAddress = 'ipAddress',
   /** column name */
-  Metadata = 'metadata',
+  metadata = 'metadata',
   /** column name */
-  NewValues = 'newValues',
+  newValues = 'newValues',
   /** column name */
-  OldValues = 'oldValues',
+  oldValues = 'oldValues',
   /** column name */
-  RequestId = 'requestId',
+  requestId = 'requestId',
   /** column name */
-  ResourceId = 'resourceId',
+  resourceId = 'resourceId',
   /** column name */
-  ResourceType = 'resourceType',
+  resourceType = 'resourceType',
   /** column name */
-  SessionId = 'sessionId',
+  sessionId = 'sessionId',
   /** column name */
-  Success = 'success',
+  success = 'success',
   /** column name */
-  UserAgent = 'userAgent',
+  userAgent = 'userAgent',
   /** column name */
-  UserEmail = 'userEmail',
+  userEmail = 'userEmail',
   /** column name */
-  UserId = 'userId',
+  userId = 'userId',
   /** column name */
-  UserRole = 'userRole'
+  userRole = 'userRole'
 }
 
 /** input type for updating data in table "audit.audit_log" */
@@ -1350,41 +1351,41 @@ export type AuditLogsStreamCursorValueInput = {
 /** update columns of table "audit.audit_log" */
 export enum AuditLogsUpdateColumn {
   /** column name */
-  Action = 'action',
+  action = 'action',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  ErrorMessage = 'errorMessage',
+  errorMessage = 'errorMessage',
   /** column name */
-  EventTime = 'eventTime',
+  eventTime = 'eventTime',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IpAddress = 'ipAddress',
+  ipAddress = 'ipAddress',
   /** column name */
-  Metadata = 'metadata',
+  metadata = 'metadata',
   /** column name */
-  NewValues = 'newValues',
+  newValues = 'newValues',
   /** column name */
-  OldValues = 'oldValues',
+  oldValues = 'oldValues',
   /** column name */
-  RequestId = 'requestId',
+  requestId = 'requestId',
   /** column name */
-  ResourceId = 'resourceId',
+  resourceId = 'resourceId',
   /** column name */
-  ResourceType = 'resourceType',
+  resourceType = 'resourceType',
   /** column name */
-  SessionId = 'sessionId',
+  sessionId = 'sessionId',
   /** column name */
-  Success = 'success',
+  success = 'success',
   /** column name */
-  UserAgent = 'userAgent',
+  userAgent = 'userAgent',
   /** column name */
-  UserEmail = 'userEmail',
+  userEmail = 'userEmail',
   /** column name */
-  UserId = 'userId',
+  userId = 'userId',
   /** column name */
-  UserRole = 'userRole'
+  userRole = 'userRole'
 }
 
 export type AuditLogsUpdates = {
@@ -1474,7 +1475,7 @@ export type AuthEventsBoolExp = {
 /** unique or primary key constraints on table "audit.auth_events" */
 export enum AuthEventsConstraint {
   /** unique or primary key constraint on columns "id" */
-  AuthEventsPkey = 'auth_events_pkey'
+  auth_events_pkey = 'auth_events_pkey'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -1577,27 +1578,27 @@ export type AuthEventsPrependInput = {
 /** select columns of table "audit.auth_events" */
 export enum AuthEventsSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  EventTime = 'eventTime',
+  eventTime = 'eventTime',
   /** column name */
-  EventType = 'eventType',
+  eventType = 'eventType',
   /** column name */
-  FailureReason = 'failureReason',
+  failureReason = 'failureReason',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IpAddress = 'ipAddress',
+  ipAddress = 'ipAddress',
   /** column name */
-  Metadata = 'metadata',
+  metadata = 'metadata',
   /** column name */
-  Success = 'success',
+  success = 'success',
   /** column name */
-  UserAgent = 'userAgent',
+  userAgent = 'userAgent',
   /** column name */
-  UserEmail = 'userEmail',
+  userEmail = 'userEmail',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 /** input type for updating data in table "audit.auth_events" */
@@ -1641,27 +1642,27 @@ export type AuthEventsStreamCursorValueInput = {
 /** update columns of table "audit.auth_events" */
 export enum AuthEventsUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  EventTime = 'eventTime',
+  eventTime = 'eventTime',
   /** column name */
-  EventType = 'eventType',
+  eventType = 'eventType',
   /** column name */
-  FailureReason = 'failureReason',
+  failureReason = 'failureReason',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IpAddress = 'ipAddress',
+  ipAddress = 'ipAddress',
   /** column name */
-  Metadata = 'metadata',
+  metadata = 'metadata',
   /** column name */
-  Success = 'success',
+  success = 'success',
   /** column name */
-  UserAgent = 'userAgent',
+  userAgent = 'userAgent',
   /** column name */
-  UserEmail = 'userEmail',
+  userEmail = 'userEmail',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 export type AuthEventsUpdates = {
@@ -1751,7 +1752,7 @@ export type AuthUsersSyncBoolExp = {
 /** unique or primary key constraints on table "neon_auth.users_sync" */
 export enum AuthUsersSyncConstraint {
   /** unique or primary key constraint on columns "id" */
-  UsersSyncPkey = 'users_sync_pkey'
+  users_sync_pkey = 'users_sync_pkey'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -1858,19 +1859,19 @@ export type AuthUsersSyncPrependInput = {
 /** select columns of table "neon_auth.users_sync" */
 export enum AuthUsersSyncSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  DeletedAt = 'deletedAt',
+  deletedAt = 'deletedAt',
   /** column name */
-  Email = 'email',
+  email = 'email',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  RawJson = 'rawJson',
+  rawJson = 'rawJson',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "neon_auth.users_sync" */
@@ -1912,11 +1913,11 @@ export type AuthUsersSyncStreamCursorValueInput = {
 /** update columns of table "neon_auth.users_sync" */
 export enum AuthUsersSyncUpdateColumn {
   /** column name */
-  DeletedAt = 'deletedAt',
+  deletedAt = 'deletedAt',
   /** column name */
-  RawJson = 'rawJson',
+  rawJson = 'rawJson',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type AuthUsersSyncUpdates = {
@@ -2013,7 +2014,7 @@ export type BillingEventLogsBoolExp = {
 /** unique or primary key constraints on table "billing_event_log" */
 export enum BillingEventLogsConstraint {
   /** unique or primary key constraint on columns "id" */
-  BillingEventLogPkey = 'billing_event_log_pkey'
+  billing_event_log_pkey = 'billing_event_log_pkey'
 }
 
 /** input type for inserting data into table "billing_event_log" */
@@ -2104,17 +2105,17 @@ export type BillingEventLogsPkColumnsInput = {
 /** select columns of table "billing_event_log" */
 export enum BillingEventLogsSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CreatedBy = 'createdBy',
+  createdBy = 'createdBy',
   /** column name */
-  EventType = 'eventType',
+  eventType = 'eventType',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  InvoiceId = 'invoiceId',
+  invoiceId = 'invoiceId',
   /** column name */
-  Message = 'message'
+  message = 'message'
 }
 
 /** input type for updating data in table "billing_event_log" */
@@ -2148,17 +2149,17 @@ export type BillingEventLogsStreamCursorValueInput = {
 /** update columns of table "billing_event_log" */
 export enum BillingEventLogsUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CreatedBy = 'createdBy',
+  createdBy = 'createdBy',
   /** column name */
-  EventType = 'eventType',
+  eventType = 'eventType',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  InvoiceId = 'invoiceId',
+  invoiceId = 'invoiceId',
   /** column name */
-  Message = 'message'
+  message = 'message'
 }
 
 export type BillingEventLogsUpdates = {
@@ -2310,7 +2311,7 @@ export type BillingInvoiceBoolExp = {
 /** unique or primary key constraints on table "billing_invoice" */
 export enum BillingInvoiceConstraint {
   /** unique or primary key constraint on columns "id" */
-  BillingInvoicePkey = 'billing_invoice_pkey'
+  billing_invoice_pkey = 'billing_invoice_pkey'
 }
 
 /** input type for incrementing numeric columns in table "billing_invoice" */
@@ -2444,29 +2445,29 @@ export type BillingInvoicePkColumnsInput = {
 /** select columns of table "billing_invoice" */
 export enum BillingInvoiceSelectColumn {
   /** column name */
-  BillingPeriodEnd = 'billingPeriodEnd',
+  billingPeriodEnd = 'billingPeriodEnd',
   /** column name */
-  BillingPeriodStart = 'billingPeriodStart',
+  billingPeriodStart = 'billingPeriodStart',
   /** column name */
-  ClientId = 'clientId',
+  clientId = 'clientId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Currency = 'currency',
+  currency = 'currency',
   /** column name */
-  DueDate = 'dueDate',
+  dueDate = 'dueDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IssuedDate = 'issuedDate',
+  issuedDate = 'issuedDate',
   /** column name */
-  Notes = 'notes',
+  notes = 'notes',
   /** column name */
-  Status = 'status',
+  status = 'status',
   /** column name */
-  TotalAmount = 'totalAmount',
+  totalAmount = 'totalAmount',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "billing_invoice" */
@@ -2556,29 +2557,29 @@ export type BillingInvoiceSumOrderBy = {
 /** update columns of table "billing_invoice" */
 export enum BillingInvoiceUpdateColumn {
   /** column name */
-  BillingPeriodEnd = 'billingPeriodEnd',
+  billingPeriodEnd = 'billingPeriodEnd',
   /** column name */
-  BillingPeriodStart = 'billingPeriodStart',
+  billingPeriodStart = 'billingPeriodStart',
   /** column name */
-  ClientId = 'clientId',
+  clientId = 'clientId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Currency = 'currency',
+  currency = 'currency',
   /** column name */
-  DueDate = 'dueDate',
+  dueDate = 'dueDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IssuedDate = 'issuedDate',
+  issuedDate = 'issuedDate',
   /** column name */
-  Notes = 'notes',
+  notes = 'notes',
   /** column name */
-  Status = 'status',
+  status = 'status',
   /** column name */
-  TotalAmount = 'totalAmount',
+  totalAmount = 'totalAmount',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type BillingInvoiceUpdates = {
@@ -2735,7 +2736,7 @@ export type BillingItemsBoolExp = {
 /** unique or primary key constraints on table "billing_items" */
 export enum BillingItemsConstraint {
   /** unique or primary key constraint on columns "id" */
-  BillingItemsPkey = 'billing_items_pkey'
+  billing_items_pkey = 'billing_items_pkey'
 }
 
 /** input type for incrementing numeric columns in table "billing_items" */
@@ -2843,21 +2844,21 @@ export type BillingItemsPkColumnsInput = {
 /** select columns of table "billing_items" */
 export enum BillingItemsSelectColumn {
   /** column name */
-  Amount = 'amount',
+  amount = 'amount',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  InvoiceId = 'invoiceId',
+  invoiceId = 'invoiceId',
   /** column name */
-  PayrollId = 'payrollId',
+  payrollId = 'payrollId',
   /** column name */
-  Quantity = 'quantity',
+  quantity = 'quantity',
   /** column name */
-  UnitPrice = 'unitPrice'
+  unitPrice = 'unitPrice'
 }
 
 /** input type for updating data in table "billing_items" */
@@ -2954,19 +2955,19 @@ export type BillingItemsSumOrderBy = {
 /** update columns of table "billing_items" */
 export enum BillingItemsUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  InvoiceId = 'invoiceId',
+  invoiceId = 'invoiceId',
   /** column name */
-  PayrollId = 'payrollId',
+  payrollId = 'payrollId',
   /** column name */
-  Quantity = 'quantity',
+  quantity = 'quantity',
   /** column name */
-  UnitPrice = 'unitPrice'
+  unitPrice = 'unitPrice'
 }
 
 export type BillingItemsUpdates = {
@@ -3114,7 +3115,7 @@ export type BillingPlansBoolExp = {
 /** unique or primary key constraints on table "billing_plan" */
 export enum BillingPlansConstraint {
   /** unique or primary key constraint on columns "id" */
-  BillingPlanPkey = 'billing_plan_pkey'
+  billing_plan_pkey = 'billing_plan_pkey'
 }
 
 /** input type for incrementing numeric columns in table "billing_plan" */
@@ -3201,19 +3202,19 @@ export type BillingPlansPkColumnsInput = {
 /** select columns of table "billing_plan" */
 export enum BillingPlansSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Currency = 'currency',
+  currency = 'currency',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  RatePerPayroll = 'ratePerPayroll',
+  ratePerPayroll = 'ratePerPayroll',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "billing_plan" */
@@ -3273,19 +3274,19 @@ export type BillingPlansSumFields = {
 /** update columns of table "billing_plan" */
 export enum BillingPlansUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Currency = 'currency',
+  currency = 'currency',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  RatePerPayroll = 'ratePerPayroll',
+  ratePerPayroll = 'ratePerPayroll',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type BillingPlansUpdates = {
@@ -3340,20 +3341,20 @@ export type ClientBillingAssignmentsAggregate = {
 };
 
 export type ClientBillingAssignmentsAggregateBoolExp = {
-  bool_and?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpBool_And>;
-  bool_or?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpBool_Or>;
+  bool_and?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpBoolAnd>;
+  bool_or?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpBoolOr>;
   count?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpCount>;
 };
 
-export type ClientBillingAssignmentsAggregateBoolExpBool_And = {
-  arguments: ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_AndArgumentsColumns;
+export type ClientBillingAssignmentsAggregateBoolExpBoolAnd = {
+  arguments: ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type ClientBillingAssignmentsAggregateBoolExpBool_Or = {
-  arguments: ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_OrArgumentsColumns;
+export type ClientBillingAssignmentsAggregateBoolExpBoolOr = {
+  arguments: ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
@@ -3415,7 +3416,7 @@ export type ClientBillingAssignmentsBoolExp = {
 /** unique or primary key constraints on table "client_billing_assignment" */
 export enum ClientBillingAssignmentsConstraint {
   /** unique or primary key constraint on columns "id" */
-  ClientBillingAssignmentPkey = 'client_billing_assignment_pkey'
+  client_billing_assignment_pkey = 'client_billing_assignment_pkey'
 }
 
 /** input type for inserting data into table "client_billing_assignment" */
@@ -3516,33 +3517,33 @@ export type ClientBillingAssignmentsPkColumnsInput = {
 /** select columns of table "client_billing_assignment" */
 export enum ClientBillingAssignmentsSelectColumn {
   /** column name */
-  BillingPlanId = 'billingPlanId',
+  billingPlanId = 'billingPlanId',
   /** column name */
-  ClientId = 'clientId',
+  clientId = 'clientId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  EndDate = 'endDate',
+  endDate = 'endDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsActive = 'isActive',
+  isActive = 'isActive',
   /** column name */
-  StartDate = 'startDate',
+  startDate = 'startDate',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** select "clientBillingAssignmentsAggregateBoolExpBool_andArgumentsColumns" columns of table "client_billing_assignment" */
-export enum ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_AndArgumentsColumns {
+export enum ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBoolAndArgumentsColumns {
   /** column name */
-  IsActive = 'isActive'
+  isActive = 'isActive'
 }
 
 /** select "clientBillingAssignmentsAggregateBoolExpBool_orArgumentsColumns" columns of table "client_billing_assignment" */
-export enum ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_OrArgumentsColumns {
+export enum ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBoolOrArgumentsColumns {
   /** column name */
-  IsActive = 'isActive'
+  isActive = 'isActive'
 }
 
 /** input type for updating data in table "client_billing_assignment" */
@@ -3580,21 +3581,21 @@ export type ClientBillingAssignmentsStreamCursorValueInput = {
 /** update columns of table "client_billing_assignment" */
 export enum ClientBillingAssignmentsUpdateColumn {
   /** column name */
-  BillingPlanId = 'billingPlanId',
+  billingPlanId = 'billingPlanId',
   /** column name */
-  ClientId = 'clientId',
+  clientId = 'clientId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  EndDate = 'endDate',
+  endDate = 'endDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsActive = 'isActive',
+  isActive = 'isActive',
   /** column name */
-  StartDate = 'startDate',
+  startDate = 'startDate',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type ClientBillingAssignmentsUpdates = {
@@ -3690,9 +3691,9 @@ export type ClientExternalSystemsBoolExp = {
 /** unique or primary key constraints on table "client_external_systems" */
 export enum ClientExternalSystemsConstraint {
   /** unique or primary key constraint on columns "client_id", "system_id" */
-  ClientExternalSystemsClientIdSystemIdKey = 'client_external_systems_client_id_system_id_key',
+  client_external_systems_client_id_system_id_key = 'client_external_systems_client_id_system_id_key',
   /** unique or primary key constraint on columns "id" */
-  ClientExternalSystemsPkey = 'client_external_systems_pkey'
+  client_external_systems_pkey = 'client_external_systems_pkey'
 }
 
 /** input type for inserting data into table "client_external_systems" */
@@ -3816,17 +3817,17 @@ export type ClientExternalSystemsPkColumnsInput = {
 /** select columns of table "client_external_systems" */
 export enum ClientExternalSystemsSelectColumn {
   /** column name */
-  ClientId = 'clientId',
+  clientId = 'clientId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  ExternalSystemId = 'externalSystemId',
+  externalSystemId = 'externalSystemId',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  SystemClientId = 'systemClientId',
+  systemClientId = 'systemClientId',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "client_external_systems" */
@@ -3872,17 +3873,17 @@ export type ClientExternalSystemsStreamCursorValueInput = {
 /** update columns of table "client_external_systems" */
 export enum ClientExternalSystemsUpdateColumn {
   /** column name */
-  ClientId = 'clientId',
+  clientId = 'clientId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  ExternalSystemId = 'externalSystemId',
+  externalSystemId = 'externalSystemId',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  SystemClientId = 'systemClientId',
+  systemClientId = 'systemClientId',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type ClientExternalSystemsUpdates = {
@@ -3961,7 +3962,7 @@ export type ClientsBillingInvoicesAggregateArgs = {
 
 
 /** columns and relationships of "clients" */
-export type ClientsBilling_InvoicesArgs = {
+export type ClientsBillingInvoicesArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -4017,20 +4018,20 @@ export type ClientsAggregate = {
 };
 
 export type ClientsAggregateBoolExp = {
-  bool_and?: InputMaybe<ClientsAggregateBoolExpBool_And>;
-  bool_or?: InputMaybe<ClientsAggregateBoolExpBool_Or>;
+  bool_and?: InputMaybe<ClientsAggregateBoolExpBoolAnd>;
+  bool_or?: InputMaybe<ClientsAggregateBoolExpBoolOr>;
   count?: InputMaybe<ClientsAggregateBoolExpCount>;
 };
 
-export type ClientsAggregateBoolExpBool_And = {
-  arguments: ClientsSelectColumnClientsAggregateBoolExpBool_AndArgumentsColumns;
+export type ClientsAggregateBoolExpBoolAnd = {
+  arguments: ClientsSelectColumnClientsAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientsBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type ClientsAggregateBoolExpBool_Or = {
-  arguments: ClientsSelectColumnClientsAggregateBoolExpBool_OrArgumentsColumns;
+export type ClientsAggregateBoolExpBoolOr = {
+  arguments: ClientsSelectColumnClientsAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientsBoolExp>;
   predicate: BooleanComparisonExp;
@@ -4098,7 +4099,7 @@ export type ClientsBoolExp = {
 /** unique or primary key constraints on table "clients" */
 export enum ClientsConstraint {
   /** unique or primary key constraint on columns "id" */
-  ClientsPkey = 'clients_pkey'
+  clients_pkey = 'clients_pkey'
 }
 
 /** input type for inserting data into table "clients" */
@@ -4247,33 +4248,33 @@ export type ClientsPkColumnsInput = {
 /** select columns of table "clients" */
 export enum ClientsSelectColumn {
   /** column name */
-  Active = 'active',
+  active = 'active',
   /** column name */
-  ContactEmail = 'contactEmail',
+  contactEmail = 'contactEmail',
   /** column name */
-  ContactPerson = 'contactPerson',
+  contactPerson = 'contactPerson',
   /** column name */
-  ContactPhone = 'contactPhone',
+  contactPhone = 'contactPhone',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** select "clientsAggregateBoolExpBool_andArgumentsColumns" columns of table "clients" */
-export enum ClientsSelectColumnClientsAggregateBoolExpBool_AndArgumentsColumns {
+export enum ClientsSelectColumnClientsAggregateBoolExpBoolAndArgumentsColumns {
   /** column name */
-  Active = 'active'
+  active = 'active'
 }
 
 /** select "clientsAggregateBoolExpBool_orArgumentsColumns" columns of table "clients" */
-export enum ClientsSelectColumnClientsAggregateBoolExpBool_OrArgumentsColumns {
+export enum ClientsSelectColumnClientsAggregateBoolExpBoolOrArgumentsColumns {
   /** column name */
-  Active = 'active'
+  active = 'active'
 }
 
 /** input type for updating data in table "clients" */
@@ -4327,21 +4328,21 @@ export type ClientsStreamCursorValueInput = {
 /** update columns of table "clients" */
 export enum ClientsUpdateColumn {
   /** column name */
-  Active = 'active',
+  active = 'active',
   /** column name */
-  ContactEmail = 'contactEmail',
+  contactEmail = 'contactEmail',
   /** column name */
-  ContactPerson = 'contactPerson',
+  contactPerson = 'contactPerson',
   /** column name */
-  ContactPhone = 'contactPhone',
+  contactPhone = 'contactPhone',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type ClientsUpdates = {
@@ -4532,43 +4533,43 @@ export type CurrentPayrollsOrderBy = {
 /** select columns of table "current_payrolls" */
 export enum CurrentPayrollsSelectColumn {
   /** column name */
-  BackupConsultantUserId = 'backupConsultantUserId',
+  backupConsultantUserId = 'backupConsultantUserId',
   /** column name */
-  ClientId = 'clientId',
+  clientId = 'clientId',
   /** column name */
-  ClientName = 'clientName',
+  clientName = 'clientName',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CycleId = 'cycleId',
+  cycleId = 'cycleId',
   /** column name */
-  DateTypeId = 'dateTypeId',
+  dateTypeId = 'dateTypeId',
   /** column name */
-  DateValue = 'dateValue',
+  dateValue = 'dateValue',
   /** column name */
-  GoLiveDate = 'goLiveDate',
+  goLiveDate = 'goLiveDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  ManagerUserId = 'managerUserId',
+  managerUserId = 'managerUserId',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  ParentPayrollId = 'parentPayrollId',
+  parentPayrollId = 'parentPayrollId',
   /** column name */
-  PayrollCycleName = 'payrollCycleName',
+  payrollCycleName = 'payrollCycleName',
   /** column name */
-  PayrollDateTypeName = 'payrollDateTypeName',
+  payrollDateTypeName = 'payrollDateTypeName',
   /** column name */
-  PrimaryConsultantUserId = 'primaryConsultantUserId',
+  primaryConsultantUserId = 'primaryConsultantUserId',
   /** column name */
-  SupersededDate = 'supersededDate',
+  supersededDate = 'supersededDate',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  VersionNumber = 'versionNumber',
+  versionNumber = 'versionNumber',
   /** column name */
-  VersionReason = 'versionReason'
+  versionReason = 'versionReason'
 }
 
 /** aggregate stddev on columns */
@@ -4739,7 +4740,7 @@ export type DataAccessLogsBoolExp = {
 /** unique or primary key constraints on table "audit.data_access_log" */
 export enum DataAccessLogsConstraint {
   /** unique or primary key constraint on columns "id" */
-  DataAccessLogPkey = 'data_access_log_pkey'
+  data_access_log_pkey = 'data_access_log_pkey'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -4857,31 +4858,31 @@ export type DataAccessLogsPrependInput = {
 /** select columns of table "audit.data_access_log" */
 export enum DataAccessLogsSelectColumn {
   /** column name */
-  AccessType = 'accessType',
+  accessType = 'accessType',
   /** column name */
-  AccessedAt = 'accessedAt',
+  accessedAt = 'accessedAt',
   /** column name */
-  DataClassification = 'dataClassification',
+  dataClassification = 'dataClassification',
   /** column name */
-  FieldsAccessed = 'fieldsAccessed',
+  fieldsAccessed = 'fieldsAccessed',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IpAddress = 'ipAddress',
+  ipAddress = 'ipAddress',
   /** column name */
-  Metadata = 'metadata',
+  metadata = 'metadata',
   /** column name */
-  QueryExecuted = 'queryExecuted',
+  queryExecuted = 'queryExecuted',
   /** column name */
-  ResourceId = 'resourceId',
+  resourceId = 'resourceId',
   /** column name */
-  ResourceType = 'resourceType',
+  resourceType = 'resourceType',
   /** column name */
-  RowCount = 'rowCount',
+  rowCount = 'rowCount',
   /** column name */
-  SessionId = 'sessionId',
+  sessionId = 'sessionId',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 /** input type for updating data in table "audit.data_access_log" */
@@ -4953,31 +4954,31 @@ export type DataAccessLogsSumFields = {
 /** update columns of table "audit.data_access_log" */
 export enum DataAccessLogsUpdateColumn {
   /** column name */
-  AccessType = 'accessType',
+  accessType = 'accessType',
   /** column name */
-  AccessedAt = 'accessedAt',
+  accessedAt = 'accessedAt',
   /** column name */
-  DataClassification = 'dataClassification',
+  dataClassification = 'dataClassification',
   /** column name */
-  FieldsAccessed = 'fieldsAccessed',
+  fieldsAccessed = 'fieldsAccessed',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IpAddress = 'ipAddress',
+  ipAddress = 'ipAddress',
   /** column name */
-  Metadata = 'metadata',
+  metadata = 'metadata',
   /** column name */
-  QueryExecuted = 'queryExecuted',
+  queryExecuted = 'queryExecuted',
   /** column name */
-  ResourceId = 'resourceId',
+  resourceId = 'resourceId',
   /** column name */
-  ResourceType = 'resourceType',
+  resourceType = 'resourceType',
   /** column name */
-  RowCount = 'rowCount',
+  rowCount = 'rowCount',
   /** column name */
-  SessionId = 'sessionId',
+  sessionId = 'sessionId',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 export type DataAccessLogsUpdates = {
@@ -5101,7 +5102,7 @@ export type ExternalSystemsBoolExp = {
 /** unique or primary key constraints on table "external_systems" */
 export enum ExternalSystemsConstraint {
   /** unique or primary key constraint on columns "id" */
-  ExternalSystemsPkey = 'external_systems_pkey'
+  external_systems_pkey = 'external_systems_pkey'
 }
 
 /** input type for inserting data into table "external_systems" */
@@ -5205,19 +5206,19 @@ export type ExternalSystemsPkColumnsInput = {
 /** select columns of table "external_systems" */
 export enum ExternalSystemsSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Icon = 'icon',
+  icon = 'icon',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  Url = 'url'
+  url = 'url'
 }
 
 /** input type for updating data in table "external_systems" */
@@ -5267,19 +5268,19 @@ export type ExternalSystemsStreamCursorValueInput = {
 /** update columns of table "external_systems" */
 export enum ExternalSystemsUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Icon = 'icon',
+  icon = 'icon',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  Url = 'url'
+  url = 'url'
 }
 
 export type ExternalSystemsUpdates = {
@@ -5353,9 +5354,9 @@ export type FeatureFlagsBoolExp = {
 /** unique or primary key constraints on table "feature_flags" */
 export enum FeatureFlagsConstraint {
   /** unique or primary key constraint on columns "feature_name" */
-  FeatureFlagsFeatureNameKey = 'feature_flags_feature_name_key',
+  feature_flags_feature_name_key = 'feature_flags_feature_name_key',
   /** unique or primary key constraint on columns "id" */
-  FeatureFlagsPkey = 'feature_flags_pkey'
+  feature_flags_pkey = 'feature_flags_pkey'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -5452,15 +5453,15 @@ export type FeatureFlagsPrependInput = {
 /** select columns of table "feature_flags" */
 export enum FeatureFlagsSelectColumn {
   /** column name */
-  AllowedRoles = 'allowedRoles',
+  allowedRoles = 'allowedRoles',
   /** column name */
-  FeatureName = 'featureName',
+  featureName = 'featureName',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsEnabled = 'isEnabled',
+  isEnabled = 'isEnabled',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "feature_flags" */
@@ -5502,15 +5503,15 @@ export type FeatureFlagsStreamCursorValueInput = {
 /** update columns of table "feature_flags" */
 export enum FeatureFlagsUpdateColumn {
   /** column name */
-  AllowedRoles = 'allowedRoles',
+  allowedRoles = 'allowedRoles',
   /** column name */
-  FeatureName = 'featureName',
+  featureName = 'featureName',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsEnabled = 'isEnabled',
+  isEnabled = 'isEnabled',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type FeatureFlagsUpdates = {
@@ -5633,7 +5634,7 @@ export type HolidaysBoolExp = {
 /** unique or primary key constraints on table "holidays" */
 export enum HolidaysConstraint {
   /** unique or primary key constraint on columns "id" */
-  HolidaysPkey = 'holidays_pkey'
+  holidays_pkey = 'holidays_pkey'
 }
 
 /** input type for incrementing numeric columns in table "holidays" */
@@ -5761,29 +5762,29 @@ export type HolidaysPkColumnsInput = {
 /** select columns of table "holidays" */
 export enum HolidaysSelectColumn {
   /** column name */
-  CountryCode = 'countryCode',
+  countryCode = 'countryCode',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Date = 'date',
+  date = 'date',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsFixed = 'isFixed',
+  isFixed = 'isFixed',
   /** column name */
-  IsGlobal = 'isGlobal',
+  isGlobal = 'isGlobal',
   /** column name */
-  LaunchYear = 'launchYear',
+  launchYear = 'launchYear',
   /** column name */
-  LocalName = 'localName',
+  localName = 'localName',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  Region = 'region',
+  region = 'region',
   /** column name */
-  Types = 'types',
+  types = 'types',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "holidays" */
@@ -5881,29 +5882,29 @@ export type HolidaysSumFields = {
 /** update columns of table "holidays" */
 export enum HolidaysUpdateColumn {
   /** column name */
-  CountryCode = 'countryCode',
+  countryCode = 'countryCode',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Date = 'date',
+  date = 'date',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsFixed = 'isFixed',
+  isFixed = 'isFixed',
   /** column name */
-  IsGlobal = 'isGlobal',
+  isGlobal = 'isGlobal',
   /** column name */
-  LaunchYear = 'launchYear',
+  launchYear = 'launchYear',
   /** column name */
-  LocalName = 'localName',
+  localName = 'localName',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  Region = 'region',
+  region = 'region',
   /** column name */
-  Types = 'types',
+  types = 'types',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type HolidaysUpdates = {
@@ -6000,7 +6001,7 @@ export type LatestPayrollVersionResultsBoolExp = {
 /** unique or primary key constraints on table "latest_payroll_version_results" */
 export enum LatestPayrollVersionResultsConstraint {
   /** unique or primary key constraint on columns "id" */
-  LatestPayrollVersionResultsPkey = 'latest_payroll_version_results_pkey'
+  latest_payroll_version_results_pkey = 'latest_payroll_version_results_pkey'
 }
 
 /** input type for incrementing numeric columns in table "latest_payroll_version_results" */
@@ -6076,19 +6077,19 @@ export type LatestPayrollVersionResultsPkColumnsInput = {
 /** select columns of table "latest_payroll_version_results" */
 export enum LatestPayrollVersionResultsSelectColumn {
   /** column name */
-  Active = 'active',
+  active = 'active',
   /** column name */
-  GoLiveDate = 'goLiveDate',
+  goLiveDate = 'goLiveDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  PayrollId = 'payrollId',
+  payrollId = 'payrollId',
   /** column name */
-  QueriedAt = 'queriedAt',
+  queriedAt = 'queriedAt',
   /** column name */
-  VersionNumber = 'versionNumber'
+  versionNumber = 'versionNumber'
 }
 
 /** input type for updating data in table "latest_payroll_version_results" */
@@ -6148,19 +6149,19 @@ export type LatestPayrollVersionResultsSumFields = {
 /** update columns of table "latest_payroll_version_results" */
 export enum LatestPayrollVersionResultsUpdateColumn {
   /** column name */
-  Active = 'active',
+  active = 'active',
   /** column name */
-  GoLiveDate = 'goLiveDate',
+  goLiveDate = 'goLiveDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  PayrollId = 'payrollId',
+  payrollId = 'payrollId',
   /** column name */
-  QueriedAt = 'queriedAt',
+  queriedAt = 'queriedAt',
   /** column name */
-  VersionNumber = 'versionNumber'
+  versionNumber = 'versionNumber'
 }
 
 export type LatestPayrollVersionResultsUpdates = {
@@ -6279,7 +6280,7 @@ export type LeaveBoolExp = {
 /** unique or primary key constraints on table "leave" */
 export enum LeaveConstraint {
   /** unique or primary key constraint on columns "id" */
-  LeavePkey = 'leave_pkey'
+  leave_pkey = 'leave_pkey'
 }
 
 /** input type for inserting data into table "leave" */
@@ -6414,19 +6415,19 @@ export type LeavePkColumnsInput = {
 /** select columns of table "leave" */
 export enum LeaveSelectColumn {
   /** column name */
-  EndDate = 'endDate',
+  endDate = 'endDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  LeaveType = 'leaveType',
+  leaveType = 'leaveType',
   /** column name */
-  Reason = 'reason',
+  reason = 'reason',
   /** column name */
-  StartDate = 'startDate',
+  startDate = 'startDate',
   /** column name */
-  Status = 'status',
+  status = 'status',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 /** input type for updating data in table "leave" */
@@ -6476,19 +6477,19 @@ export type LeaveStreamCursorValueInput = {
 /** update columns of table "leave" */
 export enum LeaveUpdateColumn {
   /** column name */
-  EndDate = 'endDate',
+  endDate = 'endDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  LeaveType = 'leaveType',
+  leaveType = 'leaveType',
   /** column name */
-  Reason = 'reason',
+  reason = 'reason',
   /** column name */
-  StartDate = 'startDate',
+  startDate = 'startDate',
   /** column name */
-  Status = 'status',
+  status = 'status',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 export type LeaveUpdates = {
@@ -6499,7 +6500,7 @@ export type LeaveUpdates = {
 };
 
 /** mutation root */
-export type Mutation_Root = {
+export type MutationRoot = {
   __typename?: 'mutation_root';
   /** delete data from the table: "adjustment_rules" */
   bulkDeleteAdjustmentRules?: Maybe<AdjustmentRulesMutationResponse>;
@@ -7092,558 +7093,558 @@ export type Mutation_Root = {
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteAdjustmentRulesArgs = {
+export type MutationRootBulkDeleteAdjustmentRulesArgs = {
   where: AdjustmentRulesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteAppSettingsArgs = {
+export type MutationRootBulkDeleteAppSettingsArgs = {
   where: AppSettingsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteAuditLogsArgs = {
+export type MutationRootBulkDeleteAuditLogsArgs = {
   where: AuditLogsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteAuthEventsArgs = {
+export type MutationRootBulkDeleteAuthEventsArgs = {
   where: AuthEventsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteBillingEventLogsArgs = {
+export type MutationRootBulkDeleteBillingEventLogsArgs = {
   where: BillingEventLogsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteBillingInvoiceArgs = {
+export type MutationRootBulkDeleteBillingInvoiceArgs = {
   where: BillingInvoiceBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteBillingItemsArgs = {
+export type MutationRootBulkDeleteBillingItemsArgs = {
   where: BillingItemsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteBillingPlansArgs = {
+export type MutationRootBulkDeleteBillingPlansArgs = {
   where: BillingPlansBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteClientBillingAssignmentsArgs = {
+export type MutationRootBulkDeleteClientBillingAssignmentsArgs = {
   where: ClientBillingAssignmentsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteClientExternalSystemsArgs = {
+export type MutationRootBulkDeleteClientExternalSystemsArgs = {
   where: ClientExternalSystemsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteClientsArgs = {
+export type MutationRootBulkDeleteClientsArgs = {
   where: ClientsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteDataAccessLogsArgs = {
+export type MutationRootBulkDeleteDataAccessLogsArgs = {
   where: DataAccessLogsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteExternalSystemsArgs = {
+export type MutationRootBulkDeleteExternalSystemsArgs = {
   where: ExternalSystemsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteFeatureFlagsArgs = {
+export type MutationRootBulkDeleteFeatureFlagsArgs = {
   where: FeatureFlagsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteHolidaysArgs = {
+export type MutationRootBulkDeleteHolidaysArgs = {
   where: HolidaysBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteLatestPayrollVersionResultsArgs = {
+export type MutationRootBulkDeleteLatestPayrollVersionResultsArgs = {
   where: LatestPayrollVersionResultsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteLeaveArgs = {
+export type MutationRootBulkDeleteLeaveArgs = {
   where: LeaveBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteNotesArgs = {
+export type MutationRootBulkDeleteNotesArgs = {
   where: NotesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePayrollActivationResultsArgs = {
+export type MutationRootBulkDeletePayrollActivationResultsArgs = {
   where: PayrollActivationResultsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePayrollAssignmentAuditsArgs = {
+export type MutationRootBulkDeletePayrollAssignmentAuditsArgs = {
   where: PayrollAssignmentAuditsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePayrollAssignmentsArgs = {
+export type MutationRootBulkDeletePayrollAssignmentsArgs = {
   where: PayrollAssignmentsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePayrollCyclesArgs = {
+export type MutationRootBulkDeletePayrollCyclesArgs = {
   where: PayrollCyclesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePayrollDateTypesArgs = {
+export type MutationRootBulkDeletePayrollDateTypesArgs = {
   where: PayrollDateTypesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePayrollDatesArgs = {
+export type MutationRootBulkDeletePayrollDatesArgs = {
   where: PayrollDatesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePayrollVersionHistoryResultsArgs = {
+export type MutationRootBulkDeletePayrollVersionHistoryResultsArgs = {
   where: PayrollVersionHistoryResultsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePayrollVersionResultsArgs = {
+export type MutationRootBulkDeletePayrollVersionResultsArgs = {
   where: PayrollVersionResultsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePayrollsArgs = {
+export type MutationRootBulkDeletePayrollsArgs = {
   where: PayrollsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePermissionAuditLogsArgs = {
+export type MutationRootBulkDeletePermissionAuditLogsArgs = {
   where: PermissionAuditLogsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePermissionChangesArgs = {
+export type MutationRootBulkDeletePermissionChangesArgs = {
   where: PermissionChangesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePermissionOverridesArgs = {
+export type MutationRootBulkDeletePermissionOverridesArgs = {
   where: PermissionOverridesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeletePermissionsArgs = {
+export type MutationRootBulkDeletePermissionsArgs = {
   where: PermissionsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteResourcesArgs = {
+export type MutationRootBulkDeleteResourcesArgs = {
   where: ResourcesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteRolePermissionsArgs = {
+export type MutationRootBulkDeleteRolePermissionsArgs = {
   where: RolePermissionsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteRolesArgs = {
+export type MutationRootBulkDeleteRolesArgs = {
   where: RolesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteSlowQueriesArgs = {
+export type MutationRootBulkDeleteSlowQueriesArgs = {
   where: SlowQueriesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteUserAccessSummariesArgs = {
+export type MutationRootBulkDeleteUserAccessSummariesArgs = {
   where: UserAccessSummariesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteUserInvitationsArgs = {
+export type MutationRootBulkDeleteUserInvitationsArgs = {
   where: UserInvitationsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteUserRolesArgs = {
+export type MutationRootBulkDeleteUserRolesArgs = {
   where: UserRolesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteUsersArgs = {
+export type MutationRootBulkDeleteUsersArgs = {
   where: UsersBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteUsersRoleBackupsArgs = {
+export type MutationRootBulkDeleteUsersRoleBackupsArgs = {
   where: UsersRoleBackupBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteUsersSyncArgs = {
+export type MutationRootBulkDeleteUsersSyncArgs = {
   where: AuthUsersSyncBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteWorkSchedulesArgs = {
+export type MutationRootBulkDeleteWorkSchedulesArgs = {
   where: WorkSchedulesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertAdjustmentRulesArgs = {
+export type MutationRootBulkInsertAdjustmentRulesArgs = {
   objects: Array<AdjustmentRulesInsertInput>;
   onConflict?: InputMaybe<AdjustmentRulesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertAppSettingsArgs = {
+export type MutationRootBulkInsertAppSettingsArgs = {
   objects: Array<AppSettingsInsertInput>;
   onConflict?: InputMaybe<AppSettingsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertAuditLogsArgs = {
+export type MutationRootBulkInsertAuditLogsArgs = {
   objects: Array<AuditLogsInsertInput>;
   onConflict?: InputMaybe<AuditLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertAuthEventsArgs = {
+export type MutationRootBulkInsertAuthEventsArgs = {
   objects: Array<AuthEventsInsertInput>;
   onConflict?: InputMaybe<AuthEventsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertBillingEventLogsArgs = {
+export type MutationRootBulkInsertBillingEventLogsArgs = {
   objects: Array<BillingEventLogsInsertInput>;
   onConflict?: InputMaybe<BillingEventLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertBillingInvoiceArgs = {
+export type MutationRootBulkInsertBillingInvoiceArgs = {
   objects: Array<BillingInvoiceInsertInput>;
   onConflict?: InputMaybe<BillingInvoiceOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertBillingItemsArgs = {
+export type MutationRootBulkInsertBillingItemsArgs = {
   objects: Array<BillingItemsInsertInput>;
   onConflict?: InputMaybe<BillingItemsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertBillingPlansArgs = {
+export type MutationRootBulkInsertBillingPlansArgs = {
   objects: Array<BillingPlansInsertInput>;
   onConflict?: InputMaybe<BillingPlansOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertClientBillingAssignmentsArgs = {
+export type MutationRootBulkInsertClientBillingAssignmentsArgs = {
   objects: Array<ClientBillingAssignmentsInsertInput>;
   onConflict?: InputMaybe<ClientBillingAssignmentsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertClientExternalSystemsArgs = {
+export type MutationRootBulkInsertClientExternalSystemsArgs = {
   objects: Array<ClientExternalSystemsInsertInput>;
   onConflict?: InputMaybe<ClientExternalSystemsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertClientsArgs = {
+export type MutationRootBulkInsertClientsArgs = {
   objects: Array<ClientsInsertInput>;
   onConflict?: InputMaybe<ClientsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertDataAccessLogsArgs = {
+export type MutationRootBulkInsertDataAccessLogsArgs = {
   objects: Array<DataAccessLogsInsertInput>;
   onConflict?: InputMaybe<DataAccessLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertExternalSystemsArgs = {
+export type MutationRootBulkInsertExternalSystemsArgs = {
   objects: Array<ExternalSystemsInsertInput>;
   onConflict?: InputMaybe<ExternalSystemsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertFeatureFlagsArgs = {
+export type MutationRootBulkInsertFeatureFlagsArgs = {
   objects: Array<FeatureFlagsInsertInput>;
   onConflict?: InputMaybe<FeatureFlagsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertHolidaysArgs = {
+export type MutationRootBulkInsertHolidaysArgs = {
   objects: Array<HolidaysInsertInput>;
   onConflict?: InputMaybe<HolidaysOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertLatestPayrollVersionResultsArgs = {
+export type MutationRootBulkInsertLatestPayrollVersionResultsArgs = {
   objects: Array<LatestPayrollVersionResultsInsertInput>;
   onConflict?: InputMaybe<LatestPayrollVersionResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertLeaveArgs = {
+export type MutationRootBulkInsertLeaveArgs = {
   objects: Array<LeaveInsertInput>;
   onConflict?: InputMaybe<LeaveOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertNotesArgs = {
+export type MutationRootBulkInsertNotesArgs = {
   objects: Array<NotesInsertInput>;
   onConflict?: InputMaybe<NotesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPayrollActivationResultsArgs = {
+export type MutationRootBulkInsertPayrollActivationResultsArgs = {
   objects: Array<PayrollActivationResultsInsertInput>;
   onConflict?: InputMaybe<PayrollActivationResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPayrollAssignmentAuditsArgs = {
+export type MutationRootBulkInsertPayrollAssignmentAuditsArgs = {
   objects: Array<PayrollAssignmentAuditsInsertInput>;
   onConflict?: InputMaybe<PayrollAssignmentAuditsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPayrollAssignmentsArgs = {
+export type MutationRootBulkInsertPayrollAssignmentsArgs = {
   objects: Array<PayrollAssignmentsInsertInput>;
   onConflict?: InputMaybe<PayrollAssignmentsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPayrollCyclesArgs = {
+export type MutationRootBulkInsertPayrollCyclesArgs = {
   objects: Array<PayrollCyclesInsertInput>;
   onConflict?: InputMaybe<PayrollCyclesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPayrollDateTypesArgs = {
+export type MutationRootBulkInsertPayrollDateTypesArgs = {
   objects: Array<PayrollDateTypesInsertInput>;
   onConflict?: InputMaybe<PayrollDateTypesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPayrollDatesArgs = {
+export type MutationRootBulkInsertPayrollDatesArgs = {
   objects: Array<PayrollDatesInsertInput>;
   onConflict?: InputMaybe<PayrollDatesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPayrollVersionHistoryResultsArgs = {
+export type MutationRootBulkInsertPayrollVersionHistoryResultsArgs = {
   objects: Array<PayrollVersionHistoryResultsInsertInput>;
   onConflict?: InputMaybe<PayrollVersionHistoryResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPayrollVersionResultsArgs = {
+export type MutationRootBulkInsertPayrollVersionResultsArgs = {
   objects: Array<PayrollVersionResultsInsertInput>;
   onConflict?: InputMaybe<PayrollVersionResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPayrollsArgs = {
+export type MutationRootBulkInsertPayrollsArgs = {
   objects: Array<PayrollsInsertInput>;
   onConflict?: InputMaybe<PayrollsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPermissionAuditLogsArgs = {
+export type MutationRootBulkInsertPermissionAuditLogsArgs = {
   objects: Array<PermissionAuditLogsInsertInput>;
   onConflict?: InputMaybe<PermissionAuditLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPermissionChangesArgs = {
+export type MutationRootBulkInsertPermissionChangesArgs = {
   objects: Array<PermissionChangesInsertInput>;
   onConflict?: InputMaybe<PermissionChangesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPermissionOverridesArgs = {
+export type MutationRootBulkInsertPermissionOverridesArgs = {
   objects: Array<PermissionOverridesInsertInput>;
   onConflict?: InputMaybe<PermissionOverridesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertPermissionsArgs = {
+export type MutationRootBulkInsertPermissionsArgs = {
   objects: Array<PermissionsInsertInput>;
   onConflict?: InputMaybe<PermissionsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertResourcesArgs = {
+export type MutationRootBulkInsertResourcesArgs = {
   objects: Array<ResourcesInsertInput>;
   onConflict?: InputMaybe<ResourcesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertRolePermissionsArgs = {
+export type MutationRootBulkInsertRolePermissionsArgs = {
   objects: Array<RolePermissionsInsertInput>;
   onConflict?: InputMaybe<RolePermissionsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertRolesArgs = {
+export type MutationRootBulkInsertRolesArgs = {
   objects: Array<RolesInsertInput>;
   onConflict?: InputMaybe<RolesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertSlowQueriesArgs = {
+export type MutationRootBulkInsertSlowQueriesArgs = {
   objects: Array<SlowQueriesInsertInput>;
   onConflict?: InputMaybe<SlowQueriesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertUserAccessSummariesArgs = {
+export type MutationRootBulkInsertUserAccessSummariesArgs = {
   objects: Array<UserAccessSummariesInsertInput>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertUserInvitationsArgs = {
+export type MutationRootBulkInsertUserInvitationsArgs = {
   objects: Array<UserInvitationsInsertInput>;
   onConflict?: InputMaybe<UserInvitationsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertUserRolesArgs = {
+export type MutationRootBulkInsertUserRolesArgs = {
   objects: Array<UserRolesInsertInput>;
   onConflict?: InputMaybe<UserRolesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertUsersArgs = {
+export type MutationRootBulkInsertUsersArgs = {
   objects: Array<UsersInsertInput>;
   onConflict?: InputMaybe<UsersOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertUsersRoleBackupsArgs = {
+export type MutationRootBulkInsertUsersRoleBackupsArgs = {
   objects: Array<UsersRoleBackupInsertInput>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertUsersSyncArgs = {
+export type MutationRootBulkInsertUsersSyncArgs = {
   objects: Array<AuthUsersSyncInsertInput>;
   onConflict?: InputMaybe<AuthUsersSyncOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertWorkSchedulesArgs = {
+export type MutationRootBulkInsertWorkSchedulesArgs = {
   objects: Array<WorkSchedulesInsertInput>;
   onConflict?: InputMaybe<WorkSchedulesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateAdjustmentRulesArgs = {
+export type MutationRootBulkUpdateAdjustmentRulesArgs = {
   _set?: InputMaybe<AdjustmentRulesSetInput>;
   where: AdjustmentRulesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateAppSettingsArgs = {
+export type MutationRootBulkUpdateAppSettingsArgs = {
   _append?: InputMaybe<AppSettingsAppendInput>;
   _deleteAtPath?: InputMaybe<AppSettingsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AppSettingsDeleteElemInput>;
@@ -7655,7 +7656,7 @@ export type Mutation_RootBulkUpdateAppSettingsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateAuditLogsArgs = {
+export type MutationRootBulkUpdateAuditLogsArgs = {
   _append?: InputMaybe<AuditLogsAppendInput>;
   _deleteAtPath?: InputMaybe<AuditLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuditLogsDeleteElemInput>;
@@ -7667,7 +7668,7 @@ export type Mutation_RootBulkUpdateAuditLogsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateAuthEventsArgs = {
+export type MutationRootBulkUpdateAuthEventsArgs = {
   _append?: InputMaybe<AuthEventsAppendInput>;
   _deleteAtPath?: InputMaybe<AuthEventsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuthEventsDeleteElemInput>;
@@ -7679,14 +7680,14 @@ export type Mutation_RootBulkUpdateAuthEventsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateBillingEventLogsArgs = {
+export type MutationRootBulkUpdateBillingEventLogsArgs = {
   _set?: InputMaybe<BillingEventLogsSetInput>;
   where: BillingEventLogsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateBillingInvoiceArgs = {
+export type MutationRootBulkUpdateBillingInvoiceArgs = {
   _inc?: InputMaybe<BillingInvoiceIncInput>;
   _set?: InputMaybe<BillingInvoiceSetInput>;
   where: BillingInvoiceBoolExp;
@@ -7694,7 +7695,7 @@ export type Mutation_RootBulkUpdateBillingInvoiceArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateBillingItemsArgs = {
+export type MutationRootBulkUpdateBillingItemsArgs = {
   _inc?: InputMaybe<BillingItemsIncInput>;
   _set?: InputMaybe<BillingItemsSetInput>;
   where: BillingItemsBoolExp;
@@ -7702,7 +7703,7 @@ export type Mutation_RootBulkUpdateBillingItemsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateBillingPlansArgs = {
+export type MutationRootBulkUpdateBillingPlansArgs = {
   _inc?: InputMaybe<BillingPlansIncInput>;
   _set?: InputMaybe<BillingPlansSetInput>;
   where: BillingPlansBoolExp;
@@ -7710,28 +7711,28 @@ export type Mutation_RootBulkUpdateBillingPlansArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateClientBillingAssignmentsArgs = {
+export type MutationRootBulkUpdateClientBillingAssignmentsArgs = {
   _set?: InputMaybe<ClientBillingAssignmentsSetInput>;
   where: ClientBillingAssignmentsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateClientExternalSystemsArgs = {
+export type MutationRootBulkUpdateClientExternalSystemsArgs = {
   _set?: InputMaybe<ClientExternalSystemsSetInput>;
   where: ClientExternalSystemsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateClientsArgs = {
+export type MutationRootBulkUpdateClientsArgs = {
   _set?: InputMaybe<ClientsSetInput>;
   where: ClientsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateDataAccessLogsArgs = {
+export type MutationRootBulkUpdateDataAccessLogsArgs = {
   _append?: InputMaybe<DataAccessLogsAppendInput>;
   _deleteAtPath?: InputMaybe<DataAccessLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<DataAccessLogsDeleteElemInput>;
@@ -7744,14 +7745,14 @@ export type Mutation_RootBulkUpdateDataAccessLogsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateExternalSystemsArgs = {
+export type MutationRootBulkUpdateExternalSystemsArgs = {
   _set?: InputMaybe<ExternalSystemsSetInput>;
   where: ExternalSystemsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateFeatureFlagsArgs = {
+export type MutationRootBulkUpdateFeatureFlagsArgs = {
   _append?: InputMaybe<FeatureFlagsAppendInput>;
   _deleteAtPath?: InputMaybe<FeatureFlagsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<FeatureFlagsDeleteElemInput>;
@@ -7763,7 +7764,7 @@ export type Mutation_RootBulkUpdateFeatureFlagsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateHolidaysArgs = {
+export type MutationRootBulkUpdateHolidaysArgs = {
   _inc?: InputMaybe<HolidaysIncInput>;
   _set?: InputMaybe<HolidaysSetInput>;
   where: HolidaysBoolExp;
@@ -7771,7 +7772,7 @@ export type Mutation_RootBulkUpdateHolidaysArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateLatestPayrollVersionResultsArgs = {
+export type MutationRootBulkUpdateLatestPayrollVersionResultsArgs = {
   _inc?: InputMaybe<LatestPayrollVersionResultsIncInput>;
   _set?: InputMaybe<LatestPayrollVersionResultsSetInput>;
   where: LatestPayrollVersionResultsBoolExp;
@@ -7779,21 +7780,21 @@ export type Mutation_RootBulkUpdateLatestPayrollVersionResultsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateLeaveArgs = {
+export type MutationRootBulkUpdateLeaveArgs = {
   _set?: InputMaybe<LeaveSetInput>;
   where: LeaveBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateNotesArgs = {
+export type MutationRootBulkUpdateNotesArgs = {
   _set?: InputMaybe<NotesSetInput>;
   where: NotesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePayrollActivationResultsArgs = {
+export type MutationRootBulkUpdatePayrollActivationResultsArgs = {
   _inc?: InputMaybe<PayrollActivationResultsIncInput>;
   _set?: InputMaybe<PayrollActivationResultsSetInput>;
   where: PayrollActivationResultsBoolExp;
@@ -7801,42 +7802,42 @@ export type Mutation_RootBulkUpdatePayrollActivationResultsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePayrollAssignmentAuditsArgs = {
+export type MutationRootBulkUpdatePayrollAssignmentAuditsArgs = {
   _set?: InputMaybe<PayrollAssignmentAuditsSetInput>;
   where: PayrollAssignmentAuditsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePayrollAssignmentsArgs = {
+export type MutationRootBulkUpdatePayrollAssignmentsArgs = {
   _set?: InputMaybe<PayrollAssignmentsSetInput>;
   where: PayrollAssignmentsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePayrollCyclesArgs = {
+export type MutationRootBulkUpdatePayrollCyclesArgs = {
   _set?: InputMaybe<PayrollCyclesSetInput>;
   where: PayrollCyclesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePayrollDateTypesArgs = {
+export type MutationRootBulkUpdatePayrollDateTypesArgs = {
   _set?: InputMaybe<PayrollDateTypesSetInput>;
   where: PayrollDateTypesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePayrollDatesArgs = {
+export type MutationRootBulkUpdatePayrollDatesArgs = {
   _set?: InputMaybe<PayrollDatesSetInput>;
   where: PayrollDatesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePayrollVersionHistoryResultsArgs = {
+export type MutationRootBulkUpdatePayrollVersionHistoryResultsArgs = {
   _inc?: InputMaybe<PayrollVersionHistoryResultsIncInput>;
   _set?: InputMaybe<PayrollVersionHistoryResultsSetInput>;
   where: PayrollVersionHistoryResultsBoolExp;
@@ -7844,7 +7845,7 @@ export type Mutation_RootBulkUpdatePayrollVersionHistoryResultsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePayrollVersionResultsArgs = {
+export type MutationRootBulkUpdatePayrollVersionResultsArgs = {
   _inc?: InputMaybe<PayrollVersionResultsIncInput>;
   _set?: InputMaybe<PayrollVersionResultsSetInput>;
   where: PayrollVersionResultsBoolExp;
@@ -7852,7 +7853,7 @@ export type Mutation_RootBulkUpdatePayrollVersionResultsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePayrollsArgs = {
+export type MutationRootBulkUpdatePayrollsArgs = {
   _inc?: InputMaybe<PayrollsIncInput>;
   _set?: InputMaybe<PayrollsSetInput>;
   where: PayrollsBoolExp;
@@ -7860,7 +7861,7 @@ export type Mutation_RootBulkUpdatePayrollsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePermissionAuditLogsArgs = {
+export type MutationRootBulkUpdatePermissionAuditLogsArgs = {
   _append?: InputMaybe<PermissionAuditLogsAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionAuditLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionAuditLogsDeleteElemInput>;
@@ -7872,7 +7873,7 @@ export type Mutation_RootBulkUpdatePermissionAuditLogsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePermissionChangesArgs = {
+export type MutationRootBulkUpdatePermissionChangesArgs = {
   _append?: InputMaybe<PermissionChangesAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionChangesDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionChangesDeleteElemInput>;
@@ -7884,7 +7885,7 @@ export type Mutation_RootBulkUpdatePermissionChangesArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePermissionOverridesArgs = {
+export type MutationRootBulkUpdatePermissionOverridesArgs = {
   _append?: InputMaybe<PermissionOverridesAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionOverridesDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionOverridesDeleteElemInput>;
@@ -7896,21 +7897,21 @@ export type Mutation_RootBulkUpdatePermissionOverridesArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdatePermissionsArgs = {
+export type MutationRootBulkUpdatePermissionsArgs = {
   _set?: InputMaybe<PermissionsSetInput>;
   where: PermissionsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateResourcesArgs = {
+export type MutationRootBulkUpdateResourcesArgs = {
   _set?: InputMaybe<ResourcesSetInput>;
   where: ResourcesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateRolePermissionsArgs = {
+export type MutationRootBulkUpdateRolePermissionsArgs = {
   _append?: InputMaybe<RolePermissionsAppendInput>;
   _deleteAtPath?: InputMaybe<RolePermissionsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<RolePermissionsDeleteElemInput>;
@@ -7922,7 +7923,7 @@ export type Mutation_RootBulkUpdateRolePermissionsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateRolesArgs = {
+export type MutationRootBulkUpdateRolesArgs = {
   _inc?: InputMaybe<RolesIncInput>;
   _set?: InputMaybe<RolesSetInput>;
   where: RolesBoolExp;
@@ -7930,21 +7931,21 @@ export type Mutation_RootBulkUpdateRolesArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateSlowQueriesArgs = {
+export type MutationRootBulkUpdateSlowQueriesArgs = {
   _set?: InputMaybe<SlowQueriesSetInput>;
   where: SlowQueriesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateUserAccessSummariesArgs = {
+export type MutationRootBulkUpdateUserAccessSummariesArgs = {
   _set?: InputMaybe<UserAccessSummariesSetInput>;
   where: UserAccessSummariesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateUserInvitationsArgs = {
+export type MutationRootBulkUpdateUserInvitationsArgs = {
   _append?: InputMaybe<UserInvitationsAppendInput>;
   _deleteAtPath?: InputMaybe<UserInvitationsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<UserInvitationsDeleteElemInput>;
@@ -7956,28 +7957,28 @@ export type Mutation_RootBulkUpdateUserInvitationsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateUserRolesArgs = {
+export type MutationRootBulkUpdateUserRolesArgs = {
   _set?: InputMaybe<UserRolesSetInput>;
   where: UserRolesBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateUsersArgs = {
+export type MutationRootBulkUpdateUsersArgs = {
   _set?: InputMaybe<UsersSetInput>;
   where: UsersBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateUsersRoleBackupsArgs = {
+export type MutationRootBulkUpdateUsersRoleBackupsArgs = {
   _set?: InputMaybe<UsersRoleBackupSetInput>;
   where: UsersRoleBackupBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateUsersSyncArgs = {
+export type MutationRootBulkUpdateUsersSyncArgs = {
   _append?: InputMaybe<AuthUsersSyncAppendInput>;
   _deleteAtPath?: InputMaybe<AuthUsersSyncDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuthUsersSyncDeleteElemInput>;
@@ -7989,7 +7990,7 @@ export type Mutation_RootBulkUpdateUsersSyncArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateWorkSchedulesArgs = {
+export type MutationRootBulkUpdateWorkSchedulesArgs = {
   _inc?: InputMaybe<WorkSchedulesIncInput>;
   _set?: InputMaybe<WorkSchedulesSetInput>;
   where: WorkSchedulesBoolExp;
@@ -7997,577 +7998,577 @@ export type Mutation_RootBulkUpdateWorkSchedulesArgs = {
 
 
 /** mutation root */
-export type Mutation_RootCheckSuspiciousActivityArgs = {
+export type MutationRootCheckSuspiciousActivityArgs = {
   timeWindow?: InputMaybe<Scalars['Int']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 /** mutation root */
-export type Mutation_RootCommitPayrollAssignmentsArgs = {
+export type MutationRootCommitPayrollAssignmentsArgs = {
   changes: Array<PayrollAssignmentInput>;
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteAdjustmentRuleByIdArgs = {
+export type MutationRootDeleteAdjustmentRuleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteAppSettingByIdArgs = {
+export type MutationRootDeleteAppSettingByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteAuditLogByIdArgs = {
+export type MutationRootDeleteAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteAuthEventByIdArgs = {
+export type MutationRootDeleteAuthEventByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteBillingEventLogByIdArgs = {
+export type MutationRootDeleteBillingEventLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteBillingInvoiceByIdArgs = {
+export type MutationRootDeleteBillingInvoiceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteBillingItemByIdArgs = {
+export type MutationRootDeleteBillingItemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteBillingPlanByIdArgs = {
+export type MutationRootDeleteBillingPlanByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteClientBillingAssignmentByIdArgs = {
+export type MutationRootDeleteClientBillingAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteClientByIdArgs = {
+export type MutationRootDeleteClientByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteClientExternalSystemByIdArgs = {
+export type MutationRootDeleteClientExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteDataAccessLogByIdArgs = {
+export type MutationRootDeleteDataAccessLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteExternalSystemByIdArgs = {
+export type MutationRootDeleteExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteFeatureFlagByIdArgs = {
+export type MutationRootDeleteFeatureFlagByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteHolidayByIdArgs = {
+export type MutationRootDeleteHolidayByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteLatestPayrollVersionResultByIdArgs = {
+export type MutationRootDeleteLatestPayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteLeaveByIdArgs = {
+export type MutationRootDeleteLeaveByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteNoteByIdArgs = {
+export type MutationRootDeleteNoteByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePayrollActivationResultByIdArgs = {
+export type MutationRootDeletePayrollActivationResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePayrollAssignmentAuditByIdArgs = {
+export type MutationRootDeletePayrollAssignmentAuditByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePayrollAssignmentByIdArgs = {
+export type MutationRootDeletePayrollAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePayrollByIdArgs = {
+export type MutationRootDeletePayrollByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePayrollCycleByIdArgs = {
+export type MutationRootDeletePayrollCycleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePayrollDateByIdArgs = {
+export type MutationRootDeletePayrollDateByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePayrollDateTypeByIdArgs = {
+export type MutationRootDeletePayrollDateTypeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePayrollVersionHistoryResultByIdArgs = {
+export type MutationRootDeletePayrollVersionHistoryResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePayrollVersionResultByIdArgs = {
+export type MutationRootDeletePayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePermissionAuditLogByIdArgs = {
+export type MutationRootDeletePermissionAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePermissionByIdArgs = {
+export type MutationRootDeletePermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePermissionChangeByIdArgs = {
+export type MutationRootDeletePermissionChangeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeletePermissionOverrideByIdArgs = {
+export type MutationRootDeletePermissionOverrideByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteResourceByIdArgs = {
+export type MutationRootDeleteResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteRoleByIdArgs = {
+export type MutationRootDeleteRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteRolePermissionByIdArgs = {
+export type MutationRootDeleteRolePermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteSlowQueryByIdArgs = {
+export type MutationRootDeleteSlowQueryByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteUserByIdArgs = {
+export type MutationRootDeleteUserByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteUserInvitationByIdArgs = {
+export type MutationRootDeleteUserInvitationByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteUserRoleByIdArgs = {
+export type MutationRootDeleteUserRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteUserSyncByIdArgs = {
+export type MutationRootDeleteUserSyncByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootDeleteWorkScheduleByIdArgs = {
+export type MutationRootDeleteWorkScheduleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootGenerateComplianceReportArgs = {
+export type MutationRootGenerateComplianceReportArgs = {
   input: ComplianceReportInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertAdjustmentRuleArgs = {
+export type MutationRootInsertAdjustmentRuleArgs = {
   object: AdjustmentRulesInsertInput;
   onConflict?: InputMaybe<AdjustmentRulesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertAppSettingArgs = {
+export type MutationRootInsertAppSettingArgs = {
   object: AppSettingsInsertInput;
   onConflict?: InputMaybe<AppSettingsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertAuditLogArgs = {
+export type MutationRootInsertAuditLogArgs = {
   object: AuditLogsInsertInput;
   onConflict?: InputMaybe<AuditLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertAuthEventArgs = {
+export type MutationRootInsertAuthEventArgs = {
   object: AuthEventsInsertInput;
   onConflict?: InputMaybe<AuthEventsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertBillingEventLogArgs = {
+export type MutationRootInsertBillingEventLogArgs = {
   object: BillingEventLogsInsertInput;
   onConflict?: InputMaybe<BillingEventLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertBillingInvoiceArgs = {
+export type MutationRootInsertBillingInvoiceArgs = {
   object: BillingInvoiceInsertInput;
   onConflict?: InputMaybe<BillingInvoiceOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertBillingItemArgs = {
+export type MutationRootInsertBillingItemArgs = {
   object: BillingItemsInsertInput;
   onConflict?: InputMaybe<BillingItemsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertBillingPlanArgs = {
+export type MutationRootInsertBillingPlanArgs = {
   object: BillingPlansInsertInput;
   onConflict?: InputMaybe<BillingPlansOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertClientArgs = {
+export type MutationRootInsertClientArgs = {
   object: ClientsInsertInput;
   onConflict?: InputMaybe<ClientsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertClientBillingAssignmentArgs = {
+export type MutationRootInsertClientBillingAssignmentArgs = {
   object: ClientBillingAssignmentsInsertInput;
   onConflict?: InputMaybe<ClientBillingAssignmentsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertClientExternalSystemArgs = {
+export type MutationRootInsertClientExternalSystemArgs = {
   object: ClientExternalSystemsInsertInput;
   onConflict?: InputMaybe<ClientExternalSystemsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertDataAccessLogArgs = {
+export type MutationRootInsertDataAccessLogArgs = {
   object: DataAccessLogsInsertInput;
   onConflict?: InputMaybe<DataAccessLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertExternalSystemArgs = {
+export type MutationRootInsertExternalSystemArgs = {
   object: ExternalSystemsInsertInput;
   onConflict?: InputMaybe<ExternalSystemsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertFeatureFlagArgs = {
+export type MutationRootInsertFeatureFlagArgs = {
   object: FeatureFlagsInsertInput;
   onConflict?: InputMaybe<FeatureFlagsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertHolidayArgs = {
+export type MutationRootInsertHolidayArgs = {
   object: HolidaysInsertInput;
   onConflict?: InputMaybe<HolidaysOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertLatestPayrollVersionResultArgs = {
+export type MutationRootInsertLatestPayrollVersionResultArgs = {
   object: LatestPayrollVersionResultsInsertInput;
   onConflict?: InputMaybe<LatestPayrollVersionResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertLeaveArgs = {
+export type MutationRootInsertLeaveArgs = {
   object: LeaveInsertInput;
   onConflict?: InputMaybe<LeaveOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertNoteArgs = {
+export type MutationRootInsertNoteArgs = {
   object: NotesInsertInput;
   onConflict?: InputMaybe<NotesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPayrollArgs = {
+export type MutationRootInsertPayrollArgs = {
   object: PayrollsInsertInput;
   onConflict?: InputMaybe<PayrollsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPayrollActivationResultArgs = {
+export type MutationRootInsertPayrollActivationResultArgs = {
   object: PayrollActivationResultsInsertInput;
   onConflict?: InputMaybe<PayrollActivationResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPayrollAssignmentArgs = {
+export type MutationRootInsertPayrollAssignmentArgs = {
   object: PayrollAssignmentsInsertInput;
   onConflict?: InputMaybe<PayrollAssignmentsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPayrollAssignmentAuditArgs = {
+export type MutationRootInsertPayrollAssignmentAuditArgs = {
   object: PayrollAssignmentAuditsInsertInput;
   onConflict?: InputMaybe<PayrollAssignmentAuditsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPayrollCycleArgs = {
+export type MutationRootInsertPayrollCycleArgs = {
   object: PayrollCyclesInsertInput;
   onConflict?: InputMaybe<PayrollCyclesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPayrollDateArgs = {
+export type MutationRootInsertPayrollDateArgs = {
   object: PayrollDatesInsertInput;
   onConflict?: InputMaybe<PayrollDatesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPayrollDateTypeArgs = {
+export type MutationRootInsertPayrollDateTypeArgs = {
   object: PayrollDateTypesInsertInput;
   onConflict?: InputMaybe<PayrollDateTypesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPayrollVersionHistoryResultArgs = {
+export type MutationRootInsertPayrollVersionHistoryResultArgs = {
   object: PayrollVersionHistoryResultsInsertInput;
   onConflict?: InputMaybe<PayrollVersionHistoryResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPayrollVersionResultArgs = {
+export type MutationRootInsertPayrollVersionResultArgs = {
   object: PayrollVersionResultsInsertInput;
   onConflict?: InputMaybe<PayrollVersionResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPermissionArgs = {
+export type MutationRootInsertPermissionArgs = {
   object: PermissionsInsertInput;
   onConflict?: InputMaybe<PermissionsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPermissionAuditLogArgs = {
+export type MutationRootInsertPermissionAuditLogArgs = {
   object: PermissionAuditLogsInsertInput;
   onConflict?: InputMaybe<PermissionAuditLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPermissionChangeArgs = {
+export type MutationRootInsertPermissionChangeArgs = {
   object: PermissionChangesInsertInput;
   onConflict?: InputMaybe<PermissionChangesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertPermissionOverrideArgs = {
+export type MutationRootInsertPermissionOverrideArgs = {
   object: PermissionOverridesInsertInput;
   onConflict?: InputMaybe<PermissionOverridesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertResourceArgs = {
+export type MutationRootInsertResourceArgs = {
   object: ResourcesInsertInput;
   onConflict?: InputMaybe<ResourcesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertRoleArgs = {
+export type MutationRootInsertRoleArgs = {
   object: RolesInsertInput;
   onConflict?: InputMaybe<RolesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertRolePermissionArgs = {
+export type MutationRootInsertRolePermissionArgs = {
   object: RolePermissionsInsertInput;
   onConflict?: InputMaybe<RolePermissionsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertSlowQueryArgs = {
+export type MutationRootInsertSlowQueryArgs = {
   object: SlowQueriesInsertInput;
   onConflict?: InputMaybe<SlowQueriesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertUserArgs = {
+export type MutationRootInsertUserArgs = {
   object: UsersInsertInput;
   onConflict?: InputMaybe<UsersOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertUserAccessSummaryArgs = {
+export type MutationRootInsertUserAccessSummaryArgs = {
   object: UserAccessSummariesInsertInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertUserInvitationArgs = {
+export type MutationRootInsertUserInvitationArgs = {
   object: UserInvitationsInsertInput;
   onConflict?: InputMaybe<UserInvitationsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertUserRoleArgs = {
+export type MutationRootInsertUserRoleArgs = {
   object: UserRolesInsertInput;
   onConflict?: InputMaybe<UserRolesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertUserSyncArgs = {
+export type MutationRootInsertUserSyncArgs = {
   object: AuthUsersSyncInsertInput;
   onConflict?: InputMaybe<AuthUsersSyncOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertUsersRoleBackupArgs = {
+export type MutationRootInsertUsersRoleBackupArgs = {
   object: UsersRoleBackupInsertInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertWorkScheduleArgs = {
+export type MutationRootInsertWorkScheduleArgs = {
   object: WorkSchedulesInsertInput;
   onConflict?: InputMaybe<WorkSchedulesOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootLogAuditEventArgs = {
+export type MutationRootLogAuditEventArgs = {
   event: AuditEventInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateAdjustmentRuleByIdArgs = {
+export type MutationRootUpdateAdjustmentRuleByIdArgs = {
   _set?: InputMaybe<AdjustmentRulesSetInput>;
   pkColumns: AdjustmentRulesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateAdjustmentRulesManyArgs = {
+export type MutationRootUpdateAdjustmentRulesManyArgs = {
   updates: Array<AdjustmentRulesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateAppSettingByIdArgs = {
+export type MutationRootUpdateAppSettingByIdArgs = {
   _append?: InputMaybe<AppSettingsAppendInput>;
   _deleteAtPath?: InputMaybe<AppSettingsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AppSettingsDeleteElemInput>;
@@ -8579,13 +8580,13 @@ export type Mutation_RootUpdateAppSettingByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateAppSettingsManyArgs = {
+export type MutationRootUpdateAppSettingsManyArgs = {
   updates: Array<AppSettingsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateAuditLogByIdArgs = {
+export type MutationRootUpdateAuditLogByIdArgs = {
   _append?: InputMaybe<AuditLogsAppendInput>;
   _deleteAtPath?: InputMaybe<AuditLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuditLogsDeleteElemInput>;
@@ -8597,13 +8598,13 @@ export type Mutation_RootUpdateAuditLogByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateAuditLogsManyArgs = {
+export type MutationRootUpdateAuditLogsManyArgs = {
   updates: Array<AuditLogsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateAuthEventByIdArgs = {
+export type MutationRootUpdateAuthEventByIdArgs = {
   _append?: InputMaybe<AuthEventsAppendInput>;
   _deleteAtPath?: InputMaybe<AuthEventsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuthEventsDeleteElemInput>;
@@ -8615,32 +8616,32 @@ export type Mutation_RootUpdateAuthEventByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateAuthEventsManyArgs = {
+export type MutationRootUpdateAuthEventsManyArgs = {
   updates: Array<AuthEventsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateAuthUsersSyncManyArgs = {
+export type MutationRootUpdateAuthUsersSyncManyArgs = {
   updates: Array<AuthUsersSyncUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateBillingEventLogByIdArgs = {
+export type MutationRootUpdateBillingEventLogByIdArgs = {
   _set?: InputMaybe<BillingEventLogsSetInput>;
   pkColumns: BillingEventLogsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateBillingEventLogsManyArgs = {
+export type MutationRootUpdateBillingEventLogsManyArgs = {
   updates: Array<BillingEventLogsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateBillingInvoiceByIdArgs = {
+export type MutationRootUpdateBillingInvoiceByIdArgs = {
   _inc?: InputMaybe<BillingInvoiceIncInput>;
   _set?: InputMaybe<BillingInvoiceSetInput>;
   pkColumns: BillingInvoicePkColumnsInput;
@@ -8648,13 +8649,13 @@ export type Mutation_RootUpdateBillingInvoiceByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateBillingInvoiceManyArgs = {
+export type MutationRootUpdateBillingInvoiceManyArgs = {
   updates: Array<BillingInvoiceUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateBillingItemByIdArgs = {
+export type MutationRootUpdateBillingItemByIdArgs = {
   _inc?: InputMaybe<BillingItemsIncInput>;
   _set?: InputMaybe<BillingItemsSetInput>;
   pkColumns: BillingItemsPkColumnsInput;
@@ -8662,13 +8663,13 @@ export type Mutation_RootUpdateBillingItemByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateBillingItemsManyArgs = {
+export type MutationRootUpdateBillingItemsManyArgs = {
   updates: Array<BillingItemsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateBillingPlanByIdArgs = {
+export type MutationRootUpdateBillingPlanByIdArgs = {
   _inc?: InputMaybe<BillingPlansIncInput>;
   _set?: InputMaybe<BillingPlansSetInput>;
   pkColumns: BillingPlansPkColumnsInput;
@@ -8676,52 +8677,52 @@ export type Mutation_RootUpdateBillingPlanByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateBillingPlansManyArgs = {
+export type MutationRootUpdateBillingPlansManyArgs = {
   updates: Array<BillingPlansUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateClientBillingAssignmentByIdArgs = {
+export type MutationRootUpdateClientBillingAssignmentByIdArgs = {
   _set?: InputMaybe<ClientBillingAssignmentsSetInput>;
   pkColumns: ClientBillingAssignmentsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateClientBillingAssignmentsManyArgs = {
+export type MutationRootUpdateClientBillingAssignmentsManyArgs = {
   updates: Array<ClientBillingAssignmentsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateClientByIdArgs = {
+export type MutationRootUpdateClientByIdArgs = {
   _set?: InputMaybe<ClientsSetInput>;
   pkColumns: ClientsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateClientExternalSystemByIdArgs = {
+export type MutationRootUpdateClientExternalSystemByIdArgs = {
   _set?: InputMaybe<ClientExternalSystemsSetInput>;
   pkColumns: ClientExternalSystemsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateClientExternalSystemsManyArgs = {
+export type MutationRootUpdateClientExternalSystemsManyArgs = {
   updates: Array<ClientExternalSystemsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateClientsManyArgs = {
+export type MutationRootUpdateClientsManyArgs = {
   updates: Array<ClientsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateDataAccessLogByIdArgs = {
+export type MutationRootUpdateDataAccessLogByIdArgs = {
   _append?: InputMaybe<DataAccessLogsAppendInput>;
   _deleteAtPath?: InputMaybe<DataAccessLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<DataAccessLogsDeleteElemInput>;
@@ -8734,26 +8735,26 @@ export type Mutation_RootUpdateDataAccessLogByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateDataAccessLogsManyArgs = {
+export type MutationRootUpdateDataAccessLogsManyArgs = {
   updates: Array<DataAccessLogsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateExternalSystemByIdArgs = {
+export type MutationRootUpdateExternalSystemByIdArgs = {
   _set?: InputMaybe<ExternalSystemsSetInput>;
   pkColumns: ExternalSystemsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateExternalSystemsManyArgs = {
+export type MutationRootUpdateExternalSystemsManyArgs = {
   updates: Array<ExternalSystemsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateFeatureFlagByIdArgs = {
+export type MutationRootUpdateFeatureFlagByIdArgs = {
   _append?: InputMaybe<FeatureFlagsAppendInput>;
   _deleteAtPath?: InputMaybe<FeatureFlagsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<FeatureFlagsDeleteElemInput>;
@@ -8765,13 +8766,13 @@ export type Mutation_RootUpdateFeatureFlagByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateFeatureFlagsManyArgs = {
+export type MutationRootUpdateFeatureFlagsManyArgs = {
   updates: Array<FeatureFlagsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateHolidayByIdArgs = {
+export type MutationRootUpdateHolidayByIdArgs = {
   _inc?: InputMaybe<HolidaysIncInput>;
   _set?: InputMaybe<HolidaysSetInput>;
   pkColumns: HolidaysPkColumnsInput;
@@ -8779,13 +8780,13 @@ export type Mutation_RootUpdateHolidayByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateHolidaysManyArgs = {
+export type MutationRootUpdateHolidaysManyArgs = {
   updates: Array<HolidaysUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateLatestPayrollVersionResultByIdArgs = {
+export type MutationRootUpdateLatestPayrollVersionResultByIdArgs = {
   _inc?: InputMaybe<LatestPayrollVersionResultsIncInput>;
   _set?: InputMaybe<LatestPayrollVersionResultsSetInput>;
   pkColumns: LatestPayrollVersionResultsPkColumnsInput;
@@ -8793,39 +8794,39 @@ export type Mutation_RootUpdateLatestPayrollVersionResultByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateLatestPayrollVersionResultsManyArgs = {
+export type MutationRootUpdateLatestPayrollVersionResultsManyArgs = {
   updates: Array<LatestPayrollVersionResultsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateLeaveByIdArgs = {
+export type MutationRootUpdateLeaveByIdArgs = {
   _set?: InputMaybe<LeaveSetInput>;
   pkColumns: LeavePkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateLeaveManyArgs = {
+export type MutationRootUpdateLeaveManyArgs = {
   updates: Array<LeaveUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateNoteByIdArgs = {
+export type MutationRootUpdateNoteByIdArgs = {
   _set?: InputMaybe<NotesSetInput>;
   pkColumns: NotesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateNotesManyArgs = {
+export type MutationRootUpdateNotesManyArgs = {
   updates: Array<NotesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollActivationResultByIdArgs = {
+export type MutationRootUpdatePayrollActivationResultByIdArgs = {
   _inc?: InputMaybe<PayrollActivationResultsIncInput>;
   _set?: InputMaybe<PayrollActivationResultsSetInput>;
   pkColumns: PayrollActivationResultsPkColumnsInput;
@@ -8833,39 +8834,39 @@ export type Mutation_RootUpdatePayrollActivationResultByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollActivationResultsManyArgs = {
+export type MutationRootUpdatePayrollActivationResultsManyArgs = {
   updates: Array<PayrollActivationResultsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollAssignmentAuditByIdArgs = {
+export type MutationRootUpdatePayrollAssignmentAuditByIdArgs = {
   _set?: InputMaybe<PayrollAssignmentAuditsSetInput>;
   pkColumns: PayrollAssignmentAuditsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollAssignmentAuditsManyArgs = {
+export type MutationRootUpdatePayrollAssignmentAuditsManyArgs = {
   updates: Array<PayrollAssignmentAuditsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollAssignmentByIdArgs = {
+export type MutationRootUpdatePayrollAssignmentByIdArgs = {
   _set?: InputMaybe<PayrollAssignmentsSetInput>;
   pkColumns: PayrollAssignmentsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollAssignmentsManyArgs = {
+export type MutationRootUpdatePayrollAssignmentsManyArgs = {
   updates: Array<PayrollAssignmentsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollByIdArgs = {
+export type MutationRootUpdatePayrollByIdArgs = {
   _inc?: InputMaybe<PayrollsIncInput>;
   _set?: InputMaybe<PayrollsSetInput>;
   pkColumns: PayrollsPkColumnsInput;
@@ -8873,46 +8874,46 @@ export type Mutation_RootUpdatePayrollByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollCycleByIdArgs = {
+export type MutationRootUpdatePayrollCycleByIdArgs = {
   _set?: InputMaybe<PayrollCyclesSetInput>;
   pkColumns: PayrollCyclesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollCyclesManyArgs = {
+export type MutationRootUpdatePayrollCyclesManyArgs = {
   updates: Array<PayrollCyclesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollDateByIdArgs = {
+export type MutationRootUpdatePayrollDateByIdArgs = {
   _set?: InputMaybe<PayrollDatesSetInput>;
   pkColumns: PayrollDatesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollDateTypeByIdArgs = {
+export type MutationRootUpdatePayrollDateTypeByIdArgs = {
   _set?: InputMaybe<PayrollDateTypesSetInput>;
   pkColumns: PayrollDateTypesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollDateTypesManyArgs = {
+export type MutationRootUpdatePayrollDateTypesManyArgs = {
   updates: Array<PayrollDateTypesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollDatesManyArgs = {
+export type MutationRootUpdatePayrollDatesManyArgs = {
   updates: Array<PayrollDatesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollVersionHistoryResultByIdArgs = {
+export type MutationRootUpdatePayrollVersionHistoryResultByIdArgs = {
   _inc?: InputMaybe<PayrollVersionHistoryResultsIncInput>;
   _set?: InputMaybe<PayrollVersionHistoryResultsSetInput>;
   pkColumns: PayrollVersionHistoryResultsPkColumnsInput;
@@ -8920,13 +8921,13 @@ export type Mutation_RootUpdatePayrollVersionHistoryResultByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollVersionHistoryResultsManyArgs = {
+export type MutationRootUpdatePayrollVersionHistoryResultsManyArgs = {
   updates: Array<PayrollVersionHistoryResultsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollVersionResultByIdArgs = {
+export type MutationRootUpdatePayrollVersionResultByIdArgs = {
   _inc?: InputMaybe<PayrollVersionResultsIncInput>;
   _set?: InputMaybe<PayrollVersionResultsSetInput>;
   pkColumns: PayrollVersionResultsPkColumnsInput;
@@ -8934,19 +8935,19 @@ export type Mutation_RootUpdatePayrollVersionResultByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollVersionResultsManyArgs = {
+export type MutationRootUpdatePayrollVersionResultsManyArgs = {
   updates: Array<PayrollVersionResultsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePayrollsManyArgs = {
+export type MutationRootUpdatePayrollsManyArgs = {
   updates: Array<PayrollsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePermissionAuditLogByIdArgs = {
+export type MutationRootUpdatePermissionAuditLogByIdArgs = {
   _append?: InputMaybe<PermissionAuditLogsAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionAuditLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionAuditLogsDeleteElemInput>;
@@ -8958,20 +8959,20 @@ export type Mutation_RootUpdatePermissionAuditLogByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdatePermissionAuditLogsManyArgs = {
+export type MutationRootUpdatePermissionAuditLogsManyArgs = {
   updates: Array<PermissionAuditLogsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePermissionByIdArgs = {
+export type MutationRootUpdatePermissionByIdArgs = {
   _set?: InputMaybe<PermissionsSetInput>;
   pkColumns: PermissionsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePermissionChangeByIdArgs = {
+export type MutationRootUpdatePermissionChangeByIdArgs = {
   _append?: InputMaybe<PermissionChangesAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionChangesDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionChangesDeleteElemInput>;
@@ -8983,13 +8984,13 @@ export type Mutation_RootUpdatePermissionChangeByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdatePermissionChangesManyArgs = {
+export type MutationRootUpdatePermissionChangesManyArgs = {
   updates: Array<PermissionChangesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePermissionOverrideByIdArgs = {
+export type MutationRootUpdatePermissionOverrideByIdArgs = {
   _append?: InputMaybe<PermissionOverridesAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionOverridesDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionOverridesDeleteElemInput>;
@@ -9001,32 +9002,32 @@ export type Mutation_RootUpdatePermissionOverrideByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdatePermissionOverridesManyArgs = {
+export type MutationRootUpdatePermissionOverridesManyArgs = {
   updates: Array<PermissionOverridesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdatePermissionsManyArgs = {
+export type MutationRootUpdatePermissionsManyArgs = {
   updates: Array<PermissionsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateResourceByIdArgs = {
+export type MutationRootUpdateResourceByIdArgs = {
   _set?: InputMaybe<ResourcesSetInput>;
   pkColumns: ResourcesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateResourcesManyArgs = {
+export type MutationRootUpdateResourcesManyArgs = {
   updates: Array<ResourcesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateRoleByIdArgs = {
+export type MutationRootUpdateRoleByIdArgs = {
   _inc?: InputMaybe<RolesIncInput>;
   _set?: InputMaybe<RolesSetInput>;
   pkColumns: RolesPkColumnsInput;
@@ -9034,7 +9035,7 @@ export type Mutation_RootUpdateRoleByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateRolePermissionByIdArgs = {
+export type MutationRootUpdateRolePermissionByIdArgs = {
   _append?: InputMaybe<RolePermissionsAppendInput>;
   _deleteAtPath?: InputMaybe<RolePermissionsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<RolePermissionsDeleteElemInput>;
@@ -9046,45 +9047,45 @@ export type Mutation_RootUpdateRolePermissionByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateRolePermissionsManyArgs = {
+export type MutationRootUpdateRolePermissionsManyArgs = {
   updates: Array<RolePermissionsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateRolesManyArgs = {
+export type MutationRootUpdateRolesManyArgs = {
   updates: Array<RolesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateSlowQueriesManyArgs = {
+export type MutationRootUpdateSlowQueriesManyArgs = {
   updates: Array<SlowQueriesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateSlowQueryByIdArgs = {
+export type MutationRootUpdateSlowQueryByIdArgs = {
   _set?: InputMaybe<SlowQueriesSetInput>;
   pkColumns: SlowQueriesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateUserAccessSummariesManyArgs = {
+export type MutationRootUpdateUserAccessSummariesManyArgs = {
   updates: Array<UserAccessSummariesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateUserByIdArgs = {
+export type MutationRootUpdateUserByIdArgs = {
   _set?: InputMaybe<UsersSetInput>;
   pkColumns: UsersPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateUserInvitationByIdArgs = {
+export type MutationRootUpdateUserInvitationByIdArgs = {
   _append?: InputMaybe<UserInvitationsAppendInput>;
   _deleteAtPath?: InputMaybe<UserInvitationsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<UserInvitationsDeleteElemInput>;
@@ -9096,26 +9097,26 @@ export type Mutation_RootUpdateUserInvitationByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateUserInvitationsManyArgs = {
+export type MutationRootUpdateUserInvitationsManyArgs = {
   updates: Array<UserInvitationsUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateUserRoleByIdArgs = {
+export type MutationRootUpdateUserRoleByIdArgs = {
   _set?: InputMaybe<UserRolesSetInput>;
   pkColumns: UserRolesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateUserRolesManyArgs = {
+export type MutationRootUpdateUserRolesManyArgs = {
   updates: Array<UserRolesUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateUserSyncByIdArgs = {
+export type MutationRootUpdateUserSyncByIdArgs = {
   _append?: InputMaybe<AuthUsersSyncAppendInput>;
   _deleteAtPath?: InputMaybe<AuthUsersSyncDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuthUsersSyncDeleteElemInput>;
@@ -9127,19 +9128,19 @@ export type Mutation_RootUpdateUserSyncByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateUsersManyArgs = {
+export type MutationRootUpdateUsersManyArgs = {
   updates: Array<UsersUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateUsersRoleBackupManyArgs = {
+export type MutationRootUpdateUsersRoleBackupManyArgs = {
   updates: Array<UsersRoleBackupUpdates>;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateWorkScheduleByIdArgs = {
+export type MutationRootUpdateWorkScheduleByIdArgs = {
   _inc?: InputMaybe<WorkSchedulesIncInput>;
   _set?: InputMaybe<WorkSchedulesSetInput>;
   pkColumns: WorkSchedulesPkColumnsInput;
@@ -9147,7 +9148,7 @@ export type Mutation_RootUpdateWorkScheduleByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateWorkSchedulesManyArgs = {
+export type MutationRootUpdateWorkSchedulesManyArgs = {
   updates: Array<WorkSchedulesUpdates>;
 };
 
@@ -9230,20 +9231,20 @@ export type NotesAggregate = {
 };
 
 export type NotesAggregateBoolExp = {
-  bool_and?: InputMaybe<NotesAggregateBoolExpBool_And>;
-  bool_or?: InputMaybe<NotesAggregateBoolExpBool_Or>;
+  bool_and?: InputMaybe<NotesAggregateBoolExpBoolAnd>;
+  bool_or?: InputMaybe<NotesAggregateBoolExpBoolOr>;
   count?: InputMaybe<NotesAggregateBoolExpCount>;
 };
 
-export type NotesAggregateBoolExpBool_And = {
-  arguments: NotesSelectColumnNotesAggregateBoolExpBool_AndArgumentsColumns;
+export type NotesAggregateBoolExpBoolAnd = {
+  arguments: NotesSelectColumnNotesAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<NotesBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type NotesAggregateBoolExpBool_Or = {
-  arguments: NotesSelectColumnNotesAggregateBoolExpBool_OrArgumentsColumns;
+export type NotesAggregateBoolExpBoolOr = {
+  arguments: NotesSelectColumnNotesAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<NotesBoolExp>;
   predicate: BooleanComparisonExp;
@@ -9308,7 +9309,7 @@ export type NotesBoolExp = {
 /** unique or primary key constraints on table "notes" */
 export enum NotesConstraint {
   /** unique or primary key constraint on columns "id" */
-  NotesPkey = 'notes_pkey'
+  notes_pkey = 'notes_pkey'
 }
 
 /** input type for inserting data into table "notes" */
@@ -9448,33 +9449,33 @@ export type NotesPkColumnsInput = {
 /** select columns of table "notes" */
 export enum NotesSelectColumn {
   /** column name */
-  Content = 'content',
+  content = 'content',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  EntityId = 'entityId',
+  entityId = 'entityId',
   /** column name */
-  EntityType = 'entityType',
+  entityType = 'entityType',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsImportant = 'isImportant',
+  isImportant = 'isImportant',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 /** select "notesAggregateBoolExpBool_andArgumentsColumns" columns of table "notes" */
-export enum NotesSelectColumnNotesAggregateBoolExpBool_AndArgumentsColumns {
+export enum NotesSelectColumnNotesAggregateBoolExpBoolAndArgumentsColumns {
   /** column name */
-  IsImportant = 'isImportant'
+  isImportant = 'isImportant'
 }
 
 /** select "notesAggregateBoolExpBool_orArgumentsColumns" columns of table "notes" */
-export enum NotesSelectColumnNotesAggregateBoolExpBool_OrArgumentsColumns {
+export enum NotesSelectColumnNotesAggregateBoolExpBoolOrArgumentsColumns {
   /** column name */
-  IsImportant = 'isImportant'
+  isImportant = 'isImportant'
 }
 
 /** input type for updating data in table "notes" */
@@ -9528,21 +9529,21 @@ export type NotesStreamCursorValueInput = {
 /** update columns of table "notes" */
 export enum NotesUpdateColumn {
   /** column name */
-  Content = 'content',
+  content = 'content',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  EntityId = 'entityId',
+  entityId = 'entityId',
   /** column name */
-  EntityType = 'entityType',
+  entityType = 'entityType',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsImportant = 'isImportant',
+  isImportant = 'isImportant',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 export type NotesUpdates = {
@@ -9612,7 +9613,7 @@ export type PayrollActivationResultsBoolExp = {
 /** unique or primary key constraints on table "payroll_activation_results" */
 export enum PayrollActivationResultsConstraint {
   /** unique or primary key constraint on columns "id" */
-  PayrollActivationResultsPkey = 'payroll_activation_results_pkey'
+  payroll_activation_results_pkey = 'payroll_activation_results_pkey'
 }
 
 /** input type for incrementing numeric columns in table "payroll_activation_results" */
@@ -9682,15 +9683,15 @@ export type PayrollActivationResultsPkColumnsInput = {
 /** select columns of table "payroll_activation_results" */
 export enum PayrollActivationResultsSelectColumn {
   /** column name */
-  ActionTaken = 'actionTaken',
+  actionTaken = 'actionTaken',
   /** column name */
-  ExecutedAt = 'executedAt',
+  executedAt = 'executedAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  PayrollId = 'payrollId',
+  payrollId = 'payrollId',
   /** column name */
-  VersionNumber = 'versionNumber'
+  versionNumber = 'versionNumber'
 }
 
 /** input type for updating data in table "payroll_activation_results" */
@@ -9746,15 +9747,15 @@ export type PayrollActivationResultsSumFields = {
 /** update columns of table "payroll_activation_results" */
 export enum PayrollActivationResultsUpdateColumn {
   /** column name */
-  ActionTaken = 'actionTaken',
+  actionTaken = 'actionTaken',
   /** column name */
-  ExecutedAt = 'executedAt',
+  executedAt = 'executedAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  PayrollId = 'payrollId',
+  payrollId = 'payrollId',
   /** column name */
-  VersionNumber = 'versionNumber'
+  versionNumber = 'versionNumber'
 }
 
 export type PayrollActivationResultsUpdates = {
@@ -9877,7 +9878,7 @@ export type PayrollAssignmentAuditsBoolExp = {
 /** unique or primary key constraints on table "payroll_assignment_audit" */
 export enum PayrollAssignmentAuditsConstraint {
   /** unique or primary key constraint on columns "id" */
-  PayrollAssignmentAuditPkey = 'payroll_assignment_audit_pkey'
+  payroll_assignment_audit_pkey = 'payroll_assignment_audit_pkey'
 }
 
 /** input type for inserting data into table "payroll_assignment_audit" */
@@ -9988,21 +9989,21 @@ export type PayrollAssignmentAuditsPkColumnsInput = {
 /** select columns of table "payroll_assignment_audit" */
 export enum PayrollAssignmentAuditsSelectColumn {
   /** column name */
-  AssignmentId = 'assignmentId',
+  assignmentId = 'assignmentId',
   /** column name */
-  ChangeReason = 'changeReason',
+  changeReason = 'changeReason',
   /** column name */
-  ChangedBy = 'changedBy',
+  changedBy = 'changedBy',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  FromConsultantId = 'fromConsultantId',
+  fromConsultantId = 'fromConsultantId',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  PayrollDateId = 'payrollDateId',
+  payrollDateId = 'payrollDateId',
   /** column name */
-  ToConsultantId = 'toConsultantId'
+  toConsultantId = 'toConsultantId'
 }
 
 /** input type for updating data in table "payroll_assignment_audit" */
@@ -10040,21 +10041,21 @@ export type PayrollAssignmentAuditsStreamCursorValueInput = {
 /** update columns of table "payroll_assignment_audit" */
 export enum PayrollAssignmentAuditsUpdateColumn {
   /** column name */
-  AssignmentId = 'assignmentId',
+  assignmentId = 'assignmentId',
   /** column name */
-  ChangeReason = 'changeReason',
+  changeReason = 'changeReason',
   /** column name */
-  ChangedBy = 'changedBy',
+  changedBy = 'changedBy',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  FromConsultantId = 'fromConsultantId',
+  fromConsultantId = 'fromConsultantId',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  PayrollDateId = 'payrollDateId',
+  payrollDateId = 'payrollDateId',
   /** column name */
-  ToConsultantId = 'toConsultantId'
+  toConsultantId = 'toConsultantId'
 }
 
 export type PayrollAssignmentAuditsUpdates = {
@@ -10118,20 +10119,20 @@ export type PayrollAssignmentsAggregate = {
 };
 
 export type PayrollAssignmentsAggregateBoolExp = {
-  bool_and?: InputMaybe<PayrollAssignmentsAggregateBoolExpBool_And>;
-  bool_or?: InputMaybe<PayrollAssignmentsAggregateBoolExpBool_Or>;
+  bool_and?: InputMaybe<PayrollAssignmentsAggregateBoolExpBoolAnd>;
+  bool_or?: InputMaybe<PayrollAssignmentsAggregateBoolExpBoolOr>;
   count?: InputMaybe<PayrollAssignmentsAggregateBoolExpCount>;
 };
 
-export type PayrollAssignmentsAggregateBoolExpBool_And = {
-  arguments: PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBool_AndArgumentsColumns;
+export type PayrollAssignmentsAggregateBoolExpBoolAnd = {
+  arguments: PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type PayrollAssignmentsAggregateBoolExpBool_Or = {
-  arguments: PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBool_OrArgumentsColumns;
+export type PayrollAssignmentsAggregateBoolExpBoolOr = {
+  arguments: PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
@@ -10198,9 +10199,9 @@ export type PayrollAssignmentsBoolExp = {
 /** unique or primary key constraints on table "payroll_assignments" */
 export enum PayrollAssignmentsConstraint {
   /** unique or primary key constraint on columns "id" */
-  PayrollAssignmentsPkey = 'payroll_assignments_pkey',
+  payroll_assignments_pkey = 'payroll_assignments_pkey',
   /** unique or primary key constraint on columns "payroll_date_id" */
-  UqPayrollAssignmentPayrollDate = 'uq_payroll_assignment_payroll_date'
+  uq_payroll_assignment_payroll_date = 'uq_payroll_assignment_payroll_date'
 }
 
 /** input type for inserting data into table "payroll_assignments" */
@@ -10320,35 +10321,35 @@ export type PayrollAssignmentsPkColumnsInput = {
 /** select columns of table "payroll_assignments" */
 export enum PayrollAssignmentsSelectColumn {
   /** column name */
-  AssignedBy = 'assignedBy',
+  assignedBy = 'assignedBy',
   /** column name */
-  AssignedDate = 'assignedDate',
+  assignedDate = 'assignedDate',
   /** column name */
-  ConsultantId = 'consultantId',
+  consultantId = 'consultantId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsBackup = 'isBackup',
+  isBackup = 'isBackup',
   /** column name */
-  OriginalConsultantId = 'originalConsultantId',
+  originalConsultantId = 'originalConsultantId',
   /** column name */
-  PayrollDateId = 'payrollDateId',
+  payrollDateId = 'payrollDateId',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** select "payrollAssignmentsAggregateBoolExpBool_andArgumentsColumns" columns of table "payroll_assignments" */
-export enum PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBool_AndArgumentsColumns {
+export enum PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBoolAndArgumentsColumns {
   /** column name */
-  IsBackup = 'isBackup'
+  isBackup = 'isBackup'
 }
 
 /** select "payrollAssignmentsAggregateBoolExpBool_orArgumentsColumns" columns of table "payroll_assignments" */
-export enum PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBool_OrArgumentsColumns {
+export enum PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBoolOrArgumentsColumns {
   /** column name */
-  IsBackup = 'isBackup'
+  isBackup = 'isBackup'
 }
 
 /** input type for updating data in table "payroll_assignments" */
@@ -10388,23 +10389,23 @@ export type PayrollAssignmentsStreamCursorValueInput = {
 /** update columns of table "payroll_assignments" */
 export enum PayrollAssignmentsUpdateColumn {
   /** column name */
-  AssignedBy = 'assignedBy',
+  assignedBy = 'assignedBy',
   /** column name */
-  AssignedDate = 'assignedDate',
+  assignedDate = 'assignedDate',
   /** column name */
-  ConsultantId = 'consultantId',
+  consultantId = 'consultantId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsBackup = 'isBackup',
+  isBackup = 'isBackup',
   /** column name */
-  OriginalConsultantId = 'originalConsultantId',
+  originalConsultantId = 'originalConsultantId',
   /** column name */
-  PayrollDateId = 'payrollDateId',
+  payrollDateId = 'payrollDateId',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type PayrollAssignmentsUpdates = {
@@ -10518,9 +10519,9 @@ export type PayrollCyclesBoolExp = {
 /** unique or primary key constraints on table "payroll_cycles" */
 export enum PayrollCyclesConstraint {
   /** unique or primary key constraint on columns "name" */
-  PayrollCyclesNameKey = 'payroll_cycles_name_key',
+  payroll_cycles_name_key = 'payroll_cycles_name_key',
   /** unique or primary key constraint on columns "id" */
-  PayrollCyclesPkey = 'payroll_cycles_pkey'
+  payroll_cycles_pkey = 'payroll_cycles_pkey'
 }
 
 /** input type for inserting data into table "payroll_cycles" */
@@ -10612,15 +10613,15 @@ export type PayrollCyclesPkColumnsInput = {
 /** select columns of table "payroll_cycles" */
 export enum PayrollCyclesSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "payroll_cycles" */
@@ -10662,15 +10663,15 @@ export type PayrollCyclesStreamCursorValueInput = {
 /** update columns of table "payroll_cycles" */
 export enum PayrollCyclesUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type PayrollCyclesUpdates = {
@@ -10807,29 +10808,29 @@ export type PayrollDashboardStatsOrderBy = {
 /** select columns of table "payroll_dashboard_stats" */
 export enum PayrollDashboardStatsSelectColumn {
   /** column name */
-  BackupConsultantUserId = 'backupConsultantUserId',
+  backupConsultantUserId = 'backupConsultantUserId',
   /** column name */
-  ClientName = 'clientName',
+  clientName = 'clientName',
   /** column name */
-  CycleName = 'cycleName',
+  cycleName = 'cycleName',
   /** column name */
-  FutureDates = 'futureDates',
+  futureDates = 'futureDates',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  ManagerUserId = 'managerUserId',
+  managerUserId = 'managerUserId',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  NextEftDate = 'nextEftDate',
+  nextEftDate = 'nextEftDate',
   /** column name */
-  PastDates = 'pastDates',
+  pastDates = 'pastDates',
   /** column name */
-  PrimaryConsultantUserId = 'primaryConsultantUserId',
+  primaryConsultantUserId = 'primaryConsultantUserId',
   /** column name */
-  Status = 'status',
+  status = 'status',
   /** column name */
-  TotalDates = 'totalDates'
+  totalDates = 'totalDates'
 }
 
 /** aggregate stddev on columns */
@@ -11016,9 +11017,9 @@ export type PayrollDateTypesBoolExp = {
 /** unique or primary key constraints on table "payroll_date_types" */
 export enum PayrollDateTypesConstraint {
   /** unique or primary key constraint on columns "name" */
-  PayrollDateTypesNameKey = 'payroll_date_types_name_key',
+  payroll_date_types_name_key = 'payroll_date_types_name_key',
   /** unique or primary key constraint on columns "id" */
-  PayrollDateTypesPkey = 'payroll_date_types_pkey'
+  payroll_date_types_pkey = 'payroll_date_types_pkey'
 }
 
 /** input type for inserting data into table "payroll_date_types" */
@@ -11110,15 +11111,15 @@ export type PayrollDateTypesPkColumnsInput = {
 /** select columns of table "payroll_date_types" */
 export enum PayrollDateTypesSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "payroll_date_types" */
@@ -11160,15 +11161,15 @@ export type PayrollDateTypesStreamCursorValueInput = {
 /** update columns of table "payroll_date_types" */
 export enum PayrollDateTypesUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type PayrollDateTypesUpdates = {
@@ -11296,9 +11297,9 @@ export type PayrollDatesBoolExp = {
 /** unique or primary key constraints on table "payroll_dates" */
 export enum PayrollDatesConstraint {
   /** unique or primary key constraint on columns "original_eft_date", "payroll_id" */
-  IdxUniquePayrollDate = 'idx_unique_payroll_date',
+  idx_unique_payroll_date = 'idx_unique_payroll_date',
   /** unique or primary key constraint on columns "id" */
-  PayrollDatesPkey = 'payroll_dates_pkey'
+  payroll_dates_pkey = 'payroll_dates_pkey'
 }
 
 /** input type for inserting data into table "payroll_dates" */
@@ -11453,21 +11454,21 @@ export type PayrollDatesPkColumnsInput = {
 /** select columns of table "payroll_dates" */
 export enum PayrollDatesSelectColumn {
   /** column name */
-  AdjustedEftDate = 'adjustedEftDate',
+  adjustedEftDate = 'adjustedEftDate',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Notes = 'notes',
+  notes = 'notes',
   /** column name */
-  OriginalEftDate = 'originalEftDate',
+  originalEftDate = 'originalEftDate',
   /** column name */
-  PayrollId = 'payrollId',
+  payrollId = 'payrollId',
   /** column name */
-  ProcessingDate = 'processingDate',
+  processingDate = 'processingDate',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "payroll_dates" */
@@ -11521,21 +11522,21 @@ export type PayrollDatesStreamCursorValueInput = {
 /** update columns of table "payroll_dates" */
 export enum PayrollDatesUpdateColumn {
   /** column name */
-  AdjustedEftDate = 'adjustedEftDate',
+  adjustedEftDate = 'adjustedEftDate',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Notes = 'notes',
+  notes = 'notes',
   /** column name */
-  OriginalEftDate = 'originalEftDate',
+  originalEftDate = 'originalEftDate',
   /** column name */
-  PayrollId = 'payrollId',
+  payrollId = 'payrollId',
   /** column name */
-  ProcessingDate = 'processingDate',
+  processingDate = 'processingDate',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type PayrollDatesUpdates = {
@@ -11617,15 +11618,15 @@ export type PayrollTriggersStatusOrderBy = {
 /** select columns of table "payroll_triggers_status" */
 export enum PayrollTriggersStatusSelectColumn {
   /** column name */
-  ActionStatement = 'actionStatement',
+  actionStatement = 'actionStatement',
   /** column name */
-  ActionTiming = 'actionTiming',
+  actionTiming = 'actionTiming',
   /** column name */
-  EventManipulation = 'eventManipulation',
+  eventManipulation = 'eventManipulation',
   /** column name */
-  EventObjectTable = 'eventObjectTable',
+  eventObjectTable = 'eventObjectTable',
   /** column name */
-  TriggerName = 'triggerName'
+  triggerName = 'triggerName'
 }
 
 /** Streaming cursor of the table "payrollTriggersStatus" */
@@ -11715,7 +11716,7 @@ export type PayrollVersionHistoryResultsBoolExp = {
 /** unique or primary key constraints on table "payroll_version_history_results" */
 export enum PayrollVersionHistoryResultsConstraint {
   /** unique or primary key constraint on columns "id" */
-  PayrollVersionHistoryResultsPkey = 'payroll_version_history_results_pkey'
+  payroll_version_history_results_pkey = 'payroll_version_history_results_pkey'
 }
 
 /** input type for incrementing numeric columns in table "payroll_version_history_results" */
@@ -11801,25 +11802,25 @@ export type PayrollVersionHistoryResultsPkColumnsInput = {
 /** select columns of table "payroll_version_history_results" */
 export enum PayrollVersionHistoryResultsSelectColumn {
   /** column name */
-  Active = 'active',
+  active = 'active',
   /** column name */
-  GoLiveDate = 'goLiveDate',
+  goLiveDate = 'goLiveDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsCurrent = 'isCurrent',
+  isCurrent = 'isCurrent',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  PayrollId = 'payrollId',
+  payrollId = 'payrollId',
   /** column name */
-  QueriedAt = 'queriedAt',
+  queriedAt = 'queriedAt',
   /** column name */
-  SupersededDate = 'supersededDate',
+  supersededDate = 'supersededDate',
   /** column name */
-  VersionNumber = 'versionNumber',
+  versionNumber = 'versionNumber',
   /** column name */
-  VersionReason = 'versionReason'
+  versionReason = 'versionReason'
 }
 
 /** input type for updating data in table "payroll_version_history_results" */
@@ -11885,25 +11886,25 @@ export type PayrollVersionHistoryResultsSumFields = {
 /** update columns of table "payroll_version_history_results" */
 export enum PayrollVersionHistoryResultsUpdateColumn {
   /** column name */
-  Active = 'active',
+  active = 'active',
   /** column name */
-  GoLiveDate = 'goLiveDate',
+  goLiveDate = 'goLiveDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsCurrent = 'isCurrent',
+  isCurrent = 'isCurrent',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  PayrollId = 'payrollId',
+  payrollId = 'payrollId',
   /** column name */
-  QueriedAt = 'queriedAt',
+  queriedAt = 'queriedAt',
   /** column name */
-  SupersededDate = 'supersededDate',
+  supersededDate = 'supersededDate',
   /** column name */
-  VersionNumber = 'versionNumber',
+  versionNumber = 'versionNumber',
   /** column name */
-  VersionReason = 'versionReason'
+  versionReason = 'versionReason'
 }
 
 export type PayrollVersionHistoryResultsUpdates = {
@@ -12000,7 +12001,7 @@ export type PayrollVersionResultsBoolExp = {
 /** unique or primary key constraints on table "payroll_version_results" */
 export enum PayrollVersionResultsConstraint {
   /** unique or primary key constraint on columns "id" */
-  PayrollVersionResultsPkey = 'payroll_version_results_pkey'
+  payroll_version_results_pkey = 'payroll_version_results_pkey'
 }
 
 /** input type for incrementing numeric columns in table "payroll_version_results" */
@@ -12083,21 +12084,21 @@ export type PayrollVersionResultsPkColumnsInput = {
 /** select columns of table "payroll_version_results" */
 export enum PayrollVersionResultsSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CreatedByUserId = 'createdByUserId',
+  createdByUserId = 'createdByUserId',
   /** column name */
-  DatesDeleted = 'datesDeleted',
+  datesDeleted = 'datesDeleted',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Message = 'message',
+  message = 'message',
   /** column name */
-  NewPayrollId = 'newPayrollId',
+  newPayrollId = 'newPayrollId',
   /** column name */
-  NewVersionNumber = 'newVersionNumber',
+  newVersionNumber = 'newVersionNumber',
   /** column name */
-  OldPayrollId = 'oldPayrollId'
+  oldPayrollId = 'oldPayrollId'
 }
 
 /** input type for updating data in table "payroll_version_results" */
@@ -12163,21 +12164,21 @@ export type PayrollVersionResultsSumFields = {
 /** update columns of table "payroll_version_results" */
 export enum PayrollVersionResultsUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CreatedByUserId = 'createdByUserId',
+  createdByUserId = 'createdByUserId',
   /** column name */
-  DatesDeleted = 'datesDeleted',
+  datesDeleted = 'datesDeleted',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Message = 'message',
+  message = 'message',
   /** column name */
-  NewPayrollId = 'newPayrollId',
+  newPayrollId = 'newPayrollId',
   /** column name */
-  NewVersionNumber = 'newVersionNumber',
+  newVersionNumber = 'newVersionNumber',
   /** column name */
-  OldPayrollId = 'oldPayrollId'
+  oldPayrollId = 'oldPayrollId'
 }
 
 export type PayrollVersionResultsUpdates = {
@@ -12475,9 +12476,9 @@ export type PayrollsBoolExp = {
 /** unique or primary key constraints on table "payrolls" */
 export enum PayrollsConstraint {
   /** unique or primary key constraint on columns  */
-  OnlyOneCurrentVersionPerFamily = 'only_one_current_version_per_family',
+  only_one_current_version_per_family = 'only_one_current_version_per_family',
   /** unique or primary key constraint on columns "id" */
-  PayrollsPkey = 'payrolls_pkey'
+  payrolls_pkey = 'payrolls_pkey'
 }
 
 /** input type for incrementing numeric columns in table "payrolls" */
@@ -12788,49 +12789,49 @@ export type PayrollsPkColumnsInput = {
 /** select columns of table "payrolls" */
 export enum PayrollsSelectColumn {
   /** column name */
-  BackupConsultantUserId = 'backupConsultantUserId',
+  backupConsultantUserId = 'backupConsultantUserId',
   /** column name */
-  ClientId = 'clientId',
+  clientId = 'clientId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CreatedByUserId = 'createdByUserId',
+  createdByUserId = 'createdByUserId',
   /** column name */
-  CycleId = 'cycleId',
+  cycleId = 'cycleId',
   /** column name */
-  DateTypeId = 'dateTypeId',
+  dateTypeId = 'dateTypeId',
   /** column name */
-  DateValue = 'dateValue',
+  dateValue = 'dateValue',
   /** column name */
-  EmployeeCount = 'employeeCount',
+  employeeCount = 'employeeCount',
   /** column name */
-  GoLiveDate = 'goLiveDate',
+  goLiveDate = 'goLiveDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  ManagerUserId = 'managerUserId',
+  managerUserId = 'managerUserId',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  ParentPayrollId = 'parentPayrollId',
+  parentPayrollId = 'parentPayrollId',
   /** column name */
-  PayrollSystem = 'payrollSystem',
+  payrollSystem = 'payrollSystem',
   /** column name */
-  PrimaryConsultantUserId = 'primaryConsultantUserId',
+  primaryConsultantUserId = 'primaryConsultantUserId',
   /** column name */
-  ProcessingDaysBeforeEft = 'processingDaysBeforeEft',
+  processingDaysBeforeEft = 'processingDaysBeforeEft',
   /** column name */
-  ProcessingTime = 'processingTime',
+  processingTime = 'processingTime',
   /** column name */
-  Status = 'status',
+  status = 'status',
   /** column name */
-  SupersededDate = 'supersededDate',
+  supersededDate = 'supersededDate',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  VersionNumber = 'versionNumber',
+  versionNumber = 'versionNumber',
   /** column name */
-  VersionReason = 'versionReason'
+  versionReason = 'versionReason'
 }
 
 /** input type for updating data in table "payrolls" */
@@ -13038,49 +13039,49 @@ export type PayrollsSumOrderBy = {
 /** update columns of table "payrolls" */
 export enum PayrollsUpdateColumn {
   /** column name */
-  BackupConsultantUserId = 'backupConsultantUserId',
+  backupConsultantUserId = 'backupConsultantUserId',
   /** column name */
-  ClientId = 'clientId',
+  clientId = 'clientId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CreatedByUserId = 'createdByUserId',
+  createdByUserId = 'createdByUserId',
   /** column name */
-  CycleId = 'cycleId',
+  cycleId = 'cycleId',
   /** column name */
-  DateTypeId = 'dateTypeId',
+  dateTypeId = 'dateTypeId',
   /** column name */
-  DateValue = 'dateValue',
+  dateValue = 'dateValue',
   /** column name */
-  EmployeeCount = 'employeeCount',
+  employeeCount = 'employeeCount',
   /** column name */
-  GoLiveDate = 'goLiveDate',
+  goLiveDate = 'goLiveDate',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  ManagerUserId = 'managerUserId',
+  managerUserId = 'managerUserId',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  ParentPayrollId = 'parentPayrollId',
+  parentPayrollId = 'parentPayrollId',
   /** column name */
-  PayrollSystem = 'payrollSystem',
+  payrollSystem = 'payrollSystem',
   /** column name */
-  PrimaryConsultantUserId = 'primaryConsultantUserId',
+  primaryConsultantUserId = 'primaryConsultantUserId',
   /** column name */
-  ProcessingDaysBeforeEft = 'processingDaysBeforeEft',
+  processingDaysBeforeEft = 'processingDaysBeforeEft',
   /** column name */
-  ProcessingTime = 'processingTime',
+  processingTime = 'processingTime',
   /** column name */
-  Status = 'status',
+  status = 'status',
   /** column name */
-  SupersededDate = 'supersededDate',
+  supersededDate = 'supersededDate',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  VersionNumber = 'versionNumber',
+  versionNumber = 'versionNumber',
   /** column name */
-  VersionReason = 'versionReason'
+  versionReason = 'versionReason'
 }
 
 export type PayrollsUpdates = {
@@ -13283,7 +13284,7 @@ export type PermissionAuditLogsBoolExp = {
 /** unique or primary key constraints on table "permission_audit_log" */
 export enum PermissionAuditLogsConstraint {
   /** unique or primary key constraint on columns "id" */
-  PermissionAuditLogPkey = 'permission_audit_log_pkey'
+  permission_audit_log_pkey = 'permission_audit_log_pkey'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -13428,29 +13429,29 @@ export type PermissionAuditLogsPrependInput = {
 /** select columns of table "permission_audit_log" */
 export enum PermissionAuditLogsSelectColumn {
   /** column name */
-  Action = 'action',
+  action = 'action',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  NewValue = 'newValue',
+  newValue = 'newValue',
   /** column name */
-  Operation = 'operation',
+  operation = 'operation',
   /** column name */
-  PreviousValue = 'previousValue',
+  previousValue = 'previousValue',
   /** column name */
-  Reason = 'reason',
+  reason = 'reason',
   /** column name */
-  Resource = 'resource',
+  resource = 'resource',
   /** column name */
-  TargetRole = 'targetRole',
+  targetRole = 'targetRole',
   /** column name */
-  TargetUserId = 'targetUserId',
+  targetUserId = 'targetUserId',
   /** column name */
-  Timestamp = 'timestamp',
+  timestamp = 'timestamp',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 /** input type for updating data in table "permission_audit_log" */
@@ -13496,29 +13497,29 @@ export type PermissionAuditLogsStreamCursorValueInput = {
 /** update columns of table "permission_audit_log" */
 export enum PermissionAuditLogsUpdateColumn {
   /** column name */
-  Action = 'action',
+  action = 'action',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  NewValue = 'newValue',
+  newValue = 'newValue',
   /** column name */
-  Operation = 'operation',
+  operation = 'operation',
   /** column name */
-  PreviousValue = 'previousValue',
+  previousValue = 'previousValue',
   /** column name */
-  Reason = 'reason',
+  reason = 'reason',
   /** column name */
-  Resource = 'resource',
+  resource = 'resource',
   /** column name */
-  TargetRole = 'targetRole',
+  targetRole = 'targetRole',
   /** column name */
-  TargetUserId = 'targetUserId',
+  targetUserId = 'targetUserId',
   /** column name */
-  Timestamp = 'timestamp',
+  timestamp = 'timestamp',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 export type PermissionAuditLogsUpdates = {
@@ -13624,7 +13625,7 @@ export type PermissionChangesBoolExp = {
 /** unique or primary key constraints on table "audit.permission_changes" */
 export enum PermissionChangesConstraint {
   /** unique or primary key constraint on columns "id" */
-  PermissionChangesPkey = 'permission_changes_pkey'
+  permission_changes_pkey = 'permission_changes_pkey'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -13739,29 +13740,29 @@ export type PermissionChangesPrependInput = {
 /** select columns of table "audit.permission_changes" */
 export enum PermissionChangesSelectColumn {
   /** column name */
-  ApprovedByUserId = 'approvedByUserId',
+  approvedByUserId = 'approvedByUserId',
   /** column name */
-  ChangeType = 'changeType',
+  changeType = 'changeType',
   /** column name */
-  ChangedAt = 'changedAt',
+  changedAt = 'changedAt',
   /** column name */
-  ChangedByUserId = 'changedByUserId',
+  changedByUserId = 'changedByUserId',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Metadata = 'metadata',
+  metadata = 'metadata',
   /** column name */
-  NewPermissions = 'newPermissions',
+  newPermissions = 'newPermissions',
   /** column name */
-  OldPermissions = 'oldPermissions',
+  oldPermissions = 'oldPermissions',
   /** column name */
-  PermissionType = 'permissionType',
+  permissionType = 'permissionType',
   /** column name */
-  Reason = 'reason',
+  reason = 'reason',
   /** column name */
-  TargetRoleId = 'targetRoleId',
+  targetRoleId = 'targetRoleId',
   /** column name */
-  TargetUserId = 'targetUserId'
+  targetUserId = 'targetUserId'
 }
 
 /** input type for updating data in table "audit.permission_changes" */
@@ -13807,29 +13808,29 @@ export type PermissionChangesStreamCursorValueInput = {
 /** update columns of table "audit.permission_changes" */
 export enum PermissionChangesUpdateColumn {
   /** column name */
-  ApprovedByUserId = 'approvedByUserId',
+  approvedByUserId = 'approvedByUserId',
   /** column name */
-  ChangeType = 'changeType',
+  changeType = 'changeType',
   /** column name */
-  ChangedAt = 'changedAt',
+  changedAt = 'changedAt',
   /** column name */
-  ChangedByUserId = 'changedByUserId',
+  changedByUserId = 'changedByUserId',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Metadata = 'metadata',
+  metadata = 'metadata',
   /** column name */
-  NewPermissions = 'newPermissions',
+  newPermissions = 'newPermissions',
   /** column name */
-  OldPermissions = 'oldPermissions',
+  oldPermissions = 'oldPermissions',
   /** column name */
-  PermissionType = 'permissionType',
+  permissionType = 'permissionType',
   /** column name */
-  Reason = 'reason',
+  reason = 'reason',
   /** column name */
-  TargetRoleId = 'targetRoleId',
+  targetRoleId = 'targetRoleId',
   /** column name */
-  TargetUserId = 'targetUserId'
+  targetUserId = 'targetUserId'
 }
 
 export type PermissionChangesUpdates = {
@@ -13889,20 +13890,20 @@ export type PermissionOverridesAggregate = {
 };
 
 export type PermissionOverridesAggregateBoolExp = {
-  bool_and?: InputMaybe<PermissionOverridesAggregateBoolExpBool_And>;
-  bool_or?: InputMaybe<PermissionOverridesAggregateBoolExpBool_Or>;
+  bool_and?: InputMaybe<PermissionOverridesAggregateBoolExpBoolAnd>;
+  bool_or?: InputMaybe<PermissionOverridesAggregateBoolExpBoolOr>;
   count?: InputMaybe<PermissionOverridesAggregateBoolExpCount>;
 };
 
-export type PermissionOverridesAggregateBoolExpBool_And = {
-  arguments: PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBool_AndArgumentsColumns;
+export type PermissionOverridesAggregateBoolExpBoolAnd = {
+  arguments: PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PermissionOverridesBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type PermissionOverridesAggregateBoolExpBool_Or = {
-  arguments: PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBool_OrArgumentsColumns;
+export type PermissionOverridesAggregateBoolExpBoolOr = {
+  arguments: PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PermissionOverridesBoolExp>;
   predicate: BooleanComparisonExp;
@@ -13974,7 +13975,7 @@ export type PermissionOverridesBoolExp = {
 /** unique or primary key constraints on table "permission_overrides" */
 export enum PermissionOverridesConstraint {
   /** unique or primary key constraint on columns "id" */
-  PermissionOverridesPkey = 'permission_overrides_pkey'
+  permission_overrides_pkey = 'permission_overrides_pkey'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -14136,41 +14137,41 @@ export type PermissionOverridesPrependInput = {
 /** select columns of table "permission_overrides" */
 export enum PermissionOverridesSelectColumn {
   /** column name */
-  Conditions = 'conditions',
+  conditions = 'conditions',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CreatedBy = 'createdBy',
+  createdBy = 'createdBy',
   /** column name */
-  ExpiresAt = 'expiresAt',
+  expiresAt = 'expiresAt',
   /** column name */
-  Granted = 'granted',
+  granted = 'granted',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Operation = 'operation',
+  operation = 'operation',
   /** column name */
-  Reason = 'reason',
+  reason = 'reason',
   /** column name */
-  Resource = 'resource',
+  resource = 'resource',
   /** column name */
-  Role = 'role',
+  role = 'role',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 /** select "permissionOverridesAggregateBoolExpBool_andArgumentsColumns" columns of table "permission_overrides" */
-export enum PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBool_AndArgumentsColumns {
+export enum PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBoolAndArgumentsColumns {
   /** column name */
-  Granted = 'granted'
+  granted = 'granted'
 }
 
 /** select "permissionOverridesAggregateBoolExpBool_orArgumentsColumns" columns of table "permission_overrides" */
-export enum PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBool_OrArgumentsColumns {
+export enum PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBoolOrArgumentsColumns {
   /** column name */
-  Granted = 'granted'
+  granted = 'granted'
 }
 
 /** input type for updating data in table "permission_overrides" */
@@ -14226,29 +14227,29 @@ export type PermissionOverridesStreamCursorValueInput = {
 /** update columns of table "permission_overrides" */
 export enum PermissionOverridesUpdateColumn {
   /** column name */
-  Conditions = 'conditions',
+  conditions = 'conditions',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  CreatedBy = 'createdBy',
+  createdBy = 'createdBy',
   /** column name */
-  ExpiresAt = 'expiresAt',
+  expiresAt = 'expiresAt',
   /** column name */
-  Granted = 'granted',
+  granted = 'granted',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Operation = 'operation',
+  operation = 'operation',
   /** column name */
-  Reason = 'reason',
+  reason = 'reason',
   /** column name */
-  Resource = 'resource',
+  resource = 'resource',
   /** column name */
-  Role = 'role',
+  role = 'role',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 export type PermissionOverridesUpdates = {
@@ -14370,19 +14371,19 @@ export type PermissionUsageReportsOrderBy = {
 /** select columns of table "audit.permission_usage_report" */
 export enum PermissionUsageReportsSelectColumn {
   /** column name */
-  Action = 'action',
+  action = 'action',
   /** column name */
-  LastUsed = 'lastUsed',
+  lastUsed = 'lastUsed',
   /** column name */
-  ResourceName = 'resourceName',
+  resourceName = 'resourceName',
   /** column name */
-  RoleName = 'roleName',
+  roleName = 'roleName',
   /** column name */
-  TotalUsageCount = 'totalUsageCount',
+  totalUsageCount = 'totalUsageCount',
   /** column name */
-  UsersWhoUsedPermission = 'usersWhoUsedPermission',
+  usersWhoUsedPermission = 'usersWhoUsedPermission',
   /** column name */
-  UsersWithPermission = 'usersWithPermission'
+  usersWithPermission = 'usersWithPermission'
 }
 
 /** aggregate stddev on columns */
@@ -14565,9 +14566,9 @@ export type PermissionsBoolExp = {
 /** unique or primary key constraints on table "permissions" */
 export enum PermissionsConstraint {
   /** unique or primary key constraint on columns "id" */
-  PermissionsPkey = 'permissions_pkey',
+  permissions_pkey = 'permissions_pkey',
   /** unique or primary key constraint on columns "action", "resource_id" */
-  PermissionsResourceIdActionKey = 'permissions_resource_id_action_key'
+  permissions_resource_id_action_key = 'permissions_resource_id_action_key'
 }
 
 /** input type for inserting data into table "permissions" */
@@ -14673,19 +14674,19 @@ export type PermissionsPkColumnsInput = {
 /** select columns of table "permissions" */
 export enum PermissionsSelectColumn {
   /** column name */
-  Action = 'action',
+  action = 'action',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  LegacyPermissionName = 'legacyPermissionName',
+  legacyPermissionName = 'legacyPermissionName',
   /** column name */
-  ResourceId = 'resourceId',
+  resourceId = 'resourceId',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "permissions" */
@@ -14721,19 +14722,19 @@ export type PermissionsStreamCursorValueInput = {
 /** update columns of table "permissions" */
 export enum PermissionsUpdateColumn {
   /** column name */
-  Action = 'action',
+  action = 'action',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  LegacyPermissionName = 'legacyPermissionName',
+  legacyPermissionName = 'legacyPermissionName',
   /** column name */
-  ResourceId = 'resourceId',
+  resourceId = 'resourceId',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type PermissionsUpdates = {
@@ -14743,11 +14744,11 @@ export type PermissionsUpdates = {
   where: PermissionsBoolExp;
 };
 
-export type Query_Root = {
+export type QueryRoot = {
   __typename?: 'query_root';
   /** query _Entity union */
-  _entities?: Maybe<_Entity>;
-  _service: _Service;
+  _entities?: Maybe<Entity>;
+  _service: Service;
   /** execute function "activate_payroll_versions" which returns "payroll_activation_results" */
   activatePayrollVersions: Array<PayrollActivationResults>;
   /** execute function "activate_payroll_versions" and query aggregates on result of table type "payroll_activation_results" */
@@ -15039,12 +15040,12 @@ export type Query_Root = {
 };
 
 
-export type Query_Root_EntitiesArgs = {
+export type QueryRootEntitiesArgs = {
   representations: Array<Scalars['_Any']['input']>;
 };
 
 
-export type Query_RootActivatePayrollVersionsArgs = {
+export type QueryRootActivatePayrollVersionsArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15053,7 +15054,7 @@ export type Query_RootActivatePayrollVersionsArgs = {
 };
 
 
-export type Query_RootActivatePayrollVersionsAggregateArgs = {
+export type QueryRootActivatePayrollVersionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15062,12 +15063,12 @@ export type Query_RootActivatePayrollVersionsAggregateArgs = {
 };
 
 
-export type Query_RootAdjustmentRuleByIdArgs = {
+export type QueryRootAdjustmentRuleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootAdjustmentRulesArgs = {
+export type QueryRootAdjustmentRulesArgs = {
   distinctOn?: InputMaybe<Array<AdjustmentRulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15076,7 +15077,7 @@ export type Query_RootAdjustmentRulesArgs = {
 };
 
 
-export type Query_RootAdjustmentRulesAggregateArgs = {
+export type QueryRootAdjustmentRulesAggregateArgs = {
   distinctOn?: InputMaybe<Array<AdjustmentRulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15085,12 +15086,12 @@ export type Query_RootAdjustmentRulesAggregateArgs = {
 };
 
 
-export type Query_RootAppSettingByIdArgs = {
+export type QueryRootAppSettingByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
-export type Query_RootAppSettingsArgs = {
+export type QueryRootAppSettingsArgs = {
   distinctOn?: InputMaybe<Array<AppSettingsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15099,7 +15100,7 @@ export type Query_RootAppSettingsArgs = {
 };
 
 
-export type Query_RootAppSettingsAggregateArgs = {
+export type QueryRootAppSettingsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AppSettingsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15108,12 +15109,12 @@ export type Query_RootAppSettingsAggregateArgs = {
 };
 
 
-export type Query_RootAuditLogByIdArgs = {
+export type QueryRootAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootAuditLogsArgs = {
+export type QueryRootAuditLogsArgs = {
   distinctOn?: InputMaybe<Array<AuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15122,7 +15123,7 @@ export type Query_RootAuditLogsArgs = {
 };
 
 
-export type Query_RootAuditLogsAggregateArgs = {
+export type QueryRootAuditLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15131,12 +15132,12 @@ export type Query_RootAuditLogsAggregateArgs = {
 };
 
 
-export type Query_RootAuthEventByIdArgs = {
+export type QueryRootAuthEventByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootAuthEventsArgs = {
+export type QueryRootAuthEventsArgs = {
   distinctOn?: InputMaybe<Array<AuthEventsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15145,7 +15146,7 @@ export type Query_RootAuthEventsArgs = {
 };
 
 
-export type Query_RootAuthEventsAggregateArgs = {
+export type QueryRootAuthEventsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuthEventsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15154,12 +15155,12 @@ export type Query_RootAuthEventsAggregateArgs = {
 };
 
 
-export type Query_RootBillingEventLogByIdArgs = {
+export type QueryRootBillingEventLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootBillingEventLogsArgs = {
+export type QueryRootBillingEventLogsArgs = {
   distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15168,7 +15169,7 @@ export type Query_RootBillingEventLogsArgs = {
 };
 
 
-export type Query_RootBillingEventLogsAggregateArgs = {
+export type QueryRootBillingEventLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15177,7 +15178,7 @@ export type Query_RootBillingEventLogsAggregateArgs = {
 };
 
 
-export type Query_RootBillingInvoiceArgs = {
+export type QueryRootBillingInvoiceArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15186,7 +15187,7 @@ export type Query_RootBillingInvoiceArgs = {
 };
 
 
-export type Query_RootBillingInvoiceAggregateArgs = {
+export type QueryRootBillingInvoiceAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15195,17 +15196,17 @@ export type Query_RootBillingInvoiceAggregateArgs = {
 };
 
 
-export type Query_RootBillingInvoiceByIdArgs = {
+export type QueryRootBillingInvoiceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootBillingItemByIdArgs = {
+export type QueryRootBillingItemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootBillingItemsArgs = {
+export type QueryRootBillingItemsArgs = {
   distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15214,7 +15215,7 @@ export type Query_RootBillingItemsArgs = {
 };
 
 
-export type Query_RootBillingItemsAggregateArgs = {
+export type QueryRootBillingItemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15223,12 +15224,12 @@ export type Query_RootBillingItemsAggregateArgs = {
 };
 
 
-export type Query_RootBillingPlanByIdArgs = {
+export type QueryRootBillingPlanByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootBillingPlansArgs = {
+export type QueryRootBillingPlansArgs = {
   distinctOn?: InputMaybe<Array<BillingPlansSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15237,7 +15238,7 @@ export type Query_RootBillingPlansArgs = {
 };
 
 
-export type Query_RootBillingPlansAggregateArgs = {
+export type QueryRootBillingPlansAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingPlansSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15246,12 +15247,12 @@ export type Query_RootBillingPlansAggregateArgs = {
 };
 
 
-export type Query_RootClientBillingAssignmentByIdArgs = {
+export type QueryRootClientBillingAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootClientBillingAssignmentsArgs = {
+export type QueryRootClientBillingAssignmentsArgs = {
   distinctOn?: InputMaybe<Array<ClientBillingAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15260,7 +15261,7 @@ export type Query_RootClientBillingAssignmentsArgs = {
 };
 
 
-export type Query_RootClientBillingAssignmentsAggregateArgs = {
+export type QueryRootClientBillingAssignmentsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientBillingAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15269,17 +15270,17 @@ export type Query_RootClientBillingAssignmentsAggregateArgs = {
 };
 
 
-export type Query_RootClientByIdArgs = {
+export type QueryRootClientByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootClientExternalSystemByIdArgs = {
+export type QueryRootClientExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootClientExternalSystemsArgs = {
+export type QueryRootClientExternalSystemsArgs = {
   distinctOn?: InputMaybe<Array<ClientExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15288,7 +15289,7 @@ export type Query_RootClientExternalSystemsArgs = {
 };
 
 
-export type Query_RootClientExternalSystemsAggregateArgs = {
+export type QueryRootClientExternalSystemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15297,7 +15298,7 @@ export type Query_RootClientExternalSystemsAggregateArgs = {
 };
 
 
-export type Query_RootClientsArgs = {
+export type QueryRootClientsArgs = {
   distinctOn?: InputMaybe<Array<ClientsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15306,7 +15307,7 @@ export type Query_RootClientsArgs = {
 };
 
 
-export type Query_RootClientsAggregateArgs = {
+export type QueryRootClientsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15315,7 +15316,7 @@ export type Query_RootClientsAggregateArgs = {
 };
 
 
-export type Query_RootCreatePayrollVersionArgs = {
+export type QueryRootCreatePayrollVersionArgs = {
   args: CreatePayrollVersionArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15325,7 +15326,7 @@ export type Query_RootCreatePayrollVersionArgs = {
 };
 
 
-export type Query_RootCreatePayrollVersionAggregateArgs = {
+export type QueryRootCreatePayrollVersionAggregateArgs = {
   args: CreatePayrollVersionArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15335,7 +15336,7 @@ export type Query_RootCreatePayrollVersionAggregateArgs = {
 };
 
 
-export type Query_RootCreatePayrollVersionSimpleArgs = {
+export type QueryRootCreatePayrollVersionSimpleArgs = {
   args: CreatePayrollVersionSimpleArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15345,7 +15346,7 @@ export type Query_RootCreatePayrollVersionSimpleArgs = {
 };
 
 
-export type Query_RootCreatePayrollVersionSimpleAggregateArgs = {
+export type QueryRootCreatePayrollVersionSimpleAggregateArgs = {
   args: CreatePayrollVersionSimpleArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15355,7 +15356,7 @@ export type Query_RootCreatePayrollVersionSimpleAggregateArgs = {
 };
 
 
-export type Query_RootCurrentPayrollsArgs = {
+export type QueryRootCurrentPayrollsArgs = {
   distinctOn?: InputMaybe<Array<CurrentPayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15364,7 +15365,7 @@ export type Query_RootCurrentPayrollsArgs = {
 };
 
 
-export type Query_RootCurrentPayrollsAggregateArgs = {
+export type QueryRootCurrentPayrollsAggregateArgs = {
   distinctOn?: InputMaybe<Array<CurrentPayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15373,12 +15374,12 @@ export type Query_RootCurrentPayrollsAggregateArgs = {
 };
 
 
-export type Query_RootDataAccessLogByIdArgs = {
+export type QueryRootDataAccessLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootDataAccessLogsArgs = {
+export type QueryRootDataAccessLogsArgs = {
   distinctOn?: InputMaybe<Array<DataAccessLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15387,7 +15388,7 @@ export type Query_RootDataAccessLogsArgs = {
 };
 
 
-export type Query_RootDataAccessLogsAggregateArgs = {
+export type QueryRootDataAccessLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<DataAccessLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15396,12 +15397,12 @@ export type Query_RootDataAccessLogsAggregateArgs = {
 };
 
 
-export type Query_RootExternalSystemByIdArgs = {
+export type QueryRootExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootExternalSystemsArgs = {
+export type QueryRootExternalSystemsArgs = {
   distinctOn?: InputMaybe<Array<ExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15410,7 +15411,7 @@ export type Query_RootExternalSystemsArgs = {
 };
 
 
-export type Query_RootExternalSystemsAggregateArgs = {
+export type QueryRootExternalSystemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15419,12 +15420,12 @@ export type Query_RootExternalSystemsAggregateArgs = {
 };
 
 
-export type Query_RootFeatureFlagByIdArgs = {
+export type QueryRootFeatureFlagByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootFeatureFlagsArgs = {
+export type QueryRootFeatureFlagsArgs = {
   distinctOn?: InputMaybe<Array<FeatureFlagsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15433,7 +15434,7 @@ export type Query_RootFeatureFlagsArgs = {
 };
 
 
-export type Query_RootFeatureFlagsAggregateArgs = {
+export type QueryRootFeatureFlagsAggregateArgs = {
   distinctOn?: InputMaybe<Array<FeatureFlagsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15442,7 +15443,7 @@ export type Query_RootFeatureFlagsAggregateArgs = {
 };
 
 
-export type Query_RootGeneratePayrollDatesArgs = {
+export type QueryRootGeneratePayrollDatesArgs = {
   args: GeneratePayrollDatesArgs;
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15452,7 +15453,7 @@ export type Query_RootGeneratePayrollDatesArgs = {
 };
 
 
-export type Query_RootGeneratePayrollDatesAggregateArgs = {
+export type QueryRootGeneratePayrollDatesAggregateArgs = {
   args: GeneratePayrollDatesArgs;
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15462,7 +15463,7 @@ export type Query_RootGeneratePayrollDatesAggregateArgs = {
 };
 
 
-export type Query_RootGetLatestPayrollVersionArgs = {
+export type QueryRootGetLatestPayrollVersionArgs = {
   args: GetLatestPayrollVersionArgs;
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15472,7 +15473,7 @@ export type Query_RootGetLatestPayrollVersionArgs = {
 };
 
 
-export type Query_RootGetLatestPayrollVersionAggregateArgs = {
+export type QueryRootGetLatestPayrollVersionAggregateArgs = {
   args: GetLatestPayrollVersionArgs;
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15482,7 +15483,7 @@ export type Query_RootGetLatestPayrollVersionAggregateArgs = {
 };
 
 
-export type Query_RootGetPayrollVersionHistoryArgs = {
+export type QueryRootGetPayrollVersionHistoryArgs = {
   args: GetPayrollVersionHistoryArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15492,7 +15493,7 @@ export type Query_RootGetPayrollVersionHistoryArgs = {
 };
 
 
-export type Query_RootGetPayrollVersionHistoryAggregateArgs = {
+export type QueryRootGetPayrollVersionHistoryAggregateArgs = {
   args: GetPayrollVersionHistoryArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15502,12 +15503,12 @@ export type Query_RootGetPayrollVersionHistoryAggregateArgs = {
 };
 
 
-export type Query_RootHolidayByIdArgs = {
+export type QueryRootHolidayByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootHolidaysArgs = {
+export type QueryRootHolidaysArgs = {
   distinctOn?: InputMaybe<Array<HolidaysSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15516,7 +15517,7 @@ export type Query_RootHolidaysArgs = {
 };
 
 
-export type Query_RootHolidaysAggregateArgs = {
+export type QueryRootHolidaysAggregateArgs = {
   distinctOn?: InputMaybe<Array<HolidaysSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15525,12 +15526,12 @@ export type Query_RootHolidaysAggregateArgs = {
 };
 
 
-export type Query_RootLatestPayrollVersionResultByIdArgs = {
+export type QueryRootLatestPayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootLatestPayrollVersionResultsArgs = {
+export type QueryRootLatestPayrollVersionResultsArgs = {
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15539,7 +15540,7 @@ export type Query_RootLatestPayrollVersionResultsArgs = {
 };
 
 
-export type Query_RootLatestPayrollVersionResultsAggregateArgs = {
+export type QueryRootLatestPayrollVersionResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15548,7 +15549,7 @@ export type Query_RootLatestPayrollVersionResultsAggregateArgs = {
 };
 
 
-export type Query_RootLeaveArgs = {
+export type QueryRootLeaveArgs = {
   distinctOn?: InputMaybe<Array<LeaveSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15557,7 +15558,7 @@ export type Query_RootLeaveArgs = {
 };
 
 
-export type Query_RootLeaveAggregateArgs = {
+export type QueryRootLeaveAggregateArgs = {
   distinctOn?: InputMaybe<Array<LeaveSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15566,17 +15567,17 @@ export type Query_RootLeaveAggregateArgs = {
 };
 
 
-export type Query_RootLeaveByIdArgs = {
+export type QueryRootLeaveByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootNoteByIdArgs = {
+export type QueryRootNoteByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootNotesArgs = {
+export type QueryRootNotesArgs = {
   distinctOn?: InputMaybe<Array<NotesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15585,7 +15586,7 @@ export type Query_RootNotesArgs = {
 };
 
 
-export type Query_RootNotesAggregateArgs = {
+export type QueryRootNotesAggregateArgs = {
   distinctOn?: InputMaybe<Array<NotesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15594,12 +15595,12 @@ export type Query_RootNotesAggregateArgs = {
 };
 
 
-export type Query_RootPayrollActivationResultByIdArgs = {
+export type QueryRootPayrollActivationResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPayrollActivationResultsArgs = {
+export type QueryRootPayrollActivationResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15608,7 +15609,7 @@ export type Query_RootPayrollActivationResultsArgs = {
 };
 
 
-export type Query_RootPayrollActivationResultsAggregateArgs = {
+export type QueryRootPayrollActivationResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15617,12 +15618,12 @@ export type Query_RootPayrollActivationResultsAggregateArgs = {
 };
 
 
-export type Query_RootPayrollAssignmentAuditByIdArgs = {
+export type QueryRootPayrollAssignmentAuditByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPayrollAssignmentAuditsArgs = {
+export type QueryRootPayrollAssignmentAuditsArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentAuditsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15631,7 +15632,7 @@ export type Query_RootPayrollAssignmentAuditsArgs = {
 };
 
 
-export type Query_RootPayrollAssignmentAuditsAggregateArgs = {
+export type QueryRootPayrollAssignmentAuditsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentAuditsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15640,12 +15641,12 @@ export type Query_RootPayrollAssignmentAuditsAggregateArgs = {
 };
 
 
-export type Query_RootPayrollAssignmentByIdArgs = {
+export type QueryRootPayrollAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPayrollAssignmentsArgs = {
+export type QueryRootPayrollAssignmentsArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15654,7 +15655,7 @@ export type Query_RootPayrollAssignmentsArgs = {
 };
 
 
-export type Query_RootPayrollAssignmentsAggregateArgs = {
+export type QueryRootPayrollAssignmentsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15663,17 +15664,17 @@ export type Query_RootPayrollAssignmentsAggregateArgs = {
 };
 
 
-export type Query_RootPayrollByIdArgs = {
+export type QueryRootPayrollByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPayrollCycleByIdArgs = {
+export type QueryRootPayrollCycleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPayrollCyclesArgs = {
+export type QueryRootPayrollCyclesArgs = {
   distinctOn?: InputMaybe<Array<PayrollCyclesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15682,7 +15683,7 @@ export type Query_RootPayrollCyclesArgs = {
 };
 
 
-export type Query_RootPayrollCyclesAggregateArgs = {
+export type QueryRootPayrollCyclesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollCyclesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15691,7 +15692,7 @@ export type Query_RootPayrollCyclesAggregateArgs = {
 };
 
 
-export type Query_RootPayrollDashboardStatsArgs = {
+export type QueryRootPayrollDashboardStatsArgs = {
   distinctOn?: InputMaybe<Array<PayrollDashboardStatsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15700,7 +15701,7 @@ export type Query_RootPayrollDashboardStatsArgs = {
 };
 
 
-export type Query_RootPayrollDashboardStatsAggregateArgs = {
+export type QueryRootPayrollDashboardStatsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDashboardStatsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15709,17 +15710,17 @@ export type Query_RootPayrollDashboardStatsAggregateArgs = {
 };
 
 
-export type Query_RootPayrollDateByIdArgs = {
+export type QueryRootPayrollDateByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPayrollDateTypeByIdArgs = {
+export type QueryRootPayrollDateTypeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPayrollDateTypesArgs = {
+export type QueryRootPayrollDateTypesArgs = {
   distinctOn?: InputMaybe<Array<PayrollDateTypesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15728,7 +15729,7 @@ export type Query_RootPayrollDateTypesArgs = {
 };
 
 
-export type Query_RootPayrollDateTypesAggregateArgs = {
+export type QueryRootPayrollDateTypesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDateTypesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15737,7 +15738,7 @@ export type Query_RootPayrollDateTypesAggregateArgs = {
 };
 
 
-export type Query_RootPayrollDatesArgs = {
+export type QueryRootPayrollDatesArgs = {
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15746,7 +15747,7 @@ export type Query_RootPayrollDatesArgs = {
 };
 
 
-export type Query_RootPayrollDatesAggregateArgs = {
+export type QueryRootPayrollDatesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15755,7 +15756,7 @@ export type Query_RootPayrollDatesAggregateArgs = {
 };
 
 
-export type Query_RootPayrollTriggersStatusArgs = {
+export type QueryRootPayrollTriggersStatusArgs = {
   distinctOn?: InputMaybe<Array<PayrollTriggersStatusSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15764,7 +15765,7 @@ export type Query_RootPayrollTriggersStatusArgs = {
 };
 
 
-export type Query_RootPayrollTriggersStatusAggregateArgs = {
+export type QueryRootPayrollTriggersStatusAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollTriggersStatusSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15773,12 +15774,12 @@ export type Query_RootPayrollTriggersStatusAggregateArgs = {
 };
 
 
-export type Query_RootPayrollVersionHistoryResultByIdArgs = {
+export type QueryRootPayrollVersionHistoryResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPayrollVersionHistoryResultsArgs = {
+export type QueryRootPayrollVersionHistoryResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15787,7 +15788,7 @@ export type Query_RootPayrollVersionHistoryResultsArgs = {
 };
 
 
-export type Query_RootPayrollVersionHistoryResultsAggregateArgs = {
+export type QueryRootPayrollVersionHistoryResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15796,12 +15797,12 @@ export type Query_RootPayrollVersionHistoryResultsAggregateArgs = {
 };
 
 
-export type Query_RootPayrollVersionResultByIdArgs = {
+export type QueryRootPayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPayrollVersionResultsArgs = {
+export type QueryRootPayrollVersionResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15810,7 +15811,7 @@ export type Query_RootPayrollVersionResultsArgs = {
 };
 
 
-export type Query_RootPayrollVersionResultsAggregateArgs = {
+export type QueryRootPayrollVersionResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15819,7 +15820,7 @@ export type Query_RootPayrollVersionResultsAggregateArgs = {
 };
 
 
-export type Query_RootPayrollsArgs = {
+export type QueryRootPayrollsArgs = {
   distinctOn?: InputMaybe<Array<PayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15828,7 +15829,7 @@ export type Query_RootPayrollsArgs = {
 };
 
 
-export type Query_RootPayrollsAggregateArgs = {
+export type QueryRootPayrollsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15837,12 +15838,12 @@ export type Query_RootPayrollsAggregateArgs = {
 };
 
 
-export type Query_RootPermissionAuditLogByIdArgs = {
+export type QueryRootPermissionAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPermissionAuditLogsArgs = {
+export type QueryRootPermissionAuditLogsArgs = {
   distinctOn?: InputMaybe<Array<PermissionAuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15851,7 +15852,7 @@ export type Query_RootPermissionAuditLogsArgs = {
 };
 
 
-export type Query_RootPermissionAuditLogsAggregateArgs = {
+export type QueryRootPermissionAuditLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionAuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15860,17 +15861,17 @@ export type Query_RootPermissionAuditLogsAggregateArgs = {
 };
 
 
-export type Query_RootPermissionByIdArgs = {
+export type QueryRootPermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPermissionChangeByIdArgs = {
+export type QueryRootPermissionChangeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPermissionChangesArgs = {
+export type QueryRootPermissionChangesArgs = {
   distinctOn?: InputMaybe<Array<PermissionChangesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15879,7 +15880,7 @@ export type Query_RootPermissionChangesArgs = {
 };
 
 
-export type Query_RootPermissionChangesAggregateArgs = {
+export type QueryRootPermissionChangesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionChangesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15888,12 +15889,12 @@ export type Query_RootPermissionChangesAggregateArgs = {
 };
 
 
-export type Query_RootPermissionOverrideByIdArgs = {
+export type QueryRootPermissionOverrideByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootPermissionOverridesArgs = {
+export type QueryRootPermissionOverridesArgs = {
   distinctOn?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15902,7 +15903,7 @@ export type Query_RootPermissionOverridesArgs = {
 };
 
 
-export type Query_RootPermissionOverridesAggregateArgs = {
+export type QueryRootPermissionOverridesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15911,7 +15912,7 @@ export type Query_RootPermissionOverridesAggregateArgs = {
 };
 
 
-export type Query_RootPermissionUsageReportsArgs = {
+export type QueryRootPermissionUsageReportsArgs = {
   distinctOn?: InputMaybe<Array<PermissionUsageReportsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15920,7 +15921,7 @@ export type Query_RootPermissionUsageReportsArgs = {
 };
 
 
-export type Query_RootPermissionUsageReportsAggregateArgs = {
+export type QueryRootPermissionUsageReportsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionUsageReportsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15929,7 +15930,7 @@ export type Query_RootPermissionUsageReportsAggregateArgs = {
 };
 
 
-export type Query_RootPermissionsArgs = {
+export type QueryRootPermissionsArgs = {
   distinctOn?: InputMaybe<Array<PermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15938,7 +15939,7 @@ export type Query_RootPermissionsArgs = {
 };
 
 
-export type Query_RootPermissionsAggregateArgs = {
+export type QueryRootPermissionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15947,12 +15948,12 @@ export type Query_RootPermissionsAggregateArgs = {
 };
 
 
-export type Query_RootResourceByIdArgs = {
+export type QueryRootResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootResourcesArgs = {
+export type QueryRootResourcesArgs = {
   distinctOn?: InputMaybe<Array<ResourcesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15961,7 +15962,7 @@ export type Query_RootResourcesArgs = {
 };
 
 
-export type Query_RootResourcesAggregateArgs = {
+export type QueryRootResourcesAggregateArgs = {
   distinctOn?: InputMaybe<Array<ResourcesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15970,17 +15971,17 @@ export type Query_RootResourcesAggregateArgs = {
 };
 
 
-export type Query_RootRoleByIdArgs = {
+export type QueryRootRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootRolePermissionByIdArgs = {
+export type QueryRootRolePermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootRolePermissionsArgs = {
+export type QueryRootRolePermissionsArgs = {
   distinctOn?: InputMaybe<Array<RolePermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15989,7 +15990,7 @@ export type Query_RootRolePermissionsArgs = {
 };
 
 
-export type Query_RootRolePermissionsAggregateArgs = {
+export type QueryRootRolePermissionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<RolePermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15998,7 +15999,7 @@ export type Query_RootRolePermissionsAggregateArgs = {
 };
 
 
-export type Query_RootRolesArgs = {
+export type QueryRootRolesArgs = {
   distinctOn?: InputMaybe<Array<RolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16007,7 +16008,7 @@ export type Query_RootRolesArgs = {
 };
 
 
-export type Query_RootRolesAggregateArgs = {
+export type QueryRootRolesAggregateArgs = {
   distinctOn?: InputMaybe<Array<RolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16016,7 +16017,7 @@ export type Query_RootRolesAggregateArgs = {
 };
 
 
-export type Query_RootSlowQueriesArgs = {
+export type QueryRootSlowQueriesArgs = {
   distinctOn?: InputMaybe<Array<SlowQueriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16025,7 +16026,7 @@ export type Query_RootSlowQueriesArgs = {
 };
 
 
-export type Query_RootSlowQueriesAggregateArgs = {
+export type QueryRootSlowQueriesAggregateArgs = {
   distinctOn?: InputMaybe<Array<SlowQueriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16034,12 +16035,12 @@ export type Query_RootSlowQueriesAggregateArgs = {
 };
 
 
-export type Query_RootSlowQueryByIdArgs = {
+export type QueryRootSlowQueryByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootUserAccessSummariesArgs = {
+export type QueryRootUserAccessSummariesArgs = {
   distinctOn?: InputMaybe<Array<UserAccessSummariesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16048,7 +16049,7 @@ export type Query_RootUserAccessSummariesArgs = {
 };
 
 
-export type Query_RootUserAccessSummariesAggregateArgs = {
+export type QueryRootUserAccessSummariesAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserAccessSummariesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16057,17 +16058,17 @@ export type Query_RootUserAccessSummariesAggregateArgs = {
 };
 
 
-export type Query_RootUserByIdArgs = {
+export type QueryRootUserByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootUserInvitationByIdArgs = {
+export type QueryRootUserInvitationByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootUserInvitationsArgs = {
+export type QueryRootUserInvitationsArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16076,7 +16077,7 @@ export type Query_RootUserInvitationsArgs = {
 };
 
 
-export type Query_RootUserInvitationsAggregateArgs = {
+export type QueryRootUserInvitationsAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16085,12 +16086,12 @@ export type Query_RootUserInvitationsAggregateArgs = {
 };
 
 
-export type Query_RootUserRoleByIdArgs = {
+export type QueryRootUserRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootUserRolesArgs = {
+export type QueryRootUserRolesArgs = {
   distinctOn?: InputMaybe<Array<UserRolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16099,7 +16100,7 @@ export type Query_RootUserRolesArgs = {
 };
 
 
-export type Query_RootUserRolesAggregateArgs = {
+export type QueryRootUserRolesAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserRolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16108,12 +16109,12 @@ export type Query_RootUserRolesAggregateArgs = {
 };
 
 
-export type Query_RootUserSyncByIdArgs = {
+export type QueryRootUserSyncByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
-export type Query_RootUsersArgs = {
+export type QueryRootUsersArgs = {
   distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16122,7 +16123,7 @@ export type Query_RootUsersArgs = {
 };
 
 
-export type Query_RootUsersAggregateArgs = {
+export type QueryRootUsersAggregateArgs = {
   distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16131,7 +16132,7 @@ export type Query_RootUsersAggregateArgs = {
 };
 
 
-export type Query_RootUsersRoleBackupsArgs = {
+export type QueryRootUsersRoleBackupsArgs = {
   distinctOn?: InputMaybe<Array<UsersRoleBackupSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16140,7 +16141,7 @@ export type Query_RootUsersRoleBackupsArgs = {
 };
 
 
-export type Query_RootUsersRoleBackupsAggregateArgs = {
+export type QueryRootUsersRoleBackupsAggregateArgs = {
   distinctOn?: InputMaybe<Array<UsersRoleBackupSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16149,7 +16150,7 @@ export type Query_RootUsersRoleBackupsAggregateArgs = {
 };
 
 
-export type Query_RootUsersSyncArgs = {
+export type QueryRootUsersSyncArgs = {
   distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16158,7 +16159,7 @@ export type Query_RootUsersSyncArgs = {
 };
 
 
-export type Query_RootUsersSyncAggregateArgs = {
+export type QueryRootUsersSyncAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16167,12 +16168,12 @@ export type Query_RootUsersSyncAggregateArgs = {
 };
 
 
-export type Query_RootWorkScheduleByIdArgs = {
+export type QueryRootWorkScheduleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Query_RootWorkSchedulesArgs = {
+export type QueryRootWorkSchedulesArgs = {
   distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16181,7 +16182,7 @@ export type Query_RootWorkSchedulesArgs = {
 };
 
 
-export type Query_RootWorkSchedulesAggregateArgs = {
+export type QueryRootWorkSchedulesAggregateArgs = {
   distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16264,9 +16265,9 @@ export type ResourcesBoolExp = {
 /** unique or primary key constraints on table "resources" */
 export enum ResourcesConstraint {
   /** unique or primary key constraint on columns "name" */
-  ResourcesNameKey = 'resources_name_key',
+  resources_name_key = 'resources_name_key',
   /** unique or primary key constraint on columns "id" */
-  ResourcesPkey = 'resources_pkey'
+  resources_pkey = 'resources_pkey'
 }
 
 /** input type for inserting data into table "resources" */
@@ -16344,17 +16345,17 @@ export type ResourcesPkColumnsInput = {
 /** select columns of table "resources" */
 export enum ResourcesSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  DisplayName = 'displayName',
+  displayName = 'displayName',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "resources" */
@@ -16388,17 +16389,17 @@ export type ResourcesStreamCursorValueInput = {
 /** update columns of table "resources" */
 export enum ResourcesUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  DisplayName = 'displayName',
+  displayName = 'displayName',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type ResourcesUpdates = {
@@ -16499,9 +16500,9 @@ export type RolePermissionsBoolExp = {
 /** unique or primary key constraints on table "role_permissions" */
 export enum RolePermissionsConstraint {
   /** unique or primary key constraint on columns "id" */
-  RolePermissionsPkey = 'role_permissions_pkey',
+  role_permissions_pkey = 'role_permissions_pkey',
   /** unique or primary key constraint on columns "permission_id", "role_id" */
-  RolePermissionsRoleIdPermissionIdKey = 'role_permissions_role_id_permission_id_key'
+  role_permissions_role_id_permission_id_key = 'role_permissions_role_id_permission_id_key'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -16610,17 +16611,17 @@ export type RolePermissionsPrependInput = {
 /** select columns of table "role_permissions" */
 export enum RolePermissionsSelectColumn {
   /** column name */
-  Conditions = 'conditions',
+  conditions = 'conditions',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  PermissionId = 'permissionId',
+  permissionId = 'permissionId',
   /** column name */
-  RoleId = 'roleId',
+  roleId = 'roleId',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "role_permissions" */
@@ -16654,17 +16655,17 @@ export type RolePermissionsStreamCursorValueInput = {
 /** update columns of table "role_permissions" */
 export enum RolePermissionsUpdateColumn {
   /** column name */
-  Conditions = 'conditions',
+  conditions = 'conditions',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  PermissionId = 'permissionId',
+  permissionId = 'permissionId',
   /** column name */
-  RoleId = 'roleId',
+  roleId = 'roleId',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type RolePermissionsUpdates = {
@@ -16803,9 +16804,9 @@ export type RolesBoolExp = {
 /** unique or primary key constraints on table "roles" */
 export enum RolesConstraint {
   /** unique or primary key constraint on columns "name" */
-  RolesNameKey = 'roles_name_key',
+  roles_name_key = 'roles_name_key',
   /** unique or primary key constraint on columns "id" */
-  RolesPkey = 'roles_pkey'
+  roles_pkey = 'roles_pkey'
 }
 
 /** input type for incrementing numeric columns in table "roles" */
@@ -16896,21 +16897,21 @@ export type RolesPkColumnsInput = {
 /** select columns of table "roles" */
 export enum RolesSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  DisplayName = 'displayName',
+  displayName = 'displayName',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsSystemRole = 'isSystemRole',
+  isSystemRole = 'isSystemRole',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  Priority = 'priority',
+  priority = 'priority',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "roles" */
@@ -16972,21 +16973,21 @@ export type RolesSumFields = {
 /** update columns of table "roles" */
 export enum RolesUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Description = 'description',
+  description = 'description',
   /** column name */
-  DisplayName = 'displayName',
+  displayName = 'displayName',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsSystemRole = 'isSystemRole',
+  isSystemRole = 'isSystemRole',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  Priority = 'priority',
+  priority = 'priority',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type RolesUpdates = {
@@ -17069,7 +17070,7 @@ export type SlowQueriesBoolExp = {
 /** unique or primary key constraints on table "audit.slow_queries" */
 export enum SlowQueriesConstraint {
   /** unique or primary key constraint on columns "id" */
-  SlowQueriesPkey = 'slow_queries_pkey'
+  slow_queries_pkey = 'slow_queries_pkey'
 }
 
 /** input type for inserting data into table "audit.slow_queries" */
@@ -17142,21 +17143,21 @@ export type SlowQueriesPkColumnsInput = {
 /** select columns of table "audit.slow_queries" */
 export enum SlowQueriesSelectColumn {
   /** column name */
-  ApplicationName = 'applicationName',
+  applicationName = 'applicationName',
   /** column name */
-  ClientAddr = 'clientAddr',
+  clientAddr = 'clientAddr',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Query = 'query',
+  query = 'query',
   /** column name */
-  QueryDuration = 'queryDuration',
+  queryDuration = 'queryDuration',
   /** column name */
-  QueryStart = 'queryStart',
+  queryStart = 'queryStart',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 /** input type for updating data in table "audit.slow_queries" */
@@ -17194,21 +17195,21 @@ export type SlowQueriesStreamCursorValueInput = {
 /** update columns of table "audit.slow_queries" */
 export enum SlowQueriesUpdateColumn {
   /** column name */
-  ApplicationName = 'applicationName',
+  applicationName = 'applicationName',
   /** column name */
-  ClientAddr = 'clientAddr',
+  clientAddr = 'clientAddr',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Query = 'query',
+  query = 'query',
   /** column name */
-  QueryDuration = 'queryDuration',
+  queryDuration = 'queryDuration',
   /** column name */
-  QueryStart = 'queryStart',
+  queryStart = 'queryStart',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 export type SlowQueriesUpdates = {
@@ -17218,7 +17219,7 @@ export type SlowQueriesUpdates = {
   where: SlowQueriesBoolExp;
 };
 
-export type Subscription_Root = {
+export type SubscriptionRoot = {
   __typename?: 'subscription_root';
   /** execute function "activate_payroll_versions" which returns "payroll_activation_results" */
   activatePayrollVersions: Array<PayrollActivationResults>;
@@ -17603,7 +17604,7 @@ export type Subscription_Root = {
 };
 
 
-export type Subscription_RootActivatePayrollVersionsArgs = {
+export type SubscriptionRootActivatePayrollVersionsArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17612,7 +17613,7 @@ export type Subscription_RootActivatePayrollVersionsArgs = {
 };
 
 
-export type Subscription_RootActivatePayrollVersionsAggregateArgs = {
+export type SubscriptionRootActivatePayrollVersionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17621,12 +17622,12 @@ export type Subscription_RootActivatePayrollVersionsAggregateArgs = {
 };
 
 
-export type Subscription_RootAdjustmentRuleByIdArgs = {
+export type SubscriptionRootAdjustmentRuleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootAdjustmentRulesArgs = {
+export type SubscriptionRootAdjustmentRulesArgs = {
   distinctOn?: InputMaybe<Array<AdjustmentRulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17635,7 +17636,7 @@ export type Subscription_RootAdjustmentRulesArgs = {
 };
 
 
-export type Subscription_RootAdjustmentRulesAggregateArgs = {
+export type SubscriptionRootAdjustmentRulesAggregateArgs = {
   distinctOn?: InputMaybe<Array<AdjustmentRulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17644,19 +17645,19 @@ export type Subscription_RootAdjustmentRulesAggregateArgs = {
 };
 
 
-export type Subscription_RootAdjustmentRulesStreamArgs = {
+export type SubscriptionRootAdjustmentRulesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AdjustmentRulesStreamCursorInput>>;
   where?: InputMaybe<AdjustmentRulesBoolExp>;
 };
 
 
-export type Subscription_RootAppSettingByIdArgs = {
+export type SubscriptionRootAppSettingByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
-export type Subscription_RootAppSettingsArgs = {
+export type SubscriptionRootAppSettingsArgs = {
   distinctOn?: InputMaybe<Array<AppSettingsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17665,7 +17666,7 @@ export type Subscription_RootAppSettingsArgs = {
 };
 
 
-export type Subscription_RootAppSettingsAggregateArgs = {
+export type SubscriptionRootAppSettingsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AppSettingsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17674,19 +17675,19 @@ export type Subscription_RootAppSettingsAggregateArgs = {
 };
 
 
-export type Subscription_RootAppSettingsStreamArgs = {
+export type SubscriptionRootAppSettingsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AppSettingsStreamCursorInput>>;
   where?: InputMaybe<AppSettingsBoolExp>;
 };
 
 
-export type Subscription_RootAuditLogByIdArgs = {
+export type SubscriptionRootAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootAuditLogsArgs = {
+export type SubscriptionRootAuditLogsArgs = {
   distinctOn?: InputMaybe<Array<AuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17695,7 +17696,7 @@ export type Subscription_RootAuditLogsArgs = {
 };
 
 
-export type Subscription_RootAuditLogsAggregateArgs = {
+export type SubscriptionRootAuditLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17704,19 +17705,19 @@ export type Subscription_RootAuditLogsAggregateArgs = {
 };
 
 
-export type Subscription_RootAuditLogsStreamArgs = {
+export type SubscriptionRootAuditLogsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AuditLogsStreamCursorInput>>;
   where?: InputMaybe<AuditLogsBoolExp>;
 };
 
 
-export type Subscription_RootAuthEventByIdArgs = {
+export type SubscriptionRootAuthEventByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootAuthEventsArgs = {
+export type SubscriptionRootAuthEventsArgs = {
   distinctOn?: InputMaybe<Array<AuthEventsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17725,7 +17726,7 @@ export type Subscription_RootAuthEventsArgs = {
 };
 
 
-export type Subscription_RootAuthEventsAggregateArgs = {
+export type SubscriptionRootAuthEventsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuthEventsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17734,26 +17735,26 @@ export type Subscription_RootAuthEventsAggregateArgs = {
 };
 
 
-export type Subscription_RootAuthEventsStreamArgs = {
+export type SubscriptionRootAuthEventsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AuthEventsStreamCursorInput>>;
   where?: InputMaybe<AuthEventsBoolExp>;
 };
 
 
-export type Subscription_RootAuthUsersSyncStreamArgs = {
+export type SubscriptionRootAuthUsersSyncStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AuthUsersSyncStreamCursorInput>>;
   where?: InputMaybe<AuthUsersSyncBoolExp>;
 };
 
 
-export type Subscription_RootBillingEventLogByIdArgs = {
+export type SubscriptionRootBillingEventLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootBillingEventLogsArgs = {
+export type SubscriptionRootBillingEventLogsArgs = {
   distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17762,7 +17763,7 @@ export type Subscription_RootBillingEventLogsArgs = {
 };
 
 
-export type Subscription_RootBillingEventLogsAggregateArgs = {
+export type SubscriptionRootBillingEventLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17771,14 +17772,14 @@ export type Subscription_RootBillingEventLogsAggregateArgs = {
 };
 
 
-export type Subscription_RootBillingEventLogsStreamArgs = {
+export type SubscriptionRootBillingEventLogsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<BillingEventLogsStreamCursorInput>>;
   where?: InputMaybe<BillingEventLogsBoolExp>;
 };
 
 
-export type Subscription_RootBillingInvoiceArgs = {
+export type SubscriptionRootBillingInvoiceArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17787,7 +17788,7 @@ export type Subscription_RootBillingInvoiceArgs = {
 };
 
 
-export type Subscription_RootBillingInvoiceAggregateArgs = {
+export type SubscriptionRootBillingInvoiceAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17796,24 +17797,24 @@ export type Subscription_RootBillingInvoiceAggregateArgs = {
 };
 
 
-export type Subscription_RootBillingInvoiceByIdArgs = {
+export type SubscriptionRootBillingInvoiceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootBillingInvoiceStreamArgs = {
+export type SubscriptionRootBillingInvoiceStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<BillingInvoiceStreamCursorInput>>;
   where?: InputMaybe<BillingInvoiceBoolExp>;
 };
 
 
-export type Subscription_RootBillingItemByIdArgs = {
+export type SubscriptionRootBillingItemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootBillingItemsArgs = {
+export type SubscriptionRootBillingItemsArgs = {
   distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17822,7 +17823,7 @@ export type Subscription_RootBillingItemsArgs = {
 };
 
 
-export type Subscription_RootBillingItemsAggregateArgs = {
+export type SubscriptionRootBillingItemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17831,19 +17832,19 @@ export type Subscription_RootBillingItemsAggregateArgs = {
 };
 
 
-export type Subscription_RootBillingItemsStreamArgs = {
+export type SubscriptionRootBillingItemsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<BillingItemsStreamCursorInput>>;
   where?: InputMaybe<BillingItemsBoolExp>;
 };
 
 
-export type Subscription_RootBillingPlanByIdArgs = {
+export type SubscriptionRootBillingPlanByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootBillingPlansArgs = {
+export type SubscriptionRootBillingPlansArgs = {
   distinctOn?: InputMaybe<Array<BillingPlansSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17852,7 +17853,7 @@ export type Subscription_RootBillingPlansArgs = {
 };
 
 
-export type Subscription_RootBillingPlansAggregateArgs = {
+export type SubscriptionRootBillingPlansAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingPlansSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17861,19 +17862,19 @@ export type Subscription_RootBillingPlansAggregateArgs = {
 };
 
 
-export type Subscription_RootBillingPlansStreamArgs = {
+export type SubscriptionRootBillingPlansStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<BillingPlansStreamCursorInput>>;
   where?: InputMaybe<BillingPlansBoolExp>;
 };
 
 
-export type Subscription_RootClientBillingAssignmentByIdArgs = {
+export type SubscriptionRootClientBillingAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootClientBillingAssignmentsArgs = {
+export type SubscriptionRootClientBillingAssignmentsArgs = {
   distinctOn?: InputMaybe<Array<ClientBillingAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17882,7 +17883,7 @@ export type Subscription_RootClientBillingAssignmentsArgs = {
 };
 
 
-export type Subscription_RootClientBillingAssignmentsAggregateArgs = {
+export type SubscriptionRootClientBillingAssignmentsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientBillingAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17891,24 +17892,24 @@ export type Subscription_RootClientBillingAssignmentsAggregateArgs = {
 };
 
 
-export type Subscription_RootClientBillingAssignmentsStreamArgs = {
+export type SubscriptionRootClientBillingAssignmentsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ClientBillingAssignmentsStreamCursorInput>>;
   where?: InputMaybe<ClientBillingAssignmentsBoolExp>;
 };
 
 
-export type Subscription_RootClientByIdArgs = {
+export type SubscriptionRootClientByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootClientExternalSystemByIdArgs = {
+export type SubscriptionRootClientExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootClientExternalSystemsArgs = {
+export type SubscriptionRootClientExternalSystemsArgs = {
   distinctOn?: InputMaybe<Array<ClientExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17917,7 +17918,7 @@ export type Subscription_RootClientExternalSystemsArgs = {
 };
 
 
-export type Subscription_RootClientExternalSystemsAggregateArgs = {
+export type SubscriptionRootClientExternalSystemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17926,14 +17927,14 @@ export type Subscription_RootClientExternalSystemsAggregateArgs = {
 };
 
 
-export type Subscription_RootClientExternalSystemsStreamArgs = {
+export type SubscriptionRootClientExternalSystemsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ClientExternalSystemsStreamCursorInput>>;
   where?: InputMaybe<ClientExternalSystemsBoolExp>;
 };
 
 
-export type Subscription_RootClientsArgs = {
+export type SubscriptionRootClientsArgs = {
   distinctOn?: InputMaybe<Array<ClientsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17942,7 +17943,7 @@ export type Subscription_RootClientsArgs = {
 };
 
 
-export type Subscription_RootClientsAggregateArgs = {
+export type SubscriptionRootClientsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17951,14 +17952,14 @@ export type Subscription_RootClientsAggregateArgs = {
 };
 
 
-export type Subscription_RootClientsStreamArgs = {
+export type SubscriptionRootClientsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ClientsStreamCursorInput>>;
   where?: InputMaybe<ClientsBoolExp>;
 };
 
 
-export type Subscription_RootCreatePayrollVersionArgs = {
+export type SubscriptionRootCreatePayrollVersionArgs = {
   args: CreatePayrollVersionArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -17968,7 +17969,7 @@ export type Subscription_RootCreatePayrollVersionArgs = {
 };
 
 
-export type Subscription_RootCreatePayrollVersionAggregateArgs = {
+export type SubscriptionRootCreatePayrollVersionAggregateArgs = {
   args: CreatePayrollVersionArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -17978,7 +17979,7 @@ export type Subscription_RootCreatePayrollVersionAggregateArgs = {
 };
 
 
-export type Subscription_RootCreatePayrollVersionSimpleArgs = {
+export type SubscriptionRootCreatePayrollVersionSimpleArgs = {
   args: CreatePayrollVersionSimpleArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -17988,7 +17989,7 @@ export type Subscription_RootCreatePayrollVersionSimpleArgs = {
 };
 
 
-export type Subscription_RootCreatePayrollVersionSimpleAggregateArgs = {
+export type SubscriptionRootCreatePayrollVersionSimpleAggregateArgs = {
   args: CreatePayrollVersionSimpleArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -17998,7 +17999,7 @@ export type Subscription_RootCreatePayrollVersionSimpleAggregateArgs = {
 };
 
 
-export type Subscription_RootCurrentPayrollsArgs = {
+export type SubscriptionRootCurrentPayrollsArgs = {
   distinctOn?: InputMaybe<Array<CurrentPayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18007,7 +18008,7 @@ export type Subscription_RootCurrentPayrollsArgs = {
 };
 
 
-export type Subscription_RootCurrentPayrollsAggregateArgs = {
+export type SubscriptionRootCurrentPayrollsAggregateArgs = {
   distinctOn?: InputMaybe<Array<CurrentPayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18016,19 +18017,19 @@ export type Subscription_RootCurrentPayrollsAggregateArgs = {
 };
 
 
-export type Subscription_RootCurrentPayrollsStreamArgs = {
+export type SubscriptionRootCurrentPayrollsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<CurrentPayrollsStreamCursorInput>>;
   where?: InputMaybe<CurrentPayrollsBoolExp>;
 };
 
 
-export type Subscription_RootDataAccessLogByIdArgs = {
+export type SubscriptionRootDataAccessLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootDataAccessLogsArgs = {
+export type SubscriptionRootDataAccessLogsArgs = {
   distinctOn?: InputMaybe<Array<DataAccessLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18037,7 +18038,7 @@ export type Subscription_RootDataAccessLogsArgs = {
 };
 
 
-export type Subscription_RootDataAccessLogsAggregateArgs = {
+export type SubscriptionRootDataAccessLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<DataAccessLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18046,19 +18047,19 @@ export type Subscription_RootDataAccessLogsAggregateArgs = {
 };
 
 
-export type Subscription_RootDataAccessLogsStreamArgs = {
+export type SubscriptionRootDataAccessLogsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<DataAccessLogsStreamCursorInput>>;
   where?: InputMaybe<DataAccessLogsBoolExp>;
 };
 
 
-export type Subscription_RootExternalSystemByIdArgs = {
+export type SubscriptionRootExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootExternalSystemsArgs = {
+export type SubscriptionRootExternalSystemsArgs = {
   distinctOn?: InputMaybe<Array<ExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18067,7 +18068,7 @@ export type Subscription_RootExternalSystemsArgs = {
 };
 
 
-export type Subscription_RootExternalSystemsAggregateArgs = {
+export type SubscriptionRootExternalSystemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18076,19 +18077,19 @@ export type Subscription_RootExternalSystemsAggregateArgs = {
 };
 
 
-export type Subscription_RootExternalSystemsStreamArgs = {
+export type SubscriptionRootExternalSystemsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ExternalSystemsStreamCursorInput>>;
   where?: InputMaybe<ExternalSystemsBoolExp>;
 };
 
 
-export type Subscription_RootFeatureFlagByIdArgs = {
+export type SubscriptionRootFeatureFlagByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootFeatureFlagsArgs = {
+export type SubscriptionRootFeatureFlagsArgs = {
   distinctOn?: InputMaybe<Array<FeatureFlagsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18097,7 +18098,7 @@ export type Subscription_RootFeatureFlagsArgs = {
 };
 
 
-export type Subscription_RootFeatureFlagsAggregateArgs = {
+export type SubscriptionRootFeatureFlagsAggregateArgs = {
   distinctOn?: InputMaybe<Array<FeatureFlagsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18106,14 +18107,14 @@ export type Subscription_RootFeatureFlagsAggregateArgs = {
 };
 
 
-export type Subscription_RootFeatureFlagsStreamArgs = {
+export type SubscriptionRootFeatureFlagsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<FeatureFlagsStreamCursorInput>>;
   where?: InputMaybe<FeatureFlagsBoolExp>;
 };
 
 
-export type Subscription_RootGeneratePayrollDatesArgs = {
+export type SubscriptionRootGeneratePayrollDatesArgs = {
   args: GeneratePayrollDatesArgs;
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18123,7 +18124,7 @@ export type Subscription_RootGeneratePayrollDatesArgs = {
 };
 
 
-export type Subscription_RootGeneratePayrollDatesAggregateArgs = {
+export type SubscriptionRootGeneratePayrollDatesAggregateArgs = {
   args: GeneratePayrollDatesArgs;
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18133,7 +18134,7 @@ export type Subscription_RootGeneratePayrollDatesAggregateArgs = {
 };
 
 
-export type Subscription_RootGetLatestPayrollVersionArgs = {
+export type SubscriptionRootGetLatestPayrollVersionArgs = {
   args: GetLatestPayrollVersionArgs;
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18143,7 +18144,7 @@ export type Subscription_RootGetLatestPayrollVersionArgs = {
 };
 
 
-export type Subscription_RootGetLatestPayrollVersionAggregateArgs = {
+export type SubscriptionRootGetLatestPayrollVersionAggregateArgs = {
   args: GetLatestPayrollVersionArgs;
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18153,7 +18154,7 @@ export type Subscription_RootGetLatestPayrollVersionAggregateArgs = {
 };
 
 
-export type Subscription_RootGetPayrollVersionHistoryArgs = {
+export type SubscriptionRootGetPayrollVersionHistoryArgs = {
   args: GetPayrollVersionHistoryArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18163,7 +18164,7 @@ export type Subscription_RootGetPayrollVersionHistoryArgs = {
 };
 
 
-export type Subscription_RootGetPayrollVersionHistoryAggregateArgs = {
+export type SubscriptionRootGetPayrollVersionHistoryAggregateArgs = {
   args: GetPayrollVersionHistoryArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18173,12 +18174,12 @@ export type Subscription_RootGetPayrollVersionHistoryAggregateArgs = {
 };
 
 
-export type Subscription_RootHolidayByIdArgs = {
+export type SubscriptionRootHolidayByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootHolidaysArgs = {
+export type SubscriptionRootHolidaysArgs = {
   distinctOn?: InputMaybe<Array<HolidaysSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18187,7 +18188,7 @@ export type Subscription_RootHolidaysArgs = {
 };
 
 
-export type Subscription_RootHolidaysAggregateArgs = {
+export type SubscriptionRootHolidaysAggregateArgs = {
   distinctOn?: InputMaybe<Array<HolidaysSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18196,19 +18197,19 @@ export type Subscription_RootHolidaysAggregateArgs = {
 };
 
 
-export type Subscription_RootHolidaysStreamArgs = {
+export type SubscriptionRootHolidaysStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<HolidaysStreamCursorInput>>;
   where?: InputMaybe<HolidaysBoolExp>;
 };
 
 
-export type Subscription_RootLatestPayrollVersionResultByIdArgs = {
+export type SubscriptionRootLatestPayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootLatestPayrollVersionResultsArgs = {
+export type SubscriptionRootLatestPayrollVersionResultsArgs = {
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18217,7 +18218,7 @@ export type Subscription_RootLatestPayrollVersionResultsArgs = {
 };
 
 
-export type Subscription_RootLatestPayrollVersionResultsAggregateArgs = {
+export type SubscriptionRootLatestPayrollVersionResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18226,14 +18227,14 @@ export type Subscription_RootLatestPayrollVersionResultsAggregateArgs = {
 };
 
 
-export type Subscription_RootLatestPayrollVersionResultsStreamArgs = {
+export type SubscriptionRootLatestPayrollVersionResultsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<LatestPayrollVersionResultsStreamCursorInput>>;
   where?: InputMaybe<LatestPayrollVersionResultsBoolExp>;
 };
 
 
-export type Subscription_RootLeaveArgs = {
+export type SubscriptionRootLeaveArgs = {
   distinctOn?: InputMaybe<Array<LeaveSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18242,7 +18243,7 @@ export type Subscription_RootLeaveArgs = {
 };
 
 
-export type Subscription_RootLeaveAggregateArgs = {
+export type SubscriptionRootLeaveAggregateArgs = {
   distinctOn?: InputMaybe<Array<LeaveSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18251,24 +18252,24 @@ export type Subscription_RootLeaveAggregateArgs = {
 };
 
 
-export type Subscription_RootLeaveByIdArgs = {
+export type SubscriptionRootLeaveByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootLeaveStreamArgs = {
+export type SubscriptionRootLeaveStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<LeaveStreamCursorInput>>;
   where?: InputMaybe<LeaveBoolExp>;
 };
 
 
-export type Subscription_RootNoteByIdArgs = {
+export type SubscriptionRootNoteByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootNotesArgs = {
+export type SubscriptionRootNotesArgs = {
   distinctOn?: InputMaybe<Array<NotesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18277,7 +18278,7 @@ export type Subscription_RootNotesArgs = {
 };
 
 
-export type Subscription_RootNotesAggregateArgs = {
+export type SubscriptionRootNotesAggregateArgs = {
   distinctOn?: InputMaybe<Array<NotesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18286,19 +18287,19 @@ export type Subscription_RootNotesAggregateArgs = {
 };
 
 
-export type Subscription_RootNotesStreamArgs = {
+export type SubscriptionRootNotesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<NotesStreamCursorInput>>;
   where?: InputMaybe<NotesBoolExp>;
 };
 
 
-export type Subscription_RootPayrollActivationResultByIdArgs = {
+export type SubscriptionRootPayrollActivationResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPayrollActivationResultsArgs = {
+export type SubscriptionRootPayrollActivationResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18307,7 +18308,7 @@ export type Subscription_RootPayrollActivationResultsArgs = {
 };
 
 
-export type Subscription_RootPayrollActivationResultsAggregateArgs = {
+export type SubscriptionRootPayrollActivationResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18316,19 +18317,19 @@ export type Subscription_RootPayrollActivationResultsAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollActivationResultsStreamArgs = {
+export type SubscriptionRootPayrollActivationResultsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollActivationResultsStreamCursorInput>>;
   where?: InputMaybe<PayrollActivationResultsBoolExp>;
 };
 
 
-export type Subscription_RootPayrollAssignmentAuditByIdArgs = {
+export type SubscriptionRootPayrollAssignmentAuditByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPayrollAssignmentAuditsArgs = {
+export type SubscriptionRootPayrollAssignmentAuditsArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentAuditsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18337,7 +18338,7 @@ export type Subscription_RootPayrollAssignmentAuditsArgs = {
 };
 
 
-export type Subscription_RootPayrollAssignmentAuditsAggregateArgs = {
+export type SubscriptionRootPayrollAssignmentAuditsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentAuditsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18346,19 +18347,19 @@ export type Subscription_RootPayrollAssignmentAuditsAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollAssignmentAuditsStreamArgs = {
+export type SubscriptionRootPayrollAssignmentAuditsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollAssignmentAuditsStreamCursorInput>>;
   where?: InputMaybe<PayrollAssignmentAuditsBoolExp>;
 };
 
 
-export type Subscription_RootPayrollAssignmentByIdArgs = {
+export type SubscriptionRootPayrollAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPayrollAssignmentsArgs = {
+export type SubscriptionRootPayrollAssignmentsArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18367,7 +18368,7 @@ export type Subscription_RootPayrollAssignmentsArgs = {
 };
 
 
-export type Subscription_RootPayrollAssignmentsAggregateArgs = {
+export type SubscriptionRootPayrollAssignmentsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18376,24 +18377,24 @@ export type Subscription_RootPayrollAssignmentsAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollAssignmentsStreamArgs = {
+export type SubscriptionRootPayrollAssignmentsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollAssignmentsStreamCursorInput>>;
   where?: InputMaybe<PayrollAssignmentsBoolExp>;
 };
 
 
-export type Subscription_RootPayrollByIdArgs = {
+export type SubscriptionRootPayrollByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPayrollCycleByIdArgs = {
+export type SubscriptionRootPayrollCycleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPayrollCyclesArgs = {
+export type SubscriptionRootPayrollCyclesArgs = {
   distinctOn?: InputMaybe<Array<PayrollCyclesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18402,7 +18403,7 @@ export type Subscription_RootPayrollCyclesArgs = {
 };
 
 
-export type Subscription_RootPayrollCyclesAggregateArgs = {
+export type SubscriptionRootPayrollCyclesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollCyclesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18411,14 +18412,14 @@ export type Subscription_RootPayrollCyclesAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollCyclesStreamArgs = {
+export type SubscriptionRootPayrollCyclesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollCyclesStreamCursorInput>>;
   where?: InputMaybe<PayrollCyclesBoolExp>;
 };
 
 
-export type Subscription_RootPayrollDashboardStatsArgs = {
+export type SubscriptionRootPayrollDashboardStatsArgs = {
   distinctOn?: InputMaybe<Array<PayrollDashboardStatsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18427,7 +18428,7 @@ export type Subscription_RootPayrollDashboardStatsArgs = {
 };
 
 
-export type Subscription_RootPayrollDashboardStatsAggregateArgs = {
+export type SubscriptionRootPayrollDashboardStatsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDashboardStatsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18436,24 +18437,24 @@ export type Subscription_RootPayrollDashboardStatsAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollDashboardStatsStreamArgs = {
+export type SubscriptionRootPayrollDashboardStatsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollDashboardStatsStreamCursorInput>>;
   where?: InputMaybe<PayrollDashboardStatsBoolExp>;
 };
 
 
-export type Subscription_RootPayrollDateByIdArgs = {
+export type SubscriptionRootPayrollDateByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPayrollDateTypeByIdArgs = {
+export type SubscriptionRootPayrollDateTypeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPayrollDateTypesArgs = {
+export type SubscriptionRootPayrollDateTypesArgs = {
   distinctOn?: InputMaybe<Array<PayrollDateTypesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18462,7 +18463,7 @@ export type Subscription_RootPayrollDateTypesArgs = {
 };
 
 
-export type Subscription_RootPayrollDateTypesAggregateArgs = {
+export type SubscriptionRootPayrollDateTypesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDateTypesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18471,14 +18472,14 @@ export type Subscription_RootPayrollDateTypesAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollDateTypesStreamArgs = {
+export type SubscriptionRootPayrollDateTypesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollDateTypesStreamCursorInput>>;
   where?: InputMaybe<PayrollDateTypesBoolExp>;
 };
 
 
-export type Subscription_RootPayrollDatesArgs = {
+export type SubscriptionRootPayrollDatesArgs = {
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18487,7 +18488,7 @@ export type Subscription_RootPayrollDatesArgs = {
 };
 
 
-export type Subscription_RootPayrollDatesAggregateArgs = {
+export type SubscriptionRootPayrollDatesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18496,14 +18497,14 @@ export type Subscription_RootPayrollDatesAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollDatesStreamArgs = {
+export type SubscriptionRootPayrollDatesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollDatesStreamCursorInput>>;
   where?: InputMaybe<PayrollDatesBoolExp>;
 };
 
 
-export type Subscription_RootPayrollTriggersStatusArgs = {
+export type SubscriptionRootPayrollTriggersStatusArgs = {
   distinctOn?: InputMaybe<Array<PayrollTriggersStatusSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18512,7 +18513,7 @@ export type Subscription_RootPayrollTriggersStatusArgs = {
 };
 
 
-export type Subscription_RootPayrollTriggersStatusAggregateArgs = {
+export type SubscriptionRootPayrollTriggersStatusAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollTriggersStatusSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18521,19 +18522,19 @@ export type Subscription_RootPayrollTriggersStatusAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollTriggersStatusStreamArgs = {
+export type SubscriptionRootPayrollTriggersStatusStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollTriggersStatusStreamCursorInput>>;
   where?: InputMaybe<PayrollTriggersStatusBoolExp>;
 };
 
 
-export type Subscription_RootPayrollVersionHistoryResultByIdArgs = {
+export type SubscriptionRootPayrollVersionHistoryResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPayrollVersionHistoryResultsArgs = {
+export type SubscriptionRootPayrollVersionHistoryResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18542,7 +18543,7 @@ export type Subscription_RootPayrollVersionHistoryResultsArgs = {
 };
 
 
-export type Subscription_RootPayrollVersionHistoryResultsAggregateArgs = {
+export type SubscriptionRootPayrollVersionHistoryResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18551,19 +18552,19 @@ export type Subscription_RootPayrollVersionHistoryResultsAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollVersionHistoryResultsStreamArgs = {
+export type SubscriptionRootPayrollVersionHistoryResultsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollVersionHistoryResultsStreamCursorInput>>;
   where?: InputMaybe<PayrollVersionHistoryResultsBoolExp>;
 };
 
 
-export type Subscription_RootPayrollVersionResultByIdArgs = {
+export type SubscriptionRootPayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPayrollVersionResultsArgs = {
+export type SubscriptionRootPayrollVersionResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18572,7 +18573,7 @@ export type Subscription_RootPayrollVersionResultsArgs = {
 };
 
 
-export type Subscription_RootPayrollVersionResultsAggregateArgs = {
+export type SubscriptionRootPayrollVersionResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18581,14 +18582,14 @@ export type Subscription_RootPayrollVersionResultsAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollVersionResultsStreamArgs = {
+export type SubscriptionRootPayrollVersionResultsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollVersionResultsStreamCursorInput>>;
   where?: InputMaybe<PayrollVersionResultsBoolExp>;
 };
 
 
-export type Subscription_RootPayrollsArgs = {
+export type SubscriptionRootPayrollsArgs = {
   distinctOn?: InputMaybe<Array<PayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18597,7 +18598,7 @@ export type Subscription_RootPayrollsArgs = {
 };
 
 
-export type Subscription_RootPayrollsAggregateArgs = {
+export type SubscriptionRootPayrollsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18606,19 +18607,19 @@ export type Subscription_RootPayrollsAggregateArgs = {
 };
 
 
-export type Subscription_RootPayrollsStreamArgs = {
+export type SubscriptionRootPayrollsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollsStreamCursorInput>>;
   where?: InputMaybe<PayrollsBoolExp>;
 };
 
 
-export type Subscription_RootPermissionAuditLogByIdArgs = {
+export type SubscriptionRootPermissionAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPermissionAuditLogsArgs = {
+export type SubscriptionRootPermissionAuditLogsArgs = {
   distinctOn?: InputMaybe<Array<PermissionAuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18627,7 +18628,7 @@ export type Subscription_RootPermissionAuditLogsArgs = {
 };
 
 
-export type Subscription_RootPermissionAuditLogsAggregateArgs = {
+export type SubscriptionRootPermissionAuditLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionAuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18636,24 +18637,24 @@ export type Subscription_RootPermissionAuditLogsAggregateArgs = {
 };
 
 
-export type Subscription_RootPermissionAuditLogsStreamArgs = {
+export type SubscriptionRootPermissionAuditLogsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PermissionAuditLogsStreamCursorInput>>;
   where?: InputMaybe<PermissionAuditLogsBoolExp>;
 };
 
 
-export type Subscription_RootPermissionByIdArgs = {
+export type SubscriptionRootPermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPermissionChangeByIdArgs = {
+export type SubscriptionRootPermissionChangeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPermissionChangesArgs = {
+export type SubscriptionRootPermissionChangesArgs = {
   distinctOn?: InputMaybe<Array<PermissionChangesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18662,7 +18663,7 @@ export type Subscription_RootPermissionChangesArgs = {
 };
 
 
-export type Subscription_RootPermissionChangesAggregateArgs = {
+export type SubscriptionRootPermissionChangesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionChangesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18671,19 +18672,19 @@ export type Subscription_RootPermissionChangesAggregateArgs = {
 };
 
 
-export type Subscription_RootPermissionChangesStreamArgs = {
+export type SubscriptionRootPermissionChangesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PermissionChangesStreamCursorInput>>;
   where?: InputMaybe<PermissionChangesBoolExp>;
 };
 
 
-export type Subscription_RootPermissionOverrideByIdArgs = {
+export type SubscriptionRootPermissionOverrideByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootPermissionOverridesArgs = {
+export type SubscriptionRootPermissionOverridesArgs = {
   distinctOn?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18692,7 +18693,7 @@ export type Subscription_RootPermissionOverridesArgs = {
 };
 
 
-export type Subscription_RootPermissionOverridesAggregateArgs = {
+export type SubscriptionRootPermissionOverridesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18701,14 +18702,14 @@ export type Subscription_RootPermissionOverridesAggregateArgs = {
 };
 
 
-export type Subscription_RootPermissionOverridesStreamArgs = {
+export type SubscriptionRootPermissionOverridesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PermissionOverridesStreamCursorInput>>;
   where?: InputMaybe<PermissionOverridesBoolExp>;
 };
 
 
-export type Subscription_RootPermissionUsageReportsArgs = {
+export type SubscriptionRootPermissionUsageReportsArgs = {
   distinctOn?: InputMaybe<Array<PermissionUsageReportsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18717,7 +18718,7 @@ export type Subscription_RootPermissionUsageReportsArgs = {
 };
 
 
-export type Subscription_RootPermissionUsageReportsAggregateArgs = {
+export type SubscriptionRootPermissionUsageReportsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionUsageReportsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18726,14 +18727,14 @@ export type Subscription_RootPermissionUsageReportsAggregateArgs = {
 };
 
 
-export type Subscription_RootPermissionUsageReportsStreamArgs = {
+export type SubscriptionRootPermissionUsageReportsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PermissionUsageReportsStreamCursorInput>>;
   where?: InputMaybe<PermissionUsageReportsBoolExp>;
 };
 
 
-export type Subscription_RootPermissionsArgs = {
+export type SubscriptionRootPermissionsArgs = {
   distinctOn?: InputMaybe<Array<PermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18742,7 +18743,7 @@ export type Subscription_RootPermissionsArgs = {
 };
 
 
-export type Subscription_RootPermissionsAggregateArgs = {
+export type SubscriptionRootPermissionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18751,19 +18752,19 @@ export type Subscription_RootPermissionsAggregateArgs = {
 };
 
 
-export type Subscription_RootPermissionsStreamArgs = {
+export type SubscriptionRootPermissionsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PermissionsStreamCursorInput>>;
   where?: InputMaybe<PermissionsBoolExp>;
 };
 
 
-export type Subscription_RootResourceByIdArgs = {
+export type SubscriptionRootResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootResourcesArgs = {
+export type SubscriptionRootResourcesArgs = {
   distinctOn?: InputMaybe<Array<ResourcesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18772,7 +18773,7 @@ export type Subscription_RootResourcesArgs = {
 };
 
 
-export type Subscription_RootResourcesAggregateArgs = {
+export type SubscriptionRootResourcesAggregateArgs = {
   distinctOn?: InputMaybe<Array<ResourcesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18781,24 +18782,24 @@ export type Subscription_RootResourcesAggregateArgs = {
 };
 
 
-export type Subscription_RootResourcesStreamArgs = {
+export type SubscriptionRootResourcesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ResourcesStreamCursorInput>>;
   where?: InputMaybe<ResourcesBoolExp>;
 };
 
 
-export type Subscription_RootRoleByIdArgs = {
+export type SubscriptionRootRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootRolePermissionByIdArgs = {
+export type SubscriptionRootRolePermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootRolePermissionsArgs = {
+export type SubscriptionRootRolePermissionsArgs = {
   distinctOn?: InputMaybe<Array<RolePermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18807,7 +18808,7 @@ export type Subscription_RootRolePermissionsArgs = {
 };
 
 
-export type Subscription_RootRolePermissionsAggregateArgs = {
+export type SubscriptionRootRolePermissionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<RolePermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18816,14 +18817,14 @@ export type Subscription_RootRolePermissionsAggregateArgs = {
 };
 
 
-export type Subscription_RootRolePermissionsStreamArgs = {
+export type SubscriptionRootRolePermissionsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<RolePermissionsStreamCursorInput>>;
   where?: InputMaybe<RolePermissionsBoolExp>;
 };
 
 
-export type Subscription_RootRolesArgs = {
+export type SubscriptionRootRolesArgs = {
   distinctOn?: InputMaybe<Array<RolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18832,7 +18833,7 @@ export type Subscription_RootRolesArgs = {
 };
 
 
-export type Subscription_RootRolesAggregateArgs = {
+export type SubscriptionRootRolesAggregateArgs = {
   distinctOn?: InputMaybe<Array<RolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18841,14 +18842,14 @@ export type Subscription_RootRolesAggregateArgs = {
 };
 
 
-export type Subscription_RootRolesStreamArgs = {
+export type SubscriptionRootRolesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<RolesStreamCursorInput>>;
   where?: InputMaybe<RolesBoolExp>;
 };
 
 
-export type Subscription_RootSlowQueriesArgs = {
+export type SubscriptionRootSlowQueriesArgs = {
   distinctOn?: InputMaybe<Array<SlowQueriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18857,7 +18858,7 @@ export type Subscription_RootSlowQueriesArgs = {
 };
 
 
-export type Subscription_RootSlowQueriesAggregateArgs = {
+export type SubscriptionRootSlowQueriesAggregateArgs = {
   distinctOn?: InputMaybe<Array<SlowQueriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18866,19 +18867,19 @@ export type Subscription_RootSlowQueriesAggregateArgs = {
 };
 
 
-export type Subscription_RootSlowQueriesStreamArgs = {
+export type SubscriptionRootSlowQueriesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<SlowQueriesStreamCursorInput>>;
   where?: InputMaybe<SlowQueriesBoolExp>;
 };
 
 
-export type Subscription_RootSlowQueryByIdArgs = {
+export type SubscriptionRootSlowQueryByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootUserAccessSummariesArgs = {
+export type SubscriptionRootUserAccessSummariesArgs = {
   distinctOn?: InputMaybe<Array<UserAccessSummariesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18887,7 +18888,7 @@ export type Subscription_RootUserAccessSummariesArgs = {
 };
 
 
-export type Subscription_RootUserAccessSummariesAggregateArgs = {
+export type SubscriptionRootUserAccessSummariesAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserAccessSummariesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18896,24 +18897,24 @@ export type Subscription_RootUserAccessSummariesAggregateArgs = {
 };
 
 
-export type Subscription_RootUserAccessSummariesStreamArgs = {
+export type SubscriptionRootUserAccessSummariesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UserAccessSummariesStreamCursorInput>>;
   where?: InputMaybe<UserAccessSummariesBoolExp>;
 };
 
 
-export type Subscription_RootUserByIdArgs = {
+export type SubscriptionRootUserByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootUserInvitationByIdArgs = {
+export type SubscriptionRootUserInvitationByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootUserInvitationsArgs = {
+export type SubscriptionRootUserInvitationsArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18922,7 +18923,7 @@ export type Subscription_RootUserInvitationsArgs = {
 };
 
 
-export type Subscription_RootUserInvitationsAggregateArgs = {
+export type SubscriptionRootUserInvitationsAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18931,19 +18932,19 @@ export type Subscription_RootUserInvitationsAggregateArgs = {
 };
 
 
-export type Subscription_RootUserInvitationsStreamArgs = {
+export type SubscriptionRootUserInvitationsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UserInvitationsStreamCursorInput>>;
   where?: InputMaybe<UserInvitationsBoolExp>;
 };
 
 
-export type Subscription_RootUserRoleByIdArgs = {
+export type SubscriptionRootUserRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootUserRolesArgs = {
+export type SubscriptionRootUserRolesArgs = {
   distinctOn?: InputMaybe<Array<UserRolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18952,7 +18953,7 @@ export type Subscription_RootUserRolesArgs = {
 };
 
 
-export type Subscription_RootUserRolesAggregateArgs = {
+export type SubscriptionRootUserRolesAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserRolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18961,19 +18962,19 @@ export type Subscription_RootUserRolesAggregateArgs = {
 };
 
 
-export type Subscription_RootUserRolesStreamArgs = {
+export type SubscriptionRootUserRolesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UserRolesStreamCursorInput>>;
   where?: InputMaybe<UserRolesBoolExp>;
 };
 
 
-export type Subscription_RootUserSyncByIdArgs = {
+export type SubscriptionRootUserSyncByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
-export type Subscription_RootUsersArgs = {
+export type SubscriptionRootUsersArgs = {
   distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18982,7 +18983,7 @@ export type Subscription_RootUsersArgs = {
 };
 
 
-export type Subscription_RootUsersAggregateArgs = {
+export type SubscriptionRootUsersAggregateArgs = {
   distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18991,14 +18992,14 @@ export type Subscription_RootUsersAggregateArgs = {
 };
 
 
-export type Subscription_RootUsersRoleBackupStreamArgs = {
+export type SubscriptionRootUsersRoleBackupStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UsersRoleBackupStreamCursorInput>>;
   where?: InputMaybe<UsersRoleBackupBoolExp>;
 };
 
 
-export type Subscription_RootUsersRoleBackupsArgs = {
+export type SubscriptionRootUsersRoleBackupsArgs = {
   distinctOn?: InputMaybe<Array<UsersRoleBackupSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19007,7 +19008,7 @@ export type Subscription_RootUsersRoleBackupsArgs = {
 };
 
 
-export type Subscription_RootUsersRoleBackupsAggregateArgs = {
+export type SubscriptionRootUsersRoleBackupsAggregateArgs = {
   distinctOn?: InputMaybe<Array<UsersRoleBackupSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19016,14 +19017,14 @@ export type Subscription_RootUsersRoleBackupsAggregateArgs = {
 };
 
 
-export type Subscription_RootUsersStreamArgs = {
+export type SubscriptionRootUsersStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UsersStreamCursorInput>>;
   where?: InputMaybe<UsersBoolExp>;
 };
 
 
-export type Subscription_RootUsersSyncArgs = {
+export type SubscriptionRootUsersSyncArgs = {
   distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19032,7 +19033,7 @@ export type Subscription_RootUsersSyncArgs = {
 };
 
 
-export type Subscription_RootUsersSyncAggregateArgs = {
+export type SubscriptionRootUsersSyncAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19041,12 +19042,12 @@ export type Subscription_RootUsersSyncAggregateArgs = {
 };
 
 
-export type Subscription_RootWorkScheduleByIdArgs = {
+export type SubscriptionRootWorkScheduleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootWorkSchedulesArgs = {
+export type SubscriptionRootWorkSchedulesArgs = {
   distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19055,7 +19056,7 @@ export type Subscription_RootWorkSchedulesArgs = {
 };
 
 
-export type Subscription_RootWorkSchedulesAggregateArgs = {
+export type SubscriptionRootWorkSchedulesAggregateArgs = {
   distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19064,7 +19065,7 @@ export type Subscription_RootWorkSchedulesAggregateArgs = {
 };
 
 
-export type Subscription_RootWorkSchedulesStreamArgs = {
+export type SubscriptionRootWorkSchedulesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<WorkSchedulesStreamCursorInput>>;
   where?: InputMaybe<WorkSchedulesBoolExp>;
@@ -19178,21 +19179,21 @@ export type UserAccessSummariesOrderBy = {
 /** select columns of table "audit.user_access_summary" */
 export enum UserAccessSummariesSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Email = 'email',
+  email = 'email',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  IsActive = 'isActive',
+  isActive = 'isActive',
   /** column name */
-  IsStaff = 'isStaff',
+  isStaff = 'isStaff',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  Role = 'role',
+  role = 'role',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "audit.user_access_summary" */
@@ -19325,7 +19326,7 @@ export type UserInvitationsBoolExp = {
 /** unique or primary key constraints on table "user_invitations" */
 export enum UserInvitationsConstraint {
   /** unique or primary key constraint on columns "id" */
-  UserInvitationsPkey = 'user_invitations_pkey'
+  user_invitations_pkey = 'user_invitations_pkey'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -19462,39 +19463,39 @@ export type UserInvitationsPrependInput = {
 /** select columns of table "user_invitations" */
 export enum UserInvitationsSelectColumn {
   /** column name */
-  AcceptedAt = 'acceptedAt',
+  acceptedAt = 'acceptedAt',
   /** column name */
-  AcceptedBy = 'acceptedBy',
+  acceptedBy = 'acceptedBy',
   /** column name */
-  ClerkInvitationId = 'clerkInvitationId',
+  clerkInvitationId = 'clerkInvitationId',
   /** column name */
-  ClerkTicket = 'clerkTicket',
+  clerkTicket = 'clerkTicket',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Email = 'email',
+  email = 'email',
   /** column name */
-  ExpiresAt = 'expiresAt',
+  expiresAt = 'expiresAt',
   /** column name */
-  FirstName = 'firstName',
+  firstName = 'firstName',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  InvitationMetadata = 'invitationMetadata',
+  invitationMetadata = 'invitationMetadata',
   /** column name */
-  InvitedAt = 'invitedAt',
+  invitedAt = 'invitedAt',
   /** column name */
-  InvitedBy = 'invitedBy',
+  invitedBy = 'invitedBy',
   /** column name */
-  InvitedRole = 'invitedRole',
+  invitedRole = 'invitedRole',
   /** column name */
-  LastName = 'lastName',
+  lastName = 'lastName',
   /** column name */
-  ManagerId = 'managerId',
+  managerId = 'managerId',
   /** column name */
-  Status = 'status',
+  status = 'status',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 /** input type for updating data in table "user_invitations" */
@@ -19550,39 +19551,39 @@ export type UserInvitationsStreamCursorValueInput = {
 /** update columns of table "user_invitations" */
 export enum UserInvitationsUpdateColumn {
   /** column name */
-  AcceptedAt = 'acceptedAt',
+  acceptedAt = 'acceptedAt',
   /** column name */
-  AcceptedBy = 'acceptedBy',
+  acceptedBy = 'acceptedBy',
   /** column name */
-  ClerkInvitationId = 'clerkInvitationId',
+  clerkInvitationId = 'clerkInvitationId',
   /** column name */
-  ClerkTicket = 'clerkTicket',
+  clerkTicket = 'clerkTicket',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Email = 'email',
+  email = 'email',
   /** column name */
-  ExpiresAt = 'expiresAt',
+  expiresAt = 'expiresAt',
   /** column name */
-  FirstName = 'firstName',
+  firstName = 'firstName',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  InvitationMetadata = 'invitationMetadata',
+  invitationMetadata = 'invitationMetadata',
   /** column name */
-  InvitedAt = 'invitedAt',
+  invitedAt = 'invitedAt',
   /** column name */
-  InvitedBy = 'invitedBy',
+  invitedBy = 'invitedBy',
   /** column name */
-  InvitedRole = 'invitedRole',
+  invitedRole = 'invitedRole',
   /** column name */
-  LastName = 'lastName',
+  lastName = 'lastName',
   /** column name */
-  ManagerId = 'managerId',
+  managerId = 'managerId',
   /** column name */
-  Status = 'status',
+  status = 'status',
   /** column name */
-  UpdatedAt = 'updatedAt'
+  updatedAt = 'updatedAt'
 }
 
 export type UserInvitationsUpdates = {
@@ -19680,9 +19681,9 @@ export type UserRolesBoolExp = {
 /** unique or primary key constraints on table "user_roles" */
 export enum UserRolesConstraint {
   /** unique or primary key constraint on columns "id" */
-  UserRolesPkey = 'user_roles_pkey',
+  user_roles_pkey = 'user_roles_pkey',
   /** unique or primary key constraint on columns "user_id", "role_id" */
-  UserRolesUserIdRoleIdKey = 'user_roles_user_id_role_id_key'
+  user_roles_user_id_role_id_key = 'user_roles_user_id_role_id_key'
 }
 
 /** input type for inserting data into table "user_roles" */
@@ -19769,15 +19770,15 @@ export type UserRolesPkColumnsInput = {
 /** select columns of table "user_roles" */
 export enum UserRolesSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  RoleId = 'roleId',
+  roleId = 'roleId',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 /** input type for updating data in table "user_roles" */
@@ -19809,15 +19810,15 @@ export type UserRolesStreamCursorValueInput = {
 /** update columns of table "user_roles" */
 export enum UserRolesUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  RoleId = 'roleId',
+  roleId = 'roleId',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  UserId = 'userId'
+  userId = 'userId'
 }
 
 export type UserRolesUpdates = {
@@ -20347,20 +20348,20 @@ export type UsersAggregate = {
 };
 
 export type UsersAggregateBoolExp = {
-  bool_and?: InputMaybe<UsersAggregateBoolExpBool_And>;
-  bool_or?: InputMaybe<UsersAggregateBoolExpBool_Or>;
+  bool_and?: InputMaybe<UsersAggregateBoolExpBoolAnd>;
+  bool_or?: InputMaybe<UsersAggregateBoolExpBoolOr>;
   count?: InputMaybe<UsersAggregateBoolExpCount>;
 };
 
-export type UsersAggregateBoolExpBool_And = {
-  arguments: UsersSelectColumnUsersAggregateBoolExpBool_AndArgumentsColumns;
+export type UsersAggregateBoolExpBoolAnd = {
+  arguments: UsersSelectColumnUsersAggregateBoolExpBoolAndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<UsersBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type UsersAggregateBoolExpBool_Or = {
-  arguments: UsersSelectColumnUsersAggregateBoolExpBool_OrArgumentsColumns;
+export type UsersAggregateBoolExpBoolOr = {
+  arguments: UsersSelectColumnUsersAggregateBoolExpBoolOrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<UsersBoolExp>;
   predicate: BooleanComparisonExp;
@@ -20467,13 +20468,13 @@ export type UsersBoolExp = {
 /** unique or primary key constraints on table "users" */
 export enum UsersConstraint {
   /** unique or primary key constraint on columns "clerk_user_id" */
-  UsersClerkUserIdKey = 'users_clerk_user_id_key',
+  users_clerk_user_id_key = 'users_clerk_user_id_key',
   /** unique or primary key constraint on columns "email" */
-  UsersEmailKey = 'users_email_key',
+  users_email_key = 'users_email_key',
   /** unique or primary key constraint on columns "id" */
-  UsersPkey = 'users_pkey',
+  users_pkey = 'users_pkey',
   /** unique or primary key constraint on columns "username" */
-  UsersUsernameKey = 'users_username_key'
+  users_username_key = 'users_username_key'
 }
 
 /** input type for inserting data into table "users" */
@@ -20788,13 +20789,13 @@ export type UsersRoleBackupOrderBy = {
 /** select columns of table "users_role_backup" */
 export enum UsersRoleBackupSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Email = 'email',
+  email = 'email',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Role = 'role'
+  role = 'role'
 }
 
 /** input type for updating data in table "users_role_backup" */
@@ -20831,49 +20832,49 @@ export type UsersRoleBackupUpdates = {
 /** select columns of table "users" */
 export enum UsersSelectColumn {
   /** column name */
-  ClerkUserId = 'clerkUserId',
+  clerkUserId = 'clerkUserId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  DeactivatedAt = 'deactivatedAt',
+  deactivatedAt = 'deactivatedAt',
   /** column name */
-  DeactivatedBy = 'deactivatedBy',
+  deactivatedBy = 'deactivatedBy',
   /** column name */
-  Email = 'email',
+  email = 'email',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Image = 'image',
+  image = 'image',
   /** column name */
-  IsActive = 'isActive',
+  isActive = 'isActive',
   /** column name */
-  IsStaff = 'isStaff',
+  isStaff = 'isStaff',
   /** column name */
-  ManagerId = 'managerId',
+  managerId = 'managerId',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  Role = 'role',
+  role = 'role',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  Username = 'username'
+  username = 'username'
 }
 
 /** select "usersAggregateBoolExpBool_andArgumentsColumns" columns of table "users" */
-export enum UsersSelectColumnUsersAggregateBoolExpBool_AndArgumentsColumns {
+export enum UsersSelectColumnUsersAggregateBoolExpBoolAndArgumentsColumns {
   /** column name */
-  IsActive = 'isActive',
+  isActive = 'isActive',
   /** column name */
-  IsStaff = 'isStaff'
+  isStaff = 'isStaff'
 }
 
 /** select "usersAggregateBoolExpBool_orArgumentsColumns" columns of table "users" */
-export enum UsersSelectColumnUsersAggregateBoolExpBool_OrArgumentsColumns {
+export enum UsersSelectColumnUsersAggregateBoolExpBoolOrArgumentsColumns {
   /** column name */
-  IsActive = 'isActive',
+  isActive = 'isActive',
   /** column name */
-  IsStaff = 'isStaff'
+  isStaff = 'isStaff'
 }
 
 /** input type for updating data in table "users" */
@@ -20945,33 +20946,33 @@ export type UsersStreamCursorValueInput = {
 /** update columns of table "users" */
 export enum UsersUpdateColumn {
   /** column name */
-  ClerkUserId = 'clerkUserId',
+  clerkUserId = 'clerkUserId',
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  DeactivatedAt = 'deactivatedAt',
+  deactivatedAt = 'deactivatedAt',
   /** column name */
-  DeactivatedBy = 'deactivatedBy',
+  deactivatedBy = 'deactivatedBy',
   /** column name */
-  Email = 'email',
+  email = 'email',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  Image = 'image',
+  image = 'image',
   /** column name */
-  IsActive = 'isActive',
+  isActive = 'isActive',
   /** column name */
-  IsStaff = 'isStaff',
+  isStaff = 'isStaff',
   /** column name */
-  ManagerId = 'managerId',
+  managerId = 'managerId',
   /** column name */
-  Name = 'name',
+  name = 'name',
   /** column name */
-  Role = 'role',
+  role = 'role',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  Username = 'username'
+  username = 'username'
 }
 
 export type UsersUpdates = {
@@ -21096,9 +21097,9 @@ export type WorkSchedulesBoolExp = {
 /** unique or primary key constraints on table "work_schedule" */
 export enum WorkSchedulesConstraint {
   /** unique or primary key constraint on columns "user_id", "work_day" */
-  UniqueUserWorkDay = 'unique_user_work_day',
+  unique_user_work_day = 'unique_user_work_day',
   /** unique or primary key constraint on columns "id" */
-  WorkSchedulePkey = 'work_schedule_pkey'
+  work_schedule_pkey = 'work_schedule_pkey'
 }
 
 /** input type for incrementing numeric columns in table "work_schedule" */
@@ -21228,17 +21229,17 @@ export type WorkSchedulesPkColumnsInput = {
 /** select columns of table "work_schedule" */
 export enum WorkSchedulesSelectColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  UserId = 'userId',
+  userId = 'userId',
   /** column name */
-  WorkDay = 'workDay',
+  workDay = 'workDay',
   /** column name */
-  WorkHours = 'workHours'
+  workHours = 'workHours'
 }
 
 /** input type for updating data in table "work_schedule" */
@@ -21336,17 +21337,17 @@ export type WorkSchedulesSumOrderBy = {
 /** update columns of table "work_schedule" */
 export enum WorkSchedulesUpdateColumn {
   /** column name */
-  CreatedAt = 'createdAt',
+  createdAt = 'createdAt',
   /** column name */
-  Id = 'id',
+  id = 'id',
   /** column name */
-  UpdatedAt = 'updatedAt',
+  updatedAt = 'updatedAt',
   /** column name */
-  UserId = 'userId',
+  userId = 'userId',
   /** column name */
-  WorkDay = 'workDay',
+  workDay = 'workDay',
   /** column name */
-  WorkHours = 'workHours'
+  workHours = 'workHours'
 }
 
 export type WorkSchedulesUpdates = {
@@ -21397,22 +21398,22 @@ export type WorkSchedulesVarianceOrderBy = {
   workHours?: InputMaybe<OrderBy>;
 };
 
-export type RoleWithPermissionsFragment = { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string, assignedPermissions: Array<{ __typename?: 'rolePermissions', id: string, conditions?: any | null, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null } } }>, assignedPermissionsAggregate: { __typename?: 'rolePermissionsAggregate', aggregate?: { __typename?: 'rolePermissionsAggregateFields', count: number } | null } };
+export type RoleWithPermissionsFragment = { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string, assignedPermissions: Array<{ __typename?: 'rolePermissions', id: string, conditions?: any | null | undefined, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null | undefined } } }>, assignedPermissionsAggregate: { __typename?: 'rolePermissionsAggregate', aggregate?: { __typename?: 'rolePermissionsAggregateFields', count: number } | null | undefined } };
 
-export type RolePermissionWithDetailsFragment = { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string } };
+export type RolePermissionWithDetailsFragment = { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null | undefined, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string } };
 
-export type UserRoleWithDetailsFragment = { __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } };
+export type UserRoleWithDetailsFragment = { __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null | undefined }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } };
 
-export type FeatureFlagCoreFragment = { __typename?: 'featureFlags', id: string, featureName: string, isEnabled?: boolean | null, allowedRoles: any, updatedAt?: string | null };
+export type FeatureFlagCoreFragment = { __typename?: 'featureFlags', id: string, featureName: string, isEnabled?: boolean | null | undefined, allowedRoles: any, updatedAt?: string | null | undefined };
 
-export type AppSettingsCoreFragment = { __typename?: 'appSettings', id: string, permissions?: any | null };
+export type AppSettingsCoreFragment = { __typename?: 'appSettings', id: string, permissions?: any | null | undefined };
 
 export type CreateSystemResourceMutationVariables = Exact<{
   object: ResourcesInsertInput;
 }>;
 
 
-export type CreateSystemResourceMutation = { __typename?: 'mutation_root', insertResource?: { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null, createdAt: string, updatedAt: string } | null };
+export type CreateSystemResourceMutation = { __typename?: 'mutation_root', insertResource?: { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null | undefined, createdAt: string, updatedAt: string } | null | undefined };
 
 export type UpdateSystemResourceMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -21420,21 +21421,21 @@ export type UpdateSystemResourceMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSystemResourceMutation = { __typename?: 'mutation_root', updateResourceById?: { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null, createdAt: string, updatedAt: string } | null };
+export type UpdateSystemResourceMutation = { __typename?: 'mutation_root', updateResourceById?: { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null | undefined, createdAt: string, updatedAt: string } | null | undefined };
 
 export type DeleteSystemResourceMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type DeleteSystemResourceMutation = { __typename?: 'mutation_root', deleteResourceById?: { __typename?: 'resources', id: string, name: string } | null };
+export type DeleteSystemResourceMutation = { __typename?: 'mutation_root', deleteResourceById?: { __typename?: 'resources', id: string, name: string } | null | undefined };
 
 export type CreateSystemPermissionMutationVariables = Exact<{
   object: PermissionsInsertInput;
 }>;
 
 
-export type CreateSystemPermissionMutation = { __typename?: 'mutation_root', insertPermission?: { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string } | null };
+export type CreateSystemPermissionMutation = { __typename?: 'mutation_root', insertPermission?: { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string } | null | undefined };
 
 export type UpdateSystemPermissionMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -21442,21 +21443,21 @@ export type UpdateSystemPermissionMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSystemPermissionMutation = { __typename?: 'mutation_root', updatePermissionById?: { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string } | null };
+export type UpdateSystemPermissionMutation = { __typename?: 'mutation_root', updatePermissionById?: { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string } | null | undefined };
 
 export type DeleteSystemPermissionMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type DeleteSystemPermissionMutation = { __typename?: 'mutation_root', deletePermissionById?: { __typename?: 'permissions', id: string, action: string } | null };
+export type DeleteSystemPermissionMutation = { __typename?: 'mutation_root', deletePermissionById?: { __typename?: 'permissions', id: string, action: string } | null | undefined };
 
 export type CreateSystemRoleMutationVariables = Exact<{
   object: RolesInsertInput;
 }>;
 
 
-export type CreateSystemRoleMutation = { __typename?: 'mutation_root', insertRole?: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } | null };
+export type CreateSystemRoleMutation = { __typename?: 'mutation_root', insertRole?: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } | null | undefined };
 
 export type UpdateSystemRoleMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -21464,28 +21465,28 @@ export type UpdateSystemRoleMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSystemRoleMutation = { __typename?: 'mutation_root', updateRoleById?: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } | null };
+export type UpdateSystemRoleMutation = { __typename?: 'mutation_root', updateRoleById?: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } | null | undefined };
 
 export type DeleteSystemRoleMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type DeleteSystemRoleMutation = { __typename?: 'mutation_root', deleteRoleById?: { __typename?: 'roles', id: string, name: string } | null };
+export type DeleteSystemRoleMutation = { __typename?: 'mutation_root', deleteRoleById?: { __typename?: 'roles', id: string, name: string } | null | undefined };
 
 export type AssignPermissionToRoleMutationVariables = Exact<{
   object: RolePermissionsInsertInput;
 }>;
 
 
-export type AssignPermissionToRoleMutation = { __typename?: 'mutation_root', insertRolePermission?: { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string } } | null };
+export type AssignPermissionToRoleMutation = { __typename?: 'mutation_root', insertRolePermission?: { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null | undefined, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string } } | null | undefined };
 
 export type RemovePermissionFromRoleMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type RemovePermissionFromRoleMutation = { __typename?: 'mutation_root', deleteRolePermissionById?: { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string } | null };
+export type RemovePermissionFromRoleMutation = { __typename?: 'mutation_root', deleteRolePermissionById?: { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string } | null | undefined };
 
 export type UpdateSystemRolePermissionMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -21493,21 +21494,21 @@ export type UpdateSystemRolePermissionMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSystemRolePermissionMutation = { __typename?: 'mutation_root', updateRolePermissionById?: { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string } } | null };
+export type UpdateSystemRolePermissionMutation = { __typename?: 'mutation_root', updateRolePermissionById?: { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null | undefined, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string } } | null | undefined };
 
 export type AssignSystemRoleToUserMutationVariables = Exact<{
   object: UserRolesInsertInput;
 }>;
 
 
-export type AssignSystemRoleToUserMutation = { __typename?: 'mutation_root', insertUserRole?: { __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } } | null };
+export type AssignSystemRoleToUserMutation = { __typename?: 'mutation_root', insertUserRole?: { __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null | undefined }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } } | null | undefined };
 
 export type RemoveSystemRoleFromUserMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type RemoveSystemRoleFromUserMutation = { __typename?: 'mutation_root', deleteUserRoleById?: { __typename?: 'userRoles', id: string, userId: string, roleId: string } | null };
+export type RemoveSystemRoleFromUserMutation = { __typename?: 'mutation_root', deleteUserRoleById?: { __typename?: 'userRoles', id: string, userId: string, roleId: string } | null | undefined };
 
 export type UpdateSystemUserRoleMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -21515,14 +21516,14 @@ export type UpdateSystemUserRoleMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSystemUserRoleMutation = { __typename?: 'mutation_root', updateUserRoleById?: { __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } } | null };
+export type UpdateSystemUserRoleMutation = { __typename?: 'mutation_root', updateUserRoleById?: { __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null | undefined }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } } | null | undefined };
 
 export type CreateFeatureFlagMutationVariables = Exact<{
   object: FeatureFlagsInsertInput;
 }>;
 
 
-export type CreateFeatureFlagMutation = { __typename?: 'mutation_root', insertFeatureFlag?: { __typename?: 'featureFlags', id: string, featureName: string, isEnabled?: boolean | null, allowedRoles: any, updatedAt?: string | null } | null };
+export type CreateFeatureFlagMutation = { __typename?: 'mutation_root', insertFeatureFlag?: { __typename?: 'featureFlags', id: string, featureName: string, isEnabled?: boolean | null | undefined, allowedRoles: any, updatedAt?: string | null | undefined } | null | undefined };
 
 export type UpdateFeatureFlagMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -21530,14 +21531,14 @@ export type UpdateFeatureFlagMutationVariables = Exact<{
 }>;
 
 
-export type UpdateFeatureFlagMutation = { __typename?: 'mutation_root', updateFeatureFlagById?: { __typename?: 'featureFlags', id: string, featureName: string, isEnabled?: boolean | null, allowedRoles: any, updatedAt?: string | null } | null };
+export type UpdateFeatureFlagMutation = { __typename?: 'mutation_root', updateFeatureFlagById?: { __typename?: 'featureFlags', id: string, featureName: string, isEnabled?: boolean | null | undefined, allowedRoles: any, updatedAt?: string | null | undefined } | null | undefined };
 
 export type DeleteFeatureFlagMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type DeleteFeatureFlagMutation = { __typename?: 'mutation_root', deleteFeatureFlagById?: { __typename?: 'featureFlags', id: string, featureName: string } | null };
+export type DeleteFeatureFlagMutation = { __typename?: 'mutation_root', deleteFeatureFlagById?: { __typename?: 'featureFlags', id: string, featureName: string } | null | undefined };
 
 export type UpdateAppSettingsMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -21545,7 +21546,7 @@ export type UpdateAppSettingsMutationVariables = Exact<{
 }>;
 
 
-export type UpdateAppSettingsMutation = { __typename?: 'mutation_root', updateAppSettingById?: { __typename?: 'appSettings', id: string, permissions?: any | null } | null };
+export type UpdateAppSettingsMutation = { __typename?: 'mutation_root', updateAppSettingById?: { __typename?: 'appSettings', id: string, permissions?: any | null | undefined } | null | undefined };
 
 export type GrantUserPermissionMutationVariables = Exact<{
   userId: Scalars['uuid']['input'];
@@ -21557,7 +21558,7 @@ export type GrantUserPermissionMutationVariables = Exact<{
 }>;
 
 
-export type GrantUserPermissionMutation = { __typename?: 'mutation_root', insertPermissionOverride?: { __typename?: 'permissionOverrides', id: string, userId?: string | null, resource: string, operation: string, granted: boolean, reason?: string | null, expiresAt?: string | null, conditions?: any | null, createdAt: string, createdBy?: string | null, targetUser?: { __typename?: 'users', id: string, name: string, email: string } | null, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
+export type GrantUserPermissionMutation = { __typename?: 'mutation_root', insertPermissionOverride?: { __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, resource: string, operation: string, granted: boolean, reason?: string | null | undefined, expiresAt?: string | null | undefined, conditions?: any | null | undefined, createdAt: string, createdBy?: string | null | undefined, targetUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined } | null | undefined };
 
 export type RestrictUserPermissionMutationVariables = Exact<{
   userId: Scalars['uuid']['input'];
@@ -21569,7 +21570,7 @@ export type RestrictUserPermissionMutationVariables = Exact<{
 }>;
 
 
-export type RestrictUserPermissionMutation = { __typename?: 'mutation_root', insertPermissionOverride?: { __typename?: 'permissionOverrides', id: string, userId?: string | null, resource: string, operation: string, granted: boolean, reason?: string | null, expiresAt?: string | null, conditions?: any | null, createdAt: string, createdBy?: string | null, targetUser?: { __typename?: 'users', id: string, name: string, email: string } | null, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
+export type RestrictUserPermissionMutation = { __typename?: 'mutation_root', insertPermissionOverride?: { __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, resource: string, operation: string, granted: boolean, reason?: string | null | undefined, expiresAt?: string | null | undefined, conditions?: any | null | undefined, createdAt: string, createdBy?: string | null | undefined, targetUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined } | null | undefined };
 
 export type GrantRolePermissionMutationVariables = Exact<{
   role: Scalars['String']['input'];
@@ -21581,7 +21582,7 @@ export type GrantRolePermissionMutationVariables = Exact<{
 }>;
 
 
-export type GrantRolePermissionMutation = { __typename?: 'mutation_root', insertPermissionOverride?: { __typename?: 'permissionOverrides', id: string, role?: string | null, resource: string, operation: string, granted: boolean, reason?: string | null, expiresAt?: string | null, conditions?: any | null, createdAt: string, createdBy?: string | null, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
+export type GrantRolePermissionMutation = { __typename?: 'mutation_root', insertPermissionOverride?: { __typename?: 'permissionOverrides', id: string, role?: string | null | undefined, resource: string, operation: string, granted: boolean, reason?: string | null | undefined, expiresAt?: string | null | undefined, conditions?: any | null | undefined, createdAt: string, createdBy?: string | null | undefined, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined } | null | undefined };
 
 export type RestrictRolePermissionMutationVariables = Exact<{
   role: Scalars['String']['input'];
@@ -21593,7 +21594,7 @@ export type RestrictRolePermissionMutationVariables = Exact<{
 }>;
 
 
-export type RestrictRolePermissionMutation = { __typename?: 'mutation_root', insertPermissionOverride?: { __typename?: 'permissionOverrides', id: string, role?: string | null, resource: string, operation: string, granted: boolean, reason?: string | null, expiresAt?: string | null, conditions?: any | null, createdAt: string, createdBy?: string | null, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
+export type RestrictRolePermissionMutation = { __typename?: 'mutation_root', insertPermissionOverride?: { __typename?: 'permissionOverrides', id: string, role?: string | null | undefined, resource: string, operation: string, granted: boolean, reason?: string | null | undefined, expiresAt?: string | null | undefined, conditions?: any | null | undefined, createdAt: string, createdBy?: string | null | undefined, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined } | null | undefined };
 
 export type UpdatePermissionOverrideMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -21603,28 +21604,28 @@ export type UpdatePermissionOverrideMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePermissionOverrideMutation = { __typename?: 'mutation_root', updatePermissionOverrideById?: { __typename?: 'permissionOverrides', id: string, userId?: string | null, role?: string | null, resource: string, operation: string, granted: boolean, reason?: string | null, expiresAt?: string | null, conditions?: any | null, createdAt: string, updatedAt: string, createdBy?: string | null, targetUser?: { __typename?: 'users', id: string, name: string, email: string } | null, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
+export type UpdatePermissionOverrideMutation = { __typename?: 'mutation_root', updatePermissionOverrideById?: { __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, role?: string | null | undefined, resource: string, operation: string, granted: boolean, reason?: string | null | undefined, expiresAt?: string | null | undefined, conditions?: any | null | undefined, createdAt: string, updatedAt: string, createdBy?: string | null | undefined, targetUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined } | null | undefined };
 
 export type RemovePermissionOverrideMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type RemovePermissionOverrideMutation = { __typename?: 'mutation_root', deletePermissionOverrideById?: { __typename?: 'permissionOverrides', id: string, userId?: string | null, role?: string | null, resource: string, operation: string, granted: boolean, reason?: string | null } | null };
+export type RemovePermissionOverrideMutation = { __typename?: 'mutation_root', deletePermissionOverrideById?: { __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, role?: string | null | undefined, resource: string, operation: string, granted: boolean, reason?: string | null | undefined } | null | undefined };
 
 export type BulkGrantUserPermissionsMutationVariables = Exact<{
   objects: Array<PermissionOverridesInsertInput> | PermissionOverridesInsertInput;
 }>;
 
 
-export type BulkGrantUserPermissionsMutation = { __typename?: 'mutation_root', bulkInsertPermissionOverrides?: { __typename?: 'permissionOverridesMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null, resource: string, operation: string, granted: boolean, reason?: string | null, expiresAt?: string | null, createdAt: string }> } | null };
+export type BulkGrantUserPermissionsMutation = { __typename?: 'mutation_root', bulkInsertPermissionOverrides?: { __typename?: 'permissionOverridesMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, resource: string, operation: string, granted: boolean, reason?: string | null | undefined, expiresAt?: string | null | undefined, createdAt: string }> } | null | undefined };
 
 export type BulkRemovePermissionOverridesMutationVariables = Exact<{
   where: PermissionOverridesBoolExp;
 }>;
 
 
-export type BulkRemovePermissionOverridesMutation = { __typename?: 'mutation_root', bulkDeletePermissionOverrides?: { __typename?: 'permissionOverridesMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null, role?: string | null, resource: string, operation: string }> } | null };
+export type BulkRemovePermissionOverridesMutation = { __typename?: 'mutation_root', bulkDeletePermissionOverrides?: { __typename?: 'permissionOverridesMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, role?: string | null | undefined, resource: string, operation: string }> } | null | undefined };
 
 export type ExtendPermissionExpirationMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -21633,36 +21634,36 @@ export type ExtendPermissionExpirationMutationVariables = Exact<{
 }>;
 
 
-export type ExtendPermissionExpirationMutation = { __typename?: 'mutation_root', updatePermissionOverrideById?: { __typename?: 'permissionOverrides', id: string, userId?: string | null, role?: string | null, resource: string, operation: string, granted: boolean, expiresAt?: string | null, reason?: string | null, updatedAt: string } | null };
+export type ExtendPermissionExpirationMutation = { __typename?: 'mutation_root', updatePermissionOverrideById?: { __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, role?: string | null | undefined, resource: string, operation: string, granted: boolean, expiresAt?: string | null | undefined, reason?: string | null | undefined, updatedAt: string } | null | undefined };
 
 export type RevokeExpiredPermissionsMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RevokeExpiredPermissionsMutation = { __typename?: 'mutation_root', bulkDeletePermissionOverrides?: { __typename?: 'permissionOverridesMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null, role?: string | null, resource: string, operation: string, expiresAt?: string | null }> } | null };
+export type RevokeExpiredPermissionsMutation = { __typename?: 'mutation_root', bulkDeletePermissionOverrides?: { __typename?: 'permissionOverridesMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, role?: string | null | undefined, resource: string, operation: string, expiresAt?: string | null | undefined }> } | null | undefined };
 
 export type GetResourcesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetResourcesQuery = { __typename?: 'query_root', resources: Array<{ __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null, createdAt: string, updatedAt: string }> };
+export type GetResourcesQuery = { __typename?: 'query_root', resources: Array<{ __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null | undefined, createdAt: string, updatedAt: string }> };
 
 export type GetResourceByIdQueryVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type GetResourceByIdQuery = { __typename?: 'query_root', resourceById?: { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null, createdAt: string, updatedAt: string } | null };
+export type GetResourceByIdQuery = { __typename?: 'query_root', resourceById?: { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null | undefined, createdAt: string, updatedAt: string } | null | undefined };
 
 export type GetPermissionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPermissionsQuery = { __typename?: 'query_root', permissions: Array<{ __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null } }> };
+export type GetPermissionsQuery = { __typename?: 'query_root', permissions: Array<{ __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null | undefined } }> };
 
 export type GetPermissionByIdQueryVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type GetPermissionByIdQuery = { __typename?: 'query_root', permissionById?: { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null } } | null };
+export type GetPermissionByIdQuery = { __typename?: 'query_root', permissionById?: { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null | undefined } } | null | undefined };
 
 export type GetRolesQueryVariables = Exact<{
   where?: InputMaybe<RolesBoolExp>;
@@ -21670,94 +21671,94 @@ export type GetRolesQueryVariables = Exact<{
 }>;
 
 
-export type GetRolesQuery = { __typename?: 'query_root', roles: Array<{ __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }> };
+export type GetRolesQuery = { __typename?: 'query_root', roles: Array<{ __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }> };
 
 export type GetRoleByIdQueryVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type GetRoleByIdQuery = { __typename?: 'query_root', roleById?: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string, assignedPermissions: Array<{ __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string } }> } | null };
+export type GetRoleByIdQuery = { __typename?: 'query_root', roleById?: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string, assignedPermissions: Array<{ __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null | undefined, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string } }> } | null | undefined };
 
 export type GetRolePermissionsQueryVariables = Exact<{
   roleId: Scalars['uuid']['input'];
 }>;
 
 
-export type GetRolePermissionsQuery = { __typename?: 'query_root', rolePermissions: Array<{ __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string } }> };
+export type GetRolePermissionsQuery = { __typename?: 'query_root', rolePermissions: Array<{ __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null | undefined, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string } }> };
 
 export type GetSystemRolesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSystemRolesQuery = { __typename?: 'query_root', roles: Array<{ __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }> };
+export type GetSystemRolesQuery = { __typename?: 'query_root', roles: Array<{ __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }> };
 
 export type GetUserRolesQueryVariables = Exact<{
   userId: Scalars['uuid']['input'];
 }>;
 
 
-export type GetUserRolesQuery = { __typename?: 'query_root', userRoles: Array<{ __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } }> };
+export type GetUserRolesQuery = { __typename?: 'query_root', userRoles: Array<{ __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null | undefined }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } }> };
 
 export type GetUsersWithRoleQueryVariables = Exact<{
   roleId: Scalars['uuid']['input'];
 }>;
 
 
-export type GetUsersWithRoleQuery = { __typename?: 'query_root', userRoles: Array<{ __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } }> };
+export type GetUsersWithRoleQuery = { __typename?: 'query_root', userRoles: Array<{ __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null | undefined }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } }> };
 
 export type GetFeatureFlagsQueryVariables = Exact<{
   where?: InputMaybe<FeatureFlagsBoolExp>;
 }>;
 
 
-export type GetFeatureFlagsQuery = { __typename?: 'query_root', featureFlags: Array<{ __typename?: 'featureFlags', id: string, featureName: string, isEnabled?: boolean | null, allowedRoles: any, updatedAt?: string | null }> };
+export type GetFeatureFlagsQuery = { __typename?: 'query_root', featureFlags: Array<{ __typename?: 'featureFlags', id: string, featureName: string, isEnabled?: boolean | null | undefined, allowedRoles: any, updatedAt?: string | null | undefined }> };
 
 export type GetFeatureFlagByIdQueryVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type GetFeatureFlagByIdQuery = { __typename?: 'query_root', featureFlagById?: { __typename?: 'featureFlags', id: string, featureName: string, isEnabled?: boolean | null, allowedRoles: any, updatedAt?: string | null } | null };
+export type GetFeatureFlagByIdQuery = { __typename?: 'query_root', featureFlagById?: { __typename?: 'featureFlags', id: string, featureName: string, isEnabled?: boolean | null | undefined, allowedRoles: any, updatedAt?: string | null | undefined } | null | undefined };
 
 export type GetAppSettingsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAppSettingsQuery = { __typename?: 'query_root', appSettings: Array<{ __typename?: 'appSettings', id: string, permissions?: any | null }> };
+export type GetAppSettingsQuery = { __typename?: 'query_root', appSettings: Array<{ __typename?: 'appSettings', id: string, permissions?: any | null | undefined }> };
 
 export type GetUserEffectivePermissionsQueryVariables = Exact<{
   userId: Scalars['uuid']['input'];
 }>;
 
 
-export type GetUserEffectivePermissionsQuery = { __typename?: 'query_root', userRoles: Array<{ __typename?: 'userRoles', roleId: string, createdAt: string }>, permissionOverrides: Array<{ __typename?: 'permissionOverrides', resource: string, operation: string, granted: boolean, conditions?: any | null }> };
+export type GetUserEffectivePermissionsQuery = { __typename?: 'query_root', userRoles: Array<{ __typename?: 'userRoles', roleId: string, createdAt: string }>, permissionOverrides: Array<{ __typename?: 'permissionOverrides', resource: string, operation: string, granted: boolean, conditions?: any | null | undefined }> };
 
 export type GetUserPermissionOverridesQueryVariables = Exact<{
   userId: Scalars['uuid']['input'];
 }>;
 
 
-export type GetUserPermissionOverridesQuery = { __typename?: 'query_root', permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null, role?: string | null, resource: string, operation: string, granted: boolean, conditions?: any | null, reason?: string | null, createdBy?: string | null, expiresAt?: string | null, createdAt: string, updatedAt: string, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null }> };
+export type GetUserPermissionOverridesQuery = { __typename?: 'query_root', permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, role?: string | null | undefined, resource: string, operation: string, granted: boolean, conditions?: any | null | undefined, reason?: string | null | undefined, createdBy?: string | null | undefined, expiresAt?: string | null | undefined, createdAt: string, updatedAt: string, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined }> };
 
 export type GetRolePermissionOverridesQueryVariables = Exact<{
   role: Scalars['String']['input'];
 }>;
 
 
-export type GetRolePermissionOverridesQuery = { __typename?: 'query_root', permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null, role?: string | null, resource: string, operation: string, granted: boolean, conditions?: any | null, reason?: string | null, createdBy?: string | null, expiresAt?: string | null, createdAt: string, updatedAt: string, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null }> };
+export type GetRolePermissionOverridesQuery = { __typename?: 'query_root', permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, role?: string | null | undefined, resource: string, operation: string, granted: boolean, conditions?: any | null | undefined, reason?: string | null | undefined, createdBy?: string | null | undefined, expiresAt?: string | null | undefined, createdAt: string, updatedAt: string, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined }> };
 
 export type GetRoleByNameQueryVariables = Exact<{
   name: Scalars['String']['input'];
 }>;
 
 
-export type GetRoleByNameQuery = { __typename?: 'query_root', roles: Array<{ __typename?: 'roles', id: string, name: string, displayName: string, description?: string | null, priority: number, isSystemRole: boolean, assignedPermissions: Array<{ __typename?: 'rolePermissions', id: string, permissionId: string, conditions?: any | null }> }> };
+export type GetRoleByNameQuery = { __typename?: 'query_root', roles: Array<{ __typename?: 'roles', id: string, name: string, displayName: string, description?: string | null | undefined, priority: number, isSystemRole: boolean, assignedPermissions: Array<{ __typename?: 'rolePermissions', id: string, permissionId: string, conditions?: any | null | undefined }> }> };
 
 export type GetPermissionsByResourceQueryVariables = Exact<{
   resourceId: Scalars['uuid']['input'];
 }>;
 
 
-export type GetPermissionsByResourceQuery = { __typename?: 'query_root', permissions: Array<{ __typename?: 'permissions', id: string, action: string, description?: string | null, legacyPermissionName?: string | null, resourceId: string, createdAt: string, updatedAt: string }> };
+export type GetPermissionsByResourceQuery = { __typename?: 'query_root', permissions: Array<{ __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, legacyPermissionName?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string }> };
 
 export type GetPermissionAuditLogQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -21767,7 +21768,7 @@ export type GetPermissionAuditLogQueryVariables = Exact<{
 }>;
 
 
-export type GetPermissionAuditLogQuery = { __typename?: 'query_root', permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null, role?: string | null, resource: string, operation: string, granted: boolean, reason?: string | null, createdAt: string, createdBy?: string | null, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null }> };
+export type GetPermissionAuditLogQuery = { __typename?: 'query_root', permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, role?: string | null | undefined, resource: string, operation: string, granted: boolean, reason?: string | null | undefined, createdAt: string, createdBy?: string | null | undefined, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined }> };
 
 export type SearchPermissionOverridesQueryVariables = Exact<{
   searchTerm: Scalars['String']['input'];
@@ -21776,141 +21777,1764 @@ export type SearchPermissionOverridesQueryVariables = Exact<{
 }>;
 
 
-export type SearchPermissionOverridesQuery = { __typename?: 'query_root', permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null, role?: string | null, resource: string, operation: string, granted: boolean, conditions?: any | null, reason?: string | null, createdBy?: string | null, expiresAt?: string | null, createdAt: string, updatedAt: string, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null, targetUser?: { __typename?: 'users', id: string, name: string, email: string } | null }> };
+export type SearchPermissionOverridesQuery = { __typename?: 'query_root', permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, role?: string | null | undefined, resource: string, operation: string, granted: boolean, conditions?: any | null | undefined, reason?: string | null | undefined, createdBy?: string | null | undefined, expiresAt?: string | null | undefined, createdAt: string, updatedAt: string, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined, targetUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined }> };
 
 export type GetExpiringPermissionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetExpiringPermissionsQuery = { __typename?: 'query_root', permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null, role?: string | null, resource: string, operation: string, granted: boolean, reason?: string | null, expiresAt?: string | null, createdAt: string, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null, targetUser?: { __typename?: 'users', id: string, name: string, email: string } | null }> };
+export type GetExpiringPermissionsQuery = { __typename?: 'query_root', permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, userId?: string | null | undefined, role?: string | null | undefined, resource: string, operation: string, granted: boolean, reason?: string | null | undefined, expiresAt?: string | null | undefined, createdAt: string, createdByUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined, targetUser?: { __typename?: 'users', id: string, name: string, email: string } | null | undefined }> };
 
 export type GetPermissionAnalyticsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPermissionAnalyticsQuery = { __typename?: 'query_root', roles_count: { __typename?: 'rolesAggregate', aggregate?: { __typename?: 'rolesAggregateFields', count: number } | null }, permissions_count: { __typename?: 'permissionsAggregate', aggregate?: { __typename?: 'permissionsAggregateFields', count: number } | null }, resources_count: { __typename?: 'resourcesAggregate', aggregate?: { __typename?: 'resourcesAggregateFields', count: number } | null }, userRoles_count: { __typename?: 'userRolesAggregate', aggregate?: { __typename?: 'userRolesAggregateFields', count: number } | null }, totalOverrides: { __typename?: 'permissionOverridesAggregate', aggregate?: { __typename?: 'permissionOverridesAggregateFields', count: number } | null }, activeOverrides: { __typename?: 'permissionOverridesAggregate', aggregate?: { __typename?: 'permissionOverridesAggregateFields', count: number } | null }, expiredOverrides: { __typename?: 'permissionOverridesAggregate', aggregate?: { __typename?: 'permissionOverridesAggregateFields', count: number } | null }, roles_by_priority: Array<{ __typename?: 'roles', name: string, displayName: string, priority: number, assignedToUsersAggregate: { __typename?: 'userRolesAggregate', aggregate?: { __typename?: 'userRolesAggregateFields', count: number } | null } }> };
+export type GetPermissionAnalyticsQuery = { __typename?: 'query_root', roles_count: { __typename?: 'rolesAggregate', aggregate?: { __typename?: 'rolesAggregateFields', count: number } | null | undefined }, permissions_count: { __typename?: 'permissionsAggregate', aggregate?: { __typename?: 'permissionsAggregateFields', count: number } | null | undefined }, resources_count: { __typename?: 'resourcesAggregate', aggregate?: { __typename?: 'resourcesAggregateFields', count: number } | null | undefined }, userRoles_count: { __typename?: 'userRolesAggregate', aggregate?: { __typename?: 'userRolesAggregateFields', count: number } | null | undefined }, totalOverrides: { __typename?: 'permissionOverridesAggregate', aggregate?: { __typename?: 'permissionOverridesAggregateFields', count: number } | null | undefined }, activeOverrides: { __typename?: 'permissionOverridesAggregate', aggregate?: { __typename?: 'permissionOverridesAggregateFields', count: number } | null | undefined }, expiredOverrides: { __typename?: 'permissionOverridesAggregate', aggregate?: { __typename?: 'permissionOverridesAggregateFields', count: number } | null | undefined }, roles_by_priority: Array<{ __typename?: 'roles', name: string, displayName: string, priority: number, assignedToUsersAggregate: { __typename?: 'userRolesAggregate', aggregate?: { __typename?: 'userRolesAggregateFields', count: number } | null | undefined } }> };
 
 export type RolesUpdatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RolesUpdatedSubscription = { __typename?: 'subscription_root', roles: Array<{ __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }> };
+export type RolesUpdatedSubscription = { __typename?: 'subscription_root', roles: Array<{ __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }> };
 
 export type UserRolesUpdatedSubscriptionVariables = Exact<{
   userId: Scalars['uuid']['input'];
 }>;
 
 
-export type UserRolesUpdatedSubscription = { __typename?: 'subscription_root', userRoles: Array<{ __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } }> };
+export type UserRolesUpdatedSubscription = { __typename?: 'subscription_root', userRoles: Array<{ __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string, roleUser: { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null | undefined }, assignedRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string } }> };
 
 export type RolePermissionsUpdatedSubscriptionVariables = Exact<{
   roleId: Scalars['uuid']['input'];
 }>;
 
 
-export type RolePermissionsUpdatedSubscription = { __typename?: 'subscription_root', rolePermissions: Array<{ __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string } }> };
+export type RolePermissionsUpdatedSubscription = { __typename?: 'subscription_root', rolePermissions: Array<{ __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null | undefined, createdAt: string, updatedAt: string, grantedToRole: { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string }, grantedPermission: { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string } }> };
 
 export type PermissionsUpdatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PermissionsUpdatedSubscription = { __typename?: 'subscription_root', permissions: Array<{ __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null } }> };
+export type PermissionsUpdatedSubscription = { __typename?: 'subscription_root', permissions: Array<{ __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null | undefined } }> };
 
 export type ResourcesUpdatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ResourcesUpdatedSubscription = { __typename?: 'subscription_root', resources: Array<{ __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null, createdAt: string, updatedAt: string }> };
+export type ResourcesUpdatedSubscription = { __typename?: 'subscription_root', resources: Array<{ __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null | undefined, createdAt: string, updatedAt: string }> };
 
-export type UserCoreFragment = { __typename?: 'users', id: string, name: string, email: string, username?: string | null, role: string, isActive?: boolean | null, isStaff?: boolean | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
+export type UserCoreFragment = { __typename?: 'users', id: string, name: string, email: string, username?: string | null | undefined, role: string, isActive?: boolean | null | undefined, isStaff?: boolean | null | undefined, clerkUserId?: string | null | undefined, createdAt?: string | null | undefined, updatedAt?: string | null | undefined };
 
-export type UserBasicFragment = { __typename?: 'users', id: string, name: string, email: string, role: string, isActive?: boolean | null };
+export type UserBasicFragment = { __typename?: 'users', id: string, name: string, email: string, role: string, isActive?: boolean | null | undefined };
 
-export type UserWithManagerFragment = { __typename?: 'users', managerId?: string | null, id: string, name: string, email: string, username?: string | null, role: string, isActive?: boolean | null, isStaff?: boolean | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string, role: string, isActive?: boolean | null } | null };
+export type UserWithManagerFragment = { __typename?: 'users', managerId?: string | null | undefined, id: string, name: string, email: string, username?: string | null | undefined, role: string, isActive?: boolean | null | undefined, isStaff?: boolean | null | undefined, clerkUserId?: string | null | undefined, createdAt?: string | null | undefined, updatedAt?: string | null | undefined, managerUser?: { __typename?: 'users', id: string, name: string, email: string, role: string, isActive?: boolean | null | undefined } | null | undefined };
 
-export type RoleCoreFragment = { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string };
+export type RoleCoreFragment = { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string };
 
-export type PermissionCoreFragment = { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string };
+export type PermissionCoreFragment = { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string };
 
-export type PermissionWithResourceFragment = { __typename?: 'permissions', id: string, action: string, description?: string | null, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null } };
+export type PermissionWithResourceFragment = { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null | undefined } };
 
-export type ClientCoreFragment = { __typename?: 'clients', id: string, name: string, contactEmail?: string | null, contactPerson?: string | null, contactPhone?: string | null, active?: boolean | null, createdAt?: string | null, updatedAt?: string | null };
+export type ClientCoreFragment = { __typename?: 'clients', id: string, name: string, contactEmail?: string | null | undefined, contactPerson?: string | null | undefined, contactPhone?: string | null | undefined, active?: boolean | null | undefined, createdAt?: string | null | undefined, updatedAt?: string | null | undefined };
 
-export type ClientBasicFragment = { __typename?: 'clients', id: string, name: string, active?: boolean | null };
+export type ClientBasicFragment = { __typename?: 'clients', id: string, name: string, active?: boolean | null | undefined };
 
-export type ResourceCoreFragment = { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null, createdAt: string, updatedAt: string };
+export type ResourceCoreFragment = { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null | undefined, createdAt: string, updatedAt: string };
 
 export type UserRoleCoreFragment = { __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string };
 
-export type RolePermissionCoreFragment = { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null, createdAt: string, updatedAt: string };
+export type RolePermissionCoreFragment = { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null | undefined, createdAt: string, updatedAt: string };
 
-export type AuditFieldsFragment = { __typename?: 'auditLogs', id: string, eventTime: string, action: string, resourceType: string, resourceId?: string | null, userId?: string | null, ipAddress?: string | null, userAgent?: string | null, success?: boolean | null, userEmail?: string | null, userRole?: string | null };
+export type AuditFieldsFragment = { __typename?: 'auditLogs', id: string, eventTime: string, action: string, resourceType: string, resourceId?: string | null | undefined, userId?: string | null | undefined, ipAddress?: string | null | undefined, userAgent?: string | null | undefined, success?: boolean | null | undefined, userEmail?: string | null | undefined, userRole?: string | null | undefined };
 
-export const RoleCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<RoleCoreFragment, unknown>;
-export const PermissionCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<PermissionCoreFragment, unknown>;
-export const PermissionWithResourceFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<PermissionWithResourceFragment, unknown>;
-export const RoleWithPermissionsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleWithPermissions"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionWithResource"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissionsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<RoleWithPermissionsFragment, unknown>;
-export const RolePermissionWithDetailsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<RolePermissionWithDetailsFragment, unknown>;
-export const UserRoleWithDetailsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<UserRoleWithDetailsFragment, unknown>;
-export const FeatureFlagCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FeatureFlagCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlags"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<FeatureFlagCoreFragment, unknown>;
-export const AppSettingsCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AppSettingsCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"appSettings"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"}}]}}]} as unknown as DocumentNode<AppSettingsCoreFragment, unknown>;
-export const UserCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserCoreFragment, unknown>;
-export const UserBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserBasicFragment, unknown>;
-export const UserWithManagerFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithManager"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserWithManagerFragment, unknown>;
-export const ClientCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"contactPerson"}},{"kind":"Field","name":{"kind":"Name","value":"contactPhone"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ClientCoreFragment, unknown>;
-export const ClientBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]} as unknown as DocumentNode<ClientBasicFragment, unknown>;
-export const ResourceCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ResourceCoreFragment, unknown>;
-export const UserRoleCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserRoleCoreFragment, unknown>;
-export const RolePermissionCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<RolePermissionCoreFragment, unknown>;
-export const AuditFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"auditLogs"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"userRole"}}]}}]} as unknown as DocumentNode<AuditFieldsFragment, unknown>;
-export const CreateSystemResourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSystemResource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"resourcesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertResource"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ResourceCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<CreateSystemResourceMutation, CreateSystemResourceMutationVariables>;
-export const UpdateSystemResourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSystemResource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"resourcesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateResourceById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ResourceCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UpdateSystemResourceMutation, UpdateSystemResourceMutationVariables>;
-export const DeleteSystemResourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteSystemResource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteResourceById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<DeleteSystemResourceMutation, DeleteSystemResourceMutationVariables>;
-export const CreateSystemPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSystemPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"permissionsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPermission"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<CreateSystemPermissionMutation, CreateSystemPermissionMutationVariables>;
-export const UpdateSystemPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSystemPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"permissionsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePermissionById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UpdateSystemPermissionMutation, UpdateSystemPermissionMutationVariables>;
-export const DeleteSystemPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteSystemPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePermissionById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}}]}}]}}]} as unknown as DocumentNode<DeleteSystemPermissionMutation, DeleteSystemPermissionMutationVariables>;
-export const CreateSystemRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSystemRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"rolesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertRole"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<CreateSystemRoleMutation, CreateSystemRoleMutationVariables>;
-export const UpdateSystemRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSystemRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"rolesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateRoleById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<UpdateSystemRoleMutation, UpdateSystemRoleMutationVariables>;
-export const DeleteSystemRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteSystemRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteRoleById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<DeleteSystemRoleMutation, DeleteSystemRoleMutationVariables>;
-export const AssignPermissionToRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AssignPermissionToRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissionsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertRolePermission"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RolePermissionWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<AssignPermissionToRoleMutation, AssignPermissionToRoleMutationVariables>;
-export const RemovePermissionFromRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemovePermissionFromRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteRolePermissionById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}}]}}]}}]} as unknown as DocumentNode<RemovePermissionFromRoleMutation, RemovePermissionFromRoleMutationVariables>;
-export const UpdateSystemRolePermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSystemRolePermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissionsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateRolePermissionById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RolePermissionWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UpdateSystemRolePermissionMutation, UpdateSystemRolePermissionMutationVariables>;
-export const AssignSystemRoleToUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AssignSystemRoleToUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"userRolesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertUserRole"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<AssignSystemRoleToUserMutation, AssignSystemRoleToUserMutationVariables>;
-export const RemoveSystemRoleFromUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveSystemRoleFromUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteUserRoleById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}}]}}]}}]} as unknown as DocumentNode<RemoveSystemRoleFromUserMutation, RemoveSystemRoleFromUserMutationVariables>;
-export const UpdateSystemUserRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSystemUserRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"userRolesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserRoleById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<UpdateSystemUserRoleMutation, UpdateSystemUserRoleMutationVariables>;
-export const CreateFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlagsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertFeatureFlag"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FeatureFlagCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FeatureFlagCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlags"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<CreateFeatureFlagMutation, CreateFeatureFlagMutationVariables>;
-export const UpdateFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlagsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFeatureFlagById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FeatureFlagCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FeatureFlagCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlags"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UpdateFeatureFlagMutation, UpdateFeatureFlagMutationVariables>;
-export const DeleteFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFeatureFlagById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}}]}}]}}]} as unknown as DocumentNode<DeleteFeatureFlagMutation, DeleteFeatureFlagMutationVariables>;
-export const UpdateAppSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateAppSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"permissions"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateAppSettingById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"permissions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"permissions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AppSettingsCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AppSettingsCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"appSettings"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"}}]}}]} as unknown as DocumentNode<UpdateAppSettingsMutation, UpdateAppSettingsMutationVariables>;
-export const GrantUserPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GrantUserPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resource"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"operation"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPermissionOverride"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"resource"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resource"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"operation"},"value":{"kind":"Variable","name":{"kind":"Name","value":"operation"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"granted"},"value":{"kind":"BooleanValue","value":true}},{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"conditions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"targetUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<GrantUserPermissionMutation, GrantUserPermissionMutationVariables>;
-export const RestrictUserPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RestrictUserPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resource"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"operation"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPermissionOverride"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"resource"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resource"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"operation"},"value":{"kind":"Variable","name":{"kind":"Name","value":"operation"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"granted"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"conditions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"targetUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<RestrictUserPermissionMutation, RestrictUserPermissionMutationVariables>;
-export const GrantRolePermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GrantRolePermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resource"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"operation"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPermissionOverride"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"resource"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resource"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"operation"},"value":{"kind":"Variable","name":{"kind":"Name","value":"operation"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"granted"},"value":{"kind":"BooleanValue","value":true}},{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"conditions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<GrantRolePermissionMutation, GrantRolePermissionMutationVariables>;
-export const RestrictRolePermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RestrictRolePermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resource"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"operation"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPermissionOverride"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"resource"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resource"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"operation"},"value":{"kind":"Variable","name":{"kind":"Name","value":"operation"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"granted"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"conditions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<RestrictRolePermissionMutation, RestrictRolePermissionMutationVariables>;
-export const UpdatePermissionOverrideDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdatePermissionOverride"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePermissionOverrideById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"conditions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"targetUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<UpdatePermissionOverrideMutation, UpdatePermissionOverrideMutationVariables>;
-export const RemovePermissionOverrideDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemovePermissionOverride"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePermissionOverrideById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}}]}}]}}]} as unknown as DocumentNode<RemovePermissionOverrideMutation, RemovePermissionOverrideMutationVariables>;
-export const BulkGrantUserPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BulkGrantUserPermissions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"objects"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"permissionOverridesInsertInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkInsertPermissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"objects"},"value":{"kind":"Variable","name":{"kind":"Name","value":"objects"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode<BulkGrantUserPermissionsMutation, BulkGrantUserPermissionsMutationVariables>;
-export const BulkRemovePermissionOverridesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BulkRemovePermissionOverrides"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"permissionOverridesBoolExp"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkDeletePermissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode<BulkRemovePermissionOverridesMutation, BulkRemovePermissionOverridesMutationVariables>;
-export const ExtendPermissionExpirationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ExtendPermissionExpiration"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"newExpiresAt"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePermissionOverrideById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"newExpiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ExtendPermissionExpirationMutation, ExtendPermissionExpirationMutationVariables>;
-export const RevokeExpiredPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RevokeExpiredPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkDeletePermissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode<RevokeExpiredPermissionsMutation, RevokeExpiredPermissionsMutationVariables>;
-export const GetResourcesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetResources"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resources"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ResourceCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetResourcesQuery, GetResourcesQueryVariables>;
-export const GetResourceByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetResourceById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resourceById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ResourceCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetResourceByIdQuery, GetResourceByIdQueryVariables>;
-export const GetPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"action"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionWithResource"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<GetPermissionsQuery, GetPermissionsQueryVariables>;
-export const GetPermissionByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPermissionById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionWithResource"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<GetPermissionByIdQuery, GetPermissionByIdQueryVariables>;
-export const GetRolesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRoles"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"rolesBoolExp"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"rolesOrderBy"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<GetRolesQuery, GetRolesQueryVariables>;
-export const GetRoleByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRoleById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roleById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RolePermissionWithDetails"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetRoleByIdQuery, GetRoleByIdQueryVariables>;
-export const GetRolePermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRolePermissions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rolePermissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"roleId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RolePermissionWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetRolePermissionsQuery, GetRolePermissionsQueryVariables>;
-export const GetSystemRolesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSystemRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isSystemRole"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"priority"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<GetSystemRolesQuery, GetSystemRolesQueryVariables>;
-export const GetUserRolesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserRoles"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userRoles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<GetUserRolesQuery, GetUserRolesQueryVariables>;
-export const GetUsersWithRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersWithRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userRoles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"roleId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<GetUsersWithRoleQuery, GetUsersWithRoleQueryVariables>;
-export const GetFeatureFlagsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFeatureFlags"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlagsBoolExp"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"featureFlags"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FeatureFlagCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FeatureFlagCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlags"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetFeatureFlagsQuery, GetFeatureFlagsQueryVariables>;
-export const GetFeatureFlagByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFeatureFlagById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"featureFlagById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FeatureFlagCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FeatureFlagCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlags"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetFeatureFlagByIdQuery, GetFeatureFlagByIdQueryVariables>;
-export const GetAppSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAppSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"appSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AppSettingsCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AppSettingsCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"appSettings"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"}}]}}]} as unknown as DocumentNode<GetAppSettingsQuery, GetAppSettingsQueryVariables>;
-export const GetUserEffectivePermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserEffectivePermissions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userRoles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}}]}}]}}]} as unknown as DocumentNode<GetUserEffectivePermissionsQuery, GetUserEffectivePermissionsQueryVariables>;
-export const GetUserPermissionOverridesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserPermissionOverrides"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<GetUserPermissionOverridesQuery, GetUserPermissionOverridesQueryVariables>;
-export const GetRolePermissionOverridesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRolePermissionOverrides"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<GetRolePermissionOverridesQuery, GetRolePermissionOverridesQueryVariables>;
-export const GetRoleByNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRoleByName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}}]}}]}}]}}]} as unknown as DocumentNode<GetRoleByNameQuery, GetRoleByNameQueryVariables>;
-export const GetPermissionsByResourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPermissionsByResource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resourceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"resourceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resourceId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"action"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"legacyPermissionName"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetPermissionsByResourceQuery, GetPermissionsByResourceQueryVariables>;
-export const GetPermissionAuditLogDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPermissionAuditLog"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"targetUserId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"targetUserId"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<GetPermissionAuditLogQuery, GetPermissionAuditLogQueryVariables>;
-export const SearchPermissionOverridesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchPermissionOverrides"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"resource"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"operation"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"targetUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<SearchPermissionOverridesQuery, SearchPermissionOverridesQueryVariables>;
-export const GetExpiringPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetExpiringPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"targetUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<GetExpiringPermissionsQuery, GetExpiringPermissionsQueryVariables>;
-export const GetPermissionAnalyticsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPermissionAnalytics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"roles_count"},"name":{"kind":"Name","value":"rolesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"permissions_count"},"name":{"kind":"Name","value":"permissionsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"resources_count"},"name":{"kind":"Name","value":"resourcesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userRoles_count"},"name":{"kind":"Name","value":"userRolesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalOverrides"},"name":{"kind":"Name","value":"permissionOverridesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeOverrides"},"name":{"kind":"Name","value":"permissionOverridesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"expiredOverrides"},"name":{"kind":"Name","value":"permissionOverridesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"roles_by_priority"},"name":{"kind":"Name","value":"roles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"priority"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"assignedToUsersAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetPermissionAnalyticsQuery, GetPermissionAnalyticsQueryVariables>;
-export const RolesUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RolesUpdated"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<RolesUpdatedSubscription, RolesUpdatedSubscriptionVariables>;
-export const UserRolesUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"UserRolesUpdated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userRoles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<UserRolesUpdatedSubscription, UserRolesUpdatedSubscriptionVariables>;
-export const RolePermissionsUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RolePermissionsUpdated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rolePermissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"roleId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RolePermissionWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<RolePermissionsUpdatedSubscription, RolePermissionsUpdatedSubscriptionVariables>;
-export const PermissionsUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"PermissionsUpdated"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionWithResource"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<PermissionsUpdatedSubscription, PermissionsUpdatedSubscriptionVariables>;
-export const ResourcesUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"ResourcesUpdated"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resources"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ResourceCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ResourcesUpdatedSubscription, ResourcesUpdatedSubscriptionVariables>;
+export const RoleCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+export const PermissionCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export const PermissionWithResourceFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export const RoleWithPermissionsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleWithPermissions"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionWithResource"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissionsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode;
+export const RolePermissionWithDetailsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export const UserRoleWithDetailsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+export const FeatureFlagCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FeatureFlagCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlags"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export const AppSettingsCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AppSettingsCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"appSettings"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"}}]}}]} as unknown as DocumentNode;
+export const UserCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export const UserBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode;
+export const UserWithManagerFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithManager"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode;
+export const ClientCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"contactPerson"}},{"kind":"Field","name":{"kind":"Name","value":"contactPhone"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export const ClientBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]} as unknown as DocumentNode;
+export const ResourceCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export const UserRoleCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export const RolePermissionCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export const AuditFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"auditLogs"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"userRole"}}]}}]} as unknown as DocumentNode;
+export const CreateSystemResourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSystemResource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"resourcesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertResource"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ResourceCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export type CreateSystemResourceMutationFn = Apollo.MutationFunction<CreateSystemResourceMutation, CreateSystemResourceMutationVariables>;
+
+/**
+ * __useCreateSystemResourceMutation__
+ *
+ * To run a mutation, you first call `useCreateSystemResourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSystemResourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSystemResourceMutation, { data, loading, error }] = useCreateSystemResourceMutation({
+ *   variables: {
+ *      object: // value for 'object'
+ *   },
+ * });
+ */
+export function useCreateSystemResourceMutation(baseOptions?: Apollo.MutationHookOptions<CreateSystemResourceMutation, CreateSystemResourceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSystemResourceMutation, CreateSystemResourceMutationVariables>(CreateSystemResourceDocument, options);
+      }
+export type CreateSystemResourceMutationHookResult = ReturnType<typeof useCreateSystemResourceMutation>;
+export type CreateSystemResourceMutationResult = Apollo.MutationResult<CreateSystemResourceMutation>;
+export type CreateSystemResourceMutationOptions = Apollo.BaseMutationOptions<CreateSystemResourceMutation, CreateSystemResourceMutationVariables>;
+export const UpdateSystemResourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSystemResource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"resourcesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateResourceById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ResourceCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export type UpdateSystemResourceMutationFn = Apollo.MutationFunction<UpdateSystemResourceMutation, UpdateSystemResourceMutationVariables>;
+
+/**
+ * __useUpdateSystemResourceMutation__
+ *
+ * To run a mutation, you first call `useUpdateSystemResourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSystemResourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSystemResourceMutation, { data, loading, error }] = useUpdateSystemResourceMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      set: // value for 'set'
+ *   },
+ * });
+ */
+export function useUpdateSystemResourceMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSystemResourceMutation, UpdateSystemResourceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSystemResourceMutation, UpdateSystemResourceMutationVariables>(UpdateSystemResourceDocument, options);
+      }
+export type UpdateSystemResourceMutationHookResult = ReturnType<typeof useUpdateSystemResourceMutation>;
+export type UpdateSystemResourceMutationResult = Apollo.MutationResult<UpdateSystemResourceMutation>;
+export type UpdateSystemResourceMutationOptions = Apollo.BaseMutationOptions<UpdateSystemResourceMutation, UpdateSystemResourceMutationVariables>;
+export const DeleteSystemResourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteSystemResource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteResourceById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode;
+export type DeleteSystemResourceMutationFn = Apollo.MutationFunction<DeleteSystemResourceMutation, DeleteSystemResourceMutationVariables>;
+
+/**
+ * __useDeleteSystemResourceMutation__
+ *
+ * To run a mutation, you first call `useDeleteSystemResourceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteSystemResourceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteSystemResourceMutation, { data, loading, error }] = useDeleteSystemResourceMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteSystemResourceMutation(baseOptions?: Apollo.MutationHookOptions<DeleteSystemResourceMutation, DeleteSystemResourceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteSystemResourceMutation, DeleteSystemResourceMutationVariables>(DeleteSystemResourceDocument, options);
+      }
+export type DeleteSystemResourceMutationHookResult = ReturnType<typeof useDeleteSystemResourceMutation>;
+export type DeleteSystemResourceMutationResult = Apollo.MutationResult<DeleteSystemResourceMutation>;
+export type DeleteSystemResourceMutationOptions = Apollo.BaseMutationOptions<DeleteSystemResourceMutation, DeleteSystemResourceMutationVariables>;
+export const CreateSystemPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSystemPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"permissionsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPermission"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export type CreateSystemPermissionMutationFn = Apollo.MutationFunction<CreateSystemPermissionMutation, CreateSystemPermissionMutationVariables>;
+
+/**
+ * __useCreateSystemPermissionMutation__
+ *
+ * To run a mutation, you first call `useCreateSystemPermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSystemPermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSystemPermissionMutation, { data, loading, error }] = useCreateSystemPermissionMutation({
+ *   variables: {
+ *      object: // value for 'object'
+ *   },
+ * });
+ */
+export function useCreateSystemPermissionMutation(baseOptions?: Apollo.MutationHookOptions<CreateSystemPermissionMutation, CreateSystemPermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSystemPermissionMutation, CreateSystemPermissionMutationVariables>(CreateSystemPermissionDocument, options);
+      }
+export type CreateSystemPermissionMutationHookResult = ReturnType<typeof useCreateSystemPermissionMutation>;
+export type CreateSystemPermissionMutationResult = Apollo.MutationResult<CreateSystemPermissionMutation>;
+export type CreateSystemPermissionMutationOptions = Apollo.BaseMutationOptions<CreateSystemPermissionMutation, CreateSystemPermissionMutationVariables>;
+export const UpdateSystemPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSystemPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"permissionsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePermissionById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export type UpdateSystemPermissionMutationFn = Apollo.MutationFunction<UpdateSystemPermissionMutation, UpdateSystemPermissionMutationVariables>;
+
+/**
+ * __useUpdateSystemPermissionMutation__
+ *
+ * To run a mutation, you first call `useUpdateSystemPermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSystemPermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSystemPermissionMutation, { data, loading, error }] = useUpdateSystemPermissionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      set: // value for 'set'
+ *   },
+ * });
+ */
+export function useUpdateSystemPermissionMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSystemPermissionMutation, UpdateSystemPermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSystemPermissionMutation, UpdateSystemPermissionMutationVariables>(UpdateSystemPermissionDocument, options);
+      }
+export type UpdateSystemPermissionMutationHookResult = ReturnType<typeof useUpdateSystemPermissionMutation>;
+export type UpdateSystemPermissionMutationResult = Apollo.MutationResult<UpdateSystemPermissionMutation>;
+export type UpdateSystemPermissionMutationOptions = Apollo.BaseMutationOptions<UpdateSystemPermissionMutation, UpdateSystemPermissionMutationVariables>;
+export const DeleteSystemPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteSystemPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePermissionById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}}]}}]}}]} as unknown as DocumentNode;
+export type DeleteSystemPermissionMutationFn = Apollo.MutationFunction<DeleteSystemPermissionMutation, DeleteSystemPermissionMutationVariables>;
+
+/**
+ * __useDeleteSystemPermissionMutation__
+ *
+ * To run a mutation, you first call `useDeleteSystemPermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteSystemPermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteSystemPermissionMutation, { data, loading, error }] = useDeleteSystemPermissionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteSystemPermissionMutation(baseOptions?: Apollo.MutationHookOptions<DeleteSystemPermissionMutation, DeleteSystemPermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteSystemPermissionMutation, DeleteSystemPermissionMutationVariables>(DeleteSystemPermissionDocument, options);
+      }
+export type DeleteSystemPermissionMutationHookResult = ReturnType<typeof useDeleteSystemPermissionMutation>;
+export type DeleteSystemPermissionMutationResult = Apollo.MutationResult<DeleteSystemPermissionMutation>;
+export type DeleteSystemPermissionMutationOptions = Apollo.BaseMutationOptions<DeleteSystemPermissionMutation, DeleteSystemPermissionMutationVariables>;
+export const CreateSystemRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSystemRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"rolesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertRole"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+export type CreateSystemRoleMutationFn = Apollo.MutationFunction<CreateSystemRoleMutation, CreateSystemRoleMutationVariables>;
+
+/**
+ * __useCreateSystemRoleMutation__
+ *
+ * To run a mutation, you first call `useCreateSystemRoleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSystemRoleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSystemRoleMutation, { data, loading, error }] = useCreateSystemRoleMutation({
+ *   variables: {
+ *      object: // value for 'object'
+ *   },
+ * });
+ */
+export function useCreateSystemRoleMutation(baseOptions?: Apollo.MutationHookOptions<CreateSystemRoleMutation, CreateSystemRoleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSystemRoleMutation, CreateSystemRoleMutationVariables>(CreateSystemRoleDocument, options);
+      }
+export type CreateSystemRoleMutationHookResult = ReturnType<typeof useCreateSystemRoleMutation>;
+export type CreateSystemRoleMutationResult = Apollo.MutationResult<CreateSystemRoleMutation>;
+export type CreateSystemRoleMutationOptions = Apollo.BaseMutationOptions<CreateSystemRoleMutation, CreateSystemRoleMutationVariables>;
+export const UpdateSystemRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSystemRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"rolesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateRoleById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+export type UpdateSystemRoleMutationFn = Apollo.MutationFunction<UpdateSystemRoleMutation, UpdateSystemRoleMutationVariables>;
+
+/**
+ * __useUpdateSystemRoleMutation__
+ *
+ * To run a mutation, you first call `useUpdateSystemRoleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSystemRoleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSystemRoleMutation, { data, loading, error }] = useUpdateSystemRoleMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      set: // value for 'set'
+ *   },
+ * });
+ */
+export function useUpdateSystemRoleMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSystemRoleMutation, UpdateSystemRoleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSystemRoleMutation, UpdateSystemRoleMutationVariables>(UpdateSystemRoleDocument, options);
+      }
+export type UpdateSystemRoleMutationHookResult = ReturnType<typeof useUpdateSystemRoleMutation>;
+export type UpdateSystemRoleMutationResult = Apollo.MutationResult<UpdateSystemRoleMutation>;
+export type UpdateSystemRoleMutationOptions = Apollo.BaseMutationOptions<UpdateSystemRoleMutation, UpdateSystemRoleMutationVariables>;
+export const DeleteSystemRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteSystemRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteRoleById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode;
+export type DeleteSystemRoleMutationFn = Apollo.MutationFunction<DeleteSystemRoleMutation, DeleteSystemRoleMutationVariables>;
+
+/**
+ * __useDeleteSystemRoleMutation__
+ *
+ * To run a mutation, you first call `useDeleteSystemRoleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteSystemRoleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteSystemRoleMutation, { data, loading, error }] = useDeleteSystemRoleMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteSystemRoleMutation(baseOptions?: Apollo.MutationHookOptions<DeleteSystemRoleMutation, DeleteSystemRoleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteSystemRoleMutation, DeleteSystemRoleMutationVariables>(DeleteSystemRoleDocument, options);
+      }
+export type DeleteSystemRoleMutationHookResult = ReturnType<typeof useDeleteSystemRoleMutation>;
+export type DeleteSystemRoleMutationResult = Apollo.MutationResult<DeleteSystemRoleMutation>;
+export type DeleteSystemRoleMutationOptions = Apollo.BaseMutationOptions<DeleteSystemRoleMutation, DeleteSystemRoleMutationVariables>;
+export const AssignPermissionToRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AssignPermissionToRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissionsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertRolePermission"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RolePermissionWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export type AssignPermissionToRoleMutationFn = Apollo.MutationFunction<AssignPermissionToRoleMutation, AssignPermissionToRoleMutationVariables>;
+
+/**
+ * __useAssignPermissionToRoleMutation__
+ *
+ * To run a mutation, you first call `useAssignPermissionToRoleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAssignPermissionToRoleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [assignPermissionToRoleMutation, { data, loading, error }] = useAssignPermissionToRoleMutation({
+ *   variables: {
+ *      object: // value for 'object'
+ *   },
+ * });
+ */
+export function useAssignPermissionToRoleMutation(baseOptions?: Apollo.MutationHookOptions<AssignPermissionToRoleMutation, AssignPermissionToRoleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AssignPermissionToRoleMutation, AssignPermissionToRoleMutationVariables>(AssignPermissionToRoleDocument, options);
+      }
+export type AssignPermissionToRoleMutationHookResult = ReturnType<typeof useAssignPermissionToRoleMutation>;
+export type AssignPermissionToRoleMutationResult = Apollo.MutationResult<AssignPermissionToRoleMutation>;
+export type AssignPermissionToRoleMutationOptions = Apollo.BaseMutationOptions<AssignPermissionToRoleMutation, AssignPermissionToRoleMutationVariables>;
+export const RemovePermissionFromRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemovePermissionFromRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteRolePermissionById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}}]}}]}}]} as unknown as DocumentNode;
+export type RemovePermissionFromRoleMutationFn = Apollo.MutationFunction<RemovePermissionFromRoleMutation, RemovePermissionFromRoleMutationVariables>;
+
+/**
+ * __useRemovePermissionFromRoleMutation__
+ *
+ * To run a mutation, you first call `useRemovePermissionFromRoleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemovePermissionFromRoleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removePermissionFromRoleMutation, { data, loading, error }] = useRemovePermissionFromRoleMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useRemovePermissionFromRoleMutation(baseOptions?: Apollo.MutationHookOptions<RemovePermissionFromRoleMutation, RemovePermissionFromRoleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemovePermissionFromRoleMutation, RemovePermissionFromRoleMutationVariables>(RemovePermissionFromRoleDocument, options);
+      }
+export type RemovePermissionFromRoleMutationHookResult = ReturnType<typeof useRemovePermissionFromRoleMutation>;
+export type RemovePermissionFromRoleMutationResult = Apollo.MutationResult<RemovePermissionFromRoleMutation>;
+export type RemovePermissionFromRoleMutationOptions = Apollo.BaseMutationOptions<RemovePermissionFromRoleMutation, RemovePermissionFromRoleMutationVariables>;
+export const UpdateSystemRolePermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSystemRolePermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissionsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateRolePermissionById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RolePermissionWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export type UpdateSystemRolePermissionMutationFn = Apollo.MutationFunction<UpdateSystemRolePermissionMutation, UpdateSystemRolePermissionMutationVariables>;
+
+/**
+ * __useUpdateSystemRolePermissionMutation__
+ *
+ * To run a mutation, you first call `useUpdateSystemRolePermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSystemRolePermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSystemRolePermissionMutation, { data, loading, error }] = useUpdateSystemRolePermissionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      set: // value for 'set'
+ *   },
+ * });
+ */
+export function useUpdateSystemRolePermissionMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSystemRolePermissionMutation, UpdateSystemRolePermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSystemRolePermissionMutation, UpdateSystemRolePermissionMutationVariables>(UpdateSystemRolePermissionDocument, options);
+      }
+export type UpdateSystemRolePermissionMutationHookResult = ReturnType<typeof useUpdateSystemRolePermissionMutation>;
+export type UpdateSystemRolePermissionMutationResult = Apollo.MutationResult<UpdateSystemRolePermissionMutation>;
+export type UpdateSystemRolePermissionMutationOptions = Apollo.BaseMutationOptions<UpdateSystemRolePermissionMutation, UpdateSystemRolePermissionMutationVariables>;
+export const AssignSystemRoleToUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AssignSystemRoleToUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"userRolesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertUserRole"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+export type AssignSystemRoleToUserMutationFn = Apollo.MutationFunction<AssignSystemRoleToUserMutation, AssignSystemRoleToUserMutationVariables>;
+
+/**
+ * __useAssignSystemRoleToUserMutation__
+ *
+ * To run a mutation, you first call `useAssignSystemRoleToUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAssignSystemRoleToUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [assignSystemRoleToUserMutation, { data, loading, error }] = useAssignSystemRoleToUserMutation({
+ *   variables: {
+ *      object: // value for 'object'
+ *   },
+ * });
+ */
+export function useAssignSystemRoleToUserMutation(baseOptions?: Apollo.MutationHookOptions<AssignSystemRoleToUserMutation, AssignSystemRoleToUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AssignSystemRoleToUserMutation, AssignSystemRoleToUserMutationVariables>(AssignSystemRoleToUserDocument, options);
+      }
+export type AssignSystemRoleToUserMutationHookResult = ReturnType<typeof useAssignSystemRoleToUserMutation>;
+export type AssignSystemRoleToUserMutationResult = Apollo.MutationResult<AssignSystemRoleToUserMutation>;
+export type AssignSystemRoleToUserMutationOptions = Apollo.BaseMutationOptions<AssignSystemRoleToUserMutation, AssignSystemRoleToUserMutationVariables>;
+export const RemoveSystemRoleFromUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveSystemRoleFromUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteUserRoleById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}}]}}]}}]} as unknown as DocumentNode;
+export type RemoveSystemRoleFromUserMutationFn = Apollo.MutationFunction<RemoveSystemRoleFromUserMutation, RemoveSystemRoleFromUserMutationVariables>;
+
+/**
+ * __useRemoveSystemRoleFromUserMutation__
+ *
+ * To run a mutation, you first call `useRemoveSystemRoleFromUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveSystemRoleFromUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeSystemRoleFromUserMutation, { data, loading, error }] = useRemoveSystemRoleFromUserMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useRemoveSystemRoleFromUserMutation(baseOptions?: Apollo.MutationHookOptions<RemoveSystemRoleFromUserMutation, RemoveSystemRoleFromUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveSystemRoleFromUserMutation, RemoveSystemRoleFromUserMutationVariables>(RemoveSystemRoleFromUserDocument, options);
+      }
+export type RemoveSystemRoleFromUserMutationHookResult = ReturnType<typeof useRemoveSystemRoleFromUserMutation>;
+export type RemoveSystemRoleFromUserMutationResult = Apollo.MutationResult<RemoveSystemRoleFromUserMutation>;
+export type RemoveSystemRoleFromUserMutationOptions = Apollo.BaseMutationOptions<RemoveSystemRoleFromUserMutation, RemoveSystemRoleFromUserMutationVariables>;
+export const UpdateSystemUserRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSystemUserRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"userRolesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserRoleById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+export type UpdateSystemUserRoleMutationFn = Apollo.MutationFunction<UpdateSystemUserRoleMutation, UpdateSystemUserRoleMutationVariables>;
+
+/**
+ * __useUpdateSystemUserRoleMutation__
+ *
+ * To run a mutation, you first call `useUpdateSystemUserRoleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSystemUserRoleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSystemUserRoleMutation, { data, loading, error }] = useUpdateSystemUserRoleMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      set: // value for 'set'
+ *   },
+ * });
+ */
+export function useUpdateSystemUserRoleMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSystemUserRoleMutation, UpdateSystemUserRoleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSystemUserRoleMutation, UpdateSystemUserRoleMutationVariables>(UpdateSystemUserRoleDocument, options);
+      }
+export type UpdateSystemUserRoleMutationHookResult = ReturnType<typeof useUpdateSystemUserRoleMutation>;
+export type UpdateSystemUserRoleMutationResult = Apollo.MutationResult<UpdateSystemUserRoleMutation>;
+export type UpdateSystemUserRoleMutationOptions = Apollo.BaseMutationOptions<UpdateSystemUserRoleMutation, UpdateSystemUserRoleMutationVariables>;
+export const CreateFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"object"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlagsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertFeatureFlag"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"object"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FeatureFlagCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FeatureFlagCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlags"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export type CreateFeatureFlagMutationFn = Apollo.MutationFunction<CreateFeatureFlagMutation, CreateFeatureFlagMutationVariables>;
+
+/**
+ * __useCreateFeatureFlagMutation__
+ *
+ * To run a mutation, you first call `useCreateFeatureFlagMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateFeatureFlagMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createFeatureFlagMutation, { data, loading, error }] = useCreateFeatureFlagMutation({
+ *   variables: {
+ *      object: // value for 'object'
+ *   },
+ * });
+ */
+export function useCreateFeatureFlagMutation(baseOptions?: Apollo.MutationHookOptions<CreateFeatureFlagMutation, CreateFeatureFlagMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateFeatureFlagMutation, CreateFeatureFlagMutationVariables>(CreateFeatureFlagDocument, options);
+      }
+export type CreateFeatureFlagMutationHookResult = ReturnType<typeof useCreateFeatureFlagMutation>;
+export type CreateFeatureFlagMutationResult = Apollo.MutationResult<CreateFeatureFlagMutation>;
+export type CreateFeatureFlagMutationOptions = Apollo.BaseMutationOptions<CreateFeatureFlagMutation, CreateFeatureFlagMutationVariables>;
+export const UpdateFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlagsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFeatureFlagById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FeatureFlagCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FeatureFlagCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlags"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+export type UpdateFeatureFlagMutationFn = Apollo.MutationFunction<UpdateFeatureFlagMutation, UpdateFeatureFlagMutationVariables>;
+
+/**
+ * __useUpdateFeatureFlagMutation__
+ *
+ * To run a mutation, you first call `useUpdateFeatureFlagMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateFeatureFlagMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateFeatureFlagMutation, { data, loading, error }] = useUpdateFeatureFlagMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      set: // value for 'set'
+ *   },
+ * });
+ */
+export function useUpdateFeatureFlagMutation(baseOptions?: Apollo.MutationHookOptions<UpdateFeatureFlagMutation, UpdateFeatureFlagMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateFeatureFlagMutation, UpdateFeatureFlagMutationVariables>(UpdateFeatureFlagDocument, options);
+      }
+export type UpdateFeatureFlagMutationHookResult = ReturnType<typeof useUpdateFeatureFlagMutation>;
+export type UpdateFeatureFlagMutationResult = Apollo.MutationResult<UpdateFeatureFlagMutation>;
+export type UpdateFeatureFlagMutationOptions = Apollo.BaseMutationOptions<UpdateFeatureFlagMutation, UpdateFeatureFlagMutationVariables>;
+export const DeleteFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFeatureFlagById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}}]}}]}}]} as unknown as DocumentNode;
+export type DeleteFeatureFlagMutationFn = Apollo.MutationFunction<DeleteFeatureFlagMutation, DeleteFeatureFlagMutationVariables>;
+
+/**
+ * __useDeleteFeatureFlagMutation__
+ *
+ * To run a mutation, you first call `useDeleteFeatureFlagMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFeatureFlagMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFeatureFlagMutation, { data, loading, error }] = useDeleteFeatureFlagMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteFeatureFlagMutation(baseOptions?: Apollo.MutationHookOptions<DeleteFeatureFlagMutation, DeleteFeatureFlagMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteFeatureFlagMutation, DeleteFeatureFlagMutationVariables>(DeleteFeatureFlagDocument, options);
+      }
+export type DeleteFeatureFlagMutationHookResult = ReturnType<typeof useDeleteFeatureFlagMutation>;
+export type DeleteFeatureFlagMutationResult = Apollo.MutationResult<DeleteFeatureFlagMutation>;
+export type DeleteFeatureFlagMutationOptions = Apollo.BaseMutationOptions<DeleteFeatureFlagMutation, DeleteFeatureFlagMutationVariables>;
+export const UpdateAppSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateAppSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"permissions"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateAppSettingById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"permissions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"permissions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AppSettingsCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AppSettingsCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"appSettings"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"}}]}}]} as unknown as DocumentNode;
+export type UpdateAppSettingsMutationFn = Apollo.MutationFunction<UpdateAppSettingsMutation, UpdateAppSettingsMutationVariables>;
+
+/**
+ * __useUpdateAppSettingsMutation__
+ *
+ * To run a mutation, you first call `useUpdateAppSettingsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateAppSettingsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateAppSettingsMutation, { data, loading, error }] = useUpdateAppSettingsMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      permissions: // value for 'permissions'
+ *   },
+ * });
+ */
+export function useUpdateAppSettingsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateAppSettingsMutation, UpdateAppSettingsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateAppSettingsMutation, UpdateAppSettingsMutationVariables>(UpdateAppSettingsDocument, options);
+      }
+export type UpdateAppSettingsMutationHookResult = ReturnType<typeof useUpdateAppSettingsMutation>;
+export type UpdateAppSettingsMutationResult = Apollo.MutationResult<UpdateAppSettingsMutation>;
+export type UpdateAppSettingsMutationOptions = Apollo.BaseMutationOptions<UpdateAppSettingsMutation, UpdateAppSettingsMutationVariables>;
+export const GrantUserPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GrantUserPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resource"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"operation"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPermissionOverride"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"resource"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resource"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"operation"},"value":{"kind":"Variable","name":{"kind":"Name","value":"operation"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"granted"},"value":{"kind":"BooleanValue","value":true}},{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"conditions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"targetUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode;
+export type GrantUserPermissionMutationFn = Apollo.MutationFunction<GrantUserPermissionMutation, GrantUserPermissionMutationVariables>;
+
+/**
+ * __useGrantUserPermissionMutation__
+ *
+ * To run a mutation, you first call `useGrantUserPermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGrantUserPermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [grantUserPermissionMutation, { data, loading, error }] = useGrantUserPermissionMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      resource: // value for 'resource'
+ *      operation: // value for 'operation'
+ *      reason: // value for 'reason'
+ *      expiresAt: // value for 'expiresAt'
+ *      conditions: // value for 'conditions'
+ *   },
+ * });
+ */
+export function useGrantUserPermissionMutation(baseOptions?: Apollo.MutationHookOptions<GrantUserPermissionMutation, GrantUserPermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<GrantUserPermissionMutation, GrantUserPermissionMutationVariables>(GrantUserPermissionDocument, options);
+      }
+export type GrantUserPermissionMutationHookResult = ReturnType<typeof useGrantUserPermissionMutation>;
+export type GrantUserPermissionMutationResult = Apollo.MutationResult<GrantUserPermissionMutation>;
+export type GrantUserPermissionMutationOptions = Apollo.BaseMutationOptions<GrantUserPermissionMutation, GrantUserPermissionMutationVariables>;
+export const RestrictUserPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RestrictUserPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resource"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"operation"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPermissionOverride"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"resource"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resource"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"operation"},"value":{"kind":"Variable","name":{"kind":"Name","value":"operation"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"granted"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"conditions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"targetUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode;
+export type RestrictUserPermissionMutationFn = Apollo.MutationFunction<RestrictUserPermissionMutation, RestrictUserPermissionMutationVariables>;
+
+/**
+ * __useRestrictUserPermissionMutation__
+ *
+ * To run a mutation, you first call `useRestrictUserPermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRestrictUserPermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [restrictUserPermissionMutation, { data, loading, error }] = useRestrictUserPermissionMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      resource: // value for 'resource'
+ *      operation: // value for 'operation'
+ *      reason: // value for 'reason'
+ *      expiresAt: // value for 'expiresAt'
+ *      conditions: // value for 'conditions'
+ *   },
+ * });
+ */
+export function useRestrictUserPermissionMutation(baseOptions?: Apollo.MutationHookOptions<RestrictUserPermissionMutation, RestrictUserPermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RestrictUserPermissionMutation, RestrictUserPermissionMutationVariables>(RestrictUserPermissionDocument, options);
+      }
+export type RestrictUserPermissionMutationHookResult = ReturnType<typeof useRestrictUserPermissionMutation>;
+export type RestrictUserPermissionMutationResult = Apollo.MutationResult<RestrictUserPermissionMutation>;
+export type RestrictUserPermissionMutationOptions = Apollo.BaseMutationOptions<RestrictUserPermissionMutation, RestrictUserPermissionMutationVariables>;
+export const GrantRolePermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GrantRolePermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resource"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"operation"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPermissionOverride"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"resource"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resource"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"operation"},"value":{"kind":"Variable","name":{"kind":"Name","value":"operation"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"granted"},"value":{"kind":"BooleanValue","value":true}},{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"conditions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode;
+export type GrantRolePermissionMutationFn = Apollo.MutationFunction<GrantRolePermissionMutation, GrantRolePermissionMutationVariables>;
+
+/**
+ * __useGrantRolePermissionMutation__
+ *
+ * To run a mutation, you first call `useGrantRolePermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGrantRolePermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [grantRolePermissionMutation, { data, loading, error }] = useGrantRolePermissionMutation({
+ *   variables: {
+ *      role: // value for 'role'
+ *      resource: // value for 'resource'
+ *      operation: // value for 'operation'
+ *      reason: // value for 'reason'
+ *      expiresAt: // value for 'expiresAt'
+ *      conditions: // value for 'conditions'
+ *   },
+ * });
+ */
+export function useGrantRolePermissionMutation(baseOptions?: Apollo.MutationHookOptions<GrantRolePermissionMutation, GrantRolePermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<GrantRolePermissionMutation, GrantRolePermissionMutationVariables>(GrantRolePermissionDocument, options);
+      }
+export type GrantRolePermissionMutationHookResult = ReturnType<typeof useGrantRolePermissionMutation>;
+export type GrantRolePermissionMutationResult = Apollo.MutationResult<GrantRolePermissionMutation>;
+export type GrantRolePermissionMutationOptions = Apollo.BaseMutationOptions<GrantRolePermissionMutation, GrantRolePermissionMutationVariables>;
+export const RestrictRolePermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RestrictRolePermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resource"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"operation"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPermissionOverride"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"resource"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resource"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"operation"},"value":{"kind":"Variable","name":{"kind":"Name","value":"operation"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"granted"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"conditions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode;
+export type RestrictRolePermissionMutationFn = Apollo.MutationFunction<RestrictRolePermissionMutation, RestrictRolePermissionMutationVariables>;
+
+/**
+ * __useRestrictRolePermissionMutation__
+ *
+ * To run a mutation, you first call `useRestrictRolePermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRestrictRolePermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [restrictRolePermissionMutation, { data, loading, error }] = useRestrictRolePermissionMutation({
+ *   variables: {
+ *      role: // value for 'role'
+ *      resource: // value for 'resource'
+ *      operation: // value for 'operation'
+ *      reason: // value for 'reason'
+ *      expiresAt: // value for 'expiresAt'
+ *      conditions: // value for 'conditions'
+ *   },
+ * });
+ */
+export function useRestrictRolePermissionMutation(baseOptions?: Apollo.MutationHookOptions<RestrictRolePermissionMutation, RestrictRolePermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RestrictRolePermissionMutation, RestrictRolePermissionMutationVariables>(RestrictRolePermissionDocument, options);
+      }
+export type RestrictRolePermissionMutationHookResult = ReturnType<typeof useRestrictRolePermissionMutation>;
+export type RestrictRolePermissionMutationResult = Apollo.MutationResult<RestrictRolePermissionMutation>;
+export type RestrictRolePermissionMutationOptions = Apollo.BaseMutationOptions<RestrictRolePermissionMutation, RestrictRolePermissionMutationVariables>;
+export const UpdatePermissionOverrideDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdatePermissionOverride"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePermissionOverrideById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"expiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"conditions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"conditions"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"targetUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode;
+export type UpdatePermissionOverrideMutationFn = Apollo.MutationFunction<UpdatePermissionOverrideMutation, UpdatePermissionOverrideMutationVariables>;
+
+/**
+ * __useUpdatePermissionOverrideMutation__
+ *
+ * To run a mutation, you first call `useUpdatePermissionOverrideMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdatePermissionOverrideMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updatePermissionOverrideMutation, { data, loading, error }] = useUpdatePermissionOverrideMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      reason: // value for 'reason'
+ *      expiresAt: // value for 'expiresAt'
+ *      conditions: // value for 'conditions'
+ *   },
+ * });
+ */
+export function useUpdatePermissionOverrideMutation(baseOptions?: Apollo.MutationHookOptions<UpdatePermissionOverrideMutation, UpdatePermissionOverrideMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdatePermissionOverrideMutation, UpdatePermissionOverrideMutationVariables>(UpdatePermissionOverrideDocument, options);
+      }
+export type UpdatePermissionOverrideMutationHookResult = ReturnType<typeof useUpdatePermissionOverrideMutation>;
+export type UpdatePermissionOverrideMutationResult = Apollo.MutationResult<UpdatePermissionOverrideMutation>;
+export type UpdatePermissionOverrideMutationOptions = Apollo.BaseMutationOptions<UpdatePermissionOverrideMutation, UpdatePermissionOverrideMutationVariables>;
+export const RemovePermissionOverrideDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemovePermissionOverride"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePermissionOverrideById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}}]}}]}}]} as unknown as DocumentNode;
+export type RemovePermissionOverrideMutationFn = Apollo.MutationFunction<RemovePermissionOverrideMutation, RemovePermissionOverrideMutationVariables>;
+
+/**
+ * __useRemovePermissionOverrideMutation__
+ *
+ * To run a mutation, you first call `useRemovePermissionOverrideMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemovePermissionOverrideMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removePermissionOverrideMutation, { data, loading, error }] = useRemovePermissionOverrideMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useRemovePermissionOverrideMutation(baseOptions?: Apollo.MutationHookOptions<RemovePermissionOverrideMutation, RemovePermissionOverrideMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemovePermissionOverrideMutation, RemovePermissionOverrideMutationVariables>(RemovePermissionOverrideDocument, options);
+      }
+export type RemovePermissionOverrideMutationHookResult = ReturnType<typeof useRemovePermissionOverrideMutation>;
+export type RemovePermissionOverrideMutationResult = Apollo.MutationResult<RemovePermissionOverrideMutation>;
+export type RemovePermissionOverrideMutationOptions = Apollo.BaseMutationOptions<RemovePermissionOverrideMutation, RemovePermissionOverrideMutationVariables>;
+export const BulkGrantUserPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BulkGrantUserPermissions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"objects"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"permissionOverridesInsertInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkInsertPermissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"objects"},"value":{"kind":"Variable","name":{"kind":"Name","value":"objects"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode;
+export type BulkGrantUserPermissionsMutationFn = Apollo.MutationFunction<BulkGrantUserPermissionsMutation, BulkGrantUserPermissionsMutationVariables>;
+
+/**
+ * __useBulkGrantUserPermissionsMutation__
+ *
+ * To run a mutation, you first call `useBulkGrantUserPermissionsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useBulkGrantUserPermissionsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [bulkGrantUserPermissionsMutation, { data, loading, error }] = useBulkGrantUserPermissionsMutation({
+ *   variables: {
+ *      objects: // value for 'objects'
+ *   },
+ * });
+ */
+export function useBulkGrantUserPermissionsMutation(baseOptions?: Apollo.MutationHookOptions<BulkGrantUserPermissionsMutation, BulkGrantUserPermissionsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<BulkGrantUserPermissionsMutation, BulkGrantUserPermissionsMutationVariables>(BulkGrantUserPermissionsDocument, options);
+      }
+export type BulkGrantUserPermissionsMutationHookResult = ReturnType<typeof useBulkGrantUserPermissionsMutation>;
+export type BulkGrantUserPermissionsMutationResult = Apollo.MutationResult<BulkGrantUserPermissionsMutation>;
+export type BulkGrantUserPermissionsMutationOptions = Apollo.BaseMutationOptions<BulkGrantUserPermissionsMutation, BulkGrantUserPermissionsMutationVariables>;
+export const BulkRemovePermissionOverridesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BulkRemovePermissionOverrides"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"permissionOverridesBoolExp"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkDeletePermissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode;
+export type BulkRemovePermissionOverridesMutationFn = Apollo.MutationFunction<BulkRemovePermissionOverridesMutation, BulkRemovePermissionOverridesMutationVariables>;
+
+/**
+ * __useBulkRemovePermissionOverridesMutation__
+ *
+ * To run a mutation, you first call `useBulkRemovePermissionOverridesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useBulkRemovePermissionOverridesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [bulkRemovePermissionOverridesMutation, { data, loading, error }] = useBulkRemovePermissionOverridesMutation({
+ *   variables: {
+ *      where: // value for 'where'
+ *   },
+ * });
+ */
+export function useBulkRemovePermissionOverridesMutation(baseOptions?: Apollo.MutationHookOptions<BulkRemovePermissionOverridesMutation, BulkRemovePermissionOverridesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<BulkRemovePermissionOverridesMutation, BulkRemovePermissionOverridesMutationVariables>(BulkRemovePermissionOverridesDocument, options);
+      }
+export type BulkRemovePermissionOverridesMutationHookResult = ReturnType<typeof useBulkRemovePermissionOverridesMutation>;
+export type BulkRemovePermissionOverridesMutationResult = Apollo.MutationResult<BulkRemovePermissionOverridesMutation>;
+export type BulkRemovePermissionOverridesMutationOptions = Apollo.BaseMutationOptions<BulkRemovePermissionOverridesMutation, BulkRemovePermissionOverridesMutationVariables>;
+export const ExtendPermissionExpirationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ExtendPermissionExpiration"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"newExpiresAt"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePermissionOverrideById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"newExpiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode;
+export type ExtendPermissionExpirationMutationFn = Apollo.MutationFunction<ExtendPermissionExpirationMutation, ExtendPermissionExpirationMutationVariables>;
+
+/**
+ * __useExtendPermissionExpirationMutation__
+ *
+ * To run a mutation, you first call `useExtendPermissionExpirationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useExtendPermissionExpirationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [extendPermissionExpirationMutation, { data, loading, error }] = useExtendPermissionExpirationMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      newExpiresAt: // value for 'newExpiresAt'
+ *      reason: // value for 'reason'
+ *   },
+ * });
+ */
+export function useExtendPermissionExpirationMutation(baseOptions?: Apollo.MutationHookOptions<ExtendPermissionExpirationMutation, ExtendPermissionExpirationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ExtendPermissionExpirationMutation, ExtendPermissionExpirationMutationVariables>(ExtendPermissionExpirationDocument, options);
+      }
+export type ExtendPermissionExpirationMutationHookResult = ReturnType<typeof useExtendPermissionExpirationMutation>;
+export type ExtendPermissionExpirationMutationResult = Apollo.MutationResult<ExtendPermissionExpirationMutation>;
+export type ExtendPermissionExpirationMutationOptions = Apollo.BaseMutationOptions<ExtendPermissionExpirationMutation, ExtendPermissionExpirationMutationVariables>;
+export const RevokeExpiredPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RevokeExpiredPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkDeletePermissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode;
+export type RevokeExpiredPermissionsMutationFn = Apollo.MutationFunction<RevokeExpiredPermissionsMutation, RevokeExpiredPermissionsMutationVariables>;
+
+/**
+ * __useRevokeExpiredPermissionsMutation__
+ *
+ * To run a mutation, you first call `useRevokeExpiredPermissionsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRevokeExpiredPermissionsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [revokeExpiredPermissionsMutation, { data, loading, error }] = useRevokeExpiredPermissionsMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useRevokeExpiredPermissionsMutation(baseOptions?: Apollo.MutationHookOptions<RevokeExpiredPermissionsMutation, RevokeExpiredPermissionsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RevokeExpiredPermissionsMutation, RevokeExpiredPermissionsMutationVariables>(RevokeExpiredPermissionsDocument, options);
+      }
+export type RevokeExpiredPermissionsMutationHookResult = ReturnType<typeof useRevokeExpiredPermissionsMutation>;
+export type RevokeExpiredPermissionsMutationResult = Apollo.MutationResult<RevokeExpiredPermissionsMutation>;
+export type RevokeExpiredPermissionsMutationOptions = Apollo.BaseMutationOptions<RevokeExpiredPermissionsMutation, RevokeExpiredPermissionsMutationVariables>;
+export const GetResourcesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetResources"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resources"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ResourceCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetResourcesQuery__
+ *
+ * To run a query within a React component, call `useGetResourcesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetResourcesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetResourcesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetResourcesQuery(baseOptions?: Apollo.QueryHookOptions<GetResourcesQuery, GetResourcesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetResourcesQuery, GetResourcesQueryVariables>(GetResourcesDocument, options);
+      }
+export function useGetResourcesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetResourcesQuery, GetResourcesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetResourcesQuery, GetResourcesQueryVariables>(GetResourcesDocument, options);
+        }
+export function useGetResourcesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetResourcesQuery, GetResourcesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetResourcesQuery, GetResourcesQueryVariables>(GetResourcesDocument, options);
+        }
+export type GetResourcesQueryHookResult = ReturnType<typeof useGetResourcesQuery>;
+export type GetResourcesLazyQueryHookResult = ReturnType<typeof useGetResourcesLazyQuery>;
+export type GetResourcesSuspenseQueryHookResult = ReturnType<typeof useGetResourcesSuspenseQuery>;
+export type GetResourcesQueryResult = Apollo.QueryResult<GetResourcesQuery, GetResourcesQueryVariables>;
+export const GetResourceByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetResourceById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resourceById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ResourceCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetResourceByIdQuery__
+ *
+ * To run a query within a React component, call `useGetResourceByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetResourceByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetResourceByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetResourceByIdQuery(baseOptions: Apollo.QueryHookOptions<GetResourceByIdQuery, GetResourceByIdQueryVariables> & ({ variables: GetResourceByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetResourceByIdQuery, GetResourceByIdQueryVariables>(GetResourceByIdDocument, options);
+      }
+export function useGetResourceByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetResourceByIdQuery, GetResourceByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetResourceByIdQuery, GetResourceByIdQueryVariables>(GetResourceByIdDocument, options);
+        }
+export function useGetResourceByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetResourceByIdQuery, GetResourceByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetResourceByIdQuery, GetResourceByIdQueryVariables>(GetResourceByIdDocument, options);
+        }
+export type GetResourceByIdQueryHookResult = ReturnType<typeof useGetResourceByIdQuery>;
+export type GetResourceByIdLazyQueryHookResult = ReturnType<typeof useGetResourceByIdLazyQuery>;
+export type GetResourceByIdSuspenseQueryHookResult = ReturnType<typeof useGetResourceByIdSuspenseQuery>;
+export type GetResourceByIdQueryResult = Apollo.QueryResult<GetResourceByIdQuery, GetResourceByIdQueryVariables>;
+export const GetPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"action"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionWithResource"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetPermissionsQuery__
+ *
+ * To run a query within a React component, call `useGetPermissionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPermissionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPermissionsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPermissionsQuery(baseOptions?: Apollo.QueryHookOptions<GetPermissionsQuery, GetPermissionsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPermissionsQuery, GetPermissionsQueryVariables>(GetPermissionsDocument, options);
+      }
+export function useGetPermissionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPermissionsQuery, GetPermissionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPermissionsQuery, GetPermissionsQueryVariables>(GetPermissionsDocument, options);
+        }
+export function useGetPermissionsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPermissionsQuery, GetPermissionsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPermissionsQuery, GetPermissionsQueryVariables>(GetPermissionsDocument, options);
+        }
+export type GetPermissionsQueryHookResult = ReturnType<typeof useGetPermissionsQuery>;
+export type GetPermissionsLazyQueryHookResult = ReturnType<typeof useGetPermissionsLazyQuery>;
+export type GetPermissionsSuspenseQueryHookResult = ReturnType<typeof useGetPermissionsSuspenseQuery>;
+export type GetPermissionsQueryResult = Apollo.QueryResult<GetPermissionsQuery, GetPermissionsQueryVariables>;
+export const GetPermissionByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPermissionById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionWithResource"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetPermissionByIdQuery__
+ *
+ * To run a query within a React component, call `useGetPermissionByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPermissionByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPermissionByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetPermissionByIdQuery(baseOptions: Apollo.QueryHookOptions<GetPermissionByIdQuery, GetPermissionByIdQueryVariables> & ({ variables: GetPermissionByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPermissionByIdQuery, GetPermissionByIdQueryVariables>(GetPermissionByIdDocument, options);
+      }
+export function useGetPermissionByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPermissionByIdQuery, GetPermissionByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPermissionByIdQuery, GetPermissionByIdQueryVariables>(GetPermissionByIdDocument, options);
+        }
+export function useGetPermissionByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPermissionByIdQuery, GetPermissionByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPermissionByIdQuery, GetPermissionByIdQueryVariables>(GetPermissionByIdDocument, options);
+        }
+export type GetPermissionByIdQueryHookResult = ReturnType<typeof useGetPermissionByIdQuery>;
+export type GetPermissionByIdLazyQueryHookResult = ReturnType<typeof useGetPermissionByIdLazyQuery>;
+export type GetPermissionByIdSuspenseQueryHookResult = ReturnType<typeof useGetPermissionByIdSuspenseQuery>;
+export type GetPermissionByIdQueryResult = Apollo.QueryResult<GetPermissionByIdQuery, GetPermissionByIdQueryVariables>;
+export const GetRolesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRoles"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"rolesBoolExp"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"rolesOrderBy"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetRolesQuery__
+ *
+ * To run a query within a React component, call `useGetRolesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRolesQuery({
+ *   variables: {
+ *      where: // value for 'where'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useGetRolesQuery(baseOptions?: Apollo.QueryHookOptions<GetRolesQuery, GetRolesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRolesQuery, GetRolesQueryVariables>(GetRolesDocument, options);
+      }
+export function useGetRolesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRolesQuery, GetRolesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRolesQuery, GetRolesQueryVariables>(GetRolesDocument, options);
+        }
+export function useGetRolesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRolesQuery, GetRolesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRolesQuery, GetRolesQueryVariables>(GetRolesDocument, options);
+        }
+export type GetRolesQueryHookResult = ReturnType<typeof useGetRolesQuery>;
+export type GetRolesLazyQueryHookResult = ReturnType<typeof useGetRolesLazyQuery>;
+export type GetRolesSuspenseQueryHookResult = ReturnType<typeof useGetRolesSuspenseQuery>;
+export type GetRolesQueryResult = Apollo.QueryResult<GetRolesQuery, GetRolesQueryVariables>;
+export const GetRoleByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRoleById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roleById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RolePermissionWithDetails"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetRoleByIdQuery__
+ *
+ * To run a query within a React component, call `useGetRoleByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoleByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoleByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetRoleByIdQuery(baseOptions: Apollo.QueryHookOptions<GetRoleByIdQuery, GetRoleByIdQueryVariables> & ({ variables: GetRoleByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRoleByIdQuery, GetRoleByIdQueryVariables>(GetRoleByIdDocument, options);
+      }
+export function useGetRoleByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoleByIdQuery, GetRoleByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRoleByIdQuery, GetRoleByIdQueryVariables>(GetRoleByIdDocument, options);
+        }
+export function useGetRoleByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRoleByIdQuery, GetRoleByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRoleByIdQuery, GetRoleByIdQueryVariables>(GetRoleByIdDocument, options);
+        }
+export type GetRoleByIdQueryHookResult = ReturnType<typeof useGetRoleByIdQuery>;
+export type GetRoleByIdLazyQueryHookResult = ReturnType<typeof useGetRoleByIdLazyQuery>;
+export type GetRoleByIdSuspenseQueryHookResult = ReturnType<typeof useGetRoleByIdSuspenseQuery>;
+export type GetRoleByIdQueryResult = Apollo.QueryResult<GetRoleByIdQuery, GetRoleByIdQueryVariables>;
+export const GetRolePermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRolePermissions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rolePermissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"roleId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RolePermissionWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetRolePermissionsQuery__
+ *
+ * To run a query within a React component, call `useGetRolePermissionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRolePermissionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRolePermissionsQuery({
+ *   variables: {
+ *      roleId: // value for 'roleId'
+ *   },
+ * });
+ */
+export function useGetRolePermissionsQuery(baseOptions: Apollo.QueryHookOptions<GetRolePermissionsQuery, GetRolePermissionsQueryVariables> & ({ variables: GetRolePermissionsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRolePermissionsQuery, GetRolePermissionsQueryVariables>(GetRolePermissionsDocument, options);
+      }
+export function useGetRolePermissionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRolePermissionsQuery, GetRolePermissionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRolePermissionsQuery, GetRolePermissionsQueryVariables>(GetRolePermissionsDocument, options);
+        }
+export function useGetRolePermissionsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRolePermissionsQuery, GetRolePermissionsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRolePermissionsQuery, GetRolePermissionsQueryVariables>(GetRolePermissionsDocument, options);
+        }
+export type GetRolePermissionsQueryHookResult = ReturnType<typeof useGetRolePermissionsQuery>;
+export type GetRolePermissionsLazyQueryHookResult = ReturnType<typeof useGetRolePermissionsLazyQuery>;
+export type GetRolePermissionsSuspenseQueryHookResult = ReturnType<typeof useGetRolePermissionsSuspenseQuery>;
+export type GetRolePermissionsQueryResult = Apollo.QueryResult<GetRolePermissionsQuery, GetRolePermissionsQueryVariables>;
+export const GetSystemRolesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSystemRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isSystemRole"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"priority"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetSystemRolesQuery__
+ *
+ * To run a query within a React component, call `useGetSystemRolesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSystemRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSystemRolesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSystemRolesQuery(baseOptions?: Apollo.QueryHookOptions<GetSystemRolesQuery, GetSystemRolesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSystemRolesQuery, GetSystemRolesQueryVariables>(GetSystemRolesDocument, options);
+      }
+export function useGetSystemRolesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSystemRolesQuery, GetSystemRolesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSystemRolesQuery, GetSystemRolesQueryVariables>(GetSystemRolesDocument, options);
+        }
+export function useGetSystemRolesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSystemRolesQuery, GetSystemRolesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetSystemRolesQuery, GetSystemRolesQueryVariables>(GetSystemRolesDocument, options);
+        }
+export type GetSystemRolesQueryHookResult = ReturnType<typeof useGetSystemRolesQuery>;
+export type GetSystemRolesLazyQueryHookResult = ReturnType<typeof useGetSystemRolesLazyQuery>;
+export type GetSystemRolesSuspenseQueryHookResult = ReturnType<typeof useGetSystemRolesSuspenseQuery>;
+export type GetSystemRolesQueryResult = Apollo.QueryResult<GetSystemRolesQuery, GetSystemRolesQueryVariables>;
+export const GetUserRolesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserRoles"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userRoles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetUserRolesQuery__
+ *
+ * To run a query within a React component, call `useGetUserRolesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserRolesQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetUserRolesQuery(baseOptions: Apollo.QueryHookOptions<GetUserRolesQuery, GetUserRolesQueryVariables> & ({ variables: GetUserRolesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserRolesQuery, GetUserRolesQueryVariables>(GetUserRolesDocument, options);
+      }
+export function useGetUserRolesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserRolesQuery, GetUserRolesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserRolesQuery, GetUserRolesQueryVariables>(GetUserRolesDocument, options);
+        }
+export function useGetUserRolesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserRolesQuery, GetUserRolesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserRolesQuery, GetUserRolesQueryVariables>(GetUserRolesDocument, options);
+        }
+export type GetUserRolesQueryHookResult = ReturnType<typeof useGetUserRolesQuery>;
+export type GetUserRolesLazyQueryHookResult = ReturnType<typeof useGetUserRolesLazyQuery>;
+export type GetUserRolesSuspenseQueryHookResult = ReturnType<typeof useGetUserRolesSuspenseQuery>;
+export type GetUserRolesQueryResult = Apollo.QueryResult<GetUserRolesQuery, GetUserRolesQueryVariables>;
+export const GetUsersWithRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersWithRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userRoles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"roleId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetUsersWithRoleQuery__
+ *
+ * To run a query within a React component, call `useGetUsersWithRoleQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsersWithRoleQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsersWithRoleQuery({
+ *   variables: {
+ *      roleId: // value for 'roleId'
+ *   },
+ * });
+ */
+export function useGetUsersWithRoleQuery(baseOptions: Apollo.QueryHookOptions<GetUsersWithRoleQuery, GetUsersWithRoleQueryVariables> & ({ variables: GetUsersWithRoleQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUsersWithRoleQuery, GetUsersWithRoleQueryVariables>(GetUsersWithRoleDocument, options);
+      }
+export function useGetUsersWithRoleLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUsersWithRoleQuery, GetUsersWithRoleQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUsersWithRoleQuery, GetUsersWithRoleQueryVariables>(GetUsersWithRoleDocument, options);
+        }
+export function useGetUsersWithRoleSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUsersWithRoleQuery, GetUsersWithRoleQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUsersWithRoleQuery, GetUsersWithRoleQueryVariables>(GetUsersWithRoleDocument, options);
+        }
+export type GetUsersWithRoleQueryHookResult = ReturnType<typeof useGetUsersWithRoleQuery>;
+export type GetUsersWithRoleLazyQueryHookResult = ReturnType<typeof useGetUsersWithRoleLazyQuery>;
+export type GetUsersWithRoleSuspenseQueryHookResult = ReturnType<typeof useGetUsersWithRoleSuspenseQuery>;
+export type GetUsersWithRoleQueryResult = Apollo.QueryResult<GetUsersWithRoleQuery, GetUsersWithRoleQueryVariables>;
+export const GetFeatureFlagsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFeatureFlags"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlagsBoolExp"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"featureFlags"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FeatureFlagCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FeatureFlagCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlags"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetFeatureFlagsQuery__
+ *
+ * To run a query within a React component, call `useGetFeatureFlagsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFeatureFlagsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFeatureFlagsQuery({
+ *   variables: {
+ *      where: // value for 'where'
+ *   },
+ * });
+ */
+export function useGetFeatureFlagsQuery(baseOptions?: Apollo.QueryHookOptions<GetFeatureFlagsQuery, GetFeatureFlagsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFeatureFlagsQuery, GetFeatureFlagsQueryVariables>(GetFeatureFlagsDocument, options);
+      }
+export function useGetFeatureFlagsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFeatureFlagsQuery, GetFeatureFlagsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFeatureFlagsQuery, GetFeatureFlagsQueryVariables>(GetFeatureFlagsDocument, options);
+        }
+export function useGetFeatureFlagsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFeatureFlagsQuery, GetFeatureFlagsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFeatureFlagsQuery, GetFeatureFlagsQueryVariables>(GetFeatureFlagsDocument, options);
+        }
+export type GetFeatureFlagsQueryHookResult = ReturnType<typeof useGetFeatureFlagsQuery>;
+export type GetFeatureFlagsLazyQueryHookResult = ReturnType<typeof useGetFeatureFlagsLazyQuery>;
+export type GetFeatureFlagsSuspenseQueryHookResult = ReturnType<typeof useGetFeatureFlagsSuspenseQuery>;
+export type GetFeatureFlagsQueryResult = Apollo.QueryResult<GetFeatureFlagsQuery, GetFeatureFlagsQueryVariables>;
+export const GetFeatureFlagByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFeatureFlagById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"featureFlagById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FeatureFlagCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FeatureFlagCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"featureFlags"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetFeatureFlagByIdQuery__
+ *
+ * To run a query within a React component, call `useGetFeatureFlagByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFeatureFlagByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFeatureFlagByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetFeatureFlagByIdQuery(baseOptions: Apollo.QueryHookOptions<GetFeatureFlagByIdQuery, GetFeatureFlagByIdQueryVariables> & ({ variables: GetFeatureFlagByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFeatureFlagByIdQuery, GetFeatureFlagByIdQueryVariables>(GetFeatureFlagByIdDocument, options);
+      }
+export function useGetFeatureFlagByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFeatureFlagByIdQuery, GetFeatureFlagByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFeatureFlagByIdQuery, GetFeatureFlagByIdQueryVariables>(GetFeatureFlagByIdDocument, options);
+        }
+export function useGetFeatureFlagByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFeatureFlagByIdQuery, GetFeatureFlagByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFeatureFlagByIdQuery, GetFeatureFlagByIdQueryVariables>(GetFeatureFlagByIdDocument, options);
+        }
+export type GetFeatureFlagByIdQueryHookResult = ReturnType<typeof useGetFeatureFlagByIdQuery>;
+export type GetFeatureFlagByIdLazyQueryHookResult = ReturnType<typeof useGetFeatureFlagByIdLazyQuery>;
+export type GetFeatureFlagByIdSuspenseQueryHookResult = ReturnType<typeof useGetFeatureFlagByIdSuspenseQuery>;
+export type GetFeatureFlagByIdQueryResult = Apollo.QueryResult<GetFeatureFlagByIdQuery, GetFeatureFlagByIdQueryVariables>;
+export const GetAppSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAppSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"appSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AppSettingsCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AppSettingsCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"appSettings"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetAppSettingsQuery__
+ *
+ * To run a query within a React component, call `useGetAppSettingsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAppSettingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAppSettingsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAppSettingsQuery(baseOptions?: Apollo.QueryHookOptions<GetAppSettingsQuery, GetAppSettingsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAppSettingsQuery, GetAppSettingsQueryVariables>(GetAppSettingsDocument, options);
+      }
+export function useGetAppSettingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAppSettingsQuery, GetAppSettingsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAppSettingsQuery, GetAppSettingsQueryVariables>(GetAppSettingsDocument, options);
+        }
+export function useGetAppSettingsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAppSettingsQuery, GetAppSettingsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAppSettingsQuery, GetAppSettingsQueryVariables>(GetAppSettingsDocument, options);
+        }
+export type GetAppSettingsQueryHookResult = ReturnType<typeof useGetAppSettingsQuery>;
+export type GetAppSettingsLazyQueryHookResult = ReturnType<typeof useGetAppSettingsLazyQuery>;
+export type GetAppSettingsSuspenseQueryHookResult = ReturnType<typeof useGetAppSettingsSuspenseQuery>;
+export type GetAppSettingsQueryResult = Apollo.QueryResult<GetAppSettingsQuery, GetAppSettingsQueryVariables>;
+export const GetUserEffectivePermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserEffectivePermissions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userRoles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetUserEffectivePermissionsQuery__
+ *
+ * To run a query within a React component, call `useGetUserEffectivePermissionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserEffectivePermissionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserEffectivePermissionsQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetUserEffectivePermissionsQuery(baseOptions: Apollo.QueryHookOptions<GetUserEffectivePermissionsQuery, GetUserEffectivePermissionsQueryVariables> & ({ variables: GetUserEffectivePermissionsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserEffectivePermissionsQuery, GetUserEffectivePermissionsQueryVariables>(GetUserEffectivePermissionsDocument, options);
+      }
+export function useGetUserEffectivePermissionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserEffectivePermissionsQuery, GetUserEffectivePermissionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserEffectivePermissionsQuery, GetUserEffectivePermissionsQueryVariables>(GetUserEffectivePermissionsDocument, options);
+        }
+export function useGetUserEffectivePermissionsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserEffectivePermissionsQuery, GetUserEffectivePermissionsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserEffectivePermissionsQuery, GetUserEffectivePermissionsQueryVariables>(GetUserEffectivePermissionsDocument, options);
+        }
+export type GetUserEffectivePermissionsQueryHookResult = ReturnType<typeof useGetUserEffectivePermissionsQuery>;
+export type GetUserEffectivePermissionsLazyQueryHookResult = ReturnType<typeof useGetUserEffectivePermissionsLazyQuery>;
+export type GetUserEffectivePermissionsSuspenseQueryHookResult = ReturnType<typeof useGetUserEffectivePermissionsSuspenseQuery>;
+export type GetUserEffectivePermissionsQueryResult = Apollo.QueryResult<GetUserEffectivePermissionsQuery, GetUserEffectivePermissionsQueryVariables>;
+export const GetUserPermissionOverridesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserPermissionOverrides"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetUserPermissionOverridesQuery__
+ *
+ * To run a query within a React component, call `useGetUserPermissionOverridesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserPermissionOverridesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserPermissionOverridesQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetUserPermissionOverridesQuery(baseOptions: Apollo.QueryHookOptions<GetUserPermissionOverridesQuery, GetUserPermissionOverridesQueryVariables> & ({ variables: GetUserPermissionOverridesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserPermissionOverridesQuery, GetUserPermissionOverridesQueryVariables>(GetUserPermissionOverridesDocument, options);
+      }
+export function useGetUserPermissionOverridesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserPermissionOverridesQuery, GetUserPermissionOverridesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserPermissionOverridesQuery, GetUserPermissionOverridesQueryVariables>(GetUserPermissionOverridesDocument, options);
+        }
+export function useGetUserPermissionOverridesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserPermissionOverridesQuery, GetUserPermissionOverridesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserPermissionOverridesQuery, GetUserPermissionOverridesQueryVariables>(GetUserPermissionOverridesDocument, options);
+        }
+export type GetUserPermissionOverridesQueryHookResult = ReturnType<typeof useGetUserPermissionOverridesQuery>;
+export type GetUserPermissionOverridesLazyQueryHookResult = ReturnType<typeof useGetUserPermissionOverridesLazyQuery>;
+export type GetUserPermissionOverridesSuspenseQueryHookResult = ReturnType<typeof useGetUserPermissionOverridesSuspenseQuery>;
+export type GetUserPermissionOverridesQueryResult = Apollo.QueryResult<GetUserPermissionOverridesQuery, GetUserPermissionOverridesQueryVariables>;
+export const GetRolePermissionOverridesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRolePermissionOverrides"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetRolePermissionOverridesQuery__
+ *
+ * To run a query within a React component, call `useGetRolePermissionOverridesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRolePermissionOverridesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRolePermissionOverridesQuery({
+ *   variables: {
+ *      role: // value for 'role'
+ *   },
+ * });
+ */
+export function useGetRolePermissionOverridesQuery(baseOptions: Apollo.QueryHookOptions<GetRolePermissionOverridesQuery, GetRolePermissionOverridesQueryVariables> & ({ variables: GetRolePermissionOverridesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRolePermissionOverridesQuery, GetRolePermissionOverridesQueryVariables>(GetRolePermissionOverridesDocument, options);
+      }
+export function useGetRolePermissionOverridesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRolePermissionOverridesQuery, GetRolePermissionOverridesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRolePermissionOverridesQuery, GetRolePermissionOverridesQueryVariables>(GetRolePermissionOverridesDocument, options);
+        }
+export function useGetRolePermissionOverridesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRolePermissionOverridesQuery, GetRolePermissionOverridesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRolePermissionOverridesQuery, GetRolePermissionOverridesQueryVariables>(GetRolePermissionOverridesDocument, options);
+        }
+export type GetRolePermissionOverridesQueryHookResult = ReturnType<typeof useGetRolePermissionOverridesQuery>;
+export type GetRolePermissionOverridesLazyQueryHookResult = ReturnType<typeof useGetRolePermissionOverridesLazyQuery>;
+export type GetRolePermissionOverridesSuspenseQueryHookResult = ReturnType<typeof useGetRolePermissionOverridesSuspenseQuery>;
+export type GetRolePermissionOverridesQueryResult = Apollo.QueryResult<GetRolePermissionOverridesQuery, GetRolePermissionOverridesQueryVariables>;
+export const GetRoleByNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRoleByName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}}]}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetRoleByNameQuery__
+ *
+ * To run a query within a React component, call `useGetRoleByNameQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoleByNameQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoleByNameQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useGetRoleByNameQuery(baseOptions: Apollo.QueryHookOptions<GetRoleByNameQuery, GetRoleByNameQueryVariables> & ({ variables: GetRoleByNameQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRoleByNameQuery, GetRoleByNameQueryVariables>(GetRoleByNameDocument, options);
+      }
+export function useGetRoleByNameLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoleByNameQuery, GetRoleByNameQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRoleByNameQuery, GetRoleByNameQueryVariables>(GetRoleByNameDocument, options);
+        }
+export function useGetRoleByNameSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRoleByNameQuery, GetRoleByNameQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRoleByNameQuery, GetRoleByNameQueryVariables>(GetRoleByNameDocument, options);
+        }
+export type GetRoleByNameQueryHookResult = ReturnType<typeof useGetRoleByNameQuery>;
+export type GetRoleByNameLazyQueryHookResult = ReturnType<typeof useGetRoleByNameLazyQuery>;
+export type GetRoleByNameSuspenseQueryHookResult = ReturnType<typeof useGetRoleByNameSuspenseQuery>;
+export type GetRoleByNameQueryResult = Apollo.QueryResult<GetRoleByNameQuery, GetRoleByNameQueryVariables>;
+export const GetPermissionsByResourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPermissionsByResource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resourceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"resourceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resourceId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"action"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"legacyPermissionName"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetPermissionsByResourceQuery__
+ *
+ * To run a query within a React component, call `useGetPermissionsByResourceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPermissionsByResourceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPermissionsByResourceQuery({
+ *   variables: {
+ *      resourceId: // value for 'resourceId'
+ *   },
+ * });
+ */
+export function useGetPermissionsByResourceQuery(baseOptions: Apollo.QueryHookOptions<GetPermissionsByResourceQuery, GetPermissionsByResourceQueryVariables> & ({ variables: GetPermissionsByResourceQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPermissionsByResourceQuery, GetPermissionsByResourceQueryVariables>(GetPermissionsByResourceDocument, options);
+      }
+export function useGetPermissionsByResourceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPermissionsByResourceQuery, GetPermissionsByResourceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPermissionsByResourceQuery, GetPermissionsByResourceQueryVariables>(GetPermissionsByResourceDocument, options);
+        }
+export function useGetPermissionsByResourceSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPermissionsByResourceQuery, GetPermissionsByResourceQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPermissionsByResourceQuery, GetPermissionsByResourceQueryVariables>(GetPermissionsByResourceDocument, options);
+        }
+export type GetPermissionsByResourceQueryHookResult = ReturnType<typeof useGetPermissionsByResourceQuery>;
+export type GetPermissionsByResourceLazyQueryHookResult = ReturnType<typeof useGetPermissionsByResourceLazyQuery>;
+export type GetPermissionsByResourceSuspenseQueryHookResult = ReturnType<typeof useGetPermissionsByResourceSuspenseQuery>;
+export type GetPermissionsByResourceQueryResult = Apollo.QueryResult<GetPermissionsByResourceQuery, GetPermissionsByResourceQueryVariables>;
+export const GetPermissionAuditLogDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPermissionAuditLog"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"targetUserId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"targetUserId"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetPermissionAuditLogQuery__
+ *
+ * To run a query within a React component, call `useGetPermissionAuditLogQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPermissionAuditLogQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPermissionAuditLogQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      userId: // value for 'userId'
+ *      targetUserId: // value for 'targetUserId'
+ *   },
+ * });
+ */
+export function useGetPermissionAuditLogQuery(baseOptions?: Apollo.QueryHookOptions<GetPermissionAuditLogQuery, GetPermissionAuditLogQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPermissionAuditLogQuery, GetPermissionAuditLogQueryVariables>(GetPermissionAuditLogDocument, options);
+      }
+export function useGetPermissionAuditLogLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPermissionAuditLogQuery, GetPermissionAuditLogQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPermissionAuditLogQuery, GetPermissionAuditLogQueryVariables>(GetPermissionAuditLogDocument, options);
+        }
+export function useGetPermissionAuditLogSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPermissionAuditLogQuery, GetPermissionAuditLogQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPermissionAuditLogQuery, GetPermissionAuditLogQueryVariables>(GetPermissionAuditLogDocument, options);
+        }
+export type GetPermissionAuditLogQueryHookResult = ReturnType<typeof useGetPermissionAuditLogQuery>;
+export type GetPermissionAuditLogLazyQueryHookResult = ReturnType<typeof useGetPermissionAuditLogLazyQuery>;
+export type GetPermissionAuditLogSuspenseQueryHookResult = ReturnType<typeof useGetPermissionAuditLogSuspenseQuery>;
+export type GetPermissionAuditLogQueryResult = Apollo.QueryResult<GetPermissionAuditLogQuery, GetPermissionAuditLogQueryVariables>;
+export const SearchPermissionOverridesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchPermissionOverrides"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"reason"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"resource"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"operation"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"targetUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useSearchPermissionOverridesQuery__
+ *
+ * To run a query within a React component, call `useSearchPermissionOverridesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchPermissionOverridesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchPermissionOverridesQuery({
+ *   variables: {
+ *      searchTerm: // value for 'searchTerm'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useSearchPermissionOverridesQuery(baseOptions: Apollo.QueryHookOptions<SearchPermissionOverridesQuery, SearchPermissionOverridesQueryVariables> & ({ variables: SearchPermissionOverridesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchPermissionOverridesQuery, SearchPermissionOverridesQueryVariables>(SearchPermissionOverridesDocument, options);
+      }
+export function useSearchPermissionOverridesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchPermissionOverridesQuery, SearchPermissionOverridesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchPermissionOverridesQuery, SearchPermissionOverridesQueryVariables>(SearchPermissionOverridesDocument, options);
+        }
+export function useSearchPermissionOverridesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SearchPermissionOverridesQuery, SearchPermissionOverridesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SearchPermissionOverridesQuery, SearchPermissionOverridesQueryVariables>(SearchPermissionOverridesDocument, options);
+        }
+export type SearchPermissionOverridesQueryHookResult = ReturnType<typeof useSearchPermissionOverridesQuery>;
+export type SearchPermissionOverridesLazyQueryHookResult = ReturnType<typeof useSearchPermissionOverridesLazyQuery>;
+export type SearchPermissionOverridesSuspenseQueryHookResult = ReturnType<typeof useSearchPermissionOverridesSuspenseQuery>;
+export type SearchPermissionOverridesQueryResult = Apollo.QueryResult<SearchPermissionOverridesQuery, SearchPermissionOverridesQueryVariables>;
+export const GetExpiringPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetExpiringPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"targetUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetExpiringPermissionsQuery__
+ *
+ * To run a query within a React component, call `useGetExpiringPermissionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetExpiringPermissionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetExpiringPermissionsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetExpiringPermissionsQuery(baseOptions?: Apollo.QueryHookOptions<GetExpiringPermissionsQuery, GetExpiringPermissionsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetExpiringPermissionsQuery, GetExpiringPermissionsQueryVariables>(GetExpiringPermissionsDocument, options);
+      }
+export function useGetExpiringPermissionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetExpiringPermissionsQuery, GetExpiringPermissionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetExpiringPermissionsQuery, GetExpiringPermissionsQueryVariables>(GetExpiringPermissionsDocument, options);
+        }
+export function useGetExpiringPermissionsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetExpiringPermissionsQuery, GetExpiringPermissionsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetExpiringPermissionsQuery, GetExpiringPermissionsQueryVariables>(GetExpiringPermissionsDocument, options);
+        }
+export type GetExpiringPermissionsQueryHookResult = ReturnType<typeof useGetExpiringPermissionsQuery>;
+export type GetExpiringPermissionsLazyQueryHookResult = ReturnType<typeof useGetExpiringPermissionsLazyQuery>;
+export type GetExpiringPermissionsSuspenseQueryHookResult = ReturnType<typeof useGetExpiringPermissionsSuspenseQuery>;
+export type GetExpiringPermissionsQueryResult = Apollo.QueryResult<GetExpiringPermissionsQuery, GetExpiringPermissionsQueryVariables>;
+export const GetPermissionAnalyticsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPermissionAnalytics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"roles_count"},"name":{"kind":"Name","value":"rolesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"permissions_count"},"name":{"kind":"Name","value":"permissionsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"resources_count"},"name":{"kind":"Name","value":"resourcesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userRoles_count"},"name":{"kind":"Name","value":"userRolesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalOverrides"},"name":{"kind":"Name","value":"permissionOverridesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeOverrides"},"name":{"kind":"Name","value":"permissionOverridesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"expiredOverrides"},"name":{"kind":"Name","value":"permissionOverridesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"roles_by_priority"},"name":{"kind":"Name","value":"roles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"priority"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"assignedToUsersAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetPermissionAnalyticsQuery__
+ *
+ * To run a query within a React component, call `useGetPermissionAnalyticsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPermissionAnalyticsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPermissionAnalyticsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPermissionAnalyticsQuery(baseOptions?: Apollo.QueryHookOptions<GetPermissionAnalyticsQuery, GetPermissionAnalyticsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPermissionAnalyticsQuery, GetPermissionAnalyticsQueryVariables>(GetPermissionAnalyticsDocument, options);
+      }
+export function useGetPermissionAnalyticsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPermissionAnalyticsQuery, GetPermissionAnalyticsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPermissionAnalyticsQuery, GetPermissionAnalyticsQueryVariables>(GetPermissionAnalyticsDocument, options);
+        }
+export function useGetPermissionAnalyticsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPermissionAnalyticsQuery, GetPermissionAnalyticsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPermissionAnalyticsQuery, GetPermissionAnalyticsQueryVariables>(GetPermissionAnalyticsDocument, options);
+        }
+export type GetPermissionAnalyticsQueryHookResult = ReturnType<typeof useGetPermissionAnalyticsQuery>;
+export type GetPermissionAnalyticsLazyQueryHookResult = ReturnType<typeof useGetPermissionAnalyticsLazyQuery>;
+export type GetPermissionAnalyticsSuspenseQueryHookResult = ReturnType<typeof useGetPermissionAnalyticsSuspenseQuery>;
+export type GetPermissionAnalyticsQueryResult = Apollo.QueryResult<GetPermissionAnalyticsQuery, GetPermissionAnalyticsQueryVariables>;
+export const RolesUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RolesUpdated"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useRolesUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useRolesUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useRolesUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRolesUpdatedSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useRolesUpdatedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<RolesUpdatedSubscription, RolesUpdatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<RolesUpdatedSubscription, RolesUpdatedSubscriptionVariables>(RolesUpdatedDocument, options);
+      }
+export type RolesUpdatedSubscriptionHookResult = ReturnType<typeof useRolesUpdatedSubscription>;
+export type RolesUpdatedSubscriptionResult = Apollo.SubscriptionResult<RolesUpdatedSubscription>;
+export const UserRolesUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"UserRolesUpdated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userRoles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"roleUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useUserRolesUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useUserRolesUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useUserRolesUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserRolesUpdatedSubscription({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useUserRolesUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<UserRolesUpdatedSubscription, UserRolesUpdatedSubscriptionVariables> & ({ variables: UserRolesUpdatedSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<UserRolesUpdatedSubscription, UserRolesUpdatedSubscriptionVariables>(UserRolesUpdatedDocument, options);
+      }
+export type UserRolesUpdatedSubscriptionHookResult = ReturnType<typeof useUserRolesUpdatedSubscription>;
+export type UserRolesUpdatedSubscriptionResult = Apollo.SubscriptionResult<UserRolesUpdatedSubscription>;
+export const RolePermissionsUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RolePermissionsUpdated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rolePermissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"roleId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"roleId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RolePermissionWithDetails"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionWithDetails"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"grantedToRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleCore"}}]}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useRolePermissionsUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useRolePermissionsUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useRolePermissionsUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRolePermissionsUpdatedSubscription({
+ *   variables: {
+ *      roleId: // value for 'roleId'
+ *   },
+ * });
+ */
+export function useRolePermissionsUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<RolePermissionsUpdatedSubscription, RolePermissionsUpdatedSubscriptionVariables> & ({ variables: RolePermissionsUpdatedSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<RolePermissionsUpdatedSubscription, RolePermissionsUpdatedSubscriptionVariables>(RolePermissionsUpdatedDocument, options);
+      }
+export type RolePermissionsUpdatedSubscriptionHookResult = ReturnType<typeof useRolePermissionsUpdatedSubscription>;
+export type RolePermissionsUpdatedSubscriptionResult = Apollo.SubscriptionResult<RolePermissionsUpdatedSubscription>;
+export const PermissionsUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"PermissionsUpdated"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionWithResource"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __usePermissionsUpdatedSubscription__
+ *
+ * To run a query within a React component, call `usePermissionsUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `usePermissionsUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePermissionsUpdatedSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function usePermissionsUpdatedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<PermissionsUpdatedSubscription, PermissionsUpdatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<PermissionsUpdatedSubscription, PermissionsUpdatedSubscriptionVariables>(PermissionsUpdatedDocument, options);
+      }
+export type PermissionsUpdatedSubscriptionHookResult = ReturnType<typeof usePermissionsUpdatedSubscription>;
+export type PermissionsUpdatedSubscriptionResult = Apollo.SubscriptionResult<PermissionsUpdatedSubscription>;
+export const ResourcesUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"ResourcesUpdated"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resources"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ResourceCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useResourcesUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useResourcesUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useResourcesUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useResourcesUpdatedSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useResourcesUpdatedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ResourcesUpdatedSubscription, ResourcesUpdatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ResourcesUpdatedSubscription, ResourcesUpdatedSubscriptionVariables>(ResourcesUpdatedDocument, options);
+      }
+export type ResourcesUpdatedSubscriptionHookResult = ReturnType<typeof useResourcesUpdatedSubscription>;
+export type ResourcesUpdatedSubscriptionResult = Apollo.SubscriptionResult<ResourcesUpdatedSubscription>;

@@ -2,14 +2,6 @@
 
 import { useState } from "react";
 import { useQuery } from "@apollo/client";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { useUserRole } from "@/hooks/use-user-role";
-import { GetUserProfileCompleteDocument } from "@/domains/users/graphql/generated";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   User,
   Users,
@@ -25,6 +17,14 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useUserRole } from "@/hooks/use-user-role";
+import { GetUserProfileCompleteDocument } from "@/domains/users/graphql/generated";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Role mapping for display
 const roleMapping = {

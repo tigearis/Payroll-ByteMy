@@ -1,10 +1,10 @@
 "use client";
 
+import { Trash2, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, RefreshCw } from "lucide-react";
-import { toast } from "sonner";
 import { useInvitationManagement } from "@/domains/auth";
 
 interface Invitation {

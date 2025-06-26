@@ -54,8 +54,8 @@ export const POST = withAuth(
       const startDate = new Date(validatedInput.startDate).toISOString();
       const endDate = new Date(validatedInput.endDate).toISOString();
 
-      let reportData: any = {};
-      let summary: any = {
+      const reportData: any = {};
+      const summary: any = {
         reportType: validatedInput.reportType,
         period: {
           start: startDate,

@@ -1,11 +1,11 @@
 // app/api/invitations/create/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { z } from "zod";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { CreateUserInvitationDocument, ValidateInvitationRolePermissionsDocument } from "@/domains/auth/graphql/generated/graphql";
 import { withAuth } from "@/lib/auth/api-auth";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
-import { z } from "zod";
 
 const CreateInvitationSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -59,7 +59,7 @@ async function POST(request: NextRequest) {
 
       // Role hierarchy validation - users can only assign roles lower than their highest role
       const userHighestPriority = Math.max(
-        ...userRoles.map(ur => ur.assignedRole.priority)
+        ...userRoles.map((ur: any) => ur.assignedRole.priority)
       );
       
       if (targetRole.priority >= userHighestPriority) {

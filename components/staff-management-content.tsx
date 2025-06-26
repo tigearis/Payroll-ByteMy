@@ -2,10 +2,10 @@
 
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
+import { UserPlus, Search, RefreshCcw, Edit, Trash2 } from "lucide-react";
 import { useStaffManagement } from "@/hooks/use-staff-management";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UserPlus, Search, RefreshCcw, Edit, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,

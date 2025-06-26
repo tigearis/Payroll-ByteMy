@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { useQuery } from "@apollo/client";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,8 +27,6 @@ import {
 import { useActorTokens } from "@/hooks/use-actor-tokens";
 import { GetUsersWithFilteringDocument } from "@/domains/users/graphql/generated/graphql";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
-import { useQuery } from "@apollo/client";
-import { toast } from "sonner";
 
 interface User {
   id: string;
@@ -210,7 +210,7 @@ export function ActorTokenManager() {
                         Loading users...
                       </SelectItem>
                     ) : (
-                      users.map(user => (
+                      users.map((user: any) => (
                         <SelectItem
                           key={user.id}
                           value={user.clerkUserId || ""}
@@ -272,7 +272,7 @@ export function ActorTokenManager() {
                 {usersLoading ? (
                   <div>Loading users...</div>
                 ) : (
-                  users.map(user => (
+                  users.map((user: any) => (
                     <div
                       key={user.id}
                       className="flex items-center justify-between p-2 border rounded"

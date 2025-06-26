@@ -254,10 +254,9 @@ const config: CodegenConfig = {
       },
     },
 
-    // 2. SHARED DOMAIN: Operations with hooks (uses client preset correctly)
-    "./shared/types/generated/": {
+    // 2. SHARED DOMAIN: Operations with hooks (uses plugin approach)
+    "./shared/types/generated/graphql.ts": {
       documents: getDomainDocuments("shared"),
-      preset: "client",
       plugins: [
         {
           add: {
@@ -268,6 +267,9 @@ const config: CodegenConfig = {
             ].join("\n"),
           },
         },
+        "typescript",
+        "typescript-operations",
+        "typescript-react-apollo",
       ],
       config: {
         scalars: SHARED_SCALARS,
@@ -275,10 +277,11 @@ const config: CodegenConfig = {
         // Import base types instead of generating them
         typesPrefix: "",
         typesSuffix: "",
-        // Client preset configuration
+        // Apollo React hooks configuration
         withHooks: true,
         withComponent: false,
         withHOC: false,
+        withMutationFn: true,
         fragmentMasking: false,
         enumsAsTypes: false,
         strictScalars: true,
@@ -286,11 +289,12 @@ const config: CodegenConfig = {
         dedupeFragments: true,
         documentMode: "documentNode",
         gqlTagName: "gql",
-      },
-      presetConfig: {
-        fragmentMasking: false,
-        // Generate index.ts with proper exports
-        gqlTagName: "gql",
+        skipDocumentsValidation: true,
+        namingConvention: {
+          typeNames: "pascal-case#pascalCase",
+          enumValues: "keep",
+          transformUnderscore: true,
+        },
       },
     },
 
@@ -305,11 +309,10 @@ const config: CodegenConfig = {
           const documents = getDomainDocuments(domain.name);
           if (documents.length === 0) return acc;
 
-          const outputDir = `./domains/${domain.name}/graphql/generated/`;
+          const outputFile = `./domains/${domain.name}/graphql/generated/graphql.ts`;
 
-          acc[outputDir] = {
+          acc[outputFile] = {
             documents,
-            preset: "client",
             plugins: [
               {
                 add: {
@@ -320,6 +323,9 @@ const config: CodegenConfig = {
                   ].join("\n"),
                 },
               },
+              "typescript",
+              "typescript-operations",
+              "typescript-react-apollo",
             ],
             config: {
               scalars: SHARED_SCALARS,
@@ -327,10 +333,11 @@ const config: CodegenConfig = {
               // Import base types from shared
               typesPrefix: "",
               typesSuffix: "",
-              // Client preset configuration
+              // Apollo React hooks configuration
               withHooks: true,
               withComponent: false,
               withHOC: false,
+              withMutationFn: true,
               fragmentMasking: false,
               enumsAsTypes: false,
               strictScalars: true,
@@ -338,10 +345,13 @@ const config: CodegenConfig = {
               dedupeFragments: true,
               documentMode: "documentNode",
               gqlTagName: "gql",
-            },
-            presetConfig: {
-              fragmentMasking: false,
-              gqlTagName: "gql",
+              // Import shared types instead of generating them
+              skipDocumentsValidation: true,
+              namingConvention: {
+                typeNames: "pascal-case#pascalCase",
+                enumValues: "keep",
+                transformUnderscore: true,
+              },
             },
           };
 
@@ -363,14 +373,14 @@ const config: CodegenConfig = {
               "export * from './base-types';",
               "",
               "// Shared operations and hooks",
-              "export * from './generated';",
+              "export * from './generated/graphql';",
               "",
               "// Domain-specific exports available at:",
               "// import { useGetUserQuery } from '../../../domains/users/graphql/generated';",
               "// import { useCreateNoteQuery } from '../../../domains/notes/graphql/generated';",
               "",
               "// Re-export commonly used utilities",
-              "export { gql } from './generated';",
+              "export { gql } from './generated/graphql';",
               "",
             ].join("\n"),
           },
@@ -456,7 +466,7 @@ const config: CodegenConfig = {
         "  const indexFiles = glob.sync('./domains/*/graphql/generated/index.ts'); " +
         "  indexFiles.forEach(file => { " +
         "    if (fs.existsSync(file)) { " +
-        '      const content = \'// Auto-generated domain exports\\\\nexport * from \\"./gql\\";\\\\nexport * from \\"./graphql\\";\\\\n\'; ' +
+        '      const content = \'// Auto-generated domain exports\\\\nexport * from \\"./graphql\\";\\\\n\'; ' +
         "      fs.writeFileSync(file, content, 'utf8'); " +
         "    } " +
         "  }); " +

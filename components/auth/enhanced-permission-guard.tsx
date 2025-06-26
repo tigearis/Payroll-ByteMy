@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
+import { PermissionDenied } from "./permission-denied";
 import {
   useEnhancedPermissions,
   type PermissionResult,
 } from "@/hooks/use-enhanced-permissions";
-import { PermissionDenied } from "./permission-denied";
 
 interface PermissionGuardProps {
   resource?: string;

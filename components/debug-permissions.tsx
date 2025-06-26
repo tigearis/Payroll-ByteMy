@@ -1,7 +1,7 @@
 "use client";
 
-import { useUserRole } from "@/hooks/use-user-role";
 import { useUser } from "@clerk/nextjs";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export function DebugPermissions() {
   const permissions = useUserRole();

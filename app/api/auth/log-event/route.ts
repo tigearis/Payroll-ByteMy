@@ -1,10 +1,10 @@
 // app/api/auth/log-event/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { z } from "zod";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { CreateAuthEventDocument } from "@/domains/audit/graphql/generated/graphql";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
-import { z } from "zod";
 
 const AuthEventSchema = z.object({
   eventType: z.enum([
