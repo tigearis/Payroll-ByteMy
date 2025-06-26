@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { clientAuthLogger } from "@/lib/auth/client-auth-logger";
 import { useInvitationAcceptance } from "@/domains/auth/hooks/use-invitation-acceptance";
 
 interface InvitationData {
@@ -84,19 +83,15 @@ function AcceptInvitationContent() {
     }
   }, [invitationData, invitationError]);
 
-  // Extract invitation metadata from JWT token and log invitation attempt
+  // Extract invitation metadata from JWT token
   React.useEffect(() => {
     if (ticket) {
-      // Log invitation acceptance page visit
-      clientAuthLogger.logAuthEvent({
+      // Log invitation acceptance page visit for debugging
+      console.log("Invitation acceptance attempt", {
         eventType: "signup_attempt",
         authMethod: "invitation_ticket",
-        success: true,
-        metadata: {
-          authFlow: "invitation_acceptance",
-          page: "accept_invitation",
-          hasInvitationToken: true,
-        },
+        page: "accept_invitation",
+        hasInvitationToken: true,
       });
 
       try {

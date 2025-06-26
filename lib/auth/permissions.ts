@@ -5,15 +5,17 @@ export type PayrollPermission =
   | "payroll:read"
   | "payroll:write"
   | "payroll:delete"
-  | "payroll:assign";
+  | "payroll:assign"
+  | "payroll:approve";
 
 export type StaffPermission =
   | "staff:read"
   | "staff:write"
   | "staff:delete"
-  | "staff:invite";
+  | "staff:invite"
+  | "staff:bulk_update";
 
-export type ClientPermission = "client:read" | "client:write" | "client:delete";
+export type ClientPermission = "client:read" | "client:write" | "client:delete" | "client:archive";
 
 export type AdminPermission =
   | "admin:manage"
@@ -29,8 +31,10 @@ export type SecurityPermission =
 export type ReportingPermission =
   | "reports:read"
   | "reports:export"
+  | "reports:schedule"
   | "audit:read"
-  | "audit:write";
+  | "audit:write"
+  | "audit:export";
 
 // Combined permission type
 export type Permission =
@@ -63,24 +67,27 @@ export interface RolePermissions {
 // CONSOLIDATED PERMISSION SYSTEM
 // ================================
 
-// 18 specific permissions across 5 hierarchical roles
+// 23 specific permissions across 5 hierarchical roles
 export const ALL_PERMISSIONS = [
   // Payroll permissions
   "payroll:read",
   "payroll:write",
   "payroll:delete",
   "payroll:assign",
+  "payroll:approve",
 
   // Staff permissions
   "staff:read",
   "staff:write",
   "staff:delete",
   "staff:invite",
+  "staff:bulk_update",
 
   // Client permissions
   "client:read",
   "client:write",
   "client:delete",
+  "client:archive",
 
   // Admin permissions
   "admin:manage",
@@ -95,8 +102,10 @@ export const ALL_PERMISSIONS = [
   // Reporting permissions
   "reports:read",
   "reports:export",
+  "reports:schedule",
   "audit:read",
   "audit:write",
+  "audit:export",
 ] as const;
 
 // Role hierarchy: developer(5) > org_admin(4) > manager(3) > consultant(2) > viewer(1)
@@ -123,17 +132,20 @@ export const ROLE_PERMISSIONS: RolePermissions = {
       "payroll:write",
       "payroll:delete",
       "payroll:assign",
+      "payroll:approve",
 
       // Staff permissions - full access
       "staff:read",
       "staff:write",
       "staff:delete",
       "staff:invite",
+      "staff:bulk_update",
 
       // Client permissions - full access
       "client:read",
       "client:write",
       "client:delete",
+      "client:archive",
 
       // Admin permissions - full access
       "admin:manage",
@@ -148,8 +160,10 @@ export const ROLE_PERMISSIONS: RolePermissions = {
       // Reporting permissions - full access
       "reports:read",
       "reports:export",
+      "reports:schedule",
       "audit:read",
       "audit:write",
+      "audit:export",
     ] as Permission[],
   },
   manager: {
@@ -164,6 +178,7 @@ export const ROLE_PERMISSIONS: RolePermissions = {
       "staff:read",
       "staff:write",
       "staff:invite",
+      "staff:bulk_update",
 
       // Client permissions - read and write
       "client:read",
@@ -175,6 +190,7 @@ export const ROLE_PERMISSIONS: RolePermissions = {
       // Reporting permissions - read and export
       "reports:read",
       "reports:export",
+      "reports:schedule",
       "audit:read",
     ] as Permission[],
   },

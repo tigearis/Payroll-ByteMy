@@ -7,7 +7,6 @@ import { useEffect, useCallback } from "react";
 import { useSignUp } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
-import { clientAuthLogger } from "@/lib/auth/client-auth-logger";
 import {
   Card,
   CardContent,
@@ -23,26 +22,12 @@ import { Label } from "@/components/ui/label";
 export default function SignUpPage() {
   const { isLoaded, signUp } = useSignUp();
 
-  // Enhanced sign-up logging with Clerk Elements
-  useEffect(() => {
-    // Log sign-up page visit
-    clientAuthLogger.logAuthEvent({
-      eventType: "signup_attempt",
-      authMethod: "clerk_elements",
-      success: true,
-      metadata: {
-        authFlow: "clerk_elements",
-        page: "signup_start"
-      }
-    });
-  }, []);
-
-  // Monitor sign-up completion status
+  // Monitor sign-up completion status for debugging
   useEffect(() => {
     if (isLoaded && signUp) {
       if (signUp.status === "complete") {
-        // Log successful signup
-        clientAuthLogger.logSignup("clerk_elements", {
+        // Log successful signup for debugging
+        console.log("Sign-up completed", {
           signUpId: signUp.id,
           authFlow: "clerk_elements",
           method: "email_password",
@@ -54,40 +39,28 @@ export default function SignUpPage() {
 
   // Handle Google OAuth signup
   const handleGoogleSignUp = async () => {
-    await clientAuthLogger.logAuthEvent({
-      eventType: "signup_attempt",
-      authMethod: "google_oauth",
-      success: true,
-      metadata: {
-        authFlow: "oauth_redirect",
-        provider: "google",
-        page: "signup"
-      }
+    console.log("Google OAuth sign-up attempt", {
+      authFlow: "oauth_redirect",
+      provider: "google",
+      page: "signup"
     });
   };
 
   // Handle form submission logging
   const handleFormSubmit = useCallback(async (_e: React.FormEvent) => {
     try {
-      await clientAuthLogger.logAuthEvent({
-        eventType: "signup_attempt",
-        authMethod: "email_password",
-        success: true,
-        metadata: {
-          authFlow: "clerk_elements",
-          method: "email_password",
-          page: "signup"
-        }
+      console.log("Email sign-up attempt", {
+        authFlow: "clerk_elements",
+        method: "email_password",
+        page: "signup"
       });
     } catch (error) {
-      // Log signup failure
-      await clientAuthLogger.logSignupFailure("email_password", 
-        error instanceof Error ? error.message : "Unknown signup error", {
-          authFlow: "clerk_elements",
-          page: "signup",
-          clerkError: error
-        }
-      );
+      // Log signup failure for debugging
+      console.error("Sign-up failed", {
+        authFlow: "clerk_elements",
+        page: "signup",
+        error: error instanceof Error ? error.message : "Unknown signup error"
+      });
     }
   }, []);
 
