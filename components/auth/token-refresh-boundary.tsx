@@ -54,7 +54,8 @@ export function TokenRefreshBoundary({ children }: TokenRefreshBoundaryProps) {
         console.error(`❌ Token check failed (${consecutiveFailures}/${maxFailures}):`, error);
         
         // Check if it's a user metadata issue
-        if (error.message?.includes('public_metadata') || error.message?.includes('role') || error.message?.includes('databaseId')) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage.includes('public_metadata') || errorMessage.includes('role') || errorMessage.includes('databaseId')) {
           console.error("❌ User metadata missing - user needs to complete profile setup");
           toast.error("Please complete your profile setup to continue.");
           // Don't auto-signout for metadata issues - let user fix their profile
