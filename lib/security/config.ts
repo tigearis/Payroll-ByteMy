@@ -29,8 +29,8 @@ export const securityConfig = {
     cookieName: "payroll-session",
     secure: true, // HTTPS only
     httpOnly: true,
-    sameSite: "strict" as const,
-    maxAge: 30 * 60 * 1000, // 30 minutes
+    sameSite: "lax" as const, // Changed from "strict" to "lax" for invitation links
+    maxAge: 60 * 60 * 1000, // 60 minutes (extended for invitation flow)
     rolling: true, // Extend session on activity
   },
 
