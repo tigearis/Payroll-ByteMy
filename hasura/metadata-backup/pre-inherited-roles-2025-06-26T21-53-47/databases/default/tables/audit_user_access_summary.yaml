@@ -1,0 +1,84 @@
+table:
+  name: user_access_summary
+  schema: audit
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    is_active:
+      custom_name: isActive
+    is_staff:
+      custom_name: isStaff
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    created_at: createdAt
+    is_active: isActive
+    is_staff: isStaff
+    updated_at: updatedAt
+  custom_name: userAccessSummaries
+  custom_root_fields:
+    delete: bulkDeleteUserAccessSummaries
+    delete_by_pk: deleteUserAccessSummaryById
+    insert: bulkInsertUserAccessSummaries
+    insert_one: insertUserAccessSummary
+    select: userAccessSummaries
+    select_aggregate: userAccessSummariesAggregate
+    select_by_pk: userAccessSummaryById
+    update: bulkUpdateUserAccessSummaries
+    update_by_pk: updateUserAccessSummaryById
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - id
+        - name
+        - role
+        - is_active
+        - created_at
+        - updated_at
+      filter:
+        role:
+          _in:
+            - consultant
+            - viewer
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - name
+        - email
+        - role
+        - is_active
+        - is_staff
+        - created_at
+        - updated_at
+      filter:
+        role:
+          _nin:
+            - developer
+      allow_aggregations: true
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

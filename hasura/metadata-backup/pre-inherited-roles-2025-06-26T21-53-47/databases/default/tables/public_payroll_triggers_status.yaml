@@ -1,0 +1,99 @@
+table:
+  name: payroll_triggers_status
+  schema: public
+configuration:
+  column_config:
+    action_statement:
+      custom_name: actionStatement
+    action_timing:
+      custom_name: actionTiming
+    event_manipulation:
+      custom_name: eventManipulation
+    event_object_table:
+      custom_name: eventObjectTable
+    trigger_name:
+      custom_name: triggerName
+  custom_column_names:
+    action_statement: actionStatement
+    action_timing: actionTiming
+    event_manipulation: eventManipulation
+    event_object_table: eventObjectTable
+    trigger_name: triggerName
+  custom_name: payrollTriggersStatus
+  custom_root_fields:
+    delete: bulkDeletePayrollTriggersStatus
+    delete_by_pk: deletePayrollTriggerStatusById
+    insert: bulkInsertPayrollTriggersStatus
+    insert_one: insertPayrollTriggerStatus
+    select: payrollTriggersStatus
+    select_aggregate: payrollTriggersStatusAggregate
+    select_by_pk: payrollTriggerStatusById
+    update: bulkUpdatePayrollTriggersStatus
+    update_by_pk: updatePayrollTriggerStatusById
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - action_statement
+        - action_timing
+        - event_manipulation
+        - event_object_table
+        - trigger_name
+      filter: {}
+    comment: Consultants can view relevant data
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - action_statement
+        - action_timing
+        - event_manipulation
+        - event_object_table
+        - trigger_name
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all data
+  - role: org_admin
+    permission:
+      columns:
+        - action_statement
+        - action_timing
+        - event_manipulation
+        - event_object_table
+        - trigger_name
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all data
+  - role: viewer
+    permission:
+      columns:
+        - action_statement
+        - action_timing
+        - event_manipulation
+        - event_object_table
+        - trigger_name
+      filter: {}
+    comment: Viewers can see basic information
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access

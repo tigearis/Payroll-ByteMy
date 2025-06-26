@@ -1,0 +1,8 @@
+function:
+  name: get_latest_payroll_version
+  schema: public
+configuration:
+  custom_root_fields:
+    function: getLatestPayrollVersion
+    function_aggregate: getLatestPayrollVersionAggregate
+  exposed_as: query

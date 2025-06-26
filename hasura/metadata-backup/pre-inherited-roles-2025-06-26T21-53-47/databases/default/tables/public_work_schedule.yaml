@@ -1,0 +1,237 @@
+table:
+  name: work_schedule
+  schema: public
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    updated_at:
+      custom_name: updatedAt
+    user_id:
+      custom_name: userId
+    work_day:
+      custom_name: workDay
+    work_hours:
+      custom_name: workHours
+  custom_column_names:
+    created_at: createdAt
+    updated_at: updatedAt
+    user_id: userId
+    work_day: workDay
+    work_hours: workHours
+  custom_name: workSchedules
+  custom_root_fields:
+    delete: bulkDeleteWorkSchedules
+    delete_by_pk: deleteWorkScheduleById
+    insert: bulkInsertWorkSchedules
+    insert_one: insertWorkSchedule
+    select: workSchedules
+    select_aggregate: workSchedulesAggregate
+    select_by_pk: workScheduleById
+    update: bulkUpdateWorkSchedules
+    update_by_pk: updateWorkScheduleById
+object_relationships:
+  - name: scheduleOwner
+    using:
+      foreign_key_constraint_on: user_id
+  - name: workScheduleUser
+    using:
+      foreign_key_constraint_on: user_id
+insert_permissions:
+  - role: consultant
+    permission:
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+      columns:
+        - work_day
+        - work_hours
+        - user_id
+    comment: Consultants can insert their own work schedule
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+  - role: manager
+    permission:
+      check:
+        _or:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - scheduleOwner:
+              manager_id:
+                _eq: X-Hasura-User-Id
+      columns:
+        - work_day
+        - work_hours
+        - user_id
+    comment: Managers can insert work schedules for themselves and their team
+  - role: org_admin
+    permission:
+      check: {}
+      columns:
+        - user_id
+        - work_day
+        - work_hours
+    comment: Org Admins can insert any work schedules
+  - role: viewer
+    permission:
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+      columns:
+        - work_day
+        - work_hours
+        - user_id
+    comment: Users can insert their own work schedule
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - created_at
+        - id
+        - updated_at
+        - user_id
+        - work_day
+        - work_hours
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+    comment: Consultants can view their own work schedule
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - id
+        - user_id
+        - work_day
+        - work_hours
+        - created_at
+        - updated_at
+      filter:
+        _or:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - scheduleOwner:
+              manager_id:
+                _eq: X-Hasura-User-Id
+      allow_aggregations: true
+    comment: Managers can view their own and their team's work schedules
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - user_id
+        - work_day
+        - work_hours
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org Admins can view all work schedules
+  - role: viewer
+    permission:
+      columns:
+        - created_at
+        - id
+        - updated_at
+        - user_id
+        - work_day
+        - work_hours
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+    comment: Users can view their own work schedule
+update_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - work_day
+        - work_hours
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+    comment: Consultants can update their own work schedules
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+  - role: manager
+    permission:
+      columns:
+        - work_day
+        - work_hours
+      filter:
+        _or:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - scheduleOwner:
+              manager_id:
+                _eq: X-Hasura-User-Id
+      check:
+        _or:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - scheduleOwner:
+              manager_id:
+                _eq: X-Hasura-User-Id
+    comment: Managers can update their own and their team's work schedules
+  - role: org_admin
+    permission:
+      columns:
+        - work_day
+        - work_hours
+        - user_id
+      filter: {}
+      check: {}
+    comment: Org Admins can update any work schedules
+  - role: viewer
+    permission:
+      columns:
+        - work_day
+        - work_hours
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+    comment: Users can update their own work schedule
+delete_permissions:
+  - role: consultant
+    permission:
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+    comment: Consultants can delete their own work schedules
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
+  - role: manager
+    permission:
+      filter:
+        _or:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - scheduleOwner:
+              manager_id:
+                _eq: X-Hasura-User-Id
+    comment: Managers can delete their own and their team's work schedules
+  - role: org_admin
+    permission:
+      filter: {}
+    comment: Org Admins can delete any work schedules
+apollo_federation_config:
+  enable: v1

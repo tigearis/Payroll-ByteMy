@@ -1,0 +1,6 @@
+- "!include public_activate_payroll_versions.yaml"
+- "!include public_create_payroll_version.yaml"
+- "!include public_create_payroll_version_simple.yaml"
+- "!include public_generate_payroll_dates.yaml"
+- "!include public_get_latest_payroll_version.yaml"
+- "!include public_get_payroll_version_history.yaml"

@@ -1,0 +1,8 @@
+function:
+  name: get_payroll_version_history
+  schema: public
+configuration:
+  custom_root_fields:
+    function: getPayrollVersionHistory
+    function_aggregate: getPayrollVersionHistoryAggregate
+  exposed_as: query

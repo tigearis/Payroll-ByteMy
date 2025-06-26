@@ -1,0 +1,8 @@
+function:
+  name: generate_payroll_dates
+  schema: public
+configuration:
+  custom_root_fields:
+    function: generatePayrollDates
+    function_aggregate: generatePayrollDatesAggregate
+  exposed_as: query

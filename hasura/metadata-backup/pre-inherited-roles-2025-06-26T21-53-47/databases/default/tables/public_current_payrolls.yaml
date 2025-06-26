@@ -1,0 +1,144 @@
+table:
+  name: current_payrolls
+  schema: public
+configuration:
+  column_config:
+    backup_consultant_user_id:
+      custom_name: backupConsultantUserId
+    client_id:
+      custom_name: clientId
+    created_at:
+      custom_name: createdAt
+    cycle_id:
+      custom_name: cycleId
+    date_type_id:
+      custom_name: dateTypeId
+    date_value:
+      custom_name: dateValue
+    go_live_date:
+      custom_name: goLiveDate
+    manager_user_id:
+      custom_name: managerUserId
+    parent_payroll_id:
+      custom_name: parentPayrollId
+    primary_consultant_user_id:
+      custom_name: primaryConsultantUserId
+    superseded_date:
+      custom_name: supersededDate
+    updated_at:
+      custom_name: updatedAt
+    version_number:
+      custom_name: versionNumber
+  custom_column_names:
+    backup_consultant_user_id: backupConsultantUserId
+    client_id: clientId
+    created_at: createdAt
+    cycle_id: cycleId
+    date_type_id: dateTypeId
+    date_value: dateValue
+    go_live_date: goLiveDate
+    manager_user_id: managerUserId
+    parent_payroll_id: parentPayrollId
+    primary_consultant_user_id: primaryConsultantUserId
+    superseded_date: supersededDate
+    updated_at: updatedAt
+    version_number: versionNumber
+  custom_name: currentPayrolls
+  custom_root_fields:
+    select: currentPayrolls
+    select_aggregate: currentPayrollsAggregate
+    select_by_pk: currentPayrollById
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - version_number
+        - parent_payroll_id
+        - go_live_date
+        - superseded_date
+        - created_at
+        - updated_at
+      filter:
+        _or:
+          - primary_consultant_user_id:
+              _eq: X-Hasura-User-Id
+          - backup_consultant_user_id:
+              _eq: X-Hasura-User-Id
+    comment: Consultants can view current payrolls where they are assigned
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - id
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - version_number
+        - parent_payroll_id
+        - go_live_date
+        - superseded_date
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all current payrolls
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - version_number
+        - parent_payroll_id
+        - go_live_date
+        - superseded_date
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: Org admins can view all current payrolls
+  - role: viewer
+    permission:
+      columns:
+        - backup_consultant_user_id
+        - client_id
+        - created_at
+        - cycle_id
+        - date_type_id
+        - date_value
+        - go_live_date
+        - id
+        - manager_user_id
+        - name
+        - parent_payroll_id
+        - primary_consultant_user_id
+        - superseded_date
+        - updated_at
+        - version_number
+      filter: {}
+    comment: Viewers can see basic current payroll information
