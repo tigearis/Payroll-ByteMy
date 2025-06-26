@@ -244,6 +244,7 @@ export function useUserManagement() {
 
     // Actions
     fetchUsers,
+    refetchUsers,
     updateUser,
     deleteUser,
     createUser,
