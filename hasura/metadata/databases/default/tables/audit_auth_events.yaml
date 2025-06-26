@@ -53,6 +53,18 @@ insert_permissions:
         - failure_reason
         - metadata
 select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - event_time
+        - event_type
+        - success
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      allow_aggregations: true
+    comment: Consultants can view their own auth events
   - role: developer
     permission:
       columns: '*'
@@ -62,13 +74,15 @@ select_permissions:
   - role: manager
     permission:
       columns:
+        - id
         - event_time
         - event_type
         - user_id
         - success
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
+        - failure_reason
+      filter: {}
+      allow_aggregations: true
+    comment: Managers can view all auth events for security monitoring
   - role: org_admin
     permission:
       columns:
@@ -85,6 +99,19 @@ select_permissions:
         - created_at
       filter: {}
       allow_aggregations: true
+    comment: Organization admins can view all auth events
+  - role: viewer
+    permission:
+      columns:
+        - id
+        - event_time
+        - event_type
+        - success
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      allow_aggregations: true
+    comment: Viewers can see basic auth info for their own events
 update_permissions:
   - role: developer
     permission:

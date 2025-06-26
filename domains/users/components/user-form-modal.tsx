@@ -147,7 +147,7 @@ export function UserFormModal({
         name: user.name,
         email: user.email,
         role: user.role,
-        managerId: user.manager?.id || "",
+        managerId: user.manager?.id || "none",
         isStaff: user.isStaff,
         isActive: user.lastSignIn ? true : false,
       });
@@ -173,7 +173,7 @@ export function UserFormModal({
           firstName: createData.firstName,
           lastName: createData.lastName,
           role: createData.role,
-          managerId: createData.managerId || undefined,
+          managerId: createData.managerId && createData.managerId !== "none" ? createData.managerId : undefined,
         });
 
         if (result.success) {
@@ -196,7 +196,7 @@ export function UserFormModal({
           name: editData.name,
           email: editData.email,
           role: editData.role,
-          managerId: editData.managerId || undefined,
+          managerId: editData.managerId && editData.managerId !== "none" ? editData.managerId : undefined,
           isStaff: editData.isStaff,
         });
 
@@ -393,7 +393,7 @@ export function UserFormModal({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">No manager</SelectItem>
+                      <SelectItem value="none">No manager</SelectItem>
                       {managers.map((manager: Manager) => (
                         <SelectItem key={manager.id} value={manager.id}>
                           <div>
