@@ -19,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuthContext } from "@/lib/auth/auth-context";
+import { useAuthContext } from "@/lib/auth";
 
 /**
  * UserNav Component

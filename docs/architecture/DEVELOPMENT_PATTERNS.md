@@ -612,10 +612,56 @@ export function ErrorBoundaryWrapper({
 
 ## Permission Guard Patterns
 
+### Unified Permission System Integration
+
+The application uses a **unified database-driven permission system** with role hierarchy and individual user overrides:
+
+```typescript
+// Always import from the unified auth barrel export
+import { useAuthContext } from "@/lib/auth";
+
+// Basic permission check (automatically includes role + overrides)
+function BasicPermissionExample() {
+  const { hasPermission } = useAuthContext();
+  
+  if (!hasPermission("payroll:write")) {
+    return <AccessDenied />;
+  }
+  
+  return <PayrollForm />;
+}
+
+// Enhanced permission usage with override information
+function AdvancedPermissionExample() {
+  const { 
+    hasPermission,
+    userRole,
+    effectivePermissions,    // Role + override permissions
+    permissionOverrides,     // Individual overrides only
+    refreshPermissions,      // Refresh after permission changes
+    getRolePermissions,      // Role permissions only
+    getOverridePermissions   // Override permissions only
+  } = useAuthContext();
+  
+  const payrollPerms = effectivePermissions.filter(p => p.resource === "payroll");
+  const hasOverrides = permissionOverrides.length > 0;
+  
+  return (
+    <div>
+      <p>Role: {userRole}</p>
+      <p>Payroll Permissions: {payrollPerms.length}</p>
+      <p>Has Permission Overrides: {hasOverrides ? "Yes" : "No"}</p>
+      {hasPermission("payroll:write") && <EditButton />}
+      {hasPermission("payroll:delete") && <DeleteButton />}
+    </div>
+  );
+}
+```
+
 ### Flexible Permission Guard Component
 
 ```typescript
-// components/auth/permission-guard.tsx
+// components/auth/permission-guard.tsx - Updated for unified system
 interface PermissionGuardProps {
   children: React.ReactNode;
   permission?: string;

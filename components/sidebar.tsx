@@ -24,7 +24,7 @@ import { twMerge } from "tailwind-merge";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAuthContext } from "@/lib/auth/auth-context";
+import { useAuthContext } from "@/lib/auth";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 
 // Local utility function

@@ -2,7 +2,7 @@
 
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useUserRole } from "@/hooks/use-user-role";
-import { useAuthContext } from "@/lib/auth/auth-context";
+import { useAuthContext } from "@/lib/auth";
 
 export function DebugPermissionInfo() {
   const { isLoaded: authLoaded, userId, has } = useAuth();

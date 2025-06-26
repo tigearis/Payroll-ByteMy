@@ -36,7 +36,7 @@ import {
   FailedOperationsStreamDocument,
   CriticalDataAccessStreamDocument,
 } from "@/domains/audit/graphql/generated/graphql";
-import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
+import { useAuthContext } from "@/lib/auth";
 import { useSecureSubscription } from "@/hooks/use-subscription-permissions";
 import { useStrategicQuery } from "@/hooks/use-strategic-query";
 
@@ -53,11 +53,25 @@ export default function SecurityDashboard() {
     []
   );
 
-  // Get permissions first
-  const { checkPermission, userRole } = useEnhancedPermissions();
-  const securityReadPermission = checkPermission("security", "read");
-  const securityManagePermission = checkPermission("security", "manage");
-  const auditReadPermission = checkPermission("audit", "read");
+  // Get permissions from unified auth context
+  const { hasPermission, userRole } = useAuthContext();
+  
+  // Convert to enhanced permission format for backward compatibility
+  const securityReadPermission = {
+    granted: hasPermission("security:read"),
+    requiredRole: "org_admin",
+    currentRole: userRole
+  };
+  const securityManagePermission = {
+    granted: hasPermission("security:manage"),
+    requiredRole: "org_admin", 
+    currentRole: userRole
+  };
+  const auditReadPermission = {
+    granted: hasPermission("audit:read"),
+    requiredRole: "org_admin",
+    currentRole: userRole
+  };
 
   // Determine which query to use based on permissions
   const securityQueryDocument = auditReadPermission.granted

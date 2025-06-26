@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { useAuthContext } from "@/lib/auth/auth-context";
+import { useAuthContext } from "@/lib/auth";
 import { toast } from "sonner";
 
 import {

@@ -1,22 +1,25 @@
-# Permission System Developer Guide
+# Unified Permission System Developer Guide
 
 ## Overview
 
-This guide provides comprehensive documentation for the clean, hierarchical permission system implemented in the Payroll ByteMy application.
+This guide provides comprehensive documentation for the **unified database-driven permission system** with role hierarchy and individual user overrides implemented in the Payroll ByteMy application.
 
 ## 🏗️ System Architecture
 
 ### Permission Flow
 ```
-User Login → Clerk Auth → Database Validation → Role Assignment → Permission Calculation → Access Control
+User Login → Clerk Auth → Database Validation → Role Assignment → Permission Calculation → Override Resolution → Access Control
 ```
 
 ### Core Components
-1. **Authentication**: Clerk integration with JWT templates
-2. **Authorization**: Role-based permissions with granular controls
-3. **Guards**: React components for UI protection
-4. **Database Security**: Hasura row-level security policies
-5. **API Protection**: Server-side permission validation
+1. **Unified Auth Provider**: Single `useAuthContext` hook for all authentication needs
+2. **Database-Driven Permissions**: Role-based permissions with individual user overrides
+3. **Permission Overrides**: Grant/restrict specific permissions beyond role permissions
+4. **Guards**: React components for UI protection
+5. **Database Security**: Hasura row-level security policies
+6. **API Protection**: Server-side permission validation
+7. **Admin Interface**: Management UI for permission overrides
+8. **Audit Trail**: Complete logging of all permission changes
 
 ## 🎯 Permission Format
 
@@ -29,16 +32,43 @@ User Login → Clerk Auth → Database Validation → Role Assignment → Permis
 "client:delete"    // Can delete clients
 "admin:manage"     // Full administrative access
 "reports:export"   // Can export reports
+"security:read"    // Can view security dashboard
 ```
 
 ## 👥 Role Hierarchy
 
 ```
-Level 5: developer    → Full system access + development tools
-Level 4: org_admin    → Organization management (everything except dev tools)
+Level 5: developer    → Full system access + development tools + permission management
+Level 4: org_admin    → Organization management + permission overrides  
 Level 3: manager      → Team and payroll management
 Level 2: consultant   → Basic payroll processing
 Level 1: viewer       → Read-only access
+```
+
+**Higher levels inherit all permissions from lower levels**
+
+## 🔀 Permission Override System
+
+### Override Types
+- **Grant**: Give additional permissions beyond role
+- **Restrict**: Remove specific permissions from role
+- **Temporary**: Set expiration dates for overrides
+- **Conditional**: Add specific conditions/restrictions
+
+### Override Priority
+1. **Individual Restrictions** (highest priority) - Always deny access
+2. **Individual Grants** - Override role permissions
+3. **Role Permissions** (lowest priority) - Default permissions
+
+### Example Scenarios
+```typescript
+// User is a "consultant" (level 2) but needs temporary admin access
+// Grant: admin:manage (expires in 7 days)
+// Result: Can access admin functions until expiration
+
+// User is a "manager" (level 3) but shouldn't delete clients  
+// Restrict: client:delete (permanent)
+// Result: Can manage staff/payroll but cannot delete clients
 ```
 
 ## 📋 Permission Categories
@@ -53,707 +83,479 @@ Level 1: viewer       → Read-only access
 - `staff:read` - View staff information
 - `staff:write` - Create/edit staff records
 - `staff:delete` - Remove staff members
-- `staff:invite` - Send staff invitations
+- `staff:invite` - Invite new staff members
 
 ### Client Management
 - `client:read` - View client information
 - `client:write` - Create/edit clients
 - `client:delete` - Remove clients
 
-### Administration
-- `admin:manage` - Full system administration
+### Administrative Functions
+- `admin:manage` - Full administrative access
 - `settings:write` - Modify system settings
-- `billing:manage` - Manage billing operations
+- `billing:manage` - Handle billing operations
 
-### Reporting & Audit
+### Security & Audit
+- `security:read` - View security dashboard
+- `security:manage` - Manage security settings
+- `audit:read` - View audit logs
+- `audit:write` - Manage audit settings
+
+### Reporting
 - `reports:read` - View reports
 - `reports:export` - Export report data
-- `audit:read` - View audit logs
-- `audit:write` - Create audit entries
 
-## 🔐 Role Permission Matrix
+## 🚀 Usage Examples
 
-| Permission | developer | org_admin | manager | consultant | viewer |
-|------------|-----------|-----------|---------|------------|--------|
-| `payroll:read` | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `payroll:write` | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `payroll:delete` | ✅ | ✅ | ❌ | ❌ | ❌ |
-| `payroll:assign` | ✅ | ✅ | ✅ | ✅ | ❌ |
-| `staff:read` | ✅ | ✅ | ✅ | ✅ | ❌ |
-| `staff:write` | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `staff:delete` | ✅ | ✅ | ❌ | ❌ | ❌ |
-| `staff:invite` | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `client:read` | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `client:write` | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `client:delete` | ✅ | ✅ | ❌ | ❌ | ❌ |
-| `admin:manage` | ✅ | ✅ | ❌ | ❌ | ❌ |
-| `settings:write` | ✅ | ✅ | ❌ | ❌ | ❌ |
-| `billing:manage` | ✅ | ✅ | ❌ | ❌ | ❌ |
-| `reports:read` | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `reports:export` | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `audit:read` | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `audit:write` | ✅ | ✅ | ❌ | ❌ | ❌ |
+### Basic Implementation
 
-## 🛡️ Permission Guards
-
-### 1. Standard PermissionGuard (90% of use cases)
-
-**File**: `components/auth/permission-guard.tsx`
-
+**Import the unified auth context:**
 ```typescript
-import { PermissionGuard } from "@/components/auth/permission-guard";
-
-// Single permission
-<PermissionGuard permission="staff:write" fallback={<AccessDenied />}>
-  <StaffForm />
-</PermissionGuard>
-
-// Multiple permissions (OR logic)
-<PermissionGuard 
-  permissions={["staff:read", "client:read"]} 
-  requireAll={false}
->
-  <Dashboard />
-</PermissionGuard>
-
-// Role-based
-<PermissionGuard roles={["manager", "org_admin"]}>
-  <ManagerTools />
-</PermissionGuard>
-
-// Multiple permissions (AND logic)
-<PermissionGuard 
-  permissions={["payroll:read", "staff:read"]} 
-  requireAll={true}
->
-  <PayrollStaffView />
-</PermissionGuard>
+import { useAuthContext } from "@/lib/auth";
 ```
 
-### 2. Enhanced PermissionGuard (Complex scenarios)
-
-**File**: `components/auth/enhanced-permission-guard.tsx`
-
+**Basic permission check:**
 ```typescript
-import { PermissionGuard } from "@/components/auth/enhanced-permission-guard";
-
-// Resource/action format with detailed feedback
-<PermissionGuard 
-  resource="payroll" 
-  action="delete"
-  fallback={DetailedErrorComponent}
->
-  <DeletePayrollButton />
-</PermissionGuard>
-
-// Multiple permissions with context
-<PermissionGuard
-  permissions={[["users", "manage"], ["payrolls", "write"]]}
-  requireAll={false}
-  showError={true}
->
-  <AdminPanel />
-</PermissionGuard>
-```
-
-### 3. RoleGuard (Page-level protection)
-
-**File**: `components/auth/role-guard.tsx`
-
-```typescript
-import { RoleGuard } from "@/components/auth/role-guard";
-
-// Role-based with redirect
-<RoleGuard requiredRole="manager" redirectTo="/dashboard">
-  <ManagerOnlyPage />
-</RoleGuard>
-
-// Permission-based with redirect
-<RoleGuard requiredPermission="admin:manage" redirectTo="/unauthorized">
-  <AdminSettings />
-</RoleGuard>
-
-// Custom fallback
-<RoleGuard 
-  requiredRole="org_admin" 
-  fallback={<CustomAccessDenied />}
->
-  <OrgAdminPanel />
-</RoleGuard>
-```
-
-### 4. Convenience Guards
-
-Pre-configured guards for common patterns:
-
-```typescript
-import { 
-  AdminGuard, 
-  ManagerGuard, 
-  StaffManagerGuard,
-  ClientManagerGuard,
-  PayrollProcessorGuard,
-  DeveloperGuard 
-} from "@/components/auth/permission-guard";
-
-<AdminGuard>              // roles={["org_admin"]}
-  <AdminPanel />
-</AdminGuard>
-
-<ManagerGuard>            // roles={["org_admin", "manager"]}
-  <ManagerDashboard />
-</ManagerGuard>
-
-<StaffManagerGuard>       // permission="staff:write"
-  <AddEmployeeButton />
-</StaffManagerGuard>
-
-<PayrollProcessorGuard>   // permission="payroll:write"
-  <CreatePayrollForm />
-</PayrollProcessorGuard>
-
-<DeveloperGuard>          // roles={["developer"]}
-  <DevTools />
-</DeveloperGuard>
-```
-
-## 🎣 Permission Hooks
-
-### 1. useAuthContext (Primary hook)
-
-```typescript
-import { useAuthContext } from "@/lib/auth/auth-context";
-
-function MyComponent() {
-  const { 
-    hasPermission, 
-    hasAnyPermission, 
-    hasRole, 
-    userRole,
-    isAuthenticated,
-    canManageStaff,
-    canProcessPayrolls 
-  } = useAuthContext();
-  
-  // Single permission check
-  if (!hasPermission("payroll:write")) {
-    return <AccessDenied />;
-  }
-  
-  // Multiple permissions (OR logic)
-  const canViewData = hasAnyPermission(["staff:read", "client:read"]);
-  
-  // Role check
-  const isManager = hasRole(["manager", "org_admin"]);
-  
-  // Convenience properties
-  if (canManageStaff) {
-    // User can manage staff
-  }
-  
-  return <ComponentContent />;
-}
-```
-
-### 2. useEnhancedPermissions (Advanced scenarios)
-
-```typescript
-import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
-
-function AdvancedComponent() {
-  const { 
-    checkPermission, 
-    requirePermission,
-    hasAnyPermission,
-    hasAllPermissions 
-  } = useEnhancedPermissions();
-  
-  // Detailed permission check
-  const result = checkPermission("payroll", "delete");
-  if (!result.granted) {
-    console.log(result.reason);      // "Insufficient permissions for payroll:delete"
-    console.log(result.suggestions); // ["Contact admin to request manager role"]
-    return <DetailedError result={result} />;
-  }
-  
-  // Strict permission check (throws on failure)
-  try {
-    requirePermission("admin", "manage");
-    // Continue with admin operations
-  } catch (error) {
-    // Handle permission error
-  }
-  
-  // Multiple permission checks
-  const canManageUsers = hasAllPermissions([
-    ["users", "read"], 
-    ["users", "write"]
-  ]);
-  
-  return <ComponentContent />;
-}
-```
-
-### 3. useUserRole (Role management)
-
-```typescript
-import { useUserRole } from "@/hooks/use-user-role";
-
-function UserManagement() {
-  const { 
-    userRole,
-    updateUserRole,
-    getAvailableRoles,
-    getRoleColor,
-    navigation 
-  } = useUserRole();
-  
-  // Role information
-  const roleOptions = getAvailableRoles();
-  const roleColorClass = getRoleColor(userRole);
-  
-  // Navigation permissions
-  if (navigation.canAccess.staff) {
-    // User can access staff section
-  }
-  
-  // Update role (requires permissions)
-  const handleRoleUpdate = async (userId, newRole) => {
-    const success = await updateUserRole(userId, newRole);
-    if (success) {
-      // Role updated successfully
-    }
-  };
-  
-  return <RoleManagementUI />;
-}
-```
-
-## 🔍 Conditional Rendering Patterns
-
-### Basic Permission Checks
-```typescript
-function PayrollActions({ payroll }) {
+function PayrollManager() {
   const { hasPermission } = useAuthContext();
   
-  return (
-    <div className="actions">
-      {/* Always visible for users with payroll:read */}
-      <ViewButton />
-      
-      {/* Conditional buttons based on permissions */}
-      {hasPermission("payroll:write") && (
-        <EditButton onClick={() => editPayroll(payroll.id)} />
-      )}
-      
-      {hasPermission("payroll:delete") && (
-        <DeleteButton onClick={() => deletePayroll(payroll.id)} />
-      )}
-      
-      {hasPermission("payroll:assign") && (
-        <AssignButton payroll={payroll} />
-      )}
-    </div>
-  );
+  if (!hasPermission("payroll:write")) {
+    return <div>Access Denied</div>;
+  }
+  
+  return <PayrollForm />;
 }
 ```
 
-### Role-Level Checks
+**Enhanced permission usage:**
 ```typescript
-function AdvancedFeatures() {
-  const { userRole, hasRoleLevel } = useAuthContext();
+function AdvancedPermissionExample() {
+  const { 
+    hasPermission, 
+    userRole,
+    effectivePermissions,    // Role + override permissions
+    permissionOverrides,     // Individual overrides only
+    refreshPermissions,      // Refresh after changes
+    getRolePermissions,      // Role permissions only
+    getOverridePermissions   // Override permissions only
+  } = useAuthContext();
+  
+  const canEdit = hasPermission("payroll:write");
+  const payrollPerms = effectivePermissions.filter(p => p.resource === "payroll");
   
   return (
     <div>
-      {/* Show for managers and above */}
-      {hasRoleLevel(userRole, "manager") && (
-        <ManagerFeatures />
-      )}
+      <p>Role: {userRole}</p>
+      <p>Can Edit: {canEdit ? "Yes" : "No"}</p>
+      <p>Effective Permissions: {payrollPerms.length}</p>
       
-      {/* Show only for developers */}
-      {userRole === "developer" && (
-        <DeveloperTools />
-      )}
-      
-      {/* Show for org_admin and above */}
-      {hasRoleLevel(userRole, "org_admin") && (
-        <AdminPanel />
-      )}
+      {permissionOverrides.map(override => (
+        <div key={override.id}>
+          <Badge variant={override.granted ? "default" : "destructive"}>
+            {override.granted ? "GRANTED" : "RESTRICTED"}
+          </Badge>
+          <span>{override.resource}:{override.operation}</span>
+        </div>
+      ))}
     </div>
   );
 }
 ```
 
-### Navigation Menus
+### Permission Guards
+
+**Standard permission guard:**
+```typescript
+<PermissionGuard permission="staff:write" fallback={<AccessDenied />}>
+  <StaffForm />
+</PermissionGuard>
+```
+
+**Role-based guard:**
+```typescript
+<RoleGuard requiredRole="manager" redirectTo="/dashboard">
+  <ManagerOnlyPage />
+</RoleGuard>
+```
+
+**Convenience guards:**
+```typescript
+<AdminGuard>              // Requires org_admin role
+  <AdminPanel />
+</AdminGuard>
+
+<StaffManagerGuard>       // Requires staff:write permission  
+  <StaffManagementTools />
+</StaffManagerGuard>
+```
+
+### Conditional Rendering
+
+**Show/hide features based on permissions:**
+```typescript
+function ActionButtons({ item }) {
+  const { hasPermission } = useAuthContext();
+  
+  return (
+    <div>
+      {hasPermission("payroll:read") && <ViewButton />}
+      {hasPermission("payroll:write") && <EditButton />}
+      {hasPermission("payroll:delete") && <DeleteButton />}
+    </div>
+  );
+}
+```
+
+**Navigation control:**
 ```typescript
 function NavigationMenu() {
   const { hasPermission, userRole } = useAuthContext();
   
   const menuItems = [
-    { 
-      path: "/dashboard", 
-      label: "Dashboard", 
-      show: true,
-      icon: "🏠"
-    },
-    { 
-      path: "/staff", 
-      label: "Staff", 
-      show: hasPermission("staff:read"),
-      icon: "👥"
-    },
-    { 
-      path: "/payrolls", 
-      label: "Payrolls", 
-      show: hasPermission("payroll:read"),
-      icon: "💰"
-    },
-    { 
-      path: "/clients", 
-      label: "Clients", 
-      show: hasPermission("client:read"),
-      icon: "🏢"
-    },
-    { 
-      path: "/settings", 
-      label: "Settings", 
-      show: hasPermission("settings:write"),
-      icon: "⚙️"
-    },
-    { 
-      path: "/developer", 
-      label: "Developer", 
-      show: userRole === "developer",
-      icon: "🔧"
-    },
+    { path: "/dashboard", label: "Dashboard", show: true },
+    { path: "/staff", label: "Staff", show: hasPermission("staff:read") },
+    { path: "/payrolls", label: "Payrolls", show: hasPermission("payroll:read") },
+    { path: "/admin", label: "Admin", show: hasPermission("admin:manage") },
+    { path: "/security", label: "Security", show: hasPermission("security:read") },
   ];
   
   return (
-    <nav className="navigation">
-      {menuItems
-        .filter(item => item.show)
-        .map(item => (
-          <NavLink 
-            key={item.path} 
-            to={item.path}
-            className="nav-item"
-          >
-            <span className="icon">{item.icon}</span>
-            {item.label}
-          </NavLink>
-        ))
-      }
+    <nav>
+      {menuItems.filter(item => item.show).map(item => (
+        <NavLink key={item.path} to={item.path}>{item.label}</NavLink>
+      ))}
     </nav>
+  );
+}
+```
+
+## 🔧 Permission Override Management
+
+### Admin Interface
+
+Access the permission management interface at `/admin/permissions`:
+
+```typescript
+// Requires admin:manage permission
+function AdminPermissionPage() {
+  return (
+    <PermissionGuard permission="admin:manage">
+      <PermissionOverrideManager userId={selectedUserId} />
+    </PermissionGuard>
+  );
+}
+```
+
+### Grant Temporary Permission
+
+```typescript
+function GrantTemporaryAccess({ userId }) {
+  const { refreshPermissions } = useAuthContext();
+  
+  const handleGrantPermission = async () => {
+    await grantUserPermission({
+      variables: {
+        userId,
+        resource: "payroll",
+        operation: "write", 
+        reason: "Temporary access for month-end processing",
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+      }
+    });
+    
+    // Refresh permissions across the app
+    await refreshPermissions();
+    
+    toast.success("Permission granted successfully");
+  };
+  
+  return (
+    <Button onClick={handleGrantPermission}>
+      Grant Temporary Payroll Access
+    </Button>
+  );
+}
+```
+
+### Restrict Permission
+
+```typescript
+function RestrictPermission({ userId }) {
+  const { refreshPermissions } = useAuthContext();
+  
+  const handleRestrictPermission = async () => {
+    await restrictUserPermission({
+      variables: {
+        userId,
+        resource: "client",
+        operation: "delete",
+        reason: "Security precaution - prevent accidental deletion"
+      }
+    });
+    
+    await refreshPermissions();
+    toast.success("Permission restricted successfully");
+  };
+  
+  return (
+    <Button variant="destructive" onClick={handleRestrictPermission}>
+      Restrict Client Deletion
+    </Button>
+  );
+}
+```
+
+### Display Permission Status
+
+```typescript
+function UserPermissionStatus({ userId }) {
+  const { 
+    effectivePermissions, 
+    permissionOverrides,
+    getRolePermissions,
+    getOverridePermissions 
+  } = useAuthContext();
+  
+  const rolePerms = getRolePermissions();
+  const overridePerms = getOverridePermissions();
+  const activeOverrides = overridePerms.filter(o => 
+    !o.expiresAt || new Date(o.expiresAt) > new Date()
+  );
+  
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Permission Status</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium">Role Permissions: {rolePerms.length}</h4>
+            <p className="text-sm text-muted-foreground">
+              Inherited from user role
+            </p>
+          </div>
+          
+          <div>
+            <h4 className="font-medium">Active Overrides: {activeOverrides.length}</h4>
+            {activeOverrides.map(override => (
+              <div key={override.id} className="flex items-center gap-2">
+                <Badge variant={override.granted ? "default" : "destructive"}>
+                  {override.granted ? "GRANTED" : "RESTRICTED"}
+                </Badge>
+                <span>{override.resource}:{override.operation}</span>
+                {override.expiresAt && (
+                  <span className="text-xs text-muted-foreground">
+                    Expires: {format(new Date(override.expiresAt), 'MMM d, yyyy')}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+          
+          <div>
+            <h4 className="font-medium">Total Effective: {effectivePermissions.length}</h4>
+            <p className="text-sm text-muted-foreground">
+              Combined role and override permissions
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 ```
 
 ## 🛡️ API Route Protection
 
-### Server-Side Permission Checks
+**Server-side permission checking:**
 ```typescript
 // app/api/payrolls/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/server-auth";
-import { roleHasPermission } from "@/lib/auth/permissions";
+import { auth } from "@clerk/nextjs/server";
+import { hasPermission } from "@/lib/auth/permissions";
 
-export async function POST(request: NextRequest) {
-  try {
-    // Get authenticated user
-    const { user } = await getCurrentUser();
-    
-    if (!user) {
-      return NextResponse.json(
-        { error: "Authentication required" }, 
-        { status: 401 }
-      );
-    }
-    
-    // Check permission
-    if (!roleHasPermission(user.role, "payroll:write")) {
-      return NextResponse.json(
-        { error: "Insufficient permissions" }, 
-        { status: 403 }
-      );
-    }
-    
-    // Process the request
-    const data = await request.json();
-    const payroll = await createPayroll(data);
-    
-    return NextResponse.json({ success: true, data: payroll });
-    
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Internal server error" }, 
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(request: NextRequest) {
-  const { user } = await getCurrentUser();
+export async function POST(request: Request) {
+  const { userId } = await auth();
   
-  // Stricter permission for deletion
-  if (!user || !roleHasPermission(user.role, "payroll:delete")) {
-    return NextResponse.json(
-      { error: "Delete permission required" }, 
-      { status: 403 }
-    );
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   
-  // Process deletion...
-}
-```
-
-### Middleware Protection
-```typescript
-// middleware.ts
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import { ROUTE_PERMISSIONS } from '@/lib/auth/permissions';
-
-const isProtectedRoute = createRouteMatcher([
-  '/staff(.*)',
-  '/payrolls(.*)',
-  '/clients(.*)',
-  '/settings(.*)',
-  '/developer(.*)'
-]);
-
-export default clerkMiddleware((auth, req) => {
-  // Protect routes that require authentication
-  if (isProtectedRoute(req)) {
-    auth().protect();
-    
-    // Additional permission checking can be added here
-    const pathname = req.nextUrl.pathname;
-    const requiredPermissions = ROUTE_PERMISSIONS[pathname];
-    
-    if (requiredPermissions?.length > 0) {
-      // Check user has required permissions
-      // Implementation depends on your needs
-    }
-  }
-});
-```
-
-## 🏗️ Database Security (Hasura)
-
-### Row-Level Security Examples
-
-**Manager Access Pattern:**
-```yaml
-# Managers can see all payrolls
-- role: manager
-  permission:
-    filter: {} # No restrictions
-    columns: ['*']
-    allow_aggregations: true
-```
-
-**Consultant Access Pattern:**
-```yaml
-# Consultants only see assigned payrolls
-- role: consultant
-  permission:
-    filter:
-      _or:
-        - primary_consultant_id: { _eq: "X-Hasura-User-Id" }
-        - backup_consultant_id: { _eq: "X-Hasura-User-Id" }
-    columns: 
-      - id
-      - name
-      - client_id
-      - status
-      # Excluding sensitive columns
-```
-
-**User-Specific Data:**
-```yaml
-# Users can only see their own leave records
-- role: viewer
-  permission:
-    filter:
-      user_id: { _eq: "X-Hasura-User-Id" }
-    columns:
-      - id
-      - start_date
-      - end_date
-      - leave_type
-      - status
-```
-
-## 🎯 Best Practices
-
-### 1. Permission Naming
-- Use clear, descriptive resource names
-- Stick to standard actions: `read`, `write`, `delete`, `manage`
-- Be consistent across similar resources
-
-### 2. Guard Selection
-- **PermissionGuard**: For 90% of UI components
-- **Enhanced PermissionGuard**: When you need detailed error feedback
-- **RoleGuard**: For page-level protection with redirects
-- **Convenience Guards**: For common patterns
-
-### 3. Performance Optimization
-- Permissions are calculated once and cached in auth context
-- Use `useMemo` for expensive permission calculations
-- Avoid checking permissions in render loops
-
-### 4. Error Handling
-```typescript
-// Good: Graceful fallback
-{hasPermission("staff:write") ? (
-  <EditButton />
-) : (
-  <ViewOnlyIndicator />
-)}
-
-// Better: Using guards with fallbacks
-<PermissionGuard permission="staff:write" fallback={<ViewOnlyIndicator />}>
-  <EditButton />
-</PermissionGuard>
-```
-
-### 5. Testing Permissions
-```typescript
-// Test with different roles
-const mockAuthContext = {
-  userRole: 'manager',
-  hasPermission: (permission) => managerPermissions.includes(permission)
-};
-
-// Test component behavior
-render(
-  <AuthContext.Provider value={mockAuthContext}>
-    <ComponentUnderTest />
-  </AuthContext.Provider>
-);
-```
-
-## 🚨 Common Pitfalls
-
-### 1. Security Through Obscurity
-```typescript
-// ❌ Bad: Hiding UI but not securing API
-{userRole === 'admin' && <DeleteButton />}
-// API endpoint is still accessible!
-
-// ✅ Good: Secure both UI and API
-<AdminGuard>
-  <DeleteButton />
-</AdminGuard>
-// + Protect API endpoint with permission checks
-```
-
-### 2. Client-Side Only Security
-```typescript
-// ❌ Bad: Only checking on client
-function deletePayroll(id) {
-  if (hasPermission("payroll:delete")) {
-    // Direct database call - INSECURE!
-    await db.payrolls.delete(id);
-  }
-}
-
-// ✅ Good: Always validate on server
-function deletePayroll(id) {
-  // Client-side check for UX
-  if (!hasPermission("payroll:delete")) {
-    showError("Permission denied");
-    return;
+  // Get user from database to check permissions
+  const user = await getUserById(userId);
+  
+  if (!user || !hasPermission(user.role, "payroll:write")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   
-  // Server validates permissions again
-  await api.delete(`/payrolls/${id}`);
+  // Process payroll creation...
 }
 ```
 
-### 3. Hardcoded Role Checks
+## 📊 Database Schema
+
+### Permission Override Tables
+
+**User Roles Table:**
+```sql
+user_roles (
+  id: uuid PRIMARY KEY,
+  user_id: uuid NOT NULL,
+  role_id: uuid NOT NULL,
+  created_at: timestamptz DEFAULT now(),
+  created_by: uuid
+)
+```
+
+**Permission Overrides Table:**
+```sql
+permission_overrides (
+  id: uuid PRIMARY KEY,
+  user_id: uuid NOT NULL,
+  resource: text NOT NULL,
+  operation: text NOT NULL,
+  granted: boolean NOT NULL,
+  reason: text NOT NULL,
+  expires_at: timestamptz,
+  conditions: jsonb,
+  created_at: timestamptz DEFAULT now(),
+  created_by: uuid NOT NULL
+)
+```
+
+### GraphQL Operations
+
+**Query user effective permissions:**
+```graphql
+query GetUserEffectivePermissions($userId: uuid!) {
+  userRoles(where: { userId: { _eq: $userId } }) {
+    roleId
+    createdAt
+  }
+  permissionOverrides(where: { userId: { _eq: $userId } }) {
+    id
+    resource
+    operation
+    granted
+    reason
+    expiresAt
+    conditions
+    createdAt
+    createdBy
+  }
+}
+```
+
+**Grant permission override:**
+```graphql
+mutation GrantUserPermission(
+  $userId: uuid!
+  $resource: String!
+  $operation: String!
+  $reason: String!
+  $expiresAt: timestamptz
+  $conditions: jsonb
+) {
+  insert_permission_overrides_one(object: {
+    userId: $userId
+    resource: $resource
+    operation: $operation
+    granted: true
+    reason: $reason
+    expiresAt: $expiresAt
+    conditions: $conditions
+  }) {
+    id
+  }
+}
+```
+
+## 🔍 Debugging & Troubleshooting
+
+### Debug Permission Issues
+
+**Check effective permissions:**
 ```typescript
-// ❌ Bad: Hardcoded roles
-if (userRole === 'manager' || userRole === 'org_admin') {
-  // This breaks when roles change
+function DebugPermissions() {
+  const { 
+    userRole,
+    effectivePermissions,
+    permissionOverrides,
+    hasPermission
+  } = useAuthContext();
+  
+  console.log("Debug Permission Info:", {
+    userRole,
+    effectivePermissions: effectivePermissions.length,
+    overrides: permissionOverrides.length,
+    canEditPayroll: hasPermission("payroll:write"),
+    canDeleteClient: hasPermission("client:delete")
+  });
+  
+  return null;
 }
-
-// ✅ Good: Permission-based checks
-if (hasPermission("staff:write")) {
-  // Works regardless of role changes
-}
 ```
 
-## 📁 File Structure
+**Common Issues:**
 
-```
-lib/auth/
-├── permissions.ts              # Single source of truth
-├── auth-context.tsx           # Main auth context
-├── service-auth.ts            # Server-side auth utilities
-└── client-auth-logger.ts      # Audit logging
+1. **Permission not working**: Check if user exists in database
+2. **Override not applied**: Verify expiration date and refresh permissions
+3. **Role inheritance**: Ensure role hierarchy is correctly configured
+4. **GraphQL errors**: Check Hasura permissions and metadata
 
-components/auth/
-├── permission-guard.tsx       # Standard guard
-├── enhanced-permission-guard.tsx  # Advanced guard
-├── role-guard.tsx            # Simple role guard
-├── permission-denied.tsx     # Error component
-└── strict-database-guard.tsx # Database validation
+### Refresh Permissions
 
-hooks/
-├── use-enhanced-permissions.ts  # Advanced permission hook
-├── use-user-role.ts           # Role management hook
-└── use-current-user.ts        # User data hook
-```
+Force refresh when permissions aren't updating:
+```typescript
+const { refreshPermissions } = useAuthContext();
 
-## 🔧 Configuration Files
+// After granting/restricting permissions
+await refreshPermissions();
 
-### Single Source of Truth: `lib/auth/permissions.ts`
-All permissions, roles, and mappings are defined here:
-- Permission strings
-- Role hierarchy
-- Role-to-permission mapping
-- Utility functions
-- TypeScript types
-
-### Route Protection: `middleware.ts`
-Handles authentication and basic route protection.
-
-### Database Security: `hasura/metadata/`
-Contains all Hasura permissions and row-level security policies.
-
-## 🆘 Troubleshooting
-
-### Common Issues
-
-1. **Permission Denied Errors**
-   - Check user is authenticated
-   - Verify user exists in database
-   - Confirm role assignment is correct
-   - Check permission is included for user's role
-
-2. **Metadata Inconsistencies**
-   - Run `pnpm fix:permissions` to auto-fix
-   - Check database schema matches metadata
-   - Verify column names exist in database
-
-3. **Type Errors**
-   - Run `pnpm codegen` to regenerate types
-   - Check permission strings match defined types
-   - Verify import paths are correct
-
-### Debug Commands
-```bash
-# Fix permission issues
-pnpm fix:permissions
-
-# Check metadata consistency
-hasura metadata ic list
-
-# Regenerate types
-pnpm codegen
-
-# Validate naming conventions
-pnpm validate:naming
+// Or trigger from admin interface
+<Button onClick={refreshPermissions}>
+  Refresh Permissions
+</Button>
 ```
 
-This comprehensive permission system provides secure, scalable, and maintainable access control for the entire application while maintaining excellent developer experience.
+## 🏛️ Best Practices
+
+### Do's ✅
+- Always use `useAuthContext` from `@/lib/auth`
+- Check permissions before rendering sensitive UI elements
+- Use permission guards for component protection
+- Implement proper fallback components for access denied
+- Use descriptive reasons when creating permission overrides
+- Set expiration dates for temporary permissions
+- Refresh permissions after making changes
+
+### Don'ts ❌
+- Don't bypass permission checks in API routes
+- Don't hardcode role names in components
+- Don't forget to handle loading states
+- Don't expose sensitive data in permission errors
+- Don't create permanent overrides without good reason
+- Don't forget to audit permission changes
+
+### Performance Tips 🚀
+- Permission checks are memoized for performance
+- Use guards to prevent unnecessary component renders
+- Batch permission changes when possible
+- Cache effective permissions on the client
+
+## 🔗 Related Documentation
+
+- [CLAUDE.md](../CLAUDE.md) - Main project documentation
+- [Security Documentation](./security/) - Security-specific guides
+- [Authentication Flow Analysis](./security/AUTHENTICATION_FLOW_ANALYSIS.md)
+- [Permission Guards Quick Reference](./security/PERMISSION_GUARDS_QUICK_REFERENCE.md)
+
+## 📝 Migration Notes
+
+If migrating from the old permission system:
+
+1. **Update imports**: Change from `@/lib/auth/auth-context` to `@/lib/auth`
+2. **Use unified hook**: Replace multiple hooks with single `useAuthContext`
+3. **Remove custom logic**: The new system handles role + override resolution automatically
+4. **Admin interface**: Use `/admin/permissions` for permission management
+5. **Database setup**: Ensure permission override tables are properly configured

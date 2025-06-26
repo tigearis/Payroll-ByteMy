@@ -16,7 +16,7 @@ import { usePathname } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 
 import { Button } from "@/components/ui/button";
-import { useAuthContext } from "@/lib/auth/auth-context";
+import { useAuthContext } from "@/lib/auth";
 
 // Local utility function
 function cn(...inputs: ClassValue[]) {

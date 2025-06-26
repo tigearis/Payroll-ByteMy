@@ -113,10 +113,7 @@ query GetUnifiedDashboardData($from_date: date!, $limit: Int = 5) {
   }
 
   processing_queue: payrollsAggregate(
-    where: {
-      supersededDate: { _isNull: true }
-      status: { _in: ["Implementation"] }
-    }
+    where: { supersededDate: { _isNull: true } }
   ) {
     aggregate {
       count

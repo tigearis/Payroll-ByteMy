@@ -3,7 +3,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
-import { useAuthContext } from "@/lib/auth/auth-context";
+import { useAuthContext } from "@/lib/auth";
 
 // Import role enums
 
