@@ -39,6 +39,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - API Authentication Guide
 - Updated Permission System Guide
 
+## Recent Fixes (June 2025)
+
+### ✅ USER INTERFACE & AUTHENTICATION IMPROVEMENTS
+
+**User Creation Flow Fixes**:
+- Added staff checkbox to create user modal with proper FormField wrapper
+- Fixed 405 error in user creation API by correcting Next.js App Router export pattern
+- Updated create user modal schema to resolve TypeScript build errors
+- Enhanced error handling and validation feedback in user creation process
+
+**Authentication System Enhancements**:
+- Updated `useCurrentUser` hook to use multiple Clerk native methods for database ID extraction
+- Added triple-fallback approach: user metadata → session metadata → JWT claims
+- Improved role extraction to prioritize `x-hasura-role` over `x-hasura-default-role`
+- Enhanced permission checking reliability with multiple data sources
+
+**Security Page Access Resolution**:
+- Resolved permission errors by fixing database user ID extraction from JWT claims
+- Updated auth context to properly handle Clerk's JWT template structure
+- Ensured developer role permissions are correctly recognized for security dashboard access
+- Added comprehensive logging for debugging auth flow issues
+
+**Build & Development**:
+- Fixed TypeScript compilation errors in create user modal component
+- Updated schema validation to handle boolean fields correctly
+- Ensured all components pass strict TypeScript checking
+- Maintained backward compatibility with existing permission system
+
 ## GraphQL Operations
 
 ### GraphQL Best Practices

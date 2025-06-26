@@ -49,7 +49,7 @@ const createUserSchema = z.object({
     required_error: "Please select a role",
   }),
   managerId: z.string().optional(),
-  isStaff: z.boolean().default(true),
+  isStaff: z.boolean(),
 });
 
 type CreateUserFormData = z.infer<typeof createUserSchema>;
