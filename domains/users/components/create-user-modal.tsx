@@ -100,8 +100,11 @@ export function CreateUserModal({
 
     setIsSubmitting(true);
     try {
-      // Get Clerk token for API authentication
-      const token = await getToken({ template: "hasura" });
+      // Get Clerk token for API authentication with refresh leeway
+      const token = await getToken({ 
+        template: "hasura",
+        leewayInSeconds: 60 // Request fresh token 60 seconds before expiry
+      });
       
       // Call the API route which handles both Clerk invitation and database creation
       const response = await fetch("/api/staff/create", {
