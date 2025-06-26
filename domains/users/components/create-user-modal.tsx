@@ -9,6 +9,7 @@ import * as z from "zod";
 
 import { useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -48,6 +49,7 @@ const createUserSchema = z.object({
     required_error: "Please select a role",
   }),
   managerId: z.string().optional(),
+  isStaff: z.boolean().default(true),
 });
 
 type CreateUserFormData = z.infer<typeof createUserSchema>;
@@ -79,6 +81,7 @@ export function CreateUserModal({
       email: "",
       role: "viewer",
       managerId: "none",
+      isStaff: true,
     },
   });
 
@@ -111,7 +114,7 @@ export function CreateUserModal({
           name: `${data.firstName} ${data.lastName}`.trim(),
           email: data.email,
           role: data.role,
-          is_staff: true,
+          is_staff: data.isStaff,
           managerId: data.managerId && data.managerId !== "none" ? data.managerId : null,
           inviteToClerk: true, // Send Clerk invitation
         }),
@@ -317,6 +320,30 @@ export function CreateUserModal({
                       </SelectContent>
                     </Select>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="isStaff"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isSubmitting}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="text-sm font-medium">
+                        Staff Member
+                      </FormLabel>
+                      <FormDescription className="text-sm text-muted-foreground">
+                        Mark this user as a staff member. Staff members have additional privileges and can be assigned to manage clients and payrolls.
+                      </FormDescription>
+                    </div>
                   </FormItem>
                 )}
               />
