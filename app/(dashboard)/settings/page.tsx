@@ -27,6 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserRoleManagement } from "@/domains/users/components/user-role-management";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { useAuthContext } from "@/lib/auth";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 
@@ -506,28 +507,69 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle>Users & Roles</CardTitle>
-                <CardDescription>
-                  Manage users and their access permissions.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <UserRoleManagement />
-              </CardContent>
-            </Card>
+            <PermissionGuard 
+              permission="admin:manage"
+              fallback={
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Users & Roles</CardTitle>
+                    <CardDescription>
+                      Manage users and their access permissions.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
+                      <p className="text-sm text-destructive">
+                        You need admin permissions to manage users and roles.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              }
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle>Users & Roles</CardTitle>
+                  <CardDescription>
+                    Manage users and their access permissions.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <UserRoleManagement />
+                </CardContent>
+              </Card>
+            </PermissionGuard>
           </TabsContent>
 
           <TabsContent value="security">
-            <Card>
-              <CardHeader>
-                <CardTitle>Security Settings</CardTitle>
-                <CardDescription>
-                  Configure security settings for your account.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
+            <PermissionGuard 
+              permission="security:write"
+              fallback={
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Security Settings</CardTitle>
+                    <CardDescription>
+                      Configure security settings for your account.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
+                      <p className="text-sm text-destructive">
+                        You need security management permissions to modify security settings.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              }
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle>Security Settings</CardTitle>
+                  <CardDescription>
+                    Configure security settings for your account.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Password Policy</h3>
                   <div className="space-y-4">
@@ -638,15 +680,34 @@ export default function SettingsPage() {
                 </Button>
               </CardFooter>
             </Card>
+            </PermissionGuard>
           </TabsContent>
         </Tabs>
       </form>
-      <Card>
-        <CardHeader>
-          <CardTitle>Role Access Settings</CardTitle>
-          <CardDescription>Toggle access rights for each role</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <PermissionGuard 
+        permission="admin:manage"
+        fallback={
+          <Card>
+            <CardHeader>
+              <CardTitle>Role Access Settings</CardTitle>
+              <CardDescription>Toggle access rights for each role</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
+                <p className="text-sm text-destructive">
+                  You need admin permissions to modify role access settings.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        }
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>Role Access Settings</CardTitle>
+            <CardDescription>Toggle access rights for each role</CardDescription>
+          </CardHeader>
+          <CardContent>
           <div className="space-y-6">
             {roles.map(role => (
               <div key={role} className="space-y-2">
@@ -680,6 +741,7 @@ export default function SettingsPage() {
           </Button>
         </CardContent>
       </Card>
+      </PermissionGuard>
     </div>
   );
 }

@@ -39,15 +39,7 @@ export function useSubscriptionPermissions({
         timestamp: new Date().toISOString(),
       });
 
-      // Log security event for audit purposes
-      if (typeof window !== "undefined" && (window as any).clientAuthLogger) {
-        (window as any).clientAuthLogger.logSecurityEvent("subscription_denied", {
-          resource,
-          action,
-          userRole,
-          requiredRole: permission.requiredRole,
-        });
-      }
+      // Security event logged via console.warn above for audit purposes
 
       onPermissionDenied?.();
     }

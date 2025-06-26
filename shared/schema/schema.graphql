@@ -243,13 +243,6 @@ input LeaveStatusEnumComparisonExp {
   _nin: [leave_status_enum!]
 }
 
-type Mutation {
-  checkSuspiciousActivity(timeWindow: Int, userId: String): SuspiciousActivityResponse
-  commitPayrollAssignments(changes: [PayrollAssignmentInput!]!): CommitPayrollAssignmentsOutput
-  generateComplianceReport(input: ComplianceReportInput!): ComplianceReportResponse
-  logAuditEvent(event: AuditEventInput!): AuditEventResponse
-}
-
 """
 Boolean expression to compare columns of type "name". All fields are combined with logical 'AND'.
 """

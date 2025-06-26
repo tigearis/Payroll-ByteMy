@@ -5,7 +5,6 @@ import { useSignIn } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { clientAuthLogger } from "@/lib/auth/client-auth-logger";
 
 export default function SignInPage() {
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -34,8 +33,8 @@ export default function SignInPage() {
       });
 
       if (result.status === "complete") {
-        // Log successful sign-in
-        await clientAuthLogger.logLogin("email_password", {
+        // Log successful sign-in for debugging
+        console.log("Sign-in completed", {
           email: email,
           sessionId: result.createdSessionId,
           authFlow: "manual_signin"
@@ -54,11 +53,11 @@ export default function SignInPage() {
           ? (err as { errors: Array<{ message?: string }> }).errors[0]?.message
           : "Sign-in failed. Please try again.";
       
-      // Log failed sign-in attempt
-      await clientAuthLogger.logLoginFailure("email_password", errorMessage || "Unknown error", {
+      // Log failed sign-in attempt for debugging
+      console.error("Sign-in failed", {
         email: email,
         authFlow: "manual_signin",
-        clerkError: err
+        error: errorMessage || "Unknown error"
       });
 
       setError(errorMessage || "Sign-in failed. Please try again.");
@@ -81,15 +80,10 @@ export default function SignInPage() {
         redirectUrlComplete: "/dashboard",
       });
       
-      // Note: Success logging will happen after redirect, but we can log the attempt
-      await clientAuthLogger.logAuthEvent({
-        eventType: "login_attempt",
-        authMethod: "google_oauth",
-        success: true,
-        metadata: {
-          authFlow: "oauth_redirect",
-          provider: "google"
-        }
+      // Note: OAuth sign-in attempt (success logging will happen after redirect)
+      console.log("Google OAuth sign-in attempt", {
+        authFlow: "oauth_redirect",
+        provider: "google"
       });
     } catch (err: unknown) {
       console.error("Google sign-in error:", err);
@@ -101,10 +95,10 @@ export default function SignInPage() {
           ? (err as { errors: Array<{ message?: string }> }).errors[0]?.message
           : "Google sign-in failed. Please try again.";
       
-      // Log failed OAuth attempt
-      await clientAuthLogger.logOAuthFailure("google", errorMessage || "Unknown error", {
+      // Log failed OAuth attempt for debugging
+      console.error("Google OAuth sign-in failed", {
         authFlow: "oauth_redirect",
-        clerkError: err
+        error: errorMessage || "Unknown error"
       });
 
       setError(errorMessage || "Google sign-in failed. Please try again.");

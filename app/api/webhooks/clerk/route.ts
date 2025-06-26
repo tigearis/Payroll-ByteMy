@@ -160,12 +160,10 @@ export async function POST(req: NextRequest) {
           const userEmail = clerkUser.emailAddresses.find(email => email.id === clerkUser.primaryEmailAddressId)?.emailAddress || '';
           const userName = `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || "New User";
           
-          // For OAuth users, assign Admin role automatically
-          const hasOAuthProvider = clerkUser.externalAccounts && clerkUser.externalAccounts.length > 0;
-
-          // Check if role is in invitation metadata first, then default
+          // SECURITY FIX: Never auto-assign admin roles to OAuth users
+          // Always use invitation metadata first, or default to viewer (least privilege)
           const invitationRole = clerkUser.publicMetadata?.role as string;
-          const defaultRole = (invitationRole as UserRole) || (hasOAuthProvider ? "org_admin" : "viewer");
+          const defaultRole = (invitationRole as UserRole) || "viewer";
 
           await syncUserWithDatabase(
             id,

@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * THIS FILE IS AUTO-GENERATED - DO NOT EDIT MANUALLY
  * 
@@ -14,24 +15,22 @@
  * ✓ Data classification enforcement
  * ✓ Permission boundary validation
  * ✓ Automatic domain isolation and exports
+ * ✓ Client Preset v4.8+ for optimal type safety
+ * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-06-26T08:26:40.436Z
+ * Generated: 2025-06-26T10:00:02.060Z
  * Schema Version: Latest from Hasura
- * CodeGen Version: Unified v3.0
+ * CodeGen Version: Client Preset v4.0
  */
 
-/* DOMAIN: SHARED | SECURITY: LOW | ACCESS: Basic Authentication */
-
-import type { DocumentNode } from 'graphql';
-import * as Apollo from '@apollo/client';
-export type Maybe<T> = T | null | undefined;
-export type InputMaybe<T> = T | null | undefined;
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -41,23 +40,23 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** Scalar _Any */
   _Any: { input: any; output: any; }
-  bigint: { input: number; output: number; }
-  bpchar: { input: string; output: string; }
+  bigint: { input: string; output: string; }
+  bpchar: { input: any; output: any; }
   date: { input: string; output: string; }
-  inet: { input: string; output: string; }
-  interval: { input: string; output: string; }
+  inet: { input: any; output: any; }
+  interval: { input: any; output: any; }
   json: { input: any; output: any; }
   jsonb: { input: any; output: any; }
-  leave_status_enum: { input: string; output: string; }
-  name: { input: string; output: string; }
+  leave_status_enum: { input: any; output: any; }
+  name: { input: any; output: any; }
   numeric: { input: number; output: number; }
-  payroll_cycle_type: { input: string; output: string; }
-  payroll_date_type: { input: string; output: string; }
-  payroll_status: { input: string; output: string; }
-  permission_action: { input: string; output: string; }
-  timestamp: { input: string; output: string; }
+  payroll_cycle_type: { input: any; output: any; }
+  payroll_date_type: { input: any; output: any; }
+  payroll_status: { input: any; output: any; }
+  permission_action: { input: any; output: any; }
+  timestamp: { input: any; output: any; }
   timestamptz: { input: string; output: string; }
-  user_role: { input: string; output: string; }
+  user_role: { input: any; output: any; }
   uuid: { input: string; output: string; }
 };
 
@@ -170,12 +169,12 @@ export type ComplianceReportResponse = {
 };
 
 /** ordering argument of a cursor */
-export enum CursorOrdering {
+export type CursorOrdering =
   /** ascending ordering of the cursor */
-  ASC = 'ASC',
+  | 'ASC'
   /** descending ordering of the cursor */
-  DESC = 'DESC'
-}
+  | 'DESC'
+  | '%future added value';
 
 /** Boolean expression to compare columns of type "date". All fields are combined with logical 'AND'. */
 export type DateComparisonExp = {
@@ -270,35 +269,6 @@ export type LeaveStatusEnumComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['leave_status_enum']['input']>>;
 };
 
-export type Mutation = {
-  __typename?: 'Mutation';
-  checkSuspiciousActivity?: Maybe<SuspiciousActivityResponse>;
-  commitPayrollAssignments?: Maybe<CommitPayrollAssignmentsOutput>;
-  generateComplianceReport?: Maybe<ComplianceReportResponse>;
-  logAuditEvent?: Maybe<AuditEventResponse>;
-};
-
-
-export type MutationCheckSuspiciousActivityArgs = {
-  timeWindow?: InputMaybe<Scalars['Int']['input']>;
-  userId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type MutationCommitPayrollAssignmentsArgs = {
-  changes: Array<PayrollAssignmentInput>;
-};
-
-
-export type MutationGenerateComplianceReportArgs = {
-  input: ComplianceReportInput;
-};
-
-
-export type MutationLogAuditEventArgs = {
-  event: AuditEventInput;
-};
-
 /** Boolean expression to compare columns of type "name". All fields are combined with logical 'AND'. */
 export type NameComparisonExp = {
   _eq?: InputMaybe<Scalars['name']['input']>;
@@ -326,20 +296,20 @@ export type NumericComparisonExp = {
 };
 
 /** column ordering options */
-export enum OrderBy {
+export type OrderBy =
   /** in ascending order, nulls last */
-  ASC = 'ASC',
+  | 'ASC'
   /** in ascending order, nulls first */
-  ASC_NULLS_FIRST = 'ASC_NULLS_FIRST',
+  | 'ASC_NULLS_FIRST'
   /** in ascending order, nulls last */
-  ASC_NULLS_LAST = 'ASC_NULLS_LAST',
+  | 'ASC_NULLS_LAST'
   /** in descending order, nulls first */
-  DESC = 'DESC',
+  | 'DESC'
   /** in descending order, nulls first */
-  DESC_NULLS_FIRST = 'DESC_NULLS_FIRST',
+  | 'DESC_NULLS_FIRST'
   /** in descending order, nulls last */
-  DESC_NULLS_LAST = 'DESC_NULLS_LAST'
-}
+  | 'DESC_NULLS_LAST'
+  | '%future added value';
 
 export type PayrollAssignmentInput = {
   date: Scalars['String']['input'];
@@ -519,9 +489,9 @@ export type UuidComparisonExp = {
 };
 
 /** A union of all types that use the @key directive */
-export type Entity = AdjustmentRules | AppSettings | AuditLogs | AuthEvents | BillingEventLogs | BillingInvoice | BillingItems | BillingPlans | ClientBillingAssignments | ClientExternalSystems | Clients | DataAccessLogs | ExternalSystems | FeatureFlags | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudits | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLogs | PermissionChanges | PermissionOverrides | Permissions | Resources | RolePermissions | Roles | SlowQueries | UserInvitations | UserRoles | Users | WorkSchedules;
+export type _Entity = AdjustmentRules | AppSettings | AuditLogs | AuthEvents | BillingEventLogs | BillingInvoice | BillingItems | BillingPlans | ClientBillingAssignments | ClientExternalSystems | Clients | DataAccessLogs | ExternalSystems | FeatureFlags | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudits | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLogs | PermissionChanges | PermissionOverrides | Permissions | Resources | RolePermissions | Roles | SlowQueries | UserInvitations | UserRoles | Users | WorkSchedules;
 
-export type Service = {
+export type _Service = {
   __typename?: '_Service';
   /** SDL representation of schema */
   sdl: Scalars['String']['output'];
@@ -614,12 +584,12 @@ export type AdjustmentRulesBoolExp = {
 };
 
 /** unique or primary key constraints on table "adjustment_rules" */
-export enum AdjustmentRulesConstraint {
+export type AdjustmentRulesConstraint =
   /** unique or primary key constraint on columns "date_type_id", "cycle_id" */
-  adjustment_rules_cycle_id_date_type_id_key = 'adjustment_rules_cycle_id_date_type_id_key',
+  | 'adjustment_rules_cycle_id_date_type_id_key'
   /** unique or primary key constraint on columns "id" */
-  adjustment_rules_pkey = 'adjustment_rules_pkey'
-}
+  | 'adjustment_rules_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "adjustment_rules" */
 export type AdjustmentRulesInsertInput = {
@@ -751,22 +721,22 @@ export type AdjustmentRulesPkColumnsInput = {
 };
 
 /** select columns of table "adjustment_rules" */
-export enum AdjustmentRulesSelectColumn {
+export type AdjustmentRulesSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  cycleId = 'cycleId',
+  | 'cycleId'
   /** column name */
-  dateTypeId = 'dateTypeId',
+  | 'dateTypeId'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  ruleCode = 'ruleCode',
+  | 'ruleCode'
   /** column name */
-  ruleDescription = 'ruleDescription',
+  | 'ruleDescription'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "adjustment_rules" */
 export type AdjustmentRulesSetInput = {
@@ -813,22 +783,22 @@ export type AdjustmentRulesStreamCursorValueInput = {
 };
 
 /** update columns of table "adjustment_rules" */
-export enum AdjustmentRulesUpdateColumn {
+export type AdjustmentRulesUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  cycleId = 'cycleId',
+  | 'cycleId'
   /** column name */
-  dateTypeId = 'dateTypeId',
+  | 'dateTypeId'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  ruleCode = 'ruleCode',
+  | 'ruleCode'
   /** column name */
-  ruleDescription = 'ruleDescription',
+  | 'ruleDescription'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type AdjustmentRulesUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -890,10 +860,10 @@ export type AppSettingsBoolExp = {
 };
 
 /** unique or primary key constraints on table "app_settings" */
-export enum AppSettingsConstraint {
+export type AppSettingsConstraint =
   /** unique or primary key constraint on columns "id" */
-  app_settings_pkey = 'app_settings_pkey'
-}
+  | 'app_settings_pkey'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type AppSettingsDeleteAtPathInput = {
@@ -970,12 +940,12 @@ export type AppSettingsPrependInput = {
 };
 
 /** select columns of table "app_settings" */
-export enum AppSettingsSelectColumn {
+export type AppSettingsSelectColumn =
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  permissions = 'permissions'
-}
+  | 'permissions'
+  | '%future added value';
 
 /** input type for updating data in table "app_settings" */
 export type AppSettingsSetInput = {
@@ -1002,12 +972,12 @@ export type AppSettingsStreamCursorValueInput = {
 };
 
 /** update columns of table "app_settings" */
-export enum AppSettingsUpdateColumn {
+export type AppSettingsUpdateColumn =
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  permissions = 'permissions'
-}
+  | 'permissions'
+  | '%future added value';
 
 export type AppSettingsUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -1122,10 +1092,10 @@ export type AuditLogsBoolExp = {
 };
 
 /** unique or primary key constraints on table "audit.audit_log" */
-export enum AuditLogsConstraint {
+export type AuditLogsConstraint =
   /** unique or primary key constraint on columns "id" */
-  audit_log_pkey = 'audit_log_pkey'
-}
+  | 'audit_log_pkey'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type AuditLogsDeleteAtPathInput = {
@@ -1257,44 +1227,44 @@ export type AuditLogsPrependInput = {
 };
 
 /** select columns of table "audit.audit_log" */
-export enum AuditLogsSelectColumn {
+export type AuditLogsSelectColumn =
   /** column name */
-  action = 'action',
+  | 'action'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  errorMessage = 'errorMessage',
+  | 'errorMessage'
   /** column name */
-  eventTime = 'eventTime',
+  | 'eventTime'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  ipAddress = 'ipAddress',
+  | 'ipAddress'
   /** column name */
-  metadata = 'metadata',
+  | 'metadata'
   /** column name */
-  newValues = 'newValues',
+  | 'newValues'
   /** column name */
-  oldValues = 'oldValues',
+  | 'oldValues'
   /** column name */
-  requestId = 'requestId',
+  | 'requestId'
   /** column name */
-  resourceId = 'resourceId',
+  | 'resourceId'
   /** column name */
-  resourceType = 'resourceType',
+  | 'resourceType'
   /** column name */
-  sessionId = 'sessionId',
+  | 'sessionId'
   /** column name */
-  success = 'success',
+  | 'success'
   /** column name */
-  userAgent = 'userAgent',
+  | 'userAgent'
   /** column name */
-  userEmail = 'userEmail',
+  | 'userEmail'
   /** column name */
-  userId = 'userId',
+  | 'userId'
   /** column name */
-  userRole = 'userRole'
-}
+  | 'userRole'
+  | '%future added value';
 
 /** input type for updating data in table "audit.audit_log" */
 export type AuditLogsSetInput = {
@@ -1349,44 +1319,44 @@ export type AuditLogsStreamCursorValueInput = {
 };
 
 /** update columns of table "audit.audit_log" */
-export enum AuditLogsUpdateColumn {
+export type AuditLogsUpdateColumn =
   /** column name */
-  action = 'action',
+  | 'action'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  errorMessage = 'errorMessage',
+  | 'errorMessage'
   /** column name */
-  eventTime = 'eventTime',
+  | 'eventTime'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  ipAddress = 'ipAddress',
+  | 'ipAddress'
   /** column name */
-  metadata = 'metadata',
+  | 'metadata'
   /** column name */
-  newValues = 'newValues',
+  | 'newValues'
   /** column name */
-  oldValues = 'oldValues',
+  | 'oldValues'
   /** column name */
-  requestId = 'requestId',
+  | 'requestId'
   /** column name */
-  resourceId = 'resourceId',
+  | 'resourceId'
   /** column name */
-  resourceType = 'resourceType',
+  | 'resourceType'
   /** column name */
-  sessionId = 'sessionId',
+  | 'sessionId'
   /** column name */
-  success = 'success',
+  | 'success'
   /** column name */
-  userAgent = 'userAgent',
+  | 'userAgent'
   /** column name */
-  userEmail = 'userEmail',
+  | 'userEmail'
   /** column name */
-  userId = 'userId',
+  | 'userId'
   /** column name */
-  userRole = 'userRole'
-}
+  | 'userRole'
+  | '%future added value';
 
 export type AuditLogsUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -1473,10 +1443,10 @@ export type AuthEventsBoolExp = {
 };
 
 /** unique or primary key constraints on table "audit.auth_events" */
-export enum AuthEventsConstraint {
+export type AuthEventsConstraint =
   /** unique or primary key constraint on columns "id" */
-  auth_events_pkey = 'auth_events_pkey'
-}
+  | 'auth_events_pkey'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type AuthEventsDeleteAtPathInput = {
@@ -1576,30 +1546,30 @@ export type AuthEventsPrependInput = {
 };
 
 /** select columns of table "audit.auth_events" */
-export enum AuthEventsSelectColumn {
+export type AuthEventsSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  eventTime = 'eventTime',
+  | 'eventTime'
   /** column name */
-  eventType = 'eventType',
+  | 'eventType'
   /** column name */
-  failureReason = 'failureReason',
+  | 'failureReason'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  ipAddress = 'ipAddress',
+  | 'ipAddress'
   /** column name */
-  metadata = 'metadata',
+  | 'metadata'
   /** column name */
-  success = 'success',
+  | 'success'
   /** column name */
-  userAgent = 'userAgent',
+  | 'userAgent'
   /** column name */
-  userEmail = 'userEmail',
+  | 'userEmail'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 /** input type for updating data in table "audit.auth_events" */
 export type AuthEventsSetInput = {
@@ -1640,30 +1610,30 @@ export type AuthEventsStreamCursorValueInput = {
 };
 
 /** update columns of table "audit.auth_events" */
-export enum AuthEventsUpdateColumn {
+export type AuthEventsUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  eventTime = 'eventTime',
+  | 'eventTime'
   /** column name */
-  eventType = 'eventType',
+  | 'eventType'
   /** column name */
-  failureReason = 'failureReason',
+  | 'failureReason'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  ipAddress = 'ipAddress',
+  | 'ipAddress'
   /** column name */
-  metadata = 'metadata',
+  | 'metadata'
   /** column name */
-  success = 'success',
+  | 'success'
   /** column name */
-  userAgent = 'userAgent',
+  | 'userAgent'
   /** column name */
-  userEmail = 'userEmail',
+  | 'userEmail'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 export type AuthEventsUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -1750,10 +1720,10 @@ export type AuthUsersSyncBoolExp = {
 };
 
 /** unique or primary key constraints on table "neon_auth.users_sync" */
-export enum AuthUsersSyncConstraint {
+export type AuthUsersSyncConstraint =
   /** unique or primary key constraint on columns "id" */
-  users_sync_pkey = 'users_sync_pkey'
-}
+  | 'users_sync_pkey'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type AuthUsersSyncDeleteAtPathInput = {
@@ -1857,22 +1827,22 @@ export type AuthUsersSyncPrependInput = {
 };
 
 /** select columns of table "neon_auth.users_sync" */
-export enum AuthUsersSyncSelectColumn {
+export type AuthUsersSyncSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  deletedAt = 'deletedAt',
+  | 'deletedAt'
   /** column name */
-  email = 'email',
+  | 'email'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  rawJson = 'rawJson',
+  | 'rawJson'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "neon_auth.users_sync" */
 export type AuthUsersSyncSetInput = {
@@ -1911,14 +1881,14 @@ export type AuthUsersSyncStreamCursorValueInput = {
 };
 
 /** update columns of table "neon_auth.users_sync" */
-export enum AuthUsersSyncUpdateColumn {
+export type AuthUsersSyncUpdateColumn =
   /** column name */
-  deletedAt = 'deletedAt',
+  | 'deletedAt'
   /** column name */
-  rawJson = 'rawJson',
+  | 'rawJson'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type AuthUsersSyncUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -2012,10 +1982,10 @@ export type BillingEventLogsBoolExp = {
 };
 
 /** unique or primary key constraints on table "billing_event_log" */
-export enum BillingEventLogsConstraint {
+export type BillingEventLogsConstraint =
   /** unique or primary key constraint on columns "id" */
-  billing_event_log_pkey = 'billing_event_log_pkey'
-}
+  | 'billing_event_log_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "billing_event_log" */
 export type BillingEventLogsInsertInput = {
@@ -2103,20 +2073,20 @@ export type BillingEventLogsPkColumnsInput = {
 };
 
 /** select columns of table "billing_event_log" */
-export enum BillingEventLogsSelectColumn {
+export type BillingEventLogsSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  createdBy = 'createdBy',
+  | 'createdBy'
   /** column name */
-  eventType = 'eventType',
+  | 'eventType'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  invoiceId = 'invoiceId',
+  | 'invoiceId'
   /** column name */
-  message = 'message'
-}
+  | 'message'
+  | '%future added value';
 
 /** input type for updating data in table "billing_event_log" */
 export type BillingEventLogsSetInput = {
@@ -2147,20 +2117,20 @@ export type BillingEventLogsStreamCursorValueInput = {
 };
 
 /** update columns of table "billing_event_log" */
-export enum BillingEventLogsUpdateColumn {
+export type BillingEventLogsUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  createdBy = 'createdBy',
+  | 'createdBy'
   /** column name */
-  eventType = 'eventType',
+  | 'eventType'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  invoiceId = 'invoiceId',
+  | 'invoiceId'
   /** column name */
-  message = 'message'
-}
+  | 'message'
+  | '%future added value';
 
 export type BillingEventLogsUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -2309,10 +2279,10 @@ export type BillingInvoiceBoolExp = {
 };
 
 /** unique or primary key constraints on table "billing_invoice" */
-export enum BillingInvoiceConstraint {
+export type BillingInvoiceConstraint =
   /** unique or primary key constraint on columns "id" */
-  billing_invoice_pkey = 'billing_invoice_pkey'
-}
+  | 'billing_invoice_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "billing_invoice" */
 export type BillingInvoiceIncInput = {
@@ -2443,32 +2413,32 @@ export type BillingInvoicePkColumnsInput = {
 };
 
 /** select columns of table "billing_invoice" */
-export enum BillingInvoiceSelectColumn {
+export type BillingInvoiceSelectColumn =
   /** column name */
-  billingPeriodEnd = 'billingPeriodEnd',
+  | 'billingPeriodEnd'
   /** column name */
-  billingPeriodStart = 'billingPeriodStart',
+  | 'billingPeriodStart'
   /** column name */
-  clientId = 'clientId',
+  | 'clientId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  currency = 'currency',
+  | 'currency'
   /** column name */
-  dueDate = 'dueDate',
+  | 'dueDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  issuedDate = 'issuedDate',
+  | 'issuedDate'
   /** column name */
-  notes = 'notes',
+  | 'notes'
   /** column name */
-  status = 'status',
+  | 'status'
   /** column name */
-  totalAmount = 'totalAmount',
+  | 'totalAmount'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "billing_invoice" */
 export type BillingInvoiceSetInput = {
@@ -2555,32 +2525,32 @@ export type BillingInvoiceSumOrderBy = {
 };
 
 /** update columns of table "billing_invoice" */
-export enum BillingInvoiceUpdateColumn {
+export type BillingInvoiceUpdateColumn =
   /** column name */
-  billingPeriodEnd = 'billingPeriodEnd',
+  | 'billingPeriodEnd'
   /** column name */
-  billingPeriodStart = 'billingPeriodStart',
+  | 'billingPeriodStart'
   /** column name */
-  clientId = 'clientId',
+  | 'clientId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  currency = 'currency',
+  | 'currency'
   /** column name */
-  dueDate = 'dueDate',
+  | 'dueDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  issuedDate = 'issuedDate',
+  | 'issuedDate'
   /** column name */
-  notes = 'notes',
+  | 'notes'
   /** column name */
-  status = 'status',
+  | 'status'
   /** column name */
-  totalAmount = 'totalAmount',
+  | 'totalAmount'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type BillingInvoiceUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -2734,10 +2704,10 @@ export type BillingItemsBoolExp = {
 };
 
 /** unique or primary key constraints on table "billing_items" */
-export enum BillingItemsConstraint {
+export type BillingItemsConstraint =
   /** unique or primary key constraint on columns "id" */
-  billing_items_pkey = 'billing_items_pkey'
-}
+  | 'billing_items_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "billing_items" */
 export type BillingItemsIncInput = {
@@ -2842,24 +2812,24 @@ export type BillingItemsPkColumnsInput = {
 };
 
 /** select columns of table "billing_items" */
-export enum BillingItemsSelectColumn {
+export type BillingItemsSelectColumn =
   /** column name */
-  amount = 'amount',
+  | 'amount'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  invoiceId = 'invoiceId',
+  | 'invoiceId'
   /** column name */
-  payrollId = 'payrollId',
+  | 'payrollId'
   /** column name */
-  quantity = 'quantity',
+  | 'quantity'
   /** column name */
-  unitPrice = 'unitPrice'
-}
+  | 'unitPrice'
+  | '%future added value';
 
 /** input type for updating data in table "billing_items" */
 export type BillingItemsSetInput = {
@@ -2953,22 +2923,22 @@ export type BillingItemsSumOrderBy = {
 };
 
 /** update columns of table "billing_items" */
-export enum BillingItemsUpdateColumn {
+export type BillingItemsUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  invoiceId = 'invoiceId',
+  | 'invoiceId'
   /** column name */
-  payrollId = 'payrollId',
+  | 'payrollId'
   /** column name */
-  quantity = 'quantity',
+  | 'quantity'
   /** column name */
-  unitPrice = 'unitPrice'
-}
+  | 'unitPrice'
+  | '%future added value';
 
 export type BillingItemsUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -3113,10 +3083,10 @@ export type BillingPlansBoolExp = {
 };
 
 /** unique or primary key constraints on table "billing_plan" */
-export enum BillingPlansConstraint {
+export type BillingPlansConstraint =
   /** unique or primary key constraint on columns "id" */
-  billing_plan_pkey = 'billing_plan_pkey'
-}
+  | 'billing_plan_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "billing_plan" */
 export type BillingPlansIncInput = {
@@ -3200,22 +3170,22 @@ export type BillingPlansPkColumnsInput = {
 };
 
 /** select columns of table "billing_plan" */
-export enum BillingPlansSelectColumn {
+export type BillingPlansSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  currency = 'currency',
+  | 'currency'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  ratePerPayroll = 'ratePerPayroll',
+  | 'ratePerPayroll'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "billing_plan" */
 export type BillingPlansSetInput = {
@@ -3272,22 +3242,22 @@ export type BillingPlansSumFields = {
 };
 
 /** update columns of table "billing_plan" */
-export enum BillingPlansUpdateColumn {
+export type BillingPlansUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  currency = 'currency',
+  | 'currency'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  ratePerPayroll = 'ratePerPayroll',
+  | 'ratePerPayroll'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type BillingPlansUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -3341,20 +3311,20 @@ export type ClientBillingAssignmentsAggregate = {
 };
 
 export type ClientBillingAssignmentsAggregateBoolExp = {
-  bool_and?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpBoolAnd>;
-  bool_or?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpBoolOr>;
+  bool_and?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpBool_Or>;
   count?: InputMaybe<ClientBillingAssignmentsAggregateBoolExpCount>;
 };
 
-export type ClientBillingAssignmentsAggregateBoolExpBoolAnd = {
-  arguments: ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBoolAndArgumentsColumns;
+export type ClientBillingAssignmentsAggregateBoolExpBool_And = {
+  arguments: ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_AndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type ClientBillingAssignmentsAggregateBoolExpBoolOr = {
-  arguments: ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBoolOrArgumentsColumns;
+export type ClientBillingAssignmentsAggregateBoolExpBool_Or = {
+  arguments: ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_OrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
@@ -3414,10 +3384,10 @@ export type ClientBillingAssignmentsBoolExp = {
 };
 
 /** unique or primary key constraints on table "client_billing_assignment" */
-export enum ClientBillingAssignmentsConstraint {
+export type ClientBillingAssignmentsConstraint =
   /** unique or primary key constraint on columns "id" */
-  client_billing_assignment_pkey = 'client_billing_assignment_pkey'
-}
+  | 'client_billing_assignment_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "client_billing_assignment" */
 export type ClientBillingAssignmentsInsertInput = {
@@ -3515,36 +3485,36 @@ export type ClientBillingAssignmentsPkColumnsInput = {
 };
 
 /** select columns of table "client_billing_assignment" */
-export enum ClientBillingAssignmentsSelectColumn {
+export type ClientBillingAssignmentsSelectColumn =
   /** column name */
-  billingPlanId = 'billingPlanId',
+  | 'billingPlanId'
   /** column name */
-  clientId = 'clientId',
+  | 'clientId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  endDate = 'endDate',
+  | 'endDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isActive = 'isActive',
+  | 'isActive'
   /** column name */
-  startDate = 'startDate',
+  | 'startDate'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** select "clientBillingAssignmentsAggregateBoolExpBool_andArgumentsColumns" columns of table "client_billing_assignment" */
-export enum ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBoolAndArgumentsColumns {
+export type ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_AndArgumentsColumns =
   /** column name */
-  isActive = 'isActive'
-}
+  | 'isActive'
+  | '%future added value';
 
 /** select "clientBillingAssignmentsAggregateBoolExpBool_orArgumentsColumns" columns of table "client_billing_assignment" */
-export enum ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBoolOrArgumentsColumns {
+export type ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_OrArgumentsColumns =
   /** column name */
-  isActive = 'isActive'
-}
+  | 'isActive'
+  | '%future added value';
 
 /** input type for updating data in table "client_billing_assignment" */
 export type ClientBillingAssignmentsSetInput = {
@@ -3579,24 +3549,24 @@ export type ClientBillingAssignmentsStreamCursorValueInput = {
 };
 
 /** update columns of table "client_billing_assignment" */
-export enum ClientBillingAssignmentsUpdateColumn {
+export type ClientBillingAssignmentsUpdateColumn =
   /** column name */
-  billingPlanId = 'billingPlanId',
+  | 'billingPlanId'
   /** column name */
-  clientId = 'clientId',
+  | 'clientId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  endDate = 'endDate',
+  | 'endDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isActive = 'isActive',
+  | 'isActive'
   /** column name */
-  startDate = 'startDate',
+  | 'startDate'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type ClientBillingAssignmentsUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -3689,12 +3659,12 @@ export type ClientExternalSystemsBoolExp = {
 };
 
 /** unique or primary key constraints on table "client_external_systems" */
-export enum ClientExternalSystemsConstraint {
+export type ClientExternalSystemsConstraint =
   /** unique or primary key constraint on columns "client_id", "system_id" */
-  client_external_systems_client_id_system_id_key = 'client_external_systems_client_id_system_id_key',
+  | 'client_external_systems_client_id_system_id_key'
   /** unique or primary key constraint on columns "id" */
-  client_external_systems_pkey = 'client_external_systems_pkey'
-}
+  | 'client_external_systems_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "client_external_systems" */
 export type ClientExternalSystemsInsertInput = {
@@ -3815,20 +3785,20 @@ export type ClientExternalSystemsPkColumnsInput = {
 };
 
 /** select columns of table "client_external_systems" */
-export enum ClientExternalSystemsSelectColumn {
+export type ClientExternalSystemsSelectColumn =
   /** column name */
-  clientId = 'clientId',
+  | 'clientId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  externalSystemId = 'externalSystemId',
+  | 'externalSystemId'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  systemClientId = 'systemClientId',
+  | 'systemClientId'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "client_external_systems" */
 export type ClientExternalSystemsSetInput = {
@@ -3871,20 +3841,20 @@ export type ClientExternalSystemsStreamCursorValueInput = {
 };
 
 /** update columns of table "client_external_systems" */
-export enum ClientExternalSystemsUpdateColumn {
+export type ClientExternalSystemsUpdateColumn =
   /** column name */
-  clientId = 'clientId',
+  | 'clientId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  externalSystemId = 'externalSystemId',
+  | 'externalSystemId'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  systemClientId = 'systemClientId',
+  | 'systemClientId'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type ClientExternalSystemsUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -3962,7 +3932,7 @@ export type ClientsBillingInvoicesAggregateArgs = {
 
 
 /** columns and relationships of "clients" */
-export type ClientsBillingInvoicesArgs = {
+export type ClientsBilling_InvoicesArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -4018,20 +3988,20 @@ export type ClientsAggregate = {
 };
 
 export type ClientsAggregateBoolExp = {
-  bool_and?: InputMaybe<ClientsAggregateBoolExpBoolAnd>;
-  bool_or?: InputMaybe<ClientsAggregateBoolExpBoolOr>;
+  bool_and?: InputMaybe<ClientsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<ClientsAggregateBoolExpBool_Or>;
   count?: InputMaybe<ClientsAggregateBoolExpCount>;
 };
 
-export type ClientsAggregateBoolExpBoolAnd = {
-  arguments: ClientsSelectColumnClientsAggregateBoolExpBoolAndArgumentsColumns;
+export type ClientsAggregateBoolExpBool_And = {
+  arguments: ClientsSelectColumnClientsAggregateBoolExpBool_AndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientsBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type ClientsAggregateBoolExpBoolOr = {
-  arguments: ClientsSelectColumnClientsAggregateBoolExpBoolOrArgumentsColumns;
+export type ClientsAggregateBoolExpBool_Or = {
+  arguments: ClientsSelectColumnClientsAggregateBoolExpBool_OrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<ClientsBoolExp>;
   predicate: BooleanComparisonExp;
@@ -4097,10 +4067,10 @@ export type ClientsBoolExp = {
 };
 
 /** unique or primary key constraints on table "clients" */
-export enum ClientsConstraint {
+export type ClientsConstraint =
   /** unique or primary key constraint on columns "id" */
-  clients_pkey = 'clients_pkey'
-}
+  | 'clients_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "clients" */
 export type ClientsInsertInput = {
@@ -4246,36 +4216,36 @@ export type ClientsPkColumnsInput = {
 };
 
 /** select columns of table "clients" */
-export enum ClientsSelectColumn {
+export type ClientsSelectColumn =
   /** column name */
-  active = 'active',
+  | 'active'
   /** column name */
-  contactEmail = 'contactEmail',
+  | 'contactEmail'
   /** column name */
-  contactPerson = 'contactPerson',
+  | 'contactPerson'
   /** column name */
-  contactPhone = 'contactPhone',
+  | 'contactPhone'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** select "clientsAggregateBoolExpBool_andArgumentsColumns" columns of table "clients" */
-export enum ClientsSelectColumnClientsAggregateBoolExpBoolAndArgumentsColumns {
+export type ClientsSelectColumnClientsAggregateBoolExpBool_AndArgumentsColumns =
   /** column name */
-  active = 'active'
-}
+  | 'active'
+  | '%future added value';
 
 /** select "clientsAggregateBoolExpBool_orArgumentsColumns" columns of table "clients" */
-export enum ClientsSelectColumnClientsAggregateBoolExpBoolOrArgumentsColumns {
+export type ClientsSelectColumnClientsAggregateBoolExpBool_OrArgumentsColumns =
   /** column name */
-  active = 'active'
-}
+  | 'active'
+  | '%future added value';
 
 /** input type for updating data in table "clients" */
 export type ClientsSetInput = {
@@ -4326,24 +4296,24 @@ export type ClientsStreamCursorValueInput = {
 };
 
 /** update columns of table "clients" */
-export enum ClientsUpdateColumn {
+export type ClientsUpdateColumn =
   /** column name */
-  active = 'active',
+  | 'active'
   /** column name */
-  contactEmail = 'contactEmail',
+  | 'contactEmail'
   /** column name */
-  contactPerson = 'contactPerson',
+  | 'contactPerson'
   /** column name */
-  contactPhone = 'contactPhone',
+  | 'contactPhone'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type ClientsUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -4531,46 +4501,46 @@ export type CurrentPayrollsOrderBy = {
 };
 
 /** select columns of table "current_payrolls" */
-export enum CurrentPayrollsSelectColumn {
+export type CurrentPayrollsSelectColumn =
   /** column name */
-  backupConsultantUserId = 'backupConsultantUserId',
+  | 'backupConsultantUserId'
   /** column name */
-  clientId = 'clientId',
+  | 'clientId'
   /** column name */
-  clientName = 'clientName',
+  | 'clientName'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  cycleId = 'cycleId',
+  | 'cycleId'
   /** column name */
-  dateTypeId = 'dateTypeId',
+  | 'dateTypeId'
   /** column name */
-  dateValue = 'dateValue',
+  | 'dateValue'
   /** column name */
-  goLiveDate = 'goLiveDate',
+  | 'goLiveDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  managerUserId = 'managerUserId',
+  | 'managerUserId'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  parentPayrollId = 'parentPayrollId',
+  | 'parentPayrollId'
   /** column name */
-  payrollCycleName = 'payrollCycleName',
+  | 'payrollCycleName'
   /** column name */
-  payrollDateTypeName = 'payrollDateTypeName',
+  | 'payrollDateTypeName'
   /** column name */
-  primaryConsultantUserId = 'primaryConsultantUserId',
+  | 'primaryConsultantUserId'
   /** column name */
-  supersededDate = 'supersededDate',
+  | 'supersededDate'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  versionNumber = 'versionNumber',
+  | 'versionNumber'
   /** column name */
-  versionReason = 'versionReason'
-}
+  | 'versionReason'
+  | '%future added value';
 
 /** aggregate stddev on columns */
 export type CurrentPayrollsStddevFields = {
@@ -4738,10 +4708,10 @@ export type DataAccessLogsBoolExp = {
 };
 
 /** unique or primary key constraints on table "audit.data_access_log" */
-export enum DataAccessLogsConstraint {
+export type DataAccessLogsConstraint =
   /** unique or primary key constraint on columns "id" */
-  data_access_log_pkey = 'data_access_log_pkey'
-}
+  | 'data_access_log_pkey'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type DataAccessLogsDeleteAtPathInput = {
@@ -4856,34 +4826,34 @@ export type DataAccessLogsPrependInput = {
 };
 
 /** select columns of table "audit.data_access_log" */
-export enum DataAccessLogsSelectColumn {
+export type DataAccessLogsSelectColumn =
   /** column name */
-  accessType = 'accessType',
+  | 'accessType'
   /** column name */
-  accessedAt = 'accessedAt',
+  | 'accessedAt'
   /** column name */
-  dataClassification = 'dataClassification',
+  | 'dataClassification'
   /** column name */
-  fieldsAccessed = 'fieldsAccessed',
+  | 'fieldsAccessed'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  ipAddress = 'ipAddress',
+  | 'ipAddress'
   /** column name */
-  metadata = 'metadata',
+  | 'metadata'
   /** column name */
-  queryExecuted = 'queryExecuted',
+  | 'queryExecuted'
   /** column name */
-  resourceId = 'resourceId',
+  | 'resourceId'
   /** column name */
-  resourceType = 'resourceType',
+  | 'resourceType'
   /** column name */
-  rowCount = 'rowCount',
+  | 'rowCount'
   /** column name */
-  sessionId = 'sessionId',
+  | 'sessionId'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 /** input type for updating data in table "audit.data_access_log" */
 export type DataAccessLogsSetInput = {
@@ -4952,34 +4922,34 @@ export type DataAccessLogsSumFields = {
 };
 
 /** update columns of table "audit.data_access_log" */
-export enum DataAccessLogsUpdateColumn {
+export type DataAccessLogsUpdateColumn =
   /** column name */
-  accessType = 'accessType',
+  | 'accessType'
   /** column name */
-  accessedAt = 'accessedAt',
+  | 'accessedAt'
   /** column name */
-  dataClassification = 'dataClassification',
+  | 'dataClassification'
   /** column name */
-  fieldsAccessed = 'fieldsAccessed',
+  | 'fieldsAccessed'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  ipAddress = 'ipAddress',
+  | 'ipAddress'
   /** column name */
-  metadata = 'metadata',
+  | 'metadata'
   /** column name */
-  queryExecuted = 'queryExecuted',
+  | 'queryExecuted'
   /** column name */
-  resourceId = 'resourceId',
+  | 'resourceId'
   /** column name */
-  resourceType = 'resourceType',
+  | 'resourceType'
   /** column name */
-  rowCount = 'rowCount',
+  | 'rowCount'
   /** column name */
-  sessionId = 'sessionId',
+  | 'sessionId'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 export type DataAccessLogsUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -5100,10 +5070,10 @@ export type ExternalSystemsBoolExp = {
 };
 
 /** unique or primary key constraints on table "external_systems" */
-export enum ExternalSystemsConstraint {
+export type ExternalSystemsConstraint =
   /** unique or primary key constraint on columns "id" */
-  external_systems_pkey = 'external_systems_pkey'
-}
+  | 'external_systems_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "external_systems" */
 export type ExternalSystemsInsertInput = {
@@ -5204,22 +5174,22 @@ export type ExternalSystemsPkColumnsInput = {
 };
 
 /** select columns of table "external_systems" */
-export enum ExternalSystemsSelectColumn {
+export type ExternalSystemsSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  icon = 'icon',
+  | 'icon'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  url = 'url'
-}
+  | 'url'
+  | '%future added value';
 
 /** input type for updating data in table "external_systems" */
 export type ExternalSystemsSetInput = {
@@ -5266,22 +5236,22 @@ export type ExternalSystemsStreamCursorValueInput = {
 };
 
 /** update columns of table "external_systems" */
-export enum ExternalSystemsUpdateColumn {
+export type ExternalSystemsUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  icon = 'icon',
+  | 'icon'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  url = 'url'
-}
+  | 'url'
+  | '%future added value';
 
 export type ExternalSystemsUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -5352,12 +5322,12 @@ export type FeatureFlagsBoolExp = {
 };
 
 /** unique or primary key constraints on table "feature_flags" */
-export enum FeatureFlagsConstraint {
+export type FeatureFlagsConstraint =
   /** unique or primary key constraint on columns "feature_name" */
-  feature_flags_feature_name_key = 'feature_flags_feature_name_key',
+  | 'feature_flags_feature_name_key'
   /** unique or primary key constraint on columns "id" */
-  feature_flags_pkey = 'feature_flags_pkey'
-}
+  | 'feature_flags_pkey'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type FeatureFlagsDeleteAtPathInput = {
@@ -5451,18 +5421,18 @@ export type FeatureFlagsPrependInput = {
 };
 
 /** select columns of table "feature_flags" */
-export enum FeatureFlagsSelectColumn {
+export type FeatureFlagsSelectColumn =
   /** column name */
-  allowedRoles = 'allowedRoles',
+  | 'allowedRoles'
   /** column name */
-  featureName = 'featureName',
+  | 'featureName'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isEnabled = 'isEnabled',
+  | 'isEnabled'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "feature_flags" */
 export type FeatureFlagsSetInput = {
@@ -5501,18 +5471,18 @@ export type FeatureFlagsStreamCursorValueInput = {
 };
 
 /** update columns of table "feature_flags" */
-export enum FeatureFlagsUpdateColumn {
+export type FeatureFlagsUpdateColumn =
   /** column name */
-  allowedRoles = 'allowedRoles',
+  | 'allowedRoles'
   /** column name */
-  featureName = 'featureName',
+  | 'featureName'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isEnabled = 'isEnabled',
+  | 'isEnabled'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type FeatureFlagsUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -5632,10 +5602,10 @@ export type HolidaysBoolExp = {
 };
 
 /** unique or primary key constraints on table "holidays" */
-export enum HolidaysConstraint {
+export type HolidaysConstraint =
   /** unique or primary key constraint on columns "id" */
-  holidays_pkey = 'holidays_pkey'
-}
+  | 'holidays_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "holidays" */
 export type HolidaysIncInput = {
@@ -5760,32 +5730,32 @@ export type HolidaysPkColumnsInput = {
 };
 
 /** select columns of table "holidays" */
-export enum HolidaysSelectColumn {
+export type HolidaysSelectColumn =
   /** column name */
-  countryCode = 'countryCode',
+  | 'countryCode'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  date = 'date',
+  | 'date'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isFixed = 'isFixed',
+  | 'isFixed'
   /** column name */
-  isGlobal = 'isGlobal',
+  | 'isGlobal'
   /** column name */
-  launchYear = 'launchYear',
+  | 'launchYear'
   /** column name */
-  localName = 'localName',
+  | 'localName'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  region = 'region',
+  | 'region'
   /** column name */
-  types = 'types',
+  | 'types'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "holidays" */
 export type HolidaysSetInput = {
@@ -5880,32 +5850,32 @@ export type HolidaysSumFields = {
 };
 
 /** update columns of table "holidays" */
-export enum HolidaysUpdateColumn {
+export type HolidaysUpdateColumn =
   /** column name */
-  countryCode = 'countryCode',
+  | 'countryCode'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  date = 'date',
+  | 'date'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isFixed = 'isFixed',
+  | 'isFixed'
   /** column name */
-  isGlobal = 'isGlobal',
+  | 'isGlobal'
   /** column name */
-  launchYear = 'launchYear',
+  | 'launchYear'
   /** column name */
-  localName = 'localName',
+  | 'localName'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  region = 'region',
+  | 'region'
   /** column name */
-  types = 'types',
+  | 'types'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type HolidaysUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -5999,10 +5969,10 @@ export type LatestPayrollVersionResultsBoolExp = {
 };
 
 /** unique or primary key constraints on table "latest_payroll_version_results" */
-export enum LatestPayrollVersionResultsConstraint {
+export type LatestPayrollVersionResultsConstraint =
   /** unique or primary key constraint on columns "id" */
-  latest_payroll_version_results_pkey = 'latest_payroll_version_results_pkey'
-}
+  | 'latest_payroll_version_results_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "latest_payroll_version_results" */
 export type LatestPayrollVersionResultsIncInput = {
@@ -6075,22 +6045,22 @@ export type LatestPayrollVersionResultsPkColumnsInput = {
 };
 
 /** select columns of table "latest_payroll_version_results" */
-export enum LatestPayrollVersionResultsSelectColumn {
+export type LatestPayrollVersionResultsSelectColumn =
   /** column name */
-  active = 'active',
+  | 'active'
   /** column name */
-  goLiveDate = 'goLiveDate',
+  | 'goLiveDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  payrollId = 'payrollId',
+  | 'payrollId'
   /** column name */
-  queriedAt = 'queriedAt',
+  | 'queriedAt'
   /** column name */
-  versionNumber = 'versionNumber'
-}
+  | 'versionNumber'
+  | '%future added value';
 
 /** input type for updating data in table "latest_payroll_version_results" */
 export type LatestPayrollVersionResultsSetInput = {
@@ -6147,22 +6117,22 @@ export type LatestPayrollVersionResultsSumFields = {
 };
 
 /** update columns of table "latest_payroll_version_results" */
-export enum LatestPayrollVersionResultsUpdateColumn {
+export type LatestPayrollVersionResultsUpdateColumn =
   /** column name */
-  active = 'active',
+  | 'active'
   /** column name */
-  goLiveDate = 'goLiveDate',
+  | 'goLiveDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  payrollId = 'payrollId',
+  | 'payrollId'
   /** column name */
-  queriedAt = 'queriedAt',
+  | 'queriedAt'
   /** column name */
-  versionNumber = 'versionNumber'
-}
+  | 'versionNumber'
+  | '%future added value';
 
 export type LatestPayrollVersionResultsUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -6278,10 +6248,10 @@ export type LeaveBoolExp = {
 };
 
 /** unique or primary key constraints on table "leave" */
-export enum LeaveConstraint {
+export type LeaveConstraint =
   /** unique or primary key constraint on columns "id" */
-  leave_pkey = 'leave_pkey'
-}
+  | 'leave_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "leave" */
 export type LeaveInsertInput = {
@@ -6413,22 +6383,22 @@ export type LeavePkColumnsInput = {
 };
 
 /** select columns of table "leave" */
-export enum LeaveSelectColumn {
+export type LeaveSelectColumn =
   /** column name */
-  endDate = 'endDate',
+  | 'endDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  leaveType = 'leaveType',
+  | 'leaveType'
   /** column name */
-  reason = 'reason',
+  | 'reason'
   /** column name */
-  startDate = 'startDate',
+  | 'startDate'
   /** column name */
-  status = 'status',
+  | 'status'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 /** input type for updating data in table "leave" */
 export type LeaveSetInput = {
@@ -6475,22 +6445,22 @@ export type LeaveStreamCursorValueInput = {
 };
 
 /** update columns of table "leave" */
-export enum LeaveUpdateColumn {
+export type LeaveUpdateColumn =
   /** column name */
-  endDate = 'endDate',
+  | 'endDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  leaveType = 'leaveType',
+  | 'leaveType'
   /** column name */
-  reason = 'reason',
+  | 'reason'
   /** column name */
-  startDate = 'startDate',
+  | 'startDate'
   /** column name */
-  status = 'status',
+  | 'status'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 export type LeaveUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -6500,7 +6470,7 @@ export type LeaveUpdates = {
 };
 
 /** mutation root */
-export type MutationRoot = {
+export type Mutation_Root = {
   __typename?: 'mutation_root';
   /** delete data from the table: "adjustment_rules" */
   bulkDeleteAdjustmentRules?: Maybe<AdjustmentRulesMutationResponse>;
@@ -7093,558 +7063,558 @@ export type MutationRoot = {
 
 
 /** mutation root */
-export type MutationRootBulkDeleteAdjustmentRulesArgs = {
+export type Mutation_RootBulkDeleteAdjustmentRulesArgs = {
   where: AdjustmentRulesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteAppSettingsArgs = {
+export type Mutation_RootBulkDeleteAppSettingsArgs = {
   where: AppSettingsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteAuditLogsArgs = {
+export type Mutation_RootBulkDeleteAuditLogsArgs = {
   where: AuditLogsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteAuthEventsArgs = {
+export type Mutation_RootBulkDeleteAuthEventsArgs = {
   where: AuthEventsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteBillingEventLogsArgs = {
+export type Mutation_RootBulkDeleteBillingEventLogsArgs = {
   where: BillingEventLogsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteBillingInvoiceArgs = {
+export type Mutation_RootBulkDeleteBillingInvoiceArgs = {
   where: BillingInvoiceBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteBillingItemsArgs = {
+export type Mutation_RootBulkDeleteBillingItemsArgs = {
   where: BillingItemsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteBillingPlansArgs = {
+export type Mutation_RootBulkDeleteBillingPlansArgs = {
   where: BillingPlansBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteClientBillingAssignmentsArgs = {
+export type Mutation_RootBulkDeleteClientBillingAssignmentsArgs = {
   where: ClientBillingAssignmentsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteClientExternalSystemsArgs = {
+export type Mutation_RootBulkDeleteClientExternalSystemsArgs = {
   where: ClientExternalSystemsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteClientsArgs = {
+export type Mutation_RootBulkDeleteClientsArgs = {
   where: ClientsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteDataAccessLogsArgs = {
+export type Mutation_RootBulkDeleteDataAccessLogsArgs = {
   where: DataAccessLogsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteExternalSystemsArgs = {
+export type Mutation_RootBulkDeleteExternalSystemsArgs = {
   where: ExternalSystemsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteFeatureFlagsArgs = {
+export type Mutation_RootBulkDeleteFeatureFlagsArgs = {
   where: FeatureFlagsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteHolidaysArgs = {
+export type Mutation_RootBulkDeleteHolidaysArgs = {
   where: HolidaysBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteLatestPayrollVersionResultsArgs = {
+export type Mutation_RootBulkDeleteLatestPayrollVersionResultsArgs = {
   where: LatestPayrollVersionResultsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteLeaveArgs = {
+export type Mutation_RootBulkDeleteLeaveArgs = {
   where: LeaveBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteNotesArgs = {
+export type Mutation_RootBulkDeleteNotesArgs = {
   where: NotesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePayrollActivationResultsArgs = {
+export type Mutation_RootBulkDeletePayrollActivationResultsArgs = {
   where: PayrollActivationResultsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePayrollAssignmentAuditsArgs = {
+export type Mutation_RootBulkDeletePayrollAssignmentAuditsArgs = {
   where: PayrollAssignmentAuditsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePayrollAssignmentsArgs = {
+export type Mutation_RootBulkDeletePayrollAssignmentsArgs = {
   where: PayrollAssignmentsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePayrollCyclesArgs = {
+export type Mutation_RootBulkDeletePayrollCyclesArgs = {
   where: PayrollCyclesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePayrollDateTypesArgs = {
+export type Mutation_RootBulkDeletePayrollDateTypesArgs = {
   where: PayrollDateTypesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePayrollDatesArgs = {
+export type Mutation_RootBulkDeletePayrollDatesArgs = {
   where: PayrollDatesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePayrollVersionHistoryResultsArgs = {
+export type Mutation_RootBulkDeletePayrollVersionHistoryResultsArgs = {
   where: PayrollVersionHistoryResultsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePayrollVersionResultsArgs = {
+export type Mutation_RootBulkDeletePayrollVersionResultsArgs = {
   where: PayrollVersionResultsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePayrollsArgs = {
+export type Mutation_RootBulkDeletePayrollsArgs = {
   where: PayrollsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePermissionAuditLogsArgs = {
+export type Mutation_RootBulkDeletePermissionAuditLogsArgs = {
   where: PermissionAuditLogsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePermissionChangesArgs = {
+export type Mutation_RootBulkDeletePermissionChangesArgs = {
   where: PermissionChangesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePermissionOverridesArgs = {
+export type Mutation_RootBulkDeletePermissionOverridesArgs = {
   where: PermissionOverridesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeletePermissionsArgs = {
+export type Mutation_RootBulkDeletePermissionsArgs = {
   where: PermissionsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteResourcesArgs = {
+export type Mutation_RootBulkDeleteResourcesArgs = {
   where: ResourcesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteRolePermissionsArgs = {
+export type Mutation_RootBulkDeleteRolePermissionsArgs = {
   where: RolePermissionsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteRolesArgs = {
+export type Mutation_RootBulkDeleteRolesArgs = {
   where: RolesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteSlowQueriesArgs = {
+export type Mutation_RootBulkDeleteSlowQueriesArgs = {
   where: SlowQueriesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteUserAccessSummariesArgs = {
+export type Mutation_RootBulkDeleteUserAccessSummariesArgs = {
   where: UserAccessSummariesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteUserInvitationsArgs = {
+export type Mutation_RootBulkDeleteUserInvitationsArgs = {
   where: UserInvitationsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteUserRolesArgs = {
+export type Mutation_RootBulkDeleteUserRolesArgs = {
   where: UserRolesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteUsersArgs = {
+export type Mutation_RootBulkDeleteUsersArgs = {
   where: UsersBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteUsersRoleBackupsArgs = {
+export type Mutation_RootBulkDeleteUsersRoleBackupsArgs = {
   where: UsersRoleBackupBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteUsersSyncArgs = {
+export type Mutation_RootBulkDeleteUsersSyncArgs = {
   where: AuthUsersSyncBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkDeleteWorkSchedulesArgs = {
+export type Mutation_RootBulkDeleteWorkSchedulesArgs = {
   where: WorkSchedulesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertAdjustmentRulesArgs = {
+export type Mutation_RootBulkInsertAdjustmentRulesArgs = {
   objects: Array<AdjustmentRulesInsertInput>;
   onConflict?: InputMaybe<AdjustmentRulesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertAppSettingsArgs = {
+export type Mutation_RootBulkInsertAppSettingsArgs = {
   objects: Array<AppSettingsInsertInput>;
   onConflict?: InputMaybe<AppSettingsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertAuditLogsArgs = {
+export type Mutation_RootBulkInsertAuditLogsArgs = {
   objects: Array<AuditLogsInsertInput>;
   onConflict?: InputMaybe<AuditLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertAuthEventsArgs = {
+export type Mutation_RootBulkInsertAuthEventsArgs = {
   objects: Array<AuthEventsInsertInput>;
   onConflict?: InputMaybe<AuthEventsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertBillingEventLogsArgs = {
+export type Mutation_RootBulkInsertBillingEventLogsArgs = {
   objects: Array<BillingEventLogsInsertInput>;
   onConflict?: InputMaybe<BillingEventLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertBillingInvoiceArgs = {
+export type Mutation_RootBulkInsertBillingInvoiceArgs = {
   objects: Array<BillingInvoiceInsertInput>;
   onConflict?: InputMaybe<BillingInvoiceOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertBillingItemsArgs = {
+export type Mutation_RootBulkInsertBillingItemsArgs = {
   objects: Array<BillingItemsInsertInput>;
   onConflict?: InputMaybe<BillingItemsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertBillingPlansArgs = {
+export type Mutation_RootBulkInsertBillingPlansArgs = {
   objects: Array<BillingPlansInsertInput>;
   onConflict?: InputMaybe<BillingPlansOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertClientBillingAssignmentsArgs = {
+export type Mutation_RootBulkInsertClientBillingAssignmentsArgs = {
   objects: Array<ClientBillingAssignmentsInsertInput>;
   onConflict?: InputMaybe<ClientBillingAssignmentsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertClientExternalSystemsArgs = {
+export type Mutation_RootBulkInsertClientExternalSystemsArgs = {
   objects: Array<ClientExternalSystemsInsertInput>;
   onConflict?: InputMaybe<ClientExternalSystemsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertClientsArgs = {
+export type Mutation_RootBulkInsertClientsArgs = {
   objects: Array<ClientsInsertInput>;
   onConflict?: InputMaybe<ClientsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertDataAccessLogsArgs = {
+export type Mutation_RootBulkInsertDataAccessLogsArgs = {
   objects: Array<DataAccessLogsInsertInput>;
   onConflict?: InputMaybe<DataAccessLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertExternalSystemsArgs = {
+export type Mutation_RootBulkInsertExternalSystemsArgs = {
   objects: Array<ExternalSystemsInsertInput>;
   onConflict?: InputMaybe<ExternalSystemsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertFeatureFlagsArgs = {
+export type Mutation_RootBulkInsertFeatureFlagsArgs = {
   objects: Array<FeatureFlagsInsertInput>;
   onConflict?: InputMaybe<FeatureFlagsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertHolidaysArgs = {
+export type Mutation_RootBulkInsertHolidaysArgs = {
   objects: Array<HolidaysInsertInput>;
   onConflict?: InputMaybe<HolidaysOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertLatestPayrollVersionResultsArgs = {
+export type Mutation_RootBulkInsertLatestPayrollVersionResultsArgs = {
   objects: Array<LatestPayrollVersionResultsInsertInput>;
   onConflict?: InputMaybe<LatestPayrollVersionResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertLeaveArgs = {
+export type Mutation_RootBulkInsertLeaveArgs = {
   objects: Array<LeaveInsertInput>;
   onConflict?: InputMaybe<LeaveOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertNotesArgs = {
+export type Mutation_RootBulkInsertNotesArgs = {
   objects: Array<NotesInsertInput>;
   onConflict?: InputMaybe<NotesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPayrollActivationResultsArgs = {
+export type Mutation_RootBulkInsertPayrollActivationResultsArgs = {
   objects: Array<PayrollActivationResultsInsertInput>;
   onConflict?: InputMaybe<PayrollActivationResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPayrollAssignmentAuditsArgs = {
+export type Mutation_RootBulkInsertPayrollAssignmentAuditsArgs = {
   objects: Array<PayrollAssignmentAuditsInsertInput>;
   onConflict?: InputMaybe<PayrollAssignmentAuditsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPayrollAssignmentsArgs = {
+export type Mutation_RootBulkInsertPayrollAssignmentsArgs = {
   objects: Array<PayrollAssignmentsInsertInput>;
   onConflict?: InputMaybe<PayrollAssignmentsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPayrollCyclesArgs = {
+export type Mutation_RootBulkInsertPayrollCyclesArgs = {
   objects: Array<PayrollCyclesInsertInput>;
   onConflict?: InputMaybe<PayrollCyclesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPayrollDateTypesArgs = {
+export type Mutation_RootBulkInsertPayrollDateTypesArgs = {
   objects: Array<PayrollDateTypesInsertInput>;
   onConflict?: InputMaybe<PayrollDateTypesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPayrollDatesArgs = {
+export type Mutation_RootBulkInsertPayrollDatesArgs = {
   objects: Array<PayrollDatesInsertInput>;
   onConflict?: InputMaybe<PayrollDatesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPayrollVersionHistoryResultsArgs = {
+export type Mutation_RootBulkInsertPayrollVersionHistoryResultsArgs = {
   objects: Array<PayrollVersionHistoryResultsInsertInput>;
   onConflict?: InputMaybe<PayrollVersionHistoryResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPayrollVersionResultsArgs = {
+export type Mutation_RootBulkInsertPayrollVersionResultsArgs = {
   objects: Array<PayrollVersionResultsInsertInput>;
   onConflict?: InputMaybe<PayrollVersionResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPayrollsArgs = {
+export type Mutation_RootBulkInsertPayrollsArgs = {
   objects: Array<PayrollsInsertInput>;
   onConflict?: InputMaybe<PayrollsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPermissionAuditLogsArgs = {
+export type Mutation_RootBulkInsertPermissionAuditLogsArgs = {
   objects: Array<PermissionAuditLogsInsertInput>;
   onConflict?: InputMaybe<PermissionAuditLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPermissionChangesArgs = {
+export type Mutation_RootBulkInsertPermissionChangesArgs = {
   objects: Array<PermissionChangesInsertInput>;
   onConflict?: InputMaybe<PermissionChangesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPermissionOverridesArgs = {
+export type Mutation_RootBulkInsertPermissionOverridesArgs = {
   objects: Array<PermissionOverridesInsertInput>;
   onConflict?: InputMaybe<PermissionOverridesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertPermissionsArgs = {
+export type Mutation_RootBulkInsertPermissionsArgs = {
   objects: Array<PermissionsInsertInput>;
   onConflict?: InputMaybe<PermissionsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertResourcesArgs = {
+export type Mutation_RootBulkInsertResourcesArgs = {
   objects: Array<ResourcesInsertInput>;
   onConflict?: InputMaybe<ResourcesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertRolePermissionsArgs = {
+export type Mutation_RootBulkInsertRolePermissionsArgs = {
   objects: Array<RolePermissionsInsertInput>;
   onConflict?: InputMaybe<RolePermissionsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertRolesArgs = {
+export type Mutation_RootBulkInsertRolesArgs = {
   objects: Array<RolesInsertInput>;
   onConflict?: InputMaybe<RolesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertSlowQueriesArgs = {
+export type Mutation_RootBulkInsertSlowQueriesArgs = {
   objects: Array<SlowQueriesInsertInput>;
   onConflict?: InputMaybe<SlowQueriesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertUserAccessSummariesArgs = {
+export type Mutation_RootBulkInsertUserAccessSummariesArgs = {
   objects: Array<UserAccessSummariesInsertInput>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertUserInvitationsArgs = {
+export type Mutation_RootBulkInsertUserInvitationsArgs = {
   objects: Array<UserInvitationsInsertInput>;
   onConflict?: InputMaybe<UserInvitationsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertUserRolesArgs = {
+export type Mutation_RootBulkInsertUserRolesArgs = {
   objects: Array<UserRolesInsertInput>;
   onConflict?: InputMaybe<UserRolesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertUsersArgs = {
+export type Mutation_RootBulkInsertUsersArgs = {
   objects: Array<UsersInsertInput>;
   onConflict?: InputMaybe<UsersOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertUsersRoleBackupsArgs = {
+export type Mutation_RootBulkInsertUsersRoleBackupsArgs = {
   objects: Array<UsersRoleBackupInsertInput>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertUsersSyncArgs = {
+export type Mutation_RootBulkInsertUsersSyncArgs = {
   objects: Array<AuthUsersSyncInsertInput>;
   onConflict?: InputMaybe<AuthUsersSyncOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkInsertWorkSchedulesArgs = {
+export type Mutation_RootBulkInsertWorkSchedulesArgs = {
   objects: Array<WorkSchedulesInsertInput>;
   onConflict?: InputMaybe<WorkSchedulesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateAdjustmentRulesArgs = {
+export type Mutation_RootBulkUpdateAdjustmentRulesArgs = {
   _set?: InputMaybe<AdjustmentRulesSetInput>;
   where: AdjustmentRulesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateAppSettingsArgs = {
+export type Mutation_RootBulkUpdateAppSettingsArgs = {
   _append?: InputMaybe<AppSettingsAppendInput>;
   _deleteAtPath?: InputMaybe<AppSettingsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AppSettingsDeleteElemInput>;
@@ -7656,7 +7626,7 @@ export type MutationRootBulkUpdateAppSettingsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateAuditLogsArgs = {
+export type Mutation_RootBulkUpdateAuditLogsArgs = {
   _append?: InputMaybe<AuditLogsAppendInput>;
   _deleteAtPath?: InputMaybe<AuditLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuditLogsDeleteElemInput>;
@@ -7668,7 +7638,7 @@ export type MutationRootBulkUpdateAuditLogsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateAuthEventsArgs = {
+export type Mutation_RootBulkUpdateAuthEventsArgs = {
   _append?: InputMaybe<AuthEventsAppendInput>;
   _deleteAtPath?: InputMaybe<AuthEventsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuthEventsDeleteElemInput>;
@@ -7680,14 +7650,14 @@ export type MutationRootBulkUpdateAuthEventsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateBillingEventLogsArgs = {
+export type Mutation_RootBulkUpdateBillingEventLogsArgs = {
   _set?: InputMaybe<BillingEventLogsSetInput>;
   where: BillingEventLogsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateBillingInvoiceArgs = {
+export type Mutation_RootBulkUpdateBillingInvoiceArgs = {
   _inc?: InputMaybe<BillingInvoiceIncInput>;
   _set?: InputMaybe<BillingInvoiceSetInput>;
   where: BillingInvoiceBoolExp;
@@ -7695,7 +7665,7 @@ export type MutationRootBulkUpdateBillingInvoiceArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateBillingItemsArgs = {
+export type Mutation_RootBulkUpdateBillingItemsArgs = {
   _inc?: InputMaybe<BillingItemsIncInput>;
   _set?: InputMaybe<BillingItemsSetInput>;
   where: BillingItemsBoolExp;
@@ -7703,7 +7673,7 @@ export type MutationRootBulkUpdateBillingItemsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateBillingPlansArgs = {
+export type Mutation_RootBulkUpdateBillingPlansArgs = {
   _inc?: InputMaybe<BillingPlansIncInput>;
   _set?: InputMaybe<BillingPlansSetInput>;
   where: BillingPlansBoolExp;
@@ -7711,28 +7681,28 @@ export type MutationRootBulkUpdateBillingPlansArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateClientBillingAssignmentsArgs = {
+export type Mutation_RootBulkUpdateClientBillingAssignmentsArgs = {
   _set?: InputMaybe<ClientBillingAssignmentsSetInput>;
   where: ClientBillingAssignmentsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateClientExternalSystemsArgs = {
+export type Mutation_RootBulkUpdateClientExternalSystemsArgs = {
   _set?: InputMaybe<ClientExternalSystemsSetInput>;
   where: ClientExternalSystemsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateClientsArgs = {
+export type Mutation_RootBulkUpdateClientsArgs = {
   _set?: InputMaybe<ClientsSetInput>;
   where: ClientsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateDataAccessLogsArgs = {
+export type Mutation_RootBulkUpdateDataAccessLogsArgs = {
   _append?: InputMaybe<DataAccessLogsAppendInput>;
   _deleteAtPath?: InputMaybe<DataAccessLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<DataAccessLogsDeleteElemInput>;
@@ -7745,14 +7715,14 @@ export type MutationRootBulkUpdateDataAccessLogsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateExternalSystemsArgs = {
+export type Mutation_RootBulkUpdateExternalSystemsArgs = {
   _set?: InputMaybe<ExternalSystemsSetInput>;
   where: ExternalSystemsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateFeatureFlagsArgs = {
+export type Mutation_RootBulkUpdateFeatureFlagsArgs = {
   _append?: InputMaybe<FeatureFlagsAppendInput>;
   _deleteAtPath?: InputMaybe<FeatureFlagsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<FeatureFlagsDeleteElemInput>;
@@ -7764,7 +7734,7 @@ export type MutationRootBulkUpdateFeatureFlagsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateHolidaysArgs = {
+export type Mutation_RootBulkUpdateHolidaysArgs = {
   _inc?: InputMaybe<HolidaysIncInput>;
   _set?: InputMaybe<HolidaysSetInput>;
   where: HolidaysBoolExp;
@@ -7772,7 +7742,7 @@ export type MutationRootBulkUpdateHolidaysArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateLatestPayrollVersionResultsArgs = {
+export type Mutation_RootBulkUpdateLatestPayrollVersionResultsArgs = {
   _inc?: InputMaybe<LatestPayrollVersionResultsIncInput>;
   _set?: InputMaybe<LatestPayrollVersionResultsSetInput>;
   where: LatestPayrollVersionResultsBoolExp;
@@ -7780,21 +7750,21 @@ export type MutationRootBulkUpdateLatestPayrollVersionResultsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateLeaveArgs = {
+export type Mutation_RootBulkUpdateLeaveArgs = {
   _set?: InputMaybe<LeaveSetInput>;
   where: LeaveBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateNotesArgs = {
+export type Mutation_RootBulkUpdateNotesArgs = {
   _set?: InputMaybe<NotesSetInput>;
   where: NotesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePayrollActivationResultsArgs = {
+export type Mutation_RootBulkUpdatePayrollActivationResultsArgs = {
   _inc?: InputMaybe<PayrollActivationResultsIncInput>;
   _set?: InputMaybe<PayrollActivationResultsSetInput>;
   where: PayrollActivationResultsBoolExp;
@@ -7802,42 +7772,42 @@ export type MutationRootBulkUpdatePayrollActivationResultsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePayrollAssignmentAuditsArgs = {
+export type Mutation_RootBulkUpdatePayrollAssignmentAuditsArgs = {
   _set?: InputMaybe<PayrollAssignmentAuditsSetInput>;
   where: PayrollAssignmentAuditsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePayrollAssignmentsArgs = {
+export type Mutation_RootBulkUpdatePayrollAssignmentsArgs = {
   _set?: InputMaybe<PayrollAssignmentsSetInput>;
   where: PayrollAssignmentsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePayrollCyclesArgs = {
+export type Mutation_RootBulkUpdatePayrollCyclesArgs = {
   _set?: InputMaybe<PayrollCyclesSetInput>;
   where: PayrollCyclesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePayrollDateTypesArgs = {
+export type Mutation_RootBulkUpdatePayrollDateTypesArgs = {
   _set?: InputMaybe<PayrollDateTypesSetInput>;
   where: PayrollDateTypesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePayrollDatesArgs = {
+export type Mutation_RootBulkUpdatePayrollDatesArgs = {
   _set?: InputMaybe<PayrollDatesSetInput>;
   where: PayrollDatesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePayrollVersionHistoryResultsArgs = {
+export type Mutation_RootBulkUpdatePayrollVersionHistoryResultsArgs = {
   _inc?: InputMaybe<PayrollVersionHistoryResultsIncInput>;
   _set?: InputMaybe<PayrollVersionHistoryResultsSetInput>;
   where: PayrollVersionHistoryResultsBoolExp;
@@ -7845,7 +7815,7 @@ export type MutationRootBulkUpdatePayrollVersionHistoryResultsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePayrollVersionResultsArgs = {
+export type Mutation_RootBulkUpdatePayrollVersionResultsArgs = {
   _inc?: InputMaybe<PayrollVersionResultsIncInput>;
   _set?: InputMaybe<PayrollVersionResultsSetInput>;
   where: PayrollVersionResultsBoolExp;
@@ -7853,7 +7823,7 @@ export type MutationRootBulkUpdatePayrollVersionResultsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePayrollsArgs = {
+export type Mutation_RootBulkUpdatePayrollsArgs = {
   _inc?: InputMaybe<PayrollsIncInput>;
   _set?: InputMaybe<PayrollsSetInput>;
   where: PayrollsBoolExp;
@@ -7861,7 +7831,7 @@ export type MutationRootBulkUpdatePayrollsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePermissionAuditLogsArgs = {
+export type Mutation_RootBulkUpdatePermissionAuditLogsArgs = {
   _append?: InputMaybe<PermissionAuditLogsAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionAuditLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionAuditLogsDeleteElemInput>;
@@ -7873,7 +7843,7 @@ export type MutationRootBulkUpdatePermissionAuditLogsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePermissionChangesArgs = {
+export type Mutation_RootBulkUpdatePermissionChangesArgs = {
   _append?: InputMaybe<PermissionChangesAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionChangesDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionChangesDeleteElemInput>;
@@ -7885,7 +7855,7 @@ export type MutationRootBulkUpdatePermissionChangesArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePermissionOverridesArgs = {
+export type Mutation_RootBulkUpdatePermissionOverridesArgs = {
   _append?: InputMaybe<PermissionOverridesAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionOverridesDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionOverridesDeleteElemInput>;
@@ -7897,21 +7867,21 @@ export type MutationRootBulkUpdatePermissionOverridesArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdatePermissionsArgs = {
+export type Mutation_RootBulkUpdatePermissionsArgs = {
   _set?: InputMaybe<PermissionsSetInput>;
   where: PermissionsBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateResourcesArgs = {
+export type Mutation_RootBulkUpdateResourcesArgs = {
   _set?: InputMaybe<ResourcesSetInput>;
   where: ResourcesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateRolePermissionsArgs = {
+export type Mutation_RootBulkUpdateRolePermissionsArgs = {
   _append?: InputMaybe<RolePermissionsAppendInput>;
   _deleteAtPath?: InputMaybe<RolePermissionsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<RolePermissionsDeleteElemInput>;
@@ -7923,7 +7893,7 @@ export type MutationRootBulkUpdateRolePermissionsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateRolesArgs = {
+export type Mutation_RootBulkUpdateRolesArgs = {
   _inc?: InputMaybe<RolesIncInput>;
   _set?: InputMaybe<RolesSetInput>;
   where: RolesBoolExp;
@@ -7931,21 +7901,21 @@ export type MutationRootBulkUpdateRolesArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateSlowQueriesArgs = {
+export type Mutation_RootBulkUpdateSlowQueriesArgs = {
   _set?: InputMaybe<SlowQueriesSetInput>;
   where: SlowQueriesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateUserAccessSummariesArgs = {
+export type Mutation_RootBulkUpdateUserAccessSummariesArgs = {
   _set?: InputMaybe<UserAccessSummariesSetInput>;
   where: UserAccessSummariesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateUserInvitationsArgs = {
+export type Mutation_RootBulkUpdateUserInvitationsArgs = {
   _append?: InputMaybe<UserInvitationsAppendInput>;
   _deleteAtPath?: InputMaybe<UserInvitationsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<UserInvitationsDeleteElemInput>;
@@ -7957,28 +7927,28 @@ export type MutationRootBulkUpdateUserInvitationsArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateUserRolesArgs = {
+export type Mutation_RootBulkUpdateUserRolesArgs = {
   _set?: InputMaybe<UserRolesSetInput>;
   where: UserRolesBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateUsersArgs = {
+export type Mutation_RootBulkUpdateUsersArgs = {
   _set?: InputMaybe<UsersSetInput>;
   where: UsersBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateUsersRoleBackupsArgs = {
+export type Mutation_RootBulkUpdateUsersRoleBackupsArgs = {
   _set?: InputMaybe<UsersRoleBackupSetInput>;
   where: UsersRoleBackupBoolExp;
 };
 
 
 /** mutation root */
-export type MutationRootBulkUpdateUsersSyncArgs = {
+export type Mutation_RootBulkUpdateUsersSyncArgs = {
   _append?: InputMaybe<AuthUsersSyncAppendInput>;
   _deleteAtPath?: InputMaybe<AuthUsersSyncDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuthUsersSyncDeleteElemInput>;
@@ -7990,7 +7960,7 @@ export type MutationRootBulkUpdateUsersSyncArgs = {
 
 
 /** mutation root */
-export type MutationRootBulkUpdateWorkSchedulesArgs = {
+export type Mutation_RootBulkUpdateWorkSchedulesArgs = {
   _inc?: InputMaybe<WorkSchedulesIncInput>;
   _set?: InputMaybe<WorkSchedulesSetInput>;
   where: WorkSchedulesBoolExp;
@@ -7998,577 +7968,577 @@ export type MutationRootBulkUpdateWorkSchedulesArgs = {
 
 
 /** mutation root */
-export type MutationRootCheckSuspiciousActivityArgs = {
+export type Mutation_RootCheckSuspiciousActivityArgs = {
   timeWindow?: InputMaybe<Scalars['Int']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 /** mutation root */
-export type MutationRootCommitPayrollAssignmentsArgs = {
+export type Mutation_RootCommitPayrollAssignmentsArgs = {
   changes: Array<PayrollAssignmentInput>;
 };
 
 
 /** mutation root */
-export type MutationRootDeleteAdjustmentRuleByIdArgs = {
+export type Mutation_RootDeleteAdjustmentRuleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteAppSettingByIdArgs = {
+export type Mutation_RootDeleteAppSettingByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteAuditLogByIdArgs = {
+export type Mutation_RootDeleteAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteAuthEventByIdArgs = {
+export type Mutation_RootDeleteAuthEventByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteBillingEventLogByIdArgs = {
+export type Mutation_RootDeleteBillingEventLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteBillingInvoiceByIdArgs = {
+export type Mutation_RootDeleteBillingInvoiceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteBillingItemByIdArgs = {
+export type Mutation_RootDeleteBillingItemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteBillingPlanByIdArgs = {
+export type Mutation_RootDeleteBillingPlanByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteClientBillingAssignmentByIdArgs = {
+export type Mutation_RootDeleteClientBillingAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteClientByIdArgs = {
+export type Mutation_RootDeleteClientByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteClientExternalSystemByIdArgs = {
+export type Mutation_RootDeleteClientExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteDataAccessLogByIdArgs = {
+export type Mutation_RootDeleteDataAccessLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteExternalSystemByIdArgs = {
+export type Mutation_RootDeleteExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteFeatureFlagByIdArgs = {
+export type Mutation_RootDeleteFeatureFlagByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteHolidayByIdArgs = {
+export type Mutation_RootDeleteHolidayByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteLatestPayrollVersionResultByIdArgs = {
+export type Mutation_RootDeleteLatestPayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteLeaveByIdArgs = {
+export type Mutation_RootDeleteLeaveByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteNoteByIdArgs = {
+export type Mutation_RootDeleteNoteByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePayrollActivationResultByIdArgs = {
+export type Mutation_RootDeletePayrollActivationResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePayrollAssignmentAuditByIdArgs = {
+export type Mutation_RootDeletePayrollAssignmentAuditByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePayrollAssignmentByIdArgs = {
+export type Mutation_RootDeletePayrollAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePayrollByIdArgs = {
+export type Mutation_RootDeletePayrollByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePayrollCycleByIdArgs = {
+export type Mutation_RootDeletePayrollCycleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePayrollDateByIdArgs = {
+export type Mutation_RootDeletePayrollDateByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePayrollDateTypeByIdArgs = {
+export type Mutation_RootDeletePayrollDateTypeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePayrollVersionHistoryResultByIdArgs = {
+export type Mutation_RootDeletePayrollVersionHistoryResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePayrollVersionResultByIdArgs = {
+export type Mutation_RootDeletePayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePermissionAuditLogByIdArgs = {
+export type Mutation_RootDeletePermissionAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePermissionByIdArgs = {
+export type Mutation_RootDeletePermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePermissionChangeByIdArgs = {
+export type Mutation_RootDeletePermissionChangeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeletePermissionOverrideByIdArgs = {
+export type Mutation_RootDeletePermissionOverrideByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteResourceByIdArgs = {
+export type Mutation_RootDeleteResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteRoleByIdArgs = {
+export type Mutation_RootDeleteRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteRolePermissionByIdArgs = {
+export type Mutation_RootDeleteRolePermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteSlowQueryByIdArgs = {
+export type Mutation_RootDeleteSlowQueryByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteUserByIdArgs = {
+export type Mutation_RootDeleteUserByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteUserInvitationByIdArgs = {
+export type Mutation_RootDeleteUserInvitationByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteUserRoleByIdArgs = {
+export type Mutation_RootDeleteUserRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteUserSyncByIdArgs = {
+export type Mutation_RootDeleteUserSyncByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootDeleteWorkScheduleByIdArgs = {
+export type Mutation_RootDeleteWorkScheduleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
 /** mutation root */
-export type MutationRootGenerateComplianceReportArgs = {
+export type Mutation_RootGenerateComplianceReportArgs = {
   input: ComplianceReportInput;
 };
 
 
 /** mutation root */
-export type MutationRootInsertAdjustmentRuleArgs = {
+export type Mutation_RootInsertAdjustmentRuleArgs = {
   object: AdjustmentRulesInsertInput;
   onConflict?: InputMaybe<AdjustmentRulesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertAppSettingArgs = {
+export type Mutation_RootInsertAppSettingArgs = {
   object: AppSettingsInsertInput;
   onConflict?: InputMaybe<AppSettingsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertAuditLogArgs = {
+export type Mutation_RootInsertAuditLogArgs = {
   object: AuditLogsInsertInput;
   onConflict?: InputMaybe<AuditLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertAuthEventArgs = {
+export type Mutation_RootInsertAuthEventArgs = {
   object: AuthEventsInsertInput;
   onConflict?: InputMaybe<AuthEventsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertBillingEventLogArgs = {
+export type Mutation_RootInsertBillingEventLogArgs = {
   object: BillingEventLogsInsertInput;
   onConflict?: InputMaybe<BillingEventLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertBillingInvoiceArgs = {
+export type Mutation_RootInsertBillingInvoiceArgs = {
   object: BillingInvoiceInsertInput;
   onConflict?: InputMaybe<BillingInvoiceOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertBillingItemArgs = {
+export type Mutation_RootInsertBillingItemArgs = {
   object: BillingItemsInsertInput;
   onConflict?: InputMaybe<BillingItemsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertBillingPlanArgs = {
+export type Mutation_RootInsertBillingPlanArgs = {
   object: BillingPlansInsertInput;
   onConflict?: InputMaybe<BillingPlansOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertClientArgs = {
+export type Mutation_RootInsertClientArgs = {
   object: ClientsInsertInput;
   onConflict?: InputMaybe<ClientsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertClientBillingAssignmentArgs = {
+export type Mutation_RootInsertClientBillingAssignmentArgs = {
   object: ClientBillingAssignmentsInsertInput;
   onConflict?: InputMaybe<ClientBillingAssignmentsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertClientExternalSystemArgs = {
+export type Mutation_RootInsertClientExternalSystemArgs = {
   object: ClientExternalSystemsInsertInput;
   onConflict?: InputMaybe<ClientExternalSystemsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertDataAccessLogArgs = {
+export type Mutation_RootInsertDataAccessLogArgs = {
   object: DataAccessLogsInsertInput;
   onConflict?: InputMaybe<DataAccessLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertExternalSystemArgs = {
+export type Mutation_RootInsertExternalSystemArgs = {
   object: ExternalSystemsInsertInput;
   onConflict?: InputMaybe<ExternalSystemsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertFeatureFlagArgs = {
+export type Mutation_RootInsertFeatureFlagArgs = {
   object: FeatureFlagsInsertInput;
   onConflict?: InputMaybe<FeatureFlagsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertHolidayArgs = {
+export type Mutation_RootInsertHolidayArgs = {
   object: HolidaysInsertInput;
   onConflict?: InputMaybe<HolidaysOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertLatestPayrollVersionResultArgs = {
+export type Mutation_RootInsertLatestPayrollVersionResultArgs = {
   object: LatestPayrollVersionResultsInsertInput;
   onConflict?: InputMaybe<LatestPayrollVersionResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertLeaveArgs = {
+export type Mutation_RootInsertLeaveArgs = {
   object: LeaveInsertInput;
   onConflict?: InputMaybe<LeaveOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertNoteArgs = {
+export type Mutation_RootInsertNoteArgs = {
   object: NotesInsertInput;
   onConflict?: InputMaybe<NotesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPayrollArgs = {
+export type Mutation_RootInsertPayrollArgs = {
   object: PayrollsInsertInput;
   onConflict?: InputMaybe<PayrollsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPayrollActivationResultArgs = {
+export type Mutation_RootInsertPayrollActivationResultArgs = {
   object: PayrollActivationResultsInsertInput;
   onConflict?: InputMaybe<PayrollActivationResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPayrollAssignmentArgs = {
+export type Mutation_RootInsertPayrollAssignmentArgs = {
   object: PayrollAssignmentsInsertInput;
   onConflict?: InputMaybe<PayrollAssignmentsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPayrollAssignmentAuditArgs = {
+export type Mutation_RootInsertPayrollAssignmentAuditArgs = {
   object: PayrollAssignmentAuditsInsertInput;
   onConflict?: InputMaybe<PayrollAssignmentAuditsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPayrollCycleArgs = {
+export type Mutation_RootInsertPayrollCycleArgs = {
   object: PayrollCyclesInsertInput;
   onConflict?: InputMaybe<PayrollCyclesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPayrollDateArgs = {
+export type Mutation_RootInsertPayrollDateArgs = {
   object: PayrollDatesInsertInput;
   onConflict?: InputMaybe<PayrollDatesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPayrollDateTypeArgs = {
+export type Mutation_RootInsertPayrollDateTypeArgs = {
   object: PayrollDateTypesInsertInput;
   onConflict?: InputMaybe<PayrollDateTypesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPayrollVersionHistoryResultArgs = {
+export type Mutation_RootInsertPayrollVersionHistoryResultArgs = {
   object: PayrollVersionHistoryResultsInsertInput;
   onConflict?: InputMaybe<PayrollVersionHistoryResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPayrollVersionResultArgs = {
+export type Mutation_RootInsertPayrollVersionResultArgs = {
   object: PayrollVersionResultsInsertInput;
   onConflict?: InputMaybe<PayrollVersionResultsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPermissionArgs = {
+export type Mutation_RootInsertPermissionArgs = {
   object: PermissionsInsertInput;
   onConflict?: InputMaybe<PermissionsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPermissionAuditLogArgs = {
+export type Mutation_RootInsertPermissionAuditLogArgs = {
   object: PermissionAuditLogsInsertInput;
   onConflict?: InputMaybe<PermissionAuditLogsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPermissionChangeArgs = {
+export type Mutation_RootInsertPermissionChangeArgs = {
   object: PermissionChangesInsertInput;
   onConflict?: InputMaybe<PermissionChangesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertPermissionOverrideArgs = {
+export type Mutation_RootInsertPermissionOverrideArgs = {
   object: PermissionOverridesInsertInput;
   onConflict?: InputMaybe<PermissionOverridesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertResourceArgs = {
+export type Mutation_RootInsertResourceArgs = {
   object: ResourcesInsertInput;
   onConflict?: InputMaybe<ResourcesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertRoleArgs = {
+export type Mutation_RootInsertRoleArgs = {
   object: RolesInsertInput;
   onConflict?: InputMaybe<RolesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertRolePermissionArgs = {
+export type Mutation_RootInsertRolePermissionArgs = {
   object: RolePermissionsInsertInput;
   onConflict?: InputMaybe<RolePermissionsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertSlowQueryArgs = {
+export type Mutation_RootInsertSlowQueryArgs = {
   object: SlowQueriesInsertInput;
   onConflict?: InputMaybe<SlowQueriesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertUserArgs = {
+export type Mutation_RootInsertUserArgs = {
   object: UsersInsertInput;
   onConflict?: InputMaybe<UsersOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertUserAccessSummaryArgs = {
+export type Mutation_RootInsertUserAccessSummaryArgs = {
   object: UserAccessSummariesInsertInput;
 };
 
 
 /** mutation root */
-export type MutationRootInsertUserInvitationArgs = {
+export type Mutation_RootInsertUserInvitationArgs = {
   object: UserInvitationsInsertInput;
   onConflict?: InputMaybe<UserInvitationsOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertUserRoleArgs = {
+export type Mutation_RootInsertUserRoleArgs = {
   object: UserRolesInsertInput;
   onConflict?: InputMaybe<UserRolesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertUserSyncArgs = {
+export type Mutation_RootInsertUserSyncArgs = {
   object: AuthUsersSyncInsertInput;
   onConflict?: InputMaybe<AuthUsersSyncOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootInsertUsersRoleBackupArgs = {
+export type Mutation_RootInsertUsersRoleBackupArgs = {
   object: UsersRoleBackupInsertInput;
 };
 
 
 /** mutation root */
-export type MutationRootInsertWorkScheduleArgs = {
+export type Mutation_RootInsertWorkScheduleArgs = {
   object: WorkSchedulesInsertInput;
   onConflict?: InputMaybe<WorkSchedulesOnConflict>;
 };
 
 
 /** mutation root */
-export type MutationRootLogAuditEventArgs = {
+export type Mutation_RootLogAuditEventArgs = {
   event: AuditEventInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateAdjustmentRuleByIdArgs = {
+export type Mutation_RootUpdateAdjustmentRuleByIdArgs = {
   _set?: InputMaybe<AdjustmentRulesSetInput>;
   pkColumns: AdjustmentRulesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateAdjustmentRulesManyArgs = {
+export type Mutation_RootUpdateAdjustmentRulesManyArgs = {
   updates: Array<AdjustmentRulesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateAppSettingByIdArgs = {
+export type Mutation_RootUpdateAppSettingByIdArgs = {
   _append?: InputMaybe<AppSettingsAppendInput>;
   _deleteAtPath?: InputMaybe<AppSettingsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AppSettingsDeleteElemInput>;
@@ -8580,13 +8550,13 @@ export type MutationRootUpdateAppSettingByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateAppSettingsManyArgs = {
+export type Mutation_RootUpdateAppSettingsManyArgs = {
   updates: Array<AppSettingsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateAuditLogByIdArgs = {
+export type Mutation_RootUpdateAuditLogByIdArgs = {
   _append?: InputMaybe<AuditLogsAppendInput>;
   _deleteAtPath?: InputMaybe<AuditLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuditLogsDeleteElemInput>;
@@ -8598,13 +8568,13 @@ export type MutationRootUpdateAuditLogByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateAuditLogsManyArgs = {
+export type Mutation_RootUpdateAuditLogsManyArgs = {
   updates: Array<AuditLogsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateAuthEventByIdArgs = {
+export type Mutation_RootUpdateAuthEventByIdArgs = {
   _append?: InputMaybe<AuthEventsAppendInput>;
   _deleteAtPath?: InputMaybe<AuthEventsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuthEventsDeleteElemInput>;
@@ -8616,32 +8586,32 @@ export type MutationRootUpdateAuthEventByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateAuthEventsManyArgs = {
+export type Mutation_RootUpdateAuthEventsManyArgs = {
   updates: Array<AuthEventsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateAuthUsersSyncManyArgs = {
+export type Mutation_RootUpdateAuthUsersSyncManyArgs = {
   updates: Array<AuthUsersSyncUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateBillingEventLogByIdArgs = {
+export type Mutation_RootUpdateBillingEventLogByIdArgs = {
   _set?: InputMaybe<BillingEventLogsSetInput>;
   pkColumns: BillingEventLogsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateBillingEventLogsManyArgs = {
+export type Mutation_RootUpdateBillingEventLogsManyArgs = {
   updates: Array<BillingEventLogsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateBillingInvoiceByIdArgs = {
+export type Mutation_RootUpdateBillingInvoiceByIdArgs = {
   _inc?: InputMaybe<BillingInvoiceIncInput>;
   _set?: InputMaybe<BillingInvoiceSetInput>;
   pkColumns: BillingInvoicePkColumnsInput;
@@ -8649,13 +8619,13 @@ export type MutationRootUpdateBillingInvoiceByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateBillingInvoiceManyArgs = {
+export type Mutation_RootUpdateBillingInvoiceManyArgs = {
   updates: Array<BillingInvoiceUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateBillingItemByIdArgs = {
+export type Mutation_RootUpdateBillingItemByIdArgs = {
   _inc?: InputMaybe<BillingItemsIncInput>;
   _set?: InputMaybe<BillingItemsSetInput>;
   pkColumns: BillingItemsPkColumnsInput;
@@ -8663,13 +8633,13 @@ export type MutationRootUpdateBillingItemByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateBillingItemsManyArgs = {
+export type Mutation_RootUpdateBillingItemsManyArgs = {
   updates: Array<BillingItemsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateBillingPlanByIdArgs = {
+export type Mutation_RootUpdateBillingPlanByIdArgs = {
   _inc?: InputMaybe<BillingPlansIncInput>;
   _set?: InputMaybe<BillingPlansSetInput>;
   pkColumns: BillingPlansPkColumnsInput;
@@ -8677,52 +8647,52 @@ export type MutationRootUpdateBillingPlanByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateBillingPlansManyArgs = {
+export type Mutation_RootUpdateBillingPlansManyArgs = {
   updates: Array<BillingPlansUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateClientBillingAssignmentByIdArgs = {
+export type Mutation_RootUpdateClientBillingAssignmentByIdArgs = {
   _set?: InputMaybe<ClientBillingAssignmentsSetInput>;
   pkColumns: ClientBillingAssignmentsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateClientBillingAssignmentsManyArgs = {
+export type Mutation_RootUpdateClientBillingAssignmentsManyArgs = {
   updates: Array<ClientBillingAssignmentsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateClientByIdArgs = {
+export type Mutation_RootUpdateClientByIdArgs = {
   _set?: InputMaybe<ClientsSetInput>;
   pkColumns: ClientsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateClientExternalSystemByIdArgs = {
+export type Mutation_RootUpdateClientExternalSystemByIdArgs = {
   _set?: InputMaybe<ClientExternalSystemsSetInput>;
   pkColumns: ClientExternalSystemsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateClientExternalSystemsManyArgs = {
+export type Mutation_RootUpdateClientExternalSystemsManyArgs = {
   updates: Array<ClientExternalSystemsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateClientsManyArgs = {
+export type Mutation_RootUpdateClientsManyArgs = {
   updates: Array<ClientsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateDataAccessLogByIdArgs = {
+export type Mutation_RootUpdateDataAccessLogByIdArgs = {
   _append?: InputMaybe<DataAccessLogsAppendInput>;
   _deleteAtPath?: InputMaybe<DataAccessLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<DataAccessLogsDeleteElemInput>;
@@ -8735,26 +8705,26 @@ export type MutationRootUpdateDataAccessLogByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateDataAccessLogsManyArgs = {
+export type Mutation_RootUpdateDataAccessLogsManyArgs = {
   updates: Array<DataAccessLogsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateExternalSystemByIdArgs = {
+export type Mutation_RootUpdateExternalSystemByIdArgs = {
   _set?: InputMaybe<ExternalSystemsSetInput>;
   pkColumns: ExternalSystemsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateExternalSystemsManyArgs = {
+export type Mutation_RootUpdateExternalSystemsManyArgs = {
   updates: Array<ExternalSystemsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateFeatureFlagByIdArgs = {
+export type Mutation_RootUpdateFeatureFlagByIdArgs = {
   _append?: InputMaybe<FeatureFlagsAppendInput>;
   _deleteAtPath?: InputMaybe<FeatureFlagsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<FeatureFlagsDeleteElemInput>;
@@ -8766,13 +8736,13 @@ export type MutationRootUpdateFeatureFlagByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateFeatureFlagsManyArgs = {
+export type Mutation_RootUpdateFeatureFlagsManyArgs = {
   updates: Array<FeatureFlagsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateHolidayByIdArgs = {
+export type Mutation_RootUpdateHolidayByIdArgs = {
   _inc?: InputMaybe<HolidaysIncInput>;
   _set?: InputMaybe<HolidaysSetInput>;
   pkColumns: HolidaysPkColumnsInput;
@@ -8780,13 +8750,13 @@ export type MutationRootUpdateHolidayByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateHolidaysManyArgs = {
+export type Mutation_RootUpdateHolidaysManyArgs = {
   updates: Array<HolidaysUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateLatestPayrollVersionResultByIdArgs = {
+export type Mutation_RootUpdateLatestPayrollVersionResultByIdArgs = {
   _inc?: InputMaybe<LatestPayrollVersionResultsIncInput>;
   _set?: InputMaybe<LatestPayrollVersionResultsSetInput>;
   pkColumns: LatestPayrollVersionResultsPkColumnsInput;
@@ -8794,39 +8764,39 @@ export type MutationRootUpdateLatestPayrollVersionResultByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateLatestPayrollVersionResultsManyArgs = {
+export type Mutation_RootUpdateLatestPayrollVersionResultsManyArgs = {
   updates: Array<LatestPayrollVersionResultsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateLeaveByIdArgs = {
+export type Mutation_RootUpdateLeaveByIdArgs = {
   _set?: InputMaybe<LeaveSetInput>;
   pkColumns: LeavePkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateLeaveManyArgs = {
+export type Mutation_RootUpdateLeaveManyArgs = {
   updates: Array<LeaveUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateNoteByIdArgs = {
+export type Mutation_RootUpdateNoteByIdArgs = {
   _set?: InputMaybe<NotesSetInput>;
   pkColumns: NotesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateNotesManyArgs = {
+export type Mutation_RootUpdateNotesManyArgs = {
   updates: Array<NotesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollActivationResultByIdArgs = {
+export type Mutation_RootUpdatePayrollActivationResultByIdArgs = {
   _inc?: InputMaybe<PayrollActivationResultsIncInput>;
   _set?: InputMaybe<PayrollActivationResultsSetInput>;
   pkColumns: PayrollActivationResultsPkColumnsInput;
@@ -8834,39 +8804,39 @@ export type MutationRootUpdatePayrollActivationResultByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollActivationResultsManyArgs = {
+export type Mutation_RootUpdatePayrollActivationResultsManyArgs = {
   updates: Array<PayrollActivationResultsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollAssignmentAuditByIdArgs = {
+export type Mutation_RootUpdatePayrollAssignmentAuditByIdArgs = {
   _set?: InputMaybe<PayrollAssignmentAuditsSetInput>;
   pkColumns: PayrollAssignmentAuditsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollAssignmentAuditsManyArgs = {
+export type Mutation_RootUpdatePayrollAssignmentAuditsManyArgs = {
   updates: Array<PayrollAssignmentAuditsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollAssignmentByIdArgs = {
+export type Mutation_RootUpdatePayrollAssignmentByIdArgs = {
   _set?: InputMaybe<PayrollAssignmentsSetInput>;
   pkColumns: PayrollAssignmentsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollAssignmentsManyArgs = {
+export type Mutation_RootUpdatePayrollAssignmentsManyArgs = {
   updates: Array<PayrollAssignmentsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollByIdArgs = {
+export type Mutation_RootUpdatePayrollByIdArgs = {
   _inc?: InputMaybe<PayrollsIncInput>;
   _set?: InputMaybe<PayrollsSetInput>;
   pkColumns: PayrollsPkColumnsInput;
@@ -8874,46 +8844,46 @@ export type MutationRootUpdatePayrollByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollCycleByIdArgs = {
+export type Mutation_RootUpdatePayrollCycleByIdArgs = {
   _set?: InputMaybe<PayrollCyclesSetInput>;
   pkColumns: PayrollCyclesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollCyclesManyArgs = {
+export type Mutation_RootUpdatePayrollCyclesManyArgs = {
   updates: Array<PayrollCyclesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollDateByIdArgs = {
+export type Mutation_RootUpdatePayrollDateByIdArgs = {
   _set?: InputMaybe<PayrollDatesSetInput>;
   pkColumns: PayrollDatesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollDateTypeByIdArgs = {
+export type Mutation_RootUpdatePayrollDateTypeByIdArgs = {
   _set?: InputMaybe<PayrollDateTypesSetInput>;
   pkColumns: PayrollDateTypesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollDateTypesManyArgs = {
+export type Mutation_RootUpdatePayrollDateTypesManyArgs = {
   updates: Array<PayrollDateTypesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollDatesManyArgs = {
+export type Mutation_RootUpdatePayrollDatesManyArgs = {
   updates: Array<PayrollDatesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollVersionHistoryResultByIdArgs = {
+export type Mutation_RootUpdatePayrollVersionHistoryResultByIdArgs = {
   _inc?: InputMaybe<PayrollVersionHistoryResultsIncInput>;
   _set?: InputMaybe<PayrollVersionHistoryResultsSetInput>;
   pkColumns: PayrollVersionHistoryResultsPkColumnsInput;
@@ -8921,13 +8891,13 @@ export type MutationRootUpdatePayrollVersionHistoryResultByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollVersionHistoryResultsManyArgs = {
+export type Mutation_RootUpdatePayrollVersionHistoryResultsManyArgs = {
   updates: Array<PayrollVersionHistoryResultsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollVersionResultByIdArgs = {
+export type Mutation_RootUpdatePayrollVersionResultByIdArgs = {
   _inc?: InputMaybe<PayrollVersionResultsIncInput>;
   _set?: InputMaybe<PayrollVersionResultsSetInput>;
   pkColumns: PayrollVersionResultsPkColumnsInput;
@@ -8935,19 +8905,19 @@ export type MutationRootUpdatePayrollVersionResultByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollVersionResultsManyArgs = {
+export type Mutation_RootUpdatePayrollVersionResultsManyArgs = {
   updates: Array<PayrollVersionResultsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePayrollsManyArgs = {
+export type Mutation_RootUpdatePayrollsManyArgs = {
   updates: Array<PayrollsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePermissionAuditLogByIdArgs = {
+export type Mutation_RootUpdatePermissionAuditLogByIdArgs = {
   _append?: InputMaybe<PermissionAuditLogsAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionAuditLogsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionAuditLogsDeleteElemInput>;
@@ -8959,20 +8929,20 @@ export type MutationRootUpdatePermissionAuditLogByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdatePermissionAuditLogsManyArgs = {
+export type Mutation_RootUpdatePermissionAuditLogsManyArgs = {
   updates: Array<PermissionAuditLogsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePermissionByIdArgs = {
+export type Mutation_RootUpdatePermissionByIdArgs = {
   _set?: InputMaybe<PermissionsSetInput>;
   pkColumns: PermissionsPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePermissionChangeByIdArgs = {
+export type Mutation_RootUpdatePermissionChangeByIdArgs = {
   _append?: InputMaybe<PermissionChangesAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionChangesDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionChangesDeleteElemInput>;
@@ -8984,13 +8954,13 @@ export type MutationRootUpdatePermissionChangeByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdatePermissionChangesManyArgs = {
+export type Mutation_RootUpdatePermissionChangesManyArgs = {
   updates: Array<PermissionChangesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePermissionOverrideByIdArgs = {
+export type Mutation_RootUpdatePermissionOverrideByIdArgs = {
   _append?: InputMaybe<PermissionOverridesAppendInput>;
   _deleteAtPath?: InputMaybe<PermissionOverridesDeleteAtPathInput>;
   _deleteElem?: InputMaybe<PermissionOverridesDeleteElemInput>;
@@ -9002,32 +8972,32 @@ export type MutationRootUpdatePermissionOverrideByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdatePermissionOverridesManyArgs = {
+export type Mutation_RootUpdatePermissionOverridesManyArgs = {
   updates: Array<PermissionOverridesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdatePermissionsManyArgs = {
+export type Mutation_RootUpdatePermissionsManyArgs = {
   updates: Array<PermissionsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateResourceByIdArgs = {
+export type Mutation_RootUpdateResourceByIdArgs = {
   _set?: InputMaybe<ResourcesSetInput>;
   pkColumns: ResourcesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateResourcesManyArgs = {
+export type Mutation_RootUpdateResourcesManyArgs = {
   updates: Array<ResourcesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateRoleByIdArgs = {
+export type Mutation_RootUpdateRoleByIdArgs = {
   _inc?: InputMaybe<RolesIncInput>;
   _set?: InputMaybe<RolesSetInput>;
   pkColumns: RolesPkColumnsInput;
@@ -9035,7 +9005,7 @@ export type MutationRootUpdateRoleByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateRolePermissionByIdArgs = {
+export type Mutation_RootUpdateRolePermissionByIdArgs = {
   _append?: InputMaybe<RolePermissionsAppendInput>;
   _deleteAtPath?: InputMaybe<RolePermissionsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<RolePermissionsDeleteElemInput>;
@@ -9047,45 +9017,45 @@ export type MutationRootUpdateRolePermissionByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateRolePermissionsManyArgs = {
+export type Mutation_RootUpdateRolePermissionsManyArgs = {
   updates: Array<RolePermissionsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateRolesManyArgs = {
+export type Mutation_RootUpdateRolesManyArgs = {
   updates: Array<RolesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateSlowQueriesManyArgs = {
+export type Mutation_RootUpdateSlowQueriesManyArgs = {
   updates: Array<SlowQueriesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateSlowQueryByIdArgs = {
+export type Mutation_RootUpdateSlowQueryByIdArgs = {
   _set?: InputMaybe<SlowQueriesSetInput>;
   pkColumns: SlowQueriesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateUserAccessSummariesManyArgs = {
+export type Mutation_RootUpdateUserAccessSummariesManyArgs = {
   updates: Array<UserAccessSummariesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateUserByIdArgs = {
+export type Mutation_RootUpdateUserByIdArgs = {
   _set?: InputMaybe<UsersSetInput>;
   pkColumns: UsersPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateUserInvitationByIdArgs = {
+export type Mutation_RootUpdateUserInvitationByIdArgs = {
   _append?: InputMaybe<UserInvitationsAppendInput>;
   _deleteAtPath?: InputMaybe<UserInvitationsDeleteAtPathInput>;
   _deleteElem?: InputMaybe<UserInvitationsDeleteElemInput>;
@@ -9097,26 +9067,26 @@ export type MutationRootUpdateUserInvitationByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateUserInvitationsManyArgs = {
+export type Mutation_RootUpdateUserInvitationsManyArgs = {
   updates: Array<UserInvitationsUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateUserRoleByIdArgs = {
+export type Mutation_RootUpdateUserRoleByIdArgs = {
   _set?: InputMaybe<UserRolesSetInput>;
   pkColumns: UserRolesPkColumnsInput;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateUserRolesManyArgs = {
+export type Mutation_RootUpdateUserRolesManyArgs = {
   updates: Array<UserRolesUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateUserSyncByIdArgs = {
+export type Mutation_RootUpdateUserSyncByIdArgs = {
   _append?: InputMaybe<AuthUsersSyncAppendInput>;
   _deleteAtPath?: InputMaybe<AuthUsersSyncDeleteAtPathInput>;
   _deleteElem?: InputMaybe<AuthUsersSyncDeleteElemInput>;
@@ -9128,19 +9098,19 @@ export type MutationRootUpdateUserSyncByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateUsersManyArgs = {
+export type Mutation_RootUpdateUsersManyArgs = {
   updates: Array<UsersUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateUsersRoleBackupManyArgs = {
+export type Mutation_RootUpdateUsersRoleBackupManyArgs = {
   updates: Array<UsersRoleBackupUpdates>;
 };
 
 
 /** mutation root */
-export type MutationRootUpdateWorkScheduleByIdArgs = {
+export type Mutation_RootUpdateWorkScheduleByIdArgs = {
   _inc?: InputMaybe<WorkSchedulesIncInput>;
   _set?: InputMaybe<WorkSchedulesSetInput>;
   pkColumns: WorkSchedulesPkColumnsInput;
@@ -9148,7 +9118,7 @@ export type MutationRootUpdateWorkScheduleByIdArgs = {
 
 
 /** mutation root */
-export type MutationRootUpdateWorkSchedulesManyArgs = {
+export type Mutation_RootUpdateWorkSchedulesManyArgs = {
   updates: Array<WorkSchedulesUpdates>;
 };
 
@@ -9231,20 +9201,20 @@ export type NotesAggregate = {
 };
 
 export type NotesAggregateBoolExp = {
-  bool_and?: InputMaybe<NotesAggregateBoolExpBoolAnd>;
-  bool_or?: InputMaybe<NotesAggregateBoolExpBoolOr>;
+  bool_and?: InputMaybe<NotesAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<NotesAggregateBoolExpBool_Or>;
   count?: InputMaybe<NotesAggregateBoolExpCount>;
 };
 
-export type NotesAggregateBoolExpBoolAnd = {
-  arguments: NotesSelectColumnNotesAggregateBoolExpBoolAndArgumentsColumns;
+export type NotesAggregateBoolExpBool_And = {
+  arguments: NotesSelectColumnNotesAggregateBoolExpBool_AndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<NotesBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type NotesAggregateBoolExpBoolOr = {
-  arguments: NotesSelectColumnNotesAggregateBoolExpBoolOrArgumentsColumns;
+export type NotesAggregateBoolExpBool_Or = {
+  arguments: NotesSelectColumnNotesAggregateBoolExpBool_OrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<NotesBoolExp>;
   predicate: BooleanComparisonExp;
@@ -9307,10 +9277,10 @@ export type NotesBoolExp = {
 };
 
 /** unique or primary key constraints on table "notes" */
-export enum NotesConstraint {
+export type NotesConstraint =
   /** unique or primary key constraint on columns "id" */
-  notes_pkey = 'notes_pkey'
-}
+  | 'notes_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "notes" */
 export type NotesInsertInput = {
@@ -9447,36 +9417,36 @@ export type NotesPkColumnsInput = {
 };
 
 /** select columns of table "notes" */
-export enum NotesSelectColumn {
+export type NotesSelectColumn =
   /** column name */
-  content = 'content',
+  | 'content'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  entityId = 'entityId',
+  | 'entityId'
   /** column name */
-  entityType = 'entityType',
+  | 'entityType'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isImportant = 'isImportant',
+  | 'isImportant'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 /** select "notesAggregateBoolExpBool_andArgumentsColumns" columns of table "notes" */
-export enum NotesSelectColumnNotesAggregateBoolExpBoolAndArgumentsColumns {
+export type NotesSelectColumnNotesAggregateBoolExpBool_AndArgumentsColumns =
   /** column name */
-  isImportant = 'isImportant'
-}
+  | 'isImportant'
+  | '%future added value';
 
 /** select "notesAggregateBoolExpBool_orArgumentsColumns" columns of table "notes" */
-export enum NotesSelectColumnNotesAggregateBoolExpBoolOrArgumentsColumns {
+export type NotesSelectColumnNotesAggregateBoolExpBool_OrArgumentsColumns =
   /** column name */
-  isImportant = 'isImportant'
-}
+  | 'isImportant'
+  | '%future added value';
 
 /** input type for updating data in table "notes" */
 export type NotesSetInput = {
@@ -9527,24 +9497,24 @@ export type NotesStreamCursorValueInput = {
 };
 
 /** update columns of table "notes" */
-export enum NotesUpdateColumn {
+export type NotesUpdateColumn =
   /** column name */
-  content = 'content',
+  | 'content'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  entityId = 'entityId',
+  | 'entityId'
   /** column name */
-  entityType = 'entityType',
+  | 'entityType'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isImportant = 'isImportant',
+  | 'isImportant'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 export type NotesUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -9611,10 +9581,10 @@ export type PayrollActivationResultsBoolExp = {
 };
 
 /** unique or primary key constraints on table "payroll_activation_results" */
-export enum PayrollActivationResultsConstraint {
+export type PayrollActivationResultsConstraint =
   /** unique or primary key constraint on columns "id" */
-  payroll_activation_results_pkey = 'payroll_activation_results_pkey'
-}
+  | 'payroll_activation_results_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "payroll_activation_results" */
 export type PayrollActivationResultsIncInput = {
@@ -9681,18 +9651,18 @@ export type PayrollActivationResultsPkColumnsInput = {
 };
 
 /** select columns of table "payroll_activation_results" */
-export enum PayrollActivationResultsSelectColumn {
+export type PayrollActivationResultsSelectColumn =
   /** column name */
-  actionTaken = 'actionTaken',
+  | 'actionTaken'
   /** column name */
-  executedAt = 'executedAt',
+  | 'executedAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  payrollId = 'payrollId',
+  | 'payrollId'
   /** column name */
-  versionNumber = 'versionNumber'
-}
+  | 'versionNumber'
+  | '%future added value';
 
 /** input type for updating data in table "payroll_activation_results" */
 export type PayrollActivationResultsSetInput = {
@@ -9745,18 +9715,18 @@ export type PayrollActivationResultsSumFields = {
 };
 
 /** update columns of table "payroll_activation_results" */
-export enum PayrollActivationResultsUpdateColumn {
+export type PayrollActivationResultsUpdateColumn =
   /** column name */
-  actionTaken = 'actionTaken',
+  | 'actionTaken'
   /** column name */
-  executedAt = 'executedAt',
+  | 'executedAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  payrollId = 'payrollId',
+  | 'payrollId'
   /** column name */
-  versionNumber = 'versionNumber'
-}
+  | 'versionNumber'
+  | '%future added value';
 
 export type PayrollActivationResultsUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -9876,10 +9846,10 @@ export type PayrollAssignmentAuditsBoolExp = {
 };
 
 /** unique or primary key constraints on table "payroll_assignment_audit" */
-export enum PayrollAssignmentAuditsConstraint {
+export type PayrollAssignmentAuditsConstraint =
   /** unique or primary key constraint on columns "id" */
-  payroll_assignment_audit_pkey = 'payroll_assignment_audit_pkey'
-}
+  | 'payroll_assignment_audit_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "payroll_assignment_audit" */
 export type PayrollAssignmentAuditsInsertInput = {
@@ -9987,24 +9957,24 @@ export type PayrollAssignmentAuditsPkColumnsInput = {
 };
 
 /** select columns of table "payroll_assignment_audit" */
-export enum PayrollAssignmentAuditsSelectColumn {
+export type PayrollAssignmentAuditsSelectColumn =
   /** column name */
-  assignmentId = 'assignmentId',
+  | 'assignmentId'
   /** column name */
-  changeReason = 'changeReason',
+  | 'changeReason'
   /** column name */
-  changedBy = 'changedBy',
+  | 'changedBy'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  fromConsultantId = 'fromConsultantId',
+  | 'fromConsultantId'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  payrollDateId = 'payrollDateId',
+  | 'payrollDateId'
   /** column name */
-  toConsultantId = 'toConsultantId'
-}
+  | 'toConsultantId'
+  | '%future added value';
 
 /** input type for updating data in table "payroll_assignment_audit" */
 export type PayrollAssignmentAuditsSetInput = {
@@ -10039,24 +10009,24 @@ export type PayrollAssignmentAuditsStreamCursorValueInput = {
 };
 
 /** update columns of table "payroll_assignment_audit" */
-export enum PayrollAssignmentAuditsUpdateColumn {
+export type PayrollAssignmentAuditsUpdateColumn =
   /** column name */
-  assignmentId = 'assignmentId',
+  | 'assignmentId'
   /** column name */
-  changeReason = 'changeReason',
+  | 'changeReason'
   /** column name */
-  changedBy = 'changedBy',
+  | 'changedBy'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  fromConsultantId = 'fromConsultantId',
+  | 'fromConsultantId'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  payrollDateId = 'payrollDateId',
+  | 'payrollDateId'
   /** column name */
-  toConsultantId = 'toConsultantId'
-}
+  | 'toConsultantId'
+  | '%future added value';
 
 export type PayrollAssignmentAuditsUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -10119,20 +10089,20 @@ export type PayrollAssignmentsAggregate = {
 };
 
 export type PayrollAssignmentsAggregateBoolExp = {
-  bool_and?: InputMaybe<PayrollAssignmentsAggregateBoolExpBoolAnd>;
-  bool_or?: InputMaybe<PayrollAssignmentsAggregateBoolExpBoolOr>;
+  bool_and?: InputMaybe<PayrollAssignmentsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<PayrollAssignmentsAggregateBoolExpBool_Or>;
   count?: InputMaybe<PayrollAssignmentsAggregateBoolExpCount>;
 };
 
-export type PayrollAssignmentsAggregateBoolExpBoolAnd = {
-  arguments: PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBoolAndArgumentsColumns;
+export type PayrollAssignmentsAggregateBoolExpBool_And = {
+  arguments: PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBool_AndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type PayrollAssignmentsAggregateBoolExpBoolOr = {
-  arguments: PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBoolOrArgumentsColumns;
+export type PayrollAssignmentsAggregateBoolExpBool_Or = {
+  arguments: PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBool_OrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollAssignmentsBoolExp>;
   predicate: BooleanComparisonExp;
@@ -10197,12 +10167,12 @@ export type PayrollAssignmentsBoolExp = {
 };
 
 /** unique or primary key constraints on table "payroll_assignments" */
-export enum PayrollAssignmentsConstraint {
+export type PayrollAssignmentsConstraint =
   /** unique or primary key constraint on columns "id" */
-  payroll_assignments_pkey = 'payroll_assignments_pkey',
+  | 'payroll_assignments_pkey'
   /** unique or primary key constraint on columns "payroll_date_id" */
-  uq_payroll_assignment_payroll_date = 'uq_payroll_assignment_payroll_date'
-}
+  | 'uq_payroll_assignment_payroll_date'
+  | '%future added value';
 
 /** input type for inserting data into table "payroll_assignments" */
 export type PayrollAssignmentsInsertInput = {
@@ -10319,38 +10289,38 @@ export type PayrollAssignmentsPkColumnsInput = {
 };
 
 /** select columns of table "payroll_assignments" */
-export enum PayrollAssignmentsSelectColumn {
+export type PayrollAssignmentsSelectColumn =
   /** column name */
-  assignedBy = 'assignedBy',
+  | 'assignedBy'
   /** column name */
-  assignedDate = 'assignedDate',
+  | 'assignedDate'
   /** column name */
-  consultantId = 'consultantId',
+  | 'consultantId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isBackup = 'isBackup',
+  | 'isBackup'
   /** column name */
-  originalConsultantId = 'originalConsultantId',
+  | 'originalConsultantId'
   /** column name */
-  payrollDateId = 'payrollDateId',
+  | 'payrollDateId'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** select "payrollAssignmentsAggregateBoolExpBool_andArgumentsColumns" columns of table "payroll_assignments" */
-export enum PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBoolAndArgumentsColumns {
+export type PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBool_AndArgumentsColumns =
   /** column name */
-  isBackup = 'isBackup'
-}
+  | 'isBackup'
+  | '%future added value';
 
 /** select "payrollAssignmentsAggregateBoolExpBool_orArgumentsColumns" columns of table "payroll_assignments" */
-export enum PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBoolOrArgumentsColumns {
+export type PayrollAssignmentsSelectColumnPayrollAssignmentsAggregateBoolExpBool_OrArgumentsColumns =
   /** column name */
-  isBackup = 'isBackup'
-}
+  | 'isBackup'
+  | '%future added value';
 
 /** input type for updating data in table "payroll_assignments" */
 export type PayrollAssignmentsSetInput = {
@@ -10387,26 +10357,26 @@ export type PayrollAssignmentsStreamCursorValueInput = {
 };
 
 /** update columns of table "payroll_assignments" */
-export enum PayrollAssignmentsUpdateColumn {
+export type PayrollAssignmentsUpdateColumn =
   /** column name */
-  assignedBy = 'assignedBy',
+  | 'assignedBy'
   /** column name */
-  assignedDate = 'assignedDate',
+  | 'assignedDate'
   /** column name */
-  consultantId = 'consultantId',
+  | 'consultantId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isBackup = 'isBackup',
+  | 'isBackup'
   /** column name */
-  originalConsultantId = 'originalConsultantId',
+  | 'originalConsultantId'
   /** column name */
-  payrollDateId = 'payrollDateId',
+  | 'payrollDateId'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type PayrollAssignmentsUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -10517,12 +10487,12 @@ export type PayrollCyclesBoolExp = {
 };
 
 /** unique or primary key constraints on table "payroll_cycles" */
-export enum PayrollCyclesConstraint {
+export type PayrollCyclesConstraint =
   /** unique or primary key constraint on columns "name" */
-  payroll_cycles_name_key = 'payroll_cycles_name_key',
+  | 'payroll_cycles_name_key'
   /** unique or primary key constraint on columns "id" */
-  payroll_cycles_pkey = 'payroll_cycles_pkey'
-}
+  | 'payroll_cycles_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "payroll_cycles" */
 export type PayrollCyclesInsertInput = {
@@ -10611,18 +10581,18 @@ export type PayrollCyclesPkColumnsInput = {
 };
 
 /** select columns of table "payroll_cycles" */
-export enum PayrollCyclesSelectColumn {
+export type PayrollCyclesSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "payroll_cycles" */
 export type PayrollCyclesSetInput = {
@@ -10661,18 +10631,18 @@ export type PayrollCyclesStreamCursorValueInput = {
 };
 
 /** update columns of table "payroll_cycles" */
-export enum PayrollCyclesUpdateColumn {
+export type PayrollCyclesUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type PayrollCyclesUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -10806,32 +10776,32 @@ export type PayrollDashboardStatsOrderBy = {
 };
 
 /** select columns of table "payroll_dashboard_stats" */
-export enum PayrollDashboardStatsSelectColumn {
+export type PayrollDashboardStatsSelectColumn =
   /** column name */
-  backupConsultantUserId = 'backupConsultantUserId',
+  | 'backupConsultantUserId'
   /** column name */
-  clientName = 'clientName',
+  | 'clientName'
   /** column name */
-  cycleName = 'cycleName',
+  | 'cycleName'
   /** column name */
-  futureDates = 'futureDates',
+  | 'futureDates'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  managerUserId = 'managerUserId',
+  | 'managerUserId'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  nextEftDate = 'nextEftDate',
+  | 'nextEftDate'
   /** column name */
-  pastDates = 'pastDates',
+  | 'pastDates'
   /** column name */
-  primaryConsultantUserId = 'primaryConsultantUserId',
+  | 'primaryConsultantUserId'
   /** column name */
-  status = 'status',
+  | 'status'
   /** column name */
-  totalDates = 'totalDates'
-}
+  | 'totalDates'
+  | '%future added value';
 
 /** aggregate stddev on columns */
 export type PayrollDashboardStatsStddevFields = {
@@ -11015,12 +10985,12 @@ export type PayrollDateTypesBoolExp = {
 };
 
 /** unique or primary key constraints on table "payroll_date_types" */
-export enum PayrollDateTypesConstraint {
+export type PayrollDateTypesConstraint =
   /** unique or primary key constraint on columns "name" */
-  payroll_date_types_name_key = 'payroll_date_types_name_key',
+  | 'payroll_date_types_name_key'
   /** unique or primary key constraint on columns "id" */
-  payroll_date_types_pkey = 'payroll_date_types_pkey'
-}
+  | 'payroll_date_types_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "payroll_date_types" */
 export type PayrollDateTypesInsertInput = {
@@ -11109,18 +11079,18 @@ export type PayrollDateTypesPkColumnsInput = {
 };
 
 /** select columns of table "payroll_date_types" */
-export enum PayrollDateTypesSelectColumn {
+export type PayrollDateTypesSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "payroll_date_types" */
 export type PayrollDateTypesSetInput = {
@@ -11159,18 +11129,18 @@ export type PayrollDateTypesStreamCursorValueInput = {
 };
 
 /** update columns of table "payroll_date_types" */
-export enum PayrollDateTypesUpdateColumn {
+export type PayrollDateTypesUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type PayrollDateTypesUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -11295,12 +11265,12 @@ export type PayrollDatesBoolExp = {
 };
 
 /** unique or primary key constraints on table "payroll_dates" */
-export enum PayrollDatesConstraint {
+export type PayrollDatesConstraint =
   /** unique or primary key constraint on columns "original_eft_date", "payroll_id" */
-  idx_unique_payroll_date = 'idx_unique_payroll_date',
+  | 'idx_unique_payroll_date'
   /** unique or primary key constraint on columns "id" */
-  payroll_dates_pkey = 'payroll_dates_pkey'
-}
+  | 'payroll_dates_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "payroll_dates" */
 export type PayrollDatesInsertInput = {
@@ -11452,24 +11422,24 @@ export type PayrollDatesPkColumnsInput = {
 };
 
 /** select columns of table "payroll_dates" */
-export enum PayrollDatesSelectColumn {
+export type PayrollDatesSelectColumn =
   /** column name */
-  adjustedEftDate = 'adjustedEftDate',
+  | 'adjustedEftDate'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  notes = 'notes',
+  | 'notes'
   /** column name */
-  originalEftDate = 'originalEftDate',
+  | 'originalEftDate'
   /** column name */
-  payrollId = 'payrollId',
+  | 'payrollId'
   /** column name */
-  processingDate = 'processingDate',
+  | 'processingDate'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "payroll_dates" */
 export type PayrollDatesSetInput = {
@@ -11520,24 +11490,24 @@ export type PayrollDatesStreamCursorValueInput = {
 };
 
 /** update columns of table "payroll_dates" */
-export enum PayrollDatesUpdateColumn {
+export type PayrollDatesUpdateColumn =
   /** column name */
-  adjustedEftDate = 'adjustedEftDate',
+  | 'adjustedEftDate'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  notes = 'notes',
+  | 'notes'
   /** column name */
-  originalEftDate = 'originalEftDate',
+  | 'originalEftDate'
   /** column name */
-  payrollId = 'payrollId',
+  | 'payrollId'
   /** column name */
-  processingDate = 'processingDate',
+  | 'processingDate'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type PayrollDatesUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -11616,18 +11586,18 @@ export type PayrollTriggersStatusOrderBy = {
 };
 
 /** select columns of table "payroll_triggers_status" */
-export enum PayrollTriggersStatusSelectColumn {
+export type PayrollTriggersStatusSelectColumn =
   /** column name */
-  actionStatement = 'actionStatement',
+  | 'actionStatement'
   /** column name */
-  actionTiming = 'actionTiming',
+  | 'actionTiming'
   /** column name */
-  eventManipulation = 'eventManipulation',
+  | 'eventManipulation'
   /** column name */
-  eventObjectTable = 'eventObjectTable',
+  | 'eventObjectTable'
   /** column name */
-  triggerName = 'triggerName'
-}
+  | 'triggerName'
+  | '%future added value';
 
 /** Streaming cursor of the table "payrollTriggersStatus" */
 export type PayrollTriggersStatusStreamCursorInput = {
@@ -11714,10 +11684,10 @@ export type PayrollVersionHistoryResultsBoolExp = {
 };
 
 /** unique or primary key constraints on table "payroll_version_history_results" */
-export enum PayrollVersionHistoryResultsConstraint {
+export type PayrollVersionHistoryResultsConstraint =
   /** unique or primary key constraint on columns "id" */
-  payroll_version_history_results_pkey = 'payroll_version_history_results_pkey'
-}
+  | 'payroll_version_history_results_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "payroll_version_history_results" */
 export type PayrollVersionHistoryResultsIncInput = {
@@ -11800,28 +11770,28 @@ export type PayrollVersionHistoryResultsPkColumnsInput = {
 };
 
 /** select columns of table "payroll_version_history_results" */
-export enum PayrollVersionHistoryResultsSelectColumn {
+export type PayrollVersionHistoryResultsSelectColumn =
   /** column name */
-  active = 'active',
+  | 'active'
   /** column name */
-  goLiveDate = 'goLiveDate',
+  | 'goLiveDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isCurrent = 'isCurrent',
+  | 'isCurrent'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  payrollId = 'payrollId',
+  | 'payrollId'
   /** column name */
-  queriedAt = 'queriedAt',
+  | 'queriedAt'
   /** column name */
-  supersededDate = 'supersededDate',
+  | 'supersededDate'
   /** column name */
-  versionNumber = 'versionNumber',
+  | 'versionNumber'
   /** column name */
-  versionReason = 'versionReason'
-}
+  | 'versionReason'
+  | '%future added value';
 
 /** input type for updating data in table "payroll_version_history_results" */
 export type PayrollVersionHistoryResultsSetInput = {
@@ -11884,28 +11854,28 @@ export type PayrollVersionHistoryResultsSumFields = {
 };
 
 /** update columns of table "payroll_version_history_results" */
-export enum PayrollVersionHistoryResultsUpdateColumn {
+export type PayrollVersionHistoryResultsUpdateColumn =
   /** column name */
-  active = 'active',
+  | 'active'
   /** column name */
-  goLiveDate = 'goLiveDate',
+  | 'goLiveDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isCurrent = 'isCurrent',
+  | 'isCurrent'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  payrollId = 'payrollId',
+  | 'payrollId'
   /** column name */
-  queriedAt = 'queriedAt',
+  | 'queriedAt'
   /** column name */
-  supersededDate = 'supersededDate',
+  | 'supersededDate'
   /** column name */
-  versionNumber = 'versionNumber',
+  | 'versionNumber'
   /** column name */
-  versionReason = 'versionReason'
-}
+  | 'versionReason'
+  | '%future added value';
 
 export type PayrollVersionHistoryResultsUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -11999,10 +11969,10 @@ export type PayrollVersionResultsBoolExp = {
 };
 
 /** unique or primary key constraints on table "payroll_version_results" */
-export enum PayrollVersionResultsConstraint {
+export type PayrollVersionResultsConstraint =
   /** unique or primary key constraint on columns "id" */
-  payroll_version_results_pkey = 'payroll_version_results_pkey'
-}
+  | 'payroll_version_results_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "payroll_version_results" */
 export type PayrollVersionResultsIncInput = {
@@ -12082,24 +12052,24 @@ export type PayrollVersionResultsPkColumnsInput = {
 };
 
 /** select columns of table "payroll_version_results" */
-export enum PayrollVersionResultsSelectColumn {
+export type PayrollVersionResultsSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  createdByUserId = 'createdByUserId',
+  | 'createdByUserId'
   /** column name */
-  datesDeleted = 'datesDeleted',
+  | 'datesDeleted'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  message = 'message',
+  | 'message'
   /** column name */
-  newPayrollId = 'newPayrollId',
+  | 'newPayrollId'
   /** column name */
-  newVersionNumber = 'newVersionNumber',
+  | 'newVersionNumber'
   /** column name */
-  oldPayrollId = 'oldPayrollId'
-}
+  | 'oldPayrollId'
+  | '%future added value';
 
 /** input type for updating data in table "payroll_version_results" */
 export type PayrollVersionResultsSetInput = {
@@ -12162,24 +12132,24 @@ export type PayrollVersionResultsSumFields = {
 };
 
 /** update columns of table "payroll_version_results" */
-export enum PayrollVersionResultsUpdateColumn {
+export type PayrollVersionResultsUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  createdByUserId = 'createdByUserId',
+  | 'createdByUserId'
   /** column name */
-  datesDeleted = 'datesDeleted',
+  | 'datesDeleted'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  message = 'message',
+  | 'message'
   /** column name */
-  newPayrollId = 'newPayrollId',
+  | 'newPayrollId'
   /** column name */
-  newVersionNumber = 'newVersionNumber',
+  | 'newVersionNumber'
   /** column name */
-  oldPayrollId = 'oldPayrollId'
-}
+  | 'oldPayrollId'
+  | '%future added value';
 
 export type PayrollVersionResultsUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -12474,12 +12444,12 @@ export type PayrollsBoolExp = {
 };
 
 /** unique or primary key constraints on table "payrolls" */
-export enum PayrollsConstraint {
+export type PayrollsConstraint =
   /** unique or primary key constraint on columns  */
-  only_one_current_version_per_family = 'only_one_current_version_per_family',
+  | 'only_one_current_version_per_family'
   /** unique or primary key constraint on columns "id" */
-  payrolls_pkey = 'payrolls_pkey'
-}
+  | 'payrolls_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "payrolls" */
 export type PayrollsIncInput = {
@@ -12787,52 +12757,52 @@ export type PayrollsPkColumnsInput = {
 };
 
 /** select columns of table "payrolls" */
-export enum PayrollsSelectColumn {
+export type PayrollsSelectColumn =
   /** column name */
-  backupConsultantUserId = 'backupConsultantUserId',
+  | 'backupConsultantUserId'
   /** column name */
-  clientId = 'clientId',
+  | 'clientId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  createdByUserId = 'createdByUserId',
+  | 'createdByUserId'
   /** column name */
-  cycleId = 'cycleId',
+  | 'cycleId'
   /** column name */
-  dateTypeId = 'dateTypeId',
+  | 'dateTypeId'
   /** column name */
-  dateValue = 'dateValue',
+  | 'dateValue'
   /** column name */
-  employeeCount = 'employeeCount',
+  | 'employeeCount'
   /** column name */
-  goLiveDate = 'goLiveDate',
+  | 'goLiveDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  managerUserId = 'managerUserId',
+  | 'managerUserId'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  parentPayrollId = 'parentPayrollId',
+  | 'parentPayrollId'
   /** column name */
-  payrollSystem = 'payrollSystem',
+  | 'payrollSystem'
   /** column name */
-  primaryConsultantUserId = 'primaryConsultantUserId',
+  | 'primaryConsultantUserId'
   /** column name */
-  processingDaysBeforeEft = 'processingDaysBeforeEft',
+  | 'processingDaysBeforeEft'
   /** column name */
-  processingTime = 'processingTime',
+  | 'processingTime'
   /** column name */
-  status = 'status',
+  | 'status'
   /** column name */
-  supersededDate = 'supersededDate',
+  | 'supersededDate'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  versionNumber = 'versionNumber',
+  | 'versionNumber'
   /** column name */
-  versionReason = 'versionReason'
-}
+  | 'versionReason'
+  | '%future added value';
 
 /** input type for updating data in table "payrolls" */
 export type PayrollsSetInput = {
@@ -13037,52 +13007,52 @@ export type PayrollsSumOrderBy = {
 };
 
 /** update columns of table "payrolls" */
-export enum PayrollsUpdateColumn {
+export type PayrollsUpdateColumn =
   /** column name */
-  backupConsultantUserId = 'backupConsultantUserId',
+  | 'backupConsultantUserId'
   /** column name */
-  clientId = 'clientId',
+  | 'clientId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  createdByUserId = 'createdByUserId',
+  | 'createdByUserId'
   /** column name */
-  cycleId = 'cycleId',
+  | 'cycleId'
   /** column name */
-  dateTypeId = 'dateTypeId',
+  | 'dateTypeId'
   /** column name */
-  dateValue = 'dateValue',
+  | 'dateValue'
   /** column name */
-  employeeCount = 'employeeCount',
+  | 'employeeCount'
   /** column name */
-  goLiveDate = 'goLiveDate',
+  | 'goLiveDate'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  managerUserId = 'managerUserId',
+  | 'managerUserId'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  parentPayrollId = 'parentPayrollId',
+  | 'parentPayrollId'
   /** column name */
-  payrollSystem = 'payrollSystem',
+  | 'payrollSystem'
   /** column name */
-  primaryConsultantUserId = 'primaryConsultantUserId',
+  | 'primaryConsultantUserId'
   /** column name */
-  processingDaysBeforeEft = 'processingDaysBeforeEft',
+  | 'processingDaysBeforeEft'
   /** column name */
-  processingTime = 'processingTime',
+  | 'processingTime'
   /** column name */
-  status = 'status',
+  | 'status'
   /** column name */
-  supersededDate = 'supersededDate',
+  | 'supersededDate'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  versionNumber = 'versionNumber',
+  | 'versionNumber'
   /** column name */
-  versionReason = 'versionReason'
-}
+  | 'versionReason'
+  | '%future added value';
 
 export type PayrollsUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -13282,10 +13252,10 @@ export type PermissionAuditLogsBoolExp = {
 };
 
 /** unique or primary key constraints on table "permission_audit_log" */
-export enum PermissionAuditLogsConstraint {
+export type PermissionAuditLogsConstraint =
   /** unique or primary key constraint on columns "id" */
-  permission_audit_log_pkey = 'permission_audit_log_pkey'
-}
+  | 'permission_audit_log_pkey'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type PermissionAuditLogsDeleteAtPathInput = {
@@ -13427,32 +13397,32 @@ export type PermissionAuditLogsPrependInput = {
 };
 
 /** select columns of table "permission_audit_log" */
-export enum PermissionAuditLogsSelectColumn {
+export type PermissionAuditLogsSelectColumn =
   /** column name */
-  action = 'action',
+  | 'action'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  newValue = 'newValue',
+  | 'newValue'
   /** column name */
-  operation = 'operation',
+  | 'operation'
   /** column name */
-  previousValue = 'previousValue',
+  | 'previousValue'
   /** column name */
-  reason = 'reason',
+  | 'reason'
   /** column name */
-  resource = 'resource',
+  | 'resource'
   /** column name */
-  targetRole = 'targetRole',
+  | 'targetRole'
   /** column name */
-  targetUserId = 'targetUserId',
+  | 'targetUserId'
   /** column name */
-  timestamp = 'timestamp',
+  | 'timestamp'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 /** input type for updating data in table "permission_audit_log" */
 export type PermissionAuditLogsSetInput = {
@@ -13495,32 +13465,32 @@ export type PermissionAuditLogsStreamCursorValueInput = {
 };
 
 /** update columns of table "permission_audit_log" */
-export enum PermissionAuditLogsUpdateColumn {
+export type PermissionAuditLogsUpdateColumn =
   /** column name */
-  action = 'action',
+  | 'action'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  newValue = 'newValue',
+  | 'newValue'
   /** column name */
-  operation = 'operation',
+  | 'operation'
   /** column name */
-  previousValue = 'previousValue',
+  | 'previousValue'
   /** column name */
-  reason = 'reason',
+  | 'reason'
   /** column name */
-  resource = 'resource',
+  | 'resource'
   /** column name */
-  targetRole = 'targetRole',
+  | 'targetRole'
   /** column name */
-  targetUserId = 'targetUserId',
+  | 'targetUserId'
   /** column name */
-  timestamp = 'timestamp',
+  | 'timestamp'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 export type PermissionAuditLogsUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -13623,10 +13593,10 @@ export type PermissionChangesBoolExp = {
 };
 
 /** unique or primary key constraints on table "audit.permission_changes" */
-export enum PermissionChangesConstraint {
+export type PermissionChangesConstraint =
   /** unique or primary key constraint on columns "id" */
-  permission_changes_pkey = 'permission_changes_pkey'
-}
+  | 'permission_changes_pkey'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type PermissionChangesDeleteAtPathInput = {
@@ -13738,32 +13708,32 @@ export type PermissionChangesPrependInput = {
 };
 
 /** select columns of table "audit.permission_changes" */
-export enum PermissionChangesSelectColumn {
+export type PermissionChangesSelectColumn =
   /** column name */
-  approvedByUserId = 'approvedByUserId',
+  | 'approvedByUserId'
   /** column name */
-  changeType = 'changeType',
+  | 'changeType'
   /** column name */
-  changedAt = 'changedAt',
+  | 'changedAt'
   /** column name */
-  changedByUserId = 'changedByUserId',
+  | 'changedByUserId'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  metadata = 'metadata',
+  | 'metadata'
   /** column name */
-  newPermissions = 'newPermissions',
+  | 'newPermissions'
   /** column name */
-  oldPermissions = 'oldPermissions',
+  | 'oldPermissions'
   /** column name */
-  permissionType = 'permissionType',
+  | 'permissionType'
   /** column name */
-  reason = 'reason',
+  | 'reason'
   /** column name */
-  targetRoleId = 'targetRoleId',
+  | 'targetRoleId'
   /** column name */
-  targetUserId = 'targetUserId'
-}
+  | 'targetUserId'
+  | '%future added value';
 
 /** input type for updating data in table "audit.permission_changes" */
 export type PermissionChangesSetInput = {
@@ -13806,32 +13776,32 @@ export type PermissionChangesStreamCursorValueInput = {
 };
 
 /** update columns of table "audit.permission_changes" */
-export enum PermissionChangesUpdateColumn {
+export type PermissionChangesUpdateColumn =
   /** column name */
-  approvedByUserId = 'approvedByUserId',
+  | 'approvedByUserId'
   /** column name */
-  changeType = 'changeType',
+  | 'changeType'
   /** column name */
-  changedAt = 'changedAt',
+  | 'changedAt'
   /** column name */
-  changedByUserId = 'changedByUserId',
+  | 'changedByUserId'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  metadata = 'metadata',
+  | 'metadata'
   /** column name */
-  newPermissions = 'newPermissions',
+  | 'newPermissions'
   /** column name */
-  oldPermissions = 'oldPermissions',
+  | 'oldPermissions'
   /** column name */
-  permissionType = 'permissionType',
+  | 'permissionType'
   /** column name */
-  reason = 'reason',
+  | 'reason'
   /** column name */
-  targetRoleId = 'targetRoleId',
+  | 'targetRoleId'
   /** column name */
-  targetUserId = 'targetUserId'
-}
+  | 'targetUserId'
+  | '%future added value';
 
 export type PermissionChangesUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -13890,20 +13860,20 @@ export type PermissionOverridesAggregate = {
 };
 
 export type PermissionOverridesAggregateBoolExp = {
-  bool_and?: InputMaybe<PermissionOverridesAggregateBoolExpBoolAnd>;
-  bool_or?: InputMaybe<PermissionOverridesAggregateBoolExpBoolOr>;
+  bool_and?: InputMaybe<PermissionOverridesAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<PermissionOverridesAggregateBoolExpBool_Or>;
   count?: InputMaybe<PermissionOverridesAggregateBoolExpCount>;
 };
 
-export type PermissionOverridesAggregateBoolExpBoolAnd = {
-  arguments: PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBoolAndArgumentsColumns;
+export type PermissionOverridesAggregateBoolExpBool_And = {
+  arguments: PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBool_AndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PermissionOverridesBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type PermissionOverridesAggregateBoolExpBoolOr = {
-  arguments: PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBoolOrArgumentsColumns;
+export type PermissionOverridesAggregateBoolExpBool_Or = {
+  arguments: PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBool_OrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PermissionOverridesBoolExp>;
   predicate: BooleanComparisonExp;
@@ -13973,10 +13943,10 @@ export type PermissionOverridesBoolExp = {
 };
 
 /** unique or primary key constraints on table "permission_overrides" */
-export enum PermissionOverridesConstraint {
+export type PermissionOverridesConstraint =
   /** unique or primary key constraint on columns "id" */
-  permission_overrides_pkey = 'permission_overrides_pkey'
-}
+  | 'permission_overrides_pkey'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type PermissionOverridesDeleteAtPathInput = {
@@ -14135,44 +14105,44 @@ export type PermissionOverridesPrependInput = {
 };
 
 /** select columns of table "permission_overrides" */
-export enum PermissionOverridesSelectColumn {
+export type PermissionOverridesSelectColumn =
   /** column name */
-  conditions = 'conditions',
+  | 'conditions'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  createdBy = 'createdBy',
+  | 'createdBy'
   /** column name */
-  expiresAt = 'expiresAt',
+  | 'expiresAt'
   /** column name */
-  granted = 'granted',
+  | 'granted'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  operation = 'operation',
+  | 'operation'
   /** column name */
-  reason = 'reason',
+  | 'reason'
   /** column name */
-  resource = 'resource',
+  | 'resource'
   /** column name */
-  role = 'role',
+  | 'role'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 /** select "permissionOverridesAggregateBoolExpBool_andArgumentsColumns" columns of table "permission_overrides" */
-export enum PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBoolAndArgumentsColumns {
+export type PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBool_AndArgumentsColumns =
   /** column name */
-  granted = 'granted'
-}
+  | 'granted'
+  | '%future added value';
 
 /** select "permissionOverridesAggregateBoolExpBool_orArgumentsColumns" columns of table "permission_overrides" */
-export enum PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBoolOrArgumentsColumns {
+export type PermissionOverridesSelectColumnPermissionOverridesAggregateBoolExpBool_OrArgumentsColumns =
   /** column name */
-  granted = 'granted'
-}
+  | 'granted'
+  | '%future added value';
 
 /** input type for updating data in table "permission_overrides" */
 export type PermissionOverridesSetInput = {
@@ -14225,32 +14195,32 @@ export type PermissionOverridesStreamCursorValueInput = {
 };
 
 /** update columns of table "permission_overrides" */
-export enum PermissionOverridesUpdateColumn {
+export type PermissionOverridesUpdateColumn =
   /** column name */
-  conditions = 'conditions',
+  | 'conditions'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  createdBy = 'createdBy',
+  | 'createdBy'
   /** column name */
-  expiresAt = 'expiresAt',
+  | 'expiresAt'
   /** column name */
-  granted = 'granted',
+  | 'granted'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  operation = 'operation',
+  | 'operation'
   /** column name */
-  reason = 'reason',
+  | 'reason'
   /** column name */
-  resource = 'resource',
+  | 'resource'
   /** column name */
-  role = 'role',
+  | 'role'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 export type PermissionOverridesUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -14369,22 +14339,22 @@ export type PermissionUsageReportsOrderBy = {
 };
 
 /** select columns of table "audit.permission_usage_report" */
-export enum PermissionUsageReportsSelectColumn {
+export type PermissionUsageReportsSelectColumn =
   /** column name */
-  action = 'action',
+  | 'action'
   /** column name */
-  lastUsed = 'lastUsed',
+  | 'lastUsed'
   /** column name */
-  resourceName = 'resourceName',
+  | 'resourceName'
   /** column name */
-  roleName = 'roleName',
+  | 'roleName'
   /** column name */
-  totalUsageCount = 'totalUsageCount',
+  | 'totalUsageCount'
   /** column name */
-  usersWhoUsedPermission = 'usersWhoUsedPermission',
+  | 'usersWhoUsedPermission'
   /** column name */
-  usersWithPermission = 'usersWithPermission'
-}
+  | 'usersWithPermission'
+  | '%future added value';
 
 /** aggregate stddev on columns */
 export type PermissionUsageReportsStddevFields = {
@@ -14564,12 +14534,12 @@ export type PermissionsBoolExp = {
 };
 
 /** unique or primary key constraints on table "permissions" */
-export enum PermissionsConstraint {
+export type PermissionsConstraint =
   /** unique or primary key constraint on columns "id" */
-  permissions_pkey = 'permissions_pkey',
+  | 'permissions_pkey'
   /** unique or primary key constraint on columns "action", "resource_id" */
-  permissions_resource_id_action_key = 'permissions_resource_id_action_key'
-}
+  | 'permissions_resource_id_action_key'
+  | '%future added value';
 
 /** input type for inserting data into table "permissions" */
 export type PermissionsInsertInput = {
@@ -14672,22 +14642,22 @@ export type PermissionsPkColumnsInput = {
 };
 
 /** select columns of table "permissions" */
-export enum PermissionsSelectColumn {
+export type PermissionsSelectColumn =
   /** column name */
-  action = 'action',
+  | 'action'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  legacyPermissionName = 'legacyPermissionName',
+  | 'legacyPermissionName'
   /** column name */
-  resourceId = 'resourceId',
+  | 'resourceId'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "permissions" */
 export type PermissionsSetInput = {
@@ -14720,22 +14690,22 @@ export type PermissionsStreamCursorValueInput = {
 };
 
 /** update columns of table "permissions" */
-export enum PermissionsUpdateColumn {
+export type PermissionsUpdateColumn =
   /** column name */
-  action = 'action',
+  | 'action'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  legacyPermissionName = 'legacyPermissionName',
+  | 'legacyPermissionName'
   /** column name */
-  resourceId = 'resourceId',
+  | 'resourceId'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type PermissionsUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -14744,11 +14714,11 @@ export type PermissionsUpdates = {
   where: PermissionsBoolExp;
 };
 
-export type QueryRoot = {
+export type Query_Root = {
   __typename?: 'query_root';
   /** query _Entity union */
-  _entities?: Maybe<Entity>;
-  _service: Service;
+  _entities?: Maybe<_Entity>;
+  _service: _Service;
   /** execute function "activate_payroll_versions" which returns "payroll_activation_results" */
   activatePayrollVersions: Array<PayrollActivationResults>;
   /** execute function "activate_payroll_versions" and query aggregates on result of table type "payroll_activation_results" */
@@ -15040,12 +15010,12 @@ export type QueryRoot = {
 };
 
 
-export type QueryRootEntitiesArgs = {
+export type Query_Root_EntitiesArgs = {
   representations: Array<Scalars['_Any']['input']>;
 };
 
 
-export type QueryRootActivatePayrollVersionsArgs = {
+export type Query_RootActivatePayrollVersionsArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15054,7 +15024,7 @@ export type QueryRootActivatePayrollVersionsArgs = {
 };
 
 
-export type QueryRootActivatePayrollVersionsAggregateArgs = {
+export type Query_RootActivatePayrollVersionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15063,12 +15033,12 @@ export type QueryRootActivatePayrollVersionsAggregateArgs = {
 };
 
 
-export type QueryRootAdjustmentRuleByIdArgs = {
+export type Query_RootAdjustmentRuleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootAdjustmentRulesArgs = {
+export type Query_RootAdjustmentRulesArgs = {
   distinctOn?: InputMaybe<Array<AdjustmentRulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15077,7 +15047,7 @@ export type QueryRootAdjustmentRulesArgs = {
 };
 
 
-export type QueryRootAdjustmentRulesAggregateArgs = {
+export type Query_RootAdjustmentRulesAggregateArgs = {
   distinctOn?: InputMaybe<Array<AdjustmentRulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15086,12 +15056,12 @@ export type QueryRootAdjustmentRulesAggregateArgs = {
 };
 
 
-export type QueryRootAppSettingByIdArgs = {
+export type Query_RootAppSettingByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
-export type QueryRootAppSettingsArgs = {
+export type Query_RootAppSettingsArgs = {
   distinctOn?: InputMaybe<Array<AppSettingsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15100,7 +15070,7 @@ export type QueryRootAppSettingsArgs = {
 };
 
 
-export type QueryRootAppSettingsAggregateArgs = {
+export type Query_RootAppSettingsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AppSettingsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15109,12 +15079,12 @@ export type QueryRootAppSettingsAggregateArgs = {
 };
 
 
-export type QueryRootAuditLogByIdArgs = {
+export type Query_RootAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootAuditLogsArgs = {
+export type Query_RootAuditLogsArgs = {
   distinctOn?: InputMaybe<Array<AuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15123,7 +15093,7 @@ export type QueryRootAuditLogsArgs = {
 };
 
 
-export type QueryRootAuditLogsAggregateArgs = {
+export type Query_RootAuditLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15132,12 +15102,12 @@ export type QueryRootAuditLogsAggregateArgs = {
 };
 
 
-export type QueryRootAuthEventByIdArgs = {
+export type Query_RootAuthEventByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootAuthEventsArgs = {
+export type Query_RootAuthEventsArgs = {
   distinctOn?: InputMaybe<Array<AuthEventsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15146,7 +15116,7 @@ export type QueryRootAuthEventsArgs = {
 };
 
 
-export type QueryRootAuthEventsAggregateArgs = {
+export type Query_RootAuthEventsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuthEventsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15155,12 +15125,12 @@ export type QueryRootAuthEventsAggregateArgs = {
 };
 
 
-export type QueryRootBillingEventLogByIdArgs = {
+export type Query_RootBillingEventLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootBillingEventLogsArgs = {
+export type Query_RootBillingEventLogsArgs = {
   distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15169,7 +15139,7 @@ export type QueryRootBillingEventLogsArgs = {
 };
 
 
-export type QueryRootBillingEventLogsAggregateArgs = {
+export type Query_RootBillingEventLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15178,7 +15148,7 @@ export type QueryRootBillingEventLogsAggregateArgs = {
 };
 
 
-export type QueryRootBillingInvoiceArgs = {
+export type Query_RootBillingInvoiceArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15187,7 +15157,7 @@ export type QueryRootBillingInvoiceArgs = {
 };
 
 
-export type QueryRootBillingInvoiceAggregateArgs = {
+export type Query_RootBillingInvoiceAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15196,17 +15166,17 @@ export type QueryRootBillingInvoiceAggregateArgs = {
 };
 
 
-export type QueryRootBillingInvoiceByIdArgs = {
+export type Query_RootBillingInvoiceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootBillingItemByIdArgs = {
+export type Query_RootBillingItemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootBillingItemsArgs = {
+export type Query_RootBillingItemsArgs = {
   distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15215,7 +15185,7 @@ export type QueryRootBillingItemsArgs = {
 };
 
 
-export type QueryRootBillingItemsAggregateArgs = {
+export type Query_RootBillingItemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15224,12 +15194,12 @@ export type QueryRootBillingItemsAggregateArgs = {
 };
 
 
-export type QueryRootBillingPlanByIdArgs = {
+export type Query_RootBillingPlanByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootBillingPlansArgs = {
+export type Query_RootBillingPlansArgs = {
   distinctOn?: InputMaybe<Array<BillingPlansSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15238,7 +15208,7 @@ export type QueryRootBillingPlansArgs = {
 };
 
 
-export type QueryRootBillingPlansAggregateArgs = {
+export type Query_RootBillingPlansAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingPlansSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15247,12 +15217,12 @@ export type QueryRootBillingPlansAggregateArgs = {
 };
 
 
-export type QueryRootClientBillingAssignmentByIdArgs = {
+export type Query_RootClientBillingAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootClientBillingAssignmentsArgs = {
+export type Query_RootClientBillingAssignmentsArgs = {
   distinctOn?: InputMaybe<Array<ClientBillingAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15261,7 +15231,7 @@ export type QueryRootClientBillingAssignmentsArgs = {
 };
 
 
-export type QueryRootClientBillingAssignmentsAggregateArgs = {
+export type Query_RootClientBillingAssignmentsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientBillingAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15270,17 +15240,17 @@ export type QueryRootClientBillingAssignmentsAggregateArgs = {
 };
 
 
-export type QueryRootClientByIdArgs = {
+export type Query_RootClientByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootClientExternalSystemByIdArgs = {
+export type Query_RootClientExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootClientExternalSystemsArgs = {
+export type Query_RootClientExternalSystemsArgs = {
   distinctOn?: InputMaybe<Array<ClientExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15289,7 +15259,7 @@ export type QueryRootClientExternalSystemsArgs = {
 };
 
 
-export type QueryRootClientExternalSystemsAggregateArgs = {
+export type Query_RootClientExternalSystemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15298,7 +15268,7 @@ export type QueryRootClientExternalSystemsAggregateArgs = {
 };
 
 
-export type QueryRootClientsArgs = {
+export type Query_RootClientsArgs = {
   distinctOn?: InputMaybe<Array<ClientsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15307,7 +15277,7 @@ export type QueryRootClientsArgs = {
 };
 
 
-export type QueryRootClientsAggregateArgs = {
+export type Query_RootClientsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15316,7 +15286,7 @@ export type QueryRootClientsAggregateArgs = {
 };
 
 
-export type QueryRootCreatePayrollVersionArgs = {
+export type Query_RootCreatePayrollVersionArgs = {
   args: CreatePayrollVersionArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15326,7 +15296,7 @@ export type QueryRootCreatePayrollVersionArgs = {
 };
 
 
-export type QueryRootCreatePayrollVersionAggregateArgs = {
+export type Query_RootCreatePayrollVersionAggregateArgs = {
   args: CreatePayrollVersionArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15336,7 +15306,7 @@ export type QueryRootCreatePayrollVersionAggregateArgs = {
 };
 
 
-export type QueryRootCreatePayrollVersionSimpleArgs = {
+export type Query_RootCreatePayrollVersionSimpleArgs = {
   args: CreatePayrollVersionSimpleArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15346,7 +15316,7 @@ export type QueryRootCreatePayrollVersionSimpleArgs = {
 };
 
 
-export type QueryRootCreatePayrollVersionSimpleAggregateArgs = {
+export type Query_RootCreatePayrollVersionSimpleAggregateArgs = {
   args: CreatePayrollVersionSimpleArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15356,7 +15326,7 @@ export type QueryRootCreatePayrollVersionSimpleAggregateArgs = {
 };
 
 
-export type QueryRootCurrentPayrollsArgs = {
+export type Query_RootCurrentPayrollsArgs = {
   distinctOn?: InputMaybe<Array<CurrentPayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15365,7 +15335,7 @@ export type QueryRootCurrentPayrollsArgs = {
 };
 
 
-export type QueryRootCurrentPayrollsAggregateArgs = {
+export type Query_RootCurrentPayrollsAggregateArgs = {
   distinctOn?: InputMaybe<Array<CurrentPayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15374,12 +15344,12 @@ export type QueryRootCurrentPayrollsAggregateArgs = {
 };
 
 
-export type QueryRootDataAccessLogByIdArgs = {
+export type Query_RootDataAccessLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootDataAccessLogsArgs = {
+export type Query_RootDataAccessLogsArgs = {
   distinctOn?: InputMaybe<Array<DataAccessLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15388,7 +15358,7 @@ export type QueryRootDataAccessLogsArgs = {
 };
 
 
-export type QueryRootDataAccessLogsAggregateArgs = {
+export type Query_RootDataAccessLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<DataAccessLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15397,12 +15367,12 @@ export type QueryRootDataAccessLogsAggregateArgs = {
 };
 
 
-export type QueryRootExternalSystemByIdArgs = {
+export type Query_RootExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootExternalSystemsArgs = {
+export type Query_RootExternalSystemsArgs = {
   distinctOn?: InputMaybe<Array<ExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15411,7 +15381,7 @@ export type QueryRootExternalSystemsArgs = {
 };
 
 
-export type QueryRootExternalSystemsAggregateArgs = {
+export type Query_RootExternalSystemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15420,12 +15390,12 @@ export type QueryRootExternalSystemsAggregateArgs = {
 };
 
 
-export type QueryRootFeatureFlagByIdArgs = {
+export type Query_RootFeatureFlagByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootFeatureFlagsArgs = {
+export type Query_RootFeatureFlagsArgs = {
   distinctOn?: InputMaybe<Array<FeatureFlagsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15434,7 +15404,7 @@ export type QueryRootFeatureFlagsArgs = {
 };
 
 
-export type QueryRootFeatureFlagsAggregateArgs = {
+export type Query_RootFeatureFlagsAggregateArgs = {
   distinctOn?: InputMaybe<Array<FeatureFlagsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15443,7 +15413,7 @@ export type QueryRootFeatureFlagsAggregateArgs = {
 };
 
 
-export type QueryRootGeneratePayrollDatesArgs = {
+export type Query_RootGeneratePayrollDatesArgs = {
   args: GeneratePayrollDatesArgs;
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15453,7 +15423,7 @@ export type QueryRootGeneratePayrollDatesArgs = {
 };
 
 
-export type QueryRootGeneratePayrollDatesAggregateArgs = {
+export type Query_RootGeneratePayrollDatesAggregateArgs = {
   args: GeneratePayrollDatesArgs;
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15463,7 +15433,7 @@ export type QueryRootGeneratePayrollDatesAggregateArgs = {
 };
 
 
-export type QueryRootGetLatestPayrollVersionArgs = {
+export type Query_RootGetLatestPayrollVersionArgs = {
   args: GetLatestPayrollVersionArgs;
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15473,7 +15443,7 @@ export type QueryRootGetLatestPayrollVersionArgs = {
 };
 
 
-export type QueryRootGetLatestPayrollVersionAggregateArgs = {
+export type Query_RootGetLatestPayrollVersionAggregateArgs = {
   args: GetLatestPayrollVersionArgs;
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15483,7 +15453,7 @@ export type QueryRootGetLatestPayrollVersionAggregateArgs = {
 };
 
 
-export type QueryRootGetPayrollVersionHistoryArgs = {
+export type Query_RootGetPayrollVersionHistoryArgs = {
   args: GetPayrollVersionHistoryArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15493,7 +15463,7 @@ export type QueryRootGetPayrollVersionHistoryArgs = {
 };
 
 
-export type QueryRootGetPayrollVersionHistoryAggregateArgs = {
+export type Query_RootGetPayrollVersionHistoryAggregateArgs = {
   args: GetPayrollVersionHistoryArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15503,12 +15473,12 @@ export type QueryRootGetPayrollVersionHistoryAggregateArgs = {
 };
 
 
-export type QueryRootHolidayByIdArgs = {
+export type Query_RootHolidayByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootHolidaysArgs = {
+export type Query_RootHolidaysArgs = {
   distinctOn?: InputMaybe<Array<HolidaysSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15517,7 +15487,7 @@ export type QueryRootHolidaysArgs = {
 };
 
 
-export type QueryRootHolidaysAggregateArgs = {
+export type Query_RootHolidaysAggregateArgs = {
   distinctOn?: InputMaybe<Array<HolidaysSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15526,12 +15496,12 @@ export type QueryRootHolidaysAggregateArgs = {
 };
 
 
-export type QueryRootLatestPayrollVersionResultByIdArgs = {
+export type Query_RootLatestPayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootLatestPayrollVersionResultsArgs = {
+export type Query_RootLatestPayrollVersionResultsArgs = {
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15540,7 +15510,7 @@ export type QueryRootLatestPayrollVersionResultsArgs = {
 };
 
 
-export type QueryRootLatestPayrollVersionResultsAggregateArgs = {
+export type Query_RootLatestPayrollVersionResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15549,7 +15519,7 @@ export type QueryRootLatestPayrollVersionResultsAggregateArgs = {
 };
 
 
-export type QueryRootLeaveArgs = {
+export type Query_RootLeaveArgs = {
   distinctOn?: InputMaybe<Array<LeaveSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15558,7 +15528,7 @@ export type QueryRootLeaveArgs = {
 };
 
 
-export type QueryRootLeaveAggregateArgs = {
+export type Query_RootLeaveAggregateArgs = {
   distinctOn?: InputMaybe<Array<LeaveSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15567,17 +15537,17 @@ export type QueryRootLeaveAggregateArgs = {
 };
 
 
-export type QueryRootLeaveByIdArgs = {
+export type Query_RootLeaveByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootNoteByIdArgs = {
+export type Query_RootNoteByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootNotesArgs = {
+export type Query_RootNotesArgs = {
   distinctOn?: InputMaybe<Array<NotesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15586,7 +15556,7 @@ export type QueryRootNotesArgs = {
 };
 
 
-export type QueryRootNotesAggregateArgs = {
+export type Query_RootNotesAggregateArgs = {
   distinctOn?: InputMaybe<Array<NotesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15595,12 +15565,12 @@ export type QueryRootNotesAggregateArgs = {
 };
 
 
-export type QueryRootPayrollActivationResultByIdArgs = {
+export type Query_RootPayrollActivationResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPayrollActivationResultsArgs = {
+export type Query_RootPayrollActivationResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15609,7 +15579,7 @@ export type QueryRootPayrollActivationResultsArgs = {
 };
 
 
-export type QueryRootPayrollActivationResultsAggregateArgs = {
+export type Query_RootPayrollActivationResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15618,12 +15588,12 @@ export type QueryRootPayrollActivationResultsAggregateArgs = {
 };
 
 
-export type QueryRootPayrollAssignmentAuditByIdArgs = {
+export type Query_RootPayrollAssignmentAuditByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPayrollAssignmentAuditsArgs = {
+export type Query_RootPayrollAssignmentAuditsArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentAuditsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15632,7 +15602,7 @@ export type QueryRootPayrollAssignmentAuditsArgs = {
 };
 
 
-export type QueryRootPayrollAssignmentAuditsAggregateArgs = {
+export type Query_RootPayrollAssignmentAuditsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentAuditsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15641,12 +15611,12 @@ export type QueryRootPayrollAssignmentAuditsAggregateArgs = {
 };
 
 
-export type QueryRootPayrollAssignmentByIdArgs = {
+export type Query_RootPayrollAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPayrollAssignmentsArgs = {
+export type Query_RootPayrollAssignmentsArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15655,7 +15625,7 @@ export type QueryRootPayrollAssignmentsArgs = {
 };
 
 
-export type QueryRootPayrollAssignmentsAggregateArgs = {
+export type Query_RootPayrollAssignmentsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15664,17 +15634,17 @@ export type QueryRootPayrollAssignmentsAggregateArgs = {
 };
 
 
-export type QueryRootPayrollByIdArgs = {
+export type Query_RootPayrollByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPayrollCycleByIdArgs = {
+export type Query_RootPayrollCycleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPayrollCyclesArgs = {
+export type Query_RootPayrollCyclesArgs = {
   distinctOn?: InputMaybe<Array<PayrollCyclesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15683,7 +15653,7 @@ export type QueryRootPayrollCyclesArgs = {
 };
 
 
-export type QueryRootPayrollCyclesAggregateArgs = {
+export type Query_RootPayrollCyclesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollCyclesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15692,7 +15662,7 @@ export type QueryRootPayrollCyclesAggregateArgs = {
 };
 
 
-export type QueryRootPayrollDashboardStatsArgs = {
+export type Query_RootPayrollDashboardStatsArgs = {
   distinctOn?: InputMaybe<Array<PayrollDashboardStatsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15701,7 +15671,7 @@ export type QueryRootPayrollDashboardStatsArgs = {
 };
 
 
-export type QueryRootPayrollDashboardStatsAggregateArgs = {
+export type Query_RootPayrollDashboardStatsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDashboardStatsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15710,17 +15680,17 @@ export type QueryRootPayrollDashboardStatsAggregateArgs = {
 };
 
 
-export type QueryRootPayrollDateByIdArgs = {
+export type Query_RootPayrollDateByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPayrollDateTypeByIdArgs = {
+export type Query_RootPayrollDateTypeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPayrollDateTypesArgs = {
+export type Query_RootPayrollDateTypesArgs = {
   distinctOn?: InputMaybe<Array<PayrollDateTypesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15729,7 +15699,7 @@ export type QueryRootPayrollDateTypesArgs = {
 };
 
 
-export type QueryRootPayrollDateTypesAggregateArgs = {
+export type Query_RootPayrollDateTypesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDateTypesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15738,7 +15708,7 @@ export type QueryRootPayrollDateTypesAggregateArgs = {
 };
 
 
-export type QueryRootPayrollDatesArgs = {
+export type Query_RootPayrollDatesArgs = {
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15747,7 +15717,7 @@ export type QueryRootPayrollDatesArgs = {
 };
 
 
-export type QueryRootPayrollDatesAggregateArgs = {
+export type Query_RootPayrollDatesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15756,7 +15726,7 @@ export type QueryRootPayrollDatesAggregateArgs = {
 };
 
 
-export type QueryRootPayrollTriggersStatusArgs = {
+export type Query_RootPayrollTriggersStatusArgs = {
   distinctOn?: InputMaybe<Array<PayrollTriggersStatusSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15765,7 +15735,7 @@ export type QueryRootPayrollTriggersStatusArgs = {
 };
 
 
-export type QueryRootPayrollTriggersStatusAggregateArgs = {
+export type Query_RootPayrollTriggersStatusAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollTriggersStatusSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15774,12 +15744,12 @@ export type QueryRootPayrollTriggersStatusAggregateArgs = {
 };
 
 
-export type QueryRootPayrollVersionHistoryResultByIdArgs = {
+export type Query_RootPayrollVersionHistoryResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPayrollVersionHistoryResultsArgs = {
+export type Query_RootPayrollVersionHistoryResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15788,7 +15758,7 @@ export type QueryRootPayrollVersionHistoryResultsArgs = {
 };
 
 
-export type QueryRootPayrollVersionHistoryResultsAggregateArgs = {
+export type Query_RootPayrollVersionHistoryResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15797,12 +15767,12 @@ export type QueryRootPayrollVersionHistoryResultsAggregateArgs = {
 };
 
 
-export type QueryRootPayrollVersionResultByIdArgs = {
+export type Query_RootPayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPayrollVersionResultsArgs = {
+export type Query_RootPayrollVersionResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15811,7 +15781,7 @@ export type QueryRootPayrollVersionResultsArgs = {
 };
 
 
-export type QueryRootPayrollVersionResultsAggregateArgs = {
+export type Query_RootPayrollVersionResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15820,7 +15790,7 @@ export type QueryRootPayrollVersionResultsAggregateArgs = {
 };
 
 
-export type QueryRootPayrollsArgs = {
+export type Query_RootPayrollsArgs = {
   distinctOn?: InputMaybe<Array<PayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15829,7 +15799,7 @@ export type QueryRootPayrollsArgs = {
 };
 
 
-export type QueryRootPayrollsAggregateArgs = {
+export type Query_RootPayrollsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15838,12 +15808,12 @@ export type QueryRootPayrollsAggregateArgs = {
 };
 
 
-export type QueryRootPermissionAuditLogByIdArgs = {
+export type Query_RootPermissionAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPermissionAuditLogsArgs = {
+export type Query_RootPermissionAuditLogsArgs = {
   distinctOn?: InputMaybe<Array<PermissionAuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15852,7 +15822,7 @@ export type QueryRootPermissionAuditLogsArgs = {
 };
 
 
-export type QueryRootPermissionAuditLogsAggregateArgs = {
+export type Query_RootPermissionAuditLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionAuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15861,17 +15831,17 @@ export type QueryRootPermissionAuditLogsAggregateArgs = {
 };
 
 
-export type QueryRootPermissionByIdArgs = {
+export type Query_RootPermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPermissionChangeByIdArgs = {
+export type Query_RootPermissionChangeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPermissionChangesArgs = {
+export type Query_RootPermissionChangesArgs = {
   distinctOn?: InputMaybe<Array<PermissionChangesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15880,7 +15850,7 @@ export type QueryRootPermissionChangesArgs = {
 };
 
 
-export type QueryRootPermissionChangesAggregateArgs = {
+export type Query_RootPermissionChangesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionChangesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15889,12 +15859,12 @@ export type QueryRootPermissionChangesAggregateArgs = {
 };
 
 
-export type QueryRootPermissionOverrideByIdArgs = {
+export type Query_RootPermissionOverrideByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootPermissionOverridesArgs = {
+export type Query_RootPermissionOverridesArgs = {
   distinctOn?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15903,7 +15873,7 @@ export type QueryRootPermissionOverridesArgs = {
 };
 
 
-export type QueryRootPermissionOverridesAggregateArgs = {
+export type Query_RootPermissionOverridesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15912,7 +15882,7 @@ export type QueryRootPermissionOverridesAggregateArgs = {
 };
 
 
-export type QueryRootPermissionUsageReportsArgs = {
+export type Query_RootPermissionUsageReportsArgs = {
   distinctOn?: InputMaybe<Array<PermissionUsageReportsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15921,7 +15891,7 @@ export type QueryRootPermissionUsageReportsArgs = {
 };
 
 
-export type QueryRootPermissionUsageReportsAggregateArgs = {
+export type Query_RootPermissionUsageReportsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionUsageReportsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15930,7 +15900,7 @@ export type QueryRootPermissionUsageReportsAggregateArgs = {
 };
 
 
-export type QueryRootPermissionsArgs = {
+export type Query_RootPermissionsArgs = {
   distinctOn?: InputMaybe<Array<PermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15939,7 +15909,7 @@ export type QueryRootPermissionsArgs = {
 };
 
 
-export type QueryRootPermissionsAggregateArgs = {
+export type Query_RootPermissionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15948,12 +15918,12 @@ export type QueryRootPermissionsAggregateArgs = {
 };
 
 
-export type QueryRootResourceByIdArgs = {
+export type Query_RootResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootResourcesArgs = {
+export type Query_RootResourcesArgs = {
   distinctOn?: InputMaybe<Array<ResourcesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15962,7 +15932,7 @@ export type QueryRootResourcesArgs = {
 };
 
 
-export type QueryRootResourcesAggregateArgs = {
+export type Query_RootResourcesAggregateArgs = {
   distinctOn?: InputMaybe<Array<ResourcesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15971,17 +15941,17 @@ export type QueryRootResourcesAggregateArgs = {
 };
 
 
-export type QueryRootRoleByIdArgs = {
+export type Query_RootRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootRolePermissionByIdArgs = {
+export type Query_RootRolePermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootRolePermissionsArgs = {
+export type Query_RootRolePermissionsArgs = {
   distinctOn?: InputMaybe<Array<RolePermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15990,7 +15960,7 @@ export type QueryRootRolePermissionsArgs = {
 };
 
 
-export type QueryRootRolePermissionsAggregateArgs = {
+export type Query_RootRolePermissionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<RolePermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -15999,7 +15969,7 @@ export type QueryRootRolePermissionsAggregateArgs = {
 };
 
 
-export type QueryRootRolesArgs = {
+export type Query_RootRolesArgs = {
   distinctOn?: InputMaybe<Array<RolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16008,7 +15978,7 @@ export type QueryRootRolesArgs = {
 };
 
 
-export type QueryRootRolesAggregateArgs = {
+export type Query_RootRolesAggregateArgs = {
   distinctOn?: InputMaybe<Array<RolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16017,7 +15987,7 @@ export type QueryRootRolesAggregateArgs = {
 };
 
 
-export type QueryRootSlowQueriesArgs = {
+export type Query_RootSlowQueriesArgs = {
   distinctOn?: InputMaybe<Array<SlowQueriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16026,7 +15996,7 @@ export type QueryRootSlowQueriesArgs = {
 };
 
 
-export type QueryRootSlowQueriesAggregateArgs = {
+export type Query_RootSlowQueriesAggregateArgs = {
   distinctOn?: InputMaybe<Array<SlowQueriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16035,12 +16005,12 @@ export type QueryRootSlowQueriesAggregateArgs = {
 };
 
 
-export type QueryRootSlowQueryByIdArgs = {
+export type Query_RootSlowQueryByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootUserAccessSummariesArgs = {
+export type Query_RootUserAccessSummariesArgs = {
   distinctOn?: InputMaybe<Array<UserAccessSummariesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16049,7 +16019,7 @@ export type QueryRootUserAccessSummariesArgs = {
 };
 
 
-export type QueryRootUserAccessSummariesAggregateArgs = {
+export type Query_RootUserAccessSummariesAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserAccessSummariesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16058,17 +16028,17 @@ export type QueryRootUserAccessSummariesAggregateArgs = {
 };
 
 
-export type QueryRootUserByIdArgs = {
+export type Query_RootUserByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootUserInvitationByIdArgs = {
+export type Query_RootUserInvitationByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootUserInvitationsArgs = {
+export type Query_RootUserInvitationsArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16077,7 +16047,7 @@ export type QueryRootUserInvitationsArgs = {
 };
 
 
-export type QueryRootUserInvitationsAggregateArgs = {
+export type Query_RootUserInvitationsAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16086,12 +16056,12 @@ export type QueryRootUserInvitationsAggregateArgs = {
 };
 
 
-export type QueryRootUserRoleByIdArgs = {
+export type Query_RootUserRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootUserRolesArgs = {
+export type Query_RootUserRolesArgs = {
   distinctOn?: InputMaybe<Array<UserRolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16100,7 +16070,7 @@ export type QueryRootUserRolesArgs = {
 };
 
 
-export type QueryRootUserRolesAggregateArgs = {
+export type Query_RootUserRolesAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserRolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16109,12 +16079,12 @@ export type QueryRootUserRolesAggregateArgs = {
 };
 
 
-export type QueryRootUserSyncByIdArgs = {
+export type Query_RootUserSyncByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
-export type QueryRootUsersArgs = {
+export type Query_RootUsersArgs = {
   distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16123,7 +16093,7 @@ export type QueryRootUsersArgs = {
 };
 
 
-export type QueryRootUsersAggregateArgs = {
+export type Query_RootUsersAggregateArgs = {
   distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16132,7 +16102,7 @@ export type QueryRootUsersAggregateArgs = {
 };
 
 
-export type QueryRootUsersRoleBackupsArgs = {
+export type Query_RootUsersRoleBackupsArgs = {
   distinctOn?: InputMaybe<Array<UsersRoleBackupSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16141,7 +16111,7 @@ export type QueryRootUsersRoleBackupsArgs = {
 };
 
 
-export type QueryRootUsersRoleBackupsAggregateArgs = {
+export type Query_RootUsersRoleBackupsAggregateArgs = {
   distinctOn?: InputMaybe<Array<UsersRoleBackupSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16150,7 +16120,7 @@ export type QueryRootUsersRoleBackupsAggregateArgs = {
 };
 
 
-export type QueryRootUsersSyncArgs = {
+export type Query_RootUsersSyncArgs = {
   distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16159,7 +16129,7 @@ export type QueryRootUsersSyncArgs = {
 };
 
 
-export type QueryRootUsersSyncAggregateArgs = {
+export type Query_RootUsersSyncAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16168,12 +16138,12 @@ export type QueryRootUsersSyncAggregateArgs = {
 };
 
 
-export type QueryRootWorkScheduleByIdArgs = {
+export type Query_RootWorkScheduleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type QueryRootWorkSchedulesArgs = {
+export type Query_RootWorkSchedulesArgs = {
   distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16182,7 +16152,7 @@ export type QueryRootWorkSchedulesArgs = {
 };
 
 
-export type QueryRootWorkSchedulesAggregateArgs = {
+export type Query_RootWorkSchedulesAggregateArgs = {
   distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -16263,12 +16233,12 @@ export type ResourcesBoolExp = {
 };
 
 /** unique or primary key constraints on table "resources" */
-export enum ResourcesConstraint {
+export type ResourcesConstraint =
   /** unique or primary key constraint on columns "name" */
-  resources_name_key = 'resources_name_key',
+  | 'resources_name_key'
   /** unique or primary key constraint on columns "id" */
-  resources_pkey = 'resources_pkey'
-}
+  | 'resources_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "resources" */
 export type ResourcesInsertInput = {
@@ -16343,20 +16313,20 @@ export type ResourcesPkColumnsInput = {
 };
 
 /** select columns of table "resources" */
-export enum ResourcesSelectColumn {
+export type ResourcesSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  displayName = 'displayName',
+  | 'displayName'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "resources" */
 export type ResourcesSetInput = {
@@ -16387,20 +16357,20 @@ export type ResourcesStreamCursorValueInput = {
 };
 
 /** update columns of table "resources" */
-export enum ResourcesUpdateColumn {
+export type ResourcesUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  displayName = 'displayName',
+  | 'displayName'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type ResourcesUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -16498,12 +16468,12 @@ export type RolePermissionsBoolExp = {
 };
 
 /** unique or primary key constraints on table "role_permissions" */
-export enum RolePermissionsConstraint {
+export type RolePermissionsConstraint =
   /** unique or primary key constraint on columns "id" */
-  role_permissions_pkey = 'role_permissions_pkey',
+  | 'role_permissions_pkey'
   /** unique or primary key constraint on columns "permission_id", "role_id" */
-  role_permissions_role_id_permission_id_key = 'role_permissions_role_id_permission_id_key'
-}
+  | 'role_permissions_role_id_permission_id_key'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type RolePermissionsDeleteAtPathInput = {
@@ -16609,20 +16579,20 @@ export type RolePermissionsPrependInput = {
 };
 
 /** select columns of table "role_permissions" */
-export enum RolePermissionsSelectColumn {
+export type RolePermissionsSelectColumn =
   /** column name */
-  conditions = 'conditions',
+  | 'conditions'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  permissionId = 'permissionId',
+  | 'permissionId'
   /** column name */
-  roleId = 'roleId',
+  | 'roleId'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "role_permissions" */
 export type RolePermissionsSetInput = {
@@ -16653,20 +16623,20 @@ export type RolePermissionsStreamCursorValueInput = {
 };
 
 /** update columns of table "role_permissions" */
-export enum RolePermissionsUpdateColumn {
+export type RolePermissionsUpdateColumn =
   /** column name */
-  conditions = 'conditions',
+  | 'conditions'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  permissionId = 'permissionId',
+  | 'permissionId'
   /** column name */
-  roleId = 'roleId',
+  | 'roleId'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type RolePermissionsUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -16802,12 +16772,12 @@ export type RolesBoolExp = {
 };
 
 /** unique or primary key constraints on table "roles" */
-export enum RolesConstraint {
+export type RolesConstraint =
   /** unique or primary key constraint on columns "name" */
-  roles_name_key = 'roles_name_key',
+  | 'roles_name_key'
   /** unique or primary key constraint on columns "id" */
-  roles_pkey = 'roles_pkey'
-}
+  | 'roles_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "roles" */
 export type RolesIncInput = {
@@ -16895,24 +16865,24 @@ export type RolesPkColumnsInput = {
 };
 
 /** select columns of table "roles" */
-export enum RolesSelectColumn {
+export type RolesSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  displayName = 'displayName',
+  | 'displayName'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isSystemRole = 'isSystemRole',
+  | 'isSystemRole'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  priority = 'priority',
+  | 'priority'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "roles" */
 export type RolesSetInput = {
@@ -16971,24 +16941,24 @@ export type RolesSumFields = {
 };
 
 /** update columns of table "roles" */
-export enum RolesUpdateColumn {
+export type RolesUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  description = 'description',
+  | 'description'
   /** column name */
-  displayName = 'displayName',
+  | 'displayName'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isSystemRole = 'isSystemRole',
+  | 'isSystemRole'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  priority = 'priority',
+  | 'priority'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type RolesUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -17068,10 +17038,10 @@ export type SlowQueriesBoolExp = {
 };
 
 /** unique or primary key constraints on table "audit.slow_queries" */
-export enum SlowQueriesConstraint {
+export type SlowQueriesConstraint =
   /** unique or primary key constraint on columns "id" */
-  slow_queries_pkey = 'slow_queries_pkey'
-}
+  | 'slow_queries_pkey'
+  | '%future added value';
 
 /** input type for inserting data into table "audit.slow_queries" */
 export type SlowQueriesInsertInput = {
@@ -17141,24 +17111,24 @@ export type SlowQueriesPkColumnsInput = {
 };
 
 /** select columns of table "audit.slow_queries" */
-export enum SlowQueriesSelectColumn {
+export type SlowQueriesSelectColumn =
   /** column name */
-  applicationName = 'applicationName',
+  | 'applicationName'
   /** column name */
-  clientAddr = 'clientAddr',
+  | 'clientAddr'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  query = 'query',
+  | 'query'
   /** column name */
-  queryDuration = 'queryDuration',
+  | 'queryDuration'
   /** column name */
-  queryStart = 'queryStart',
+  | 'queryStart'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 /** input type for updating data in table "audit.slow_queries" */
 export type SlowQueriesSetInput = {
@@ -17193,24 +17163,24 @@ export type SlowQueriesStreamCursorValueInput = {
 };
 
 /** update columns of table "audit.slow_queries" */
-export enum SlowQueriesUpdateColumn {
+export type SlowQueriesUpdateColumn =
   /** column name */
-  applicationName = 'applicationName',
+  | 'applicationName'
   /** column name */
-  clientAddr = 'clientAddr',
+  | 'clientAddr'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  query = 'query',
+  | 'query'
   /** column name */
-  queryDuration = 'queryDuration',
+  | 'queryDuration'
   /** column name */
-  queryStart = 'queryStart',
+  | 'queryStart'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 export type SlowQueriesUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -17219,7 +17189,7 @@ export type SlowQueriesUpdates = {
   where: SlowQueriesBoolExp;
 };
 
-export type SubscriptionRoot = {
+export type Subscription_Root = {
   __typename?: 'subscription_root';
   /** execute function "activate_payroll_versions" which returns "payroll_activation_results" */
   activatePayrollVersions: Array<PayrollActivationResults>;
@@ -17604,7 +17574,7 @@ export type SubscriptionRoot = {
 };
 
 
-export type SubscriptionRootActivatePayrollVersionsArgs = {
+export type Subscription_RootActivatePayrollVersionsArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17613,7 +17583,7 @@ export type SubscriptionRootActivatePayrollVersionsArgs = {
 };
 
 
-export type SubscriptionRootActivatePayrollVersionsAggregateArgs = {
+export type Subscription_RootActivatePayrollVersionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17622,12 +17592,12 @@ export type SubscriptionRootActivatePayrollVersionsAggregateArgs = {
 };
 
 
-export type SubscriptionRootAdjustmentRuleByIdArgs = {
+export type Subscription_RootAdjustmentRuleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootAdjustmentRulesArgs = {
+export type Subscription_RootAdjustmentRulesArgs = {
   distinctOn?: InputMaybe<Array<AdjustmentRulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17636,7 +17606,7 @@ export type SubscriptionRootAdjustmentRulesArgs = {
 };
 
 
-export type SubscriptionRootAdjustmentRulesAggregateArgs = {
+export type Subscription_RootAdjustmentRulesAggregateArgs = {
   distinctOn?: InputMaybe<Array<AdjustmentRulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17645,19 +17615,19 @@ export type SubscriptionRootAdjustmentRulesAggregateArgs = {
 };
 
 
-export type SubscriptionRootAdjustmentRulesStreamArgs = {
+export type Subscription_RootAdjustmentRulesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AdjustmentRulesStreamCursorInput>>;
   where?: InputMaybe<AdjustmentRulesBoolExp>;
 };
 
 
-export type SubscriptionRootAppSettingByIdArgs = {
+export type Subscription_RootAppSettingByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
-export type SubscriptionRootAppSettingsArgs = {
+export type Subscription_RootAppSettingsArgs = {
   distinctOn?: InputMaybe<Array<AppSettingsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17666,7 +17636,7 @@ export type SubscriptionRootAppSettingsArgs = {
 };
 
 
-export type SubscriptionRootAppSettingsAggregateArgs = {
+export type Subscription_RootAppSettingsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AppSettingsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17675,19 +17645,19 @@ export type SubscriptionRootAppSettingsAggregateArgs = {
 };
 
 
-export type SubscriptionRootAppSettingsStreamArgs = {
+export type Subscription_RootAppSettingsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AppSettingsStreamCursorInput>>;
   where?: InputMaybe<AppSettingsBoolExp>;
 };
 
 
-export type SubscriptionRootAuditLogByIdArgs = {
+export type Subscription_RootAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootAuditLogsArgs = {
+export type Subscription_RootAuditLogsArgs = {
   distinctOn?: InputMaybe<Array<AuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17696,7 +17666,7 @@ export type SubscriptionRootAuditLogsArgs = {
 };
 
 
-export type SubscriptionRootAuditLogsAggregateArgs = {
+export type Subscription_RootAuditLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17705,19 +17675,19 @@ export type SubscriptionRootAuditLogsAggregateArgs = {
 };
 
 
-export type SubscriptionRootAuditLogsStreamArgs = {
+export type Subscription_RootAuditLogsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AuditLogsStreamCursorInput>>;
   where?: InputMaybe<AuditLogsBoolExp>;
 };
 
 
-export type SubscriptionRootAuthEventByIdArgs = {
+export type Subscription_RootAuthEventByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootAuthEventsArgs = {
+export type Subscription_RootAuthEventsArgs = {
   distinctOn?: InputMaybe<Array<AuthEventsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17726,7 +17696,7 @@ export type SubscriptionRootAuthEventsArgs = {
 };
 
 
-export type SubscriptionRootAuthEventsAggregateArgs = {
+export type Subscription_RootAuthEventsAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuthEventsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17735,26 +17705,26 @@ export type SubscriptionRootAuthEventsAggregateArgs = {
 };
 
 
-export type SubscriptionRootAuthEventsStreamArgs = {
+export type Subscription_RootAuthEventsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AuthEventsStreamCursorInput>>;
   where?: InputMaybe<AuthEventsBoolExp>;
 };
 
 
-export type SubscriptionRootAuthUsersSyncStreamArgs = {
+export type Subscription_RootAuthUsersSyncStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AuthUsersSyncStreamCursorInput>>;
   where?: InputMaybe<AuthUsersSyncBoolExp>;
 };
 
 
-export type SubscriptionRootBillingEventLogByIdArgs = {
+export type Subscription_RootBillingEventLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootBillingEventLogsArgs = {
+export type Subscription_RootBillingEventLogsArgs = {
   distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17763,7 +17733,7 @@ export type SubscriptionRootBillingEventLogsArgs = {
 };
 
 
-export type SubscriptionRootBillingEventLogsAggregateArgs = {
+export type Subscription_RootBillingEventLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17772,14 +17742,14 @@ export type SubscriptionRootBillingEventLogsAggregateArgs = {
 };
 
 
-export type SubscriptionRootBillingEventLogsStreamArgs = {
+export type Subscription_RootBillingEventLogsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<BillingEventLogsStreamCursorInput>>;
   where?: InputMaybe<BillingEventLogsBoolExp>;
 };
 
 
-export type SubscriptionRootBillingInvoiceArgs = {
+export type Subscription_RootBillingInvoiceArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17788,7 +17758,7 @@ export type SubscriptionRootBillingInvoiceArgs = {
 };
 
 
-export type SubscriptionRootBillingInvoiceAggregateArgs = {
+export type Subscription_RootBillingInvoiceAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17797,24 +17767,24 @@ export type SubscriptionRootBillingInvoiceAggregateArgs = {
 };
 
 
-export type SubscriptionRootBillingInvoiceByIdArgs = {
+export type Subscription_RootBillingInvoiceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootBillingInvoiceStreamArgs = {
+export type Subscription_RootBillingInvoiceStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<BillingInvoiceStreamCursorInput>>;
   where?: InputMaybe<BillingInvoiceBoolExp>;
 };
 
 
-export type SubscriptionRootBillingItemByIdArgs = {
+export type Subscription_RootBillingItemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootBillingItemsArgs = {
+export type Subscription_RootBillingItemsArgs = {
   distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17823,7 +17793,7 @@ export type SubscriptionRootBillingItemsArgs = {
 };
 
 
-export type SubscriptionRootBillingItemsAggregateArgs = {
+export type Subscription_RootBillingItemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17832,19 +17802,19 @@ export type SubscriptionRootBillingItemsAggregateArgs = {
 };
 
 
-export type SubscriptionRootBillingItemsStreamArgs = {
+export type Subscription_RootBillingItemsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<BillingItemsStreamCursorInput>>;
   where?: InputMaybe<BillingItemsBoolExp>;
 };
 
 
-export type SubscriptionRootBillingPlanByIdArgs = {
+export type Subscription_RootBillingPlanByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootBillingPlansArgs = {
+export type Subscription_RootBillingPlansArgs = {
   distinctOn?: InputMaybe<Array<BillingPlansSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17853,7 +17823,7 @@ export type SubscriptionRootBillingPlansArgs = {
 };
 
 
-export type SubscriptionRootBillingPlansAggregateArgs = {
+export type Subscription_RootBillingPlansAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingPlansSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17862,19 +17832,19 @@ export type SubscriptionRootBillingPlansAggregateArgs = {
 };
 
 
-export type SubscriptionRootBillingPlansStreamArgs = {
+export type Subscription_RootBillingPlansStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<BillingPlansStreamCursorInput>>;
   where?: InputMaybe<BillingPlansBoolExp>;
 };
 
 
-export type SubscriptionRootClientBillingAssignmentByIdArgs = {
+export type Subscription_RootClientBillingAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootClientBillingAssignmentsArgs = {
+export type Subscription_RootClientBillingAssignmentsArgs = {
   distinctOn?: InputMaybe<Array<ClientBillingAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17883,7 +17853,7 @@ export type SubscriptionRootClientBillingAssignmentsArgs = {
 };
 
 
-export type SubscriptionRootClientBillingAssignmentsAggregateArgs = {
+export type Subscription_RootClientBillingAssignmentsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientBillingAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17892,24 +17862,24 @@ export type SubscriptionRootClientBillingAssignmentsAggregateArgs = {
 };
 
 
-export type SubscriptionRootClientBillingAssignmentsStreamArgs = {
+export type Subscription_RootClientBillingAssignmentsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ClientBillingAssignmentsStreamCursorInput>>;
   where?: InputMaybe<ClientBillingAssignmentsBoolExp>;
 };
 
 
-export type SubscriptionRootClientByIdArgs = {
+export type Subscription_RootClientByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootClientExternalSystemByIdArgs = {
+export type Subscription_RootClientExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootClientExternalSystemsArgs = {
+export type Subscription_RootClientExternalSystemsArgs = {
   distinctOn?: InputMaybe<Array<ClientExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17918,7 +17888,7 @@ export type SubscriptionRootClientExternalSystemsArgs = {
 };
 
 
-export type SubscriptionRootClientExternalSystemsAggregateArgs = {
+export type Subscription_RootClientExternalSystemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17927,14 +17897,14 @@ export type SubscriptionRootClientExternalSystemsAggregateArgs = {
 };
 
 
-export type SubscriptionRootClientExternalSystemsStreamArgs = {
+export type Subscription_RootClientExternalSystemsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ClientExternalSystemsStreamCursorInput>>;
   where?: InputMaybe<ClientExternalSystemsBoolExp>;
 };
 
 
-export type SubscriptionRootClientsArgs = {
+export type Subscription_RootClientsArgs = {
   distinctOn?: InputMaybe<Array<ClientsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17943,7 +17913,7 @@ export type SubscriptionRootClientsArgs = {
 };
 
 
-export type SubscriptionRootClientsAggregateArgs = {
+export type Subscription_RootClientsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ClientsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -17952,14 +17922,14 @@ export type SubscriptionRootClientsAggregateArgs = {
 };
 
 
-export type SubscriptionRootClientsStreamArgs = {
+export type Subscription_RootClientsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ClientsStreamCursorInput>>;
   where?: InputMaybe<ClientsBoolExp>;
 };
 
 
-export type SubscriptionRootCreatePayrollVersionArgs = {
+export type Subscription_RootCreatePayrollVersionArgs = {
   args: CreatePayrollVersionArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -17969,7 +17939,7 @@ export type SubscriptionRootCreatePayrollVersionArgs = {
 };
 
 
-export type SubscriptionRootCreatePayrollVersionAggregateArgs = {
+export type Subscription_RootCreatePayrollVersionAggregateArgs = {
   args: CreatePayrollVersionArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -17979,7 +17949,7 @@ export type SubscriptionRootCreatePayrollVersionAggregateArgs = {
 };
 
 
-export type SubscriptionRootCreatePayrollVersionSimpleArgs = {
+export type Subscription_RootCreatePayrollVersionSimpleArgs = {
   args: CreatePayrollVersionSimpleArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -17989,7 +17959,7 @@ export type SubscriptionRootCreatePayrollVersionSimpleArgs = {
 };
 
 
-export type SubscriptionRootCreatePayrollVersionSimpleAggregateArgs = {
+export type Subscription_RootCreatePayrollVersionSimpleAggregateArgs = {
   args: CreatePayrollVersionSimpleArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -17999,7 +17969,7 @@ export type SubscriptionRootCreatePayrollVersionSimpleAggregateArgs = {
 };
 
 
-export type SubscriptionRootCurrentPayrollsArgs = {
+export type Subscription_RootCurrentPayrollsArgs = {
   distinctOn?: InputMaybe<Array<CurrentPayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18008,7 +17978,7 @@ export type SubscriptionRootCurrentPayrollsArgs = {
 };
 
 
-export type SubscriptionRootCurrentPayrollsAggregateArgs = {
+export type Subscription_RootCurrentPayrollsAggregateArgs = {
   distinctOn?: InputMaybe<Array<CurrentPayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18017,19 +17987,19 @@ export type SubscriptionRootCurrentPayrollsAggregateArgs = {
 };
 
 
-export type SubscriptionRootCurrentPayrollsStreamArgs = {
+export type Subscription_RootCurrentPayrollsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<CurrentPayrollsStreamCursorInput>>;
   where?: InputMaybe<CurrentPayrollsBoolExp>;
 };
 
 
-export type SubscriptionRootDataAccessLogByIdArgs = {
+export type Subscription_RootDataAccessLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootDataAccessLogsArgs = {
+export type Subscription_RootDataAccessLogsArgs = {
   distinctOn?: InputMaybe<Array<DataAccessLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18038,7 +18008,7 @@ export type SubscriptionRootDataAccessLogsArgs = {
 };
 
 
-export type SubscriptionRootDataAccessLogsAggregateArgs = {
+export type Subscription_RootDataAccessLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<DataAccessLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18047,19 +18017,19 @@ export type SubscriptionRootDataAccessLogsAggregateArgs = {
 };
 
 
-export type SubscriptionRootDataAccessLogsStreamArgs = {
+export type Subscription_RootDataAccessLogsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<DataAccessLogsStreamCursorInput>>;
   where?: InputMaybe<DataAccessLogsBoolExp>;
 };
 
 
-export type SubscriptionRootExternalSystemByIdArgs = {
+export type Subscription_RootExternalSystemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootExternalSystemsArgs = {
+export type Subscription_RootExternalSystemsArgs = {
   distinctOn?: InputMaybe<Array<ExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18068,7 +18038,7 @@ export type SubscriptionRootExternalSystemsArgs = {
 };
 
 
-export type SubscriptionRootExternalSystemsAggregateArgs = {
+export type Subscription_RootExternalSystemsAggregateArgs = {
   distinctOn?: InputMaybe<Array<ExternalSystemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18077,19 +18047,19 @@ export type SubscriptionRootExternalSystemsAggregateArgs = {
 };
 
 
-export type SubscriptionRootExternalSystemsStreamArgs = {
+export type Subscription_RootExternalSystemsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ExternalSystemsStreamCursorInput>>;
   where?: InputMaybe<ExternalSystemsBoolExp>;
 };
 
 
-export type SubscriptionRootFeatureFlagByIdArgs = {
+export type Subscription_RootFeatureFlagByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootFeatureFlagsArgs = {
+export type Subscription_RootFeatureFlagsArgs = {
   distinctOn?: InputMaybe<Array<FeatureFlagsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18098,7 +18068,7 @@ export type SubscriptionRootFeatureFlagsArgs = {
 };
 
 
-export type SubscriptionRootFeatureFlagsAggregateArgs = {
+export type Subscription_RootFeatureFlagsAggregateArgs = {
   distinctOn?: InputMaybe<Array<FeatureFlagsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18107,14 +18077,14 @@ export type SubscriptionRootFeatureFlagsAggregateArgs = {
 };
 
 
-export type SubscriptionRootFeatureFlagsStreamArgs = {
+export type Subscription_RootFeatureFlagsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<FeatureFlagsStreamCursorInput>>;
   where?: InputMaybe<FeatureFlagsBoolExp>;
 };
 
 
-export type SubscriptionRootGeneratePayrollDatesArgs = {
+export type Subscription_RootGeneratePayrollDatesArgs = {
   args: GeneratePayrollDatesArgs;
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18124,7 +18094,7 @@ export type SubscriptionRootGeneratePayrollDatesArgs = {
 };
 
 
-export type SubscriptionRootGeneratePayrollDatesAggregateArgs = {
+export type Subscription_RootGeneratePayrollDatesAggregateArgs = {
   args: GeneratePayrollDatesArgs;
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18134,7 +18104,7 @@ export type SubscriptionRootGeneratePayrollDatesAggregateArgs = {
 };
 
 
-export type SubscriptionRootGetLatestPayrollVersionArgs = {
+export type Subscription_RootGetLatestPayrollVersionArgs = {
   args: GetLatestPayrollVersionArgs;
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18144,7 +18114,7 @@ export type SubscriptionRootGetLatestPayrollVersionArgs = {
 };
 
 
-export type SubscriptionRootGetLatestPayrollVersionAggregateArgs = {
+export type Subscription_RootGetLatestPayrollVersionAggregateArgs = {
   args: GetLatestPayrollVersionArgs;
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18154,7 +18124,7 @@ export type SubscriptionRootGetLatestPayrollVersionAggregateArgs = {
 };
 
 
-export type SubscriptionRootGetPayrollVersionHistoryArgs = {
+export type Subscription_RootGetPayrollVersionHistoryArgs = {
   args: GetPayrollVersionHistoryArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18164,7 +18134,7 @@ export type SubscriptionRootGetPayrollVersionHistoryArgs = {
 };
 
 
-export type SubscriptionRootGetPayrollVersionHistoryAggregateArgs = {
+export type Subscription_RootGetPayrollVersionHistoryAggregateArgs = {
   args: GetPayrollVersionHistoryArgs;
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18174,12 +18144,12 @@ export type SubscriptionRootGetPayrollVersionHistoryAggregateArgs = {
 };
 
 
-export type SubscriptionRootHolidayByIdArgs = {
+export type Subscription_RootHolidayByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootHolidaysArgs = {
+export type Subscription_RootHolidaysArgs = {
   distinctOn?: InputMaybe<Array<HolidaysSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18188,7 +18158,7 @@ export type SubscriptionRootHolidaysArgs = {
 };
 
 
-export type SubscriptionRootHolidaysAggregateArgs = {
+export type Subscription_RootHolidaysAggregateArgs = {
   distinctOn?: InputMaybe<Array<HolidaysSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18197,19 +18167,19 @@ export type SubscriptionRootHolidaysAggregateArgs = {
 };
 
 
-export type SubscriptionRootHolidaysStreamArgs = {
+export type Subscription_RootHolidaysStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<HolidaysStreamCursorInput>>;
   where?: InputMaybe<HolidaysBoolExp>;
 };
 
 
-export type SubscriptionRootLatestPayrollVersionResultByIdArgs = {
+export type Subscription_RootLatestPayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootLatestPayrollVersionResultsArgs = {
+export type Subscription_RootLatestPayrollVersionResultsArgs = {
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18218,7 +18188,7 @@ export type SubscriptionRootLatestPayrollVersionResultsArgs = {
 };
 
 
-export type SubscriptionRootLatestPayrollVersionResultsAggregateArgs = {
+export type Subscription_RootLatestPayrollVersionResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<LatestPayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18227,14 +18197,14 @@ export type SubscriptionRootLatestPayrollVersionResultsAggregateArgs = {
 };
 
 
-export type SubscriptionRootLatestPayrollVersionResultsStreamArgs = {
+export type Subscription_RootLatestPayrollVersionResultsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<LatestPayrollVersionResultsStreamCursorInput>>;
   where?: InputMaybe<LatestPayrollVersionResultsBoolExp>;
 };
 
 
-export type SubscriptionRootLeaveArgs = {
+export type Subscription_RootLeaveArgs = {
   distinctOn?: InputMaybe<Array<LeaveSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18243,7 +18213,7 @@ export type SubscriptionRootLeaveArgs = {
 };
 
 
-export type SubscriptionRootLeaveAggregateArgs = {
+export type Subscription_RootLeaveAggregateArgs = {
   distinctOn?: InputMaybe<Array<LeaveSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18252,24 +18222,24 @@ export type SubscriptionRootLeaveAggregateArgs = {
 };
 
 
-export type SubscriptionRootLeaveByIdArgs = {
+export type Subscription_RootLeaveByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootLeaveStreamArgs = {
+export type Subscription_RootLeaveStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<LeaveStreamCursorInput>>;
   where?: InputMaybe<LeaveBoolExp>;
 };
 
 
-export type SubscriptionRootNoteByIdArgs = {
+export type Subscription_RootNoteByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootNotesArgs = {
+export type Subscription_RootNotesArgs = {
   distinctOn?: InputMaybe<Array<NotesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18278,7 +18248,7 @@ export type SubscriptionRootNotesArgs = {
 };
 
 
-export type SubscriptionRootNotesAggregateArgs = {
+export type Subscription_RootNotesAggregateArgs = {
   distinctOn?: InputMaybe<Array<NotesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18287,19 +18257,19 @@ export type SubscriptionRootNotesAggregateArgs = {
 };
 
 
-export type SubscriptionRootNotesStreamArgs = {
+export type Subscription_RootNotesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<NotesStreamCursorInput>>;
   where?: InputMaybe<NotesBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollActivationResultByIdArgs = {
+export type Subscription_RootPayrollActivationResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPayrollActivationResultsArgs = {
+export type Subscription_RootPayrollActivationResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18308,7 +18278,7 @@ export type SubscriptionRootPayrollActivationResultsArgs = {
 };
 
 
-export type SubscriptionRootPayrollActivationResultsAggregateArgs = {
+export type Subscription_RootPayrollActivationResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollActivationResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18317,19 +18287,19 @@ export type SubscriptionRootPayrollActivationResultsAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollActivationResultsStreamArgs = {
+export type Subscription_RootPayrollActivationResultsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollActivationResultsStreamCursorInput>>;
   where?: InputMaybe<PayrollActivationResultsBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollAssignmentAuditByIdArgs = {
+export type Subscription_RootPayrollAssignmentAuditByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPayrollAssignmentAuditsArgs = {
+export type Subscription_RootPayrollAssignmentAuditsArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentAuditsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18338,7 +18308,7 @@ export type SubscriptionRootPayrollAssignmentAuditsArgs = {
 };
 
 
-export type SubscriptionRootPayrollAssignmentAuditsAggregateArgs = {
+export type Subscription_RootPayrollAssignmentAuditsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentAuditsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18347,19 +18317,19 @@ export type SubscriptionRootPayrollAssignmentAuditsAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollAssignmentAuditsStreamArgs = {
+export type Subscription_RootPayrollAssignmentAuditsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollAssignmentAuditsStreamCursorInput>>;
   where?: InputMaybe<PayrollAssignmentAuditsBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollAssignmentByIdArgs = {
+export type Subscription_RootPayrollAssignmentByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPayrollAssignmentsArgs = {
+export type Subscription_RootPayrollAssignmentsArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18368,7 +18338,7 @@ export type SubscriptionRootPayrollAssignmentsArgs = {
 };
 
 
-export type SubscriptionRootPayrollAssignmentsAggregateArgs = {
+export type Subscription_RootPayrollAssignmentsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollAssignmentsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18377,24 +18347,24 @@ export type SubscriptionRootPayrollAssignmentsAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollAssignmentsStreamArgs = {
+export type Subscription_RootPayrollAssignmentsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollAssignmentsStreamCursorInput>>;
   where?: InputMaybe<PayrollAssignmentsBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollByIdArgs = {
+export type Subscription_RootPayrollByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPayrollCycleByIdArgs = {
+export type Subscription_RootPayrollCycleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPayrollCyclesArgs = {
+export type Subscription_RootPayrollCyclesArgs = {
   distinctOn?: InputMaybe<Array<PayrollCyclesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18403,7 +18373,7 @@ export type SubscriptionRootPayrollCyclesArgs = {
 };
 
 
-export type SubscriptionRootPayrollCyclesAggregateArgs = {
+export type Subscription_RootPayrollCyclesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollCyclesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18412,14 +18382,14 @@ export type SubscriptionRootPayrollCyclesAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollCyclesStreamArgs = {
+export type Subscription_RootPayrollCyclesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollCyclesStreamCursorInput>>;
   where?: InputMaybe<PayrollCyclesBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollDashboardStatsArgs = {
+export type Subscription_RootPayrollDashboardStatsArgs = {
   distinctOn?: InputMaybe<Array<PayrollDashboardStatsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18428,7 +18398,7 @@ export type SubscriptionRootPayrollDashboardStatsArgs = {
 };
 
 
-export type SubscriptionRootPayrollDashboardStatsAggregateArgs = {
+export type Subscription_RootPayrollDashboardStatsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDashboardStatsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18437,24 +18407,24 @@ export type SubscriptionRootPayrollDashboardStatsAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollDashboardStatsStreamArgs = {
+export type Subscription_RootPayrollDashboardStatsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollDashboardStatsStreamCursorInput>>;
   where?: InputMaybe<PayrollDashboardStatsBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollDateByIdArgs = {
+export type Subscription_RootPayrollDateByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPayrollDateTypeByIdArgs = {
+export type Subscription_RootPayrollDateTypeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPayrollDateTypesArgs = {
+export type Subscription_RootPayrollDateTypesArgs = {
   distinctOn?: InputMaybe<Array<PayrollDateTypesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18463,7 +18433,7 @@ export type SubscriptionRootPayrollDateTypesArgs = {
 };
 
 
-export type SubscriptionRootPayrollDateTypesAggregateArgs = {
+export type Subscription_RootPayrollDateTypesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDateTypesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18472,14 +18442,14 @@ export type SubscriptionRootPayrollDateTypesAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollDateTypesStreamArgs = {
+export type Subscription_RootPayrollDateTypesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollDateTypesStreamCursorInput>>;
   where?: InputMaybe<PayrollDateTypesBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollDatesArgs = {
+export type Subscription_RootPayrollDatesArgs = {
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18488,7 +18458,7 @@ export type SubscriptionRootPayrollDatesArgs = {
 };
 
 
-export type SubscriptionRootPayrollDatesAggregateArgs = {
+export type Subscription_RootPayrollDatesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18497,14 +18467,14 @@ export type SubscriptionRootPayrollDatesAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollDatesStreamArgs = {
+export type Subscription_RootPayrollDatesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollDatesStreamCursorInput>>;
   where?: InputMaybe<PayrollDatesBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollTriggersStatusArgs = {
+export type Subscription_RootPayrollTriggersStatusArgs = {
   distinctOn?: InputMaybe<Array<PayrollTriggersStatusSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18513,7 +18483,7 @@ export type SubscriptionRootPayrollTriggersStatusArgs = {
 };
 
 
-export type SubscriptionRootPayrollTriggersStatusAggregateArgs = {
+export type Subscription_RootPayrollTriggersStatusAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollTriggersStatusSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18522,19 +18492,19 @@ export type SubscriptionRootPayrollTriggersStatusAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollTriggersStatusStreamArgs = {
+export type Subscription_RootPayrollTriggersStatusStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollTriggersStatusStreamCursorInput>>;
   where?: InputMaybe<PayrollTriggersStatusBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollVersionHistoryResultByIdArgs = {
+export type Subscription_RootPayrollVersionHistoryResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPayrollVersionHistoryResultsArgs = {
+export type Subscription_RootPayrollVersionHistoryResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18543,7 +18513,7 @@ export type SubscriptionRootPayrollVersionHistoryResultsArgs = {
 };
 
 
-export type SubscriptionRootPayrollVersionHistoryResultsAggregateArgs = {
+export type Subscription_RootPayrollVersionHistoryResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionHistoryResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18552,19 +18522,19 @@ export type SubscriptionRootPayrollVersionHistoryResultsAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollVersionHistoryResultsStreamArgs = {
+export type Subscription_RootPayrollVersionHistoryResultsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollVersionHistoryResultsStreamCursorInput>>;
   where?: InputMaybe<PayrollVersionHistoryResultsBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollVersionResultByIdArgs = {
+export type Subscription_RootPayrollVersionResultByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPayrollVersionResultsArgs = {
+export type Subscription_RootPayrollVersionResultsArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18573,7 +18543,7 @@ export type SubscriptionRootPayrollVersionResultsArgs = {
 };
 
 
-export type SubscriptionRootPayrollVersionResultsAggregateArgs = {
+export type Subscription_RootPayrollVersionResultsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollVersionResultsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18582,14 +18552,14 @@ export type SubscriptionRootPayrollVersionResultsAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollVersionResultsStreamArgs = {
+export type Subscription_RootPayrollVersionResultsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollVersionResultsStreamCursorInput>>;
   where?: InputMaybe<PayrollVersionResultsBoolExp>;
 };
 
 
-export type SubscriptionRootPayrollsArgs = {
+export type Subscription_RootPayrollsArgs = {
   distinctOn?: InputMaybe<Array<PayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18598,7 +18568,7 @@ export type SubscriptionRootPayrollsArgs = {
 };
 
 
-export type SubscriptionRootPayrollsAggregateArgs = {
+export type Subscription_RootPayrollsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PayrollsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18607,19 +18577,19 @@ export type SubscriptionRootPayrollsAggregateArgs = {
 };
 
 
-export type SubscriptionRootPayrollsStreamArgs = {
+export type Subscription_RootPayrollsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollsStreamCursorInput>>;
   where?: InputMaybe<PayrollsBoolExp>;
 };
 
 
-export type SubscriptionRootPermissionAuditLogByIdArgs = {
+export type Subscription_RootPermissionAuditLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPermissionAuditLogsArgs = {
+export type Subscription_RootPermissionAuditLogsArgs = {
   distinctOn?: InputMaybe<Array<PermissionAuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18628,7 +18598,7 @@ export type SubscriptionRootPermissionAuditLogsArgs = {
 };
 
 
-export type SubscriptionRootPermissionAuditLogsAggregateArgs = {
+export type Subscription_RootPermissionAuditLogsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionAuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18637,24 +18607,24 @@ export type SubscriptionRootPermissionAuditLogsAggregateArgs = {
 };
 
 
-export type SubscriptionRootPermissionAuditLogsStreamArgs = {
+export type Subscription_RootPermissionAuditLogsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PermissionAuditLogsStreamCursorInput>>;
   where?: InputMaybe<PermissionAuditLogsBoolExp>;
 };
 
 
-export type SubscriptionRootPermissionByIdArgs = {
+export type Subscription_RootPermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPermissionChangeByIdArgs = {
+export type Subscription_RootPermissionChangeByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPermissionChangesArgs = {
+export type Subscription_RootPermissionChangesArgs = {
   distinctOn?: InputMaybe<Array<PermissionChangesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18663,7 +18633,7 @@ export type SubscriptionRootPermissionChangesArgs = {
 };
 
 
-export type SubscriptionRootPermissionChangesAggregateArgs = {
+export type Subscription_RootPermissionChangesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionChangesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18672,19 +18642,19 @@ export type SubscriptionRootPermissionChangesAggregateArgs = {
 };
 
 
-export type SubscriptionRootPermissionChangesStreamArgs = {
+export type Subscription_RootPermissionChangesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PermissionChangesStreamCursorInput>>;
   where?: InputMaybe<PermissionChangesBoolExp>;
 };
 
 
-export type SubscriptionRootPermissionOverrideByIdArgs = {
+export type Subscription_RootPermissionOverrideByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootPermissionOverridesArgs = {
+export type Subscription_RootPermissionOverridesArgs = {
   distinctOn?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18693,7 +18663,7 @@ export type SubscriptionRootPermissionOverridesArgs = {
 };
 
 
-export type SubscriptionRootPermissionOverridesAggregateArgs = {
+export type Subscription_RootPermissionOverridesAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionOverridesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18702,14 +18672,14 @@ export type SubscriptionRootPermissionOverridesAggregateArgs = {
 };
 
 
-export type SubscriptionRootPermissionOverridesStreamArgs = {
+export type Subscription_RootPermissionOverridesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PermissionOverridesStreamCursorInput>>;
   where?: InputMaybe<PermissionOverridesBoolExp>;
 };
 
 
-export type SubscriptionRootPermissionUsageReportsArgs = {
+export type Subscription_RootPermissionUsageReportsArgs = {
   distinctOn?: InputMaybe<Array<PermissionUsageReportsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18718,7 +18688,7 @@ export type SubscriptionRootPermissionUsageReportsArgs = {
 };
 
 
-export type SubscriptionRootPermissionUsageReportsAggregateArgs = {
+export type Subscription_RootPermissionUsageReportsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionUsageReportsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18727,14 +18697,14 @@ export type SubscriptionRootPermissionUsageReportsAggregateArgs = {
 };
 
 
-export type SubscriptionRootPermissionUsageReportsStreamArgs = {
+export type Subscription_RootPermissionUsageReportsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PermissionUsageReportsStreamCursorInput>>;
   where?: InputMaybe<PermissionUsageReportsBoolExp>;
 };
 
 
-export type SubscriptionRootPermissionsArgs = {
+export type Subscription_RootPermissionsArgs = {
   distinctOn?: InputMaybe<Array<PermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18743,7 +18713,7 @@ export type SubscriptionRootPermissionsArgs = {
 };
 
 
-export type SubscriptionRootPermissionsAggregateArgs = {
+export type Subscription_RootPermissionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<PermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18752,19 +18722,19 @@ export type SubscriptionRootPermissionsAggregateArgs = {
 };
 
 
-export type SubscriptionRootPermissionsStreamArgs = {
+export type Subscription_RootPermissionsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PermissionsStreamCursorInput>>;
   where?: InputMaybe<PermissionsBoolExp>;
 };
 
 
-export type SubscriptionRootResourceByIdArgs = {
+export type Subscription_RootResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootResourcesArgs = {
+export type Subscription_RootResourcesArgs = {
   distinctOn?: InputMaybe<Array<ResourcesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18773,7 +18743,7 @@ export type SubscriptionRootResourcesArgs = {
 };
 
 
-export type SubscriptionRootResourcesAggregateArgs = {
+export type Subscription_RootResourcesAggregateArgs = {
   distinctOn?: InputMaybe<Array<ResourcesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18782,24 +18752,24 @@ export type SubscriptionRootResourcesAggregateArgs = {
 };
 
 
-export type SubscriptionRootResourcesStreamArgs = {
+export type Subscription_RootResourcesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ResourcesStreamCursorInput>>;
   where?: InputMaybe<ResourcesBoolExp>;
 };
 
 
-export type SubscriptionRootRoleByIdArgs = {
+export type Subscription_RootRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootRolePermissionByIdArgs = {
+export type Subscription_RootRolePermissionByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootRolePermissionsArgs = {
+export type Subscription_RootRolePermissionsArgs = {
   distinctOn?: InputMaybe<Array<RolePermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18808,7 +18778,7 @@ export type SubscriptionRootRolePermissionsArgs = {
 };
 
 
-export type SubscriptionRootRolePermissionsAggregateArgs = {
+export type Subscription_RootRolePermissionsAggregateArgs = {
   distinctOn?: InputMaybe<Array<RolePermissionsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18817,14 +18787,14 @@ export type SubscriptionRootRolePermissionsAggregateArgs = {
 };
 
 
-export type SubscriptionRootRolePermissionsStreamArgs = {
+export type Subscription_RootRolePermissionsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<RolePermissionsStreamCursorInput>>;
   where?: InputMaybe<RolePermissionsBoolExp>;
 };
 
 
-export type SubscriptionRootRolesArgs = {
+export type Subscription_RootRolesArgs = {
   distinctOn?: InputMaybe<Array<RolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18833,7 +18803,7 @@ export type SubscriptionRootRolesArgs = {
 };
 
 
-export type SubscriptionRootRolesAggregateArgs = {
+export type Subscription_RootRolesAggregateArgs = {
   distinctOn?: InputMaybe<Array<RolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18842,14 +18812,14 @@ export type SubscriptionRootRolesAggregateArgs = {
 };
 
 
-export type SubscriptionRootRolesStreamArgs = {
+export type Subscription_RootRolesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<RolesStreamCursorInput>>;
   where?: InputMaybe<RolesBoolExp>;
 };
 
 
-export type SubscriptionRootSlowQueriesArgs = {
+export type Subscription_RootSlowQueriesArgs = {
   distinctOn?: InputMaybe<Array<SlowQueriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18858,7 +18828,7 @@ export type SubscriptionRootSlowQueriesArgs = {
 };
 
 
-export type SubscriptionRootSlowQueriesAggregateArgs = {
+export type Subscription_RootSlowQueriesAggregateArgs = {
   distinctOn?: InputMaybe<Array<SlowQueriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18867,19 +18837,19 @@ export type SubscriptionRootSlowQueriesAggregateArgs = {
 };
 
 
-export type SubscriptionRootSlowQueriesStreamArgs = {
+export type Subscription_RootSlowQueriesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<SlowQueriesStreamCursorInput>>;
   where?: InputMaybe<SlowQueriesBoolExp>;
 };
 
 
-export type SubscriptionRootSlowQueryByIdArgs = {
+export type Subscription_RootSlowQueryByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootUserAccessSummariesArgs = {
+export type Subscription_RootUserAccessSummariesArgs = {
   distinctOn?: InputMaybe<Array<UserAccessSummariesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18888,7 +18858,7 @@ export type SubscriptionRootUserAccessSummariesArgs = {
 };
 
 
-export type SubscriptionRootUserAccessSummariesAggregateArgs = {
+export type Subscription_RootUserAccessSummariesAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserAccessSummariesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18897,24 +18867,24 @@ export type SubscriptionRootUserAccessSummariesAggregateArgs = {
 };
 
 
-export type SubscriptionRootUserAccessSummariesStreamArgs = {
+export type Subscription_RootUserAccessSummariesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UserAccessSummariesStreamCursorInput>>;
   where?: InputMaybe<UserAccessSummariesBoolExp>;
 };
 
 
-export type SubscriptionRootUserByIdArgs = {
+export type Subscription_RootUserByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootUserInvitationByIdArgs = {
+export type Subscription_RootUserInvitationByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootUserInvitationsArgs = {
+export type Subscription_RootUserInvitationsArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18923,7 +18893,7 @@ export type SubscriptionRootUserInvitationsArgs = {
 };
 
 
-export type SubscriptionRootUserInvitationsAggregateArgs = {
+export type Subscription_RootUserInvitationsAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18932,19 +18902,19 @@ export type SubscriptionRootUserInvitationsAggregateArgs = {
 };
 
 
-export type SubscriptionRootUserInvitationsStreamArgs = {
+export type Subscription_RootUserInvitationsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UserInvitationsStreamCursorInput>>;
   where?: InputMaybe<UserInvitationsBoolExp>;
 };
 
 
-export type SubscriptionRootUserRoleByIdArgs = {
+export type Subscription_RootUserRoleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootUserRolesArgs = {
+export type Subscription_RootUserRolesArgs = {
   distinctOn?: InputMaybe<Array<UserRolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18953,7 +18923,7 @@ export type SubscriptionRootUserRolesArgs = {
 };
 
 
-export type SubscriptionRootUserRolesAggregateArgs = {
+export type Subscription_RootUserRolesAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserRolesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18962,19 +18932,19 @@ export type SubscriptionRootUserRolesAggregateArgs = {
 };
 
 
-export type SubscriptionRootUserRolesStreamArgs = {
+export type Subscription_RootUserRolesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UserRolesStreamCursorInput>>;
   where?: InputMaybe<UserRolesBoolExp>;
 };
 
 
-export type SubscriptionRootUserSyncByIdArgs = {
+export type Subscription_RootUserSyncByIdArgs = {
   id: Scalars['String']['input'];
 };
 
 
-export type SubscriptionRootUsersArgs = {
+export type Subscription_RootUsersArgs = {
   distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18983,7 +18953,7 @@ export type SubscriptionRootUsersArgs = {
 };
 
 
-export type SubscriptionRootUsersAggregateArgs = {
+export type Subscription_RootUsersAggregateArgs = {
   distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -18992,14 +18962,14 @@ export type SubscriptionRootUsersAggregateArgs = {
 };
 
 
-export type SubscriptionRootUsersRoleBackupStreamArgs = {
+export type Subscription_RootUsersRoleBackupStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UsersRoleBackupStreamCursorInput>>;
   where?: InputMaybe<UsersRoleBackupBoolExp>;
 };
 
 
-export type SubscriptionRootUsersRoleBackupsArgs = {
+export type Subscription_RootUsersRoleBackupsArgs = {
   distinctOn?: InputMaybe<Array<UsersRoleBackupSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19008,7 +18978,7 @@ export type SubscriptionRootUsersRoleBackupsArgs = {
 };
 
 
-export type SubscriptionRootUsersRoleBackupsAggregateArgs = {
+export type Subscription_RootUsersRoleBackupsAggregateArgs = {
   distinctOn?: InputMaybe<Array<UsersRoleBackupSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19017,14 +18987,14 @@ export type SubscriptionRootUsersRoleBackupsAggregateArgs = {
 };
 
 
-export type SubscriptionRootUsersStreamArgs = {
+export type Subscription_RootUsersStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UsersStreamCursorInput>>;
   where?: InputMaybe<UsersBoolExp>;
 };
 
 
-export type SubscriptionRootUsersSyncArgs = {
+export type Subscription_RootUsersSyncArgs = {
   distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19033,7 +19003,7 @@ export type SubscriptionRootUsersSyncArgs = {
 };
 
 
-export type SubscriptionRootUsersSyncAggregateArgs = {
+export type Subscription_RootUsersSyncAggregateArgs = {
   distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19042,12 +19012,12 @@ export type SubscriptionRootUsersSyncAggregateArgs = {
 };
 
 
-export type SubscriptionRootWorkScheduleByIdArgs = {
+export type Subscription_RootWorkScheduleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type SubscriptionRootWorkSchedulesArgs = {
+export type Subscription_RootWorkSchedulesArgs = {
   distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19056,7 +19026,7 @@ export type SubscriptionRootWorkSchedulesArgs = {
 };
 
 
-export type SubscriptionRootWorkSchedulesAggregateArgs = {
+export type Subscription_RootWorkSchedulesAggregateArgs = {
   distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -19065,7 +19035,7 @@ export type SubscriptionRootWorkSchedulesAggregateArgs = {
 };
 
 
-export type SubscriptionRootWorkSchedulesStreamArgs = {
+export type Subscription_RootWorkSchedulesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<WorkSchedulesStreamCursorInput>>;
   where?: InputMaybe<WorkSchedulesBoolExp>;
@@ -19177,24 +19147,24 @@ export type UserAccessSummariesOrderBy = {
 };
 
 /** select columns of table "audit.user_access_summary" */
-export enum UserAccessSummariesSelectColumn {
+export type UserAccessSummariesSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  email = 'email',
+  | 'email'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  isActive = 'isActive',
+  | 'isActive'
   /** column name */
-  isStaff = 'isStaff',
+  | 'isStaff'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  role = 'role',
+  | 'role'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "audit.user_access_summary" */
 export type UserAccessSummariesSetInput = {
@@ -19324,10 +19294,10 @@ export type UserInvitationsBoolExp = {
 };
 
 /** unique or primary key constraints on table "user_invitations" */
-export enum UserInvitationsConstraint {
+export type UserInvitationsConstraint =
   /** unique or primary key constraint on columns "id" */
-  user_invitations_pkey = 'user_invitations_pkey'
-}
+  | 'user_invitations_pkey'
+  | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export type UserInvitationsDeleteAtPathInput = {
@@ -19461,42 +19431,42 @@ export type UserInvitationsPrependInput = {
 };
 
 /** select columns of table "user_invitations" */
-export enum UserInvitationsSelectColumn {
+export type UserInvitationsSelectColumn =
   /** column name */
-  acceptedAt = 'acceptedAt',
+  | 'acceptedAt'
   /** column name */
-  acceptedBy = 'acceptedBy',
+  | 'acceptedBy'
   /** column name */
-  clerkInvitationId = 'clerkInvitationId',
+  | 'clerkInvitationId'
   /** column name */
-  clerkTicket = 'clerkTicket',
+  | 'clerkTicket'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  email = 'email',
+  | 'email'
   /** column name */
-  expiresAt = 'expiresAt',
+  | 'expiresAt'
   /** column name */
-  firstName = 'firstName',
+  | 'firstName'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  invitationMetadata = 'invitationMetadata',
+  | 'invitationMetadata'
   /** column name */
-  invitedAt = 'invitedAt',
+  | 'invitedAt'
   /** column name */
-  invitedBy = 'invitedBy',
+  | 'invitedBy'
   /** column name */
-  invitedRole = 'invitedRole',
+  | 'invitedRole'
   /** column name */
-  lastName = 'lastName',
+  | 'lastName'
   /** column name */
-  managerId = 'managerId',
+  | 'managerId'
   /** column name */
-  status = 'status',
+  | 'status'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 /** input type for updating data in table "user_invitations" */
 export type UserInvitationsSetInput = {
@@ -19549,42 +19519,42 @@ export type UserInvitationsStreamCursorValueInput = {
 };
 
 /** update columns of table "user_invitations" */
-export enum UserInvitationsUpdateColumn {
+export type UserInvitationsUpdateColumn =
   /** column name */
-  acceptedAt = 'acceptedAt',
+  | 'acceptedAt'
   /** column name */
-  acceptedBy = 'acceptedBy',
+  | 'acceptedBy'
   /** column name */
-  clerkInvitationId = 'clerkInvitationId',
+  | 'clerkInvitationId'
   /** column name */
-  clerkTicket = 'clerkTicket',
+  | 'clerkTicket'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  email = 'email',
+  | 'email'
   /** column name */
-  expiresAt = 'expiresAt',
+  | 'expiresAt'
   /** column name */
-  firstName = 'firstName',
+  | 'firstName'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  invitationMetadata = 'invitationMetadata',
+  | 'invitationMetadata'
   /** column name */
-  invitedAt = 'invitedAt',
+  | 'invitedAt'
   /** column name */
-  invitedBy = 'invitedBy',
+  | 'invitedBy'
   /** column name */
-  invitedRole = 'invitedRole',
+  | 'invitedRole'
   /** column name */
-  lastName = 'lastName',
+  | 'lastName'
   /** column name */
-  managerId = 'managerId',
+  | 'managerId'
   /** column name */
-  status = 'status',
+  | 'status'
   /** column name */
-  updatedAt = 'updatedAt'
-}
+  | 'updatedAt'
+  | '%future added value';
 
 export type UserInvitationsUpdates = {
   /** append existing jsonb value of filtered columns with new jsonb value */
@@ -19679,12 +19649,12 @@ export type UserRolesBoolExp = {
 };
 
 /** unique or primary key constraints on table "user_roles" */
-export enum UserRolesConstraint {
+export type UserRolesConstraint =
   /** unique or primary key constraint on columns "id" */
-  user_roles_pkey = 'user_roles_pkey',
+  | 'user_roles_pkey'
   /** unique or primary key constraint on columns "user_id", "role_id" */
-  user_roles_user_id_role_id_key = 'user_roles_user_id_role_id_key'
-}
+  | 'user_roles_user_id_role_id_key'
+  | '%future added value';
 
 /** input type for inserting data into table "user_roles" */
 export type UserRolesInsertInput = {
@@ -19768,18 +19738,18 @@ export type UserRolesPkColumnsInput = {
 };
 
 /** select columns of table "user_roles" */
-export enum UserRolesSelectColumn {
+export type UserRolesSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  roleId = 'roleId',
+  | 'roleId'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 /** input type for updating data in table "user_roles" */
 export type UserRolesSetInput = {
@@ -19808,18 +19778,18 @@ export type UserRolesStreamCursorValueInput = {
 };
 
 /** update columns of table "user_roles" */
-export enum UserRolesUpdateColumn {
+export type UserRolesUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  roleId = 'roleId',
+  | 'roleId'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  userId = 'userId'
-}
+  | 'userId'
+  | '%future added value';
 
 export type UserRolesUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -20348,20 +20318,20 @@ export type UsersAggregate = {
 };
 
 export type UsersAggregateBoolExp = {
-  bool_and?: InputMaybe<UsersAggregateBoolExpBoolAnd>;
-  bool_or?: InputMaybe<UsersAggregateBoolExpBoolOr>;
+  bool_and?: InputMaybe<UsersAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<UsersAggregateBoolExpBool_Or>;
   count?: InputMaybe<UsersAggregateBoolExpCount>;
 };
 
-export type UsersAggregateBoolExpBoolAnd = {
-  arguments: UsersSelectColumnUsersAggregateBoolExpBoolAndArgumentsColumns;
+export type UsersAggregateBoolExpBool_And = {
+  arguments: UsersSelectColumnUsersAggregateBoolExpBool_AndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<UsersBoolExp>;
   predicate: BooleanComparisonExp;
 };
 
-export type UsersAggregateBoolExpBoolOr = {
-  arguments: UsersSelectColumnUsersAggregateBoolExpBoolOrArgumentsColumns;
+export type UsersAggregateBoolExpBool_Or = {
+  arguments: UsersSelectColumnUsersAggregateBoolExpBool_OrArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<UsersBoolExp>;
   predicate: BooleanComparisonExp;
@@ -20466,16 +20436,16 @@ export type UsersBoolExp = {
 };
 
 /** unique or primary key constraints on table "users" */
-export enum UsersConstraint {
+export type UsersConstraint =
   /** unique or primary key constraint on columns "clerk_user_id" */
-  users_clerk_user_id_key = 'users_clerk_user_id_key',
+  | 'users_clerk_user_id_key'
   /** unique or primary key constraint on columns "email" */
-  users_email_key = 'users_email_key',
+  | 'users_email_key'
   /** unique or primary key constraint on columns "id" */
-  users_pkey = 'users_pkey',
+  | 'users_pkey'
   /** unique or primary key constraint on columns "username" */
-  users_username_key = 'users_username_key'
-}
+  | 'users_username_key'
+  | '%future added value';
 
 /** input type for inserting data into table "users" */
 export type UsersInsertInput = {
@@ -20787,16 +20757,16 @@ export type UsersRoleBackupOrderBy = {
 };
 
 /** select columns of table "users_role_backup" */
-export enum UsersRoleBackupSelectColumn {
+export type UsersRoleBackupSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  email = 'email',
+  | 'email'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  role = 'role'
-}
+  | 'role'
+  | '%future added value';
 
 /** input type for updating data in table "users_role_backup" */
 export type UsersRoleBackupSetInput = {
@@ -20830,52 +20800,52 @@ export type UsersRoleBackupUpdates = {
 };
 
 /** select columns of table "users" */
-export enum UsersSelectColumn {
+export type UsersSelectColumn =
   /** column name */
-  clerkUserId = 'clerkUserId',
+  | 'clerkUserId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  deactivatedAt = 'deactivatedAt',
+  | 'deactivatedAt'
   /** column name */
-  deactivatedBy = 'deactivatedBy',
+  | 'deactivatedBy'
   /** column name */
-  email = 'email',
+  | 'email'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  image = 'image',
+  | 'image'
   /** column name */
-  isActive = 'isActive',
+  | 'isActive'
   /** column name */
-  isStaff = 'isStaff',
+  | 'isStaff'
   /** column name */
-  managerId = 'managerId',
+  | 'managerId'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  role = 'role',
+  | 'role'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  username = 'username'
-}
+  | 'username'
+  | '%future added value';
 
 /** select "usersAggregateBoolExpBool_andArgumentsColumns" columns of table "users" */
-export enum UsersSelectColumnUsersAggregateBoolExpBoolAndArgumentsColumns {
+export type UsersSelectColumnUsersAggregateBoolExpBool_AndArgumentsColumns =
   /** column name */
-  isActive = 'isActive',
+  | 'isActive'
   /** column name */
-  isStaff = 'isStaff'
-}
+  | 'isStaff'
+  | '%future added value';
 
 /** select "usersAggregateBoolExpBool_orArgumentsColumns" columns of table "users" */
-export enum UsersSelectColumnUsersAggregateBoolExpBoolOrArgumentsColumns {
+export type UsersSelectColumnUsersAggregateBoolExpBool_OrArgumentsColumns =
   /** column name */
-  isActive = 'isActive',
+  | 'isActive'
   /** column name */
-  isStaff = 'isStaff'
-}
+  | 'isStaff'
+  | '%future added value';
 
 /** input type for updating data in table "users" */
 export type UsersSetInput = {
@@ -20944,36 +20914,36 @@ export type UsersStreamCursorValueInput = {
 };
 
 /** update columns of table "users" */
-export enum UsersUpdateColumn {
+export type UsersUpdateColumn =
   /** column name */
-  clerkUserId = 'clerkUserId',
+  | 'clerkUserId'
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  deactivatedAt = 'deactivatedAt',
+  | 'deactivatedAt'
   /** column name */
-  deactivatedBy = 'deactivatedBy',
+  | 'deactivatedBy'
   /** column name */
-  email = 'email',
+  | 'email'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  image = 'image',
+  | 'image'
   /** column name */
-  isActive = 'isActive',
+  | 'isActive'
   /** column name */
-  isStaff = 'isStaff',
+  | 'isStaff'
   /** column name */
-  managerId = 'managerId',
+  | 'managerId'
   /** column name */
-  name = 'name',
+  | 'name'
   /** column name */
-  role = 'role',
+  | 'role'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  username = 'username'
-}
+  | 'username'
+  | '%future added value';
 
 export type UsersUpdates = {
   /** sets the columns of the filtered rows to the given values */
@@ -21095,12 +21065,12 @@ export type WorkSchedulesBoolExp = {
 };
 
 /** unique or primary key constraints on table "work_schedule" */
-export enum WorkSchedulesConstraint {
+export type WorkSchedulesConstraint =
   /** unique or primary key constraint on columns "user_id", "work_day" */
-  unique_user_work_day = 'unique_user_work_day',
+  | 'unique_user_work_day'
   /** unique or primary key constraint on columns "id" */
-  work_schedule_pkey = 'work_schedule_pkey'
-}
+  | 'work_schedule_pkey'
+  | '%future added value';
 
 /** input type for incrementing numeric columns in table "work_schedule" */
 export type WorkSchedulesIncInput = {
@@ -21227,20 +21197,20 @@ export type WorkSchedulesPkColumnsInput = {
 };
 
 /** select columns of table "work_schedule" */
-export enum WorkSchedulesSelectColumn {
+export type WorkSchedulesSelectColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  userId = 'userId',
+  | 'userId'
   /** column name */
-  workDay = 'workDay',
+  | 'workDay'
   /** column name */
-  workHours = 'workHours'
-}
+  | 'workHours'
+  | '%future added value';
 
 /** input type for updating data in table "work_schedule" */
 export type WorkSchedulesSetInput = {
@@ -21335,20 +21305,20 @@ export type WorkSchedulesSumOrderBy = {
 };
 
 /** update columns of table "work_schedule" */
-export enum WorkSchedulesUpdateColumn {
+export type WorkSchedulesUpdateColumn =
   /** column name */
-  createdAt = 'createdAt',
+  | 'createdAt'
   /** column name */
-  id = 'id',
+  | 'id'
   /** column name */
-  updatedAt = 'updatedAt',
+  | 'updatedAt'
   /** column name */
-  userId = 'userId',
+  | 'userId'
   /** column name */
-  workDay = 'workDay',
+  | 'workDay'
   /** column name */
-  workHours = 'workHours'
-}
+  | 'workHours'
+  | '%future added value';
 
 export type WorkSchedulesUpdates = {
   /** increments the numeric columns with given value of the filtered values */
@@ -21398,29 +21368,29 @@ export type WorkSchedulesVarianceOrderBy = {
   workHours?: InputMaybe<OrderBy>;
 };
 
-export type UserCoreFragment = { __typename?: 'users', id: string, name: string, email: string, username?: string | null | undefined, role: string, isActive?: boolean | null | undefined, isStaff?: boolean | null | undefined, clerkUserId?: string | null | undefined, createdAt?: string | null | undefined, updatedAt?: string | null | undefined };
+export type UserCoreFragment = { __typename?: 'users', id: string, name: string, email: string, username?: string | null, role: any, isActive?: boolean | null, isStaff?: boolean | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
 
-export type UserBasicFragment = { __typename?: 'users', id: string, name: string, email: string, role: string, isActive?: boolean | null | undefined };
+export type UserBasicFragment = { __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null };
 
-export type UserWithManagerFragment = { __typename?: 'users', managerId?: string | null | undefined, id: string, name: string, email: string, username?: string | null | undefined, role: string, isActive?: boolean | null | undefined, isStaff?: boolean | null | undefined, clerkUserId?: string | null | undefined, createdAt?: string | null | undefined, updatedAt?: string | null | undefined, managerUser?: { __typename?: 'users', id: string, name: string, email: string, role: string, isActive?: boolean | null | undefined } | null | undefined };
+export type UserWithManagerFragment = { __typename?: 'users', managerId?: string | null, id: string, name: string, email: string, username?: string | null, role: any, isActive?: boolean | null, isStaff?: boolean | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null } | null };
 
-export type RoleCoreFragment = { __typename?: 'roles', id: string, name: string, description?: string | null | undefined, displayName: string, priority: number, isSystemRole: boolean, createdAt: string };
+export type RoleCoreFragment = { __typename?: 'roles', id: string, name: string, description?: string | null, displayName: string, priority: number, isSystemRole: boolean, createdAt: string };
 
-export type PermissionCoreFragment = { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string };
+export type PermissionCoreFragment = { __typename?: 'permissions', id: string, action: any, description?: string | null, resourceId: string, createdAt: string, updatedAt: string };
 
-export type PermissionWithResourceFragment = { __typename?: 'permissions', id: string, action: string, description?: string | null | undefined, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null | undefined } };
+export type PermissionWithResourceFragment = { __typename?: 'permissions', id: string, action: any, description?: string | null, resourceId: string, createdAt: string, updatedAt: string, relatedResource: { __typename?: 'resources', id: string, name: string, description?: string | null } };
 
-export type ClientCoreFragment = { __typename?: 'clients', id: string, name: string, contactEmail?: string | null | undefined, contactPerson?: string | null | undefined, contactPhone?: string | null | undefined, active?: boolean | null | undefined, createdAt?: string | null | undefined, updatedAt?: string | null | undefined };
+export type ClientCoreFragment = { __typename?: 'clients', id: string, name: string, contactEmail?: string | null, contactPerson?: string | null, contactPhone?: string | null, active?: boolean | null, createdAt?: string | null, updatedAt?: string | null };
 
-export type ClientBasicFragment = { __typename?: 'clients', id: string, name: string, active?: boolean | null | undefined };
+export type ClientBasicFragment = { __typename?: 'clients', id: string, name: string, active?: boolean | null };
 
-export type ResourceCoreFragment = { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null | undefined, createdAt: string, updatedAt: string };
+export type ResourceCoreFragment = { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null, createdAt: string, updatedAt: string };
 
 export type UserRoleCoreFragment = { __typename?: 'userRoles', id: string, userId: string, roleId: string, createdAt: string, updatedAt: string };
 
-export type RolePermissionCoreFragment = { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null | undefined, createdAt: string, updatedAt: string };
+export type RolePermissionCoreFragment = { __typename?: 'rolePermissions', id: string, roleId: string, permissionId: string, conditions?: any | null, createdAt: string, updatedAt: string };
 
-export type AuditFieldsFragment = { __typename?: 'auditLogs', id: string, eventTime: string, action: string, resourceType: string, resourceId?: string | null | undefined, userId?: string | null | undefined, ipAddress?: string | null | undefined, userAgent?: string | null | undefined, success?: boolean | null | undefined, userEmail?: string | null | undefined, userRole?: string | null | undefined };
+export type AuditFieldsFragment = { __typename?: 'auditLogs', id: string, eventTime: string, action: string, resourceType: string, resourceId?: string | null, userId?: string | null, ipAddress?: any | null, userAgent?: string | null, success?: boolean | null, userEmail?: string | null, userRole?: string | null };
 
 export type PlaceholderMutationMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -21430,12 +21400,12 @@ export type PlaceholderMutationMutation = { __typename: 'mutation_root' };
 export type GetDashboardStatsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDashboardStatsQuery = { __typename?: 'query_root', clients_aggregate: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null | undefined }, payrollsAggregate: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null | undefined }, active_payrolls: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null | undefined }, processing_queue: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null | undefined } };
+export type GetDashboardStatsQuery = { __typename?: 'query_root', clients_aggregate: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null }, payrollsAggregate: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, active_payrolls: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, processing_queue: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null } };
 
 export type GetSystemStatsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSystemStatsQuery = { __typename?: 'query_root', total_payrolls: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null | undefined }, total_clients: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null | undefined }, total_users: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null | undefined } };
+export type GetSystemStatsQuery = { __typename?: 'query_root', total_payrolls: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, total_clients: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null }, total_users: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
 
 export type GetUpcomingPayrollsQueryVariables = Exact<{
   from_date: Scalars['date']['input'];
@@ -21443,7 +21413,7 @@ export type GetUpcomingPayrollsQueryVariables = Exact<{
 }>;
 
 
-export type GetUpcomingPayrollsQuery = { __typename?: 'query_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: string, client: { __typename?: 'clients', id: string, name: string }, payrollDates: Array<{ __typename?: 'payrollDates', id: string, adjustedEftDate: string, processingDate: string }> }> };
+export type GetUpcomingPayrollsQuery = { __typename?: 'query_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', id: string, name: string }, payrollDates: Array<{ __typename?: 'payrollDates', id: string, adjustedEftDate: string, processingDate: string }> }> };
 
 export type GetUnifiedDashboardDataQueryVariables = Exact<{
   from_date: Scalars['date']['input'];
@@ -21451,12 +21421,12 @@ export type GetUnifiedDashboardDataQueryVariables = Exact<{
 }>;
 
 
-export type GetUnifiedDashboardDataQuery = { __typename?: 'query_root', clients_aggregate: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null | undefined }, payrollsAggregate: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null | undefined }, active_payrolls: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null | undefined }, processing_queue: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null | undefined }, active_users: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null | undefined }, upcoming_payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: string, employeeCount?: number | null | undefined, client: { __typename?: 'clients', id: string, name: string }, primaryConsultant?: { __typename?: 'users', id: string, name: string } | null | undefined, payrollDates: Array<{ __typename?: 'payrollDates', id: string, adjustedEftDate: string, processingDate: string }> }>, recent_payroll_updates: Array<{ __typename?: 'payrolls', id: string, name: string, status: string, updatedAt?: string | null | undefined, client: { __typename?: 'clients', name: string } }> };
+export type GetUnifiedDashboardDataQuery = { __typename?: 'query_root', clients_aggregate: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null }, payrollsAggregate: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, active_payrolls: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, processing_queue: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, active_users: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null }, upcoming_payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, employeeCount?: number | null, client: { __typename?: 'clients', id: string, name: string }, primaryConsultant?: { __typename?: 'users', id: string, name: string } | null, payrollDates: Array<{ __typename?: 'payrollDates', id: string, adjustedEftDate: string, processingDate: string }> }>, recent_payroll_updates: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, updatedAt?: string | null, client: { __typename?: 'clients', name: string } }> };
 
 export type GetDashboardStatsMinimalQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDashboardStatsMinimalQuery = { __typename?: 'query_root', clientCount: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null | undefined }, payrollCount: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null | undefined }, userCount: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null | undefined } };
+export type GetDashboardStatsMinimalQuery = { __typename?: 'query_root', clientCount: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null }, payrollCount: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, userCount: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
 
 export type GetUpcomingPayrollsMinimalQueryVariables = Exact<{
   from_date: Scalars['date']['input'];
@@ -21464,525 +21434,82 @@ export type GetUpcomingPayrollsMinimalQueryVariables = Exact<{
 }>;
 
 
-export type GetUpcomingPayrollsMinimalQuery = { __typename?: 'query_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: string, client: { __typename?: 'clients', name: string }, nextDate: Array<{ __typename?: 'payrollDates', adjustedEftDate: string }> }> };
+export type GetUpcomingPayrollsMinimalQuery = { __typename?: 'query_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', name: string }, nextDate: Array<{ __typename?: 'payrollDates', adjustedEftDate: string }> }> };
 
 export type GetRecentActivityMinimalQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type GetRecentActivityMinimalQuery = { __typename?: 'query_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: string, updatedAt?: string | null | undefined, client: { __typename?: 'clients', name: string } }> };
+export type GetRecentActivityMinimalQuery = { __typename?: 'query_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, updatedAt?: string | null, client: { __typename?: 'clients', name: string } }> };
 
 export type GetQuickStatsOnlyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetQuickStatsOnlyQuery = { __typename?: 'query_root', totals: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null | undefined }, activeClients: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null | undefined }, activeUsers: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null | undefined } };
+export type GetQuickStatsOnlyQuery = { __typename?: 'query_root', totals: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, activeClients: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null }, activeUsers: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
 
 export type ClientCountUpdatesSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ClientCountUpdatesSubscription = { __typename?: 'subscription_root', clientsAggregate: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null | undefined } };
+export type ClientCountUpdatesSubscription = { __typename?: 'subscription_root', clientsAggregate: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null } };
 
 export type PayrollCountUpdatesSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PayrollCountUpdatesSubscription = { __typename?: 'subscription_root', payrollsAggregate: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null | undefined } };
+export type PayrollCountUpdatesSubscription = { __typename?: 'subscription_root', payrollsAggregate: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null } };
 
 export type UserCountUpdatesSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UserCountUpdatesSubscription = { __typename?: 'subscription_root', usersAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null | undefined } };
+export type UserCountUpdatesSubscription = { __typename?: 'subscription_root', usersAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
 
 export type RecentPayrollActivitySubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RecentPayrollActivitySubscription = { __typename?: 'subscription_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: string, updatedAt?: string | null | undefined, client: { __typename?: 'clients', name: string } }> };
+export type RecentPayrollActivitySubscription = { __typename?: 'subscription_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, updatedAt?: string | null, client: { __typename?: 'clients', name: string } }> };
 
 export type RecentUserActivitySubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RecentUserActivitySubscription = { __typename?: 'subscription_root', users: Array<{ __typename?: 'users', id: string, name: string, role: string, updatedAt?: string | null | undefined }> };
+export type RecentUserActivitySubscription = { __typename?: 'subscription_root', users: Array<{ __typename?: 'users', id: string, name: string, role: any, updatedAt?: string | null }> };
 
 export type CriticalPayrollNotificationsSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CriticalPayrollNotificationsSubscription = { __typename?: 'subscription_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: string, client: { __typename?: 'clients', name: string }, primaryConsultant?: { __typename?: 'users', name: string } | null | undefined }> };
+export type CriticalPayrollNotificationsSubscription = { __typename?: 'subscription_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', name: string }, primaryConsultant?: { __typename?: 'users', name: string } | null }> };
 
 export type UpcomingPayrollsUpdatesSubscriptionVariables = Exact<{
   fromDate: Scalars['date']['input'];
 }>;
 
 
-export type UpcomingPayrollsUpdatesSubscription = { __typename?: 'subscription_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: string, client: { __typename?: 'clients', name: string }, nextDate: Array<{ __typename?: 'payrollDates', adjustedEftDate: string }> }> };
+export type UpcomingPayrollsUpdatesSubscription = { __typename?: 'subscription_root', payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', name: string }, nextDate: Array<{ __typename?: 'payrollDates', adjustedEftDate: string }> }> };
 
-export const UserCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
-export const UserBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode;
-export const UserWithManagerFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithManager"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode;
-export const RoleCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode;
-export const PermissionCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
-export const PermissionWithResourceFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
-export const ClientCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"contactPerson"}},{"kind":"Field","name":{"kind":"Name","value":"contactPhone"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
-export const ClientBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]} as unknown as DocumentNode;
-export const ResourceCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
-export const UserRoleCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
-export const RolePermissionCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode;
-export const AuditFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"auditLogs"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"userRole"}}]}}]} as unknown as DocumentNode;
-export const PlaceholderMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PlaceholderMutation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]} as unknown as DocumentNode;
-export type PlaceholderMutationMutationFn = Apollo.MutationFunction<PlaceholderMutationMutation, PlaceholderMutationMutationVariables>;
-
-/**
- * __usePlaceholderMutationMutation__
- *
- * To run a mutation, you first call `usePlaceholderMutationMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `usePlaceholderMutationMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [placeholderMutationMutation, { data, loading, error }] = usePlaceholderMutationMutation({
- *   variables: {
- *   },
- * });
- */
-export function usePlaceholderMutationMutation(baseOptions?: Apollo.MutationHookOptions<PlaceholderMutationMutation, PlaceholderMutationMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<PlaceholderMutationMutation, PlaceholderMutationMutationVariables>(PlaceholderMutationDocument, options);
-      }
-export type PlaceholderMutationMutationHookResult = ReturnType<typeof usePlaceholderMutationMutation>;
-export type PlaceholderMutationMutationResult = Apollo.MutationResult<PlaceholderMutationMutation>;
-export type PlaceholderMutationMutationOptions = Apollo.BaseMutationOptions<PlaceholderMutationMutation, PlaceholderMutationMutationVariables>;
-export const GetDashboardStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"clients_aggregate"},"name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"payrollsAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"active_payrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"processing_queue"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Implementation","block":false}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useGetDashboardStatsQuery__
- *
- * To run a query within a React component, call `useGetDashboardStatsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetDashboardStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetDashboardStatsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetDashboardStatsQuery(baseOptions?: Apollo.QueryHookOptions<GetDashboardStatsQuery, GetDashboardStatsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetDashboardStatsQuery, GetDashboardStatsQueryVariables>(GetDashboardStatsDocument, options);
-      }
-export function useGetDashboardStatsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDashboardStatsQuery, GetDashboardStatsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetDashboardStatsQuery, GetDashboardStatsQueryVariables>(GetDashboardStatsDocument, options);
-        }
-export function useGetDashboardStatsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetDashboardStatsQuery, GetDashboardStatsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetDashboardStatsQuery, GetDashboardStatsQueryVariables>(GetDashboardStatsDocument, options);
-        }
-export type GetDashboardStatsQueryHookResult = ReturnType<typeof useGetDashboardStatsQuery>;
-export type GetDashboardStatsLazyQueryHookResult = ReturnType<typeof useGetDashboardStatsLazyQuery>;
-export type GetDashboardStatsSuspenseQueryHookResult = ReturnType<typeof useGetDashboardStatsSuspenseQuery>;
-export type GetDashboardStatsQueryResult = Apollo.QueryResult<GetDashboardStatsQuery, GetDashboardStatsQueryVariables>;
-export const GetSystemStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSystemStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"total_payrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"total_clients"},"name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"total_users"},"name":{"kind":"Name","value":"usersAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useGetSystemStatsQuery__
- *
- * To run a query within a React component, call `useGetSystemStatsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSystemStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetSystemStatsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetSystemStatsQuery(baseOptions?: Apollo.QueryHookOptions<GetSystemStatsQuery, GetSystemStatsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetSystemStatsQuery, GetSystemStatsQueryVariables>(GetSystemStatsDocument, options);
-      }
-export function useGetSystemStatsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSystemStatsQuery, GetSystemStatsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetSystemStatsQuery, GetSystemStatsQueryVariables>(GetSystemStatsDocument, options);
-        }
-export function useGetSystemStatsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSystemStatsQuery, GetSystemStatsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetSystemStatsQuery, GetSystemStatsQueryVariables>(GetSystemStatsDocument, options);
-        }
-export type GetSystemStatsQueryHookResult = ReturnType<typeof useGetSystemStatsQuery>;
-export type GetSystemStatsLazyQueryHookResult = ReturnType<typeof useGetSystemStatsLazyQuery>;
-export type GetSystemStatsSuspenseQueryHookResult = ReturnType<typeof useGetSystemStatsSuspenseQuery>;
-export type GetSystemStatsQueryResult = Apollo.QueryResult<GetSystemStatsQuery, GetSystemStatsQueryVariables>;
-export const GetUpcomingPayrollsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUpcomingPayrolls"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDatesAggregate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"min"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"processingDate"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useGetUpcomingPayrollsQuery__
- *
- * To run a query within a React component, call `useGetUpcomingPayrollsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUpcomingPayrollsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUpcomingPayrollsQuery({
- *   variables: {
- *      from_date: // value for 'from_date'
- *      limit: // value for 'limit'
- *   },
- * });
- */
-export function useGetUpcomingPayrollsQuery(baseOptions: Apollo.QueryHookOptions<GetUpcomingPayrollsQuery, GetUpcomingPayrollsQueryVariables> & ({ variables: GetUpcomingPayrollsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUpcomingPayrollsQuery, GetUpcomingPayrollsQueryVariables>(GetUpcomingPayrollsDocument, options);
-      }
-export function useGetUpcomingPayrollsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUpcomingPayrollsQuery, GetUpcomingPayrollsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUpcomingPayrollsQuery, GetUpcomingPayrollsQueryVariables>(GetUpcomingPayrollsDocument, options);
-        }
-export function useGetUpcomingPayrollsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUpcomingPayrollsQuery, GetUpcomingPayrollsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetUpcomingPayrollsQuery, GetUpcomingPayrollsQueryVariables>(GetUpcomingPayrollsDocument, options);
-        }
-export type GetUpcomingPayrollsQueryHookResult = ReturnType<typeof useGetUpcomingPayrollsQuery>;
-export type GetUpcomingPayrollsLazyQueryHookResult = ReturnType<typeof useGetUpcomingPayrollsLazyQuery>;
-export type GetUpcomingPayrollsSuspenseQueryHookResult = ReturnType<typeof useGetUpcomingPayrollsSuspenseQuery>;
-export type GetUpcomingPayrollsQueryResult = Apollo.QueryResult<GetUpcomingPayrollsQuery, GetUpcomingPayrollsQueryVariables>;
-export const GetUnifiedDashboardDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUnifiedDashboardData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"clients_aggregate"},"name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"payrollsAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"active_payrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"processing_queue"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"active_users"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcoming_payrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDatesAggregate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"min"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"processingDate"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"recent_payroll_updates"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"3"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useGetUnifiedDashboardDataQuery__
- *
- * To run a query within a React component, call `useGetUnifiedDashboardDataQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUnifiedDashboardDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUnifiedDashboardDataQuery({
- *   variables: {
- *      from_date: // value for 'from_date'
- *      limit: // value for 'limit'
- *   },
- * });
- */
-export function useGetUnifiedDashboardDataQuery(baseOptions: Apollo.QueryHookOptions<GetUnifiedDashboardDataQuery, GetUnifiedDashboardDataQueryVariables> & ({ variables: GetUnifiedDashboardDataQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUnifiedDashboardDataQuery, GetUnifiedDashboardDataQueryVariables>(GetUnifiedDashboardDataDocument, options);
-      }
-export function useGetUnifiedDashboardDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUnifiedDashboardDataQuery, GetUnifiedDashboardDataQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUnifiedDashboardDataQuery, GetUnifiedDashboardDataQueryVariables>(GetUnifiedDashboardDataDocument, options);
-        }
-export function useGetUnifiedDashboardDataSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUnifiedDashboardDataQuery, GetUnifiedDashboardDataQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetUnifiedDashboardDataQuery, GetUnifiedDashboardDataQueryVariables>(GetUnifiedDashboardDataDocument, options);
-        }
-export type GetUnifiedDashboardDataQueryHookResult = ReturnType<typeof useGetUnifiedDashboardDataQuery>;
-export type GetUnifiedDashboardDataLazyQueryHookResult = ReturnType<typeof useGetUnifiedDashboardDataLazyQuery>;
-export type GetUnifiedDashboardDataSuspenseQueryHookResult = ReturnType<typeof useGetUnifiedDashboardDataSuspenseQuery>;
-export type GetUnifiedDashboardDataQueryResult = Apollo.QueryResult<GetUnifiedDashboardDataQuery, GetUnifiedDashboardDataQueryVariables>;
-export const GetDashboardStatsMinimalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardStatsMinimal"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"clientCount"},"name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"payrollCount"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userCount"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useGetDashboardStatsMinimalQuery__
- *
- * To run a query within a React component, call `useGetDashboardStatsMinimalQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetDashboardStatsMinimalQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetDashboardStatsMinimalQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetDashboardStatsMinimalQuery(baseOptions?: Apollo.QueryHookOptions<GetDashboardStatsMinimalQuery, GetDashboardStatsMinimalQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetDashboardStatsMinimalQuery, GetDashboardStatsMinimalQueryVariables>(GetDashboardStatsMinimalDocument, options);
-      }
-export function useGetDashboardStatsMinimalLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDashboardStatsMinimalQuery, GetDashboardStatsMinimalQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetDashboardStatsMinimalQuery, GetDashboardStatsMinimalQueryVariables>(GetDashboardStatsMinimalDocument, options);
-        }
-export function useGetDashboardStatsMinimalSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetDashboardStatsMinimalQuery, GetDashboardStatsMinimalQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetDashboardStatsMinimalQuery, GetDashboardStatsMinimalQueryVariables>(GetDashboardStatsMinimalDocument, options);
-        }
-export type GetDashboardStatsMinimalQueryHookResult = ReturnType<typeof useGetDashboardStatsMinimalQuery>;
-export type GetDashboardStatsMinimalLazyQueryHookResult = ReturnType<typeof useGetDashboardStatsMinimalLazyQuery>;
-export type GetDashboardStatsMinimalSuspenseQueryHookResult = ReturnType<typeof useGetDashboardStatsMinimalSuspenseQuery>;
-export type GetDashboardStatsMinimalQueryResult = Apollo.QueryResult<GetDashboardStatsMinimalQuery, GetDashboardStatsMinimalQueryVariables>;
-export const GetUpcomingPayrollsMinimalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUpcomingPayrollsMinimal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDatesAggregate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"min"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"nextDate"},"name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useGetUpcomingPayrollsMinimalQuery__
- *
- * To run a query within a React component, call `useGetUpcomingPayrollsMinimalQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUpcomingPayrollsMinimalQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUpcomingPayrollsMinimalQuery({
- *   variables: {
- *      from_date: // value for 'from_date'
- *      limit: // value for 'limit'
- *   },
- * });
- */
-export function useGetUpcomingPayrollsMinimalQuery(baseOptions: Apollo.QueryHookOptions<GetUpcomingPayrollsMinimalQuery, GetUpcomingPayrollsMinimalQueryVariables> & ({ variables: GetUpcomingPayrollsMinimalQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUpcomingPayrollsMinimalQuery, GetUpcomingPayrollsMinimalQueryVariables>(GetUpcomingPayrollsMinimalDocument, options);
-      }
-export function useGetUpcomingPayrollsMinimalLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUpcomingPayrollsMinimalQuery, GetUpcomingPayrollsMinimalQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUpcomingPayrollsMinimalQuery, GetUpcomingPayrollsMinimalQueryVariables>(GetUpcomingPayrollsMinimalDocument, options);
-        }
-export function useGetUpcomingPayrollsMinimalSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUpcomingPayrollsMinimalQuery, GetUpcomingPayrollsMinimalQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetUpcomingPayrollsMinimalQuery, GetUpcomingPayrollsMinimalQueryVariables>(GetUpcomingPayrollsMinimalDocument, options);
-        }
-export type GetUpcomingPayrollsMinimalQueryHookResult = ReturnType<typeof useGetUpcomingPayrollsMinimalQuery>;
-export type GetUpcomingPayrollsMinimalLazyQueryHookResult = ReturnType<typeof useGetUpcomingPayrollsMinimalLazyQuery>;
-export type GetUpcomingPayrollsMinimalSuspenseQueryHookResult = ReturnType<typeof useGetUpcomingPayrollsMinimalSuspenseQuery>;
-export type GetUpcomingPayrollsMinimalQueryResult = Apollo.QueryResult<GetUpcomingPayrollsMinimalQuery, GetUpcomingPayrollsMinimalQueryVariables>;
-export const GetRecentActivityMinimalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRecentActivityMinimal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useGetRecentActivityMinimalQuery__
- *
- * To run a query within a React component, call `useGetRecentActivityMinimalQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetRecentActivityMinimalQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetRecentActivityMinimalQuery({
- *   variables: {
- *      limit: // value for 'limit'
- *   },
- * });
- */
-export function useGetRecentActivityMinimalQuery(baseOptions?: Apollo.QueryHookOptions<GetRecentActivityMinimalQuery, GetRecentActivityMinimalQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetRecentActivityMinimalQuery, GetRecentActivityMinimalQueryVariables>(GetRecentActivityMinimalDocument, options);
-      }
-export function useGetRecentActivityMinimalLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRecentActivityMinimalQuery, GetRecentActivityMinimalQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetRecentActivityMinimalQuery, GetRecentActivityMinimalQueryVariables>(GetRecentActivityMinimalDocument, options);
-        }
-export function useGetRecentActivityMinimalSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRecentActivityMinimalQuery, GetRecentActivityMinimalQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetRecentActivityMinimalQuery, GetRecentActivityMinimalQueryVariables>(GetRecentActivityMinimalDocument, options);
-        }
-export type GetRecentActivityMinimalQueryHookResult = ReturnType<typeof useGetRecentActivityMinimalQuery>;
-export type GetRecentActivityMinimalLazyQueryHookResult = ReturnType<typeof useGetRecentActivityMinimalLazyQuery>;
-export type GetRecentActivityMinimalSuspenseQueryHookResult = ReturnType<typeof useGetRecentActivityMinimalSuspenseQuery>;
-export type GetRecentActivityMinimalQueryResult = Apollo.QueryResult<GetRecentActivityMinimalQuery, GetRecentActivityMinimalQueryVariables>;
-export const GetQuickStatsOnlyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetQuickStatsOnly"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"totals"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeClients"},"name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeUsers"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useGetQuickStatsOnlyQuery__
- *
- * To run a query within a React component, call `useGetQuickStatsOnlyQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetQuickStatsOnlyQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetQuickStatsOnlyQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetQuickStatsOnlyQuery(baseOptions?: Apollo.QueryHookOptions<GetQuickStatsOnlyQuery, GetQuickStatsOnlyQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetQuickStatsOnlyQuery, GetQuickStatsOnlyQueryVariables>(GetQuickStatsOnlyDocument, options);
-      }
-export function useGetQuickStatsOnlyLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetQuickStatsOnlyQuery, GetQuickStatsOnlyQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetQuickStatsOnlyQuery, GetQuickStatsOnlyQueryVariables>(GetQuickStatsOnlyDocument, options);
-        }
-export function useGetQuickStatsOnlySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetQuickStatsOnlyQuery, GetQuickStatsOnlyQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetQuickStatsOnlyQuery, GetQuickStatsOnlyQueryVariables>(GetQuickStatsOnlyDocument, options);
-        }
-export type GetQuickStatsOnlyQueryHookResult = ReturnType<typeof useGetQuickStatsOnlyQuery>;
-export type GetQuickStatsOnlyLazyQueryHookResult = ReturnType<typeof useGetQuickStatsOnlyLazyQuery>;
-export type GetQuickStatsOnlySuspenseQueryHookResult = ReturnType<typeof useGetQuickStatsOnlySuspenseQuery>;
-export type GetQuickStatsOnlyQueryResult = Apollo.QueryResult<GetQuickStatsOnlyQuery, GetQuickStatsOnlyQueryVariables>;
-export const ClientCountUpdatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"ClientCountUpdates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useClientCountUpdatesSubscription__
- *
- * To run a query within a React component, call `useClientCountUpdatesSubscription` and pass it any options that fit your needs.
- * When your component renders, `useClientCountUpdatesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useClientCountUpdatesSubscription({
- *   variables: {
- *   },
- * });
- */
-export function useClientCountUpdatesSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ClientCountUpdatesSubscription, ClientCountUpdatesSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<ClientCountUpdatesSubscription, ClientCountUpdatesSubscriptionVariables>(ClientCountUpdatesDocument, options);
-      }
-export type ClientCountUpdatesSubscriptionHookResult = ReturnType<typeof useClientCountUpdatesSubscription>;
-export type ClientCountUpdatesSubscriptionResult = Apollo.SubscriptionResult<ClientCountUpdatesSubscription>;
-export const PayrollCountUpdatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"PayrollCountUpdates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __usePayrollCountUpdatesSubscription__
- *
- * To run a query within a React component, call `usePayrollCountUpdatesSubscription` and pass it any options that fit your needs.
- * When your component renders, `usePayrollCountUpdatesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = usePayrollCountUpdatesSubscription({
- *   variables: {
- *   },
- * });
- */
-export function usePayrollCountUpdatesSubscription(baseOptions?: Apollo.SubscriptionHookOptions<PayrollCountUpdatesSubscription, PayrollCountUpdatesSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<PayrollCountUpdatesSubscription, PayrollCountUpdatesSubscriptionVariables>(PayrollCountUpdatesDocument, options);
-      }
-export type PayrollCountUpdatesSubscriptionHookResult = ReturnType<typeof usePayrollCountUpdatesSubscription>;
-export type PayrollCountUpdatesSubscriptionResult = Apollo.SubscriptionResult<PayrollCountUpdatesSubscription>;
-export const UserCountUpdatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"UserCountUpdates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useUserCountUpdatesSubscription__
- *
- * To run a query within a React component, call `useUserCountUpdatesSubscription` and pass it any options that fit your needs.
- * When your component renders, `useUserCountUpdatesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useUserCountUpdatesSubscription({
- *   variables: {
- *   },
- * });
- */
-export function useUserCountUpdatesSubscription(baseOptions?: Apollo.SubscriptionHookOptions<UserCountUpdatesSubscription, UserCountUpdatesSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<UserCountUpdatesSubscription, UserCountUpdatesSubscriptionVariables>(UserCountUpdatesDocument, options);
-      }
-export type UserCountUpdatesSubscriptionHookResult = ReturnType<typeof useUserCountUpdatesSubscription>;
-export type UserCountUpdatesSubscriptionResult = Apollo.SubscriptionResult<UserCountUpdatesSubscription>;
-export const RecentPayrollActivityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RecentPayrollActivity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useRecentPayrollActivitySubscription__
- *
- * To run a query within a React component, call `useRecentPayrollActivitySubscription` and pass it any options that fit your needs.
- * When your component renders, `useRecentPayrollActivitySubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useRecentPayrollActivitySubscription({
- *   variables: {
- *   },
- * });
- */
-export function useRecentPayrollActivitySubscription(baseOptions?: Apollo.SubscriptionHookOptions<RecentPayrollActivitySubscription, RecentPayrollActivitySubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<RecentPayrollActivitySubscription, RecentPayrollActivitySubscriptionVariables>(RecentPayrollActivityDocument, options);
-      }
-export type RecentPayrollActivitySubscriptionHookResult = ReturnType<typeof useRecentPayrollActivitySubscription>;
-export type RecentPayrollActivitySubscriptionResult = Apollo.SubscriptionResult<RecentPayrollActivitySubscription>;
-export const RecentUserActivityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RecentUserActivity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"3"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useRecentUserActivitySubscription__
- *
- * To run a query within a React component, call `useRecentUserActivitySubscription` and pass it any options that fit your needs.
- * When your component renders, `useRecentUserActivitySubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useRecentUserActivitySubscription({
- *   variables: {
- *   },
- * });
- */
-export function useRecentUserActivitySubscription(baseOptions?: Apollo.SubscriptionHookOptions<RecentUserActivitySubscription, RecentUserActivitySubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<RecentUserActivitySubscription, RecentUserActivitySubscriptionVariables>(RecentUserActivityDocument, options);
-      }
-export type RecentUserActivitySubscriptionHookResult = ReturnType<typeof useRecentUserActivitySubscription>;
-export type RecentUserActivitySubscriptionResult = Apollo.SubscriptionResult<RecentUserActivitySubscription>;
-export const CriticalPayrollNotificationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"CriticalPayrollNotifications"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Issue","block":false},{"kind":"StringValue","value":"Critical","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useCriticalPayrollNotificationsSubscription__
- *
- * To run a query within a React component, call `useCriticalPayrollNotificationsSubscription` and pass it any options that fit your needs.
- * When your component renders, `useCriticalPayrollNotificationsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCriticalPayrollNotificationsSubscription({
- *   variables: {
- *   },
- * });
- */
-export function useCriticalPayrollNotificationsSubscription(baseOptions?: Apollo.SubscriptionHookOptions<CriticalPayrollNotificationsSubscription, CriticalPayrollNotificationsSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<CriticalPayrollNotificationsSubscription, CriticalPayrollNotificationsSubscriptionVariables>(CriticalPayrollNotificationsDocument, options);
-      }
-export type CriticalPayrollNotificationsSubscriptionHookResult = ReturnType<typeof useCriticalPayrollNotificationsSubscription>;
-export type CriticalPayrollNotificationsSubscriptionResult = Apollo.SubscriptionResult<CriticalPayrollNotificationsSubscription>;
-export const UpcomingPayrollsUpdatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"UpcomingPayrollsUpdates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDatesAggregate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"min"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"nextDate"},"name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}}]}}]}}]}}]} as unknown as DocumentNode;
-
-/**
- * __useUpcomingPayrollsUpdatesSubscription__
- *
- * To run a query within a React component, call `useUpcomingPayrollsUpdatesSubscription` and pass it any options that fit your needs.
- * When your component renders, `useUpcomingPayrollsUpdatesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useUpcomingPayrollsUpdatesSubscription({
- *   variables: {
- *      fromDate: // value for 'fromDate'
- *   },
- * });
- */
-export function useUpcomingPayrollsUpdatesSubscription(baseOptions: Apollo.SubscriptionHookOptions<UpcomingPayrollsUpdatesSubscription, UpcomingPayrollsUpdatesSubscriptionVariables> & ({ variables: UpcomingPayrollsUpdatesSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<UpcomingPayrollsUpdatesSubscription, UpcomingPayrollsUpdatesSubscriptionVariables>(UpcomingPayrollsUpdatesDocument, options);
-      }
-export type UpcomingPayrollsUpdatesSubscriptionHookResult = ReturnType<typeof useUpcomingPayrollsUpdatesSubscription>;
-export type UpcomingPayrollsUpdatesSubscriptionResult = Apollo.SubscriptionResult<UpcomingPayrollsUpdatesSubscription>;
+export const UserCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserCoreFragment, unknown>;
+export const UserBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserBasicFragment, unknown>;
+export const UserWithManagerFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithManager"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserWithManagerFragment, unknown>;
+export const RoleCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<RoleCoreFragment, unknown>;
+export const PermissionCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<PermissionCoreFragment, unknown>;
+export const PermissionWithResourceFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionWithResource"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionCore"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<PermissionWithResourceFragment, unknown>;
+export const ClientCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"contactPerson"}},{"kind":"Field","name":{"kind":"Name","value":"contactPhone"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ClientCoreFragment, unknown>;
+export const ClientBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]} as unknown as DocumentNode<ClientBasicFragment, unknown>;
+export const ResourceCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ResourceCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"resources"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ResourceCoreFragment, unknown>;
+export const UserRoleCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"userRoles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserRoleCoreFragment, unknown>;
+export const RolePermissionCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RolePermissionCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"rolePermissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<RolePermissionCoreFragment, unknown>;
+export const AuditFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"auditLogs"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"userRole"}}]}}]} as unknown as DocumentNode<AuditFieldsFragment, unknown>;
+export const PlaceholderMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PlaceholderMutation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]} as unknown as DocumentNode<PlaceholderMutationMutation, PlaceholderMutationMutationVariables>;
+export const GetDashboardStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"clients_aggregate"},"name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"payrollsAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"active_payrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"processing_queue"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Implementation","block":false}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetDashboardStatsQuery, GetDashboardStatsQueryVariables>;
+export const GetSystemStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSystemStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"total_payrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"total_clients"},"name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"total_users"},"name":{"kind":"Name","value":"usersAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetSystemStatsQuery, GetSystemStatsQueryVariables>;
+export const GetUpcomingPayrollsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUpcomingPayrolls"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDatesAggregate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"min"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"processingDate"}}]}}]}}]}}]} as unknown as DocumentNode<GetUpcomingPayrollsQuery, GetUpcomingPayrollsQueryVariables>;
+export const GetUnifiedDashboardDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUnifiedDashboardData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"clients_aggregate"},"name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"payrollsAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"active_payrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"processing_queue"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"active_users"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcoming_payrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDatesAggregate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"min"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"processingDate"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"recent_payroll_updates"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"3"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetUnifiedDashboardDataQuery, GetUnifiedDashboardDataQueryVariables>;
+export const GetDashboardStatsMinimalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardStatsMinimal"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"clientCount"},"name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"payrollCount"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userCount"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetDashboardStatsMinimalQuery, GetDashboardStatsMinimalQueryVariables>;
+export const GetUpcomingPayrollsMinimalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUpcomingPayrollsMinimal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDatesAggregate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"min"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"nextDate"},"name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"from_date"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}}]}}]}}]}}]} as unknown as DocumentNode<GetUpcomingPayrollsMinimalQuery, GetUpcomingPayrollsMinimalQueryVariables>;
+export const GetRecentActivityMinimalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRecentActivityMinimal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetRecentActivityMinimalQuery, GetRecentActivityMinimalQueryVariables>;
+export const GetQuickStatsOnlyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetQuickStatsOnly"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"totals"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeClients"},"name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeUsers"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetQuickStatsOnlyQuery, GetQuickStatsOnlyQueryVariables>;
+export const ClientCountUpdatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"ClientCountUpdates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<ClientCountUpdatesSubscription, ClientCountUpdatesSubscriptionVariables>;
+export const PayrollCountUpdatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"PayrollCountUpdates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<PayrollCountUpdatesSubscription, PayrollCountUpdatesSubscriptionVariables>;
+export const UserCountUpdatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"UserCountUpdates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<UserCountUpdatesSubscription, UserCountUpdatesSubscriptionVariables>;
+export const RecentPayrollActivityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RecentPayrollActivity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<RecentPayrollActivitySubscription, RecentPayrollActivitySubscriptionVariables>;
+export const RecentUserActivityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RecentUserActivity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"3"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<RecentUserActivitySubscription, RecentUserActivitySubscriptionVariables>;
+export const CriticalPayrollNotificationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"CriticalPayrollNotifications"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Issue","block":false},{"kind":"StringValue","value":"Critical","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CriticalPayrollNotificationsSubscription, CriticalPayrollNotificationsSubscriptionVariables>;
+export const UpcomingPayrollsUpdatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"UpcomingPayrollsUpdates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDatesAggregate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"min"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"nextDate"},"name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}}]}}]}}]}}]} as unknown as DocumentNode<UpcomingPayrollsUpdatesSubscription, UpcomingPayrollsUpdatesSubscriptionVariables>;

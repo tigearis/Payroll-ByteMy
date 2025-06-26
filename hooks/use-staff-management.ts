@@ -54,8 +54,8 @@ export function useStaffManagement(options: UseStaffManagementOptions = {}) {
     }
   }, [autoFetch, isLoaded, isSignedIn, loading, error, fetchUsers, pageSize, role]);
 
-  // Computed states for UI
-  const canCreateStaff = permissions?.canCreate || currentUserRole === "developer" || currentUserRole === "org_admin";
+  // Computed states for UI using permission system
+  const canCreateStaff = permissions?.canCreate || permissions?.canManageUsers;
   const canViewStaff = permissions?.canManageUsers || currentUserRole !== "viewer";
   const isReady = isLoaded && isSignedIn && !loading;
 

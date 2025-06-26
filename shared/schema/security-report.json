@@ -1,186 +1,112 @@
 {
-  "generatedAt": "2025-06-26T08:26:40.499Z",
-  "codegenVersion": "unified-v3.0-fixed",
   "domains": [
     {
       "name": "auth",
-      "securityLevel": "CRITICAL",
-      "hasOperations": true,
-      "accessControls": "Admin + MFA + Full Audit",
-      "outputPath": "./domains/auth/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/auth/graphql/fragments.graphql",
-        "./domains/auth/graphql/queries.graphql",
-        "./domains/auth/graphql/mutations.graphql",
-        "./domains/auth/graphql/subscriptions.graphql"
-      ]
+      "security": "CRITICAL",
+      "description": "Authentication and JWT handling",
+      "hasOperations": false,
+      "documentsPath": "./domains/auth/graphql/generated/"
     },
     {
       "name": "audit",
-      "securityLevel": "CRITICAL",
-      "hasOperations": true,
-      "accessControls": "Admin + MFA + Full Audit",
-      "outputPath": "./domains/audit/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/audit/graphql/fragments.graphql",
-        "./domains/audit/graphql/queries.graphql",
-        "./domains/audit/graphql/mutations.graphql",
-        "./domains/audit/graphql/subscriptions.graphql"
-      ]
+      "security": "CRITICAL",
+      "description": "SOC2 compliance and logging",
+      "hasOperations": false,
+      "documentsPath": "./domains/audit/graphql/generated/"
     },
     {
       "name": "permissions",
-      "securityLevel": "CRITICAL",
-      "hasOperations": true,
-      "accessControls": "Admin + MFA + Full Audit",
-      "outputPath": "./domains/permissions/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/permissions/graphql/fragments.graphql",
-        "./domains/permissions/graphql/queries.graphql",
-        "./domains/permissions/graphql/mutations.graphql",
-        "./domains/permissions/graphql/subscriptions.graphql"
-      ]
+      "security": "CRITICAL",
+      "description": "Role-based access control",
+      "hasOperations": false,
+      "documentsPath": "./domains/permissions/graphql/generated/"
     },
     {
       "name": "users",
-      "securityLevel": "HIGH",
-      "hasOperations": true,
-      "accessControls": "Role-based + Audit Logging",
-      "outputPath": "./domains/users/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/users/graphql/fragments.graphql",
-        "./domains/users/graphql/queries.graphql",
-        "./domains/users/graphql/mutations.graphql",
-        "./domains/users/graphql/subscriptions.graphql"
-      ]
+      "security": "HIGH",
+      "description": "User management and staff lifecycle",
+      "hasOperations": false,
+      "documentsPath": "./domains/users/graphql/generated/"
     },
     {
       "name": "clients",
-      "securityLevel": "HIGH",
-      "hasOperations": true,
-      "accessControls": "Role-based + Audit Logging",
-      "outputPath": "./domains/clients/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/clients/graphql/fragments.graphql",
-        "./domains/clients/graphql/queries.graphql",
-        "./domains/clients/graphql/mutations.graphql",
-        "./domains/clients/graphql/subscriptions.graphql"
-      ]
+      "security": "HIGH",
+      "description": "Client relationship management",
+      "hasOperations": false,
+      "documentsPath": "./domains/clients/graphql/generated/"
     },
     {
       "name": "billing",
-      "securityLevel": "HIGH",
-      "hasOperations": true,
-      "accessControls": "Role-based + Audit Logging",
-      "outputPath": "./domains/billing/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/billing/graphql/queries.graphql",
-        "./domains/billing/graphql/mutations.graphql"
-      ]
+      "security": "HIGH",
+      "description": "Financial operations",
+      "hasOperations": false,
+      "documentsPath": "./domains/billing/graphql/generated/"
     },
     {
       "name": "payrolls",
-      "securityLevel": "MEDIUM",
-      "hasOperations": true,
-      "accessControls": "Authentication + Basic Audit",
-      "outputPath": "./domains/payrolls/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/payrolls/graphql/fragments.graphql",
-        "./domains/payrolls/graphql/queries.graphql",
-        "./domains/payrolls/graphql/mutations.graphql",
-        "./domains/payrolls/graphql/subscriptions.graphql"
-      ]
+      "security": "MEDIUM",
+      "description": "Payroll processing engine",
+      "hasOperations": false,
+      "documentsPath": "./domains/payrolls/graphql/generated/"
     },
     {
       "name": "notes",
-      "securityLevel": "MEDIUM",
-      "hasOperations": true,
-      "accessControls": "Authentication + Basic Audit",
-      "outputPath": "./domains/notes/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/notes/graphql/fragments.graphql",
-        "./domains/notes/graphql/queries.graphql",
-        "./domains/notes/graphql/mutations.graphql",
-        "./domains/notes/graphql/subscriptions.graphql"
-      ]
+      "security": "MEDIUM",
+      "description": "Documentation and communication",
+      "hasOperations": false,
+      "documentsPath": "./domains/notes/graphql/generated/"
     },
     {
       "name": "leave",
-      "securityLevel": "MEDIUM",
-      "hasOperations": true,
-      "accessControls": "Authentication + Basic Audit",
-      "outputPath": "./domains/leave/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/leave/graphql/fragments.graphql",
-        "./domains/leave/graphql/queries.graphql",
-        "./domains/leave/graphql/mutations.graphql",
-        "./domains/leave/graphql/subscriptions.graphql"
-      ]
+      "security": "MEDIUM",
+      "description": "Employee leave management",
+      "hasOperations": false,
+      "documentsPath": "./domains/leave/graphql/generated/"
     },
     {
       "name": "work-schedule",
-      "securityLevel": "MEDIUM",
-      "hasOperations": true,
-      "accessControls": "Authentication + Basic Audit",
-      "outputPath": "./domains/work-schedule/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/work-schedule/graphql/fragments.graphql",
-        "./domains/work-schedule/graphql/queries.graphql",
-        "./domains/work-schedule/graphql/mutations.graphql",
-        "./domains/work-schedule/graphql/subscriptions.graphql"
-      ]
+      "security": "MEDIUM",
+      "description": "Staff scheduling",
+      "hasOperations": false,
+      "documentsPath": "./domains/work-schedule/graphql/generated/"
     },
     {
       "name": "external-systems",
-      "securityLevel": "MEDIUM",
-      "hasOperations": true,
-      "accessControls": "Authentication + Basic Audit",
-      "outputPath": "./domains/external-systems/graphql/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./domains/external-systems/graphql/fragments.graphql",
-        "./domains/external-systems/graphql/queries.graphql",
-        "./domains/external-systems/graphql/mutations.graphql",
-        "./domains/external-systems/graphql/subscriptions.graphql"
-      ]
+      "security": "MEDIUM",
+      "description": "Third-party integrations",
+      "hasOperations": false,
+      "documentsPath": "./domains/external-systems/graphql/generated/"
     },
     {
       "name": "shared",
-      "securityLevel": "LOW",
-      "hasOperations": true,
-      "accessControls": "Basic Authentication",
-      "outputPath": "./shared/types/generated/",
-      "documents": [
-        "./shared/graphql/fragments.graphql",
-        "./shared/graphql/queries.graphql",
-        "./shared/graphql/mutations.graphql",
-        "./shared/graphql/subscriptions.graphql"
-      ]
+      "security": "LOW",
+      "description": "Public/aggregate data",
+      "hasOperations": false,
+      "documentsPath": "./domains/shared/graphql/generated/"
     }
   ],
-  "compliance": {
-    "soc2": true,
-    "auditLogging": true,
-    "rbac": true,
-    "dataClassification": true,
-    "autoExports": true,
-    "duplicatePrevention": true
+  "securityLevels": {
+    "CRITICAL": "Auth, user roles, financial data - Requires admin access + MFA",
+    "HIGH": "PII, client data, employee info - Requires role-based access",
+    "MEDIUM": "Internal business data - Requires authentication",
+    "LOW": "Public/aggregate data - Basic access control"
   },
-  "fixes": {
-    "separatedBaseTypes": true,
-    "properClientPreset": true,
-    "noFragmentMasking": true,
-    "cleanExports": true,
-    "noDuplicateGeneration": true
-  }
+  "complianceFeatures": [
+    "Role-based access control (RBAC)",
+    "Audit logging integration",
+    "Data classification enforcement",
+    "Permission boundary validation",
+    "Automatic domain isolation and exports",
+    "Client Preset v4.8+ for optimal type safety",
+    "Zero type conflicts with modern codegen"
+  ],
+  "generatedAt": "2025-06-26T10:00:02.077Z",
+  "codegenVersion": "Client Preset v4.0",
+  "architectureFixes": [
+    "Migrated to client preset for better type safety",
+    "Eliminated type export conflicts",
+    "Simplified output directory structure",
+    "Removed complex post-generation hooks",
+    "Enhanced domain isolation"
+  ]
 }
