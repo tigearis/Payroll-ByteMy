@@ -344,7 +344,7 @@ export default function StaffDetailsPage() {
     
     // Check for explicit restrictions first
     const restriction = overrides.find(
-      override => 
+      (override: any) => 
         `${override.resource}:${override.operation}` === permission && 
         override.granted === false
     );
@@ -352,7 +352,7 @@ export default function StaffDetailsPage() {
     
     // Check for explicit grants
     const grant = overrides.find(
-      override => 
+      (override: any) => 
         `${override.resource}:${override.operation}` === permission && 
         override.granted === true
     );
@@ -368,7 +368,7 @@ export default function StaffDetailsPage() {
     const overrides = permissionOverridesData?.permissionOverrides || [];
     
     const override = overrides.find(
-      o => `${o.resource}:${o.operation}` === permission
+      (o: any) => `${o.resource}:${o.operation}` === permission
     );
     
     if (override) {
