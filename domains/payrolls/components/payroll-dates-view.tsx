@@ -265,17 +265,26 @@ function PayrollDatesTable({
       header: "Notes",
       cell: ({ row }) => (
         <div>
-          {row.original.notes ? (
-            <NotesModal
-              note={{
-                id: row.original.id,
-                content: row.original.notes,
-              }}
-              refetchNotes={() => refetch()}
-            />
-          ) : (
-            <span className="text-gray-500">-</span>
-          )}
+          <NotesModal
+            note={{
+              id: row.original.id,
+              content: row.original.notes || "",
+            }}
+            refetchNotes={() => refetch()}
+            trigger={
+              row.original.notes ? (
+                <Button variant="ghost" size="sm" className="h-auto p-1">
+                  <div className="max-w-[150px] truncate text-left">
+                    {row.original.notes}
+                  </div>
+                </Button>
+              ) : (
+                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-600">
+                  Add note
+                </Button>
+              )
+            }
+          />
         </div>
       ),
     },
@@ -484,7 +493,15 @@ export function PayrollDatesView({
       original_eft_date: date.originalEftDate,
       adjusted_eft_date: date.adjustedEftDate,
       processing_date: date.processingDate,
+      notes: date.notes,
       payroll_id: date.payrollId,
+      payroll: date.payroll ? {
+        id: date.payroll.id,
+        name: date.payroll.name,
+        version_number: date.payroll.versionNumber,
+        status: date.payroll.status,
+        superseded_date: date.payroll.supersededDate,
+      } : undefined,
     }));
     const currentDate = startOfDay(new Date());
     pastDates = allDates.filter(date => {
@@ -499,7 +516,16 @@ export function PayrollDatesView({
     // Fallback to client-side filtering - direct access since fragment masking is disabled
     const familyDates =
       familyData.payrolls.flatMap((payroll: any) =>
-        payroll.payrollDates.map((date: any) => date)
+        payroll.payrollDates.map((date: any) => ({
+          ...date,
+          payroll: {
+            id: payroll.id,
+            name: payroll.name,
+            version_number: payroll.versionNumber,
+            status: payroll.status,
+            superseded_date: payroll.supersededDate,
+          }
+        }))
       ) || [];
     // Convert to the expected format
     allDates = familyDates.map((date: any) => ({
@@ -507,7 +533,9 @@ export function PayrollDatesView({
       original_eft_date: date.originalEftDate,
       adjusted_eft_date: date.adjustedEftDate,
       processing_date: date.processingDate,
+      notes: date.notes,
       payroll_id: date.payrollId,
+      payroll: date.payroll,
     }));
     const currentDate = startOfDay(new Date());
     pastDates = allDates.filter(date => {
@@ -526,7 +554,15 @@ export function PayrollDatesView({
       original_eft_date: date.originalEftDate,
       adjusted_eft_date: date.adjustedEftDate,
       processing_date: date.processingDate,
+      notes: date.notes,
       payroll_id: date.payrollId,
+      payroll: date.payroll ? {
+        id: date.payroll.id,
+        name: date.payroll.name,
+        version_number: date.payroll.versionNumber,
+        status: date.payroll.status,
+        superseded_date: date.payroll.supersededDate,
+      } : undefined,
     }));
     const currentDate = startOfDay(new Date());
     pastDates = allDates.filter(date => {

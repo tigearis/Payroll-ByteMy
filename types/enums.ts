@@ -1,5 +1,3 @@
-// Note: Role types have been moved to @/types/permissions.ts
-// Import Role from @/types/permissions instead of using this enum
 // types/custom-enums.ts
 
 // Weekday enum for payroll scheduling (1-5 for Monday-Friday)
@@ -77,4 +75,13 @@ export enum Status {
   Active = "active",
   Inactive = "inactive",
   Archived = "archived",
+}
+
+// Role enum (standardized naming)
+export enum Role {
+  Developer = "developer",
+  Admin = "org_admin",
+  Manager = "manager",
+  Consultant = "consultant",
+  Viewer = "viewer",
 }

@@ -313,6 +313,13 @@ query GetPayrollDates($payrollId: uuid!) {
     createdAt
     updatedAt
     payrollId
+    payroll {
+      id
+      name
+      versionNumber
+      status
+      supersededDate
+    }
   }
 }
 
@@ -704,6 +711,7 @@ query GetPayrollFamilyDates($payrollId: uuid!) {
     name
     versionNumber
     status
+    supersededDate
     payrollDates(orderBy: { originalEftDate: ASC }) {
       ...PayrollDate
     }
