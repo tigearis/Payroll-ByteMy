@@ -34,7 +34,7 @@ const CreateStaffSchema = z.object({
 type CreateStaffInput = z.infer<typeof CreateStaffSchema>;
 
 // Secure staff creation endpoint - admin only
-export const POST = withAuth(
+const handler = withAuth(
   async (request: NextRequest, session) => {
     console.log("🔧 =========================");
     console.log("🔧 STAFF CREATION STARTING");
@@ -431,6 +431,9 @@ export const POST = withAuth(
     allowedRoles: ["developer", "org_admin", "manager"], // Admins and managers can create staff
   }
 );
+
+// Export the POST method
+export const POST = handler;
 
 export async function GET() {
   console.log("GET handler working");
