@@ -206,7 +206,7 @@ export function ActorTokenManager() {
                   </SelectTrigger>
                   <SelectContent>
                     {usersLoading ? (
-                      <SelectItem value="" disabled>
+                      <SelectItem value="loading" disabled>
                         Loading users...
                       </SelectItem>
                     ) : (

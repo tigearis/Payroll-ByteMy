@@ -78,7 +78,7 @@ export function CreateUserModal({
       lastName: "",
       email: "",
       role: "viewer",
-      managerId: "",
+      managerId: "none",
     },
   });
 
@@ -112,7 +112,7 @@ export function CreateUserModal({
           email: data.email,
           role: data.role,
           is_staff: true,
-          managerId: data.managerId || null,
+          managerId: data.managerId && data.managerId !== "none" ? data.managerId : null,
           inviteToClerk: true, // Send Clerk invitation
         }),
       });
@@ -333,7 +333,7 @@ export function CreateUserModal({
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value || ""}
+                        defaultValue={field.value || "none"}
                         disabled={isSubmitting}
                       >
                         <FormControl>
@@ -342,7 +342,7 @@ export function CreateUserModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">No manager assigned</SelectItem>
+                          <SelectItem value="none">No manager assigned</SelectItem>
                           {managers.map(manager => (
                             <SelectItem key={manager.id} value={manager.id}>
                               <div className="flex flex-col">

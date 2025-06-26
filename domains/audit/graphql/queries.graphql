@@ -189,7 +189,60 @@ query SecurityOverview(
     resourceType
   }
 
-  # Data access in last 7 days
+  # Auth events summary
+  authEventsSummary: authEvents(
+    where: { eventTime: { _gte: $sevenDaysAgo } }
+    orderBy: { eventTime: DESC }
+    limit: 50
+  ) {
+    id
+    eventTime
+    eventType
+    success
+    failureReason
+  }
+}
+
+# Security Overview with Data Access (for privileged roles)
+query SecurityOverviewWithDataAccess(
+  $twentyFourHoursAgo: timestamptz!
+  $sevenDaysAgo: timestamptz!
+) {
+  # Recent audit logs (last 24 hours)
+  recentAuditLogs: auditLogs(
+    where: { eventTime: { _gte: $twentyFourHoursAgo } }
+    orderBy: { eventTime: DESC }
+    limit: 100
+  ) {
+    id
+    eventTime
+    action
+    resourceType
+    success
+  }
+
+  # Audit log count for metrics
+  auditLogCount: auditLogsAggregate(
+    where: { eventTime: { _gte: $twentyFourHoursAgo } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  # Failed operations in last 24 hours
+  failedOperations: auditLogs(
+    where: { success: { _eq: false }, eventTime: { _gte: $twentyFourHoursAgo } }
+    orderBy: { eventTime: DESC }
+    limit: 50
+  ) {
+    id
+    eventTime
+    action
+    resourceType
+  }
+
+  # Data access in last 7 days (only for privileged roles)
   dataAccessSummary: dataAccessLogs(
     where: { accessedAt: { _gte: $sevenDaysAgo } }
     orderBy: { accessedAt: DESC }

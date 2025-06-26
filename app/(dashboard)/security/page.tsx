@@ -29,11 +29,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import {
   SecurityOverviewDocument,
+  SecurityOverviewWithDataAccessDocument,
   SecurityEventsStreamDocument,
   FailedOperationsStreamDocument,
-  CriticalDataAccessStreamDocument
+  CriticalDataAccessStreamDocument,
 } from "@/domains/audit/graphql/generated/graphql";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
 import { useSecureSubscription } from "@/hooks/use-subscription-permissions";
@@ -42,12 +43,26 @@ import { useStrategicQuery } from "@/hooks/use-strategic-query";
 export default function SecurityDashboard() {
   // State for WebSocket connection status
   const [isWebSocketConnected, setIsWebSocketConnected] = useState(true);
-  
+
   // Calculate time ranges - memoized to prevent unnecessary re-subscriptions
-  const timeRanges = useMemo(() => ({
-    twentyFourHoursAgo: subHours(new Date(), 24).toISOString(),
-    sevenDaysAgo: subDays(new Date(), 7).toISOString(),
-  }), []);
+  const timeRanges = useMemo(
+    () => ({
+      twentyFourHoursAgo: subHours(new Date(), 24).toISOString(),
+      sevenDaysAgo: subDays(new Date(), 7).toISOString(),
+    }),
+    []
+  );
+
+  // Get permissions first
+  const { checkPermission, userRole } = useEnhancedPermissions();
+  const securityReadPermission = checkPermission("security", "read");
+  const securityManagePermission = checkPermission("security", "manage");
+  const auditReadPermission = checkPermission("audit", "read");
+
+  // Determine which query to use based on permissions
+  const securityQueryDocument = auditReadPermission.granted
+    ? SecurityOverviewWithDataAccessDocument
+    : SecurityOverviewDocument;
 
   // Initial data load using strategic query for security events
   const {
@@ -55,66 +70,70 @@ export default function SecurityDashboard() {
     loading: queryLoading,
     error,
     refetch,
-  } = useStrategicQuery(
-    SecurityOverviewDocument,
-    "securityEvents",
-    {
-      variables: timeRanges,
-      // No polling - subscriptions handle real-time updates
-      pollInterval: 0,
-    }
-  );
+  } = useStrategicQuery(securityQueryDocument, "securityEvents", {
+    variables: timeRanges,
+    // No polling - subscriptions handle real-time updates
+    pollInterval: 0,
+  });
 
   // Real-time security events subscription with permission validation
   const securityEventsResult = useSecureSubscription(
-    () => useSubscription(SecurityEventsStreamDocument, {
-      variables: { twentyFourHoursAgo: timeRanges.twentyFourHoursAgo },
-      onError: (error) => {
-        console.warn("Security events subscription error:", error);
-        setIsWebSocketConnected(false);
-      },
-      onComplete: () => {
-        console.log("Security events subscription completed");
-      },
-    }),
-    { 
-      resource: "security", 
+    () =>
+      useSubscription(SecurityEventsStreamDocument, {
+        variables: { twentyFourHoursAgo: timeRanges.twentyFourHoursAgo },
+        onError: error => {
+          console.warn("Security events subscription error:", error);
+          setIsWebSocketConnected(false);
+        },
+        onComplete: () => {
+          console.log("Security events subscription completed");
+        },
+      }),
+    {
+      resource: "security",
       action: "read",
       onPermissionDenied: () => setIsWebSocketConnected(false),
     }
   );
-  const { data: securityEventsData, error: securityEventsError, permissionError: securityPermissionError } = securityEventsResult;
+  const {
+    data: securityEventsData,
+    error: securityEventsError,
+    permissionError: securityPermissionError,
+  } = securityEventsResult;
 
   // Real-time failed operations subscription
-  const { 
-    data: failedOpsData,
-    error: failedOpsError 
-  } = useSubscription(FailedOperationsStreamDocument, {
-    variables: { twentyFourHoursAgo: timeRanges.twentyFourHoursAgo },
-    onError: (error) => {
-      console.warn("Failed operations subscription error:", error);
-      setIsWebSocketConnected(false);
-    },
-  });
+  const { data: failedOpsData, error: failedOpsError } = useSubscription(
+    FailedOperationsStreamDocument,
+    {
+      variables: { twentyFourHoursAgo: timeRanges.twentyFourHoursAgo },
+      onError: error => {
+        console.warn("Failed operations subscription error:", error);
+        setIsWebSocketConnected(false);
+      },
+    }
+  );
 
-  // Real-time critical data access subscription
-  const { 
-    data: criticalDataAccessData,
-    error: criticalDataAccessError 
-  } = useSubscription(CriticalDataAccessStreamDocument, {
-    variables: { sevenDaysAgo: timeRanges.sevenDaysAgo },
-    onError: (error) => {
-      console.warn("Critical data access subscription error:", error);
-      setIsWebSocketConnected(false);
-    },
-  });
+  // Real-time critical data access subscription - only for roles with permissions
+  const { data: criticalDataAccessData, error: criticalDataAccessError } =
+    useSubscription(CriticalDataAccessStreamDocument, {
+      variables: { sevenDaysAgo: timeRanges.sevenDaysAgo },
+      // Skip subscription if user doesn't have audit read permissions
+      skip: !auditReadPermission.granted,
+      onError: error => {
+        console.warn("Critical data access subscription error:", error);
+        // Don't set WebSocket as disconnected for permission errors
+        if (
+          !error.message.includes("field") &&
+          !error.message.includes("permission")
+        ) {
+          setIsWebSocketConnected(false);
+        }
+      },
+    });
 
   // Fallback polling when WebSocket is disconnected
-  const { 
-    data: fallbackData,
-    loading: fallbackLoading 
-  } = useStrategicQuery(
-    SecurityOverviewDocument,
+  const { data: fallbackData, loading: fallbackLoading } = useStrategicQuery(
+    securityQueryDocument,
     "auditLogs", // Use auditLogs strategy for fallback
     {
       variables: timeRanges,
@@ -127,35 +146,55 @@ export default function SecurityDashboard() {
 
   // Monitor WebSocket connection status
   useEffect(() => {
-    const hasSubscriptionErrors = !!(securityEventsError || failedOpsError || criticalDataAccessError);
+    const hasSubscriptionErrors = !!(
+      securityEventsError ||
+      failedOpsError ||
+      criticalDataAccessError
+    );
     if (hasSubscriptionErrors) {
       setIsWebSocketConnected(false);
     } else if (securityEventsData || failedOpsData || criticalDataAccessData) {
       setIsWebSocketConnected(true);
     }
-  }, [securityEventsData, failedOpsData, criticalDataAccessData, securityEventsError, failedOpsError, criticalDataAccessError]);
+  }, [
+    securityEventsData,
+    failedOpsData,
+    criticalDataAccessData,
+    securityEventsError,
+    failedOpsError,
+    criticalDataAccessError,
+  ]);
 
   // Merge initial data with real-time updates
   const data = useMemo(() => {
-    const baseData = isWebSocketConnected ? initialData : (fallbackData || initialData);
-    
+    const baseData = isWebSocketConnected
+      ? initialData
+      : fallbackData || initialData;
+
     if (!baseData) return null;
 
     return {
       ...baseData,
       // Use real-time data when available, fallback to initial data
-      recentAuditLogs: securityEventsData?.auditLogs || baseData.recentAuditLogs,
+      recentAuditLogs:
+        securityEventsData?.auditLogs || baseData.recentAuditLogs,
       failedOperations: failedOpsData?.auditLogs || baseData.failedOperations,
-      dataAccessSummary: criticalDataAccessData?.dataAccessLogs || baseData.dataAccessSummary,
+      // Safely handle dataAccessLogs field - fallback to empty array if not available
+      dataAccessSummary:
+        criticalDataAccessData?.dataAccessLogs ||
+        baseData.dataAccessSummary ||
+        [],
     };
-  }, [initialData, fallbackData, securityEventsData, failedOpsData, criticalDataAccessData, isWebSocketConnected]);
+  }, [
+    initialData,
+    fallbackData,
+    securityEventsData,
+    failedOpsData,
+    criticalDataAccessData,
+    isWebSocketConnected,
+  ]);
 
-  const { checkPermission, userRole } = useEnhancedPermissions();
-  
-  const securityReadPermission = checkPermission("security", "read");
-  const securityManagePermission = checkPermission("security", "manage");
-  const auditReadPermission = checkPermission("audit", "read");
-  
+
   if (!securityReadPermission.granted) {
     return (
       <div className="container mx-auto py-6">
@@ -163,8 +202,9 @@ export default function SecurityDashboard() {
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>
-            You don't have permission to view security information. 
-            Required role: {securityReadPermission.requiredRole}. Current role: {securityReadPermission.currentRole}.
+            You don't have permission to view security information. Required
+            role: {securityReadPermission.requiredRole}. Current role:{" "}
+            {securityReadPermission.currentRole}.
           </AlertDescription>
         </Alert>
       </div>
@@ -182,12 +222,16 @@ export default function SecurityDashboard() {
     hasData: !!data,
     hasError: !!error,
     isWebSocketConnected,
-    hasSubscriptionData: !!(securityEventsData || failedOpsData || criticalDataAccessData),
+    hasSubscriptionData: !!(
+      securityEventsData ||
+      failedOpsData ||
+      criticalDataAccessData
+    ),
     subscriptionErrors: {
       securityEvents: !!securityEventsError,
       failedOps: !!failedOpsError,
       criticalDataAccess: !!criticalDataAccessError,
-    }
+    },
   });
 
   // Enhanced loading state considering subscriptions
@@ -198,7 +242,7 @@ export default function SecurityDashboard() {
           <Shield className="h-12 w-12 animate-pulse mx-auto mb-4" />
           <p>Loading security dashboard...</p>
           <p className="text-sm text-muted-foreground">
-            {!isWebSocketConnected 
+            {!isWebSocketConnected
               ? "Loading security data (fallback mode)..."
               : "Loading security data..."}
           </p>
@@ -215,9 +259,12 @@ export default function SecurityDashboard() {
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Error Loading Security Data</AlertTitle>
           <AlertDescription>
-            {error.message.includes("permission")
-              ? "You don't have permission to access audit logs. Please check your role permissions."
-              : `Failed to load security data: ${error.message}`}
+            {error.message.includes("permission") ||
+            error.message.includes("field")
+              ? "You don't have permission to access some security data. Please contact your administrator if you need access to detailed audit logs."
+              : error.message.includes("dataAccessLogs")
+                ? "Some security data is not available. This may be due to missing permissions or empty audit logs."
+                : `Failed to load security data: ${error.message}`}
           </AlertDescription>
           <Button onClick={() => refetch()} className="mt-2" variant="outline">
             <RefreshCcw className="mr-2 h-4 w-4" />
@@ -253,11 +300,13 @@ export default function SecurityDashboard() {
               Monitor security events, audit trails, and compliance status
             </p>
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${
-                isWebSocketConnected ? 'bg-green-500' : 'bg-orange-500'
-              }`} />
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  isWebSocketConnected ? "bg-green-500" : "bg-orange-500"
+                }`}
+              />
               <span className="text-xs text-muted-foreground">
-                {isWebSocketConnected ? 'Real-time' : 'Fallback mode'}
+                {isWebSocketConnected ? "Real-time" : "Fallback mode"}
               </span>
             </div>
           </div>
@@ -446,7 +495,18 @@ export default function SecurityDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              {!data?.dataAccessSummary?.length ? (
+              {!auditReadPermission.granted ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Lock className="h-12 w-12 mx-auto mb-2" />
+                  <p>
+                    Requires audit read permissions to view critical data access
+                    logs
+                  </p>
+                  <p className="text-sm">
+                    Contact your administrator for access
+                  </p>
+                </div>
+              ) : !data?.dataAccessSummary?.length ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Shield className="h-12 w-12 mx-auto mb-2" />
                   <p>No critical data access in the last 7 days</p>

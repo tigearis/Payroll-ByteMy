@@ -120,7 +120,7 @@ export function EditUserModal({
         name: data.name,
         email: data.email,
         role: data.role,
-        managerId: data.managerId || "",
+        managerId: data.managerId && data.managerId !== "none" ? data.managerId : "",
         isStaff: data.isStaff,
       };
 
@@ -289,7 +289,7 @@ export function EditUserModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">No manager assigned</SelectItem>
+                          <SelectItem value="none">No manager assigned</SelectItem>
                           {managers.map(manager => (
                             <SelectItem key={manager.id} value={manager.id}>
                               <div className="flex flex-col">
