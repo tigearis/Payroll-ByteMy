@@ -277,7 +277,7 @@ query ComplianceAuditLogs($startDate: timestamptz!, $endDate: timestamptz!) {
   }
 }
 
-query SecurityOverview($timeRange: timestamptz = "24 hours") {
+query SecurityOverview($timeRange: timestamptz!) {
   totalAuditLogs: auditLogsAggregate(
     where: { eventTime: { _gte: $timeRange } }
   ) {

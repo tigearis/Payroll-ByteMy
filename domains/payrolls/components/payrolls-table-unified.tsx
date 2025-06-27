@@ -56,7 +56,7 @@ interface PayrollsTableProps {
   onSelectAll?: (checked: boolean) => void;
   visibleColumns?: string[];
   sortField?: string;
-  sortDirection?: "asc" | "desc";
+  sortDirection?: "ASC" | "DESC";
   onSort?: (field: string) => void;
 }
 
@@ -278,7 +278,7 @@ export function PayrollsTableUnified({
       onSelectItem={onSelectPayroll || (() => {})}
       onSelectAll={onSelectAll || (() => {})}
       sortField={sortField || ""}
-      sortDirection={sortDirection || "asc"}
+      sortDirection={sortDirection || "ASC"}
       onSort={onSort || (() => {})}
       visibleColumns={visibleColumns || []}
       actions={actions}

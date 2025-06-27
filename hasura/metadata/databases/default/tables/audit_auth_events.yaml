@@ -67,7 +67,8 @@ select_permissions:
     comment: Consultants can view their own auth events
   - role: developer
     permission:
-      columns: '*'
+      check: {}
+      columns: "*"
       filter: {}
       allow_aggregations: true
     comment: Developer role has full select access
@@ -115,7 +116,7 @@ select_permissions:
 update_permissions:
   - role: developer
     permission:
-      columns: '*'
+      columns: "*"
       filter: {}
       check: {}
     comment: Developer role has full update access

@@ -35,7 +35,7 @@ export interface ClientsTableProps {
   onRefresh?: () => void;
   visibleColumns?: string[];
   sortField?: string;
-  sortDirection?: "asc" | "desc";
+  sortDirection?: "ASC" | "DESC";
   onSort?: (field: string) => void;
 }
 

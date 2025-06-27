@@ -204,7 +204,7 @@ interface PayrollsTableProps {
   onSelectAll?: (checked: boolean) => void;
   visibleColumns?: string[];
   sortField?: string;
-  sortDirection?: "asc" | "desc";
+  sortDirection?: "ASC" | "DESC";
   onSort?: (field: string) => void;
 }
 
@@ -219,7 +219,7 @@ export function PayrollsTable({
     col => col.key
   ),
   sortField = "name",
-  sortDirection = "asc",
+  sortDirection = "ASC",
   onSort,
 }: PayrollsTableProps) {
   const renderSortableHeader = (label: string, field: string) => {
@@ -239,7 +239,7 @@ export function PayrollsTable({
         <span>{label}</span>
         {isSorted && (
           <div className="ml-1">
-            {sortDirection === "asc" ? (
+            {sortDirection === "ASC" ? (
               <ChevronUp className="w-4 h-4" />
             ) : (
               <ChevronDown className="w-4 h-4" />

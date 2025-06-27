@@ -359,8 +359,8 @@ class UnifiedAuditLogger {
       } = {};
 
       if (userId) result.userId = userId;
-      if (hasuraClaims?.["x-hasura-role"])
-        result.userRole = hasuraClaims["x-hasura-role"];
+      if (hasuraClaims?.["x-hasura-default-role"])
+        result.userRole = hasuraClaims["x-hasura-default-role"];
       if (sessionClaims?.email)
         result.userEmail = sessionClaims.email as string;
       if (sessionClaims?.sid) result.sessionId = sessionClaims.sid;

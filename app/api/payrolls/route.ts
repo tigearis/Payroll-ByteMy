@@ -21,9 +21,8 @@ export const GET = withAuth(
       const hasuraClaims = sessionClaims?.[
         "https://hasura.io/jwt/claims"
       ] as any;
-      const userRole = (hasuraClaims?.["x-hasura-role"] ||
+      const userRole = (hasuraClaims?.["x-hasura-default-role"] ||
         (sessionClaims?.metadata as any)?.role ||
-        hasuraClaims?.["x-hasura-default-role"] ||
         (sessionClaims?.metadata as any)?.defaultrole ||
         (sessionClaims as any)?.role) as string;
 

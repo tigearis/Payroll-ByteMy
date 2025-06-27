@@ -112,7 +112,7 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     }
     // Fallback to session claims
     const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const claimsRole = claims?.["x-hasura-role"] as Role;
+    const claimsRole = claims?.["x-hasura-default-role"] as Role;
     return claimsRole || "viewer";
   }, [databaseUser?.role, sessionClaims]);
   
