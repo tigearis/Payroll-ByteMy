@@ -300,7 +300,7 @@ export default function SecurityDashboard() {
   }
 
   // Calculate security metrics
-  const totalOps = data?.auditLogCount?.aggregate?.count || 0;
+  const totalOps = data?.totalAuditLogs?.aggregate?.count || 0;
   const failedOps = data?.failedOperations?.length || 0;
   const successRate =
     totalOps > 0
@@ -494,7 +494,7 @@ export default function SecurityDashboard() {
                           <Badge variant="destructive">Failed</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {formatDistanceToNow(new Date(op.eventTime))} ago
+                          {op.eventTime ? formatDistanceToNow(new Date(op.eventTime)) : 'Unknown time'} ago
                         </p>
                       </div>
                     </div>
@@ -552,7 +552,7 @@ export default function SecurityDashboard() {
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {formatDistanceToNow(new Date(access.accessedAt))} ago
+                          {access.eventTime ? formatDistanceToNow(new Date(access.eventTime)) : 'Unknown time'} ago
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Rows accessed: {access.rowCount || 0}
