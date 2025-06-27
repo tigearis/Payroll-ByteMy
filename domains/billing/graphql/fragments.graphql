@@ -1,13 +1,9 @@
-# Billing Domain Fragments - TEMPORARILY DISABLED
+# Billing Domain Fragments - TEMPORARILY DISABLED FOR SCHEMA FIXES
 # Security Classification: HIGH - Financial and billing data
 # SOC2 Compliance: Financial data with strict audit requirements
-#
-# NOTE: Billing fragments temporarily commented out due to schema mismatches
-# Table name inconsistency between billingInvoice and billingInvoices
-# 
-# Uncomment and fix when billing table schema is finalized
 
-# Placeholder fragment to keep the file valid for codegen
-# fragment PlaceholderBillingFragment on __Type {
-#   name
-# }
+# Placeholder fragment to keep file valid during schema fixes
+fragment TempBillingPlaceholder on billingInvoice {
+  id
+  createdAt
+}

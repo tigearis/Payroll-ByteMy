@@ -28,10 +28,10 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CreateClientDocument,
-  GetClientsDocument,
+  GetClientsListDocument,
 } from "@/domains/clients/graphql/generated/graphql";
 import { CreatePayrollDocument } from "@/domains/payrolls/graphql/generated/graphql";
-import { GetAllUsersListDocument } from "@/domains/users/graphql/generated";
+import { GetAllUsersListDocument } from "@/domains/users/graphql/generated/graphql";
 
 // Hardcoded options for cycles and date types (these should ideally come from the database)
 const PAYROLL_CYCLES = [
@@ -513,7 +513,7 @@ export default function NewClientPage() {
   const { data: usersData } = useQuery(GetAllUsersListDocument);
 
   const [createClient] = useMutation(CreateClientDocument, {
-    refetchQueries: [{ query: GetClientsDocument }],
+    refetchQueries: [{ query: GetClientsListDocument }],
   });
 
   const [createPayrollMutation] = useMutation(CreatePayrollDocument);
@@ -721,7 +721,7 @@ export default function NewClientPage() {
       const clientResult = await createClient({
         variables: {
           name: formData.name.trim(),
-          contactName: formData.contact_person.trim() || null,
+          contactPerson: formData.contact_person.trim() || null,
           contactEmail: formData.contact_email.trim() || null,
           contactPhone: formData.contact_phone.trim() || null,
         },

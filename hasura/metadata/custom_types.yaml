@@ -1,0 +1,185 @@
+# Hasura Custom Types Configuration
+# This file defines custom scalars and enums to replace client-side type mappings
+
+custom_types:
+  # Custom Scalar Types
+  scalars:
+    - name: UUID
+      description: "A universally unique identifier"
+    - name: uuid
+      description: "A universally unique identifier (lowercase)"
+    - name: timestamptz
+      description: "Timestamp with timezone"
+    - name: timestamp
+      description: "Timestamp without timezone"
+    - name: date
+      description: "Date scalar type"
+    - name: jsonb
+      description: "JSONB data type for storing JSON objects"
+    - name: numeric
+      description: "Numeric/decimal data type"
+    - name: bpchar
+      description: "Fixed-length character type"
+
+  # Custom Enum Types
+  enums:
+    - name: BusinessWeekdayEnum
+      description: "Business weekdays with numeric values"
+      values:
+        - value: "1"
+          description: "Monday"
+        - value: "2"
+          description: "Tuesday"
+        - value: "3"
+          description: "Wednesday"
+        - value: "4"
+          description: "Thursday"
+        - value: "5"
+          description: "Friday"
+
+    - name: WeekdayStringEnum
+      description: "Weekday string enum for form values"
+      values:
+        - value: "1"
+          description: "Monday"
+        - value: "2"
+          description: "Tuesday"
+        - value: "3"
+          description: "Wednesday"
+        - value: "4"
+          description: "Thursday"
+        - value: "5"
+          description: "Friday"
+
+    - name: FortnightlyWeekEnum
+      description: "Week type enum for fortnightly payrolls"
+      values:
+        - value: "A"
+          description: "Week A"
+        - value: "B"
+          description: "Week B"
+
+    - name: LeaveStatus
+      description: "Leave request status enum"
+      values:
+        - value: "Pending"
+          description: "Leave request is pending approval"
+        - value: "Approved"
+          description: "Leave request has been approved"
+        - value: "Rejected"
+          description: "Leave request has been rejected"
+
+    - name: PayrollCycleType
+      description: "Payroll cycle frequency types"
+      values:
+        - value: "weekly"
+          description: "Weekly payroll cycle"
+        - value: "fortnightly"
+          description: "Fortnightly payroll cycle"
+        - value: "bi_monthly"
+          description: "Bi-monthly payroll cycle"
+        - value: "monthly"
+          description: "Monthly payroll cycle"
+        - value: "quarterly"
+          description: "Quarterly payroll cycle"
+
+    - name: PayrollDateType
+      description: "Payroll date calculation types"
+      values:
+        - value: "fixed_date"
+          description: "Fixed date of the month"
+        - value: "eom"
+          description: "End of month"
+        - value: "som"
+          description: "Start of month"
+        - value: "week_a"
+          description: "Week A in fortnightly cycle"
+        - value: "week_b"
+          description: "Week B in fortnightly cycle"
+        - value: "dow"
+          description: "Day of week"
+
+    - name: PayrollStatus
+      description: "Payroll status enum (matches database values)"
+      values:
+        - value: "Active"
+          description: "Payroll is active"
+        - value: "Implementation"
+          description: "Payroll is in implementation phase"
+        - value: "Inactive"
+          description: "Payroll is inactive"
+
+    - name: PermissionAction
+      description: "Permission action types"
+      values:
+        - value: "create"
+          description: "Create permission"
+        - value: "read"
+          description: "Read permission"
+        - value: "update"
+          description: "Update permission"
+        - value: "delete"
+          description: "Delete permission"
+        - value: "list"
+          description: "List permission"
+        - value: "manage"
+          description: "Manage permission"
+        - value: "approve"
+          description: "Approve permission"
+        - value: "reject"
+          description: "Reject permission"
+
+    - name: Status
+      description: "General status enum"
+      values:
+        - value: "active"
+          description: "Active status"
+        - value: "inactive"
+          description: "Inactive status"
+        - value: "archived"
+          description: "Archived status"
+
+    - name: Role
+      description: "User role enum"
+      values:
+        - value: "developer"
+          description: "Developer role"
+        - value: "org_admin"
+          description: "Organisation administrator role"
+        - value: "manager"
+          description: "Manager role"
+        - value: "consultant"
+          description: "Consultant role"
+        - value: "viewer"
+          description: "Viewer role"
+
+    - name: LeaveType
+      description: "Types of leave that can be taken"
+      values:
+        - value: "Annual"
+          description: "Annual leave"
+        - value: "Sick"
+          description: "Sick leave"
+        - value: "Other"
+          description: "Other types of leave"
+
+    - name: EntityType
+      description: "Entity types for notes"
+      values:
+        - value: "payroll"
+          description: "Payroll entity"
+        - value: "client"
+          description: "Client entity"
+
+    - name: EventType
+      description: "Calendar event types"
+      values:
+        - value: "payroll"
+          description: "Payroll event"
+        - value: "holiday"
+          description: "Holiday event"
+        - value: "leave"
+          description: "Leave event"
+  # Optional: Custom Input/Output Objects can be defined here if needed
+  # objects: []
+  # input_objects: []

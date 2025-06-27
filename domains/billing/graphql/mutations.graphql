@@ -1,17 +1,10 @@
-# Billing Domain Mutations - TEMPORARILY DISABLED
+# Billing Domain Mutations - TEMPORARILY DISABLED FOR SCHEMA FIXES
 # Security Classification: HIGH - Financial and billing data
 # SOC2 Compliance: All mutations logged with comprehensive audit trail
-# 
-# NOTE: Billing operations temporarily commented out due to schema mismatches
-# The following issues need to be resolved when billing is implemented:
-# 1. Table name inconsistency: billingInvoice vs billingInvoices
-# 2. Missing fields: paidAmount, paidDate, paymentMethod, paymentReference, etc.
-# 3. Input type mismatches: billingInvoicesInsertInput vs billingInvoiceInsertInput
-# 
-# Uncomment and fix when billing table schema is finalized
 
-# Placeholder mutation to keep the file valid for codegen
-mutation PlaceholderBillingMutation {
-  # This is a placeholder - replace with actual billing mutations when schema is ready
-  __typename
+# Placeholder mutation to keep file valid during schema fixes
+mutation PlaceholderBillingMutation($id: uuid!) {
+  deleteBillingInvoiceById(id: $id) {
+    id
+  }
 }

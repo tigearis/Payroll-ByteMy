@@ -2,75 +2,201 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Architecture
+
+This is **Payroll Matrix**, an enterprise-grade SOC2-compliant payroll management system built with Next.js 15, React 19, TypeScript, and Hasura GraphQL. The application follows domain-driven design (DDD) with 11 isolated business domains.
+
+### Tech Stack
+- **Frontend**: Next.js 15 App Router, React 19, TypeScript 5.8
+- **Authentication**: Clerk with JWT integration and MFA
+- **Database**: PostgreSQL (Neon) with Row Level Security
+- **API**: Hasura GraphQL Engine with custom business logic
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **State Management**: Apollo Client with optimistic updates
+- **Testing**: Playwright for E2E, Jest for unit tests
+
+### Domain Structure
+The codebase is organized into isolated business domains under `/domains/`:
+- **auth** (CRITICAL) - Authentication and authorization
+- **audit** (CRITICAL) - SOC2 compliance and logging  
+- **permissions** (CRITICAL) - Role-based access control
+- **users** (HIGH) - User management and staff lifecycle
+- **clients** (HIGH) - Client relationship management
+- **billing** (HIGH) - Financial operations
+- **payrolls** (MEDIUM) - Core payroll processing
+- **notes** (MEDIUM) - Documentation and communication
+- **leave** (MEDIUM) - Employee leave management
+- **work-schedule** (MEDIUM) - Staff scheduling
+- **external-systems** (MEDIUM) - Third-party integrations
+
+Each domain follows this structure:
+```
+domains/{domain}/
+├── components/     # React components
+├── graphql/        # GraphQL operations and generated types
+├── hooks/          # React hooks
+├── services/       # Business logic
+├── types/          # TypeScript definitions
+└── index.ts        # Domain exports
+```
+
 ## Development Commands
 
 ### Core Commands
-
 - `pnpm dev` - Start development server with Turbopack
-- `pnpm build` - Build for production
+- `pnpm build` - Build for production (✅ **Currently passing - all TypeScript errors resolved**)
+- `pnpm build:production` - Production build with NODE_ENV=production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
+- `pnpm lint:fix` - Auto-fix linting issues
+- `pnpm lint:strict` - Strict linting with zero warnings
+- `pnpm type-check` - TypeScript type checking
+- `pnpm quality:check` - Run lint, format check, and type check
+- `pnpm quality:fix` - Fix lint and format issues
+
+### GraphQL Development
 - `pnpm codegen` - Generate GraphQL types from schema
 - `pnpm codegen:watch` - Watch mode for GraphQL code generation
+- `pnpm codegen:debug` - Verbose GraphQL codegen with debugging
+- `pnpm codegen:dry-run` - Check GraphQL codegen without writing files
+- `pnpm get-schema` - Fetch latest schema from Hasura
 
-... [previous content remains unchanged]
+### Testing
+- `pnpm test:e2e` - Run Playwright E2E tests
+- `pnpm test:e2e:ui` - Run E2E tests with UI
+- `pnpm test:e2e:headed` - Run E2E tests in headed mode
+- `pnpm test:e2e:debug` - Debug E2E tests
 
-## Security Implementation (December 2024)
+### Database & Hasura
+- `pnpm hasura:console` - Open Hasura console
+- `pnpm hasura:migrate` - Apply database migrations
+- `pnpm hasura:metadata` - Apply Hasura metadata
 
-### ✅ PRODUCTION-READY SECURITY STATUS
+### Data Management
+- `pnpm test:data:seed` - Seed test data
+- `pnpm test:data:clean` - Clean test data
+- `pnpm test:data:reseed` - Clean and reseed test data
 
-**Critical Security Fixes Applied**:
-- OAuth privilege escalation vulnerability fixed (auto-admin assignment removed)
-- Component permission guards implemented (100% coverage on sensitive components)
-- Permission system standardized (23 granular permissions across 5 roles)
-- Redundant authentication files removed (improved security and maintainability)
-- API routes properly protected with authentication and authorization
+## GraphQL Development Guidelines
 
-**Security Compliance**:
-- Zero critical vulnerabilities remaining
-- SOC2 compliance ready
-- Enterprise-grade authentication and authorization
-- Comprehensive audit logging
-- Production deployment approved
+### Code Generation Strategy
+The project uses a domain-driven GraphQL code generation approach:
+- Each domain generates self-contained TypeScript types
+- Shared fragments are available across all domains
+- SOC2 security classifications are enforced
+- Client preset is used for modern React/Apollo patterns
 
-**New Documentation Created**:
-- Security Audit Completion Report
-- Component Permission Guards Guide  
-- API Authentication Guide
-- Updated Permission System Guide
+### Important Files
+- `config/codegen.ts` - GraphQL code generation configuration
+- `shared/schema/schema.graphql` - Complete GraphQL schema
+- `shared/schema/introspection.json` - Schema introspection
+- `shared/types/generated/` - Shared GraphQL types
 
-## Recent Fixes (June 2025)
+### Working with GraphQL
+1. Use the introspection.json, schema.graphql and Hasura metadata when creating GraphQL operations
+2. Domain-specific operations go in `domains/{domain}/graphql/`
+3. Shared fragments and queries go in `shared/graphql/`
+4. Always run `pnpm codegen` after modifying GraphQL files
+5. Use the generated types for type safety
 
-### ✅ USER INTERFACE & AUTHENTICATION IMPROVEMENTS
+## Security & Compliance
 
-**User Creation Flow Fixes**:
-- Added staff checkbox to create user modal with proper FormField wrapper
-- Fixed 405 error in user creation API by correcting Next.js App Router export pattern
-- Updated create user modal schema to resolve TypeScript build errors
-- Enhanced error handling and validation feedback in user creation process
+This is a SOC2-compliant system with enterprise-grade security:
+- **Role-based access control** with 5-tier hierarchy (Developer → Org Admin → Manager → Consultant → Viewer)
+- **Data classification** system (CRITICAL, HIGH, MEDIUM, LOW)
+- **Comprehensive audit logging** for all user actions
+- **Component-level permission guards** protecting sensitive UI
+- **API-level authentication and authorization** on all endpoints
 
-**Authentication System Enhancements**:
-- Updated `useCurrentUser` hook to use multiple Clerk native methods for database ID extraction
-- Added triple-fallback approach: user metadata → session metadata → JWT claims
-- Improved role extraction to prioritize `x-hasura-role` over `x-hasura-default-role`
-- Enhanced permission checking reliability with multiple data sources
+### Permission System
+- Use `PermissionGuard` components to protect UI elements
+- Check permissions with `useEnhancedPermissions` hook
+- All sensitive operations require proper role validation
+- Database has row-level security enabled
 
-**Security Page Access Resolution**:
-- Resolved permission errors by fixing database user ID extraction from JWT claims
-- Updated auth context to properly handle Clerk's JWT template structure
-- Ensured developer role permissions are correctly recognized for security dashboard access
-- Added comprehensive logging for debugging auth flow issues
+## Code Conventions
 
-**Build & Development**:
-- Fixed TypeScript compilation errors in create user modal component
-- Updated schema validation to handle boolean fields correctly
-- Ensured all components pass strict TypeScript checking
-- Maintained backward compatibility with existing permission system
+### File Organization
+- Use the existing TypeScript path mappings (`@/components/*`, `@/lib/*`, etc.)
+- Follow domain-driven organization for business logic
+- Place shared utilities in `/lib/` or `/shared/`
+- Components go in `/components/` with domain-specific ones in `/domains/{domain}/components/`
 
-## GraphQL Operations
+### Naming Conventions
+- Components: PascalCase (e.g., `UserManagementTable`)
+- Files: kebab-case (e.g., `user-management-table.tsx`)
+- Functions/variables: camelCase
+- Types/interfaces: PascalCase
+- GraphQL operations: PascalCase with descriptive suffixes (e.g., `GetUsersWithRolesQuery`)
 
-### GraphQL Best Practices
+### Import Organization
+Imports should be ordered: builtin → external → internal → parent → sibling → index
 
-- If there is an error with generated graphql items or types the codegen or .graphql files must be fix to ensure that this does happen in the future. All generated item should happen without any typescript, import or export errors in the generated files. 
+## Development Workflow
 
-... [rest of the previous content continues]
+1. **Before starting**: Ensure environment variables are set up (see README.md)
+2. **GraphQL changes**: Always run `pnpm codegen` after modifying .graphql files
+3. **Quality checks**: Run `pnpm quality:check` before committing
+4. **Testing**: Use E2E tests for critical user flows
+5. **Security**: All new components handling sensitive data need permission guards
+
+## TypeScript Guidelines
+
+### Build Status
+- ✅ **Production build is currently clean** - All TypeScript errors have been resolved
+- Run `pnpm build` to verify - should complete without TypeScript compilation errors
+- See `TYPESCRIPT_BUILD_FIXES.md` for details on recent fixes
+
+### Type Safety Best Practices
+1. **GraphQL Integration**:
+   - Always use generated types from `domains/{domain}/graphql/generated/graphql.ts`
+   - Query response properties may use aliases - check the actual GraphQL query
+   - Example: `GetCurrentUserQuery` returns `user` property (aliased from `userById`)
+
+2. **User Metadata Requirements**:
+   - All `UserPublicMetadata` objects must include `permissions` property
+   - Use `getPermissionsForRole(role)` to calculate permissions based on role
+   - Required in Clerk invitation and user creation flows
+
+3. **Mutation Variables**:
+   - Audit mutations expect `input` parameter, not `object`
+   - Auth event mutations expect flattened variables, not nested `object`
+   - Always check generated GraphQL types for exact structure
+
+4. **Safe Property Access**:
+   - Use optional chaining (`?.`) for potentially undefined properties
+   - Provide fallback values for required properties
+   - Example: `weights?.fieldWeight || 1`
+
+### Common TypeScript Issues & Solutions
+
+1. **"Property does not exist" on GraphQL responses**:
+   - Check if query uses aliases in GraphQL definition
+   - Use the alias name in TypeScript code, not the original field name
+
+2. **"Missing permissions property" in UserMetadata**:
+   - Add `permissions: getPermissionsForRole(role)` to publicMetadata objects
+   - Import `getPermissionsForRole` from `@/lib/auth/permissions`
+
+3. **"Object literal may only specify known properties" in mutations**:
+   - Check generated mutation variable types
+   - Ensure variable structure matches exactly (flat vs nested)
+
+4. **Type import errors**:
+   - Use `CustomPermission` instead of `Permission` from types exports
+   - Check `types/permissions.ts` for available exports
+
+### Development Workflow for TypeScript
+1. **Before making changes**: Run `pnpm type-check` to ensure clean baseline
+2. **After GraphQL changes**: Run `pnpm codegen` then `pnpm type-check`
+3. **Before committing**: Run `pnpm build` to ensure production build passes
+4. **Quality gate**: Use `pnpm quality:check` for comprehensive validation
+
+## Important Notes
+
+- **Never commit** environment secrets or API keys
+- **Always use** generated GraphQL types for type safety  
+- **Follow SOC2 guidelines** for any security-related changes
+- **Test permission boundaries** when adding new features
+- **Use the existing design system** (shadcn/ui components)
+- **Maintain audit trails** for all data modifications

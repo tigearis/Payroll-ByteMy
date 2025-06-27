@@ -12,7 +12,7 @@ import {
   GeneratePayrollDatesQueryDocument,
   GetPayrollsMissingDatesDocument,
   GetPayrollsDocument,
-} from "@/domains/payrolls/graphql/generated";
+} from '@/domains/payrolls/graphql/generated/graphql';
 
 interface GenerateMissingDatesButtonProps {
   payrollIds: string[];

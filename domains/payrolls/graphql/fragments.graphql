@@ -1,310 +1,139 @@
-# Payrolls Domain Fragments
-# Security Classification: MEDIUM - Business operational data
-# SOC2 Compliance: Payroll processing with audit requirements
+# Payroll Domain Specific Fragments
 
-fragment PayrollCore on payrolls {
-  id
-  name
-  status
-  clientId
-  employeeCount
-  goLiveDate
-  payrollSystem
-  processingTime
-  processingDaysBeforeEft
-  createdAt
-  updatedAt
-  versionNumber
-  supersededDate
-}
-
-fragment PayrollBasic on payrolls {
-  ...PayrollCore
-  primaryConsultantUserId
-  backupConsultantUserId
-  managerUserId
-  cycleId
-  dateTypeId
-  dateValue
-}
-
-fragment PayrollDetailed on payrolls {
-  ...PayrollBasic
-  parentPayrollId
-  versionReason
-  createdByUserId
-}
-
-fragment PayrollWithClient on payrolls {
-  ...PayrollBasic
-  client {
-    id
-    name
-    contactPerson
-    contactEmail
-    active
-  }
-}
-
-fragment PayrollWithUsers on payrolls {
-  ...PayrollBasic
-  primaryConsultant {
-    id
-    name
-    email
-    role
-    isActive
-  }
-  backupConsultant {
-    id
-    name
-    email
-    role
-    isActive
-  }
-  manager {
-    id
-    name
-    email
-    role
-    isActive
-  }
-}
-
-fragment PayrollWithCycle on payrolls {
-  ...PayrollBasic
-  payrollCycle {
-    id
-    name
-    description
-  }
-  payrollDateType {
-    id
-    name
-    description
-  }
-}
-
-fragment PayrollWithAllRelations on payrolls {
-  ...PayrollDetailed
-  client {
-    id
-    name
-    contactPerson
-    contactEmail
-    active
-  }
-  primaryConsultant {
-    id
-    name
-    email
-    role
-    isActive
-  }
-  backupConsultant {
-    id
-    name
-    email
-    role
-    isActive
-  }
-  manager {
-    id
-    name
-    email
-    role
-    isActive
-  }
-  payrollCycle {
-    id
-    name
-    description
-  }
-  payrollDateType {
-    id
-    name
-    description
-  }
-  recentPayrollDates: payrollDates(limit: 10, orderBy: { adjustedEftDate: ASC }) {
-    id
-    adjustedEftDate
-  }
-  # Note: createdByUser relationship not available, use createdByUserId instead
-  createdByUserId
-  parentPayroll {
-    id
-    name
-    versionNumber
-    status
-  }
-}
-
-# Performance-optimized fragments
-
-fragment PayrollSummary on payrolls {
-  id
-  name
-  status
-  clientId
-  employeeCount
-  supersededDate
-}
-
-fragment PayrollListItem on payrolls {
-  ...PayrollSummary
-  goLiveDate
-  primaryConsultantUserId
-  backupConsultantUserId
-  managerUserId
-  createdAt
-  updatedAt
-  cycleId
-  dateTypeId
-  dateValue
-  client {
-    id
-    name
-  }
-  primaryConsultant {
-    id
-    name
-  }
-  backupConsultant {
-    id
-    name
-  }
-  manager {
-    id
-    name
-  }
-  payrollCycle {
-    id
-    name
-  }
-  payrollDateType {
-    id
-    name
-  }
-  payrollDates(limit: 10, orderBy: { adjustedEftDate: ASC }) {
-    id
-    adjustedEftDate
-  }
-}
-
-fragment PayrollTableRow on payrolls {
-  ...PayrollListItem
-  payrollSystem
-  processingTime
-  versionNumber
-  primaryConsultant {
-    id
-    name
-  }
-  backupConsultant {
-    id
-    name
-  }
-  manager {
-    id
-    name
-  }
-}
-
-fragment PayrollDashboardCard on payrolls {
-  ...PayrollSummary
-  goLiveDate
-  primaryConsultant {
-    id
-    name
-  }
-  client {
-    id
-    name
-  }
-  payrollCycle {
-    id
-    name
-    description
-  }
-}
-
-fragment PayrollMinimal on payrolls {
-  id
-  name
-  status
-  clientId
-}
-
-fragment PayrollForAssignment on payrolls {
-  id
-  name
-  status
-  employeeCount
-  goLiveDate
-  client {
-    id
-    name
-  }
-  primaryConsultantUserId
-  backupConsultantUserId
-  managerUserId
-}
-
-fragment PayrollForAudit on payrolls {
-  id
-  name
-  status
-  clientId
-  employeeCount
-  goLiveDate
-  versionNumber
-  createdAt
-  updatedAt
-  # Personal data excluded from audit logs
-}
-
-fragment PayrollVersionInfo on payrolls {
-  id
-  name
-  versionNumber
-  versionReason
-  parentPayrollId
-  supersededDate
-  createdAt
-  # Note: createdByUser relationship not available, use createdByUserId instead
-  createdByUserId
-}
-
-fragment PayrollWithDates on payrolls {
-  ...PayrollCore
-  payrollDates(orderBy: { originalEftDate: ASC }) {
-    id
-    originalEftDate
-    adjustedEftDate
-    processingDate
-    notes
-    createdAt
-    updatedAt
-  }
-}
-
+# Payroll processing info
 fragment PayrollProcessingInfo on payrolls {
   id
   name
   status
-  payrollSystem
+  employeeCount
   processingTime
   processingDaysBeforeEft
   goLiveDate
+}
+
+# Payroll version info - fixing createdBy field
+fragment PayrollVersionInfo on payrolls {
+  id
+  versionNumber
+  versionReason
+  parentPayrollId
+  supersededDate
+  createdAt
+  createdByUserId
+}
+
+# Payroll with all relations - fixing createdBy field
+fragment PayrollWithAllRelations on payrolls {
+  ...PayrollBase
+  client {
+    ...ClientMinimal
+  }
+  primaryConsultant {
+    ...UserMinimal
+  }
+  backupConsultant {
+    ...UserMinimal
+  }
+  manager {
+    ...UserMinimal
+  }
+  createdByUserId
+}
+
+# Payroll for assignment
+fragment PayrollForAssignment on payrolls {
+  id
+  name
+  status
+  clientId
+  client {
+    ...ClientMinimal
+  }
+  primaryConsultantUserId
+  backupConsultantUserId
+  managerUserId
+}
+
+# Payroll basic info
+fragment PayrollBasic on payrolls {
+  id
+  name
+  status
   employeeCount
   client {
+    ...ClientMinimal
+  }
+}
+
+# Payroll for audit - fixing createdBy field
+fragment PayrollForAudit on payrolls {
+  id
+  name
+  status
+  versionNumber
+  createdAt
+  updatedAt
+  createdByUserId
+}
+
+# Payroll table row
+fragment PayrollTableRow on payrolls {
+  ...PayrollListItem
+  goLiveDate
+  processingTime
+  versionNumber
+}
+
+# Payroll dashboard card
+fragment PayrollDashboardCard on payrolls {
+  ...PayrollMinimal
+  client {
+    ...ClientMinimal
+  }
+  primaryConsultant {
+    ...UserMinimal
+  }
+  goLiveDate
+}
+
+# Payroll date fragment - fixing field names to match schema
+fragment PayrollDate on payrollDates {
+  id
+  payrollId
+  originalEftDate
+  adjustedEftDate
+  processingDate
+  notes
+  createdAt
+  relatedPayroll {
     id
     name
   }
+}
+
+# Payroll detailed
+fragment PayrollDetailed on payrolls {
+  ...PayrollFullDetail
+}
+
+# Payroll summary
+fragment PayrollSummary on payrolls {
+  ...PayrollBase
+  client {
+    ...ClientMinimal
+  }
+  primaryConsultant {
+    ...UserMinimal
+  }
+}
+
+# Missing fragments that were referenced in queries
+fragment PayrollWithCycle on payrolls {
+  ...PayrollBase
+  cycleId
   payrollCycle {
     id
     name
-    description
   }
 }
 
@@ -313,25 +142,11 @@ fragment PayrollWorkload on payrolls {
   name
   status
   employeeCount
+  processingTime
+  processingDaysBeforeEft
+  primaryConsultantUserId
+  backupConsultantUserId
   client {
-    id
-    name
+    ...ClientMinimal
   }
-  payrollCycle {
-    id
-    name
-    description
-  }
-}
-
-# Payroll date fragments
-fragment PayrollDate on payrollDates {
-  id
-  originalEftDate
-  adjustedEftDate
-  processingDate
-  notes
-  payrollId
-  createdAt
-  updatedAt
 }

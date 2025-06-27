@@ -204,60 +204,19 @@ query GetPermissionAuditLogs(
 # Get pending invitations (admin view)
 query GetPendingInvitations($limit: Int = 50, $offset: Int = 0) {
   userInvitations(
-    where: { status: { _eq: "pending" } }
-    orderBy: { invitedAt: DESC }
+    where: { status: { _eq: "pending" }, expiresAt: { _gt: "now()" } }
+    orderBy: { createdAt: DESC }
     limit: $limit
     offset: $offset
   ) {
-    id
-    email
-    firstName
-    lastName
-    invitedRole
-    managerId
-    invitedAt
-    expiresAt
-    status
-    invitedByUser {
-      name
-      email
-      role
-    }
-    managerUser {
-      name
-      email
-    }
+    ...UserInvitationDetail
   }
 }
 
 # Get invitation by Clerk ticket (for acceptance flow)
 query GetInvitationByTicket($clerkTicket: String!) {
-  userInvitations(
-    where: { 
-      clerkTicket: { _eq: $clerkTicket }
-      status: { _eq: "pending" }
-      expiresAt: { _gt: "now()" }
-    }
-    limit: 1
-  ) {
-    id
-    email
-    firstName
-    lastName
-    invitedRole
-    managerId
-    invitationMetadata
-    invitedAt
-    expiresAt
-    invitedByUser {
-      name
-      email
-      role
-    }
-    managerUser {
-      name
-      email
-    }
+  userInvitations(where: { clerkTicket: { _eq: $clerkTicket } }, limit: 1) {
+    ...UserInvitationDetail
   }
 }
 
@@ -313,27 +272,22 @@ query GetInvitationsBySender($invitedBy: uuid!, $limit: Int = 50) {
 }
 
 # Get expired invitations for cleanup
-query GetExpiredInvitations($limit: Int = 100) {
+query GetExpiredInvitations {
   userInvitations(
-    where: { 
-      status: { _eq: "pending" }
-      expiresAt: { _lt: "now()" }
+    where: {
+      _or: [{ status: { _eq: "expired" } }, { expiresAt: { _lt: "now()" } }]
     }
-    orderBy: { expiresAt: ASC }
-    limit: $limit
+    orderBy: { expiresAt: DESC }
   ) {
-    id
-    email
-    firstName
-    lastName
-    invitedRole
-    invitedAt
-    expiresAt
+    ...UserInvitationDetail
   }
 }
 
 # Validate invitation role assignment permissions
-query ValidateInvitationRolePermissions($invitedRole: String!, $invitedBy: uuid!) {
+query ValidateInvitationRolePermissions(
+  $invitedRole: String!
+  $invitedBy: uuid!
+) {
   # Get the inviter's roles and permissions
   users(where: { id: { _eq: $invitedBy } }) {
     id
@@ -353,7 +307,7 @@ query ValidateInvitationRolePermissions($invitedRole: String!, $invitedBy: uuid!
       }
     }
   }
-  
+
   # Get the target role details
   roles(where: { name: { _eq: $invitedRole } }) {
     id
@@ -365,39 +319,15 @@ query ValidateInvitationRolePermissions($invitedRole: String!, $invitedBy: uuid!
 
 # Get invitation by ID for resending
 query GetInvitationById($invitationId: uuid!) {
-  userInvitations(where: { id: { _eq: $invitationId } }) {
-    id
-    email
-    firstName
-    lastName
-    invitedRole
-    managerId
-    clerkInvitationId
-    clerkTicket
-    invitationMetadata
-    invitedBy
-    invitedAt
-    acceptedAt
-    expiresAt
-    status
-    invitedByUser {
-      id
-      name
-      email
-      role
-    }
-    managerUser {
-      id
-      name
-      email
-    }
+  userInvitationById(id: $invitationId) {
+    ...UserInvitationDetail
   }
 }
 
 # Get resendable invitations (pending or expired, not accepted)
 query GetResendableInvitations($invitedBy: uuid!, $limit: Int = 50) {
   userInvitations(
-    where: { 
+    where: {
       invitedBy: { _eq: $invitedBy }
       status: { _in: ["pending", "expired"] }
     }
@@ -419,3 +349,20 @@ query GetResendableInvitations($invitedBy: uuid!, $limit: Int = 50) {
 # NOTE: API key management queries removed - api_keys table not found in schema
 # File: lib/security/persistent-api-keys.ts still uses inline GraphQL
 
+# User invitation fragments
+fragment UserInvitationDetail on userInvitations {
+  id
+  email
+  firstName
+  lastName
+  invitedRole
+  managerId
+  clerkInvitationId
+  clerkTicket
+  invitationMetadata
+  invitedBy
+  status
+  expiresAt
+  createdAt
+  updatedAt
+}

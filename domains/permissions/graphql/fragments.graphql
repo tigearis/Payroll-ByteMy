@@ -1,31 +1,47 @@
-# Permissions Domain Fragments
-# Import shared fragments: ResourceCore, PermissionCore, RoleCore, UserRoleCore, RolePermissionCore
+# Permission Domain Fragments
 
-fragment RoleWithPermissions on roles {
-  ...RoleCore
-  assignedPermissions {
-    id
-    conditions
-    grantedPermission {
-      ...PermissionWithResource
-    }
-  }
-  assignedPermissionsAggregate {
-    aggregate {
-      count
-    }
+# Resource core info
+fragment ResourceCore on resources {
+  id
+  name
+  displayName
+  description
+}
+
+# Permission core info - fixing field names to match schema
+fragment PermissionCore on permissions {
+  id
+  resourceId
+  action
+  description
+  legacyPermissionName
+  relatedResource {
+    ...ResourceCore
   }
 }
 
-# RolePermissionCore and UserRoleCore now moved to shared/graphql/fragments.graphql
+# Permission with resource details - this was the missing fragment
+fragment PermissionWithResource on permissions {
+  ...PermissionCore
+}
 
+# Role core info
+fragment RoleCore on roles {
+  id
+  name
+  displayName
+  description
+  isSystemRole
+  priority
+}
+
+# Role permission with details - fixing relationship field names
 fragment RolePermissionWithDetails on rolePermissions {
   id
   roleId
   permissionId
   conditions
   createdAt
-  updatedAt
   grantedToRole {
     ...RoleCore
   }
@@ -34,23 +50,21 @@ fragment RolePermissionWithDetails on rolePermissions {
   }
 }
 
+# User role with details - fixing relationship field names
 fragment UserRoleWithDetails on userRoles {
   id
   userId
   roleId
   createdAt
-  updatedAt
   roleUser {
-    id
-    name
-    email
-    isActive
+    ...UserMinimal
   }
   assignedRole {
     ...RoleCore
   }
 }
 
+# Feature flag core - fixing field names to match schema
 fragment FeatureFlagCore on featureFlags {
   id
   featureName
@@ -59,6 +73,7 @@ fragment FeatureFlagCore on featureFlags {
   updatedAt
 }
 
+# App settings core - fixing field names to match schema
 fragment AppSettingsCore on appSettings {
   id
   permissions

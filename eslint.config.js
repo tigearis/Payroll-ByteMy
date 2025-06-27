@@ -24,20 +24,22 @@ const eslintConfig = [
       "react/display-name": "off",
       "react/prop-types": "off",
 
-      // TypeScript rules
+      // TypeScript rules - More pragmatic approach
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
           caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
         },
       ],
+      // Downgrade no-explicit-any to warning for gradual migration
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-empty-object-type": "off", // Allow empty interfaces for extending
+      "@typescript-eslint/no-empty-object-type": "off",
 
       // ================================
-      // CASE CONVENTION RULES - Updated to ignore GraphQL patterns
+      // CASE CONVENTION RULES - More flexible for existing codebase
       // ================================
       "@typescript-eslint/naming-convention": [
         "warn",
@@ -48,6 +50,8 @@ const eslintConfig = [
         {
           selector: "variable",
           format: ["camelCase", "UPPER_CASE", "PascalCase"],
+          // Allow underscore prefix for intentionally unused variables
+          leadingUnderscore: "allow",
         },
         {
           selector: "function",
@@ -59,15 +63,15 @@ const eslintConfig = [
         },
         {
           selector: "import",
-          format: null, // Allow any format for imports (React, Link, etc.)
+          format: null, // Allow any format for imports
         },
         {
           selector: "enumMember",
-          format: ["UPPER_CASE", "camelCase", "PascalCase"], // Allow all formats for enum members
+          format: ["UPPER_CASE", "camelCase", "PascalCase"],
           filter: {
-            // Ignore common GraphQL and database naming patterns
+            // More comprehensive ignore patterns
             regex:
-              "^(id|name|email|createdAt|updatedAt|userId|roleId|permissionId|.*Id|.*At|.*By|.*Type|.*Status|.*Name|.*Value|.*Key|.*Pkey|.*_pkey|.*_key|.*_.*|Create|Read|Update|Delete|List|Manage|Approve|Reject)$",
+              "^(id|name|email|createdAt|updatedAt|userId|roleId|permissionId|.*Id|.*At|.*By|.*Type|.*Status|.*Name|.*Value|.*Key|.*Pkey|.*_pkey|.*_key|.*_.*|Create|Read|Update|Delete|List|Manage|Approve|Reject|PERMISSION_.*|STATUS_.*)$",
             match: false,
           },
         },
@@ -75,9 +79,9 @@ const eslintConfig = [
           selector: "objectLiteralProperty",
           format: null, // Allow any format for object properties
           filter: {
-            // Allow GraphQL patterns, API routes, and other special cases
+            // Allow more external API patterns
             regex:
-              "^(__|_|[A-Z]|-|/|\\d+|\\d+\\.\\d+|.*_.*|.*Pkey|.*_pkey|.*_key|bool_and|bool_or|data-|x-hasura-).*",
+              "^(__|_|[A-Z]|-|/|\\d+|\\d+\\.\\d+|.*_.*|.*Pkey|.*_pkey|.*_key|bool_and|bool_or|data-|x-hasura-|svix-|on-hold|manager-review|my-.*|w-.*|h-.*|border-.*|bg-.*|text-.*).*",
             match: true,
           },
         },
@@ -85,15 +89,20 @@ const eslintConfig = [
           selector: "typeProperty",
           format: null, // Allow any format for type properties
           filter: {
-            // Allow GraphQL patterns like __typename, _set, _inc, etc.
+            // Allow GraphQL and external API patterns
             regex:
-              "^(__|_|bool_|.*_.*|.*Pkey|.*_pkey|.*_key|ID|String|Boolean|Int|Float).*",
+              "^(__|_|bool_|.*_.*|.*Pkey|.*_pkey|.*_key|ID|String|Boolean|Int|Float|x-hasura-.*|\\$fragmentRefs).*",
             match: true,
           },
         },
         {
           selector: "classProperty",
-          format: ["camelCase", "UPPER_CASE"], // Allow constants in classes
+          format: ["camelCase", "UPPER_CASE"],
+        },
+        {
+          selector: "parameter",
+          format: ["camelCase"],
+          leadingUnderscore: "allow", // Allow _param for intentionally unused parameters
         },
       ],
 
@@ -103,8 +112,25 @@ const eslintConfig = [
       "prefer-const": "error",
       "no-var": "error",
 
-      // Import rules (relaxed)
-      "import/order": "warn",
+      // Import rules
+      "import/order": [
+        "warn",
+        {
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index",
+          ],
+          "newlines-between": "never",
+          alphabetize: {
+            order: "asc",
+            caseInsensitive: true,
+          },
+        },
+      ],
     },
   },
   {

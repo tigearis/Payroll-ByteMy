@@ -15,7 +15,7 @@ query GetResourceById($id: uuid!) {
 
 # Permissions
 query GetPermissions {
-  permissions(orderBy: { action: ASC }) {
+  permissions(orderBy: { resourceId: ASC }) {
     ...PermissionWithResource
   }
 }

@@ -153,19 +153,16 @@ export async function POST(request: NextRequest) {
           await adminApolloClient.mutate({
             mutation: CreateAuthEventDocument,
             variables: {
-              object: {
-                userId: databaseUserId,
-                eventType,
-                eventTime: new Date().toISOString(),
-                success,
+              userId: databaseUserId,
+              eventType,
+              success,
+              ipAddress: ipAddress || null,
+              userAgent: userAgent || null,
+              metadata: {
+                authMethod,
+                source: "client_side",
                 failureReason: failureReason || null,
-                ipAddress: ipAddress || null,
-                userAgent: userAgent || null,
-                metadata: {
-                  authMethod,
-                  source: "client_side",
-                  ...metadata
-                }
+                ...metadata
               }
             }
           });

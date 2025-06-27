@@ -70,6 +70,7 @@ import { PayrollVersionHistory } from "@/domains/payrolls/components/payroll-ver
 
 import {
   GetPayrollByIdDocument,
+  GetPayrollForEditDocument,
   GetPayrollDatesDocument,
   GetPayrollsDocument,
   UpdatePayrollDocument,
@@ -1051,10 +1052,10 @@ export default function PayrollPage() {
     latestVersionData,
   ]);
 
-  // Get payroll data - use network-only to prevent flash of old cached data
+  // Get payroll data - use GetPayrollForEdit to get all needed fields including cycleId, dateTypeId, etc.
   // Skip this query if we're still checking versions or about to redirect
-  const { data, loading, error, refetch } = useFreshQuery(
-    GetPayrollByIdDocument,
+  const { data, loading, error, refetch } = useQuery(
+    GetPayrollForEditDocument,
     {
       variables: { id },
       skip: !id || isVersionCheckingOrRedirecting,
@@ -1182,18 +1183,17 @@ export default function PayrollPage() {
       const payroll = data.payrollById;
       setEditedPayroll({
         ...payroll,
-        // Ensure field names match the form - use the enum values from nested relationships
-        cycle_id: (payroll.payrollCycle as any)?.name || payroll.cycleId || "",
-        date_type_id:
-          (payroll.payrollDateType as any)?.name || payroll.dateTypeId || "",
+        // Ensure field names match the form - use the actual field names from schema
+        cycle_id: (payroll as any).cycleId || "",
+        date_type_id: (payroll as any).dateTypeId || "",
         date_value: (payroll as any).dateValue?.toString() || "",
         fortnightlyWeek: "", // Add fortnightly week field
-        primary_consultant_user_id: payroll.primaryConsultantUserId || "",
-        backup_consultant_user_id: payroll.backupConsultantUserId || "",
-        manager_user_id: payroll.managerUserId || "",
+        primary_consultant_user_id: payroll.primaryConsultant?.id || "",
+        backup_consultant_user_id: payroll.backupConsultant?.id || "",
+        manager_user_id: payroll.manager?.id || "",
         processing_days_before_eft:
-          (payroll as any).processingDaysBeforeEft?.toString() || "",
-        go_live_date: payroll.goLiveDate || "",
+          payroll.processingDaysBeforeEft?.toString() || "",
+        go_live_date: (payroll as any).goLiveDate || "",
       });
     }
   }, [data, editedPayroll.id]);
@@ -1427,13 +1427,11 @@ export default function PayrollPage() {
     clientKeys: client ? Object.keys(client) : [],
   });
 
-  const statusConfig = getStatusConfig(
-    payroll.status || "Implementation"
-  );
+  const statusConfig = getStatusConfig(payroll.status || "Implementation");
   const StatusIcon = statusConfig.icon;
 
   // Calculate totals from payroll dates if available
-  const payrollDates = payroll.recentPayrollDates || [];
+  const payrollDates = (payroll as any).payrollDates || [];
   const totalEmployees = payroll.employeeCount || 0;
 
   const handleSave = async () => {
@@ -1442,17 +1440,16 @@ export default function PayrollPage() {
       console.log("📋 editedPayroll:", editedPayroll);
 
       // Get the original cycle and date type IDs
-      const originalCycleId = payroll.cycleId;
-      const originalDateTypeId = payroll.dateTypeId;
+      const originalCycleId = (payroll as any).cycleId;
+      const originalDateTypeId = (payroll as any).dateTypeId;
       const originalDateValue = (payroll as any).dateValue;
 
       // Only convert to UUIDs if the values have actually changed
       let cycleId = originalCycleId;
       let dateTypeId = originalDateTypeId;
 
-      // Check if cycle changed by comparing display names
-      const originalCycleName = (payroll.payrollCycle as any)?.name;
-      if (editedPayroll.cycle_id !== originalCycleName) {
+      // Check if cycle changed by comparing IDs
+      if (editedPayroll.cycle_id !== originalCycleId) {
         const newCycleId = getCycleIdFromName(editedPayroll.cycle_id);
         if (!newCycleId) {
           toast.error("Invalid payroll cycle selected");
@@ -1461,9 +1458,8 @@ export default function PayrollPage() {
         cycleId = newCycleId;
       }
 
-      // Check if date type changed by comparing display names
-      const originalDateTypeName = (payroll as any).payrollDateType?.name;
-      if (editedPayroll.date_type_id !== originalDateTypeName) {
+      // Check if date type changed by comparing IDs
+      if (editedPayroll.date_type_id !== originalDateTypeId) {
         const newDateTypeId = getDateTypeIdFromName(editedPayroll.date_type_id);
         if (!newDateTypeId) {
           toast.error("Invalid date type selected");
@@ -1947,9 +1943,7 @@ export default function PayrollPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div className="text-center p-4 bg-blue-50 rounded-lg">
                         <div className="text-2xl font-bold text-blue-700">
-                          {payroll.employeeCount ||
-                            totalEmployees ||
-                            0}
+                          {payroll.employeeCount || totalEmployees || 0}
                         </div>
                         <div className="text-sm text-blue-600">Employees</div>
                       </div>

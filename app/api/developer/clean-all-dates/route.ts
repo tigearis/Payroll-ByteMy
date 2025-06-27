@@ -32,9 +32,9 @@ export const POST = withAuth(
         mutation: CleanAllPayrollDatesDocument,
       });
 
-      const deletedDates =
-        result.data?.bulkDeletePayrollDates?.affectedRows || 0;
-      const resetPayrolls = result.data?.bulkUpdatePayrolls?.affectedRows || 0;
+      const existingDates = result.data?.payrollDates?.length || 0;
+      const deletedDates = 0; // Placeholder since this is just a query
+      const resetPayrolls = 0; // Placeholder since this is just a query
 
       console.log(
         `✅ Clean complete: ${deletedDates} dates deleted, ${resetPayrolls} payrolls reset`

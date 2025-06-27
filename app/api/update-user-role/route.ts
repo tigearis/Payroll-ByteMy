@@ -3,6 +3,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 import { withAuth } from "@/lib/auth/api-auth";
+import { getPermissionsForRole } from "@/lib/auth/permissions";
 
 export const POST = withAuth(
   async (req: NextRequest) => {
@@ -46,6 +47,7 @@ export const POST = withAuth(
       await client.users.updateUserMetadata(targetUserId, {
         publicMetadata: {
           role,
+          permissions: getPermissionsForRole(role),
         },
       });
 

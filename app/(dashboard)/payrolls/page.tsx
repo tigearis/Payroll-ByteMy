@@ -1,6 +1,7 @@
 // app/(dashboard)/payrolls/page.tsx - UPDATED VERSION
 "use client";
 
+import { useQuery } from "@apollo/client";
 import {
   PlusCircle,
   Search,
@@ -59,7 +60,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PayrollsTable } from "@/domains/payrolls/components/payrolls-table";
-import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GetPayrollsPaginatedDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useUserRole } from "@/hooks/use-user-role";
 import { useCachedQuery } from "@/hooks/use-strategic-query";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
@@ -404,9 +405,13 @@ export default function PayrollsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [showFilters, setShowFilters] = useState(false);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
   // Sorting state
-  const [sortField, setSortField] = useState<string>("nextEftDate");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState<string>("updatedAt");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   // Column visibility state
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
@@ -420,24 +425,98 @@ export default function PayrollsPage() {
   const canManagePayrolls = checkPermission("payroll", "write").granted;
   const canViewAdvanced = checkPermission("admin", "manage").granted;
 
-  const { data, loading, error, refetch } = useCachedQuery(
-    GetPayrollsDocument,
-    "payrolls",
-    {
-      errorPolicy: "all",
+  // Build GraphQL where conditions for server-side filtering
+  const buildWhereConditions = () => {
+    const conditions: any[] = [];
+
+    // Search term filter
+    if (searchTerm) {
+      conditions.push({
+        _or: [
+          { name: { _ilike: `%${searchTerm}%` } },
+          { client: { name: { _ilike: `%${searchTerm}%` } } },
+          { primaryConsultant: { name: { _ilike: `%${searchTerm}%` } } },
+          { backupConsultant: { name: { _ilike: `%${searchTerm}%` } } }
+        ]
+      });
     }
-  );
+
+    // Status filter
+    if (statusFilter.length > 0) {
+      conditions.push({ status: { _in: statusFilter } });
+    }
+
+    // Client filter
+    if (clientFilter.length > 0) {
+      conditions.push({ clientId: { _in: clientFilter } });
+    }
+
+    // Consultant filter
+    if (consultantFilter.length > 0) {
+      conditions.push({
+        _or: [
+          { primaryConsultantUserId: { _in: consultantFilter } },
+          { backupConsultantUserId: { _in: consultantFilter } }
+        ]
+      });
+    }
+
+    // Pay cycle filter
+    if (payCycleFilter.length > 0) {
+      conditions.push({ payrollCycle: { name: { _in: payCycleFilter } } });
+    }
+
+    // Date type filter
+    if (dateTypeFilter.length > 0) {
+      conditions.push({ payrollDateType: { name: { _in: dateTypeFilter } } });
+    }
+
+    return conditions.length > 0 ? { _and: conditions } : {};
+  };
+
+  // Build GraphQL orderBy for server-side sorting
+  const buildOrderBy = () => {
+    const sortMap: Record<string, string> = {
+      name: "name",
+      client: "client.name",
+      consultant: "primaryConsultant.name",
+      employees: "employeeCount",
+      lastUpdated: "updatedAt",
+      status: "status"
+    };
+
+    const field = sortMap[sortField] || "updatedAt";
+    return [{ [field]: sortDirection }];
+  };
+
+  // Calculate pagination offset
+  const offset = (currentPage - 1) * pageSize;
+
+  const { data, loading, error, refetch } = useQuery(GetPayrollsPaginatedDocument, {
+    variables: {
+      limit: pageSize,
+      offset: offset,
+      where: buildWhereConditions(),
+      orderBy: buildOrderBy()
+    },
+    errorPolicy: "all",
+    fetchPolicy: "cache-and-network"
+  });
 
   const payrolls = data?.payrolls || [];
+  const totalCount = data?.payrollsAggregate?.aggregate?.count || 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   // Debug: Log payroll data to see what we're getting
-  console.log("Payrolls data:", {
+  console.log("Payrolls data (server-side filtered):", {
     loading,
     error,
     payrollsCount: payrolls.length,
-    firstPayroll: payrolls[0],
-    firstPayrollKeys: payrolls[0] ? Object.keys(payrolls[0]) : [],
-    rawData: data,
+    totalCount,
+    currentPage,
+    totalPages,
+    filterConditions: buildWhereConditions(),
+    orderBy: buildOrderBy()
   });
 
   useEffect(() => {
@@ -493,28 +572,18 @@ export default function PayrollsPage() {
     );
   }
 
-  // Transform payroll data
-  const transformedPayrolls = payrolls.map((payroll: any) => {
-    // Fix employee count - use the employeeCount from the payroll directly
+  // Transform payroll data (minimal client-side processing since filtering/sorting is server-side)
+  const displayPayrolls = payrolls.map((payroll: any) => {
     const employeeCount = payroll.employeeCount || 0;
 
     // Get next EFT date from payrollDates
     const getNextEftDate = (payrollDates: any[]) => {
-      if (!payrollDates || payrollDates.length === 0) {
-        return null;
-      }
-
+      if (!payrollDates || payrollDates.length === 0) return null;
+      
       const today = new Date();
       const futureDates = payrollDates
-        .filter(
-          date =>
-            date.adjustedEftDate && new Date(date.adjustedEftDate) >= today
-        )
-        .sort(
-          (a, b) =>
-            new Date(a.adjustedEftDate).getTime() -
-            new Date(b.adjustedEftDate).getTime()
-        );
+        .filter(date => date.adjustedEftDate && new Date(date.adjustedEftDate) >= today)
+        .sort((a, b) => new Date(a.adjustedEftDate).getTime() - new Date(b.adjustedEftDate).getTime());
 
       return futureDates.length > 0 ? futureDates[0].adjustedEftDate : null;
     };
@@ -523,118 +592,12 @@ export default function PayrollsPage() {
       ...payroll,
       employeeCount,
       payrollCycleFormatted: formatPayrollCycle(payroll),
-      priority:
-        employeeCount > 50 ? "high" : employeeCount > 20 ? "medium" : "low",
+      priority: employeeCount > 50 ? "high" : employeeCount > 20 ? "medium" : "low",
       progress: getStatusConfig(payroll.status || "Implementation").progress,
       nextEftDate: getNextEftDate(payroll.payrollDates),
       lastUpdated: new Date(payroll.updatedAt || payroll.createdAt),
       lastUpdatedBy: payroll.backupConsultant?.name || "System",
     };
-  });
-
-  // Filter payrolls
-  const filteredPayrolls = transformedPayrolls.filter((payroll: any) => {
-    const matchesSearch =
-      !searchTerm ||
-      payroll.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payroll.client?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payroll.primaryConsultant?.name
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      payroll.payrollCycleFormatted?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      statusFilter.length === 0 || statusFilter.includes(payroll.status);
-
-    const matchesClient =
-      clientFilter.length === 0 || clientFilter.includes(payroll.client?.id);
-
-    const matchesConsultant =
-      consultantFilter.length === 0 ||
-      consultantFilter.includes(payroll.primaryConsultant?.id);
-
-    const matchesPayCycle =
-      payCycleFilter.length === 0 ||
-      payCycleFilter.includes(payroll.payrollCycle?.name);
-
-    const matchesDateType =
-      dateTypeFilter.length === 0 ||
-      dateTypeFilter.includes(payroll.payrollDateType?.name);
-
-    return (
-      matchesSearch &&
-      matchesStatus &&
-      matchesClient &&
-      matchesConsultant &&
-      matchesPayCycle &&
-      matchesDateType
-    );
-  });
-
-  // Sort payrolls
-  const sortedPayrolls = [...filteredPayrolls].sort((a, b) => {
-    let aValue = a[sortField];
-    let bValue = b[sortField];
-
-    // Handle nested values
-    if (sortField === "client") {
-      aValue = a.client?.name || "";
-      bValue = b.client?.name || "";
-    } else if (sortField === "consultant") {
-      aValue = a.primaryConsultant?.name || "";
-      bValue = b.primaryConsultant?.name || "";
-    } else if (sortField === "employees") {
-      aValue = a.employeeCount;
-      bValue = b.employeeCount;
-    } else if (sortField === "lastUpdated") {
-      aValue = a.lastUpdated;
-      bValue = b.lastUpdated;
-    } else if (sortField === "nextEftDate") {
-      aValue = a.nextEftDate ? new Date(a.nextEftDate) : null;
-      bValue = b.nextEftDate ? new Date(b.nextEftDate) : null;
-    } else if (sortField === "payrollCycle") {
-      aValue = a.payrollCycleFormatted;
-      bValue = b.payrollCycleFormatted;
-    }
-
-    // Handle different data types
-    if (typeof aValue === "number" && typeof bValue === "number") {
-      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
-    }
-
-    if (aValue instanceof Date && bValue instanceof Date) {
-      return sortDirection === "asc"
-        ? aValue.getTime() - bValue.getTime()
-        : bValue.getTime() - aValue.getTime();
-    }
-
-    // Handle null dates (put nulls at the end)
-    if (sortField === "nextEftDate") {
-      if (aValue === null && bValue === null) {
-        return 0;
-      }
-      if (aValue === null) {
-        return 1;
-      }
-      if (bValue === null) {
-        return -1;
-      }
-      if (aValue instanceof Date && bValue instanceof Date) {
-        return sortDirection === "asc"
-          ? aValue.getTime() - bValue.getTime()
-          : bValue.getTime() - aValue.getTime();
-      }
-    }
-
-    // String comparison
-    const aStr = String(aValue || "").toLowerCase();
-    const bStr = String(bValue || "").toLowerCase();
-
-    if (sortDirection === "asc") {
-      return aStr.localeCompare(bStr);
-    } else {
-      return bStr.localeCompare(aStr);
-    }
   });
 
   // Get unique values for filters
@@ -662,10 +625,15 @@ export default function PayrollsPage() {
     new Set(payrolls.map((p: any) => p.payrollDateType?.name).filter(Boolean))
   ) as string[];
 
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, clientFilter, consultantFilter, payCycleFilter, dateTypeFilter]);
+
   // Handle selection
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedPayrolls(sortedPayrolls.map((p: any) => p.id));
+      setSelectedPayrolls(displayPayrolls.map((p: any) => p.id));
     } else {
       setSelectedPayrolls([]);
     }
@@ -679,7 +647,7 @@ export default function PayrollsPage() {
     }
   };
 
-  // Handle sorting
+  // Handle sorting (server-side)
   const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -687,6 +655,18 @@ export default function PayrollsPage() {
       setSortField(field);
       setSortDirection("asc");
     }
+    // Reset to first page when sorting changes
+    setCurrentPage(1);
+  };
+
+  // Handle pagination
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1); // Reset to first page when page size changes
   };
 
   // Handle column visibility
@@ -729,17 +709,18 @@ export default function PayrollsPage() {
     dateTypeFilter.length > 0;
 
   // Calculate summary statistics
-  const activePayrolls = sortedPayrolls.filter(
+  const payrollsList = data?.payrolls || [];
+  const activePayrolls = payrollsList.filter(
     (p: any) => p.status === "Active"
   ).length;
-  const totalEmployees = sortedPayrolls.reduce(
+  const totalEmployees = payrollsList.reduce(
     (sum: number, p: any) => sum + (p.employeeCount || 0),
     0
   );
   const totalClients = new Set(
-    sortedPayrolls.map((p: any) => p.client?.id).filter(Boolean)
+    payrollsList.map((p: any) => p.client?.id).filter(Boolean)
   ).size;
-  const pendingPayrolls = sortedPayrolls.filter((p: any) =>
+  const pendingPayrolls = payrollsList.filter((p: any) =>
     ["Implementation"].includes(p.status || "Implementation")
   ).length;
 
@@ -763,7 +744,7 @@ export default function PayrollsPage() {
   // Render card view
   const renderCardView = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {sortedPayrolls.map((payroll: any) => {
+      {payrollsList.map((payroll: any) => {
         const statusConfig = getStatusConfig(
           payroll.status || "Implementation"
         );
@@ -847,7 +828,7 @@ export default function PayrollsPage() {
   // Render list view
   const renderListView = () => (
     <div className="space-y-3">
-      {sortedPayrolls.map((payroll: any) => {
+      {payrollsList.map((payroll: any) => {
         const statusConfig = getStatusConfig(
           payroll.status || "Implementation"
         );
@@ -988,7 +969,7 @@ export default function PayrollsPage() {
                     Total Payrolls
                   </p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {sortedPayrolls.length}
+                    {payrollsList.length}
                   </p>
                 </div>
                 <FileText className="w-8 h-8 text-blue-600" />
@@ -1304,7 +1285,7 @@ export default function PayrollsPage() {
               </div>
             </CardContent>
           </Card>
-        ) : sortedPayrolls.length === 0 ? (
+        ) : payrollsList.length === 0 ? (
           <Card>
             <CardContent className="p-12">
               <div className="text-center">
@@ -1336,7 +1317,7 @@ export default function PayrollsPage() {
           <div>
             {viewMode === "table" && (
               <PayrollsTable
-                payrolls={sortedPayrolls}
+                payrolls={payrollsList}
                 loading={!!loading}
                 onRefresh={refetch}
                 selectedPayrolls={selectedPayrolls}

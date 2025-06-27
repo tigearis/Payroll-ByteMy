@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { GetUserUpcomingPayrollsDocument } from "@/domains/payrolls/graphql/generated";
+import { GetUserUpcomingPayrollsDocument } from '@/domains/payrolls/graphql/generated/graphql';
 import {
   UserUpcomingPayroll as UpcomingPayroll,
   UserUpcomingPayrollsData as UpcomingPayrollsData,

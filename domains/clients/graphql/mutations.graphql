@@ -4,7 +4,7 @@
 
 mutation CreateClient(
   $name: String!
-  $contactName: String
+  $contactPerson: String
   $contactEmail: String
   $contactPhone: String
   $address: String
@@ -16,18 +16,19 @@ mutation CreateClient(
   insertClient(
     object: {
       name: $name
+      contactPerson: $contactPerson
       contactEmail: $contactEmail
       contactPhone: $contactPhone
     }
   ) {
-    ...ClientWithContact
+    ...ClientBase
   }
 }
 
 mutation UpdateClient(
   $id: uuid!
   $name: String
-  $contactName: String
+  $contactPerson: String
   $contactEmail: String
   $contactPhone: String
   $address: String
@@ -40,11 +41,12 @@ mutation UpdateClient(
     pkColumns: { id: $id }
     _set: {
       name: $name
+      contactPerson: $contactPerson
       contactEmail: $contactEmail
       contactPhone: $contactPhone
     }
   ) {
-    ...ClientWithContact
+    ...ClientBase
   }
 }
 
@@ -53,7 +55,7 @@ mutation UpdateClientStatus($id: uuid!, $active: Boolean!) {
     pkColumns: { id: $id }
     _set: { active: $active, updatedAt: "now()" }
   ) {
-    ...ClientBasicInfo
+    ...ClientBase
   }
 }
 
@@ -62,7 +64,7 @@ mutation DeactivateClient($id: uuid!) {
     pkColumns: { id: $id }
     _set: { active: false, updatedAt: "now()" }
   ) {
-    ...ClientBasicInfo
+    ...ClientBase
   }
 }
 
@@ -71,7 +73,7 @@ mutation ActivateClient($id: uuid!) {
     pkColumns: { id: $id }
     _set: { active: true, updatedAt: "now()" }
   ) {
-    ...ClientBasicInfo
+    ...ClientBase
   }
 }
 
@@ -94,7 +96,7 @@ mutation BulkUpdateClientStatus($clientIds: [uuid!]!, $active: Boolean!) {
   ) {
     affectedRows
     returning {
-      ...ClientBasicInfo
+      ...ClientBase
     }
   }
 }

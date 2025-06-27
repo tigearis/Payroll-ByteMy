@@ -1,47 +1,34 @@
 /**
  * Client Domain Types
+ * Only contains domain-specific types, not core entities
  */
 
-export interface Client {
-  id: string;
-  name: string;
-  contactPerson?: string;
-  contact_email?: string;
-  contactPhone?: string;
-  active: boolean;
-  createdAt: string;
-  updatedAt: string;
+// Re-export core types from main types for domain convenience
+export type { Client, ClientExternalSystem } from "@/types/interfaces";
 
-  // Relationships
-  payrolls?: import("../../payrolls/types").Payroll[];
-}
-
-export type ClientExternalSystem = {
-  id: string;
-  clientId: string;
-  systemId: string;
-  systemClientId?: string;
-
-  // Relationships
-  client: Client;
-};
-
-// Extracted from inline types
+// Domain-specific data transformation type
 export interface ClientExtracted {
-  id: string;
+  id: UUID;
   name: string;
-  contact_person: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
+  contactPerson: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
   active: boolean;
   payrolls?: Array<{
-    id: string;
+    id: UUID;
     name: string;
     status: string;
     active?: boolean;
   }>;
 }
 
+// ===========================
+// Component Props (Domain-Specific)
+// ===========================
+
+/**
+ * Props for clients table component
+ */
 export interface ClientsTableProps {
   clients: ClientExtracted[];
   loading?: boolean;
@@ -52,13 +39,16 @@ export interface ClientsTableProps {
   onSort?: (field: string) => void;
 }
 
+/**
+ * Props for client card component
+ */
 export interface ClientCardProps {
   client: {
-    id: any;
+    id: UUID;
     name: string;
-    contact_email: string;
-    contact_person: string;
-    contact_phone: string;
+    contactEmail: string;
+    contactPerson: string;
+    contactPhone: string;
   };
   onEdit?: () => void;
   className?: string;

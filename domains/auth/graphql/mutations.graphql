@@ -159,21 +159,7 @@ mutation CreateUserInvitation(
       status: "pending"
     }
   ) {
-    id
-    email
-    firstName
-    lastName
-    invitedRole
-    managerId
-    clerkTicket
-    invitedAt
-    expiresAt
-    status
-    invitedByUser {
-      name
-      email
-      role
-    }
+    ...UserInvitationDetail
   }
 }
 
@@ -184,39 +170,29 @@ mutation CompleteInvitationAcceptance(
   $userEmail: String!
   $userName: String!
 ) {
-  # Mark invitation as accepted
-  updateUserInvitationById(
-    pkColumns: { id: $invitationId }
-    _set: { 
-      status: "accepted"
-      acceptedAt: "now()"
-    }
-  ) {
-    id
-    email
-    firstName
-    lastName
-    invitedRole
-    managerId
-    status
-    acceptedAt
-  }
-
-  # Create the user record
   insertUser(
     object: {
       clerkUserId: $clerkUserId
       email: $userEmail
       name: $userName
       isActive: true
-      isStaff: true
     }
   ) {
     id
-    clerkUserId
     email
     name
+    clerkUserId
     isActive
+    createdAt
+  }
+
+  updateUserInvitationById(
+    pkColumns: { id: $invitationId }
+    _set: { status: "accepted", acceptedAt: "now()", updatedAt: "now()" }
+  ) {
+    id
+    status
+    acceptedAt
   }
 }
 
@@ -226,39 +202,15 @@ mutation AssignInvitationRole(
   $roleId: uuid!
   $invitationId: uuid!
 ) {
-  # Assign the role
   insertUserRole(object: { userId: $userId, roleId: $roleId }) {
     id
     userId
     roleId
     assignedRole {
+      id
       name
       displayName
-      priority
     }
-  }
-
-  # Update invitation with the created user
-  updateUserInvitationById(
-    pkColumns: { id: $invitationId }
-    _set: { acceptedBy: $userId }
-  ) {
-    id
-    acceptedBy
-  }
-
-  # Log the role assignment for audit
-  insertPermissionAuditLog(
-    object: {
-      userId: $userId
-      action: "role_assigned_from_invitation"
-      resource: "user_roles"
-      newValue: { roleId: $roleId, invitationId: $invitationId }
-      timestamp: "now()"
-    }
-  ) {
-    id
-    timestamp
   }
 }
 
@@ -266,11 +218,9 @@ mutation AssignInvitationRole(
 mutation CancelUserInvitation($invitationId: uuid!) {
   updateUserInvitationById(
     pkColumns: { id: $invitationId }
-    _set: { status: "cancelled" }
+    _set: { status: "cancelled", updatedAt: "now()" }
   ) {
-    id
-    status
-    updatedAt
+    ...UserInvitationDetail
   }
 }
 
@@ -283,44 +233,24 @@ mutation ResendUserInvitation(
 ) {
   updateUserInvitationById(
     pkColumns: { id: $invitationId }
-    _set: { 
-      status: "pending"
+    _set: {
       expiresAt: $newExpiresAt
       clerkTicket: $newClerkTicket
       clerkInvitationId: $newClerkInvitationId
+      status: "pending"
       updatedAt: "now()"
     }
   ) {
-    id
-    email
-    firstName
-    lastName
-    invitedRole
-    status
-    expiresAt
-    updatedAt
-    invitedByUser {
-      name
-      email
-    }
+    ...UserInvitationDetail
   }
 }
 
 # Mark expired invitations as expired (bulk operation)
 mutation MarkExpiredInvitations {
-  bulkUpdateUserInvitations(
-    where: { 
-      status: { _eq: "pending" }
-      expiresAt: { _lt: "now()" }
-    }
-    _set: { status: "expired" }
+  bulkUpdateUserInvitations: bulkUpdateUserInvitations(
+    where: { status: { _eq: "pending" }, expiresAt: { _lt: "now()" } }
+    _set: { status: "expired", updatedAt: "now()" }
   ) {
     affectedRows
-    returning {
-      id
-      email
-      status
-      expiresAt
-    }
   }
 }

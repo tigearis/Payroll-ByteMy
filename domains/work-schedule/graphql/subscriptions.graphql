@@ -118,7 +118,7 @@ subscription DailyScheduleUpdates($workDay: String!) {
     where: { workDay: { _eq: $workDay } }
     orderBy: { scheduleOwner: { name: ASC } }
   ) {
-    ...DailyWorkSchedule
+    ...WorkScheduleBasic
   }
 }
 
@@ -127,7 +127,7 @@ subscription TodayScheduleUpdates {
     where: { workDay: { _eq: "now()::date" } }
     orderBy: { scheduleOwner: { name: ASC } }
   ) {
-    ...DailyWorkSchedule
+    ...WorkScheduleBasic
   }
 }
 
@@ -162,7 +162,7 @@ subscription ScheduleAvailabilityUpdates($workDay: String!, $minHours: numeric =
     }
     orderBy: { workHours: DESC }
   ) {
-    ...WorkScheduleAvailability
+    ...WorkScheduleCapacity
   }
 }
 
@@ -285,7 +285,7 @@ subscription UserWorkSchedulesUpdates(
       workDay: { _gte: $startDate, _lte: $endDate }
     }
   ) {
-    ...WorkScheduleTotals
+    ...WorkScheduleWeeklyView
   }
 }
 
@@ -319,7 +319,7 @@ subscription TeamSchedulesUpdates(
       workDay: { _gte: $startDate, _lte: $endDate }
     }
   ) {
-    ...WorkScheduleStats
+    ...WorkScheduleDashboardCard
   }
 }
 
@@ -648,7 +648,7 @@ subscription UserSchedulesUpdates($userId: uuid!) {
   workSchedules(
     where: { userId: { _eq: $userId } }
   ) {
-    ...UserWorkScheduleSummary
+    ...MyWorkSchedule
   }
 }
 

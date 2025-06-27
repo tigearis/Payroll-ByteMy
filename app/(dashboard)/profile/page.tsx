@@ -19,7 +19,7 @@ import { format } from "date-fns";
 import Link from "next/link";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUserRole } from "@/hooks/use-user-role";
-import { GetUserProfileCompleteDocument } from "@/domains/users/graphql/generated";
+import { GetUserProfileCompleteDocument } from "@/domains/users/graphql/generated/graphql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

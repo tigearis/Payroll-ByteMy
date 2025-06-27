@@ -75,7 +75,10 @@ mutation RemovePermissionFromRole($id: uuid!) {
   }
 }
 
-mutation UpdateSystemRolePermission($id: uuid!, $set: rolePermissionsSetInput!) {
+mutation UpdateSystemRolePermission(
+  $id: uuid!
+  $set: rolePermissionsSetInput!
+) {
   updateRolePermissionById(pkColumns: { id: $id }, _set: $set) {
     ...RolePermissionWithDetails
   }
@@ -370,9 +373,7 @@ mutation BulkGrantUserPermissions(
 }
 
 # Bulk remove permission overrides
-mutation BulkRemovePermissionOverrides(
-  $where: permissionOverridesBoolExp!
-) {
+mutation BulkRemovePermissionOverrides($where: permissionOverridesBoolExp!) {
   bulkDeletePermissionOverrides(where: $where) {
     returning {
       id
@@ -393,11 +394,7 @@ mutation ExtendPermissionExpiration(
 ) {
   updatePermissionOverrideById(
     pkColumns: { id: $id }
-    _set: { 
-      expiresAt: $newExpiresAt
-      reason: $reason
-      updatedAt: "now()"
-    }
+    _set: { expiresAt: $newExpiresAt, reason: $reason, updatedAt: "now()" }
   ) {
     id
     userId
@@ -413,9 +410,7 @@ mutation ExtendPermissionExpiration(
 
 # Revoke expired permissions (cleanup)
 mutation RevokeExpiredPermissions {
-  bulkDeletePermissionOverrides(
-    where: { expiresAt: { _lte: "now()" } }
-  ) {
+  bulkDeletePermissionOverrides(where: { expiresAt: { _lte: "now()" } }) {
     returning {
       id
       userId

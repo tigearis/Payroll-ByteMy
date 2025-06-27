@@ -82,7 +82,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  ClientsGetClientByIdDocument,
+  GetClientByIdDocument,
   UpdateClientDocument,
   UpdateClientStatusDocument,
   ArchiveClientDocument,
@@ -221,7 +221,7 @@ export default function ClientDetailPage() {
 
   // GraphQL operations
   const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(
-    ClientsGetClientByIdDocument,
+    GetClientByIdDocument,
     {
       variables: { id },
       skip: !id,
@@ -232,15 +232,11 @@ export default function ClientDetailPage() {
   );
 
   const [updateClient] = useMutation(UpdateClientDocument, {
-    refetchQueries: [
-      { query: ClientsGetClientByIdDocument, variables: { id } },
-    ],
+    refetchQueries: [{ query: GetClientByIdDocument, variables: { id } }],
   });
 
   const [updateClientStatus] = useMutation(UpdateClientStatusDocument, {
-    refetchQueries: [
-      { query: ClientsGetClientByIdDocument, variables: { id } },
-    ],
+    refetchQueries: [{ query: GetClientByIdDocument, variables: { id } }],
   });
 
   // Archive client functionality (soft delete)
@@ -281,7 +277,7 @@ export default function ClientDetailPage() {
     );
   }
 
-  const client = data?.clientById;
+  const client = data?.client;
 
   // Debug: Log client data to see what we're getting
   console.log("Client details data:", {
@@ -289,8 +285,8 @@ export default function ClientDetailPage() {
     error,
     client,
     clientKeys: client ? Object.keys(client) : [],
-    payrolls: client?.payrolls,
-    payrollsLength: client?.payrolls?.length,
+    payrollHistory: client?.payrollHistory,
+    payrollHistoryLength: client?.payrollHistory?.length,
   });
 
   if (!client) {
@@ -454,7 +450,7 @@ export default function ClientDetailPage() {
           name: editFormData.name.trim(),
           contactEmail: editFormData.contactEmail.trim() || null,
           contactPhone: editFormData.contactPhone.trim() || null,
-          contactName: editFormData.contactPerson.trim() || null,
+          contactPerson: editFormData.contactPerson.trim() || null,
         },
       });
 
@@ -480,11 +476,11 @@ export default function ClientDetailPage() {
 
   // Calculate client statistics
   const activePayrolls =
-    (client as any)?.payrolls?.filter((p: any) => !p.supersededDate)?.length ||
+    (client as any)?.payrollHistory?.filter((p: any) => !p.supersededDate)?.length ||
     0;
-  const totalPayrolls = (client as any)?.payrolls?.length || 0;
+  const totalPayrolls = (client as any)?.payrollHistory?.length || 0;
   const totalEmployees =
-    (client as any)?.payrolls?.reduce((sum: number, p: any) => {
+    (client as any)?.payrollHistory?.reduce((sum: number, p: any) => {
       // PayrollDates don't have employeeCount - use payroll's employeeCount directly
       const employeeCount = p.employeeCount || 0;
       return sum + employeeCount;
@@ -757,7 +753,7 @@ export default function ClientDetailPage() {
             <CardContent>
               {(() => {
                 const transformedPayrolls = transformPayrollData(
-                  (client as any)?.payrolls || []
+                  (client as any)?.payrollHistory || []
                 );
 
                 return (

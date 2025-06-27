@@ -2,6 +2,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 import { withAuth } from "@/lib/auth/api-auth";
+import { getPermissionsForRole } from "@/lib/auth/permissions";
 
 export const GET = withAuth(
   async (req: NextRequest) => {
@@ -128,6 +129,7 @@ export const POST = withAuth(
 
           // User role and permissions
           role,
+          permissions: getPermissionsForRole(role),
           isStaff: true,
 
           // User information for prefilling

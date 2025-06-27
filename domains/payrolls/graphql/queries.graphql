@@ -299,6 +299,86 @@ query GetPayrollDateTypes {
   }
 }
 
+# GetPayrollDetailComplete
+# Optimized combined query for payroll detail pages that consolidates multiple separate queries into a single request
+# Performance: Reduces network requests from 4 separate queries to 1 combined query (75% reduction)
+# Replaces: GetPayrollForEditDocument, GetAllUsersListDocument, GetPayrollCyclesDocument, GetPayrollDateTypesDocument
+# Domain: payrolls | Security: MEDIUM | Complexity: HIGH
+# Param id: The unique identifier for the payroll to fetch complete details for
+# Returns: Combined data with payroll details, users, cycles, and date types
+# Usage: Payroll detail pages (/payrolls/[id]) to load all necessary data in a single request
+# Since: Priority 2 optimization (2025-06-27) | Classification: SOC2_COMPLIANT
+query GetPayrollDetailComplete($id: uuid!) {
+  # Main payroll data with all relations
+  payrollById(id: $id) {
+    ...PayrollDetailed
+    client {
+      id
+      name
+    }
+    payrollCycle {
+      id
+      name
+      description
+    }
+    payrollDateType {
+      id
+      name
+    }
+    # Additional relations for complete detail view
+    primaryConsultant {
+      id
+      name
+      email
+      role
+    }
+    backupConsultant {
+      id
+      name
+      email
+      role
+    }
+    manager {
+      id
+      name
+      email
+      role
+    }
+    # Payroll dates for timeline view - use different alias to avoid conflict
+    detailDates: payrollDates(orderBy: { originalEftDate: ASC }, limit: 12) {
+      id
+      originalEftDate
+      adjustedEftDate
+      processingDate
+      createdAt
+    }
+  }
+  
+  # All users for consultant/manager assignments (combines GetAllUsersList)
+  users(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
+    id
+    name
+    email
+    role
+    isStaff
+    isActive
+  }
+  
+  # Lookup tables (combines GetPayrollCycles)
+  payrollCycles(orderBy: { name: ASC }) {
+    id
+    name
+    description
+  }
+  
+  # Lookup tables (combines GetPayrollDateTypes)
+  payrollDateTypes(orderBy: { name: ASC }) {
+    id
+    name
+    description
+  }
+}
+
 # Payroll dates management
 query GetPayrollDates($payrollId: uuid!) {
   payrollDates(

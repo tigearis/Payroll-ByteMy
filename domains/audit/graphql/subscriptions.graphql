@@ -1,85 +1,121 @@
 # Audit Domain Subscriptions
 
-# Subscribe to new audit logs
-subscription SubscribeToAuditLogs {
-  auditLogs(orderBy: { eventTime: DESC }, limit: 1) {
-    ...AuditLogWithUser
+# Monitor real-time audit events
+subscription AuditLogStream(
+  $resourceTypes: [String!]
+  $actions: [String!]
+  $sinceTimestamp: timestamptz!
+) {
+  auditLogs(
+    where: {
+      resourceType: {_in: $resourceTypes}
+      action: {_in: $actions}
+      eventTime: {_gte: $sinceTimestamp}
+    }
+    orderBy: {eventTime: DESC}
+  ) {
+    ...AuditLogEntry
   }
 }
 
-# Subscribe to failed operations
-subscription SubscribeToFailedOperations {
+# Monitor auth events
+subscription AuthEventStream($eventTypes: [String!], $sinceTimestamp: timestamptz!) {
+  authEvents(
+    where: {
+      eventType: {_in: $eventTypes}
+      eventTime: {_gte: $sinceTimestamp}
+    }
+    orderBy: {eventTime: DESC}
+  ) {
+    ...AuthEvent
+  }
+}
+
+# Missing subscriptions needed by security pages
+subscription SubscribeToAuditLogs($limit: Int = 50) {
+  auditLogs(orderBy: { eventTime: DESC }, limit: $limit) {
+    ...AuditLogEntry
+  }
+}
+
+subscription SecurityEventsStream {
+  auditLogs(
+    where: { 
+      resourceType: { _in: ["security", "auth", "permission"] }
+    }
+    orderBy: { eventTime: DESC }
+    limit: 100
+  ) {
+    ...AuditLogEntry
+  }
+}
+
+subscription FailedOperationsStream {
   auditLogs(
     where: { success: { _eq: false } }
     orderBy: { eventTime: DESC }
-    limit: 10
-  ) {
-    ...AuditLogCore
-  }
-}
-
-# Subscribe to user audit activity
-subscription SubscribeToUserAuditActivity($user_id: uuid!) {
-  auditLogs(
-    where: { userId: { _eq: $user_id } }
-    orderBy: { eventTime: DESC }
-    limit: 20
-  ) {
-    ...AuditLogCore
-  }
-}
-
-# Subscribe to data access logs
-subscription SubscribeToDataAccessLogs {
-  dataAccessLogs(orderBy: { accessedAt: DESC }, limit: 10) {
-    ...DataAccessLogCore
-  }
-}
-
-# Real-time security events for dashboard
-subscription SecurityEventsStream($twentyFourHoursAgo: timestamptz!) {
-  auditLogs(
-    where: { eventTime: { _gte: $twentyFourHoursAgo } }
-    orderBy: { eventTime: DESC }
     limit: 50
   ) {
-    id
-    eventTime
-    action
-    resourceType
-    success
+    ...AuditLogEntry
   }
 }
 
-# Real-time failed operations stream
-subscription FailedOperationsStream($twentyFourHoursAgo: timestamptz!) {
+subscription CriticalDataAccessStream {
   auditLogs(
-    where: { success: { _eq: false }, eventTime: { _gte: $twentyFourHoursAgo } }
+    where: { 
+      resourceType: { _in: ["users", "clients", "payrolls"] }
+      action: { _in: ["delete", "create", "update"] }
+    }
     orderBy: { eventTime: DESC }
-    limit: 20
+    limit: 100
   ) {
-    id
-    eventTime
-    action
-    resourceType
+    ...AuditLogEntry
   }
 }
 
-# Real-time critical data access stream
-subscription CriticalDataAccessStream($sevenDaysAgo: timestamptz!) {
+# Monitor data access events
+subscription DataAccessStream($resourceTypes: [String!], $sinceTimestamp: timestamptz!) {
   dataAccessLogs(
     where: {
-      accessedAt: { _gte: $sevenDaysAgo }
-      dataClassification: { _eq: "CRITICAL" }
+      resourceType: {_in: $resourceTypes}
+      accessedAt: {_gte: $sinceTimestamp}
     }
-    orderBy: { accessedAt: DESC }
-    limit: 30
+    orderBy: {accessedAt: DESC}
+  ) {
+    ...DataAccessLog
+  }
+}
+
+# Monitor sensitive audit logs
+subscription SensitiveAuditStream($resourceTypes: [String!]!, $sinceTimestamp: timestamptz!) {
+  auditLogs(
+    where: {
+      resourceType: {_in: $resourceTypes}
+      action: {_in: ["view", "export", "update", "delete"]}
+      eventTime: {_gte: $sinceTimestamp}
+    }
+    orderBy: {eventTime: DESC}
+  ) {
+    ...AuditLogEntry
+  }
+}
+
+# Monitor permission audit events
+subscription PermissionAuditStream($sinceTimestamp: timestamptz!) {
+  permissionAuditLogs(
+    where: {
+      operation: {_eq: "deny"}
+      createdAt: {_gte: $sinceTimestamp}
+    }
+    orderBy: {createdAt: DESC}
   ) {
     id
-    accessedAt
-    resourceType
-    accessType
-    dataClassification
-    rowCount
+    userId
+    action
+    resource
+    operation
+    reason
+    createdAt
+    # user relationship not available
   }
 }

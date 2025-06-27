@@ -12,6 +12,7 @@ import {
 } from "@/domains/users/services/user-sync";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
+import { getPermissionsForRole } from "@/lib/auth/permissions";
 import {
   auditLogger,
   LogLevel,
@@ -258,6 +259,7 @@ export const POST = withAuth(
         lastName,
         publicMetadata: {
           role,
+          permissions: getPermissionsForRole(role),
           managerId,
           invitedBy: session.userId,
           invitedAt: new Date().toISOString(),

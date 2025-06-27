@@ -1,14 +1,10 @@
-# Billing Domain Queries - TEMPORARILY DISABLED
+# Billing Domain Queries - TEMPORARILY DISABLED FOR SCHEMA FIXES
 # Security Classification: HIGH - Financial and billing data
 # SOC2 Compliance: Row-level security and audit logging enforced
-#
-# NOTE: Billing queries temporarily commented out due to schema mismatches
-# Table name inconsistency between billingInvoice and billingInvoices
-# 
-# Uncomment and fix when billing table schema is finalized
 
-# Placeholder query to keep the file valid for codegen
+# Placeholder query to keep file valid during schema fixes
 query PlaceholderBillingQuery {
-  # This is a placeholder - replace with actual billing queries when schema is ready
-  __typename
+  billingInvoice(limit: 1) {
+    id
+  }
 }

@@ -1,233 +1,160 @@
-# Clients Domain Queries
-# Security Classification: HIGH - Contains PII and business-critical data
-# SOC2 Compliance: Row-level security and audit logging enforced
+# Client Domain Queries
 
-query GetClients {
-  clients(where: { active: { _eq: true } }, orderBy: { name: ASC }) {
-    ...ClientBasicInfo
+# Get paginated list of clients
+query GetClientsList(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: clientsBoolExp
+  $orderBy: [clientsOrderBy!] = { name: ASC }
+) {
+  clients(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
+    ...ClientListItem
   }
-}
-
-# Simple client list for forms and dropdowns (migrated from payrolls/new/page.tsx)
-query GetClientsSimple {
-  clients {
-    id
-    name
-  }
-}
-
-query GetClientsWithContact {
-  clients(where: { active: { _eq: true } }, orderBy: { name: ASC }) {
-    ...ClientWithContact
-  }
-}
-
-query ClientsGetClientById($id: uuid!) {
-  clientById(id: $id) {
-    ...ClientWithRelations
-  }
-}
-
-query GetClientBasicById($id: uuid!) {
-  clientById(id: $id) {
-    ...ClientBasicInfo
-  }
-}
-
-query GetActiveClients {
-  clients(where: { active: { _eq: true } }, orderBy: { name: ASC }) {
-    ...ClientBasicInfo
-  }
-}
-
-query GetClientsForBilling {
-  clients(where: { active: { _eq: true } }, orderBy: { name: ASC }) {
-    ...ClientForBilling
-  }
-}
-
-query SearchClients($searchTerm: String!) {
-  clients(
-    where: {
-      _and: [
-        { active: { _eq: true } }
-        {
-          _or: [
-            { name: { _ilike: $searchTerm } }
-            { contactPerson: { _ilike: $searchTerm } }
-            { contactEmail: { _ilike: $searchTerm } }
-          ]
-        }
-      ]
-    }
-    orderBy: { name: ASC }
-    limit: 50
-  ) {
-    ...ClientWithContact
-  }
-}
-
-# Audit query - limited fields for compliance
-query GetClientsForAudit {
-  clients(orderBy: { createdAt: DESC }) {
-    ...ClientForAudit
-  }
-}
-
-query GetClientStats {
-  clientsAggregate {
-    aggregate {
-      count
-    }
-  }
-  active_clients: clientsAggregate(where: { active: { _eq: true } }) {
-    aggregate {
-      count
-    }
-  }
-  inactive_clients: clientsAggregate(where: { active: { _eq: false } }) {
+  clientsAggregate(where: $where) {
     aggregate {
       count
     }
   }
 }
 
-query GetClientsDashboardStats {
-  payrollsAggregate(where: {supersededDate: {_isNull: true}}) {
+# GetClientsListWithStats
+# Optimized combined query for clients listing page that consolidates client data with dashboard statistics
+# Performance: Reduces network requests from 2 separate queries to 1 combined query (50% reduction)
+# Replaces: GetClientsListDocument, GetClientsDashboardStatsDocument
+# Domain: clients | Security: HIGH | Complexity: MEDIUM
+# Params: limit (page size), offset (pagination), where (filters), orderBy (sorting)
+# Returns: Combined client data with list, pagination, dashboard stats, and attention monitoring
+# Usage: Main clients page (/clients) to load client list with dashboard stats
+# Features: Real-time dashboard statistics, client attention monitoring, recent activity tracking
+# Since: Priority 2 optimization (2025-06-27) | Classification: SOC2_COMPLIANT
+query GetClientsListWithStats(
+  $limit: Int = 20
+  $offset: Int = 0
+  $where: clientsBoolExp
+  $orderBy: [clientsOrderBy!] = { name: ASC }
+) {
+  # Main clients list with pagination
+  clients(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
+    ...ClientListItem
+  }
+  
+  # Pagination metadata
+  clientsAggregate(where: $where) {
     aggregate {
       count
+    }
+  }
+  
+  # Dashboard statistics (combines GetClientsDashboardStats)
+  activeClientsCount: clientsAggregate(where: {active: {_eq: true}}) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Total employees across all clients
+  totalEmployeesAcrossClients: payrollsAggregate(where: {supersededDate: {_isNull: true}}) {
+    aggregate {
       sum {
         employeeCount
       }
     }
   }
-  clientsAggregate(where: {active: {_eq: true}}) {
-    aggregate {
-      count
-    }
-  }
-}
-
-# Phase 2: Paginated client queries for performance optimization
-
-query GetClientsPaginated(
-  $limit: Int = 20
-  $offset: Int = 0
-  $where: clientsBoolExp = {}
-  $orderBy: [clientsOrderBy!] = [{ name: ASC }]
-) {
-  clients(
-    limit: $limit
-    offset: $offset
-    where: { _and: [{ active: { _eq: true } }, $where] }
-    orderBy: $orderBy
-  ) {
-    ...ClientListItem
-  }
-
-  clientsAggregate(where: { _and: [{ active: { _eq: true } }, $where] }) {
-    aggregate {
-      count
-    }
-  }
-}
-
-query GetAllClientsPaginated(
-  $limit: Int = 20
-  $offset: Int = 0
-  $where: clientsBoolExp = {}
-  $orderBy: [clientsOrderBy!] = [{ name: ASC }]
-) {
-  clients(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
-    ...ClientTableRow
-  }
-
-  allClientsAggregate: clientsAggregate(where: $where) {
-    aggregate {
-      count
-    }
-  }
-}
-
-query SearchClientsPaginated(
-  $searchTerm: String!
-  $limit: Int = 20
-  $offset: Int = 0
-) {
-  clients(
+  
+  # Clients needing attention (no active payrolls)
+  clientsNeedingAttention: clients(
     where: {
-      _and: [
-        { active: { _eq: true } }
-        {
-          _or: [
-            { name: { _ilike: $searchTerm } }
-            { contactPerson: { _ilike: $searchTerm } }
-            { contactEmail: { _ilike: $searchTerm } }
-          ]
+      active: {_eq: true}
+      _not: {
+        payrolls: {
+          supersededDate: {_isNull: true}
+          status: {_eq: "Active"}
         }
-      ]
+      }
     }
-    orderBy: { name: ASC }
-    limit: $limit
-    offset: $offset
+    limit: 5
   ) {
-    ...ClientListItem
+    ...ClientMinimal
   }
-
-  searchAggregate: clientsAggregate(
-    where: {
-      _and: [
-        { active: { _eq: true } }
-        {
-          _or: [
-            { name: { _ilike: $searchTerm } }
-            { contactPerson: { _ilike: $searchTerm } }
-            { contactEmail: { _ilike: $searchTerm } }
-          ]
-        }
-      ]
-    }
+  
+  # Recent client activity
+  recentlyUpdatedClients: clients(
+    where: {active: {_eq: true}}
+    orderBy: {updatedAt: DESC}
+    limit: 3
   ) {
-    aggregate {
-      count
-    }
+    ...ClientMinimal
+    updatedAt
   }
 }
 
-query GetInactiveClientsPaginated($limit: Int = 20, $offset: Int = 0) {
-  clients(
-    where: { active: { _eq: false } }
-    orderBy: { name: ASC }
-    limit: $limit
-    offset: $offset
-  ) {
-    ...ClientTableRow
-  }
+# Get single client by ID
+query GetClientById($id: uuid!) {
+  client: clientById(id: $id) {
+    ...ClientWithStats
+    # Basic client fields that exist in schema
+    createdAt
+    updatedAt
 
-  inactiveAggregate: clientsAggregate(where: { active: { _eq: false } }) {
-    aggregate {
-      count
+    # Payroll history
+    payrollHistory: payrolls(
+      where: { supersededDate: { _isNull: true } }
+      orderBy: { createdAt: DESC }
+      limit: 10
+    ) {
+      ...PayrollMinimal
     }
+
+    # Related notes would be queried separately through the notes table
   }
 }
 
-# Phase 2: Optimized client queries to reduce over-fetching
-
-query GetClientsQuickList {
-  # Minimal client data for dropdowns and quick lists
+# Get clients for dropdown selection
+query GetClientsForDropdown {
   clients(where: { active: { _eq: true } }, orderBy: { name: ASC }) {
     ...ClientMinimal
   }
 }
 
-query GetClientCard($id: uuid!) {
-  # Essential client data for cards and previews
-  clientById(id: $id) {
-    ...ClientSummary
-    contactEmail
-    payrollCount: payrollsAggregate(
-      where: { supersededDate: { _isNull: true } }
-    ) {
+# Search clients - fixing field references
+query SearchClients($searchTerm: String!) {
+  clients(
+    where: {
+      _or: [
+        { name: { _ilike: $searchTerm } }
+        { contactEmail: { _ilike: $searchTerm } }
+        { contactPhone: { _ilike: $searchTerm } }
+      ]
+    }
+    limit: 10
+  ) {
+    ...ClientWithConsultant
+  }
+}
+
+# Get client activity
+query GetClientActivity($clientId: String!, $limit: Int = 20) {
+  auditLogs(
+    where: { resourceType: { _eq: "client" }, resourceId: { _eq: $clientId } }
+    orderBy: { eventTime: DESC }
+    limit: $limit
+  ) {
+    ...AuditLogEntry
+  }
+}
+
+# Simple clients list for payroll creation
+query GetClientsSimple {
+  clients(where: { active: { _eq: true } }, orderBy: { name: ASC }) {
+    ...ClientBasic
+  }
+}
+
+# All clients for developer/admin use
+query GetAllClientsForDeveloper {
+  clients(orderBy: { name: ASC }) {
+    ...ClientBasic
+    payrollsAggregate {
       aggregate {
         count
       }
@@ -235,87 +162,23 @@ query GetClientCard($id: uuid!) {
   }
 }
 
-# Migrated from app/api/developer/route.ts
-
-query ClientsGetAllForDeveloper {
-  clients {
-    id
-    name
-    contactPerson
-    contactEmail
-    active
+# Legacy compatibility - maps to GetClientsList  
+query GetClients($limit: Int = 20, $offset: Int = 0) {
+  clients(limit: $limit, offset: $offset, orderBy: { name: ASC }) {
+    ...ClientListItem
   }
-}
-
-query GetClientOptions {
-  # Ultra-minimal for form options and selectors
-  clients(where: { active: { _eq: true } }, orderBy: { name: ASC }) {
-    id
-    name
-  }
-}
-
-query GetClientDashboardCards($limit: Int = 12) {
-  # Optimized for client dashboard grid
-  clients(
-    where: { active: { _eq: true } }
-    orderBy: { name: ASC }
-    limit: $limit
-  ) {
-    ...ClientDashboardCard
-  }
-}
-
-query GetClientWithActivePayrolls($id: uuid!) {
-  # Client data with only active payroll summary
-  clientById(id: $id) {
-    ...ClientSummary
-    contactEmail
-    contactPhone
-    contactPerson
-    activePayrolls: payrolls(
-      where: { supersededDate: { _isNull: true } }
-      orderBy: { name: ASC }
-    ) {
-      id
-      name
-      status
-      primaryConsultant {
-        name
-      }
+  clientsAggregate {
+    aggregate {
+      count
     }
   }
 }
 
-# Migrated from app/api/developer/route.ts
-
-query GetAllClientsForDeveloper {
-  clients {
-    id
-    name
-    contactPerson
-    contactEmail
-    active
-  }
-}
-
-query ClientsGetPayrollsData {
-  clients(orderBy: { name: ASC }) {
-    ...ClientListItem
-    payrolls {
-      id
-      name
-      status
-      employeeCount
-      payrollCycle {
-        name
-      }
-      payrollDateType {
-        name
-      }
-      payrollDates(orderBy: { adjustedEftDate: DESC }, limit: 1) {
-        adjustedEftDate
-      }
+# Get client statistics for dashboard
+query GetClientStats {
+  clientsAggregate {
+    aggregate {
+      count
     }
   }
 }

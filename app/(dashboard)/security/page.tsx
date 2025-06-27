@@ -1,6 +1,6 @@
 "use client";
 
-import { useSubscription } from "@apollo/client";
+import { useSubscription, useQuery } from "@apollo/client";
 import { formatDistanceToNow, format, subHours, subDays } from "date-fns";
 import { useMemo, useState, useEffect } from "react";
 import {
@@ -31,7 +31,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   SecurityOverviewDocument,
-  SecurityOverviewWithDataAccessDocument,
   SecurityEventsStreamDocument,
   FailedOperationsStreamDocument,
   CriticalDataAccessStreamDocument,
@@ -88,8 +87,8 @@ export default function SecurityDashboard() {
     loading: queryLoading,
     error,
     refetch,
-  } = useStrategicQuery(securityQueryDocument, "securityEvents", {
-    variables: timeRanges,
+  } = useQuery(securityQueryDocument, {
+    variables: { timeRange: timeRanges.twentyFourHoursAgo },
     // No polling - subscriptions handle real-time updates
     pollInterval: 0,
     // Skip query if user doesn't have security read permission
@@ -100,7 +99,7 @@ export default function SecurityDashboard() {
   const securityEventsResult = useSecureSubscription(
     () =>
       useSubscription(SecurityEventsStreamDocument, {
-        variables: { twentyFourHoursAgo: timeRanges.twentyFourHoursAgo },
+        variables: {},
         onError: error => {
           console.warn("Security events subscription error:", error);
           setIsWebSocketConnected(false);
@@ -125,7 +124,7 @@ export default function SecurityDashboard() {
   const { data: failedOpsData, error: failedOpsError } = useSubscription(
     FailedOperationsStreamDocument,
     {
-      variables: { twentyFourHoursAgo: timeRanges.twentyFourHoursAgo },
+      variables: {},
       onError: error => {
         console.warn("Failed operations subscription error:", error);
         setIsWebSocketConnected(false);
@@ -136,7 +135,7 @@ export default function SecurityDashboard() {
   // Real-time critical data access subscription - only for roles with permissions
   const { data: criticalDataAccessData, error: criticalDataAccessError } =
     useSubscription(CriticalDataAccessStreamDocument, {
-      variables: { sevenDaysAgo: timeRanges.sevenDaysAgo },
+      variables: {},
       // Skip subscription if user doesn't have audit read permissions
       skip: !auditReadPermission.granted,
       onError: error => {
@@ -201,7 +200,7 @@ export default function SecurityDashboard() {
       failedOperations: failedOpsData?.auditLogs || baseData.failedOperations,
       // Safely handle dataAccessLogs field - fallback to empty array if not available
       dataAccessSummary:
-        criticalDataAccessData?.dataAccessLogs ||
+        criticalDataAccessData?.auditLogs ||
         baseData.dataAccessSummary ||
         [],
     };

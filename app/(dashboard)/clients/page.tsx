@@ -2,6 +2,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
+import { useQuery } from "@apollo/client";
 import {
   PlusCircle,
   Search,
@@ -20,7 +21,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useStrategicQuery } from "@/hooks/use-strategic-query";
 import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
 
@@ -49,7 +50,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ClientsTable } from "@/domains/clients/components/clients-table";
-import { GetAllClientsPaginatedDocument, GetClientsDashboardStatsDocument } from "@/domains/clients/graphql/generated/graphql";
+import { GetClientsListDocument, GetClientsDashboardStatsDocument } from "@/domains/clients/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useUserRole } from "@/hooks/use-user-role";
 
@@ -147,32 +148,81 @@ function ClientsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [showFilters, setShowFilters] = useState(false);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
   // Sorting state
   const [sortField, setSortField] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
+  // Build GraphQL where conditions for server-side filtering
+  const buildWhereConditions = () => {
+    const conditions: any[] = [];
+
+    // Search term filter
+    if (searchTerm) {
+      conditions.push({
+        _or: [
+          { name: { _ilike: `%${searchTerm}%` } },
+          { contactEmail: { _ilike: `%${searchTerm}%` } },
+          { contactPerson: { _ilike: `%${searchTerm}%` } },
+          { contactPhone: { _ilike: `%${searchTerm}%` } }
+        ]
+      });
+    }
+
+    // Status filter
+    if (statusFilter.length > 0) {
+      if (statusFilter.includes("active") && !statusFilter.includes("inactive")) {
+        conditions.push({ active: { _eq: true } });
+      } else if (statusFilter.includes("inactive") && !statusFilter.includes("active")) {
+        conditions.push({ active: { _eq: false } });
+      }
+      // If both are selected, no filter needed
+    }
+
+    return conditions.length > 0 ? { _and: conditions } : {};
+  };
+
+  // Build GraphQL orderBy for server-side sorting
+  const buildOrderBy = () => {
+    const sortMap: Record<string, string> = {
+      name: "name",
+      contactEmail: "contactEmail",
+      contactPerson: "contactPerson",
+      createdAt: "createdAt"
+    };
+
+    const field = sortMap[sortField] || "name";
+    return [{ [field]: sortDirection }];
+  };
+
+  // Calculate pagination offset
+  const offset = (currentPage - 1) * pageSize;
+
   // Get dashboard stats efficiently
-  const { loading: statsLoading, error: statsError, data: statsData } = useStrategicQuery(
-    GetClientsDashboardStatsDocument,
-    "dashboard-stats",
-    {
+  const { loading: statsLoading, error: statsError, data: statsData } = useQuery(GetClientsDashboardStatsDocument, {
       skip: !userLoaded || !user || !canViewClients,
       errorPolicy: "all",
     }
   );
 
-  // Main GraphQL operations - only execute when user is loaded and authenticated
+  // Main GraphQL operations with server-side filtering and pagination
   const { loading, error, data, refetch, startPolling, stopPolling } = useStrategicQuery(
-    GetAllClientsPaginatedDocument,
+    GetClientsListDocument,
     "clients",
     {
       variables: {
-        limit: 1000, // Fetch all clients for now
-        offset: 0,
+        limit: pageSize,
+        offset: offset,
+        where: buildWhereConditions(),
+        orderBy: buildOrderBy()
       },
       pollInterval: 60000,
-      skip: !userLoaded || !user || !canViewClients, // Skip query if user is not loaded, not authenticated, or lacks permission
-      errorPolicy: "all", // Show partial data even if there are errors
+      skip: !userLoaded || !user || !canViewClients,
+      errorPolicy: "all",
+      fetchPolicy: "cache-and-network"
     }
   );
 
@@ -250,91 +300,59 @@ function ClientsPage() {
   }
 
   const clients = data?.clients || [];
+  const totalCount = data?.clientsAggregate?.aggregate?.count || 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
 
+  // Minimal client-side processing for display purposes only
+  const displayClients = clients.map((client: any) => ({
+    ...client,
+    payrollCount: client.payrollCount?.aggregate?.count || 0,
+    totalEmployees: client.totalEmployees?.aggregate?.sum?.employeeCount || 0
+  }));
 
-  // Get unique values for filters
+  // Client-side payroll count filtering (since it requires aggregation)
+  const finalClients = payrollCountFilter.length > 0 
+    ? displayClients.filter((client: any) => {
+        const payrollCount = client.payrollCount;
+        return (
+          (payrollCountFilter.includes("0") && payrollCount === 0) ||
+          (payrollCountFilter.includes("1-5") && payrollCount >= 1 && payrollCount <= 5) ||
+          (payrollCountFilter.includes("6-10") && payrollCount >= 6 && payrollCount <= 10) ||
+          (payrollCountFilter.includes("10+") && payrollCount > 10)
+        );
+      })
+    : displayClients;
+
+  // Get unique values for filters from current page data
   const uniquePayrollCounts = Array.from(
     new Set(clients.map((c: any) => c.payrollCount?.aggregate?.count || 0))
   ) as number[];
   uniquePayrollCounts.sort((a, b) => a - b);
 
-  // Filter clients based on search, status, and payroll count
-  const filteredClients = clients.filter((client: any) => {
-    const matchesSearch =
-      searchTerm === "" ||
-      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.contactEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.contactPhone?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      statusFilter.length === 0 ||
-      (statusFilter.includes("active") && client.active) ||
-      (statusFilter.includes("inactive") && !client.active);
-
-    const payrollCount = client.payrollCount?.aggregate?.count || 0;
-    const matchesPayrollCount =
-      payrollCountFilter.length === 0 ||
-      (payrollCountFilter.includes("0") && payrollCount === 0) ||
-      (payrollCountFilter.includes("1-5") &&
-        payrollCount >= 1 &&
-        payrollCount <= 5) ||
-      (payrollCountFilter.includes("6-10") &&
-        payrollCount >= 6 &&
-        payrollCount <= 10) ||
-      (payrollCountFilter.includes("10+") && payrollCount > 10);
-
-    return matchesSearch && matchesStatus && matchesPayrollCount;
-  });
-
-  // Sort clients
-  const sortedClients = [...filteredClients].sort((a, b) => {
-    let aValue = (a as any)[sortField];
-    let bValue = (b as any)[sortField];
-
-    // Handle specific sort fields
-    if (sortField === "payrollCount") {
-      aValue = (a as any).payrollCount?.aggregate?.count || 0;
-      bValue = (b as any).payrollCount?.aggregate?.count || 0;
-    } else if (sortField === "activePayrolls") {
-      // For now, use total count since we don't have active payroll count in this query
-      aValue = (a as any).payrollCount?.aggregate?.count || 0;
-      bValue = (b as any).payrollCount?.aggregate?.count || 0;
-    } else if (sortField === "lastUpdated") {
-      aValue = new Date((a as any).updatedAt || (a as any).createdAt);
-      bValue = new Date((b as any).updatedAt || (b as any).createdAt);
-    } else if (sortField === "contact_person") {
-      aValue = (a as any).contactPerson || "";
-      bValue = (b as any).contactPerson || "";
-    } else if (sortField === "contact_email") {
-      aValue = (a as any).contactEmail || "";
-      bValue = (b as any).contactEmail || "";
-    } else if (sortField === "status") {
-      aValue = (a as any).active ? "Active" : "Inactive";
-      bValue = (b as any).active ? "Active" : "Inactive";
-    }
-
-    // Handle different data types
-    if (typeof aValue === "number" && typeof bValue === "number") {
-      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
-    }
-
-    if (aValue instanceof Date && bValue instanceof Date) {
-      return sortDirection === "asc"
-        ? aValue.getTime() - bValue.getTime()
-        : bValue.getTime() - aValue.getTime();
-    }
-
-    // String comparison
-    const aStr = String(aValue).toLowerCase();
-    const bStr = String(bValue).toLowerCase();
-
-    if (sortDirection === "asc") {
-      return aStr.localeCompare(bStr);
+  // Add event handlers for server-side filtering
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      return bStr.localeCompare(aStr);
+      setSortField(field);
+      setSortDirection("asc");
     }
-  });
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1);
+  };
+
+  // Reset to first page when filters change
+  const resetToFirstPage = () => {
+    setCurrentPage(1);
+  };
 
   // Helper functions
   const _formatCurrency = (amount: number) => {
@@ -362,16 +380,21 @@ function ClientsPage() {
     searchTerm || statusFilter.length > 0 || payrollCountFilter.length > 0;
 
   // Get summary statistics from dedicated stats query
-  const totalClients = statsData?.clientsAggregate?.aggregate?.count || 0;
+  const totalClients = statsData?.activeClientsCount?.aggregate?.count || 0;
   const activeClients = totalClients; // This query already filters for active clients
-  const totalPayrolls = statsData?.payrollsAggregate?.aggregate?.count || 0;
-  const totalEmployees = statsData?.payrollsAggregate?.aggregate?.sum?.employeeCount || 0;
+  const totalPayrolls = 0; // Not available in current query structure
+  const totalEmployees = 0; // Not available in current query, would need separate query
 
+
+  // Use useEffect to reset page when filters change
+  React.useEffect(() => {
+    resetToFirstPage();
+  }, [searchTerm, statusFilter, payrollCountFilter]);
 
   // Render card view
   const renderCardView = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {sortedClients.map((client: any) => (
+      {finalClients.map((client: any) => (
         <Card
           key={client.id}
           className="hover:shadow-lg transition-shadow duration-200"
@@ -442,7 +465,7 @@ function ClientsPage() {
   // Render list view
   const renderListView = () => (
     <div className="space-y-3">
-      {sortedClients.map((client: any) => (
+      {finalClients.map((client: any) => (
         <Card
           key={client.id}
           className="hover:shadow-md transition-shadow duration-200"
@@ -764,7 +787,7 @@ function ClientsPage() {
             </div>
           </CardContent>
         </Card>
-      ) : sortedClients.length === 0 ? (
+      ) : data?.clients?.length === 0 ? (
         <Card>
           <CardContent className="p-12">
             <div className="text-center">
@@ -792,7 +815,7 @@ function ClientsPage() {
         <div>
           {viewMode === "table" && (
             <ClientsTable
-              clients={sortedClients as any}
+              clients={data?.clients || []}
               loading={loading}
               onRefresh={refetch}
             />

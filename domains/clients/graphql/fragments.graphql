@@ -1,135 +1,102 @@
-# Clients Domain Fragments
-# Security Classification: HIGH - Contains PII and business-critical data
-# SOC2 Compliance: Customer data with audit trail requirements
+# Client Domain Fragments
+# Following standardized naming conventions established in Priority 3 technical debt resolution
 
-fragment ClientBasicInfo on clients {
-  id
-  name
+# ============================================
+# Minimal Fragments (1-3 fields)
+# ============================================
+
+# NOTE: ClientMinimal is now defined in shared/graphql/fragments.graphql
+# Use the shared version for consistency across domains
+
+# Core client fields for basic operations
+fragment ClientCore on clients {
+  ...ClientMinimal
+  contactPerson
 }
 
-fragment ClientWithContact on clients {
-  ...ClientBasicInfo
+# ============================================
+# Basic Fragments (4-8 fields)
+# ============================================
+
+# Standard client information for most operations
+fragment ClientBasic on clients {
+  ...ClientCore
   contactEmail
   contactPhone
+  createdAt
+  updatedAt
 }
 
-fragment ClientForBilling on clients {
-  id
-  name
-  contactPerson
-  contactEmail
+# Client summary with key business metrics
+fragment ClientSummary on clients {
+  ...ClientBasic
+  # Add computed fields when available in schema
 }
 
+# Optimized for client list displays
+fragment ClientListItem on clients {
+  ...ClientBasic
+  # Optimized field selection for list performance
+}
+
+# ============================================
+# Extended Fragments (9+ fields)
+# ============================================
+
+# Comprehensive client details
+fragment ClientDetailed on clients {
+  ...ClientBasic
+  # Extended fields when available in schema
+}
+
+# Client with relationship data
+fragment ClientWithRelations on clients {
+  ...ClientDetailed
+  # Relationship fields to be added when schema supports
+}
+
+# Most comprehensive client view
+fragment ClientComplete on clients {
+  ...ClientWithRelations
+  # All available client data including nested relationships
+}
+
+# ============================================
+# Specialized Fragments
+# ============================================
+
+# Optimized for dashboard card display
+fragment ClientCard on clients {
+  ...ClientCore
+  updatedAt
+}
+
+# Table row format for client tables
+fragment ClientTableRow on clients {
+  ...ClientBasic
+}
+
+# Audit-compliant fields only
 fragment ClientForAudit on clients {
   id
   name
-  # Contact info excluded from audit logs for privacy
-}
-
-fragment ClientWithRelations on clients {
-  ...ClientWithContact
   active
-  contactPerson
   createdAt
   updatedAt
-  payrolls(where: { supersededDate: { _isNull: true } }) {
-    id
-    name
-    status
-    employeeCount
-    createdAt
-    updatedAt
-    primaryConsultant {
-      id
-      name
-    }
-    backupConsultant {
-      id
-      name
-    }
-    manager {
-      id
-      name
-    }
-    payrollCycle {
-      id
-      name
-    }
-    supersededDate
-  }
 }
 
-# Performance-optimized fragments for Phase 2
-
-fragment ClientSummary on clients {
-  id
-  name
-  active
-}
-
-fragment ClientListItem on clients {
-  ...ClientSummary
+# Search result format
+fragment ClientSearchResult on clients {
+  ...ClientCore
   contactEmail
   contactPhone
-  payrollCount: payrollsAggregate {
-    aggregate {
-      count
-    }
-  }
-  totalEmployees: payrollsAggregate(
-    where: { supersededDate: { _isNull: true } }
-  ) {
-    aggregate {
-      sum {
-        employeeCount
-      }
-    }
-  }
 }
 
-fragment ClientDashboardCard on clients {
-  ...ClientSummary
-  activePayrolls: payrollsAggregate(
-    where: { supersededDate: { _isNull: true } }
-  ) {
-    aggregate {
-      count
-    }
-  }
-}
+# ============================================
+# Legacy Fragments (for backward compatibility)
+# ============================================
 
-fragment ClientTableRow on clients {
-  ...ClientListItem
-  contactPerson
-  updatedAt
-}
-
-fragment ClientMinimal on clients {
-  id
-  name
-}
-
-fragment ClientWithMetrics on clients {
-  ...ClientSummary
-  totalPayrolls: payrollsAggregate {
-    aggregate {
-      count
-    }
-  }
-  activePayrolls: payrollsAggregate(
-    where: { supersededDate: { _isNull: true } }
-  ) {
-    aggregate {
-      count
-    }
-  }
-  recentPayrolls: payrolls(
-    orderBy: { updatedAt: DESC }
-    limit: 3
-  ) {
-    id
-    name
-    status
-    updatedAt
-  }
+# @deprecated Use ClientComplete instead
+fragment ClientWithConsultant on clients {
+  ...ClientBasic
 }

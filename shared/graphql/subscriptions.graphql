@@ -1,103 +1,68 @@
-# Shared Subscriptions
-# Common subscriptions used across domains
+# Shared GraphQL Subscriptions
+# Updated to match actual Hasura schema
 
-# Real-time dashboard subscriptions
+# ============================================
+# Activity Monitoring
+# ============================================
 
-subscription ClientCountUpdates {
-  clientsAggregate(where: { active: { _eq: true } }) {
-    aggregate {
-      count
-    }
-  }
-}
-
-subscription PayrollCountUpdates {
-  payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
-    aggregate {
-      count
-    }
-  }
-}
-
-subscription UserCountUpdates {
-  usersAggregate(where: { isActive: { _eq: true } }) {
-    aggregate {
-      count
-    }
-  }
-}
-
-subscription RecentPayrollActivity {
-  payrolls(
-    where: { supersededDate: { _isNull: true } }
-    orderBy: { updatedAt: DESC }
-    limit: 5
-  ) {
-    id
-    name
-    status
-    updatedAt
-    client {
-      name
-    }
-  }
-}
-
-subscription RecentUserActivity {
-  users(
-    where: { isActive: { _eq: true } }
-    orderBy: { updatedAt: DESC }
-    limit: 3
-  ) {
-    id
-    name
-    role
-    updatedAt
-  }
-}
-
-subscription CriticalPayrollNotifications {
-  payrolls(
+# Monitor recent system activity
+subscription RecentActivity($resourceTypes: [String!]) {
+  auditLogs(
     where: {
-      supersededDate: { _isNull: true }
-      status: { _in: ["Issue", "Critical"] }
+      resourceType: {_in: $resourceTypes}
+      eventTime: {_gte: "now() - interval '5 minutes'"}
     }
-    orderBy: { updatedAt: DESC }
+    orderBy: {eventTime: DESC}
+    limit: 20
+  ) {
+    ...AuditLogEntry
+  }
+}
+
+# ============================================
+# Authentication Monitoring
+# ============================================
+
+# Monitor authentication events in real-time
+subscription AuthenticationEvents($userId: uuid) {
+  authEvents(
+    where: {
+      userId: {_eq: $userId}
+      eventTime: {_gte: "now() - interval '10 minutes'"}
+    }
+    orderBy: {eventTime: DESC}
+  ) {
+    ...AuthEvent
+  }
+}
+
+# ============================================
+# Data Access Monitoring
+# ============================================
+
+# Monitor data access for sensitive resources
+subscription SensitiveDataAccess($resourceTypes: [String!]!) {
+  dataAccessLogs(
+    where: {
+      resourceType: {_in: $resourceTypes}
+      accessedAt: {_gte: "now() - interval '10 minutes'"}
+    }
+    orderBy: {accessedAt: DESC}
+  ) {
+    ...DataAccessLog
+  }
+}
+
+# ============================================
+# Permission Change Monitoring
+# ============================================
+
+# Monitor permission changes
+subscription PermissionChangeStream {
+  permissionChanges(
+    orderBy: {changedAt: DESC}
     limit: 10
   ) {
-    id
-    name
-    status
-    client {
-      name
-    }
-    primaryConsultant {
-      name
-    }
-  }
-}
-
-subscription UpcomingPayrollsUpdates($fromDate: date!) {
-  payrolls(
-    where: {
-      supersededDate: { _isNull: true }
-      payrollDates: { adjustedEftDate: { _gte: $fromDate } }
-    }
-    orderBy: { payrollDatesAggregate: { min: { adjustedEftDate: ASC } } }
-    limit: 5
-  ) {
-    id
-    name
-    status
-    client {
-      name
-    }
-    nextDate: payrollDates(
-      where: { adjustedEftDate: { _gte: $fromDate } }
-      orderBy: { adjustedEftDate: ASC }
-      limit: 1
-    ) {
-      adjustedEftDate
-    }
+    ...PermissionChange
   }
 }
