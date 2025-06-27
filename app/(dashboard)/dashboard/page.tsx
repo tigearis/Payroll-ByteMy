@@ -2,7 +2,6 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
-import { format } from "date-fns";
 import { CalendarDays, Users, Calculator } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +13,6 @@ interface DashboardStatsData {
   clientsAggregate: { aggregate: { count: number } };
   totalPayrolls: { aggregate: { count: number } };
   activePayrolls: { aggregate: { count: number } };
-  processingPayrolls: { aggregate: { count: number } };
   upcomingPayrolls: Array<{
     id: string;
     name: string;
@@ -38,12 +36,11 @@ export default function DashboardPage() {
   const totalClients = dashboardData?.clientsAggregate?.aggregate?.count ?? 0;
   const totalPayrolls = dashboardData?.totalPayrolls?.aggregate?.count ?? 0;
   const activePayrolls = dashboardData?.activePayrolls?.aggregate?.count ?? 0;
-  const processingPayrolls = dashboardData?.processingPayrolls?.aggregate?.count ?? 0;
   const upcomingPayrolls = dashboardData?.upcomingPayrolls ?? [];
 
   // Get next payroll - using the first upcoming payroll as an approximation
   const nextPayroll = upcomingPayrolls[0];
-  
+
   // Calculate loading and error states
   const isLoading = dashboardLoading;
   const hasError = dashboardError;
@@ -107,7 +104,9 @@ export default function DashboardPage() {
             {dashboardLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
-              <div className="text-2xl font-bold">{upcomingPayrolls.length}</div>
+              <div className="text-2xl font-bold">
+                {upcomingPayrolls.length}
+              </div>
             )}
             <p className="text-xs text-gray-600">
               {nextPayroll

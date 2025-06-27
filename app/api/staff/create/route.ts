@@ -1,4 +1,3 @@
-import { clerkClient } from "@clerk/nextjs/server";
 import { createClerkClient } from "@clerk/backend";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -34,11 +33,88 @@ const CreateStaffSchema = z.object({
 
 type CreateStaffInput = z.infer<typeof CreateStaffSchema>;
 
+// Validate required environment variables
+function validateEnvironment(): { clerkSecretKey: string; appUrl: string } {
+  const clerkSecretKey = process.env.CLERK_SECRET_KEY;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+  if (!clerkSecretKey) {
+    throw new Error("CLERK_SECRET_KEY environment variable is required");
+  }
+
+  if (!appUrl) {
+    throw new Error("NEXT_PUBLIC_APP_URL environment variable is required");
+  }
+
+  return { clerkSecretKey, appUrl };
+}
+
+// Enhanced Clerk invitation creation with retry logic
+async function createClerkInvitation(
+  clerkClient: any,
+  staffInput: CreateStaffInput,
+  appUrl: string,
+  session: any
+): Promise<{ invitation: any; sent: boolean }> {
+  const invitationParams = {
+    emailAddress: staffInput.email,
+    redirectUrl: `${appUrl}/accept-invitation`,
+    publicMetadata: {
+      role: staffInput.role,
+      permissions: getPermissionsForRole(staffInput.role),
+      isStaff: staffInput.is_staff,
+      managerId: staffInput.managerId,
+      invitedBy: session.userId,
+      invitationType: "staff_creation",
+      name: staffInput.name,
+    },
+    notify: true, // Send email invitation
+    ignoreExisting: false, // Fail if invitation already exists initially
+  };
+
+  console.log("📧 Creating invitation with parameters:", {
+    emailAddress: invitationParams.emailAddress,
+    redirectUrl: invitationParams.redirectUrl,
+    notify: invitationParams.notify,
+    ignoreExisting: invitationParams.ignoreExisting,
+    publicMetadataKeys: Object.keys(invitationParams.publicMetadata)
+  });
+
+  try {
+    const invitation = await clerkClient.invitations.createInvitation(invitationParams);
+    return { invitation, sent: true };
+  } catch (error: any) {
+    // If invitation already exists, try with ignoreExisting: true
+    if (error.errors?.some((e: any) => 
+      e.code === "form_identifier_exists" || 
+      e.code === "duplicate_record" ||
+      e.message?.includes("already exists")
+    )) {
+      console.log(`⚠️ Invitation exists for ${staffInput.email}, retrying with ignoreExisting: true`);
+      
+      try {
+        const invitation = await clerkClient.invitations.createInvitation({
+          ...invitationParams,
+          ignoreExisting: true
+        });
+        return { invitation, sent: true };
+      } catch (retryError: any) {
+        console.error("❌ Failed even with ignoreExisting: true:", retryError.message);
+        throw retryError;
+      }
+    }
+    
+    // Re-throw other errors
+    throw error;
+  }
+}
+
 // Secure staff creation endpoint - admin only
 const handler = withAuth(
   async (request: NextRequest, session) => {
     console.log("🔧 =========================");
     console.log("🔧 STAFF CREATION STARTING");
+    console.log("🔧 POST HANDLER CALLED SUCCESSFULLY");
     console.log("🔧 =========================");
     console.log("Request method:", request.method);
     console.log("Request URL:", request.url);
@@ -61,6 +137,18 @@ const handler = withAuth(
     try {
       // Extract client info once
       const clientInfo = auditLogger.extractClientInfo(request);
+
+      console.log("🔧 Starting staff creation process...");
+      console.log("🔧 Request validation and environment setup...");
+      
+      // Step 0: Early environment validation
+      try {
+        validateEnvironment();
+        console.log("✅ Environment variables validated");
+      } catch (envError: any) {
+        console.error("❌ Environment validation failed:", envError.message);
+        throw new Error(`Environment configuration error: ${envError.message}`);
+      }
 
       // Log staff creation attempt
       await auditLogger.logSOC2Event({
@@ -116,8 +204,12 @@ const handler = withAuth(
       }
 
       const staffInput = validationResult.data;
+      console.log("✅ Input validation passed");
 
-      // Step 1: Send Clerk invitation (if requested)
+      // Step 1: Get validated environment (already validated above)
+      const { clerkSecretKey, appUrl } = validateEnvironment();
+
+      // Step 2: Send Clerk invitation (if requested)
       let invitationSent = false;
       let invitationId = null;
 
@@ -125,33 +217,27 @@ const handler = withAuth(
         try {
           console.log(`📧 Sending Clerk invitation to: ${staffInput.email}`);
           console.log("📧 Environment check:", {
-            hasClerkSecret: !!process.env.CLERK_SECRET_KEY,
-            hasClerkPublishable:
-              !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-            appUrl: process.env.NEXT_PUBLIC_APP_URL,
+            hasClerkSecret: !!clerkSecretKey,
+            hasClerkPublishable: !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+            appUrl,
           });
 
-          const client = await clerkClient();
+          // Create Clerk client with validated secret key
+          const clerkClient = createClerkClient({
+            secretKey: clerkSecretKey,
+          });
           console.log("📧 Clerk client created successfully");
 
-          // Use Clerk's invitation system - this is the correct approach
-          const invitation = await client.invitations.createInvitation({
-            emailAddress: staffInput.email,
-            redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/accept-invitation`,
-            publicMetadata: {
-              role: staffInput.role,
-              permissions: getPermissionsForRole(staffInput.role),
-              isStaff: staffInput.is_staff,
-              managerId: staffInput.managerId,
-              invitedBy: session.userId,
-              invitationType: "staff_creation",
-              name: staffInput.name,
-            },
-            notify: true, // Ensure email is sent
-          });
+          // Use enhanced invitation creation with retry logic
+          const { invitation, sent } = await createClerkInvitation(
+            clerkClient,
+            staffInput,
+            appUrl,
+            session
+          );
 
           invitationId = invitation.id;
-          invitationSent = true;
+          invitationSent = sent;
           console.log(`✅ Sent Clerk invitation: ${invitationId}`);
         } catch (clerkError: any) {
           console.error(`❌ Failed to send Clerk invitation:`, {
@@ -163,18 +249,22 @@ const handler = withAuth(
             stack: clerkError.stack,
           });
 
-          // Check if invitation already exists
-          if (
-            clerkError.errors?.some(
-              (e: any) =>
-                e.code === "form_identifier_exists" ||
-                e.code === "duplicate_record"
-            )
-          ) {
-            console.log(
-              `⚠️ Invitation may already exist for ${staffInput.email}`
-            );
+          // Handle specific Clerk error cases based on documentation
+          if (clerkError.errors?.some((e: any) => 
+            e.code === "form_identifier_exists" || 
+            e.code === "duplicate_record" ||
+            e.message?.includes("already exists")
+          )) {
+            console.log(`⚠️ Invitation already exists for ${staffInput.email}`);
+            // According to Clerk docs, we can set ignoreExisting: true to bypass this
+            console.log("⚠️ Consider using ignoreExisting: true for existing invitations");
             // Continue - we'll still create the database user
+          } else if (clerkError.status === 422) {
+            console.error("❌ Validation error from Clerk - check invitation parameters");
+            throw new Error(`Clerk invitation validation failed: ${clerkError.message}`);
+          } else if (clerkError.status === 401) {
+            console.error("❌ Authentication error - check CLERK_SECRET_KEY");
+            throw new Error("Clerk authentication failed - invalid secret key");
           } else {
             // Log the error but continue with database-only creation
             console.log(
@@ -184,7 +274,7 @@ const handler = withAuth(
         }
       }
 
-      // Step 2: Create user in database
+      // Step 3: Create user in database
       let databaseUser = null;
 
       try {
@@ -210,29 +300,25 @@ const handler = withAuth(
           hasAdminSecret: !!process.env.HASURA_ADMIN_SECRET,
         });
 
-        // Get Apollo Client (same as working payroll routes)
-        // If token is missing or invalid, fall back to admin client for user creation
+        // Get Apollo Client with proper authentication
         let apolloClient;
-        let useAdminFallback = false;
+        let authHeaders = {};
 
-        if (!token) {
-          console.log(
-            "⚠️ No JWT token available, checking if admin fallback is possible..."
-          );
-          if (process.env.HASURA_ADMIN_SECRET) {
-            console.log("💾 Using admin client as fallback for user creation");
-            const { adminApolloClient } = await import(
-              "@/lib/apollo/unified-client"
-            );
-            apolloClient = adminApolloClient;
-            useAdminFallback = true;
-          } else {
-            throw new Error(
-              "No authentication token and no admin secret available"
-            );
-          }
-        } else {
+        if (token) {
+          console.log("💾 Using user token for GraphQL authentication");
           apolloClient = serverApolloClient;
+          authHeaders = { authorization: `Bearer ${token}` };
+        } else if (process.env.HASURA_ADMIN_SECRET) {
+          console.log("💾 Using admin client as fallback for user creation");
+          const { adminApolloClient } = await import(
+            "@/lib/apollo/unified-client"
+          );
+          apolloClient = adminApolloClient;
+          // Admin client uses the secret internally, no additional headers needed
+        } else {
+          throw new Error(
+            "No authentication token available and no admin secret configured"
+          );
         }
 
         // Import generated GraphQL operation
@@ -258,9 +344,9 @@ const handler = withAuth(
             managerId: staffInput.managerId || null,
             clerkUserId: null, // Will be set when user accepts invitation
           },
-          ...(useAdminFallback
-            ? {}
-            : { context: { headers: { authorization: `Bearer ${token}` } } }),
+          ...(Object.keys(authHeaders).length > 0
+            ? { context: { headers: authHeaders } }
+            : {}),
         });
 
         console.log("💾 GraphQL mutation result:", {
@@ -370,19 +456,30 @@ const handler = withAuth(
         },
       });
     } catch (error: any) {
-      console.error("Staff creation error - DETAILED:", {
-        error,
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-        cause: error.cause,
-        graphQLErrors: error.graphQLErrors,
-        networkError: error.networkError,
-        extraInfo: error.extraInfo,
-        errorCode: error.code,
-        status: error.status,
-        statusText: error.statusText,
-      });
+      console.error("❌ Staff creation failed - DETAILED ERROR ANALYSIS:");
+      console.error("Error type:", error.constructor.name);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+      
+      // Log specific error details
+      if (error.message?.includes("Environment configuration")) {
+        console.error("🔧 Environment Error - Check your .env file:");
+        console.error("- CLERK_SECRET_KEY:", !!process.env.CLERK_SECRET_KEY);
+        console.error("- NEXT_PUBLIC_APP_URL:", !!process.env.NEXT_PUBLIC_APP_URL);
+        console.error("- HASURA_ADMIN_SECRET:", !!process.env.HASURA_ADMIN_SECRET);
+      }
+      
+      if (error.graphQLErrors) {
+        console.error("GraphQL Errors:", error.graphQLErrors);
+      }
+      
+      if (error.networkError) {
+        console.error("Network Error:", error.networkError);
+      }
+      
+      if (error.code || error.status) {
+        console.error("Error Code/Status:", { code: error.code, status: error.status });
+      }
 
       try {
         const errorClientInfo = auditLogger.extractClientInfo(request);
@@ -434,10 +531,33 @@ const handler = withAuth(
   }
 );
 
+// Debug wrapper to see if route is called at all
+const debugPOST = async (request: NextRequest) => {
+  console.log("🚨 DEBUG: POST route called BEFORE withAuth");
+  console.log("🚨 Method:", request.method);
+  console.log("🚨 URL:", request.url);
+  console.log("🚨 Headers:", {
+    authorization: request.headers.get("authorization"),
+    "content-type": request.headers.get("content-type"),
+    "user-agent": request.headers.get("user-agent"),
+  });
+
+  try {
+    return await handler(request);
+  } catch (error) {
+    console.log("🚨 ERROR in POST handler:", error);
+    throw error;
+  }
+};
+
 // Export the POST method
-export const POST = handler;
+export const POST = debugPOST;
 
 export async function GET() {
-  console.log("GET handler working");
-  return new NextResponse("GET working");
+  console.log("DEBUG: GET handler called for /api/staff/create");
+  return NextResponse.json({
+    message: "GET working - route is accessible",
+    timestamp: new Date().toISOString(),
+    methods: ["GET", "POST"],
+  });
 }

@@ -8,40 +8,42 @@
 # Main dashboard metrics
 query GetDashboardMetrics($userId: uuid!) {
   # Client statistics
-  clientsAggregate(where: {active: {_eq: true}}) {
+  clientsAggregate(where: { active: { _eq: true } }) {
     aggregate {
       count
     }
   }
-  
+
   # Active payrolls
-  activePayrollsAggregate: payrollsAggregate(where: {
-    supersededDate: {_isNull: true}
-    status: {_nin: ["Completed", "Failed"]}
-  }) {
+  activePayrollsAggregate: payrollsAggregate(
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _nin: ["Completed", "Failed"] }
+    }
+  ) {
     aggregate {
       count
     }
   }
-  
+
   # Total employees across all active payrolls
-  totalEmployeesAggregate: payrollsAggregate(where: {
-    supersededDate: {_isNull: true}
-  }) {
+  totalEmployeesAggregate: payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
+  ) {
     aggregate {
       sum {
         employeeCount
       }
     }
   }
-  
+
   # Upcoming payrolls
   upcomingPayrolls: payrolls(
     where: {
-      supersededDate: {_isNull: true}
-      status: {_nin: ["Completed", "Failed", "Cancelled"]}
+      supersededDate: { _isNull: true }
+      status: { _nin: ["Completed", "Failed", "Cancelled"] }
     }
-    orderBy: {updatedAt: DESC}
+    orderBy: { updatedAt: DESC }
     limit: 5
   ) {
     ...PayrollMinimal
@@ -67,7 +69,7 @@ query GetDashboardStatsOptimized($limit: Int = 10) {
       count
     }
   }
-  
+
   # Payroll statistics (replaces GetPayrollDashboardStatsDocument)
   totalPayrolls: payrollsAggregate(
     where: { supersededDate: { _isNull: true } }
@@ -76,35 +78,18 @@ query GetDashboardStatsOptimized($limit: Int = 10) {
       count
     }
   }
-  
+
   activePayrolls: payrollsAggregate(
-    where: { 
-      supersededDate: { _isNull: true }
-      status: { _eq: "active" }
-    }
+    where: { supersededDate: { _isNull: true }, status: { _eq: "Active" } }
   ) {
     aggregate {
       count
     }
   }
-  
-  processingPayrolls: payrollsAggregate(
-    where: { 
-      supersededDate: { _isNull: true }
-      status: { _eq: "processing" }
-    }
-  ) {
-    aggregate {
-      count
-    }
-  }
-  
-  # Upcoming payrolls with next pay dates (replaces GetUpcomingPayrollsDocument)  
+
+  # Upcoming payrolls with next pay dates (replaces GetUpcomingPayrollsDocument)
   upcomingPayrolls: payrolls(
-    where: {
-      supersededDate: { _isNull: true }
-      status: { _eq: "active" }
-    }
+    where: { supersededDate: { _isNull: true }, status: { _eq: "Active" } }
     orderBy: { updatedAt: DESC }
     limit: $limit
   ) {
@@ -121,30 +106,26 @@ query GetDashboardStatsOptimized($limit: Int = 10) {
 # Dashboard stats for clients page
 query GetClientsDashboardStats {
   # Total active clients
-  activeClientsCount: clientsAggregate(where: {active: {_eq: true}}) {
+  activeClientsCount: clientsAggregate(where: { active: { _eq: true } }) {
     aggregate {
       count
     }
   }
-  
+
   # Total employees across all clients
-  payrollsAggregate(where: {supersededDate: {_isNull: true}}) {
+  payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
     aggregate {
       sum {
         employeeCount
       }
     }
   }
-  
+
   # Clients without recent payrolls
   clientsNeedingAttention: clients(
     where: {
-      active: {_eq: true}
-      _not: {
-        payrolls: {
-          supersededDate: {_isNull: true}
-        }
-      }
+      active: { _eq: true }
+      _not: { payrolls: { supersededDate: { _isNull: true } } }
     }
   ) {
     ...ClientMinimal
@@ -165,11 +146,8 @@ query GetCurrentUser($userId: uuid!) {
 # Get users for dropdowns
 query GetUsersForDropdown($role: user_role) {
   users(
-    where: {
-      isActive: {_eq: true}
-      role: {_eq: $role}
-    }
-    orderBy: {name: ASC}
+    where: { isActive: { _eq: true }, role: { _eq: $role } }
+    orderBy: { name: ASC }
   ) {
     ...UserMinimal
   }
@@ -185,10 +163,10 @@ query GetSystemHealth {
   databaseHealth: users(limit: 1) {
     id
   }
-  
+
   # Recent activity
   recentActivity: auditLogsAggregate(
-    where: {eventTime: {_gte: "now() - interval '1 hour'"}}
+    where: { eventTime: { _gte: "now() - interval '1 hour'" } }
   ) {
     aggregate {
       count
@@ -206,33 +184,33 @@ query GlobalSearch($searchTerm: String!) {
   clients(
     where: {
       _or: [
-        {name: {_ilike: $searchTerm}}
-        {contactEmail: {_ilike: $searchTerm}}
+        { name: { _ilike: $searchTerm } }
+        { contactEmail: { _ilike: $searchTerm } }
       ]
     }
     limit: 5
   ) {
     ...ClientMinimal
   }
-  
+
   # Search users
   users(
     where: {
       _or: [
-        {name: {_ilike: $searchTerm}}
-        {email: {_ilike: $searchTerm}}
+        { name: { _ilike: $searchTerm } }
+        { email: { _ilike: $searchTerm } }
       ]
     }
     limit: 5
   ) {
     ...UserMinimal
   }
-  
+
   # Search payrolls by client name
   payrolls(
     where: {
-      client: {name: {_ilike: $searchTerm}}
-      supersededDate: {_isNull: true}
+      client: { name: { _ilike: $searchTerm } }
+      supersededDate: { _isNull: true }
     }
     limit: 5
   ) {
