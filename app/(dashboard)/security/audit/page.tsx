@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/table";
 
 import {
-  AuditLogDocument,
+  GetAuditLogsDocument,
   SubscribeToAuditLogsDocument,
 } from "@/domains/audit/graphql/generated/graphql";
 import { OrderBy } from "@/shared/types/generated/graphql";
@@ -90,7 +90,7 @@ export default function AuditLogPage() {
 
   // Use strategic query for audit logs with real-time capabilities
   const { data, loading, error, refetch } = useStrategicQuery(
-    AuditLogDocument,
+    GetAuditLogsDocument,
     "auditLogs",
     {
       variables: {
