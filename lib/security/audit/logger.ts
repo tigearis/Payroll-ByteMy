@@ -10,11 +10,11 @@ import { gql } from "@apollo/client";
 import { extractClientInfo as getClientInfo } from "@/lib/utils/client-info";
 
 import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { 
-  LogAuditEventDocument, 
-  LogAuthEventDocument, 
-  type LogAuditEventMutationVariables, 
-  type LogAuthEventMutationVariables 
+import {
+  LogAuditEventDocument,
+  LogAuthEventDocument,
+  type LogAuditEventMutationVariables,
+  type LogAuthEventMutationVariables,
 } from "@/domains/audit/graphql/generated/graphql";
 
 // ================================
@@ -209,17 +209,19 @@ class UnifiedAuditLogger {
           // Map to correct schema field names and include required fields from permissions
           resourceType: entry.entityType,
           ...(entry.entityId && { resourceId: entry.entityId }),
-          ...(entry.previousValues && { oldValues: entry.previousValues as any }),
+          ...(entry.previousValues && {
+            oldValues: entry.previousValues as any,
+          }),
           ...(entry.newValues && { newValues: entry.newValues as any }),
           requestId: entry.requestId,
           success: entry.success,
-          ...(entry.errorMessage && { error_message: entry.errorMessage }),
+          ...(entry.errorMessage && { errorMessage: entry.errorMessage }),
           ...(entry.userAgent && { userAgent: entry.userAgent }),
           ...(entry.ipAddress && { ipAddress: entry.ipAddress }),
           ...(entry.sessionId && { sessionId: entry.sessionId }),
-          // Add user fields that are allowed in system role permissions  
+          // Add user fields that are allowed in system role permissions
           userId: entry.userId,
-          ...(entry.userRole && { user_role: entry.userRole }),
+          ...(entry.userRole && { userRole: entry.userRole }),
         },
       };
 
@@ -255,7 +257,8 @@ class UnifiedAuditLogger {
             action: `SOC2_${entry.eventType}`,
             entityType: "soc2_compliance",
             entityId: entry.resourceId || null,
-            dataClassification: entry.dataClassification || DataClassification.CRITICAL,
+            dataClassification:
+              entry.dataClassification || DataClassification.CRITICAL,
             requestId: `soc2-${Date.now()}`,
             success: entry.success,
             errorMessage: entry.errorMessage || null,
@@ -283,7 +286,8 @@ class UnifiedAuditLogger {
           action: AuditAction.CREATE,
           entityType: "soc2_compliance",
           ...(entry.resourceId && { entityId: entry.resourceId }),
-          dataClassification: entry.dataClassification || DataClassification.CRITICAL,
+          dataClassification:
+            entry.dataClassification || DataClassification.CRITICAL,
           requestId: `soc2-${Date.now()}`,
           success: entry.success,
           ...(entry.errorMessage && { errorMessage: entry.errorMessage }),

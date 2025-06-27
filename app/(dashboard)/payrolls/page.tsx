@@ -30,7 +30,7 @@ import {
   List,
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 
 import { PayrollUpdatesListener } from "@/components/real-time-updates";
@@ -425,8 +425,8 @@ export default function PayrollsPage() {
   const canManagePayrolls = checkPermission("payroll", "write").granted;
   const canViewAdvanced = checkPermission("admin", "manage").granted;
 
-  // Build GraphQL where conditions for server-side filtering
-  const buildWhereConditions = () => {
+  // Build GraphQL where conditions for server-side filtering (memoized)
+  const whereConditions = useMemo(() => {
     const conditions: any[] = [];
 
     // Search term filter
@@ -472,10 +472,10 @@ export default function PayrollsPage() {
     }
 
     return conditions.length > 0 ? { _and: conditions } : {};
-  };
+  }, [searchTerm, statusFilter, clientFilter, consultantFilter, payCycleFilter, dateTypeFilter]);
 
-  // Build GraphQL orderBy for server-side sorting
-  const buildOrderBy = () => {
+  // Build GraphQL orderBy for server-side sorting (memoized)
+  const orderByConditions = useMemo(() => {
     const sortMap: Record<string, string> = {
       name: "name",
       client: "client.name",
@@ -487,7 +487,7 @@ export default function PayrollsPage() {
 
     const field = sortMap[sortField] || "updatedAt";
     return [{ [field]: sortDirection }];
-  };
+  }, [sortField, sortDirection]);
 
   // Calculate pagination offset
   const offset = (currentPage - 1) * pageSize;
@@ -496,8 +496,8 @@ export default function PayrollsPage() {
     variables: {
       limit: pageSize,
       offset: offset,
-      where: buildWhereConditions(),
-      orderBy: buildOrderBy()
+      where: whereConditions,
+      orderBy: orderByConditions
     },
     errorPolicy: "all",
     fetchPolicy: "cache-and-network"
@@ -515,23 +515,11 @@ export default function PayrollsPage() {
     totalCount,
     currentPage,
     totalPages,
-    filterConditions: buildWhereConditions(),
-    orderBy: buildOrderBy()
+    filterConditions: whereConditions,
+    orderBy: orderByConditions
   });
 
-  useEffect(() => {
-    if (roleLoading) {
-      const timeout = setTimeout(() => {
-        toast.info("Loading payrolls...", {
-          duration: 3000,
-          closeButton: true,
-        });
-      }, 2000);
-      return () => clearTimeout(timeout);
-    }
-    // Void return for consistency
-    return;
-  }, [roleLoading]);
+  // Remove problematic useEffect that could cause infinite re-renders
 
   if (roleLoading) {
     return (
@@ -572,11 +560,8 @@ export default function PayrollsPage() {
     );
   }
 
-  // Transform payroll data (minimal client-side processing since filtering/sorting is server-side)
-  const displayPayrolls = payrolls.map((payroll: any) => {
-    const employeeCount = payroll.employeeCount || 0;
-
-    // Get next EFT date from payrollDates
+  // Transform payroll data using useMemo to prevent infinite re-renders
+  const displayPayrolls = useMemo(() => {
     const getNextEftDate = (payrollDates: any[]) => {
       if (!payrollDates || payrollDates.length === 0) return null;
       
@@ -588,86 +573,93 @@ export default function PayrollsPage() {
       return futureDates.length > 0 ? futureDates[0].adjustedEftDate : null;
     };
 
-    return {
-      ...payroll,
-      employeeCount,
-      payrollCycleFormatted: formatPayrollCycle(payroll),
-      priority: employeeCount > 50 ? "high" : employeeCount > 20 ? "medium" : "low",
-      progress: getStatusConfig(payroll.status || "Implementation").progress,
-      nextEftDate: getNextEftDate(payroll.payrollDates),
-      lastUpdated: new Date(payroll.updatedAt || payroll.createdAt),
-      lastUpdatedBy: payroll.backupConsultant?.name || "System",
-    };
-  });
+    return payrolls.map((payroll: any) => {
+      const employeeCount = payroll.employeeCount || 0;
+      return {
+        ...payroll,
+        employeeCount,
+        payrollCycleFormatted: formatPayrollCycle(payroll),
+        priority: employeeCount > 50 ? "high" : employeeCount > 20 ? "medium" : "low",
+        progress: getStatusConfig(payroll.status || "Implementation").progress,
+        nextEftDate: getNextEftDate(payroll.payrollDates),
+        lastUpdated: new Date(payroll.updatedAt || payroll.createdAt),
+        lastUpdatedBy: payroll.backupConsultant?.name || "System",
+      };
+    });
+  }, [payrolls]);
 
-  // Get unique values for filters
-  const uniqueStatuses = Array.from(
-    new Set(payrolls.map((p: any) => p.status || "Implementation"))
-  ) as string[];
-  const uniqueClients = Array.from(
-    new Map(
-      payrolls
-        .filter((p: any) => p.client?.id)
-        .map((p: any) => [p.client.id, p.client])
-    ).values()
-  ) as any[];
-  const uniqueConsultants = Array.from(
-    new Map(
-      payrolls
-        .filter((p: any) => p.primaryConsultant?.id)
-        .map((p: any) => [p.primaryConsultant.id, p.primaryConsultant])
-    ).values()
-  ) as any[];
-  const uniquePayCycles = Array.from(
-    new Set(payrolls.map((p: any) => p.payrollCycle?.name).filter(Boolean))
-  ) as string[];
-  const uniqueDateTypes = Array.from(
-    new Set(payrolls.map((p: any) => p.payrollDateType?.name).filter(Boolean))
-  ) as string[];
+  // Get unique values for filters using useMemo
+  const { uniqueStatuses, uniqueClients, uniqueConsultants, uniquePayCycles, uniqueDateTypes } = useMemo(() => {
+    return {
+      uniqueStatuses: Array.from(
+        new Set(payrolls.map((p: any) => p.status || "Implementation"))
+      ) as string[],
+      uniqueClients: Array.from(
+        new Map(
+          payrolls
+            .filter((p: any) => p.client?.id)
+            .map((p: any) => [p.client.id, p.client])
+        ).values()
+      ) as any[],
+      uniqueConsultants: Array.from(
+        new Map(
+          payrolls
+            .filter((p: any) => p.primaryConsultant?.id)
+            .map((p: any) => [p.primaryConsultant.id, p.primaryConsultant])
+        ).values()
+      ) as any[],
+      uniquePayCycles: Array.from(
+        new Set(payrolls.map((p: any) => p.payrollCycle?.name).filter(Boolean))
+      ) as string[],
+      uniqueDateTypes: Array.from(
+        new Set(payrolls.map((p: any) => p.payrollDateType?.name).filter(Boolean))
+      ) as string[]
+    };
+  }, [payrolls]);
 
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter, clientFilter, consultantFilter, payCycleFilter, dateTypeFilter]);
+  }, [searchTerm, statusFilter.length, clientFilter.length, consultantFilter.length, payCycleFilter.length, dateTypeFilter.length]);
 
-  // Handle selection
-  const handleSelectAll = (checked: boolean) => {
+  // Handle selection (memoized callbacks)
+  const handleSelectAll = useCallback((checked: boolean) => {
     if (checked) {
       setSelectedPayrolls(displayPayrolls.map((p: any) => p.id));
     } else {
       setSelectedPayrolls([]);
     }
-  };
+  }, [displayPayrolls]);
 
-  const handleSelectPayroll = (payrollId: string, checked: boolean) => {
+  const handleSelectPayroll = useCallback((payrollId: string, checked: boolean) => {
     if (checked) {
-      setSelectedPayrolls([...selectedPayrolls, payrollId]);
+      setSelectedPayrolls(prev => [...prev, payrollId]);
     } else {
-      setSelectedPayrolls(selectedPayrolls.filter(id => id !== payrollId));
+      setSelectedPayrolls(prev => prev.filter(id => id !== payrollId));
     }
-  };
+  }, []);
 
-  // Handle sorting (server-side)
-  const handleSort = (field: string) => {
+  // Handle sorting (server-side) - memoized callback
+  const handleSort = useCallback((field: string) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
+      setSortDirection(prev => prev === "ASC" ? "DESC" : "ASC");
     } else {
       setSortField(field);
       setSortDirection("ASC");
     }
     // Reset to first page when sorting changes
     setCurrentPage(1);
-  };
+  }, [sortField]);
 
-  // Handle pagination
-  const handlePageChange = (page: number) => {
+  // Handle pagination - memoized callbacks
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
-  };
+  }, []);
 
-  const handlePageSizeChange = (newPageSize: number) => {
+  const handlePageSizeChange = useCallback((newPageSize: number) => {
     setPageSize(newPageSize);
     setCurrentPage(1); // Reset to first page when page size changes
-  };
+  }, []);
 
   // Handle column visibility
   const toggleColumnVisibility = (columnKey: string) => {
@@ -691,14 +683,14 @@ export default function PayrollsPage() {
     }
   };
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setSearchTerm("");
     setStatusFilter([]);
     setClientFilter([]);
     setConsultantFilter([]);
     setPayCycleFilter([]);
     setDateTypeFilter([]);
-  };
+  }, []);
 
   const hasActiveFilters =
     searchTerm ||
@@ -708,21 +700,16 @@ export default function PayrollsPage() {
     payCycleFilter.length > 0 ||
     dateTypeFilter.length > 0;
 
-  // Calculate summary statistics
+  // Calculate summary statistics using useMemo
   const payrollsList = data?.payrolls || [];
-  const activePayrolls = payrollsList.filter(
-    (p: any) => p.status === "Active"
-  ).length;
-  const totalEmployees = payrollsList.reduce(
-    (sum: number, p: any) => sum + (p.employeeCount || 0),
-    0
-  );
-  const totalClients = new Set(
-    payrollsList.map((p: any) => p.client?.id).filter(Boolean)
-  ).size;
-  const pendingPayrolls = payrollsList.filter((p: any) =>
-    ["Implementation"].includes(p.status || "Implementation")
-  ).length;
+  const { activePayrolls, totalEmployees, totalClients, pendingPayrolls } = useMemo(() => {
+    return {
+      activePayrolls: payrollsList.filter((p: any) => p.status === "Active").length,
+      totalEmployees: payrollsList.reduce((sum: number, p: any) => sum + (p.employeeCount || 0), 0),
+      totalClients: new Set(payrollsList.map((p: any) => p.client?.id).filter(Boolean)).size,
+      pendingPayrolls: payrollsList.filter((p: any) => ["Implementation"].includes(p.status || "Implementation")).length
+    };
+  }, [payrollsList]);
 
   // Helper functions for views
   const getStatusColor = (status: string) => {

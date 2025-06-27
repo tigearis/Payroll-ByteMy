@@ -14,10 +14,6 @@ import {
   LogCategory,
   SOC2EventType,
 } from "@/lib/security/audit/logger";
-import { 
-  authenticateServiceRequest, 
-  ServiceOperation 
-} from "@/lib/auth/service-auth";
 
 // Input validation schema
 const CreateStaffSchema = z.object({
@@ -110,8 +106,8 @@ async function createClerkInvitation(
 }
 
 // Secure staff creation endpoint - admin only
-const handler = withAuth(
-  async (request: NextRequest, session) => {
+async function POST(request: NextRequest) {
+  return withAuth(async (request: NextRequest, session) => {
     console.log("🔧 =========================");
     console.log("🔧 STAFF CREATION STARTING");
     console.log("🔧 POST HANDLER CALLED SUCCESSFULLY");
@@ -525,33 +521,12 @@ const handler = withAuth(
         { status: 500 }
       );
     }
-  },
-  {
+  }, {
     allowedRoles: ["developer", "org_admin", "manager"], // Admins and managers can create staff
-  }
-);
+  })(request);
+}
 
-// Debug wrapper to see if route is called at all
-const debugPOST = async (request: NextRequest) => {
-  console.log("🚨 DEBUG: POST route called BEFORE withAuth");
-  console.log("🚨 Method:", request.method);
-  console.log("🚨 URL:", request.url);
-  console.log("🚨 Headers:", {
-    authorization: request.headers.get("authorization"),
-    "content-type": request.headers.get("content-type"),
-    "user-agent": request.headers.get("user-agent"),
-  });
-
-  try {
-    return await handler(request);
-  } catch (error) {
-    console.log("🚨 ERROR in POST handler:", error);
-    throw error;
-  }
-};
-
-// Export the POST method
-export const POST = debugPOST;
+export { POST };
 
 export async function GET() {
   console.log("DEBUG: GET handler called for /api/staff/create");
