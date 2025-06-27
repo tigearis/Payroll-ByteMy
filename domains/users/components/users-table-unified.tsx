@@ -42,7 +42,7 @@ interface UsersTableProps {
   onRefresh?: () => void;
   visibleColumns?: string[];
   sortField?: string;
-  sortDirection?: "asc" | "desc";
+  sortDirection?: "ASC" | "DESC";
   onSort?: (field: string) => void;
   onEditUser?: (user: User) => void;
   onViewUser?: (user: User) => void;
@@ -244,7 +244,7 @@ export function UsersTableUnified({
       emptyMessage="No users found. Add your first team member to get started."
       selectable={false}
       sortField={sortField || ""}
-      sortDirection={sortDirection || "asc"}
+      sortDirection={sortDirection || "ASC"}
       onSort={onSort || (() => {})}
       visibleColumns={visibleColumns || []}
       actions={actions}

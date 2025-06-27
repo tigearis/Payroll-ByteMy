@@ -26,11 +26,9 @@ export async function GET(request: NextRequest) {
 
     // Extract role from JWT (same logic as api-auth.ts) - FIXED ORDER
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const userRole = // ACTUAL ROLE FIRST - this is what we want!
-      (hasuraClaims?.["x-hasura-role"] ||
+    const userRole = // Use x-hasura-default-role as primary source
+      (hasuraClaims?.["x-hasura-default-role"] ||
         (sessionClaims?.metadata as any)?.role ||
-        // Fallback to default role only if no actual role found
-        hasuraClaims?.["x-hasura-default-role"] ||
         (sessionClaims?.metadata as any)?.defaultrole ||
         (sessionClaims as any)?.role) as string;
 
@@ -58,7 +56,7 @@ export async function GET(request: NextRequest) {
         hasHasuraClaims: !!hasuraClaims,
         v2DefaultRole: (sessionClaims?.metadata as any)?.defaultrole,
         v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
-        v1Role: hasuraClaims?.["x-hasura-role"],
+        v1Role: hasuraClaims?.["x-hasura-default-role"],
         sessionId: sessionClaims?.sid,
       },
     });

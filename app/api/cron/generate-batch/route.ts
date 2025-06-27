@@ -28,7 +28,6 @@ export async function POST(req: NextRequest) {
         );
         const hasuraClaims = payload["https://hasura.io/jwt/claims"];
         userRole =
-          hasuraClaims?.["x-hasura-role"] ||
           hasuraClaims?.["x-hasura-default-role"] ||
           "viewer";
       }

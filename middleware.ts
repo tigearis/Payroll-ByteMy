@@ -43,7 +43,7 @@ export default clerkMiddleware(async (auth, req) => {
           userRole:
             (
               authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any
-            )?.["x-hasura-role"] ||
+            )?.["x-hasura-default-role"] ||
             authResult.sessionClaims?.metadata?.role ||
             "unknown",
           action: AuditAction.READ,

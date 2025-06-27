@@ -77,30 +77,24 @@ export async function requireAuth(
       throw new Error("Unauthorized: No active session");
     }
 
-    // Extract role from JWT (handle both V1 and V2 formats)
+    // Extract role from JWT - use x-hasura-default-role as primary source
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const userRole = // JWT V1 format - ACTUAL ROLE FIRST
-      (hasuraClaims?.["x-hasura-role"] ||
-        // JWT V2 format - ACTUAL ROLE FIRST
-        (sessionClaims?.metadata as any)?.role ||
-        // Fallback to default role only if no actual role found
-        hasuraClaims?.["x-hasura-default-role"] ||
-        (sessionClaims?.metadata as any)?.defaultrole ||
-        (sessionClaims as any)?.role) as string;
+    const userRole = (
+      hasuraClaims?.["x-hasura-default-role"] ||
+      (sessionClaims?.metadata as any)?.role ||
+      (sessionClaims?.metadata as any)?.defaultrole ||
+      (sessionClaims as any)?.role ||
+      "viewer"
+    ) as string;
 
     // Debug logging for role extraction
-    console.log("🔍 Auth Debug (V1/V2 compatible):", {
+    console.log("🔍 Auth Debug (using x-hasura-default-role):", {
       userId: `${userId?.substring(0, 8)}...`,
-      jwtVersion: hasuraClaims
-        ? "v1"
-        : sessionClaims?.metadata
-          ? "v2"
-          : "unknown",
+      jwtVersion: hasuraClaims ? "v1" : sessionClaims?.metadata ? "v2" : "unknown",
       hasMetadata: !!sessionClaims?.metadata,
       hasHasuraClaims: !!hasuraClaims,
-      v2DefaultRole: (sessionClaims?.metadata as any)?.defaultrole,
-      v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
-      v1Role: hasuraClaims?.["x-hasura-role"],
+      defaultRole: hasuraClaims?.["x-hasura-default-role"],
+      allowedRoles: hasuraClaims?.["x-hasura-allowed-roles"],
       finalUserRole: userRole,
       sessionId: sessionClaims?.sid,
     });

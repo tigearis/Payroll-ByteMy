@@ -60,7 +60,7 @@ export interface PayrollsTableProps {
   onSelectAll?: (checked: boolean) => void;
   visibleColumns?: string[];
   sortField?: string;
-  sortDirection?: "asc" | "desc";
+  sortDirection?: "ASC" | "DESC";
   onSort?: (field: string) => void;
 }
 

@@ -78,7 +78,7 @@ export function createWebSocketLink(
                 // Log connection for audit purposes
                 console.log("WebSocket connection authenticated", {
                   userId: hasuraClaims["x-hasura-user-id"],
-                  role: hasuraClaims["x-hasura-role"],
+                  role: hasuraClaims["x-hasura-default-role"],
                   timestamp: new Date().toISOString()
                 });
               } catch (tokenError) {

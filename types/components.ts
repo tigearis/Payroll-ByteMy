@@ -205,7 +205,7 @@ export interface TableColumn<T = any> {
  */
 export interface TableSort {
   column: string;
-  direction: "asc" | "desc";
+  direction: "ASC" | "DESC";
 }
 
 /**

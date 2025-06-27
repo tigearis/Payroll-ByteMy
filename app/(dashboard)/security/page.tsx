@@ -155,7 +155,7 @@ export default function SecurityDashboard() {
     securityQueryDocument,
     "auditLogs", // Use auditLogs strategy for fallback
     {
-      variables: timeRanges,
+      variables: { timeRange: timeRanges.twentyFourHoursAgo },
       // Only poll if WebSocket is disconnected
       skip: isWebSocketConnected,
       pollInterval: isWebSocketConnected ? 0 : 300000, // 5 minutes fallback

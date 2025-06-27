@@ -74,7 +74,7 @@ export interface DataTableProps<T> {
 
   // Sorting
   sortField?: string;
-  sortDirection?: "asc" | "desc";
+  sortDirection?: "ASC" | "DESC";
   onSort?: (field: string) => void;
 
   // Visibility
@@ -227,7 +227,7 @@ export function UnifiedDataTable<T>({
     if (!onSort) return;
 
     if (sortField === columnKey) {
-      onSort(sortDirection === "asc" ? "desc" : "asc");
+      onSort(sortDirection === "ASC" ? "DESC" : "ASC");
     } else {
       onSort(columnKey);
     }
@@ -237,7 +237,7 @@ export function UnifiedDataTable<T>({
   const renderSortIcon = (columnKey: string) => {
     if (sortField !== String(columnKey)) return null;
 
-    return sortDirection === "asc" ? (
+    return sortDirection === "ASC" ? (
       <ChevronUp className="w-4 h-4" />
     ) : (
       <ChevronDown className="w-4 h-4" />

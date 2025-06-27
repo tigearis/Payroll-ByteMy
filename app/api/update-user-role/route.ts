@@ -88,7 +88,6 @@ export const GET = withAuth(
       // Get current user's role - FIXED: Use actual role first
       const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
       const currentUserRole =
-        claims?.["x-hasura-role"] ||
         claims?.["x-hasura-default-role"] ||
         "viewer";
 
@@ -111,7 +110,6 @@ export const GET = withAuth(
         "hasura_claims"
       ] as any;
       const targetUserRole =
-        targetUserClaims?.["x-hasura-role"] ||
         targetUserClaims?.["x-hasura-default-role"] ||
         "viewer";
 

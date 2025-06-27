@@ -411,7 +411,7 @@ export default function PayrollsPage() {
 
   // Sorting state
   const [sortField, setSortField] = useState<string>("updatedAt");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("DESC");
 
   // Column visibility state
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
@@ -650,10 +650,10 @@ export default function PayrollsPage() {
   // Handle sorting (server-side)
   const handleSort = (field: string) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
     } else {
       setSortField(field);
-      setSortDirection("asc");
+      setSortDirection("ASC");
     }
     // Reset to first page when sorting changes
     setCurrentPage(1);
@@ -929,7 +929,7 @@ export default function PayrollsPage() {
       >
         <span>{label}</span>
         {sortField === field &&
-          (sortDirection === "asc" ? (
+          (sortDirection === "ASC" ? (
             <ChevronUp className="ml-1 h-4 w-4" />
           ) : (
             <ChevronDown className="ml-1 h-4 w-4" />
@@ -1075,37 +1075,37 @@ export default function PayrollsPage() {
                   onValueChange={value => {
                     const [field, direction] = value.split("-");
                     setSortField(field);
-                    setSortDirection(direction as "asc" | "desc");
+                    setSortDirection(direction as "ASC" | "DESC");
                   }}
                 >
                   <SelectTrigger className="w-[200px]">
                     <SelectValue placeholder="Sort by..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="nextEftDate-asc">
+                    <SelectItem value="nextEftDate-ASC">
                       Next EFT Date ↑
                     </SelectItem>
-                    <SelectItem value="nextEftDate-desc">
+                    <SelectItem value="nextEftDate-DESC">
                       Next EFT Date ↓
                     </SelectItem>
-                    <SelectItem value="name-asc">Name A-Z</SelectItem>
-                    <SelectItem value="name-desc">Name Z-A</SelectItem>
-                    <SelectItem value="client-asc">Client A-Z</SelectItem>
-                    <SelectItem value="client-desc">Client Z-A</SelectItem>
-                    <SelectItem value="status-asc">Status A-Z</SelectItem>
-                    <SelectItem value="status-desc">Status Z-A</SelectItem>
-                    <SelectItem value="employees-asc">Employees ↑</SelectItem>
-                    <SelectItem value="employees-desc">Employees ↓</SelectItem>
-                    <SelectItem value="lastUpdated-asc">
+                    <SelectItem value="name-ASC">Name A-Z</SelectItem>
+                    <SelectItem value="name-DESC">Name Z-A</SelectItem>
+                    <SelectItem value="client-ASC">Client A-Z</SelectItem>
+                    <SelectItem value="client-DESC">Client Z-A</SelectItem>
+                    <SelectItem value="status-ASC">Status A-Z</SelectItem>
+                    <SelectItem value="status-DESC">Status Z-A</SelectItem>
+                    <SelectItem value="employees-ASC">Employees ↑</SelectItem>
+                    <SelectItem value="employees-DESC">Employees ↓</SelectItem>
+                    <SelectItem value="lastUpdated-ASC">
                       Last Updated ↑
                     </SelectItem>
-                    <SelectItem value="lastUpdated-desc">
+                    <SelectItem value="lastUpdated-DESC">
                       Last Updated ↓
                     </SelectItem>
-                    <SelectItem value="payrollCycle-asc">
+                    <SelectItem value="payrollCycle-ASC">
                       Pay Cycle A-Z
                     </SelectItem>
-                    <SelectItem value="payrollCycle-desc">
+                    <SelectItem value="payrollCycle-DESC">
                       Pay Cycle Z-A
                     </SelectItem>
                   </SelectContent>
