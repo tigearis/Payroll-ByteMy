@@ -154,7 +154,7 @@ function ClientsPage() {
 
   // Sorting state
   const [sortField, setSortField] = useState<string>("name");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("ASC");
 
   // Build GraphQL where conditions for server-side filtering
   const buildWhereConditions = () => {
@@ -332,10 +332,10 @@ function ClientsPage() {
   // Add event handlers for server-side filtering
   const handleSort = (field: string) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
     } else {
       setSortField(field);
-      setSortDirection("asc");
+      setSortDirection("ASC");
     }
     setCurrentPage(1); // Reset to first page when sorting changes
   };
@@ -678,37 +678,37 @@ function ClientsPage() {
                 onValueChange={value => {
                   const [field, direction] = value.split("-");
                   setSortField(field);
-                  setSortDirection(direction as "asc" | "desc");
+                  setSortDirection(direction as "ASC" | "DESC");
                 }}
               >
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="Sort by..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="name-asc">Name A-Z</SelectItem>
-                  <SelectItem value="name-desc">Name Z-A</SelectItem>
-                  <SelectItem value="status-asc">Status A-Z</SelectItem>
-                  <SelectItem value="status-desc">Status Z-A</SelectItem>
-                  <SelectItem value="payrollCount-asc">Payrolls ↑</SelectItem>
-                  <SelectItem value="payrollCount-desc">Payrolls ↓</SelectItem>
-                  <SelectItem value="activePayrolls-asc">
+                  <SelectItem value="name-ASC">Name A-Z</SelectItem>
+                  <SelectItem value="name-DESC">Name Z-A</SelectItem>
+                  <SelectItem value="status-ASC">Status A-Z</SelectItem>
+                  <SelectItem value="status-DESC">Status Z-A</SelectItem>
+                  <SelectItem value="payrollCount-ASC">Payrolls ↑</SelectItem>
+                  <SelectItem value="payrollCount-DESC">Payrolls ↓</SelectItem>
+                  <SelectItem value="activePayrolls-ASC">
                     Active Payrolls ↑
                   </SelectItem>
-                  <SelectItem value="activePayrolls-desc">
+                  <SelectItem value="activePayrolls-DESC">
                     Active Payrolls ↓
                   </SelectItem>
-                  <SelectItem value="contact_person-asc">
+                  <SelectItem value="contact_person-ASC">
                     Contact A-Z
                   </SelectItem>
-                  <SelectItem value="contact_person-desc">
+                  <SelectItem value="contact_person-DESC">
                     Contact Z-A
                   </SelectItem>
-                  <SelectItem value="contact_email-asc">Email A-Z</SelectItem>
-                  <SelectItem value="contact_email-desc">Email Z-A</SelectItem>
-                  <SelectItem value="lastUpdated-asc">
+                  <SelectItem value="contact_email-ASC">Email A-Z</SelectItem>
+                  <SelectItem value="contact_email-DESC">Email Z-A</SelectItem>
+                  <SelectItem value="lastUpdated-ASC">
                     Last Updated ↑
                   </SelectItem>
-                  <SelectItem value="lastUpdated-desc">
+                  <SelectItem value="lastUpdated-DESC">
                     Last Updated ↓
                   </SelectItem>
                 </SelectContent>

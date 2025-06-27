@@ -80,7 +80,7 @@ query GetDashboardStatsOptimized($limit: Int = 10) {
   activePayrolls: payrollsAggregate(
     where: { 
       supersededDate: { _isNull: true }
-      status: { _eq: "Active" }
+      status: { _eq: "active" }
     }
   ) {
     aggregate {
@@ -91,7 +91,7 @@ query GetDashboardStatsOptimized($limit: Int = 10) {
   processingPayrolls: payrollsAggregate(
     where: { 
       supersededDate: { _isNull: true }
-      status: { _eq: "Processing" }
+      status: { _eq: "processing" }
     }
   ) {
     aggregate {
@@ -103,7 +103,7 @@ query GetDashboardStatsOptimized($limit: Int = 10) {
   upcomingPayrolls: payrolls(
     where: {
       supersededDate: { _isNull: true }
-      status: { _eq: "Active" }
+      status: { _eq: "active" }
     }
     orderBy: { updatedAt: DESC }
     limit: $limit
