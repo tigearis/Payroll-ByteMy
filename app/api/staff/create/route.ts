@@ -106,8 +106,8 @@ async function createClerkInvitation(
 }
 
 // Secure staff creation endpoint - admin only
-async function POST(request: NextRequest) {
-  return withAuth(async (request: NextRequest, session) => {
+export const POST = withAuth(
+  async (request: NextRequest, session) => {
     console.log("🔧 =========================");
     console.log("🔧 STAFF CREATION STARTING");
     console.log("🔧 POST HANDLER CALLED SUCCESSFULLY");
@@ -521,12 +521,11 @@ async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-  }, {
+  },
+  {
     allowedRoles: ["developer", "org_admin", "manager"], // Admins and managers can create staff
-  })(request);
-}
-
-export { POST };
+  }
+);
 
 export async function GET() {
   console.log("DEBUG: GET handler called for /api/staff/create");
