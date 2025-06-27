@@ -1,52 +1,33 @@
-// Users Domain Types
-// Security Classification: CRITICAL - Employee PII and authentication data
-// SOC2 Compliance: Strict access controls with audit logging
+/**
+ * Users Domain Types
+ * Security Classification: CRITICAL - Employee PII and authentication data
+ * SOC2 Compliance: Strict access controls with audit logging
+ * 
+ * Only contains domain-specific types, not core entities
+ */
 
-// Extracted from inline TypeScript interfaces and types
+// Re-export core types from main types for domain convenience
+export type { User, Role } from "@/types";
+export type { CustomPermission as Permission } from "@/types/permissions";
 
-export type UserRole =
-  | "developer"
-  | "org_admin"
-  | "manager"
-  | "consultant"
-  | "viewer";
+// ===========================
+// Domain-Specific Filter & Search Types
+// ===========================
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  created_at: string;
-  updated_at: string;
-  is_staff: boolean;
-  manager_id?: string;
-  clerk_user_id: string;
-  manager?: {
-    id: string;
-    name: string;
-    email: string;
-  };
-  subordinates?: User[];
-  lastSignIn?: string;
-  imageUrl?: string;
-  emailVerified?: boolean;
-}
-
-export interface Manager {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
+/**
+ * User filtering options for user management
+ */
 export interface UserFilters {
-  role?: string;
+  role?: Role;
   search?: string;
-  managerId?: string;
+  managerId?: UUID;
   limit?: number;
   offset?: number;
 }
 
+/**
+ * User permissions summary (domain-specific computation)
+ */
 export interface UserPermissions {
   canCreate: boolean;
   canManageUsers: boolean;
@@ -56,95 +37,138 @@ export interface UserPermissions {
   canManageSystem: boolean;
 }
 
+// ===========================
+// Domain-Specific Form Types
+// ===========================
+
+/**
+ * User creation form data
+ */
 export interface CreateUserData {
   email: string;
   firstName: string;
   lastName: string;
-  role?: UserRole;
-  managerId?: string;
-}
-
-export interface UpdateUserData {
-  name?: string;
-  email?: string;
-  role?: UserRole;
-  managerId?: string;
+  role?: Role;
+  managerId?: UUID;
   isStaff?: boolean;
 }
 
-// Extracted from staff page
-export interface Staff {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  username?: string;
-  image?: string;
-  is_staff: boolean;
-  manager_id?: string;
-  clerk_user_id?: string;
-  created_at?: string;
-  updated_at?: string;
-  manager?: {
-    name: string;
-    id: string;
-    email: string;
-  };
-  leaves?: Array<{
-    id: string;
-    start_date: string;
-    end_date: string;
-    leave_type: string;
-    reason: string;
-    status: string;
-  }>;
-  label?: string;
+/**
+ * User update form data
+ */
+export interface UpdateUserData {
+  name?: string;
+  email?: string;
+  role?: Role;
+  managerId?: UUID;
+  isStaff?: boolean;
 }
 
-export interface StaffEditForm {
-  name: string;
-  email: string;
-  username: string;
-  role: string;
-  manager_id: string;
-  is_staff: boolean;
-}
-
+/**
+ * Staff creation form (legacy - consider consolidating with CreateUserData)
+ */
 export interface CreateStaffForm {
   email: string;
   firstName: string;
   lastName: string;
-  role: string;
-  is_staff: boolean;
+  role: Role;
+  isStaff: boolean;
 }
 
-// Profile types from settings page
+/**
+ * Staff edit form (legacy - consider consolidating with UpdateUserData)
+ */
+export interface StaffEditForm {
+  name: string;
+  email: string;
+  username: string;
+  role: Role;
+  managerId: UUID;
+  isStaff: boolean;
+}
+
+/**
+ * User profile form data for settings page
+ */
 export interface UserProfileFormData {
-  id: string;
+  id: UUID;
   name: string;
   email: string;
   username: string;
   image: string;
-  role: string;
-  is_staff: boolean;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  clerk_user_id: string;
+  role: Role;
+  isStaff: boolean;
+  isActive: boolean;
+  createdAt: Timestamptz;
+  updatedAt: Timestamptz;
+  clerkUserId: string;
   manager?: {
-    id: string;
+    id: UUID;
     name: string;
     email: string;
   };
 }
 
-// User sync types
+// ===========================
+// Domain-Specific Data Sync Types
+// ===========================
+
+/**
+ * User synchronization data from Clerk
+ */
 export interface UserSyncData {
   clerkId: string;
   name: string;
   email: string;
-  role?: UserRole;
+  role?: Role;
   isStaff?: boolean;
-  managerId?: string;
+  managerId?: UUID;
   image?: string;
+}
+
+// ===========================
+// Legacy/Deprecated Types
+// ===========================
+
+/**
+ * @deprecated Use main User type from @/types/interfaces
+ * Manager interface - replace with User type
+ */
+export interface Manager {
+  id: UUID;
+  name: string;
+  email: string;
+  role: Role;
+}
+
+/**
+ * @deprecated Use main User type from @/types/interfaces
+ * Staff interface - this is essentially the same as User
+ */
+export interface Staff {
+  id: UUID;
+  email: string;
+  name: string;
+  role: Role;
+  username?: string;
+  image?: string;
+  isStaff: boolean;
+  managerId?: UUID;
+  clerkUserId?: string;
+  createdAt?: Timestamptz;
+  updatedAt?: Timestamptz;
+  manager?: {
+    name: string;
+    id: UUID;
+    email: string;
+  };
+  leaves?: Array<{
+    id: UUID;
+    startDate: DateString;
+    endDate: DateString;
+    leaveType: LeaveType;
+    reason: string;
+    status: LeaveStatus;
+  }>;
+  label?: string;
 }

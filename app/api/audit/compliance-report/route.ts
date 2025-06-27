@@ -71,7 +71,7 @@ export const POST = withAuth(
       });
 
       reportData.auditLogs = auditResult.data.auditLogs;
-      reportData.auditSummary = auditResult.data.auditLogsAggregate;
+      reportData.auditSummary = { aggregate: { count: auditResult.data.auditLogs.length } };
 
       // Generate basic summary for all report types
       summary.totalAuditLogs = reportData.auditSummary.aggregate.count;

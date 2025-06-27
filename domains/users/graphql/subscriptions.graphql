@@ -1,105 +1,49 @@
-# Users Domain Subscriptions
-# Security Classification: CRITICAL - Employee PII and authentication data
-# SOC2 Compliance: Strict access controls with audit logging
+# User Domain Subscriptions
 
-# Extracted from inline GraphQL operations
-subscription StaffSubscription {
-  users(where: { isStaff: { _eq: true } }) {
-    id
-    name
-    role
+# Subscribe to user updates
+subscription UserUpdates($userId: uuid!) {
+  userById(id: $userId) {
+    ...UserProfile
     updatedAt
   }
 }
 
-subscription UserUpdates($id: uuid!) {
-  users(where: { id: { _eq: $id } }) {
-    ...UserBasicInfo
+# Monitor active users - simplified since lastActivityAt and currentStatus don't exist
+subscription ActiveUsers {
+  users(where: { isActive: { _eq: true } }) {
+    id
+    name
+    email
+    updatedAt
   }
 }
 
-subscription StaffListUpdates {
-  users(
-    where: { role: { _in: ["consultant", "manager", "org_admin"] } }
-    orderBy: { name: ASC }
+# Monitor user auth events - simplified since many fields don't exist
+subscription UserAuthEvents($userId: uuid!) {
+  authEvents(where: { userId: { _eq: $userId } }) {
+    id
+    createdAt
+    ipAddress
+    userAgent
+  }
+}
+
+# Monitor permission changes - fixing field references
+subscription PermissionOverrideChanges($userId: uuid!) {
+  permissionOverrides(
+    where: { userId: { _eq: $userId } }
+    orderBy: { createdAt: DESC }
   ) {
-    ...UserBasicInfo
-  }
-}
-
-# Real-time authentication and user status subscriptions
-
-subscription UserRoleChanges($userId: uuid!) {
-  users(where: { id: { _eq: $userId } }) {
     id
-    role
-    isActive
-    isStaff
-    updatedAt
-    managerId
-  }
-}
-
-subscription UserStatusUpdates($userId: uuid!) {
-  users(where: { id: { _eq: $userId } }) {
-    id
-    name
-    role
-    isActive
-    isStaff
-    deactivatedAt
-    deactivatedBy
-    updatedAt
-  }
-}
-
-subscription ActiveUsersCount {
-  usersAggregate(where: { isActive: { _eq: true } }) {
-    aggregate {
-      count
-    }
-  }
-}
-
-subscription UserSessionStatus($clerkUserId: String!) {
-  users(where: { clerkUserId: { _eq: $clerkUserId } }) {
-    id
-    role
-    isActive
-    updatedAt
-  }
-}
-
-subscription TeamMemberUpdates($managerId: uuid!) {
-  users(where: { managerId: { _eq: $managerId } }) {
-    id
-    name
-    role
-    isActive
-    updatedAt
-  }
-}
-
-subscription UserPermissionUpdates($userId: uuid!) {
-  users(where: { id: { _eq: $userId } }) {
-    id
-    role
-    isActive
-    assignedRoles {
-      roleId
-      assignedRole {
-        name
-        assignedPermissions {
-          permissionId
-          grantedPermission {
-            action
-            description
-            relatedResource {
-              name
-            }
-          }
-        }
-      }
+    resource
+    operation
+    granted
+    reason
+    expiresAt
+    createdAt
+    createdBy
+    createdByUser {
+      ...UserMinimal
     }
   }
 }

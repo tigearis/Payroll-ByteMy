@@ -111,14 +111,14 @@ async function GET(request: NextRequest) {
             action: "cleanup_expired",
             metadata: {
               expiredCount: cleanupResult.data?.bulkUpdateUserInvitations?.affectedRows || 0,
-              expiredInvitations: cleanupResult.data?.bulkUpdateUserInvitations?.returning || []
+              expiredInvitations: []
             }
           });
 
           return NextResponse.json({
             success: true,
             complianceNote: `Marked ${cleanupResult.data?.bulkUpdateUserInvitations?.affectedRows || 0} expired invitations`,
-            expiredInvitations: cleanupResult.data?.bulkUpdateUserInvitations?.returning || []
+            expiredInvitations: []
           });
 
         default:

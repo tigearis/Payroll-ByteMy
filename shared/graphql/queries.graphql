@@ -1,265 +1,244 @@
-# Shared Queries
-# Security Classification: MEDIUM - Dashboard and cross-domain data
-# SOC2 Compliance: Aggregate data with no PII exposure
+# Shared GraphQL Queries
+# Updated to match actual Hasura schema
 
-query GetDashboardStats {
-  # Total clients count
-  clients_aggregate: clientsAggregate {
+# ============================================
+# Dashboard Queries
+# ============================================
+
+# Main dashboard metrics
+query GetDashboardMetrics($userId: uuid!) {
+  # Client statistics
+  clientsAggregate(where: {active: {_eq: true}}) {
     aggregate {
       count
     }
   }
-
-  # Total payrolls count
-  payrollsAggregate: payrollsAggregate {
+  
+  # Active payrolls
+  activePayrollsAggregate: payrollsAggregate(where: {
+    supersededDate: {_isNull: true}
+    status: {_nin: ["Completed", "Failed"]}
+  }) {
     aggregate {
       count
     }
   }
+  
+  # Total employees across all active payrolls
+  totalEmployeesAggregate: payrollsAggregate(where: {
+    supersededDate: {_isNull: true}
+  }) {
+    aggregate {
+      sum {
+        employeeCount
+      }
+    }
+  }
+  
+  # Upcoming payrolls
+  upcomingPayrolls: payrolls(
+    where: {
+      supersededDate: {_isNull: true}
+      status: {_nin: ["Completed", "Failed", "Cancelled"]}
+    }
+    orderBy: {updatedAt: DESC}
+    limit: 5
+  ) {
+    ...PayrollMinimal
+    client {
+      ...ClientMinimal
+    }
+  }
+}
 
-  # Active payrolls (non-superseded)
-  active_payrolls: payrollsAggregate(
+# GetDashboardStatsOptimized
+# Optimized combined query for dashboard statistics that consolidates multiple separate queries into a single request
+# Performance: Reduces network requests from 3 separate queries to 1 combined query (67% reduction)
+# Replaces: GetClientStatsDocument, GetPayrollDashboardStatsDocument, GetUpcomingPayrollsDocument
+# Domain: shared | Security: MEDIUM | Complexity: MEDIUM
+# Param limit: Maximum number of upcoming payrolls to return (default: 10)
+# Returns: Combined dashboard statistics with clients, payrolls, and upcoming payroll data
+# Usage: Main dashboard page (/dashboard) to load all statistics in a single request
+# Since: Priority 2 optimization (2025-06-27) | Classification: SOC2_COMPLIANT
+query GetDashboardStatsOptimized($limit: Int = 10) {
+  # Client statistics (replaces GetClientStatsDocument)
+  clientsAggregate {
+    aggregate {
+      count
+    }
+  }
+  
+  # Payroll statistics (replaces GetPayrollDashboardStatsDocument)
+  totalPayrolls: payrollsAggregate(
     where: { supersededDate: { _isNull: true } }
   ) {
     aggregate {
       count
     }
   }
-
-  # Processing queue (payrolls needing attention - can be refined later)
-  processing_queue: payrollsAggregate(
+  
+  activePayrolls: payrollsAggregate(
+    where: { 
+      supersededDate: { _isNull: true }
+      status: { _eq: "Active" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  processingPayrolls: payrollsAggregate(
+    where: { 
+      supersededDate: { _isNull: true }
+      status: { _eq: "Processing" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Upcoming payrolls with next pay dates (replaces GetUpcomingPayrollsDocument)  
+  upcomingPayrolls: payrolls(
     where: {
       supersededDate: { _isNull: true }
-      status: { _in: ["Implementation"] }
+      status: { _eq: "Active" }
     }
-  ) {
-    aggregate {
-      count
-    }
-  }
-}
-
-query GetSystemStats {
-  # Total counts for admin dashboard
-  total_payrolls: payrollsAggregate {
-    aggregate {
-      count
-    }
-  }
-
-  total_clients: clientsAggregate {
-    aggregate {
-      count
-    }
-  }
-
-  total_users: usersAggregate {
-    aggregate {
-      count
-    }
-  }
-}
-
-query GetUpcomingPayrollsShared($from_date: date!, $limit: Int = 10) {
-  payrolls(
-    where: {
-      supersededDate: { _isNull: true }
-      payrollDates: { adjustedEftDate: { _gte: $from_date } }
-    }
-    orderBy: { payrollDatesAggregate: { min: { adjustedEftDate: ASC } } }
-    limit: $limit
-  ) {
-    id
-    name
-    status
-    client {
-      id
-      name
-    }
-    payrollDates(
-      where: { adjustedEftDate: { _gte: $from_date } }
-      orderBy: { adjustedEftDate: ASC }
-      limit: 1
-    ) {
-      id
-      adjustedEftDate
-      processingDate
-    }
-  }
-}
-
-# Unified dashboard query combining stats and upcoming payrolls for optimal performance
-
-query GetUnifiedDashboardData($from_date: date!, $limit: Int = 5) {
-  # All dashboard statistics in one call
-  clients_aggregate: clientsAggregate {
-    aggregate {
-      count
-    }
-  }
-
-  payrollsAggregate: payrollsAggregate {
-    aggregate {
-      count
-    }
-  }
-
-  active_payrolls: payrollsAggregate(
-    where: { supersededDate: { _isNull: true } }
-  ) {
-    aggregate {
-      count
-    }
-  }
-
-  processing_queue: payrollsAggregate(
-    where: { supersededDate: { _isNull: true } }
-  ) {
-    aggregate {
-      count
-    }
-  }
-
-  # Recent user activity count for dashboard insights
-  active_users: usersAggregate(where: { isActive: { _eq: true } }) {
-    aggregate {
-      count
-    }
-  }
-
-  # Upcoming payrolls with enhanced data for dashboard cards
-  upcoming_payrolls: payrolls(
-    where: {
-      supersededDate: { _isNull: true }
-      payrollDates: { adjustedEftDate: { _gte: $from_date } }
-    }
-    orderBy: { payrollDatesAggregate: { min: { adjustedEftDate: ASC } } }
-    limit: $limit
-  ) {
-    id
-    name
-    status
-    employeeCount
-    client {
-      id
-      name
-    }
-    primaryConsultant {
-      id
-      name
-    }
-    payrollDates(
-      where: { adjustedEftDate: { _gte: $from_date } }
-      orderBy: { adjustedEftDate: ASC }
-      limit: 1
-    ) {
-      id
-      adjustedEftDate
-      processingDate
-    }
-  }
-
-  # Recent activity summary for quick insights
-  recent_payroll_updates: payrolls(
-    where: { supersededDate: { _isNull: true } }
-    orderBy: { updatedAt: DESC }
-    limit: 3
-  ) {
-    id
-    name
-    status
-    updatedAt
-    client {
-      name
-    }
-  }
-}
-
-# Phase 2: Optimized queries to reduce over-fetching in list views
-
-query GetDashboardStatsMinimal {
-  # Minimal stats for quick dashboard loading
-  clientCount: clientsAggregate {
-    aggregate {
-      count
-    }
-  }
-
-  payrollCount: payrollsAggregate(
-    where: { supersededDate: { _isNull: true } }
-  ) {
-    aggregate {
-      count
-    }
-  }
-
-  userCount: usersAggregate(where: { isActive: { _eq: true } }) {
-    aggregate {
-      count
-    }
-  }
-}
-
-query GetUpcomingPayrollsMinimal($from_date: date!, $limit: Int = 5) {
-  # Minimal data for dashboard upcoming payrolls widget
-  payrolls(
-    where: {
-      supersededDate: { _isNull: true }
-      payrollDates: { adjustedEftDate: { _gte: $from_date } }
-    }
-    orderBy: { payrollDatesAggregate: { min: { adjustedEftDate: ASC } } }
-    limit: $limit
-  ) {
-    id
-    name
-    status
-    client {
-      name
-    }
-    nextDate: payrollDates(
-      where: { adjustedEftDate: { _gte: $from_date } }
-      orderBy: { adjustedEftDate: ASC }
-      limit: 1
-    ) {
-      adjustedEftDate
-    }
-  }
-}
-
-query GetRecentActivityMinimal($limit: Int = 10) {
-  # Minimal recent activity for activity feed
-  payrolls(
-    where: { supersededDate: { _isNull: true } }
     orderBy: { updatedAt: DESC }
     limit: $limit
   ) {
     id
     name
     status
-    updatedAt
     client {
+      id
       name
     }
   }
 }
 
-query GetQuickStatsOnly {
-  # Only aggregated counts for very fast loading
-  totals: payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
+# Dashboard stats for clients page
+query GetClientsDashboardStats {
+  # Total active clients
+  activeClientsCount: clientsAggregate(where: {active: {_eq: true}}) {
     aggregate {
       count
     }
   }
+  
+  # Total employees across all clients
+  payrollsAggregate(where: {supersededDate: {_isNull: true}}) {
+    aggregate {
+      sum {
+        employeeCount
+      }
+    }
+  }
+  
+  # Clients without recent payrolls
+  clientsNeedingAttention: clients(
+    where: {
+      active: {_eq: true}
+      _not: {
+        payrolls: {
+          supersededDate: {_isNull: true}
+        }
+      }
+    }
+  ) {
+    ...ClientMinimal
+  }
+}
 
-  activeClients: clientsAggregate(where: { active: { _eq: true } }) {
+# ============================================
+# User Queries
+# ============================================
+
+# Get current user with permissions
+query GetCurrentUser($userId: uuid!) {
+  user: userById(id: $userId) {
+    ...UserProfile
+  }
+}
+
+# Get users for dropdowns
+query GetUsersForDropdown($role: user_role) {
+  users(
+    where: {
+      isActive: {_eq: true}
+      role: {_eq: $role}
+    }
+    orderBy: {name: ASC}
+  ) {
+    ...UserMinimal
+  }
+}
+
+# ============================================
+# System Health Queries
+# ============================================
+
+# System health check
+query GetSystemHealth {
+  # Database connection
+  databaseHealth: users(limit: 1) {
+    id
+  }
+  
+  # Recent activity
+  recentActivity: auditLogsAggregate(
+    where: {eventTime: {_gte: "now() - interval '1 hour'"}}
+  ) {
     aggregate {
       count
     }
   }
+}
 
-  activeUsers: usersAggregate(where: { isActive: { _eq: true } }) {
-    aggregate {
-      count
+# ============================================
+# Search Queries
+# ============================================
+
+# Global search across entities
+query GlobalSearch($searchTerm: String!) {
+  # Search clients
+  clients(
+    where: {
+      _or: [
+        {name: {_ilike: $searchTerm}}
+        {contactEmail: {_ilike: $searchTerm}}
+      ]
+    }
+    limit: 5
+  ) {
+    ...ClientMinimal
+  }
+  
+  # Search users
+  users(
+    where: {
+      _or: [
+        {name: {_ilike: $searchTerm}}
+        {email: {_ilike: $searchTerm}}
+      ]
+    }
+    limit: 5
+  ) {
+    ...UserMinimal
+  }
+  
+  # Search payrolls by client name
+  payrolls(
+    where: {
+      client: {name: {_ilike: $searchTerm}}
+      supersededDate: {_isNull: true}
+    }
+    limit: 5
+  ) {
+    ...PayrollMinimal
+    client {
+      ...ClientMinimal
     }
   }
 }

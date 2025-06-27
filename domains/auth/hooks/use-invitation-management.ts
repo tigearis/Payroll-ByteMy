@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { toast } from "sonner";
 import {
   GetPendingInvitationsDocument,
@@ -39,7 +39,7 @@ export function useInvitationManagement() {
     loading: pendingLoading,
     error: pendingError,
     refetch: refetchPending,
-  } = useCachedQuery(GetPendingInvitationsDocument, "invitations", {
+  } = useQuery(GetPendingInvitationsDocument, {
     variables: { limit: 50, offset: 0 },
     errorPolicy: "all",
   });
@@ -50,7 +50,7 @@ export function useInvitationManagement() {
     loading: expiredLoading,
     error: expiredError,
     refetch: refetchExpired,
-  } = useCachedQuery(GetExpiredInvitationsDocument, "invitations", {
+  } = useQuery(GetExpiredInvitationsDocument, {
     errorPolicy: "all",
   });
 

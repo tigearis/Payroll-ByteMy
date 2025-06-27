@@ -1,11 +1,12 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode, useMemo } from 'react';
+import { useQuery } from '@apollo/client';
 import { useUser, useAuth } from '@clerk/nextjs';
 import { Permission, Role, sanitizeUserRole, getPermissionsForRole, hasRoleLevel } from './permissions';
 import { 
-  useGetUserEffectivePermissionsQuery,
-  useGetUserPermissionOverridesQuery 
+  GetUserEffectivePermissionsDocument,
+  GetUserPermissionOverridesDocument 
 } from '@/domains/permissions/graphql/generated/graphql';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
@@ -123,7 +124,7 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     data: permissionsData, 
     loading: permissionsLoading, 
     refetch: refetchPermissions 
-  } = useGetUserEffectivePermissionsQuery({
+  } = useQuery(GetUserEffectivePermissionsDocument, {
     variables: { userId: databaseId || '' },
     skip: !databaseId,
     errorPolicy: 'all'
@@ -133,7 +134,7 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     data: overridesData, 
     loading: overridesLoading,
     refetch: refetchOverrides 
-  } = useGetUserPermissionOverridesQuery({
+  } = useQuery(GetUserPermissionOverridesDocument, {
     variables: { userId: databaseId || '' },
     skip: !databaseId,
     errorPolicy: 'all'

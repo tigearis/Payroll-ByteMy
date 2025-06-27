@@ -1,68 +1,23 @@
-# Clients Domain Subscriptions
-# Security Classification: HIGH - Contains PII and business-critical data
-# SOC2 Compliance: Customer data with audit trail requirements
+# Client Domain Subscriptions
 
-subscription ClientUpdates($id: uuid!) {
-  clientById(id: $id) {
-    ...ClientWithRelations
-  }
-}
-
-subscription ClientListUpdates {
-  clients(
-    where: { active: { _eq: true } }
-    orderBy: { name: ASC }
-  ) {
-    ...ClientBasicInfo
-  }
-}
-
-subscription ClientStatusUpdates($id: uuid!) {
-  clientById(id: $id) {
-    id
-    name
-    active
+# Subscribe to client updates
+subscription ClientUpdates($clientId: uuid!) {
+  clientById(id: $clientId) {
+    ...ClientWithStats
     updatedAt
   }
 }
 
-subscription ClientPayrollUpdates($clientId: uuid!) {
-  payrolls(
-    where: { 
-      clientId: { _eq: $clientId }
-      supersededDate: { _isNull: true }
-    }
-    orderBy: { updatedAt: DESC }
-  ) {
-    id
-    name
-    status
-    updatedAt
+# Subscribe to all active clients
+subscription ActiveClients {
+  clients(where: { active: { _eq: true } }) {
+    ...ClientListItem
   }
 }
 
-subscription ActiveClientsCount {
-  clientsAggregate(where: { active: { _eq: true } }) {
-    aggregate {
-      count
-    }
-  }
-}
-
-# Phase 2: Real-time dashboard subscriptions
-
-subscription ClientDashboardUpdates {
-  clients(
-    where: { active: { _eq: true } }
-    orderBy: { name: ASC }
-    limit: 10
-  ) {
-    ...ClientDashboardCard
-  }
-}
-
-subscription ClientMetricsUpdates($id: uuid!) {
-  clientById(id: $id) {
-    ...ClientWithMetrics
+# Monitor new client additions
+subscription NewClients($since: timestamptz!) {
+  clients(where: { createdAt: { _gte: $since } }) {
+    ...ClientWithStats
   }
 }

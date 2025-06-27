@@ -1,18 +1,17 @@
-# Shared Enum Types
-# These enums are used across multiple domains
+# Shared GraphQL Enums
+# Enum definitions that match the database schema
 
+# User role enum
 enum UserRole {
-  DEVELOPER
-  ORG_ADMIN
-  MANAGER
-  CONSULTANT
-  VIEWER
+  developer
+  org_admin
+  manager
+  consultant
+  viewer
 }
 
+# Payroll status enum
 enum PayrollStatus {
-  Active
-  Implementation
-  Inactive
   Processing
   Draft
   PendingApproval
@@ -21,21 +20,96 @@ enum PayrollStatus {
   Failed
   PendingReview
   Issue
+  Pending
 }
 
-enum AuditEventType {
-  LOGIN
-  LOGOUT
-  PERMISSION_GRANTED
-  PERMISSION_DENIED
-  DATA_ACCESS
-  DATA_MODIFICATION
-  SECURITY_VIOLATION
+# Approval status enum
+enum ApprovalStatus {
+  Pending
+  Approved
+  Rejected
 }
 
-enum SecurityLevel {
-  CRITICAL
-  HIGH
-  MEDIUM
-  LOW
+# Date type enum for payroll dates
+enum PayrollDateType {
+  PaymentDate
+  ProcessingDate
+  SubmissionDeadline
+  ApprovalDeadline
+}
+
+# Permission action enum
+enum PermissionAction {
+  create
+  read
+  update
+  delete
+  approve
+  export
+  bulk_update
+  manage_permissions
+}
+
+# Invitation status enum
+enum InvitationStatus {
+  pending
+  accepted
+  expired
+  cancelled
+}
+
+# Security event severity
+enum SecurityEventSeverity {
+  low
+  medium
+  high
+  critical
+}
+
+# Security event type
+enum SecurityEventType {
+  login_success
+  login_failure
+  permission_denied
+  suspicious_activity
+  api_key_used
+  data_export
+  bulk_operation
+}
+
+# Audit action enum
+enum AuditAction {
+  create
+  update
+  delete
+  view
+  export
+  approve
+  reject
+  login
+  logout
+}
+
+# Payroll cycle enum
+enum PayrollCycle {
+  weekly
+  biweekly
+  semimonthly
+  monthly
+}
+
+# Leave status enum
+enum LeaveStatus {
+  pending
+  approved
+  rejected
+  cancelled
+}
+
+# Note type enum
+enum NoteType {
+  general
+  important
+  warning
+  system
 }

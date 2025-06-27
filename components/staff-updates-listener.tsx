@@ -2,7 +2,7 @@ import { DocumentNode } from "@apollo/client";
 
 import { RealTimeUpdates } from "@/components/real-time-updates";
 import { 
-  StaffSubscriptionDocument,
+  ActiveUsersDocument,
   GetStaffListDocument,
   GetAllUsersListDocument
 } from "@/domains/users/graphql/generated/graphql";
@@ -21,7 +21,7 @@ export function StaffUpdatesListener({
 }) {
   return (
     <RealTimeUpdates
-      subscription={StaffSubscriptionDocument}
+      subscription={ActiveUsersDocument}
       refetchQueries={refetchQueries}
       showToasts={showToasts}
       {...(onUpdate && { onUpdate })}

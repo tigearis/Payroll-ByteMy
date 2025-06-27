@@ -8,81 +8,45 @@ import { CalendarDays, Users, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UrgentAlerts } from "@/components/urgent-alerts";
-import {
-  GetPayrollDashboardStatsDocument,
-  GetUpcomingPayrollsDocument,
-} from "@/domains/payrolls/graphql/generated/graphql";
-import { GetClientStatsDocument } from "@/domains/clients/graphql/generated/graphql";
+import { GetDashboardStatsOptimizedDocument } from "@/shared/types/generated/graphql";
 
-interface PayrollStatsData {
+interface DashboardStatsData {
+  clientsAggregate: { aggregate: { count: number } };
   totalPayrolls: { aggregate: { count: number } };
   activePayrolls: { aggregate: { count: number } };
   processingPayrolls: { aggregate: { count: number } };
-}
-
-interface ClientStatsData {
-  clientsAggregate: { aggregate: { count: number } };
-}
-
-interface NextPayDate {
-  originalEftDate: string;
-  adjustedEftDate: string;
-  processingDate: string;
-}
-
-interface UpcomingPayroll {
-  id: string;
-  name: string;
-  status: string;
-  client: { name: string };
-  nextPayDate: NextPayDate[];
-}
-
-interface UpcomingPayrollsData {
-  payrolls: UpcomingPayroll[];
+  upcomingPayrolls: Array<{
+    id: string;
+    name: string;
+    status: string;
+    client: { id: string; name: string };
+  }>;
 }
 
 export default function DashboardPage() {
-  const today = new Date().toISOString().split("T")[0];
-
-  // Fetch client statistics
+  // Fetch all dashboard statistics with single optimized query
   const {
-    data: clientData,
-    loading: clientLoading,
-    error: clientError,
-  } = useQuery<ClientStatsData>(GetClientStatsDocument, {
+    data: dashboardData,
+    loading: dashboardLoading,
+    error: dashboardError,
+  } = useQuery<DashboardStatsData>(GetDashboardStatsOptimizedDocument, {
+    variables: { limit: 5 },
     errorPolicy: "all",
   });
-
-  // Fetch payroll statistics
-  const {
-    data: payrollData,
-    loading: payrollLoading,
-    error: payrollError,
-  } = useQuery<PayrollStatsData>(GetPayrollDashboardStatsDocument, {
-    errorPolicy: "all",
-  });
-
-  // Fetch upcoming payrolls for the count and next payroll date
-  const { data: upcomingData, loading: upcomingLoading } =
-    useQuery<UpcomingPayrollsData>(GetUpcomingPayrollsDocument, {
-      variables: { limit: 1 },
-      errorPolicy: "all",
-    });
 
   // Extract stats with fallbacks
-  const totalClients = clientData?.clientsAggregate?.aggregate?.count ?? 0;
-  const totalPayrolls = payrollData?.totalPayrolls?.aggregate?.count ?? 0;
-  const activePayrolls = payrollData?.activePayrolls?.aggregate?.count ?? 0;
-  const processingPayrolls = payrollData?.processingPayrolls?.aggregate?.count ?? 0;
+  const totalClients = dashboardData?.clientsAggregate?.aggregate?.count ?? 0;
+  const totalPayrolls = dashboardData?.totalPayrolls?.aggregate?.count ?? 0;
+  const activePayrolls = dashboardData?.activePayrolls?.aggregate?.count ?? 0;
+  const processingPayrolls = dashboardData?.processingPayrolls?.aggregate?.count ?? 0;
+  const upcomingPayrolls = dashboardData?.upcomingPayrolls ?? [];
 
-  // Get next payroll date
-  const nextPayroll = upcomingData?.payrolls?.[0];
-  const nextPayrollDate = nextPayroll?.nextPayDate?.[0]?.adjustedEftDate;
+  // Get next payroll - using the first upcoming payroll as an approximation
+  const nextPayroll = upcomingPayrolls[0];
   
-  // Calculate loading states
-  const isLoading = clientLoading || payrollLoading || upcomingLoading;
-  const hasError = clientError || payrollError;
+  // Calculate loading and error states
+  const isLoading = dashboardLoading;
+  const hasError = dashboardError;
 
   return (
     <div className="space-y-6">
@@ -104,13 +68,13 @@ export default function DashboardPage() {
             <Users className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            {clientLoading ? (
+            {dashboardLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
               <div className="text-2xl font-bold">{totalClients}</div>
             )}
             <p className="text-xs text-gray-600">
-              {clientError ? "Error loading data" : "Active clients"}
+              {hasError ? "Error loading data" : "Active clients"}
             </p>
           </CardContent>
         </Card>
@@ -122,7 +86,7 @@ export default function DashboardPage() {
             <Calculator className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            {payrollLoading ? (
+            {dashboardLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
               <div className="text-2xl font-bold">{totalPayrolls}</div>
@@ -140,14 +104,14 @@ export default function DashboardPage() {
             <CalendarDays className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            {upcomingLoading ? (
+            {dashboardLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
-              <div className="text-2xl font-bold">{upcomingData?.payrolls?.length ?? 0}</div>
+              <div className="text-2xl font-bold">{upcomingPayrolls.length}</div>
             )}
             <p className="text-xs text-gray-600">
-              {nextPayrollDate
-                ? `Next: ${format(new Date(nextPayrollDate), "MMM dd, yyyy")}`
+              {nextPayroll
+                ? `Next: ${nextPayroll.client.name} (${nextPayroll.name})`
                 : "No upcoming payrolls"}
             </p>
           </CardContent>

@@ -10,6 +10,7 @@ import {
 } from "@/domains/auth/graphql/generated/graphql";
 import { withAuth } from "@/lib/auth/api-auth";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
+import { getPermissionsForRole, Role } from "@/lib/auth/permissions";
 
 const ResendInvitationSchema = z.object({
   invitationId: z.string().uuid("Invalid invitation ID"),
@@ -39,7 +40,7 @@ async function POST(request: NextRequest) {
         variables: { invitationId }
       });
 
-      const invitation = invitationData.userInvitations[0];
+      const invitation = invitationData.userInvitationById;
       if (!invitation) {
         return NextResponse.json(
           { error: "Invitation not found" },
@@ -134,7 +135,8 @@ async function POST(request: NextRequest) {
         publicMetadata: {
           firstName: invitation.firstName,
           lastName: invitation.lastName,
-          role: invitation.invitedRole,
+          role: invitation.invitedRole as Role,
+          permissions: getPermissionsForRole(invitation.invitedRole as Role),
           managerId: invitation.managerId,
           invitedBy: invitation.invitedBy,
           invitationMetadata: invitation.invitationMetadata,
@@ -185,7 +187,7 @@ async function POST(request: NextRequest) {
           lastName: invitation.lastName,
           role: invitation.invitedRole,
           status: "pending",
-          originalInvitedAt: invitation.invitedAt,
+          originalInvitedAt: invitation.createdAt,
           newExpiresAt: newExpiresAt.toISOString(),
           resentAt: new Date().toISOString(),
           resentBy: authUser.email,

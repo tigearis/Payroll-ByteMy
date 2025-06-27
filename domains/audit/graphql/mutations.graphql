@@ -1,111 +1,132 @@
 # Audit Domain Mutations
 
-# Note: Audit logs are typically created automatically by the system
-# These mutations are for administrative purposes only
-
-# Audit Log Management
-mutation CreateAuditLog($object: auditLogsInsertInput!) {
-  insertAuditLog(object: $object) {
-    ...AuditLogCore
-  }
-}
-
-# Data Access Log Management
-mutation CreateDataAccessLog($object: dataAccessLogsInsertInput!) {
-  insertDataAccessLog(object: $object) {
-    ...DataAccessLogCore
-  }
-}
-
-# Auth Event Management
-mutation CreateAuthEvent($object: authEventsInsertInput!) {
-  insertAuthEvent(object: $object) {
-    ...AuthEventCore
-  }
-}
-
-# Permission Change Management
-mutation CreatePermissionChange(
-  $object: permissionChangesInsertInput!
+# Log audit event
+mutation CreateAuditLog(
+  $userId: uuid!
+  $action: String!
+  $resourceType: String!
+  $resourceId: String
+  $metadata: jsonb
+  $ipAddress: inet
+  $userAgent: String
 ) {
-  insertPermissionChange(object: $object) {
-    ...PermissionChangeCore
-  }
-}
-
-# Bulk Operations
-mutation BulkCreateAuditLogs($objects: [auditLogsInsertInput!]!) {
-  bulkInsertAuditLogs(objects: $objects) {
-    returning {
-      ...AuditLogCore
+  insertAuditLog(
+    object: {
+      userId: $userId
+      action: $action
+      resourceType: $resourceType
+      resourceId: $resourceId
+      metadata: $metadata
+      ipAddress: $ipAddress
+      userAgent: $userAgent
     }
-    affectedRows
-  }
-}
-
-mutation UpdateAuditLog($id: uuid!, $set: auditLogsSetInput!) {
-  updateAuditLogById(pkColumns: { id: $id }, _set: $set) {
-    ...AuditLogWithUser
-  }
-}
-
-# Bulk operations for performance
-mutation CreateMultipleAuditLogs($objects: [auditLogsInsertInput!]!) {
-  bulkInsertAuditLogs(objects: $objects) {
-    returning {
-      ...AuditLogCore
-    }
-    affectedRows
-  }
-}
-
-mutation CreateMultipleDataAccessLogs(
-  $objects: [dataAccessLogsInsertInput!]!
-) {
-  bulkInsertDataAccessLogs(objects: $objects) {
-    returning {
-      ...DataAccessLogCore
-    }
-    affectedRows
-  }
-}
-
-# Migrated from app/api/developer/clean-all-dates/route.ts
-
-mutation CleanAllPayrollDates {
-  bulkDeletePayrollDates(where: {}) {
-    affectedRows
-  }
-  bulkUpdatePayrolls(where: {}, _set: { versionNumber: 1 }) {
-    affectedRows
-  }
-}
-
-# ================================
-# LOGGER SERVICE MUTATIONS
-# Migrated from lib/security/audit/logger.ts
-# ================================
-
-# Log general audit events
-mutation LogAuditEvent($object: auditLogsInsertInput!) {
-  insertAuditLog(object: $object) {
+  ) {
     id
     eventTime
   }
 }
 
-# Log authentication events
-mutation LogAuthEvent($object: authEventsInsertInput!) {
-  insertAuthEvent(object: $object) {
+# Missing mutation needed by auth logging
+mutation CreateAuthEvent(
+  $userId: uuid
+  $eventType: String!
+  $success: Boolean!
+  $ipAddress: inet
+  $userAgent: String
+  $metadata: jsonb
+) {
+  insertAuthEvent(
+    object: {
+      userId: $userId
+      eventType: $eventType
+      success: $success
+      ipAddress: $ipAddress
+      userAgent: $userAgent
+      metadata: $metadata
+    }
+  ) {
     id
     eventTime
   }
 }
 
-# SOC2 compliance logging using the custom function
-mutation LogSOC2ComplianceEvent($event: AuditEventInput!) {
-  logAuditEvent(event: $event) {
-    success
-    message
+# Log auth event
+mutation LogAuthEvent(
+  $eventType: String!
+  $userId: uuid
+  $metadata: jsonb
+  $ipAddress: inet
+  $userAgent: String
+  $success: Boolean = true
+  $failureReason: String
+) {
+  insertAuthEvent(
+    object: {
+      eventType: $eventType
+      userId: $userId
+      metadata: $metadata
+      ipAddress: $ipAddress
+      userAgent: $userAgent
+      success: $success
+      failureReason: $failureReason
+    }
+  ) {
+    id
+    eventTime
+  }
+}
+
+# Log data access event
+mutation LogDataAccessEvent(
+  $userId: uuid!
+  $resourceType: String!
+  $resourceId: String
+  $accessType: String!
+  $ipAddress: inet
+  $metadata: jsonb
+) {
+  insertDataAccessLog(
+    object: {
+      userId: $userId
+      resourceType: $resourceType
+      resourceId: $resourceId
+      accessType: $accessType
+      ipAddress: $ipAddress
+      metadata: $metadata
+    }
+  ) {
+    id
+    accessedAt
+  }
+}
+
+# Log permission audit event
+mutation LogPermissionAuditEvent(
+  $userId: uuid!
+  $action: String!
+  $resource: String!
+  $operation: String
+  $reason: String
+) {
+  insertPermissionAuditLog(
+    object: {
+      userId: $userId
+      action: $action
+      resource: $resource
+      operation: $operation
+      reason: $reason
+    }
+  ) {
+    id
+    createdAt
+  }
+}
+
+# Delete old audit logs
+mutation DeleteOldAuditLogs($beforeDate: timestamptz!) {
+  bulkDeleteAuditLogs(
+    where: {eventTime: {_lt: $beforeDate}}
+  ) {
+    affectedRows
   }
 }

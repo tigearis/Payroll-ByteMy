@@ -3,5 +3,5 @@ endpoint: https://bytemy.hasura.app
 metadata_directory: metadata
 actions:
   kind: synchronous
-  handler_webhook_baseurl: http://localhost:3000
+  handler_webhook_baseurl: https://bytemy.hasura.app
 admin_secret: 3w+sHTuq8wQwddK4xyWO5LDeRH+anvJoFVyOMvtq8Lo=

@@ -56,6 +56,8 @@ columns and relationships of "billing_invoice_item"
 """
 type BillingInvoiceItem {
   amount: numeric
+  """An object relationship"""
+  billingInvoice: billingInvoice!
   createdAt: timestamptz
   description: String!
   id: uuid!
@@ -71,6 +73,10 @@ aggregated selection of "billing_invoice_item"
 type BillingInvoiceItemAggregate {
   aggregate: BillingInvoiceItemAggregateFields
   nodes: [BillingInvoiceItem!]!
+}
+
+input BillingInvoiceItemAggregateBoolExp {
+  count: billingInvoiceItemAggregateBoolExpCount
 }
 
 """
@@ -90,11 +96,46 @@ type BillingInvoiceItemAggregateFields {
   variance: BillingInvoiceItemVarianceFields
 }
 
+"""
+order by aggregate values of table "billing_invoice_item"
+"""
+input BillingInvoiceItemAggregateOrderBy {
+  avg: BillingInvoiceItemAvgOrderBy
+  count: OrderBy
+  max: BillingInvoiceItemMaxOrderBy
+  min: BillingInvoiceItemMinOrderBy
+  stddev: BillingInvoiceItemStddevOrderBy
+  stddevPop: BillingInvoiceItemStddevPopOrderBy
+  stddevSamp: BillingInvoiceItemStddevSampOrderBy
+  sum: BillingInvoiceItemSumOrderBy
+  varPop: BillingInvoiceItemVarPopOrderBy
+  varSamp: BillingInvoiceItemVarSampOrderBy
+  variance: BillingInvoiceItemVarianceOrderBy
+}
+
+"""
+input type for inserting array relation for remote table "billing_invoice_item"
+"""
+input BillingInvoiceItemArrRelInsertInput {
+  data: [BillingInvoiceItemInsertInput!]!
+  """upsert condition"""
+  onConflict: BillingInvoiceItemOnConflict
+}
+
 """aggregate avg on columns"""
 type BillingInvoiceItemAvgFields {
   amount: Float
   quantity: Float
   unitPrice: Float
+}
+
+"""
+order by avg() on columns of table "billing_invoice_item"
+"""
+input BillingInvoiceItemAvgOrderBy {
+  amount: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
 }
 
 """
@@ -105,6 +146,7 @@ input BillingInvoiceItemBoolExp {
   _not: BillingInvoiceItemBoolExp
   _or: [BillingInvoiceItemBoolExp!]
   amount: NumericComparisonExp
+  billingInvoice: billingInvoiceBoolExp
   createdAt: TimestamptzComparisonExp
   description: StringComparisonExp
   id: UuidComparisonExp
@@ -136,6 +178,7 @@ input BillingInvoiceItemIncInput {
 input type for inserting data into table "billing_invoice_item"
 """
 input BillingInvoiceItemInsertInput {
+  billingInvoice: billingInvoiceObjRelInsertInput
   createdAt: timestamptz
   description: String
   id: uuid
@@ -157,6 +200,20 @@ type BillingInvoiceItemMaxFields {
   updatedAt: timestamptz
 }
 
+"""
+order by max() on columns of table "billing_invoice_item"
+"""
+input BillingInvoiceItemMaxOrderBy {
+  amount: OrderBy
+  createdAt: OrderBy
+  description: OrderBy
+  id: OrderBy
+  invoiceId: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
+  updatedAt: OrderBy
+}
+
 """aggregate min on columns"""
 type BillingInvoiceItemMinFields {
   amount: numeric
@@ -167,6 +224,20 @@ type BillingInvoiceItemMinFields {
   quantity: Int
   unitPrice: numeric
   updatedAt: timestamptz
+}
+
+"""
+order by min() on columns of table "billing_invoice_item"
+"""
+input BillingInvoiceItemMinOrderBy {
+  amount: OrderBy
+  createdAt: OrderBy
+  description: OrderBy
+  id: OrderBy
+  invoiceId: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
+  updatedAt: OrderBy
 }
 
 """
@@ -191,6 +262,7 @@ input BillingInvoiceItemOnConflict {
 """Ordering options when selecting data from "billing_invoice_item"."""
 input BillingInvoiceItemOrderBy {
   amount: OrderBy
+  billingInvoice: billingInvoiceOrderBy
   createdAt: OrderBy
   description: OrderBy
   id: OrderBy
@@ -247,6 +319,15 @@ type BillingInvoiceItemStddevFields {
   unitPrice: Float
 }
 
+"""
+order by stddev() on columns of table "billing_invoice_item"
+"""
+input BillingInvoiceItemStddevOrderBy {
+  amount: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
+}
+
 """aggregate stddevPop on columns"""
 type BillingInvoiceItemStddevPopFields {
   amount: Float
@@ -254,11 +335,29 @@ type BillingInvoiceItemStddevPopFields {
   unitPrice: Float
 }
 
+"""
+order by stddevPop() on columns of table "billing_invoice_item"
+"""
+input BillingInvoiceItemStddevPopOrderBy {
+  amount: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
+}
+
 """aggregate stddevSamp on columns"""
 type BillingInvoiceItemStddevSampFields {
   amount: Float
   quantity: Float
   unitPrice: Float
+}
+
+"""
+order by stddevSamp() on columns of table "billing_invoice_item"
+"""
+input BillingInvoiceItemStddevSampOrderBy {
+  amount: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
 }
 
 """
@@ -288,6 +387,15 @@ type BillingInvoiceItemSumFields {
   amount: numeric
   quantity: Int
   unitPrice: numeric
+}
+
+"""
+order by sum() on columns of table "billing_invoice_item"
+"""
+input BillingInvoiceItemSumOrderBy {
+  amount: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
 }
 
 """
@@ -326,6 +434,15 @@ type BillingInvoiceItemVarPopFields {
   unitPrice: Float
 }
 
+"""
+order by varPop() on columns of table "billing_invoice_item"
+"""
+input BillingInvoiceItemVarPopOrderBy {
+  amount: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
+}
+
 """aggregate varSamp on columns"""
 type BillingInvoiceItemVarSampFields {
   amount: Float
@@ -333,11 +450,29 @@ type BillingInvoiceItemVarSampFields {
   unitPrice: Float
 }
 
+"""
+order by varSamp() on columns of table "billing_invoice_item"
+"""
+input BillingInvoiceItemVarSampOrderBy {
+  amount: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
+}
+
 """aggregate variance on columns"""
 type BillingInvoiceItemVarianceFields {
   amount: Float
   quantity: Float
   unitPrice: Float
+}
+
+"""
+order by variance() on columns of table "billing_invoice_item"
+"""
+input BillingInvoiceItemVarianceOrderBy {
+  amount: OrderBy
+  quantity: OrderBy
+  unitPrice: OrderBy
 }
 
 """
@@ -2313,6 +2448,8 @@ scalar bigint
 columns and relationships of "billing_event_log"
 """
 type billingEventLogs {
+  """An object relationship"""
+  billingInvoice: billingInvoice
   createdAt: timestamptz
   createdBy: uuid
   """An object relationship"""
@@ -2376,6 +2513,7 @@ input billingEventLogsBoolExp {
   _and: [billingEventLogsBoolExp!]
   _not: billingEventLogsBoolExp
   _or: [billingEventLogsBoolExp!]
+  billingInvoice: billingInvoiceBoolExp
   createdAt: TimestamptzComparisonExp
   createdBy: UuidComparisonExp
   createdByUser: usersBoolExp
@@ -2399,6 +2537,7 @@ enum billingEventLogsConstraint {
 input type for inserting data into table "billing_event_log"
 """
 input billingEventLogsInsertInput {
+  billingInvoice: billingInvoiceObjRelInsertInput
   createdAt: timestamptz
   createdBy: uuid
   createdByUser: usersObjRelInsertInput
@@ -2473,6 +2612,7 @@ input billingEventLogsOnConflict {
 
 """Ordering options when selecting data from "billing_event_log"."""
 input billingEventLogsOrderBy {
+  billingInvoice: billingInvoiceOrderBy
   createdAt: OrderBy
   createdBy: OrderBy
   createdByUser: usersOrderBy
@@ -2592,6 +2732,32 @@ type billingInvoice {
     """filter the rows returned"""
     where: billingEventLogsBoolExp
   ): billingEventLogsAggregate!
+  """An array relationship"""
+  billingInvoiceItems(
+    """distinct select on columns"""
+    distinctOn: [BillingInvoiceItemSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingInvoiceItemOrderBy!]
+    """filter the rows returned"""
+    where: BillingInvoiceItemBoolExp
+  ): [BillingInvoiceItem!]!
+  """An aggregate relationship"""
+  billingInvoiceItemsAggregate(
+    """distinct select on columns"""
+    distinctOn: [BillingInvoiceItemSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingInvoiceItemOrderBy!]
+    """filter the rows returned"""
+    where: BillingInvoiceItemBoolExp
+  ): BillingInvoiceItemAggregate!
   billingPeriodEnd: date!
   billingPeriodStart: date!
   """An object relationship"""
@@ -2691,6 +2857,8 @@ input billingInvoiceBoolExp {
   _or: [billingInvoiceBoolExp!]
   billingEventLogs: billingEventLogsBoolExp
   billingEventLogsAggregate: billingEventLogsAggregateBoolExp
+  billingInvoiceItems: BillingInvoiceItemBoolExp
+  billingInvoiceItemsAggregate: BillingInvoiceItemAggregateBoolExp
   billingPeriodEnd: DateComparisonExp
   billingPeriodStart: DateComparisonExp
   client: clientsBoolExp
@@ -2728,6 +2896,7 @@ input type for inserting data into table "billing_invoice"
 """
 input billingInvoiceInsertInput {
   billingEventLogs: billingEventLogsArrRelInsertInput
+  billingInvoiceItems: BillingInvoiceItemArrRelInsertInput
   billingPeriodEnd: date
   billingPeriodStart: date
   client: clientsObjRelInsertInput
@@ -2741,6 +2910,13 @@ input billingInvoiceInsertInput {
   status: String
   totalAmount: numeric
   updatedAt: timestamptz
+}
+
+input billingInvoiceItemAggregateBoolExpCount {
+  arguments: [BillingInvoiceItemSelectColumn!]
+  distinct: Boolean
+  filter: BillingInvoiceItemBoolExp
+  predicate: IntComparisonExp!
 }
 
 """aggregate max on columns"""
@@ -2822,6 +2998,15 @@ type billingInvoiceMutationResponse {
 }
 
 """
+input type for inserting object relation for remote table "billing_invoice"
+"""
+input billingInvoiceObjRelInsertInput {
+  data: billingInvoiceInsertInput!
+  """upsert condition"""
+  onConflict: billingInvoiceOnConflict
+}
+
+"""
 on_conflict condition type for table "billing_invoice"
 """
 input billingInvoiceOnConflict {
@@ -2833,6 +3018,7 @@ input billingInvoiceOnConflict {
 """Ordering options when selecting data from "billing_invoice"."""
 input billingInvoiceOrderBy {
   billingEventLogsAggregate: billingEventLogsAggregateOrderBy
+  billingInvoiceItemsAggregate: BillingInvoiceItemAggregateOrderBy
   billingPeriodEnd: OrderBy
   billingPeriodStart: OrderBy
   client: clientsOrderBy

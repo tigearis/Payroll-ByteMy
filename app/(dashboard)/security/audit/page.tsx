@@ -40,9 +40,9 @@ import {
 
 import {
   AuditLogDocument,
-  OrderBy,
   SubscribeToAuditLogsDocument,
 } from "@/domains/audit/graphql/generated/graphql";
+import { OrderBy } from "@/shared/types/generated/graphql";
 import { useStrategicQuery } from "@/hooks/use-strategic-query";
 
 const ITEMS_PER_PAGE = 50;
@@ -97,7 +97,7 @@ export default function AuditLogPage() {
         limit: ITEMS_PER_PAGE,
         offset: page * ITEMS_PER_PAGE,
         where,
-        orderBy: [{ eventTime: OrderBy.DESC }],
+        orderBy: [{ eventTime: 'DESC' as OrderBy }],
       },
     }
   );

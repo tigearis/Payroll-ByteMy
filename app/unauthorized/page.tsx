@@ -2,8 +2,8 @@
 
 import { AlertTriangle, ArrowLeft, Shield } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,10 +13,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { UnauthorizedModal } from "@/components/auth/unauthorized-modal";
+import { useUnauthorizedModal } from "@/hooks/use-unauthorized-modal";
 
 function UnauthorizedContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const reason = searchParams.get("reason");
+  const modal = searchParams.get("modal") === "true";
+
+  const unauthorizedModal = useUnauthorizedModal();
+
+  // If modal parameter is present, show modal instead of full page
+  useEffect(() => {
+    if (modal) {
+      unauthorizedModal.show(reason || undefined);
+    }
+  }, [modal, reason, unauthorizedModal]);
 
   const getErrorMessage = () => {
     switch (reason) {
@@ -50,6 +63,28 @@ function UnauthorizedContent() {
   };
 
   const { title, description, icon } = getErrorMessage();
+
+  // Handle modal close - navigate back to previous page or dashboard
+  const handleModalClose = () => {
+    unauthorizedModal.hide();
+    router.back();
+  };
+
+  // If showing as modal, render modal and return to previous page content
+  if (modal) {
+    return (
+      <>
+        {/* This allows the previous page to remain visible behind the modal */}
+        <UnauthorizedModal
+          open={unauthorizedModal.isOpen}
+          onOpenChange={handleModalClose}
+          reason={reason || undefined}
+          onNavigateHome={() => router.push("/dashboard")}
+          onGoBack={() => router.back()}
+        />
+      </>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">

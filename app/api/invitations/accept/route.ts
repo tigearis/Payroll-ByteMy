@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
         invitationId: invitation.id,
         email: userEmail,
         assignedRole: invitation.invitedRole,
-        invitedByUser: invitation.invitedByUser?.email,
+        invitedByUser: invitation.invitedBy,
         clerkUserId,
       },
     });

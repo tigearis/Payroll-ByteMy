@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 
 import { PermissionOverrideManager } from '@/components/admin/permission-override-manager';
-import { useGetUsersQuery } from '@/domains/users/graphql/generated/graphql';
+import { GetUsersDocument } from '@/domains/users/graphql/generated/graphql';
+import { useQuery } from '@apollo/client';
 import { useAuthContext } from '@/lib/auth/enhanced-auth-context';
 import { PermissionGuard } from '@/components/auth/permission-guard';
 
@@ -19,7 +20,7 @@ export default function PermissionsAdminPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Get users for selection
-  const { data: usersData, loading: usersLoading } = useGetUsersQuery({
+  const { data: usersData, loading: usersLoading } = useQuery(GetUsersDocument, {
     variables: {
       where: searchTerm ? {
         _or: [

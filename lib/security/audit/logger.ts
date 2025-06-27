@@ -204,7 +204,7 @@ class UnifiedAuditLogger {
   async logAuditEvent(entry: AuditLogEntry): Promise<void> {
     try {
       const variables: LogAuditEventMutationVariables = {
-        object: {
+        input: {
           action: entry.action,
           // Map to correct schema field names and include required fields from permissions
           resourceType: entry.entityType,
@@ -304,16 +304,13 @@ class UnifiedAuditLogger {
   async logAuthEvent(entry: AuthLogEntry): Promise<void> {
     try {
       const variables: LogAuthEventMutationVariables = {
-        object: {
-          eventType: entry.eventType,
-          ...(entry.userId && { userId: entry.userId }),
-          ...(entry.userEmail && { userEmail: entry.userEmail }),
-          ...(entry.ipAddress && { ipAddress: entry.ipAddress }),
-          ...(entry.userAgent && { userAgent: entry.userAgent }),
-          success: entry.success,
-          ...(entry.failureReason && { failureReason: entry.failureReason }),
-          ...(entry.metadata && { metadata: entry.metadata as any }),
-        },
+        eventType: entry.eventType,
+        ...(entry.userId && { userId: entry.userId }),
+        ...(entry.ipAddress && { ipAddress: entry.ipAddress }),
+        ...(entry.userAgent && { userAgent: entry.userAgent }),
+        success: entry.success,
+        ...(entry.failureReason && { failureReason: entry.failureReason }),
+        ...(entry.metadata && { metadata: entry.metadata as any }),
       };
 
       await adminApolloClient.mutate({

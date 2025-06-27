@@ -1,3 +1,68 @@
+/**
+ * GraphQL Code Generator Configuration
+ * 
+ * ARCHITECTURE OVERVIEW:
+ * =====================
+ * 
+ * This configuration implements a domain-driven GraphQL code generation strategy
+ * with shared fragment support and SOC2 compliance. Each domain generates 
+ * self-contained TypeScript types while having access to shared fragments.
+ * 
+ * KEY FEATURES:
+ * - ✅ Domain isolation with shared fragment access
+ * - ✅ SOC2 compliant security classifications
+ * - ✅ Support for GraphQL comment headers (# comments)
+ * - ✅ Automatic type generation for active domains
+ * - ✅ Fragment deduplication and optimization
+ * - ✅ Client preset for modern React/Apollo patterns
+ * 
+ * FRAGMENT SHARING STRATEGY:
+ * =========================
+ * 
+ * While shared fragments appear in each domain's generated files, this is the
+ * RECOMMENDED approach per GraphQL Codegen best practices because:
+ * 
+ * 1. VALIDATION: GraphQL requires all fragments to be available during validation
+ * 2. SELF-CONTAINED: Each domain module is independent (no runtime dependencies)
+ * 3. OPTIMIZATION: dedupeFragments handles build-time optimization
+ * 4. BUNDLING: Better for code splitting and module bundling
+ * 5. TYPE SAFETY: Prevents circular import issues and runtime errors
+ * 
+ * DIRECTORY STRUCTURE:
+ * ===================
+ * 
+ * shared/
+ * ├── graphql/fragments.graphql     # Shared fragments (UserCore, RoleCore, etc.)
+ * ├── graphql/queries.graphql       # Cross-domain queries  
+ * └── types/generated/              # Base types for all domains
+ * 
+ * domains/{domain}/
+ * ├── graphql/queries.graphql       # Domain-specific operations
+ * ├── graphql/mutations.graphql     # Domain mutations
+ * ├── graphql/fragments.graphql     # Domain fragments
+ * └── graphql/generated/            # Self-contained generated types
+ * 
+ * SECURITY CLASSIFICATIONS:
+ * ========================
+ * 
+ * CRITICAL: Auth, user roles, financial data (admin + MFA required)
+ * HIGH:     PII, client data, employee info (role-based access)
+ * MEDIUM:   Internal business data (authentication required)
+ * LOW:      Public/aggregate data (basic access control)
+ * 
+ * USAGE:
+ * ======
+ * 
+ * # Generate all types
+ * pnpm codegen
+ * 
+ * # Watch mode (development)
+ * pnpm codegen:watch
+ * 
+ * @see https://the-guild.dev/graphql/codegen/docs/guides/react-vue
+ * @see https://the-guild.dev/blog/unleash-the-power-of-fragments-with-graphql-codegen
+ */
+
 import type { CodegenConfig } from "@graphql-codegen/cli";
 import * as dotenv from "dotenv";
 import { resolve } from "path";
@@ -171,35 +236,44 @@ const domainHasValidOperations = (domainName: string): boolean => {
 };
 
 // Generate domain configuration with client preset
+// Each domain generates self-contained types with shared fragment access
 const generateDomainConfig = (domainName: string) => {
   const domain = domains[domainName as keyof typeof domains];
   if (!domain) return null;
 
   return {
     [`./domains/${domainName}/graphql/generated/`]: {
-      preset: "client",
+      preset: "client", // Modern client preset for React/Apollo
       documents: [
-        `./domains/${domainName}/graphql/*.graphql`,
-        `./shared/graphql/**/*.graphql`, // Include all shared GraphQL files
+        `./domains/${domainName}/graphql/*.graphql`, // Domain-specific operations
+        `./shared/graphql/**/*.graphql`, // Shared fragments and operations
       ],
       presetConfig: {
-        gqlTagName: "gql",
-        fragmentMasking: false, // Keep disabled for simpler DX
-        enumsAsTypes: true,
-        dedupeFragments: true, // This should help reduce duplication
-        omitOperationSuffix: false,
+        gqlTagName: "gql", // Use gql`` template literal
+        fragmentMasking: false, // Disabled for simpler DX (can access fragment data directly)
+        enumsAsTypes: true, // Generate union types for enums
+        dedupeFragments: true, // Optimize duplicate fragments during generation
+        omitOperationSuffix: false, // Keep Query/Mutation suffixes for clarity
       },
       config: {
-        scalars: SHARED_SCALARS,
-        skipTypename: false,
-        maybeValue: "T | null | undefined",
-        enumsAsTypes: true,
-        futureProofEnums: true,
-        futureProofUnions: true,
-        nonOptionalTypename: false,
-        // Client preset specific - import shared types
-        baseTypesPath: "../../shared/types/generated/graphql",
-        onlyOperationTypes: true,
+        scalars: SHARED_SCALARS, // Consistent scalar mappings across all domains
+        skipTypename: false, // Include __typename for Apollo cache
+        maybeValue: "T | null | undefined", // Nullable type representation
+        enumsAsTypes: true, // Generate type unions instead of enums
+        futureProofEnums: true, // Handle enum additions gracefully
+        futureProofUnions: true, // Handle union additions gracefully
+        nonOptionalTypename: false, // Make __typename optional
+        
+        // Fragment and Type Management
+        // Note: While shared fragments appear in each domain's generated files,
+        // this is the recommended approach per GraphQL Codegen best practices:
+        // 1. Ensures validation passes (all fragments must be available)
+        // 2. Creates self-contained modules (no runtime dependency issues)
+        // 3. Optimizes bundle splitting (each domain is independent)
+        // 4. dedupeFragments handles optimization during generation
+        baseTypesPath: "../../shared/types/generated/graphql", // Import base types
+        onlyOperationTypes: true, // Generate only operation types, import others
+        
         // SOC2 Compliance metadata
         security: {
           level: domain.security,
@@ -218,7 +292,13 @@ const generateDomainConfig = (domainName: string) => {
   };
 };
 
-// Main configuration using modern client preset
+// Main GraphQL Code Generator Configuration
+// 
+// Architecture: Domain-Driven Generation with Shared Types
+// - Each domain generates self-contained types for independence
+// - Shared fragments and types are included in each domain for validation
+// - SOC2 compliant with security classifications and audit trails
+//
 const config: CodegenConfig = {
   schema: {
     [HASURA_URL]: {
@@ -227,27 +307,27 @@ const config: CodegenConfig = {
       },
     },
   },
-  // No global documents - each domain handles its own to avoid conflicts
   generates: {
-    // Shared types using client preset (only include shared documents)
+    // Shared Types Generation
+    // Contains base GraphQL types, shared fragments, and common operations
+    // Used as base types for domain-specific generations
     "./shared/types/generated/": {
       preset: "client",
       documents: [
-        "./shared/graphql/**/*.graphql",
-        "./shared/graphql/**/*.{ts,tsx}",
-        // Explicitly exclude domain-specific documents to avoid conflicts
-        "!./domains/*/graphql/**/*",
+        "./shared/graphql/**/*.graphql", // Shared fragments and operations
+        "./shared/graphql/**/*.{ts,tsx}", // TypeScript GraphQL documents
+        "!./domains/*/graphql/**/*", // Exclude domain-specific files to avoid conflicts
       ],
       presetConfig: {
         gqlTagName: "gql",
-        fragmentMasking: false,
-        enumsAsTypes: true,
-        dedupeFragments: true,
+        fragmentMasking: false, // Simpler DX - direct fragment access
+        enumsAsTypes: true, // Union types for better type safety
+        dedupeFragments: true, // Optimize fragment duplicates
       },
       config: {
-        scalars: SHARED_SCALARS,
-        skipTypename: false,
-        maybeValue: "T | null | undefined",
+        scalars: SHARED_SCALARS, // Consistent scalar types
+        skipTypename: false, // Include __typename for Apollo
+        maybeValue: "T | null | undefined", // Nullable type representation  
         enumsAsTypes: true,
         futureProofEnums: true,
         futureProofUnions: true,
@@ -329,7 +409,9 @@ const config: CodegenConfig = {
       ],
     },
 
-    // Generate domain-specific configurations for domains with operations
+    // Domain-Specific Type Generation
+    // Automatically generates types for domains with valid GraphQL operations
+    // Each domain includes shared fragments for validation and self-contained modules
     ...Object.keys(domains).reduce((acc, domainName) => {
       if (domainHasValidOperations(domainName)) {
         const domainConfig = generateDomainConfig(domainName);
@@ -354,7 +436,7 @@ const config: CodegenConfig = {
     scalars: SHARED_SCALARS,
   },
 
-  // Hooks for validation and cleanup (simplified)
+  // Hooks for validation and cleanup
   hooks: {
     afterOneFileWrite: [],
     afterAllFileWrite: [
@@ -362,6 +444,17 @@ const config: CodegenConfig = {
       'node -e "console.log(\\"✅ GraphQL Code Generation completed successfully\\")"',
     ],
   },
+
+  // Performance and debugging options
+  verbose: false, // Set to true for detailed generation logs
+  debug: false,   // Set to true for debugging generation issues
+  
+  // Common troubleshooting:
+  // 1. "Unknown fragment" errors: Ensure shared fragments are in /shared/graphql/fragments.graphql
+  // 2. "Duplicate operation names": Check for naming conflicts between domains and shared
+  // 3. "Invalid enum value": Update GraphQL schema or fix enum usage in operations
+  // 4. Comments causing issues: This config supports # comments in .graphql files
+  // 5. Fragment not found: Verify fragment is defined and included in documents array
 };
 
 export default config;

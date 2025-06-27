@@ -13,12 +13,13 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 
 import { 
-  useGetUserPermissionOverridesQuery,
-  useGrantUserPermissionMutation,
-  useRestrictUserPermissionMutation,
-  useRemovePermissionOverrideMutation,
-  useExtendPermissionExpirationMutation
+  GetUserPermissionOverridesDocument,
+  GrantUserPermissionDocument,
+  RestrictUserPermissionDocument,
+  RemovePermissionOverrideDocument,
+  ExtendPermissionExpirationDocument
 } from '@/domains/permissions/graphql/generated/graphql';
+import { useQuery, useMutation } from '@apollo/client';
 
 import { useAuthContext } from '@/lib/auth/enhanced-auth-context';
 import { PERMISSION_CATEGORIES, ALL_PERMISSIONS } from '@/lib/auth/permissions';
@@ -49,15 +50,15 @@ export function PermissionOverrideManager({
   });
 
   // GraphQL operations
-  const { data, loading, refetch } = useGetUserPermissionOverridesQuery({
+  const { data, loading, refetch } = useQuery(GetUserPermissionOverridesDocument, {
     variables: { userId },
     errorPolicy: 'all'
   });
 
-  const [grantPermission, { loading: granting }] = useGrantUserPermissionMutation();
-  const [restrictPermission, { loading: restricting }] = useRestrictUserPermissionMutation();
-  const [removeOverride, { loading: removing }] = useRemovePermissionOverrideMutation();
-  const [extendExpiration, { loading: extending }] = useExtendPermissionExpirationMutation();
+  const [grantPermission, { loading: granting }] = useMutation(GrantUserPermissionDocument);
+  const [restrictPermission, { loading: restricting }] = useMutation(RestrictUserPermissionDocument);
+  const [removeOverride, { loading: removing }] = useMutation(RemovePermissionOverrideDocument);
+  const [extendExpiration, { loading: extending }] = useMutation(ExtendPermissionExpirationDocument);
 
   // Check if user can manage permissions
   const canManage = hasPermission('admin:manage') || hasPermission('staff:write');
@@ -78,14 +79,20 @@ export function PermissionOverrideManager({
     if (!newPermission.resource || !newPermission.operation) return;
 
     try {
-      const variables = {
+      const variables: any = {
         userId,
         resource: newPermission.resource,
         operation: newPermission.operation,
         reason: newPermission.reason,
-        expiresAt: newPermission.expiresAt || undefined,
-        conditions: newPermission.conditions ? JSON.parse(newPermission.conditions) : undefined
       };
+      
+      if (newPermission.expiresAt) {
+        variables.expiresAt = newPermission.expiresAt;
+      }
+      
+      if (newPermission.conditions) {
+        variables.conditions = JSON.parse(newPermission.conditions);
+      }
 
       if (newPermission.granted) {
         await grantPermission({ variables });

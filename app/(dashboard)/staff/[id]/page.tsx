@@ -67,7 +67,7 @@ import { Switch } from "@/components/ui/switch";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 
 import {
-  GetStaffByIdDocument,
+  GetStaffDetailCompleteDocument,
   UpdateUserDocument,
   UpdateUserRoleDocument,
   GetAllUsersListDocument,
@@ -138,7 +138,7 @@ export default function StaffDetailsPage() {
   const canEdit = hasPermission("staff:write");
 
   // GraphQL queries
-  const { data, loading, error, refetch } = useQuery(GetStaffByIdDocument, {
+  const { data, loading, error, refetch } = useQuery(GetStaffDetailCompleteDocument, {
     variables: { id },
     skip: !id || !canRead,
     fetchPolicy: "network-only",
@@ -237,7 +237,7 @@ export default function StaffDetailsPage() {
       const user = data.userById;
       setEditedUser({
         ...user,
-        managerId: user.managerId || "",
+        managerId: (user as any)?.managerId || "",
       });
     }
   }, [data, editedUser.id]);

@@ -1,126 +1,374 @@
 # Shared GraphQL Fragments
-# Common fragments used across domains to eliminate duplication
+# Updated to match standardized naming conventions (Priority 3 technical debt resolution)
+# Following {EntityName}{Purpose} naming pattern
 
-# Core User fragments - Used across auth, users, and permissions domains
-fragment UserCore on users {
+# ============================================
+# User Fragments (Hierarchical: Minimal → Core → Basic → Extended → Complete)
+# ============================================
+
+# Minimal user info for references (1-3 fields)
+fragment UserMinimal on users {
   id
   name
   email
-  username
-  role
-  isActive
-  isStaff
-  clerkUserId
-  createdAt
-  updatedAt
 }
 
+# Core user fields for basic operations (4-6 fields) - SHARED VERSION
+fragment UserCoreShared on users {
+  ...UserMinimal
+  role
+  isActive
+}
+
+# Standard user info for lists and basic operations (7-8 fields)
 fragment UserBasic on users {
-  id
-  name
-  email
-  role
-  isActive
-}
-
-fragment UserWithManager on users {
-  ...UserCore
-  managerId
-  managerUser {
-    ...UserBasic
-  }
-}
-
-# Core Role fragments - Used across auth and permissions domains
-fragment RoleCore on roles {
-  id
-  name
-  description
-  displayName
-  priority
-  isSystemRole
-  createdAt
-}
-
-# Core Permission fragments - Used across auth and permissions domains
-fragment PermissionCore on permissions {
-  id
-  action
-  description
-  resourceId
+  ...UserCoreShared
   createdAt
   updatedAt
 }
 
-fragment PermissionWithResource on permissions {
-  ...PermissionCore
-  relatedResource {
-    id
-    name
-    description
+# @deprecated Use UserBasic instead for consistency
+fragment UserBase on users {
+  ...UserBasic
+}
+
+# Extended user info with role relationships (9-12 fields)
+fragment UserWithRole on users {
+  ...UserBasic
+  assignedRoles {
+    assignedRole {
+      id
+      name
+      displayName
+    }
   }
 }
 
-# Core Client fragments - Used across clients and billing domains
-fragment ClientCore on clients {
+# Comprehensive user profile (13+ fields)
+fragment UserProfile on users {
+  ...UserWithRole
+  username
+  clerkUserId
+  image
+  isStaff
+  managerId
+  deactivatedAt
+  deactivatedBy
+  managerUser {
+    ...UserMinimal
+  }
+}
+
+# User search result format (domain-specific fragments are in users/graphql/fragments.graphql)
+fragment UserSearchResult on users {
+  ...UserCoreShared
+  username
+  isStaff
+}
+
+# ============================================
+# Client Fragments (domain-specific fragments are in clients/graphql/fragments.graphql)
+# ============================================
+
+# Minimal client info for shared use
+fragment ClientMinimal on clients {
   id
   name
+}
+
+# Basic client info for lists
+fragment ClientBase on clients {
+  id
+  name
+  active
   contactEmail
   contactPerson
   contactPhone
-  active
+  createdAt
+}
+
+# Client with statistics
+fragment ClientWithStats on clients {
+  ...ClientBase
+  # Current employee count
+  currentEmployeeCount: payrollsAggregate(
+    where: {supersededDate: {_isNull: true}}
+  ) {
+    aggregate {
+      sum {
+        employeeCount
+      }
+    }
+  }
+  # Active payroll count
+  activePayrollCount: payrollsAggregate(
+    where: {
+      supersededDate: {_isNull: true}
+      status: {_eq: "Active"}
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Client list base for shared queries (use domain-specific ClientListItem for detailed lists)
+fragment ClientListBase on clients {
+  ...ClientBase
+  # Basic payroll statistics
+  payrollCount: payrollsAggregate(
+    where: {supersededDate: {_isNull: true}}
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# ============================================
+# Payroll Fragments
+# ============================================
+
+# Minimal payroll info
+fragment PayrollMinimal on payrolls {
+  id
+  name
+  employeeCount
+  status
+}
+
+# Basic payroll info
+fragment PayrollBase on payrolls {
+  id
+  name
+  employeeCount
+  status
+  payrollSystem
+  processingTime
+  processingDaysBeforeEft
+  versionNumber
   createdAt
   updatedAt
 }
 
-fragment ClientBasic on clients {
-  id
-  name
-  active
+# Payroll with client info
+fragment PayrollWithClient on payrolls {
+  ...PayrollBase
+  clientId
+  client {
+    id
+    name
+    active
+  }
 }
 
-# Core Payroll fragments - moved to domains/payrolls/graphql/fragments.graphql to avoid duplication
+# Payroll list item (for tables)
+fragment PayrollListItem on payrolls {
+  ...PayrollWithClient
+  primaryConsultantUserId
+  backupConsultantUserId
+  managerUserId
+  createdByUserId
+  primaryConsultant {
+    ...UserMinimal
+  }
+  manager {
+    ...UserMinimal
+  }
+  # createdBy relationship not available in schema
+}
 
-# Core Resource fragments - Used across auth and permissions domains
-fragment ResourceCore on resources {
+# Payroll with dates
+fragment PayrollWithDates on payrolls {
+  ...PayrollBase
+  goLiveDate
+  payrollDates(orderBy: {originalEftDate: ASC}) {
+    id
+    originalEftDate
+    adjustedEftDate
+    notes
+  }
+}
+
+# Full payroll detail
+fragment PayrollFullDetail on payrolls {
+  ...PayrollWithDates
+  ...PayrollWithClient
+  dateTypeId
+  cycleId
+  dateValue
+  versionReason
+  supersededDate
+  parentPayrollId
+  
+  # Version tracking
+  parentPayroll {
+    id
+    versionNumber
+  }
+  childPayrolls(orderBy: {versionNumber: DESC}) {
+    id
+    versionNumber
+    versionReason
+    createdAt
+    # createdBy relationship not available
+  }
+  
+  # People
+  primaryConsultant {
+    ...UserMinimal
+  }
+  backupConsultant {
+    ...UserMinimal
+  }
+  manager {
+    ...UserMinimal
+  }
+  # createdBy relationship not available in schema
+  
+  # Related data - notes relationship not available in schema
+}
+
+# ============================================
+# Note Fragments
+# ============================================
+
+# Note with author
+fragment NoteWithAuthor on notes {
+  id
+  content
+  isImportant
+  createdAt
+  entityId
+  entityType
+  authorUser {
+    ...UserMinimal
+  }
+}
+
+# ============================================
+# Permission Fragments
+# ============================================
+
+# Basic permission
+fragment PermissionBase on permissions {
+  id
+  resourceId
+  description
+  legacyPermissionName
+  action
+}
+
+# Role with permissions
+fragment RoleWithPermissions on roles {
   id
   name
   displayName
   description
-  createdAt
-  updatedAt
+  isSystemRole
+  priority
+  assignedPermissions {
+    grantedPermission {
+      ...PermissionBase
+    }
+  }
 }
 
-# Core User Role fragments - Used across auth and permissions domains
-fragment UserRoleCore on userRoles {
+# ============================================
+# Audit Fragments
+# ============================================
+
+# Audit log entry
+fragment AuditLogEntry on auditLogs {
   id
   userId
-  roleId
-  createdAt
-  updatedAt
-}
-
-# Core Role Permission fragments - Used across auth and permissions domains
-fragment RolePermissionCore on rolePermissions {
-  id
-  roleId
-  permissionId
-  conditions
-  createdAt
-  updatedAt
-}
-
-# Audit and timestamp patterns
-fragment AuditFields on auditLogs {
-  id
-  eventTime
+  userEmail
+  userRole
   action
   resourceType
   resourceId
-  userId
+  eventTime
+  success
+  errorMessage
   ipAddress
   userAgent
-  success
+  metadata
+}
+
+# Auth event
+fragment AuthEvent on authEvents {
+  id
+  userId
   userEmail
-  userRole
+  eventType
+  eventTime
+  success
+  failureReason
+  ipAddress
+  userAgent
+  metadata
+}
+
+# Data access log
+fragment DataAccessLog on dataAccessLogs {
+  id
+  userId
+  resourceType
+  resourceId
+  accessType
+  accessedAt
+  dataClassification
+  fieldsAccessed
+  rowCount
+  ipAddress
+  metadata
+}
+
+# Permission change
+fragment PermissionChange on permissionChanges {
+  id
+  changedAt
+  changedByUserId
+  targetUserId
+  targetRoleId
+  changeType
+  permissionType
+  oldPermissions
+  newPermissions
+  reason
+  approvedByUserId
+}
+
+# ============================================
+# Payroll Date Fragments
+# ============================================
+
+# Payroll date info
+fragment PayrollDateInfo on payrollDates {
+  id
+  originalEftDate
+  adjustedEftDate
+  notes
+  createdAt
+}
+
+# ============================================
+# Permission Override Fragments
+# ============================================
+
+# Permission override info
+fragment PermissionOverrideInfo on permissionOverrides {
+  id
+  userId
+  role
+  resource
+  operation
+  granted
+  reason
+  conditions
+  expiresAt
+  createdBy
+  createdAt
+  # user relationships not available in schema
 }

@@ -1,0 +1,13 @@
+services:
+  app_hasura_promptql:
+    build:
+      context: .
+      dockerfile: .hasura-connector/Dockerfile.hasura_promptql
+    environment:
+      HASURA_SERVICE_TOKEN_SECRET: $APP_HASURA_PROMPTQL_HASURA_SERVICE_TOKEN_SECRET
+      OTEL_EXPORTER_OTLP_ENDPOINT: $APP_HASURA_PROMPTQL_OTEL_EXPORTER_OTLP_ENDPOINT
+      OTEL_SERVICE_NAME: $APP_HASURA_PROMPTQL_OTEL_SERVICE_NAME
+    extra_hosts:
+      - local.hasura.dev:host-gateway
+    ports:
+      - 7942:8080

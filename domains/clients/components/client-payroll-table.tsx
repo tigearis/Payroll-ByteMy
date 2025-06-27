@@ -11,10 +11,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Payroll } from "@/types/interface";
+import { PayrollWithCycle } from "@/types";
 
 interface ClientPayrollsTableProps {
-  payrolls: Payroll[];
+  payrolls: PayrollWithCycle[];
   isLoading?: boolean;
 }
 
@@ -90,21 +90,29 @@ export function ClientPayrollsTable({
   };
 
   // Function to display the appropriate date value based on date type
-  const displayDateValue = (payroll: Payroll) => {
+  const displayDateValue = (payroll: PayrollWithCycle) => {
     if (!payroll.payrollDateType || !payroll.payrollDateType.name) {
       return "N/A";
     }
 
     const dateTypeName = payroll.payrollDateType.name.toUpperCase();
 
+    // Note: dateValue property doesn't exist in current type structure
+    // This would need to be adapted based on actual data structure
+    const dateValue = (payroll as any).dateValue;
+    
+    if (!dateValue) {
+      return "N/A";
+    }
+
     if (
       dateTypeName.includes("DOW") ||
       dateTypeName.includes("WEEK A") ||
       dateTypeName.includes("WEEK B")
     ) {
-      return formatDayOfWeek(payroll.dateValue);
+      return formatDayOfWeek(dateValue);
     } else {
-      return formatFixedDate(payroll.dateValue);
+      return formatFixedDate(dateValue);
     }
   };
 

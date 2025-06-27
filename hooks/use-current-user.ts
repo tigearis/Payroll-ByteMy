@@ -84,7 +84,7 @@ export function useCurrentUser() {
   const { data, loading, error, refetch, networkStatus } = useQuery(
     GetCurrentUserDocument,
     {
-      variables: { currentUserId: databaseUserId! },
+      variables: { userId: databaseUserId! },
       skip: !databaseUserId, // Don't query if no database user ID
 
       // Apollo's built-in optimizations (replaces auth-mutex functionality)
@@ -98,8 +98,8 @@ export function useCurrentUser() {
       // Enhanced error handling and debugging
       onCompleted: result => {
         console.log("🔍 useCurrentUser: GraphQL query completed", {
-          hasUser: !!result?.userById,
-          userData: result?.userById,
+          hasUser: !!result?.user,
+          userData: result?.user,
           databaseUserId,
         });
       },
@@ -115,7 +115,7 @@ export function useCurrentUser() {
     }
   );
 
-  const currentUser = data?.userById;
+  const currentUser = data?.user;
   const isReady = isLoaded && userLoaded && !loading;
 
   return {

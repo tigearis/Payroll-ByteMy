@@ -1,103 +1,41 @@
 /**
  * Payroll Domain Types
+ * Only contains domain-specific types, not core entities
  */
 
-import type {
-  PayrollStatus,
-  PayrollCycleType,
-  PayrollDateType as PayrollDateTypeEnum,
-} from "@/types/enums";
+// Import and re-export core types from main types for domain convenience
+import type { 
+  Payroll, 
+  PayrollCycle, 
+  PayrollDateTypeEntity,
+  PayrollVersionData,
+  AdjustmentRule
+} from "@/types";
 
-export interface Payroll {
-  dayValue:
-    | {
-        original_eft_date?: string;
-        adjusted_eft_date?: string;
-        processing_date?: string;
-        id: string;
-        notes?: string;
-      }[]
-    | undefined;
-  employee_count: undefined;
-  id: string;
-  name: string;
-  clientId: string;
-  cycleId: string;
-  dateTypeId: string;
-  primaryConsultantId: string;
-  backupConsultantId?: string;
-  managerId: string;
-  processingDaysBeforeEft: number;
-  payrollSystem?: string;
-  dateValue?: number;
-  status: PayrollStatus;
-  createdAt: string;
-  updatedAt: string;
-  employeeCount?: number;
-
-  // Relationships
-  client: import("../../clients/types").Client;
-  payrollCycle?: PayrollCycle;
-  payrollDateType?: PayrollDateTypeEntity;
-  primaryConsultantUser?: import("../../users/types").User;
-  backupConsultantUser?: import("../../users/types").User;
-  managerUser?: import("../../users/types").User;
-  payrollDates?: PayrollDate[];
-}
-
-export type PayrollCycle = {
-  id: string;
-  name: string;
-  payrollCycleType: PayrollCycleType;
-  description?: string;
-
-  // Relationships
-  payrolls?: Payroll[];
+export type { 
+  Payroll, 
+  PayrollCycle, 
+  PayrollDateTypeEntity,
+  PayrollVersionData,
+  AdjustmentRule
 };
 
-export type PayrollDateTypeEntity = {
-  id: string;
-  name: string;
-  payrollDateType: PayrollDateTypeEnum;
-  description?: string;
+export type { 
+  PayrollInput,
+  PayrollCreationData 
+} from "@/types/components";
 
-  // Relationships
-  payrolls?: Payroll[];
-};
+export type { 
+  GeneratePayrollDatesArgs 
+} from "@/types/api";
 
-// Re-export PayrollDateType interface with the new name to maintain compatibility
-export type PayrollDateType = PayrollDateTypeEntity;
+// ===========================
+// Domain-Specific Calendar Types
+// ===========================
 
-export type PayrollDate = {
-  id: string;
-  payrollId: string;
-  originalEftDate: string;
-  adjustedEftDate: string;
-  processingDate: string;
-  notes?: string;
-
-  // Relationships
-  payroll: Payroll;
-};
-
-export type AdjustmentRule = {
-  id: string;
-  cycleId: string;
-  dateTypeId: string;
-  ruleCode: string;
-  ruleDescription: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export interface GeneratePayrollDatesArgs {
-  p_payroll_ids: string[]; // Array of payroll IDs to process
-  p_start_date: string; // Start date for generating payroll dates (ISO format)
-  p_end_date: string; // End date for generating payroll dates (ISO format)
-  p_max_dates: number; // Maximum number of payroll dates to generate
-}
-
-// Enhanced calendar props interface for payroll scheduling
+/**
+ * Enhanced calendar props interface for payroll scheduling
+ */
 export interface EnhancedCalendarProps {
   mode: "fortnightly" | "fixed";
   selectedWeek?: string;
@@ -106,13 +44,19 @@ export interface EnhancedCalendarProps {
   onDaySelect: (day: string) => void;
 }
 
-// Extracted from inline types
+// ===========================
+// Component Props (Domain-Specific)
+// ===========================
+
+/**
+ * Props for payrolls table component
+ */
 export interface PayrollsTableProps {
-  payrolls: any[];
+  payrolls: any[]; // TODO: Type this properly with Payroll[]
   loading?: boolean;
   onRefresh?: () => void;
-  selectedPayrolls?: string[];
-  onSelectPayroll?: (payrollId: string, checked: boolean) => void;
+  selectedPayrolls?: UUID[];
+  onSelectPayroll?: (payrollId: UUID, checked: boolean) => void;
   onSelectAll?: (checked: boolean) => void;
   visibleColumns?: string[];
   sortField?: string;
@@ -120,37 +64,28 @@ export interface PayrollsTableProps {
   onSort?: (field: string) => void;
 }
 
+/**
+ * Props for payroll details card component
+ */
 export interface PayrollDetailsCardProps {
   payroll: {
-    status: string;
-    processing_days_before_eft: number;
-    payroll_system?: string;
+    status: PayrollStatus;
+    processingDaysBeforeEft: number;
+    payrollSystem?: string;
   };
   className?: string;
 }
 
+/**
+ * View mode for payroll list/grid
+ */
 export type ViewMode = "cards" | "table" | "list";
 
-// Payroll versioning types
-export interface PayrollVersionData {
-  id: string;
-  name: string;
-  version_number: number;
-  status: string;
-  created_at: string;
-  superseded_date?: string;
-  go_live_date?: string;
-  notes?: string;
-  parent_payroll_id?: string;
-}
+// ===========================
+// Legacy Compatibility Types
+// ===========================
 
-export interface PayrollCreationData {
-  name: string;
-  clientId: string;
-  cycleId: string;
-  primaryConsultantId: string;
-  managerId: string;
-  processingDaysBeforeEft: number;
-  status?: string;
-  version_number?: number;
-}
+/**
+ * @deprecated Use PayrollDateTypeEntity from main types
+ */
+export type PayrollDateType = PayrollDateTypeEntity;

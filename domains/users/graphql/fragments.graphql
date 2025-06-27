@@ -2,7 +2,7 @@
 # Security Classification: CRITICAL - Contains PII and authentication data
 # SOC2 Compliance: Employee data with strict access controls
 
-fragment UsersUserCore on users {
+fragment UserCore on users {
   id
   name
   email
@@ -15,13 +15,13 @@ fragment UsersUserCore on users {
 }
 
 fragment UserWithProfile on users {
-  ...UsersUserCore
+  ...UserCore
   username
   image
 }
 
 fragment UserWithRoles on users {
-  ...UsersUserCore
+  ...UserCore
   assignedRoles {
     id
     roleId
@@ -53,12 +53,12 @@ fragment UserWithRoles on users {
 }
 
 fragment UserWithTeam on users {
-  ...UsersUserCore
+  ...UserCore
   # Team members not available in schema - removed
 }
 
 fragment UserWithWorkSchedule on users {
-  ...UsersUserCore
+  ...UserCore
   userWorkSchedules {
     id
     workDay
@@ -69,7 +69,7 @@ fragment UserWithWorkSchedule on users {
 }
 
 fragment UserWithPayrolls on users {
-  ...UsersUserCore
+  ...UserCore
 }
 
 fragment UserWithAllRelations on users {
@@ -203,12 +203,6 @@ fragment UserTeamSummary on users {
     name
   }
   # directReports not available in schema - removed
-}
-
-fragment UserMinimal on users {
-  id
-  name
-  role
 }
 
 fragment UserTableRow on users {

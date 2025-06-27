@@ -73,7 +73,7 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
           clientId: payroll.clientId,
           cycleId: payroll.cycleId,
           dateTypeId: payroll.dateTypeId,
-          primaryConsultantUserId: payroll.primaryConsultantUserId,
+          primaryConsultant: payroll.primaryConsultantUserId ? { id: payroll.primaryConsultantUserId } : (payroll as any).primaryConsultant,
           employeeCount: payroll.employeeCount,
           client: {
             __typename: "clients",
@@ -83,6 +83,8 @@ export const EditPayrollDialog: React.FC<EditPayrollDialogProps> = ({
           status: "Active",
           processingDaysBeforeEft: 2,
           processingTime: 1,
+          childPayrolls: [],
+          payrollDates: [],
         },
       },
       update: (cache, { data }) => {

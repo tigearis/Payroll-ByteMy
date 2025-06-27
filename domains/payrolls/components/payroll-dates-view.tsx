@@ -501,7 +501,13 @@ export function PayrollDatesView({
         version_number: date.payroll.versionNumber,
         status: date.payroll.status,
         superseded_date: date.payroll.supersededDate,
-      } : undefined,
+      } : {
+        id: '',
+        name: 'Unknown',
+        version_number: 0,
+        status: 'Unknown',
+        superseded_date: '',
+      },
     }));
     const currentDate = startOfDay(new Date());
     pastDates = allDates.filter(date => {
@@ -562,7 +568,13 @@ export function PayrollDatesView({
         version_number: date.payroll.versionNumber,
         status: date.payroll.status,
         superseded_date: date.payroll.supersededDate,
-      } : undefined,
+      } : {
+        id: '',
+        name: 'Unknown',
+        version_number: 0,
+        status: 'Unknown',
+        superseded_date: '',
+      },
     }));
     const currentDate = startOfDay(new Date());
     pastDates = allDates.filter(date => {

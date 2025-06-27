@@ -1,37 +1,11 @@
-// types/custom-enums.ts
+/**
+ * Enum definitions for the Payroll ByteMy application
+ *
+ * These enums match the database schema and are used throughout
+ * the application for type safety and consistency.
+ */
 
-// Weekday enum for payroll scheduling (1-5 for Monday-Friday)
-export enum BusinessWeekdayEnum {
-  Monday = 1,
-  Tuesday = 2,
-  Wednesday = 3,
-  Thursday = 4,
-  Friday = 5,
-}
-
-// Weekday string enum for form values
-export enum WeekdayStringEnum {
-  Monday = "1",
-  Tuesday = "2",
-  Wednesday = "3",
-  Thursday = "4",
-  Friday = "5",
-}
-
-// Week type enum for fortnightly payrolls
-export enum FortnightlyWeekEnum {
-  WeekA = "A",
-  WeekB = "B",
-}
-
-// LeaveStatus enum (standardized naming)
-export enum LeaveStatus {
-  Pending = "Pending",
-  Approved = "Approved",
-  Rejected = "Rejected",
-}
-
-// PayrollCycleType enum (standardized naming)
+// Payroll cycle types
 export enum PayrollCycleType {
   Weekly = "weekly",
   Fortnightly = "fortnightly",
@@ -40,48 +14,52 @@ export enum PayrollCycleType {
   Quarterly = "quarterly",
 }
 
-// PayrollDateType enum (standardized naming)
+// Payroll date types
 export enum PayrollDateType {
+  SOM = "som", // Start of Month
+  EOM = "eom", // End of Month
   FixedDate = "fixed_date",
-  EOM = "eom",
-  SOM = "som",
-  WeekA = "week_a",
-  WeekB = "week_b",
-  DOW = "dow",
 }
 
-// Consolidated PayrollStatus enum (matches database enum values)
+// User roles with hierarchy
+export enum Role {
+  developer = "developer",
+  org_admin = "org_admin",
+  manager = "manager",
+  consultant = "consultant",
+  viewer = "viewer",
+}
+
+// Payroll status enum
 export enum PayrollStatus {
-  // Database values (these are the only valid values)
-  Active = "Active",
+  Draft = "draft",
+  DataEntry = "data-entry",
+  Review = "review",
+  Processing = "processing",
+  ManagerReview = "manager-review",
+  Approved = "approved",
+  Submitted = "submitted",
+  Paid = "paid",
+  OnHold = "on-hold",
+  Cancelled = "cancelled",
   Implementation = "Implementation",
+  Active = "Active",
   Inactive = "Inactive",
 }
 
-// PermissionAction enum (standardized naming)
+// Permission actions
 export enum PermissionAction {
   Create = "create",
   Read = "read",
   Update = "update",
   Delete = "delete",
-  List = "list",
-  Manage = "manage",
-  Approve = "approve",
-  Reject = "reject",
+  Execute = "execute",
 }
 
-// Status enum (standardized naming)
-export enum Status {
-  Active = "active",
-  Inactive = "inactive",
-  Archived = "archived",
-}
-
-// Role enum (standardized naming)
-export enum Role {
-  Developer = "developer",
-  Admin = "org_admin",
-  Manager = "manager",
-  Consultant = "consultant",
-  Viewer = "viewer",
+// Leave status
+export enum LeaveStatus {
+  Pending = "pending",
+  Approved = "approved",
+  Rejected = "rejected",
+  Cancelled = "cancelled",
 }

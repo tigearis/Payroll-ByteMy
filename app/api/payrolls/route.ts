@@ -2,7 +2,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated";
+import { GetPayrollsDocument } from '@/domains/payrolls/graphql/generated/graphql';
 import { serverApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
 

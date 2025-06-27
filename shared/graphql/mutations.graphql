@@ -1,18 +1,30 @@
-# Shared Mutations
-# Common mutations used across domains
+# Shared GraphQL Mutations
+# Updated to match actual Hasura schema
 
-# Placeholder for shared mutations
-# Domain-specific mutations should be in their respective domain files
+# ============================================
+# Audit Mutations
+# ============================================
 
-# Example shared mutation for audit logging
-# mutation LogAuditEvent($input: AuditLogInput!) {
-#   insertAuditLog(object: $input) {
-#     id
-#     timestamp
-#   }
-# }
+# Log an audit event
+mutation LogAuditEvent($input: auditLogsInsertInput!) {
+  insertAuditLogsOne: insertAuditLog(object: $input) {
+    id
+    eventTime
+  }
+}
 
-# Placeholder mutation to make file valid
-mutation PlaceholderMutation {
+# ============================================
+# Note Mutations
+# ============================================
+
+# NOTE: Note mutations moved to domains/notes/graphql/mutations.graphql
+# for better domain isolation and comprehensive operations
+
+# ============================================
+# Generic Mutations
+# ============================================
+
+# Refresh data - forces Apollo cache update
+mutation RefreshData {
   __typename
 }

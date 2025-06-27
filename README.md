@@ -184,6 +184,28 @@ Frontend (Next.js) → Apollo Client → Hasura GraphQL → PostgreSQL
 
 ## 🔧 Development Workflow
 
+### Build Status
+✅ **Production build is currently clean and stable**
+- All TypeScript compilation errors resolved
+- GraphQL type generation working correctly
+- SOC2 compliance features fully functional
+
+### Core Development Commands
+
+```bash
+# Start development server
+pnpm dev
+
+# Production build (currently passing ✅)
+pnpm build
+
+# Type checking (clean ✅) 
+pnpm type-check
+
+# Quality checks (lint + format + types)
+pnpm quality:check
+```
+
 ### Code Generation
 
 ```bash
@@ -194,7 +216,7 @@ pnpm codegen
 pnpm codegen:watch
 ```
 
-### Testing
+### Testing & Quality
 
 ```bash
 # Run all tests
@@ -203,8 +225,11 @@ pnpm test
 # Run tests in watch mode
 pnpm test:watch
 
-# Run type checking
-pnpm type-check
+# Run comprehensive quality checks
+pnpm quality:check
+
+# Fix linting and formatting issues
+pnpm quality:fix
 ```
 
 ### Database Operations

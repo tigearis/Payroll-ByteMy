@@ -6,6 +6,7 @@ import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { CreateUserInvitationDocument, ValidateInvitationRolePermissionsDocument } from "@/domains/auth/graphql/generated/graphql";
 import { withAuth } from "@/lib/auth/api-auth";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
+import { getPermissionsForRole } from "@/lib/auth/permissions";
 
 const CreateInvitationSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -95,6 +96,7 @@ async function POST(request: NextRequest) {
           firstName,
           lastName,
           role,
+          permissions: getPermissionsForRole(role),
           managerId: managerId || null,
           invitedBy: databaseUserId,
           invitationMetadata: metadata || {}

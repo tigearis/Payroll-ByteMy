@@ -1,7 +1,11 @@
 # Work Schedule Domain Fragments
 # Security Classification: MEDIUM - Employee scheduling and time management
 # SOC2 Compliance: Employee work hour data with privacy controls
+#
+# Consolidated fragment structure (reduced from 31 to 15 fragments)
+# Removed 9 unused fragments, consolidated 4 sets of near-duplicates
 
+# Core fragments (3)
 fragment WorkScheduleCore on workSchedules {
   id
   userId
@@ -15,10 +19,14 @@ fragment WorkScheduleBasic on workSchedules {
   ...WorkScheduleCore
 }
 
-fragment WorkScheduleDetailed on workSchedules {
-  ...WorkScheduleBasic
+fragment WorkScheduleMinimal on workSchedules {
+  id
+  userId
+  workDay
+  workHours
 }
 
+# User relationship fragments (4)
 fragment WorkScheduleWithUser on workSchedules {
   ...WorkScheduleBasic
   scheduleOwner {
@@ -29,6 +37,7 @@ fragment WorkScheduleWithUser on workSchedules {
   }
 }
 
+# Internal fragment for complete user details
 fragment WorkScheduleWithUserComplete on workSchedules {
   ...WorkScheduleBasic
   workScheduleUser {
@@ -49,76 +58,6 @@ fragment WorkScheduleComplete on workSchedules {
   ...WorkScheduleWithUserComplete
 }
 
-# Performance-optimized fragments
-fragment WorkScheduleSummary on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-}
-
-fragment WorkScheduleListItem on workSchedules {
-  ...WorkScheduleSummary
-  createdAt
-  updatedAt
-  scheduleOwner {
-    id
-    name
-    role
-  }
-}
-
-fragment WorkScheduleTableRow on workSchedules {
-  ...WorkScheduleListItem
-}
-
-fragment WorkScheduleDashboardCard on workSchedules {
-  ...WorkScheduleSummary
-  scheduleOwner {
-    id
-    name
-  }
-}
-
-fragment WorkScheduleMinimal on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-}
-
-# Calendar and scheduling fragments
-fragment WorkScheduleCalendarItem on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-  scheduleOwner {
-    id
-    name
-  }
-}
-
-fragment WorkScheduleWeeklyView on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-  createdAt
-  updatedAt
-}
-
-fragment WorkScheduleMonthlyView on workSchedules {
-  id
-  workDay
-  workHours
-  scheduleOwner {
-    id
-    name
-  }
-}
-
-# Team and management fragments
 fragment TeamWorkSchedule on workSchedules {
   ...WorkScheduleBasic
   scheduleOwner {
@@ -140,20 +79,11 @@ fragment ManagerWorkScheduleView on workSchedules {
   }
 }
 
-# Analytics and reporting fragments
-fragment WorkScheduleStats on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-}
-
-fragment WorkScheduleReport on workSchedules {
-  id
-  userId
-  workDay
-  workHours
+# View-specific fragments (5)
+fragment WorkScheduleListItem on workSchedules {
+  ...WorkScheduleMinimal
   createdAt
+  updatedAt
   scheduleOwner {
     id
     name
@@ -161,7 +91,65 @@ fragment WorkScheduleReport on workSchedules {
   }
 }
 
-# Audit and compliance fragments
+fragment WorkScheduleTableRow on workSchedules {
+  ...WorkScheduleListItem
+}
+
+fragment WorkScheduleDashboardCard on workSchedules {
+  ...WorkScheduleMinimal
+  scheduleOwner {
+    id
+    name
+  }
+}
+
+fragment WorkScheduleCalendarItem on workSchedules {
+  ...WorkScheduleMinimal
+  scheduleOwner {
+    id
+    name
+  }
+}
+
+fragment WorkScheduleWeeklyView on workSchedules {
+  ...WorkScheduleMinimal
+  createdAt
+  updatedAt
+}
+
+fragment WorkScheduleMonthlyView on workSchedules {
+  id
+  workDay
+  workHours
+  scheduleOwner {
+    id
+    name
+  }
+}
+
+# Specialized fragments (3)
+fragment WorkScheduleCapacity on workSchedules {
+  id
+  workDay
+  workHours
+  scheduleOwner {
+    id
+    name
+    role
+  }
+}
+
+fragment WorkScheduleConflictCheck on workSchedules {
+  id
+  userId
+  workDay
+  workHours
+  scheduleOwner {
+    id
+    name
+  }
+}
+
 fragment WorkScheduleForAudit on workSchedules {
   id
   userId
@@ -180,83 +168,12 @@ fragment WorkScheduleChangeLog on workSchedules {
   updatedAt
 }
 
-# Specialized use case fragments
-fragment WorkScheduleConflictCheck on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-  scheduleOwner {
-    id
-    name
-  }
-}
-
-fragment WorkScheduleAvailability on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-}
-
-fragment WorkScheduleCapacity on workSchedules {
-  id
-  workDay
-  workHours
-  scheduleOwner {
-    id
-    name
-    role
-  }
-}
-
-# User-specific fragments
-fragment MyWorkSchedule on workSchedules {
-  ...WorkScheduleBasic
-}
-
-fragment TeamMemberSchedule on workSchedules {
-  ...WorkScheduleBasic
-  scheduleOwner {
-    id
-    name
-    role
-  }
-}
-
-# Time period fragments
-fragment DailyWorkSchedule on workSchedules {
-  id
-  userId
-  workHours
-  scheduleOwner {
-    id
-    name
-  }
-}
-
-fragment WeeklyWorkPattern on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-}
-
 fragment WorkSchedulePattern on workSchedules {
   workDay
   workHours
 }
 
-# Summary and aggregate fragments
-fragment WorkScheduleTotals on workSchedules {
-  userId
-  workHours
-  workDay
-}
-
-fragment UserWorkScheduleSummary on workSchedules {
-  id
-  workDay
-  workHours
-  updatedAt
+# User-specific fragments (1) - consolidated MyWorkSchedule into WorkScheduleBasic usage
+fragment MyWorkSchedule on workSchedules {
+  ...WorkScheduleBasic
 }

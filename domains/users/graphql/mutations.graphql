@@ -3,7 +3,7 @@
 
 mutation CreateUser($object: usersInsertInput!) {
   insertUser(object: $object) {
-    ...UsersUserCore
+    ...UserBase
     username
     image
     managerId
@@ -12,7 +12,7 @@ mutation CreateUser($object: usersInsertInput!) {
 
 mutation UpdateUser($id: uuid!, $set: usersSetInput!) {
   updateUserById(pkColumns: { id: $id }, _set: $set) {
-    ...UsersUserCore
+    ...UserBase
     username
     image
     managerId
@@ -24,7 +24,7 @@ mutation DeleteUser($id: uuid!) {
     pkColumns: { id: $id }
     _set: { isActive: false, deactivatedAt: "now()" }
   ) {
-    ...UsersUserCore
+    ...UserBase
   }
 }
 
@@ -33,14 +33,14 @@ mutation UpdateUserRole($id: uuid!, $role: user_role!) {
     pkColumns: { id: $id }
     _set: { role: $role }
   ) {
-    ...UsersUserCore
+    ...UserBase
   }
 }
 
 mutation BulkUpdateUsers($where: usersBoolExp!, $set: usersSetInput!) {
   bulkUpdateUsers(where: $where, _set: $set) {
     returning {
-      ...UsersUserCore
+      ...UserBase
     }
     affectedRows
   }
@@ -70,7 +70,7 @@ mutation CreateUserFromClerk(
       updateColumns: [name, email, image, updatedAt]
     }
   ) {
-    ...UsersUserCore
+    ...UserBase
   }
 }
 
@@ -93,7 +93,7 @@ mutation CreateUserByEmail(
       clerkUserId: $clerkUserId
     }
   ) {
-    ...UsersUserCore
+    ...UserBase
   }
 }
 
@@ -111,7 +111,7 @@ mutation DeactivateUser($id: uuid!) {
     pkColumns: { id: $id }
     _set: { isActive: false, deactivatedAt: "now()" }
   ) {
-    ...UsersUserCore
+    ...UserBase
   }
 }
 
@@ -120,7 +120,7 @@ mutation ReactivateUser($id: uuid!) {
     pkColumns: { id: $id }
     _set: { isActive: true, deactivatedAt: null }
   ) {
-    ...UsersUserCore
+    ...UserBase
   }
 }
 
@@ -139,7 +139,7 @@ mutation UpdateStaffRole($id: uuid!, $role: user_role!) {
     pkColumns: { id: $id }
     _set: { role: $role }
   ) {
-    ...UsersUserCore
+    ...UserBase
   }
 }
 
@@ -150,7 +150,7 @@ mutation UpdateUserRoleFromClerk($clerkUserId: String!, $role: user_role!) {
     _set: { role: $role }
   ) {
     returning {
-      ...UsersUserCore
+      ...UserBase
     }
     affectedRows
   }

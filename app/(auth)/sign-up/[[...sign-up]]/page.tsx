@@ -75,15 +75,13 @@ export default function SignUpPage() {
             <Image
               src="/bytemy-payroll-logo.png"
               alt="ByteMy Logo"
-              width={200}
-              height={60}
+              width={300}
+              height={90}
               priority
-              className="h-12 w-auto"
+              className="h-20 w-auto"
             />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-            Payroll Matrix
-          </h1>
+
           <p className="mt-2 text-sm text-gray-600">
             Create your account to get started
           </p>

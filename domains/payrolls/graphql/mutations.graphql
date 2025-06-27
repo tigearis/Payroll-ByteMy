@@ -2,7 +2,16 @@
 # Security Classification: MEDIUM - Business operational data
 # SOC2 Compliance: All mutations logged with audit trail
 
-# Core CRUD operations
+# CreatePayroll
+# Creates a new payroll record with full client and consultant relationships
+# Domain: payrolls | Security: MEDIUM | Complexity: MEDIUM
+# Param object: Complete payroll data (name, clientId, consultants, manager, status, cycle, etc.)
+# Returns: Created payroll record with populated relationships (client, consultants, manager)
+# Usage: Creating new payroll implementations from clients or payrolls pages
+# Validation: Client must exist and be active, consultant/manager must have appropriate roles
+# Audit: All payroll creations automatically logged for SOC2 compliance
+# Side effects: Triggers audit log, may notify consultants, updates client dashboard stats
+# Since: Initial payroll system implementation | Classification: SOC2_COMPLIANT
 mutation CreatePayroll($object: payrollsInsertInput!) {
   insertPayroll(object: $object) {
     ...PayrollDetailed

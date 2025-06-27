@@ -158,7 +158,7 @@ query GetSchedulesByDay($workDay: String!) {
     where: { workDay: { _eq: $workDay } }
     orderBy: { scheduleOwner: { name: ASC } }
   ) {
-    ...DailyWorkSchedule
+    ...WorkScheduleCalendarItem
   }
 }
 
@@ -168,7 +168,7 @@ query GetWeeklySchedulePattern($userId: uuid!) {
     orderBy: { workDay: ASC }
     limit: 7
   ) {
-    ...WeeklyWorkPattern
+    ...WorkScheduleMinimal
   }
 }
 
@@ -193,7 +193,7 @@ query GetAvailableUsers($workDay: String!, $minHours: numeric = 4.0) {
     }
     orderBy: { workHours: DESC }
   ) {
-    ...WorkScheduleAvailability
+    ...WorkScheduleMinimal
   }
 }
 
@@ -261,7 +261,7 @@ query GetUserWorkHoursTotals($userId: uuid!, $startDate: String!, $endDate: Stri
       workDay: { _gte: $startDate, _lte: $endDate }
     }
   ) {
-    ...WorkScheduleTotals
+    ...WorkScheduleMinimal
   }
   
   totalHours: workSchedulesAggregate(
@@ -285,7 +285,7 @@ query GetTeamWorkHoursSummary($managerUserId: uuid!, $startDate: String!, $endDa
       workDay: { _gte: $startDate, _lte: $endDate }
     }
   ) {
-    ...WorkScheduleStats
+    ...WorkScheduleMinimal
   }
   
   teamHoursTotals: workSchedulesAggregate(

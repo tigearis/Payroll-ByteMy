@@ -8,6 +8,7 @@ import {
   UserRole,
 } from "@/domains/users/services/user-sync";
 import { withAuth } from "@/lib/auth/api-auth";
+import { getPermissionsForRole } from "@/lib/auth/permissions";
 import {
   auditLogger,
   LogLevel,
@@ -139,6 +140,7 @@ const handler = withAuth(
             redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/accept-invitation`,
             publicMetadata: {
               role: staffInput.role,
+              permissions: getPermissionsForRole(staffInput.role),
               isStaff: staffInput.is_staff,
               managerId: staffInput.managerId,
               invitedBy: session.userId,
