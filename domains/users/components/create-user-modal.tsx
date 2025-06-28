@@ -99,11 +99,52 @@ export function CreateUserModal({
     }
 
     setIsSubmitting(true);
+    
+    console.log("🚀 Starting user creation process...");
+    console.log("📋 Form data:", {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      role: data.role,
+      isStaff: data.isStaff,
+      managerId: data.managerId,
+    });
+    
     try {
       // Get Clerk token for API authentication with refresh leeway
+      console.log("🔑 Getting Clerk token...");
       const token = await getToken({ 
         template: "hasura",
         leewayInSeconds: 60 // Request fresh token 60 seconds before expiry
+      });
+      
+      console.log("🔑 Token status:", {
+        hasToken: !!token,
+        tokenLength: token?.length,
+        tokenPrefix: token?.substring(0, 20) + "..."
+      });
+      
+      if (!token) {
+        console.error("❌ No authentication token available");
+        toast.error("Authentication token not available. Please refresh and try again.");
+        return;
+      }
+      
+      const requestBody = {
+        name: `${data.firstName} ${data.lastName}`.trim(),
+        email: data.email,
+        role: data.role,
+        is_staff: data.isStaff,
+        managerId: data.managerId && data.managerId !== "none" ? data.managerId : null,
+        inviteToClerk: true, // Send Clerk invitation
+      };
+      
+      console.log("📤 Request details:", {
+        url: "/api/staff/create",
+        method: "POST",
+        hasAuthHeader: !!token,
+        bodyKeys: Object.keys(requestBody),
+        body: requestBody
       });
       
       // Call the API route which handles both Clerk invitation and database creation
@@ -113,35 +154,52 @@ export function CreateUserModal({
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          name: `${data.firstName} ${data.lastName}`.trim(),
-          email: data.email,
-          role: data.role,
-          is_staff: data.isStaff,
-          managerId: data.managerId && data.managerId !== "none" ? data.managerId : null,
-          inviteToClerk: true, // Send Clerk invitation
-        }),
+        body: JSON.stringify(requestBody),
+      });
+
+      console.log("📥 Response status:", {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
       });
 
       // Check if response is OK first
       if (!response.ok) {
+        console.error("❌ Response not OK:", response.status, response.statusText);
+        
         // Try to get error text, fallback to status text
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        let errorDetails = null;
+        
         try {
           const errorText = await response.text();
+          console.log("📥 Error response body:", errorText);
+          
           if (errorText) {
             // Try to parse as JSON for structured error
             try {
               const errorData = JSON.parse(errorText);
+              console.log("📥 Parsed error data:", errorData);
               errorMessage = errorData.error || errorData.details || errorMessage;
-            } catch {
+              errorDetails = errorData;
+            } catch (parseError) {
+              console.log("📥 Error text (not JSON):", errorText);
               // If not JSON, use the text as is
               errorMessage = errorText;
             }
           }
-        } catch {
+        } catch (readError) {
+          console.error("❌ Failed to read error response:", readError);
           // If we can't read the response, use the status
         }
+        
+        // Special handling for 405 Method Not Allowed
+        if (response.status === 405) {
+          console.error("🚫 405 Method Not Allowed - Route may not support POST or middleware issue");
+          errorMessage = "Method not allowed. Check if the API route supports POST requests.";
+        }
+        
         throw new Error(errorMessage);
       }
 
@@ -149,12 +207,15 @@ export function CreateUserModal({
       let responseData;
       try {
         const responseText = await response.text();
+        console.log("📥 Success response body:", responseText);
+        
         if (!responseText) {
           throw new Error("Empty response from server");
         }
         responseData = JSON.parse(responseText);
+        console.log("📥 Parsed success data:", responseData);
       } catch (parseError) {
-        console.error("JSON parsing error:", parseError);
+        console.error("❌ JSON parsing error:", parseError);
         throw new Error("Invalid response format from server");
       }
 
@@ -170,10 +231,17 @@ export function CreateUserModal({
       form.reset();
       onClose();
     } catch (error) {
-      console.error("Failed to create user:", error);
+      console.error("❌ Failed to create user:", error);
+      console.error("❌ Error details:", {
+        name: error instanceof Error ? error.name : "Unknown",
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : "No stack trace",
+      });
+      
       const errorMessage = error instanceof Error ? error.message : "Failed to create user";
-      toast.error(errorMessage);
+      toast.error(`User creation failed: ${errorMessage}`);
     } finally {
+      console.log("🏁 User creation process finished");
       setIsSubmitting(false);
     }
   };
