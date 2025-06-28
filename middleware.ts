@@ -80,7 +80,30 @@ export default clerkMiddleware(async (auth, req) => {
     const { sessionClaims } = authObject;
 
     // Phase 2: Role extraction using standardized JWT claims structure
-    const userRole = sessionClaims?.["x-hasura-default-role"] as Role;
+    // Try multiple possible locations for the role in JWT claims
+    const userRole = (
+      sessionClaims?.["x-hasura-default-role"] ||           // Direct claim
+      sessionClaims?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"] || // Hasura JWT v1
+      sessionClaims?.metadata?.role ||                      // Clerk metadata (direct)
+      (authObject as any)?.publicMetadata?.role ||         // Fallback to auth object
+      'viewer'
+    ) as Role;
+    
+    // Debug logging for role extraction issues
+    if (!sessionClaims?.["x-hasura-default-role"]) {
+      console.warn('[MIDDLEWARE] Role extraction debug:', {
+        userId: authObject.userId,
+        pathname,
+        extractedRole: userRole,
+        claimSources: {
+          directClaim: sessionClaims?.["x-hasura-default-role"],
+          hasuraJwtClaim: sessionClaims?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"],
+          metadataRole: sessionClaims?.metadata?.role,
+          publicMetadataRole: (authObject as any)?.publicMetadata?.role,
+        },
+        fullSessionClaims: JSON.stringify(sessionClaims, null, 2)
+      });
+    }
 
     // Phase 2: Determine required role using centralized route configuration
     const requiredRole = getRequiredRole(pathname);
