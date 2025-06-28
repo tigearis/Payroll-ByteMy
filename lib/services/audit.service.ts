@@ -41,19 +41,29 @@ export class AuditService {
     // Non-blocking async execution
     Promise.resolve().then(async () => {
       try {
-        await auditLogger.logAuditEvent({
-          userId: authResult.userId,
-          userRole: this.extractUserRole(authResult),
-          action: AuditAction.READ,
-          entityType: this.getEntityType(req),
-          entityId: new URL(req.url).pathname,
-          dataClassification: DataClassification.LOW,
-          requestId: crypto.randomUUID(),
-          success: true,
-          method: req.method,
-          userAgent: req.headers.get("user-agent")?.substring(0, 100) || "unknown",
-          ipAddress: this.extractIpAddress(req),
-        });
+        const databaseUserId = this.extractDatabaseUserId(authResult);
+        
+        // Only log if we have a valid database user ID
+        if (databaseUserId) {
+          await auditLogger.logAuditEvent({
+            userId: databaseUserId, // Use database UUID instead of Clerk user ID
+            userRole: this.extractUserRole(authResult),
+            action: AuditAction.READ,
+            entityType: this.getEntityType(req),
+            entityId: new URL(req.url).pathname,
+            dataClassification: DataClassification.LOW,
+            requestId: crypto.randomUUID(),
+            success: true,
+            method: req.method,
+            userAgent: req.headers.get("user-agent")?.substring(0, 100) || "unknown",
+            ipAddress: this.extractIpAddress(req),
+          });
+        } else {
+          console.warn("[AUDIT] No valid database user ID found for audit logging", {
+            clerkUserId: authResult.userId,
+            sessionClaims: authResult.sessionClaims
+          });
+        }
       } catch (err) {
         console.error("[AUDIT] Failed to log middleware access:", err);
       }
@@ -212,6 +222,33 @@ export class AuditService {
       req.headers.get("x-real-ip") ||
       "unknown"
     );
+  }
+
+  /**
+   * Extract database user ID from auth result
+   * Uses the same extraction pattern as useCurrentUser hook
+   * @param authResult - Authentication result from Clerk middleware
+   * @returns Database UUID or null if not found
+   */
+  private static extractDatabaseUserId(authResult: any): string | null {
+    if (!authResult?.userId) return null;
+
+    // Extract from JWT claims (primary method)
+    const hasuraClaims = authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any;
+    const jwtUserId = hasuraClaims?.["x-hasura-user-id"] as string;
+    
+    // Extract from metadata (fallback)
+    const metadataUserId = authResult.sessionClaims?.metadata?.databaseId as string;
+    
+    // Return the database UUID (not Clerk user ID)
+    const databaseUserId = jwtUserId || metadataUserId;
+    
+    // Validate it looks like a UUID (36 characters)
+    if (databaseUserId && typeof databaseUserId === "string" && databaseUserId.length === 36) {
+      return databaseUserId;
+    }
+    
+    return null;
   }
 
   /**
