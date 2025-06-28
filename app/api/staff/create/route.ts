@@ -615,12 +615,3 @@ export const POST = withAuth(
     allowedRoles: ["developer", "org_admin", "manager"], // Admins and managers can create staff
   }
 );
-
-export async function GET() {
-  console.log("DEBUG: GET handler called for /api/staff/create");
-  return NextResponse.json({
-    message: "GET working - route is accessible",
-    timestamp: new Date().toISOString(),
-    methods: ["GET", "POST"],
-  });
-}

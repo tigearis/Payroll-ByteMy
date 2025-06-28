@@ -442,23 +442,72 @@ Run the Phase 4 migration to enable sync state tracking:
 
 ## Troubleshooting
 
+### Middleware Authentication Issues
+
+If you encounter "unauthorized" redirects or authentication problems:
+
+#### **Correct JWT Token Retrieval in Middleware**
+
+The key to fixing OAuth authentication race conditions is using `getToken()` to properly retrieve JWT claims:
+
+```typescript
+// middleware.ts - CORRECT implementation
+import { clerkMiddleware } from "@clerk/nextjs/server";
+
+export default clerkMiddleware(async (auth, req) => {
+  // Get complete auth data
+  const { userId, sessionClaims, getToken } = await auth();
+  
+  // CRITICAL: Use getToken() to retrieve JWT claims
+  const token = await getToken({ template: "hasura" });
+  
+  // Get claims from sessionClaims first
+  const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
+  
+  // If sessionClaims doesn't have JWT claims, decode from token
+  let jwtClaims = hasuraClaims;
+  if (!jwtClaims && token) {
+    try {
+      const base64Payload = token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(base64Payload));
+      jwtClaims = decodedPayload["https://hasura.io/jwt/claims"];
+    } catch (error) {
+      console.error("Failed to decode JWT token:", error);
+    }
+  }
+  
+  // Use jwtClaims for role validation
+  const userRole = jwtClaims?.["x-hasura-default-role"] || "viewer";
+});
+```
+
+#### **Why This Fixes OAuth Race Conditions**
+
+- **OAuth Login Flow**: Google/social logins may have incomplete session data initially
+- **getToken() Reliability**: Always retrieves the most current JWT with proper claims
+- **Fallback Strategy**: Checks sessionClaims first, then decodes token if needed
+- **Race Condition Prevention**: Waits for complete token data before role validation
+
+#### **JWT Template Configuration (Clerk Dashboard)**
+
+Ensure your Clerk JWT template includes dynamic role hierarchy:
+
+```json
+{
+  "https://hasura.io/jwt/claims": {
+    "x-hasura-user-id": "{{user.public_metadata.databaseId}}",
+    "x-hasura-default-role": "{{user.public_metadata.role || 'viewer'}}",
+    "x-hasura-allowed-roles": "{{user.public_metadata.allowedRoles || ['viewer']}}",
+    "x-hasura-clerk-user-id": "{{user.id}}"
+  }
+}
+```
+
 ### Authentication & Security Issues
 
 If you encounter authentication problems or security alerts:
 
-1. **JWT Template Configuration**: Ensure Clerk JWT template is properly configured
-   ```json
-   {
-       "https://hasura.io/jwt/claims": {
-           "x-hasura-user-id": "{{user.public_metadata.databaseId}}",
-           "x-hasura-default-role": "{{user.public_metadata.role || 'viewer'}}",
-           "x-hasura-allowed-roles": "{{user.public_metadata.allowedRoles || ['viewer']}}",
-           "x-hasura-clerk-user-id": "{{user.id}}"
-       }
-   }
-   ```
-
-2. **User Metadata Requirements**: Ensure users have proper metadata in Clerk
+1. **User Metadata Requirements**: Ensure users have proper metadata in Clerk
    ```bash
    # User's publicMetadata should include:
    {
