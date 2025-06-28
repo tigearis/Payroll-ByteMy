@@ -8,9 +8,14 @@ import { hasRoleLevel } from "./lib/auth/permissions";
 export default clerkMiddleware(async (auth, req) => {
   const { pathname } = req.nextUrl;
 
-  console.log("🔒 Enhanced middleware processing:", {
+  // VERY VISIBLE TEST LOG
+  console.error("🚨 MIDDLEWARE RUNNING:", pathname);
+  
+  console.log("🔒 MIDDLEWARE STARTED:", {
     pathname,
     method: req.method,
+    url: req.url,
+    timestamp: new Date().toISOString()
   });
 
   // Skip public routes
