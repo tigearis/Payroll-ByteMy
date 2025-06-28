@@ -114,6 +114,65 @@ This is a SOC2-compliant system with enterprise-grade security:
 - All sensitive operations require proper role validation
 - Database has row-level security enabled
 
+### Enhanced Middleware Authentication (2025-06-28)
+✅ **Enterprise-grade middleware implementation** with comprehensive security and audit logging:
+
+#### **Core Features**
+- **Centralized route configuration** using `/config/routes.ts` utilities
+- **Role-based access control** leveraging existing permission hierarchy
+- **SOC2-compliant audit logging** for all authentication events
+- **Smart response strategy** - JSON errors for API routes, redirects for browser routes
+- **Non-blocking performance** using Promise-based audit service
+
+#### **Security Enhancements**
+- **Comprehensive audit trails** for authentication failures and access denials
+- **Role hierarchy validation** using `hasRoleLevel()` from `/lib/auth/permissions.ts`
+- **IP address and user agent tracking** for security analysis
+- **Error resilience** with try-catch blocks preventing middleware crashes
+- **Authentication failure recovery** with redirect URLs for seamless UX
+
+#### **Route Protection Strategy**
+```typescript
+// Public routes (no auth required)
+routes.public() - /, /sign-in, /sign-up, etc.
+
+// System routes (handle own auth)
+routes.system() - /api/cron, /api/signed, etc.
+
+// Protected routes with role requirements
+developer: /developer/*, /api/developer/*
+org_admin: /admin/*, /security/*, /api/admin/*
+manager: /staff/*, /invitations/*, /api/staff/*
+consultant: /dashboard/*, /clients/*, /payrolls/* (default)
+```
+
+#### **Audit Logging Implementation**
+- **Successful access**: `AuditService.logAccess(authObject, req)`
+- **Access denials**: `AuditService.logAccessDenied(req, userRole, requiredRole, userId)`
+- **Auth failures**: `AuditService.logAuthFailure(req, reason, userInfo)`
+- **Error tracking**: All middleware errors logged with context
+- **Data classification**: HIGH for security events, LOW for routine access
+
+#### **Response Patterns**
+**API Routes** (`/api/*`):
+```json
+{
+  "error": "Forbidden",
+  "message": "Insufficient permissions...",
+  "code": "INSUFFICIENT_PERMISSIONS",
+  "requiredRole": "manager",
+  "currentRole": "consultant"
+}
+```
+
+**Browser Routes**: Redirect to `/unauthorized?reason=role_required&current=role`
+
+#### **Key Files**
+- `middleware.ts` - Enhanced middleware with 3-phase implementation
+- `/config/routes.ts` - Centralized route matchers and role requirements
+- `/lib/services/audit.service.ts` - Non-blocking audit logging service
+- `/lib/auth/permissions.ts` - Role hierarchy and permission utilities
+
 ## Code Conventions
 
 ### File Organization
