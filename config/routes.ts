@@ -17,7 +17,6 @@ export const routes = {
     "/api/webhooks/clerk(.*)",
     "/_next(.*)",
     "/favicon.ico",
-    "/dashboard(.*)",
   ]),
 
   // Developer-only routes (highest privilege level)

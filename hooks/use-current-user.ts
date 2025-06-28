@@ -34,28 +34,37 @@ export function useCurrentUser() {
 
     // Method 1: Use Clerk's native publicMetadata (preferred)
     const metadataUserId = user.publicMetadata?.databaseId as string;
-    
+
     // Method 2: Use session object for direct access (alternative native method)
     const sessionUserId = session?.user?.publicMetadata?.databaseId as string;
-    
+
     // Method 3: Extract from JWT session claims (fallback)
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
     const jwtUserId = hasuraClaims?.["x-hasura-user-id"] as string;
-    
+    const jwtRole = sessionClaims?.["x-hasura-default-role"] as string;
+
     // Priority: user metadata, session metadata, then JWT claims
-    const extractedUserId = metadataUserId || sessionUserId || jwtUserId;
+    const extractedUserId =
+      metadataUserId || sessionUserId || jwtUserId || jwtRole;
 
     console.log("🔍 useCurrentUser: Database ID extraction", {
       extractedUserId,
       metadataUserId,
       sessionUserId,
       jwtUserId,
+      jwtRole,
       clerkUserId,
       userRole: user.publicMetadata?.role,
       hasPublicMetadata: !!user.publicMetadata,
       hasSession: !!session,
       hasJwtClaims: !!hasuraClaims,
-      source: metadataUserId ? "user-metadata" : sessionUserId ? "session-metadata" : jwtUserId ? "jwt-claims" : "none",
+      source: metadataUserId
+        ? "user-metadata"
+        : sessionUserId
+          ? "session-metadata"
+          : jwtUserId
+            ? "jwt-claims"
+            : "none",
       fullPublicMetadata: user.publicMetadata,
     });
 
@@ -68,7 +77,11 @@ export function useCurrentUser() {
       console.log(
         "✅ Valid database user ID extracted:",
         extractedUserId,
-        metadataUserId ? "(from user metadata)" : sessionUserId ? "(from session metadata)" : "(from JWT claims)"
+        metadataUserId
+          ? "(from user metadata)"
+          : sessionUserId
+            ? "(from session metadata)"
+            : "(from JWT claims)"
       );
       return extractedUserId;
     } else if (extractedUserId) {
