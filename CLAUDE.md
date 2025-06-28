@@ -114,22 +114,34 @@ This is a SOC2-compliant system with enterprise-grade security:
 - All sensitive operations require proper role validation
 - Database has row-level security enabled
 
-### Enhanced Middleware Authentication (2025-06-28)
-✅ **Enterprise-grade middleware implementation** with comprehensive security and audit logging:
+### Enhanced Authentication & Security (2025-06-28)
+✅ **Enterprise-grade security implementation** with comprehensive JWT validation and role monitoring:
 
-#### **Core Features**
-- **Centralized route configuration** using `/config/routes.ts` utilities
-- **Role-based access control** leveraging existing permission hierarchy
-- **SOC2-compliant audit logging** for all authentication events
-- **Smart response strategy** - JSON errors for API routes, redirects for browser routes
-- **Non-blocking performance** using Promise-based audit service
+#### **JWT Template Security**
+- **Dynamic Role Hierarchy**: JWT template now uses `{{user.public_metadata.allowedRoles}}` instead of hardcoded roles
+- **Recommended JWT Template**:
+```json
+{
+    "https://hasura.io/jwt/claims": {
+        "x-hasura-user-id": "{{user.public_metadata.databaseId}}",
+        "x-hasura-default-role": "{{user.public_metadata.role || 'viewer'}}",
+        "x-hasura-allowed-roles": "{{user.public_metadata.allowedRoles || ['viewer']}}",
+        "x-hasura-clerk-user-id": "{{user.id}}"
+    }
+}
+```
 
 #### **Security Enhancements**
-- **Comprehensive audit trails** for authentication failures and access denials
-- **Role hierarchy validation** using `hasRoleLevel()` from `/lib/auth/permissions.ts`
-- **IP address and user agent tracking** for security analysis
-- **Error resilience** with try-catch blocks preventing middleware crashes
-- **Authentication failure recovery** with redirect URLs for seamless UX
+- **JWT Claims Validation**: Comprehensive validation with security monitoring (`/lib/auth/jwt-validation.ts`)
+- **Role Mismatch Detection**: Real-time monitoring and alerting for JWT/database inconsistencies
+- **HMAC Cron Authentication**: Replaced simple secrets with HMAC signature validation
+- **Admin Access Control**: Removed authentication bypass options (`skipAuth` removed)
+- **Security Event Logging**: Comprehensive audit trails for all security violations
+
+#### **Middleware Authentication**
+- **Server-Side Auth**: Removed React hooks from Edge Runtime middleware
+- **Role Hierarchy Validation**: Uses centralized `hasRoleLevel()` function
+- **JWT Claims Extraction**: Proper server-side role extraction from validated claims
 
 #### **Route Protection Strategy**
 ```typescript
@@ -146,32 +158,18 @@ manager: /staff/*, /invitations/*, /api/staff/*
 consultant: /dashboard/*, /clients/*, /payrolls/* (default)
 ```
 
-#### **Audit Logging Implementation**
-- **Successful access**: `AuditService.logAccess(authObject, req)`
-- **Access denials**: `AuditService.logAccessDenied(req, userRole, requiredRole, userId)`
-- **Auth failures**: `AuditService.logAuthFailure(req, reason, userInfo)`
-- **Error tracking**: All middleware errors logged with context
-- **Data classification**: HIGH for security events, LOW for routine access
+#### **Security Monitoring**
+- **Role Escalation Detection**: Monitors attempts to use unauthorized roles
+- **Authentication Pattern Analysis**: Detects suspicious login/token patterns
+- **Critical Alert System**: Real-time notifications for security violations
+- **Security Metrics Tracking**: Comprehensive security event tracking
 
-#### **Response Patterns**
-**API Routes** (`/api/*`):
-```json
-{
-  "error": "Forbidden",
-  "message": "Insufficient permissions...",
-  "code": "INSUFFICIENT_PERMISSIONS",
-  "requiredRole": "manager",
-  "currentRole": "consultant"
-}
-```
-
-**Browser Routes**: Redirect to `/unauthorized?reason=role_required&current=role`
-
-#### **Key Files**
-- `middleware.ts` - Enhanced middleware with 3-phase implementation
-- `/config/routes.ts` - Centralized route matchers and role requirements
-- `/lib/services/audit.service.ts` - Non-blocking audit logging service
-- `/lib/auth/permissions.ts` - Role hierarchy and permission utilities
+#### **Key Security Files**
+- `lib/auth/jwt-validation.ts` - JWT token security validation
+- `lib/security/role-monitoring.ts` - Role security monitoring and alerting
+- `lib/auth/secure-cron-auth.ts` - HMAC-based cron authentication
+- `middleware.ts` - Secure server-side authentication middleware
+- `scripts/migrate-user-allowed-roles.ts` - User metadata migration utility
 
 ## Code Conventions
 
@@ -444,48 +442,78 @@ Run the Phase 4 migration to enable sync state tracking:
 
 ## Troubleshooting
 
-### Middleware Authentication Issues
+### Authentication & Security Issues
 
-If you encounter "unauthorized" redirects or authentication problems:
+If you encounter authentication problems or security alerts:
 
-1. **Check User Role Metadata**: Ensure users have proper role metadata in Clerk
+1. **JWT Template Configuration**: Ensure Clerk JWT template is properly configured
+   ```json
+   {
+       "https://hasura.io/jwt/claims": {
+           "x-hasura-user-id": "{{user.public_metadata.databaseId}}",
+           "x-hasura-default-role": "{{user.public_metadata.role || 'viewer'}}",
+           "x-hasura-allowed-roles": "{{user.public_metadata.allowedRoles || ['viewer']}}",
+           "x-hasura-clerk-user-id": "{{user.id}}"
+       }
+   }
+   ```
+
+2. **User Metadata Requirements**: Ensure users have proper metadata in Clerk
    ```bash
    # User's publicMetadata should include:
    {
      "role": "consultant|manager|org_admin|developer",
      "permissions": [...],
+     "allowedRoles": ["viewer", "consultant", ...], // Dynamic based on role
      "databaseId": "uuid"
    }
    ```
 
-2. **Debug Middleware**: Temporarily use debug middleware for troubleshooting
+3. **Role Mismatch Errors**: If JWT role doesn't match database role
    ```bash
-   # Replace middleware.ts with middleware-debug.ts for detailed logging
-   mv middleware.ts middleware-backup.ts
-   mv middleware-debug.ts middleware.ts
-   # Check browser console and server logs for auth flow details
+   # Check security monitoring logs
+   # Run user sync to fix inconsistencies
+   POST /api/sync/reconcile
+   
+   # Or migrate user metadata
+   npx tsx scripts/migrate-user-allowed-roles.ts
    ```
 
-3. **Verify Environment Variables**: Ensure all auth-related env vars are set
+4. **Security Monitoring Alerts**: Monitor for security violations
+   - Check `lib/security/role-monitoring.ts` logs for alerts
+   - Review security metrics in audit logs
+   - Investigate role escalation attempts immediately
+
+5. **Environment Variables**: Ensure all security-related env vars are set
    ```bash
    CLERK_SECRET_KEY=sk_test_...
    CLERK_WEBHOOK_SECRET=whsec_...
    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
    HASURA_GRAPHQL_ADMIN_SECRET=...
+   CRON_SECRET=... # For HMAC cron authentication
    ```
 
-4. **Role Hierarchy Issues**: Check that user role matches route requirements
-   - Routes under `/developer` require `developer` role (level 5)
-   - Routes under `/admin` require `org_admin` role (level 4)  
-   - Routes under `/staff` require `manager` role (level 3)
-   - General routes require `consultant` role (level 2)
-
-5. **JWT Token Issues**: If Hasura JWT claims are missing, re-sync user:
+6. **JWT Claims Validation**: If JWT validation fails
    ```bash
-   # Use API endpoint to fix user sync
-   POST /api/fix-user-sync
-   # Or use the enhanced sync reconciliation
-   POST /api/sync/reconcile
+   # Check JWT claims structure in browser dev tools
+   # Verify Hasura template is applied correctly
+   # Ensure user metadata is properly synced
+   
+   # Debug JWT claims
+   console.log(sessionClaims?.["https://hasura.io/jwt/claims"]);
+   ```
+
+7. **Cron Job Authentication**: For HMAC cron auth issues
+   ```bash
+   # Generate proper HMAC signature
+   timestamp=$(date +%s)
+   operation="cleanup_old_dates"
+   signature=$(echo -n "${timestamp}:${operation}" | openssl dgst -sha256 -hmac "$CRON_SECRET" -binary | xxd -p)
+   
+   curl -X POST https://your-app.com/api/cron/cleanup-old-dates \
+     -H "x-cron-signature: sha256=${signature}" \
+     -H "x-cron-timestamp: ${timestamp}" \
+     -H "x-cron-operation: ${operation}"
    ```
 
 ### Phase 4 Sync Issues
@@ -515,9 +543,38 @@ If sync operations are failing:
    AND table_name IN ('user_sync_states', 'webhook_retry_queue', 'sync_conflicts');
    ```
 
+## Security Guidelines
+
+### Authentication & Authorization
+- **JWT Security**: Always validate JWT claims before processing requests
+- **Role Hierarchy**: Use the centralized role hierarchy system (`hasRoleLevel()`)
+- **Permission Guards**: Protect UI components with `PermissionGuard` components
+- **Server-Side Validation**: Never rely solely on client-side permission checks
+- **Audit Logging**: Log all security-sensitive operations
+
+### Security Best Practices
+- **Environment Secrets**: Never commit secrets or API keys to the repository
+- **Role Escalation**: Monitor and alert on unauthorized role escalation attempts
+- **JWT Template**: Keep JWT template minimal and secure (no unnecessary claims)
+- **Admin Operations**: Always require proper authentication for admin operations
+- **Cron Jobs**: Use HMAC authentication for all scheduled operations
+
+### Security Monitoring
+- **Role Mismatches**: Automatically detected and logged
+- **Failed Auth Attempts**: Tracked and monitored for patterns
+- **Permission Violations**: Real-time alerts for security violations
+- **Security Metrics**: Comprehensive tracking of security events
+
+### Code Security Checklist
+- [ ] All API routes use proper authentication (`withAuth` or equivalent)
+- [ ] Permission checks are server-side validated
+- [ ] JWT claims are validated before use
+- [ ] No hardcoded secrets or credentials
+- [ ] Security events are properly logged
+- [ ] Role hierarchy is respected in all operations
+
 ## Important Notes
 
-- **Never commit** environment secrets or API keys
 - **Always use** generated GraphQL types for type safety  
 - **Follow SOC2 guidelines** for any security-related changes
 - **Test permission boundaries** when adding new features

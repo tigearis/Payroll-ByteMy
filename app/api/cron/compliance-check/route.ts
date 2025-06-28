@@ -130,8 +130,7 @@ export async function POST(request: NextRequest) {
         ninetyDaysAgo,
         sevenDaysAgo,
         sevenYearsAgo,
-      },
-      { skipAuth: true }
+      }
     );
 
     if (errors) {
@@ -192,8 +191,7 @@ export async function POST(request: NextRequest) {
             enforce_audit_retention
           }
         `,
-        {},
-        { skipAuth: true }
+        {}
       );
       issues.push(`Cleaned up ${findings.old_audit_logs} old audit logs`);
     }
@@ -214,8 +212,7 @@ export async function POST(request: NextRequest) {
           remediationNotes: issues.join("; "),
           performedBy: "00000000-0000-0000-0000-000000000000", // System user
           nextCheckDue: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-        },
-        { skipAuth: true }
+        }
       );
 
     if (checkErrors) {

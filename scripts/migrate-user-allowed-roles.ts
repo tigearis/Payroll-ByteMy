@@ -7,13 +7,12 @@
  * Usage: npx tsx scripts/migrate-user-allowed-roles.ts
  */
 
+import 'dotenv/config';
 import { clerkClient } from "@clerk/nextjs/server";
 import { getAllowedRoles, Role } from "../lib/auth/permissions";
-import { adminApolloClient } from "../lib/apollo/unified-client";
-import { gql } from "@apollo/client";
 
 // GraphQL query to get all users
-const GET_ALL_USERS = gql`
+const GET_ALL_USERS = `
   query GetAllUsersForMigration {
     users {
       id
@@ -33,18 +32,46 @@ interface DatabaseUser {
   email: string;
 }
 
+// Direct Hasura API call instead of Apollo Client
+async function fetchUsersFromDatabase(): Promise<DatabaseUser[]> {
+  const hasuraUrl = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL;
+  const adminSecret = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
+  
+  if (!hasuraUrl || !adminSecret) {
+    throw new Error("Missing required environment variables: NEXT_PUBLIC_HASURA_GRAPHQL_URL or HASURA_GRAPHQL_ADMIN_SECRET");
+  }
+
+  const response = await fetch(hasuraUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-hasura-admin-secret': adminSecret,
+    },
+    body: JSON.stringify({
+      query: GET_ALL_USERS,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+  }
+
+  const result = await response.json();
+  
+  if (result.errors) {
+    throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
+  }
+
+  return result.data?.users || [];
+}
+
 async function migrateUserAllowedRoles() {
   console.log("🚀 Starting allowed roles migration...");
   
   try {
     // Get all users from database
     console.log("📊 Fetching users from database...");
-    const { data } = await adminApolloClient.query({
-      query: GET_ALL_USERS,
-      fetchPolicy: "network-only"
-    });
-
-    const users: DatabaseUser[] = data?.users || [];
+    const users = await fetchUsersFromDatabase();
     console.log(`Found ${users.length} users to migrate`);
 
     if (users.length === 0) {
@@ -211,11 +238,10 @@ async function main() {
   console.log("\n🎉 Migration completed!");
 }
 
-if (require.main === module) {
-  main().catch(error => {
-    console.error("Migration failed:", error);
-    process.exit(1);
-  });
-}
+// Run the migration when script is executed directly
+main().catch(error => {
+  console.error("Migration failed:", error);
+  process.exit(1);
+});
 
 export { migrateUserAllowedRoles };

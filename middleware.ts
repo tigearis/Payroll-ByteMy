@@ -38,7 +38,7 @@ export default clerkMiddleware(async (auth, req) => {
     const sessionClaims = authResult.sessionClaims;
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
     const userRole = hasuraClaims?.["x-hasura-default-role"] || 
-                     sessionClaims?.publicMetadata?.role ||
+                     (sessionClaims?.publicMetadata as any)?.role ||
                      "viewer";
 
     console.log("🔍 Auth details:", {

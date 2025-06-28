@@ -4,6 +4,7 @@
  * Provides comprehensive logging for audit, security, and SOC2 compliance requirements
  */
 
+import "server-only";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 import { gql } from "@apollo/client";
@@ -244,7 +245,7 @@ class UnifiedAuditLogger {
   async logSOC2Event(entry: SOC2LogEntry): Promise<void> {
     try {
       // Use the proper SOC2 compliance mutation
-      const { data, errors } = await adminApolloClient.mutate({
+      const { errors } = await adminApolloClient.mutate({
         mutation: gql`
           mutation LogSOC2ComplianceEvent($event: AuditEventInput!) {
             logAuditEvent(event: $event) {
