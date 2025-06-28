@@ -42,11 +42,12 @@ export default clerkMiddleware(async (auth, req) => {
     // Skip system routes (they handle their own auth mechanisms)
     if (routes.system(req)) return NextResponse.next();
 
-    // Authentication enforcement for protected routes
-    let authObject;
-    try {
-      authObject = await auth.protect();
-    } catch (authError) {
+    // Get auth state for protected routes (following Clerk docs pattern)
+    const authObject = await auth();
+    const { sessionClaims } = authObject;
+
+    // Check if user is authenticated for protected routes
+    if (!authObject.userId) {
       // Phase 1: Audit logging for authentication failures
       AuditService.logAuthFailure(req, "authentication_failed");
 
@@ -77,31 +78,16 @@ export default clerkMiddleware(async (auth, req) => {
       }
     }
 
-    const { sessionClaims } = authObject;
-
-    // Phase 2: Role extraction using standardized JWT claims structure
-    // Try multiple possible locations for the role in JWT claims
-    const userRole = (
-      sessionClaims?.["x-hasura-default-role"] ||           // Direct claim
-      sessionClaims?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"] || // Hasura JWT v1
-      sessionClaims?.metadata?.role ||                      // Clerk metadata (direct)
-      (authObject as any)?.publicMetadata?.role ||         // Fallback to auth object
-      'viewer'
-    ) as Role;
+    // Phase 2: Role extraction following Clerk documentation pattern
+    const userRole = (sessionClaims?.['x-hasura-default-role'] || 'viewer') as Role;
     
     // Debug logging for role extraction issues
     if (!sessionClaims?.["x-hasura-default-role"]) {
-      console.warn('[MIDDLEWARE] Role extraction debug:', {
+      console.warn('[MIDDLEWARE] Missing x-hasura-default-role in session claims:', {
         userId: authObject.userId,
         pathname,
         extractedRole: userRole,
-        claimSources: {
-          directClaim: sessionClaims?.["x-hasura-default-role"],
-          hasuraJwtClaim: sessionClaims?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"],
-          metadataRole: sessionClaims?.metadata?.role,
-          publicMetadataRole: (authObject as any)?.publicMetadata?.role,
-        },
-        fullSessionClaims: JSON.stringify(sessionClaims, null, 2)
+        sessionClaims: JSON.stringify(sessionClaims, null, 2)
       });
     }
 
