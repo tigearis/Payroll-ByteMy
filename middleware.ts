@@ -83,12 +83,24 @@ export default clerkMiddleware(async (auth, req) => {
       userId: userId.substring(0, 8) + "...",
       userRole: finalUserRole,
       hasJwtClaims: !!hasuraClaims,
+      hasMetadata: !!publicMetadata,
+      jwtRole: hasuraClaims?.["x-hasura-default-role"],
+      metadataRole: publicMetadata?.role,
       pathname,
       method: req.method,
+      hasCompleteJWT: hasCompleteJWTClaims,
+      hasCompleteMeta: hasCompleteMetadata
     });
 
     // Get required role for this route
     const requiredRole = getRequiredRole(pathname);
+
+    console.log("🔍 Route permission check:", {
+      pathname,
+      requiredRole,
+      userRole: finalUserRole,
+      hasRoleLevel: requiredRole ? hasRoleLevel(finalUserRole, requiredRole) : "no role required"
+    });
 
     if (requiredRole) {
       // Check if user has sufficient role using the centralized function

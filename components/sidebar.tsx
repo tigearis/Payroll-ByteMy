@@ -113,6 +113,15 @@ export function Sidebar() {
   const authContext = useAuthContext();
   const { sidebarCollapsed, toggleSidebar } = useLayoutPreferences();
 
+  // Debug: Log auth context state
+  console.log("🔍 Sidebar auth debug:", {
+    isLoading: authContext.isLoading,
+    isAuthenticated: authContext.isAuthenticated,
+    userRole: authContext.userRole,
+    hasPermissionFunction: typeof authContext.hasPermission,
+    samplePermissionCheck: authContext.hasPermission ? authContext.hasPermission("client:read") : "hasPermission not available"
+  });
+
   // Filter routes based on auth context
   const accessibleRoutes = routes.filter(route => {
     // Hide routes marked as hidden
@@ -121,7 +130,30 @@ export function Sidebar() {
     }
 
     if (!authContext.isLoading && authContext.isAuthenticated) {
-      return route.checkAccess(authContext);
+      try {
+        // TEMPORARY FIX: If user is developer, show all routes
+        if (authContext.userRole === "developer") {
+          console.log(`🔧 Developer access granted for ${route.label}`);
+          return true;
+        }
+
+        const hasAccess = route.checkAccess(authContext);
+        console.log(`🔍 Route ${route.label} access check:`, {
+          route: route.href,
+          hasAccess,
+          userRole: authContext.userRole,
+          isAuthenticated: authContext.isAuthenticated
+        });
+        return hasAccess;
+      } catch (error) {
+        console.error(`❌ Error checking access for ${route.label}:`, error);
+        // TEMPORARY FALLBACK: If permission check fails but user is developer, allow access
+        if (authContext.userRole === "developer") {
+          console.log(`🔧 Developer fallback access for ${route.label}`);
+          return true;
+        }
+        return false;
+      }
     }
     return false; // Don't show routes if not authenticated
   });
