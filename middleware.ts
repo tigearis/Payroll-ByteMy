@@ -25,25 +25,63 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next();
   }
 
-  // Protect all other routes
+  // Get complete auth data using auth() instead of auth.protect()
   try {
-    const authResult = await auth.protect();
+    const { userId, sessionClaims, redirectToSignIn } = await auth();
 
-    if (!authResult?.userId) {
+    // Handle unauthenticated users
+    if (!userId) {
       console.log("❌ No user ID found");
-      return NextResponse.redirect(new URL("/sign-in", req.url));
+      if (pathname.startsWith("/api/")) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      return redirectToSignIn();
     }
 
-    // Get user role from session claims (server-side)
-    const sessionClaims = authResult.sessionClaims;
+    // Get complete session data
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const userRole = hasuraClaims?.["x-hasura-default-role"] || 
-                     (sessionClaims?.publicMetadata as any)?.role ||
-                     "viewer";
+    const publicMetadata = sessionClaims?.publicMetadata as any;
+    
+    // Check if we have complete user data
+    const hasCompleteJWTClaims = hasuraClaims?.["x-hasura-user-id"] && hasuraClaims?.["x-hasura-default-role"];
+    const hasCompleteMetadata = publicMetadata?.databaseId && publicMetadata?.role;
+    const userRole = hasuraClaims?.["x-hasura-default-role"] || publicMetadata?.role;
+    
+    // If we don't have complete user data, allow only sync-related paths
+    if (!hasCompleteJWTClaims && !hasCompleteMetadata) {
+      const allowedIncompleteDataPaths = [
+        "/dashboard",
+        "/api/sync-current-user", 
+        "/api/sync/",
+        "/api/webhooks/clerk",
+        "/profile",
+        "/settings"
+      ];
+
+      const isAllowedPath = allowedIncompleteDataPaths.some(path => 
+        pathname === path || pathname.startsWith(path)
+      );
+
+      if (isAllowedPath) {
+        console.log("⏳ Session not fully loaded, allowing sync path", {
+          pathname,
+          hasJwtClaims: hasCompleteJWTClaims,
+          hasMetadata: hasCompleteMetadata,
+          userId: userId.substring(0, 8) + "..."
+        });
+        return NextResponse.next();
+      } else {
+        console.log("⏳ Session not fully loaded, redirecting to dashboard for sync");
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+    }
+
+    // Now we have complete user data
+    const finalUserRole = userRole || "viewer";
 
     console.log("🔍 Auth details:", {
-      userId: authResult.userId.substring(0, 8) + "...",
-      userRole,
+      userId: userId.substring(0, 8) + "...",
+      userRole: finalUserRole,
       hasJwtClaims: !!hasuraClaims,
       pathname,
       method: req.method,
@@ -54,9 +92,9 @@ export default clerkMiddleware(async (auth, req) => {
 
     if (requiredRole) {
       // Check if user has sufficient role using the centralized function
-      if (!hasRoleLevel(userRole, requiredRole)) {
+      if (!hasRoleLevel(finalUserRole, requiredRole)) {
         console.log("❌ Insufficient permissions:", {
-          userRole,
+          userRole: finalUserRole,
           requiredRole,
         });
 
@@ -65,17 +103,17 @@ export default clerkMiddleware(async (auth, req) => {
           return NextResponse.json(
             {
               error: "Forbidden",
-              message: `Insufficient permissions. Required: ${requiredRole}, Current: ${userRole}`,
+              message: `Insufficient permissions. Required: ${requiredRole}, Current: ${finalUserRole}`,
               code: "INSUFFICIENT_PERMISSIONS",
               requiredRole,
-              currentRole: userRole,
+              currentRole: finalUserRole,
             },
             { status: 403 }
           );
         } else {
           return NextResponse.redirect(
             new URL(
-              `/unauthorized?reason=role_required&current=${userRole}&required=${requiredRole}`,
+              `/unauthorized?reason=role_required&current=${finalUserRole}&required=${requiredRole}`,
               req.url
             )
           );
