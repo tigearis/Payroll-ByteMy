@@ -113,6 +113,49 @@ export function DatabaseUserGuard({
  */
 function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
   const [isSyncing, setIsSyncing] = React.useState(false);
+  const [autoSyncAttempted, setAutoSyncAttempted] = React.useState(false);
+
+  // Attempt automatic sync for OAuth users (likely from Google login)
+  React.useEffect(() => {
+    const attemptAutoSync = async () => {
+      // Only auto-sync once per session and if user looks like OAuth user
+      if (autoSyncAttempted) return;
+      
+      // Check if this looks like an OAuth flow (has OAuth provider data)
+      const hasOAuthData = clerkUser?.externalAccounts?.length > 0;
+      const isRecentLogin = clerkUser?.lastSignInAt && 
+        (Date.now() - new Date(clerkUser.lastSignInAt).getTime()) < 60000; // Within last minute
+      
+      if (hasOAuthData && isRecentLogin) {
+        console.log("🔄 Attempting automatic sync for OAuth user");
+        setAutoSyncAttempted(true);
+        setIsSyncing(true);
+        
+        try {
+          const response = await fetch("/api/sync-current-user", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+          });
+
+          if (response.ok) {
+            // Auto-redirect on successful sync
+            setTimeout(() => {
+              window.location.href = "/dashboard";
+            }, 1000);
+            return;
+          }
+        } catch (error) {
+          console.log("Auto-sync failed, user will need to sync manually");
+        }
+        
+        setIsSyncing(false);
+      } else {
+        setAutoSyncAttempted(true);
+      }
+    };
+
+    attemptAutoSync();
+  }, [clerkUser, autoSyncAttempted]);
 
   const handleSyncUser = async () => {
     setIsSyncing(true);
@@ -125,13 +168,14 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
       });
 
       if (response.ok) {
+        const result = await response.json();
         toast.success("User synchronized successfully", {
-          description: "Please refresh the page to continue.",
+          description: "Redirecting to dashboard...",
         });
-        // Refresh the page after successful sync
+        // Redirect to dashboard after successful sync instead of just refreshing
         setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+          window.location.href = "/dashboard";
+        }, 1500);
       } else {
         const error = await response.text();
         throw new Error(error);
@@ -139,7 +183,7 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
     } catch (error) {
       console.error("Failed to sync user:", error);
       toast.error("Failed to sync user", {
-        description: "Please contact support if this issue persists.",
+        description: "Please try again or contact support if this issue persists.",
       });
     } finally {
       setIsSyncing(false);
@@ -165,11 +209,13 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
           <CardTitle className="text-xl">Account Setup Required</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Alert variant="destructive">
+          <Alert variant={isSyncing ? "default" : "destructive"}>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Your account is not properly set up in our system. This is a
-              security measure to protect unauthorized access.
+              {isSyncing 
+                ? "Setting up your account automatically..."
+                : "Your account is not properly set up in our system. This is a security measure to protect unauthorized access."
+              }
             </AlertDescription>
           </Alert>
 
