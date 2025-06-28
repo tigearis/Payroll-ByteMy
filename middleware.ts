@@ -60,30 +60,10 @@ export default clerkMiddleware(async (auth, req) => {
       }
     }
     
-    // DETAILED DEBUG LOGGING
-    console.log("🔍 DETAILED SESSION DEBUG:", {
-      hasSessionClaims: !!sessionClaims,
-      hasToken: !!token,
-      hasuraClaims: hasuraClaims,
-      jwtClaims: jwtClaims,
-      publicMetadata: publicMetadata,
-      jwtUserId: jwtClaims?.["x-hasura-user-id"],
-      jwtRole: jwtClaims?.["x-hasura-default-role"], 
-      metadataRole: publicMetadata?.role,
-      metadataDatabaseId: publicMetadata?.databaseId
-    });
-    
     // Check if we have complete user data (use jwtClaims instead of hasuraClaims)
     const hasCompleteJWTClaims = jwtClaims?.["x-hasura-user-id"] && jwtClaims?.["x-hasura-default-role"];
     const hasCompleteMetadata = publicMetadata?.databaseId && publicMetadata?.role;
     const userRole = jwtClaims?.["x-hasura-default-role"] || publicMetadata?.role;
-    
-    console.log("🔍 COMPLETENESS CHECK:", {
-      hasCompleteJWTClaims,
-      hasCompleteMetadata,
-      userRole,
-      combinedDataComplete: hasCompleteJWTClaims || hasCompleteMetadata
-    });
     
     // If we don't have complete user data, allow only sync-related paths
     if (!hasCompleteJWTClaims && !hasCompleteMetadata) {
@@ -117,28 +97,8 @@ export default clerkMiddleware(async (auth, req) => {
     // Now we have complete user data
     const finalUserRole = userRole || "viewer";
 
-    console.log("🔍 Auth details:", {
-      userId: userId.substring(0, 8) + "...",
-      userRole: finalUserRole,
-      hasJwtClaims: !!jwtClaims,
-      hasMetadata: !!publicMetadata,
-      jwtRole: jwtClaims?.["x-hasura-default-role"],
-      metadataRole: publicMetadata?.role,
-      pathname,
-      method: req.method,
-      hasCompleteJWT: hasCompleteJWTClaims,
-      hasCompleteMeta: hasCompleteMetadata
-    });
-
     // Get required role for this route
     const requiredRole = getRequiredRole(pathname);
-
-    console.log("🔍 Route permission check:", {
-      pathname,
-      requiredRole,
-      userRole: finalUserRole,
-      hasRoleLevel: requiredRole ? hasRoleLevel(finalUserRole, requiredRole) : "no role required"
-    });
 
     if (requiredRole) {
       // Check if user has sufficient role using the centralized function
