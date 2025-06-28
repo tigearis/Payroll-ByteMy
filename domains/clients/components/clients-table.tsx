@@ -68,9 +68,9 @@ interface Client {
   contactEmail: string | null;
   contactPhone: string | null;
   active: boolean;
-  payrollCount?: {
-    aggregate: {
-      count: number;
+  payrollsAggregate?: {
+    aggregate?: {
+      count?: number;
     };
   };
   updatedAt?: string;
@@ -242,7 +242,7 @@ export function ClientsTable({
                         <div className="flex items-center gap-2">
                           <Calculator className="w-4 h-4 text-gray-500" />
                           <span className="font-medium">
-                            {(client as any).payrollCount?.aggregate?.count || 0}
+                            {client.payrollsAggregate?.aggregate?.count || 0}
                           </span>
                         </div>
                       </TableCell>

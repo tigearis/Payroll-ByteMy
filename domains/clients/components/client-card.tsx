@@ -9,9 +9,15 @@ interface ClientCardProps {
   client: {
     id: any;
     name: string;
-    contact_email: string;
-    contact_person: string;
-    contact_phone: string;
+    contactEmail: string;
+    contactPerson: string;
+    contactPhone: string;
+    active?: boolean;
+    payrollsAggregate?: {
+      aggregate?: {
+        count?: number;
+      };
+    };
   };
   onEdit?: () => void; // Optional edit handler
   className?: string; // Allow custom styles
@@ -46,13 +52,13 @@ export const ClientCard: React.FC<ClientCardProps> = ({
           </Link>
         </p>
         <p>
-          <strong>Contact Person:</strong> {client.contact_person}
+          <strong>Contact Person:</strong> {client.contactPerson}
         </p>
         <p>
-          <strong>Email:</strong> {client.contact_email}
+          <strong>Email:</strong> {client.contactEmail}
         </p>
         <p>
-          <strong>Phone:</strong> {client.contact_phone}
+          <strong>Phone:</strong> {client.contactPhone}
         </p>
       </CardContent>
     </Card>

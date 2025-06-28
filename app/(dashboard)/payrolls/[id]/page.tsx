@@ -1188,9 +1188,9 @@ export default function PayrollPage() {
         date_type_id: (payroll as any).dateTypeId || "",
         date_value: (payroll as any).dateValue?.toString() || "",
         fortnightlyWeek: "", // Add fortnightly week field
-        primary_consultant_user_id: payroll.primaryConsultant?.id || "",
-        backup_consultant_user_id: payroll.backupConsultant?.id || "",
-        manager_user_id: payroll.manager?.id || "",
+        primary_consultant_user_id: (payroll as any).primaryConsultantUserId || "",
+        backup_consultant_user_id: (payroll as any).backupConsultantUserId || "",
+        manager_user_id: (payroll as any).managerUserId || "",
         processing_days_before_eft:
           payroll.processingDaysBeforeEft?.toString() || "",
         go_live_date: (payroll as any).goLiveDate || "",
@@ -1234,7 +1234,7 @@ export default function PayrollPage() {
 
   // Get users filtered by role and staff status
   const users = usersData?.users || [];
-  const staffUsers = users.filter((user: any) => user.is_staff === true);
+  const staffUsers = users.filter((user: any) => user.isStaff === true);
   const availablePrimaryConsultants = staffUsers;
   const availableBackupConsultants = staffUsers.filter(
     (user: any) => user.id !== editedPayroll.primary_consultant_user_id
@@ -1940,7 +1940,7 @@ export default function PayrollPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       <div className="text-center p-4 bg-blue-50 rounded-lg">
                         <div className="text-2xl font-bold text-blue-700">
                           {payroll.employeeCount || totalEmployees || 0}
@@ -1954,6 +1954,12 @@ export default function PayrollPage() {
                         <div className="text-sm text-green-600">
                           Pay Periods
                         </div>
+                      </div>
+                      <div className="text-center p-4 bg-purple-50 rounded-lg">
+                        <div className="text-lg font-bold text-purple-700">
+                          {getCycleName(payroll)}
+                        </div>
+                        <div className="text-sm text-purple-600">Schedule</div>
                       </div>
                       <div className="text-center p-4 bg-orange-50 rounded-lg">
                         <div className="text-2xl font-bold text-orange-700">
@@ -2195,7 +2201,7 @@ export default function PayrollPage() {
                               </Label>
                               <Select
                                 value={
-                                  editedPayroll.primary_consultant_user_id || ""
+                                  editedPayroll.primary_consultant_user_id || "none"
                                 }
                                 onValueChange={value =>
                                   handleInputChange(
@@ -2287,7 +2293,7 @@ export default function PayrollPage() {
                             <div>
                               <Label htmlFor="manager">Manager</Label>
                               <Select
-                                value={editedPayroll.manager_user_id || ""}
+                                value={editedPayroll.manager_user_id || "none"}
                                 onValueChange={value =>
                                   handleInputChange(
                                     "manager_user_id",

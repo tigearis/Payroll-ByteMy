@@ -29,10 +29,7 @@ mutation DeleteUser($id: uuid!) {
 }
 
 mutation UpdateUserRole($id: uuid!, $role: user_role!) {
-  updateUserById(
-    pkColumns: { id: $id }
-    _set: { role: $role }
-  ) {
+  updateUserById(pkColumns: { id: $id }, _set: { role: $role }) {
     ...UserBase
   }
 }
@@ -98,10 +95,7 @@ mutation CreateUserByEmail(
 }
 
 mutation UpdateUserProfile($id: uuid!, $name: String, $image: String) {
-  updateUserById(
-    pkColumns: { id: $id }
-    _set: { name: $name, image: $image }
-  ) {
+  updateUserById(pkColumns: { id: $id }, _set: { name: $name, image: $image }) {
     ...UserWithProfile
   }
 }
@@ -135,10 +129,7 @@ mutation HardDeleteUser($id: uuid!) {
 
 # Staff role management
 mutation UpdateStaffRole($id: uuid!, $role: user_role!) {
-  updateUserById(
-    pkColumns: { id: $id }
-    _set: { role: $role }
-  ) {
+  updateUserById(pkColumns: { id: $id }, _set: { role: $role }) {
     ...UserBase
   }
 }
@@ -153,5 +144,53 @@ mutation UpdateUserRoleFromClerk($clerkUserId: String!, $role: user_role!) {
       ...UserBase
     }
     affectedRows
+  }
+}
+
+mutation RevokeInvitation(
+  $invitationId: uuid!
+  $revokeReason: String!
+  $revokedBy: uuid!
+) {
+  updateUserInvitationById(
+    pkColumns: { id: $invitationId }
+    _set: {
+      invitationStatus: "revoked"
+      status: "cancelled"
+      revokedAt: "now()"
+      revokedBy: $revokedBy
+      revokeReason: $revokeReason
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    invitationStatus
+    revokedAt
+    revokeReason
+  }
+}
+
+mutation ResendInvitationEnhanced(
+  $invitationId: uuid!
+  $newExpiresAt: timestamptz!
+  $newClerkTicket: String
+  $newClerkInvitationId: String
+) {
+  updateUserInvitationById(
+    pkColumns: { id: $invitationId }
+    _set: {
+      expiresAt: $newExpiresAt
+      clerkTicket: $newClerkTicket
+      clerkInvitationId: $newClerkInvitationId
+      invitationStatus: "pending"
+      status: "pending"
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    invitationStatus
+    expiresAt
   }
 }

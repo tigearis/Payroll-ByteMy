@@ -248,9 +248,327 @@ mutation ResendUserInvitation(
 # Mark expired invitations as expired (bulk operation)
 mutation MarkExpiredInvitations {
   bulkUpdateUserInvitations: bulkUpdateUserInvitations(
-    where: { status: { _eq: "pending" }, expiresAt: { _lt: "now()" } }
-    _set: { status: "expired", updatedAt: "now()" }
+    where: { invitationStatus: { _eq: "pending" }, expiresAt: { _lt: "now()" } }
+    _set: { invitationStatus: "expired", status: "expired", updatedAt: "now()" }
   ) {
     affectedRows
+  }
+}
+
+# ================================
+# PHASE 2: ENHANCED INVITATION MANAGEMENT
+# Focus: Comprehensive invitation lifecycle management
+# ================================
+
+# Revoke invitation with reason
+mutation RevokeInvitation(
+  $invitationId: uuid!
+  $revokeReason: String!
+  $revokedBy: uuid!
+) {
+  updateUserInvitationById(
+    pkColumns: { id: $invitationId }
+    _set: {
+      invitationStatus: "revoked"
+      status: "cancelled"
+      revokedAt: "now()"
+      revokedBy: $revokedBy
+      revokeReason: $revokeReason
+      updatedAt: "now()"
+    }
+  ) {
+    ...UserInvitationCore
+  }
+}
+
+# Enhanced resend invitation with status tracking
+mutation ResendInvitationEnhanced(
+  $invitationId: uuid!
+  $newExpiresAt: timestamptz!
+  $newClerkTicket: String
+  $newClerkInvitationId: String
+) {
+  updateUserInvitationById(
+    pkColumns: { id: $invitationId }
+    _set: {
+      expiresAt: $newExpiresAt
+      clerkTicket: $newClerkTicket
+      clerkInvitationId: $newClerkInvitationId
+      invitationStatus: "pending"
+      status: "pending"
+      updatedAt: "now()"
+    }
+  ) {
+    ...UserInvitationCore
+  }
+}
+
+# Create invitation with enhanced status tracking
+mutation CreateInvitationEnhanced(
+  $email: String!
+  $firstName: String!
+  $lastName: String!
+  $invitedRole: String!
+  $managerId: uuid
+  $clerkInvitationId: String
+  $clerkTicket: String
+  $invitationMetadata: jsonb
+  $invitedBy: uuid!
+  $expiresAt: timestamptz!
+) {
+  insertUserInvitation(
+    object: {
+      email: $email
+      firstName: $firstName
+      lastName: $lastName
+      invitedRole: $invitedRole
+      managerId: $managerId
+      clerkInvitationId: $clerkInvitationId
+      clerkTicket: $clerkTicket
+      invitationMetadata: $invitationMetadata
+      invitedBy: $invitedBy
+      expiresAt: $expiresAt
+      status: "pending"
+      invitationStatus: "pending"
+    }
+  ) {
+    ...UserInvitationCore
+  }
+}
+
+# Accept invitation with enhanced status tracking
+mutation AcceptInvitationEnhanced(
+  $invitationId: uuid!
+  $acceptedBy: uuid!
+) {
+  updateUserInvitationById(
+    pkColumns: { id: $invitationId }
+    _set: {
+      invitationStatus: "accepted"
+      status: "accepted"
+      acceptedAt: "now()"
+      acceptedBy: $acceptedBy
+      updatedAt: "now()"
+    }
+  ) {
+    ...UserInvitationCore
+  }
+}
+
+# Bulk revoke invitations
+mutation BulkRevokeInvitations(
+  $invitationIds: [uuid!]!
+  $revokeReason: String!
+  $revokedBy: uuid!
+) {
+  bulkUpdateUserInvitations(
+    where: { id: { _in: $invitationIds } }
+    _set: {
+      invitationStatus: "revoked"
+      status: "cancelled"
+      revokedAt: "now()"
+      revokedBy: $revokedBy
+      revokeReason: $revokeReason
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      ...UserInvitationCore
+    }
+    affectedRows
+  }
+}
+
+# ================================
+# PHASE 3: USER STATUS MANAGEMENT
+# Focus: User lifecycle management with audit compliance
+# ================================
+
+# Deactivate user with reason and audit logging
+mutation DeactivateUser(
+  $userId: uuid!
+  $reason: String!
+  $deactivatedBy: uuid!
+  $deactivatedByString: String!
+) {
+  updateUserById(
+    pkColumns: { id: $userId }
+    _set: {
+      status: "inactive"
+      isActive: false
+      deactivatedAt: "now()"
+      deactivatedBy: $deactivatedByString
+      statusChangeReason: $reason
+      statusChangedAt: "now()"
+      statusChangedBy: $deactivatedBy
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    name
+    status
+    isActive
+    deactivatedAt
+    deactivatedBy
+    statusChangeReason
+    statusChangedAt
+    statusChangedBy
+  }
+}
+
+# Lock user account with reason and audit logging
+mutation LockUser(
+  $userId: uuid!
+  $reason: String!
+  $lockedBy: uuid!
+) {
+  updateUserById(
+    pkColumns: { id: $userId }
+    _set: {
+      status: "locked"
+      isActive: false
+      statusChangeReason: $reason
+      statusChangedAt: "now()"
+      statusChangedBy: $lockedBy
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    name
+    status
+    isActive
+    statusChangeReason
+    statusChangedAt
+    statusChangedBy
+  }
+}
+
+# Unlock user account with reason and audit logging
+mutation UnlockUser(
+  $userId: uuid!
+  $reason: String!
+  $unlockedBy: uuid!
+) {
+  updateUserById(
+    pkColumns: { id: $userId }
+    _set: {
+      status: "active"
+      isActive: true
+      statusChangeReason: $reason
+      statusChangedAt: "now()"
+      statusChangedBy: $unlockedBy
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    name
+    status
+    isActive
+    statusChangeReason
+    statusChangedAt
+    statusChangedBy
+  }
+}
+
+# Reactivate user account with reason and audit logging
+mutation ReactivateUser(
+  $userId: uuid!
+  $reason: String!
+  $reactivatedBy: uuid!
+) {
+  updateUserById(
+    pkColumns: { id: $userId }
+    _set: {
+      status: "active"
+      isActive: true
+      deactivatedAt: null
+      deactivatedBy: null
+      statusChangeReason: $reason
+      statusChangedAt: "now()"
+      statusChangedBy: $reactivatedBy
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    name
+    status
+    isActive
+    deactivatedAt
+    deactivatedBy
+    statusChangeReason
+    statusChangedAt
+    statusChangedBy
+  }
+}
+
+# Bulk user status change with audit logging
+mutation BulkChangeUserStatus(
+  $userIds: [uuid!]!
+  $newStatus: user_status_enum!
+  $reason: String!
+  $changedBy: uuid!
+  $setInactive: Boolean! = false
+) {
+  bulkUpdateUsers(
+    where: { id: { _in: $userIds } }
+    _set: {
+      status: $newStatus
+      isActive: $setInactive
+      statusChangeReason: $reason
+      statusChangedAt: "now()"
+      statusChangedBy: $changedBy
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      id
+      email
+      name
+      status
+      isActive
+      statusChangeReason
+      statusChangedAt
+      statusChangedBy
+    }
+    affectedRows
+  }
+}
+
+# Update user status with comprehensive validation
+mutation UpdateUserStatus(
+  $userId: uuid!
+  $newStatus: user_status_enum!
+  $reason: String!
+  $changedBy: uuid!
+  $metadata: jsonb = null
+) {
+  updateUserById(
+    pkColumns: { id: $userId }
+    _set: {
+      status: $newStatus
+      isActive: true
+      statusChangeReason: $reason
+      statusChangedAt: "now()"
+      statusChangedBy: $changedBy
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    name
+    status
+    isActive
+    role
+    statusChangeReason
+    statusChangedAt
+    statusChangedBy
+    deactivatedAt
+    deactivatedBy
+    createdAt
+    updatedAt
   }
 }

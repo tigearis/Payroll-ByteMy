@@ -86,11 +86,11 @@ const allRoutes = [
     hidden: true, // Temporarily hidden - may use in the future
   },
   {
-    href: "/developer",
-    label: "Developer",
+    href: "/developer/diagnostics/user-creation",
+    label: "Debug Tools",
     icon: Code,
-    checkAccess: (auth: any) => auth.hasPermission("admin:manage"),
-    devOnly: true, // Only show in development
+    checkAccess: (auth: any) => auth.userRole === "developer",
+    badge: process.env.NODE_ENV === "production" ? "PROD" : "DEV",
   },
   {
     href: "/security",

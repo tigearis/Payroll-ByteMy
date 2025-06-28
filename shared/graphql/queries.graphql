@@ -112,8 +112,15 @@ query GetClientsDashboardStats {
     }
   }
 
+  # Total payrolls count
+  totalPayrollsCount: payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
+    aggregate {
+      count
+    }
+  }
+
   # Total employees across all clients
-  payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
+  totalEmployeesSum: payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
     aggregate {
       sum {
         employeeCount

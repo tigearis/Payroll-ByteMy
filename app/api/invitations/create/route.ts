@@ -103,7 +103,7 @@ async function POST(request: NextRequest) {
         }
       });
 
-      // 3. Store invitation in database
+      // 3. Store invitation in database with enhanced status tracking
       const { data: invitationData } = await adminApolloClient.mutate({
         mutation: CreateUserInvitationDocument,
         variables: {
@@ -116,7 +116,9 @@ async function POST(request: NextRequest) {
           clerkTicket: null, // Will be updated when user clicks the link
           invitationMetadata: metadata || {},
           invitedBy: databaseUserId,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+          status: "pending", // Legacy status field
+          invitationStatus: "pending" // New enhanced status enum
         }
       });
 
@@ -151,6 +153,7 @@ async function POST(request: NextRequest) {
           lastName,
           role,
           status: "pending",
+          invitationStatus: "pending",
           expiresAt: invitationData.insertUserInvitation.expiresAt,
           clerkInvitationId: clerkInvitation.id
         }

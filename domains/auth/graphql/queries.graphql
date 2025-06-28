@@ -204,12 +204,12 @@ query GetPermissionAuditLogs(
 # Get pending invitations (admin view)
 query GetPendingInvitations($limit: Int = 50, $offset: Int = 0) {
   userInvitations(
-    where: { status: { _eq: "pending" }, expiresAt: { _gt: "now()" } }
+    where: { invitationStatus: { _eq: "pending" }, expiresAt: { _gt: "now()" } }
     orderBy: { createdAt: DESC }
     limit: $limit
     offset: $offset
   ) {
-    ...UserInvitationDetail
+    ...UserInvitationCore
   }
 }
 
@@ -329,20 +329,382 @@ query GetResendableInvitations($invitedBy: uuid!, $limit: Int = 50) {
   userInvitations(
     where: {
       invitedBy: { _eq: $invitedBy }
-      status: { _in: ["pending", "expired"] }
+      invitationStatus: { _in: ["pending", "expired"] }
     }
     orderBy: { invitedAt: DESC }
     limit: $limit
   ) {
+    ...UserInvitationCore
+  }
+}
+
+# ================================
+# PHASE 2: ENHANCED INVITATION QUERIES
+# Focus: Comprehensive invitation lifecycle management
+# ================================
+
+# Get all invitations with status filtering
+query GetInvitationsWithStatus(
+  $statuses: [invitation_status_enum!]
+  $limit: Int = 50
+  $offset: Int = 0
+  $orderBy: [userInvitationsOrderBy!] = [{ createdAt: DESC }]
+) {
+  userInvitations(
+    where: { invitationStatus: { _in: $statuses } }
+    orderBy: $orderBy
+    limit: $limit
+    offset: $offset
+  ) {
+    ...UserInvitationWithDetails
+  }
+  
+  userInvitationsAggregate(
+    where: { invitationStatus: { _in: $statuses } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Get invitation dashboard statistics
+query GetInvitationDashboardStats {
+  pending: userInvitationsAggregate(
+    where: { invitationStatus: { _eq: "pending" }, expiresAt: { _gt: "now()" } }
+  ) {
+    aggregate { count }
+  }
+  
+  expired: userInvitationsAggregate(
+    where: { invitationStatus: { _eq: "expired" } }
+  ) {
+    aggregate { count }
+  }
+  
+  accepted: userInvitationsAggregate(
+    where: { invitationStatus: { _eq: "accepted" } }
+  ) {
+    aggregate { count }
+  }
+  
+  revoked: userInvitationsAggregate(
+    where: { invitationStatus: { _eq: "revoked" } }
+  ) {
+    aggregate { count }
+  }
+  
+  expiringSoon: userInvitationsAggregate(
+    where: {
+      invitationStatus: { _eq: "pending" }
+      expiresAt: { _gt: "now()", _lt: "now() + interval '7 days'" }
+    }
+  ) {
+    aggregate { count }
+  }
+}
+
+# Get revoked invitations with details
+query GetRevokedInvitations($limit: Int = 50, $offset: Int = 0) {
+  userInvitations(
+    where: { invitationStatus: { _eq: "revoked" } }
+    orderBy: { revokedAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...UserInvitationCore
+  }
+}
+
+# Get invitation history for audit purposes
+query GetInvitationAuditHistory(
+  $email: String
+  $invitedBy: uuid
+  $startDate: timestamptz
+  $endDate: timestamptz
+  $limit: Int = 100
+) {
+  userInvitations(
+    where: {
+      _and: [
+        { email: { _eq: $email } }
+        { invitedBy: { _eq: $invitedBy } }
+        { createdAt: { _gte: $startDate } }
+        { createdAt: { _lte: $endDate } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+  ) {
+    ...UserInvitationWithDetails
+  }
+}
+
+# Get expiring invitations for notifications
+query GetExpiringInvitations($daysUntilExpiry: Int = 7) {
+  userInvitations(
+    where: {
+      invitationStatus: { _eq: "pending" }
+      expiresAt: {
+        _gt: "now()"
+        _lt: "now() + interval '${daysUntilExpiry} days'"
+      }
+    }
+    orderBy: { expiresAt: ASC }
+  ) {
+    ...UserInvitationWithDetails
+  }
+}
+
+# Search invitations by email or name
+query SearchInvitations(
+  $searchTerm: String!
+  $limit: Int = 20
+) {
+  userInvitations(
+    where: {
+      _or: [
+        { email: { _ilike: "%${searchTerm}%" } }
+        { firstName: { _ilike: "%${searchTerm}%" } }
+        { lastName: { _ilike: "%${searchTerm}%" } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+  ) {
+    ...UserInvitationCore
+  }
+}
+
+# Get invitation by ID with full details
+query GetInvitationByIdDetailed($invitationId: uuid!) {
+  userInvitationById(id: $invitationId) {
+    ...UserInvitationWithDetails
+  }
+}
+
+# ================================
+# PHASE 3: USER STATUS MANAGEMENT QUERIES
+# Focus: User lifecycle management and audit reporting
+# ================================
+
+# Get users by status with filtering and pagination
+query GetUsersByStatus(
+  $statuses: [user_status_enum!]
+  $limit: Int = 50
+  $offset: Int = 0
+  $orderBy: [usersOrderBy!] = [{ updatedAt: DESC }]
+) {
+  users(
+    where: { status: { _in: $statuses } }
+    orderBy: $orderBy
+    limit: $limit
+    offset: $offset
+  ) {
     id
     email
-    firstName
-    lastName
-    invitedRole
+    name
+    role
     status
-    invitedAt
-    expiresAt
-    acceptedAt
+    isActive
+    isStaff
+    statusChangedAt
+    statusChangedBy
+    statusChangeReason
+    deactivatedAt
+    deactivatedBy
+    createdAt
+    updatedAt
+  }
+  
+  usersAggregate(
+    where: { status: { _in: $statuses } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Get user status dashboard statistics
+query GetUserStatusDashboardStats {
+  active: usersAggregate(
+    where: { status: { _eq: "active" } }
+  ) {
+    aggregate { count }
+  }
+  
+  inactive: usersAggregate(
+    where: { status: { _eq: "inactive" } }
+  ) {
+    aggregate { count }
+  }
+  
+  locked: usersAggregate(
+    where: { status: { _eq: "locked" } }
+  ) {
+    aggregate { count }
+  }
+  
+  pending: usersAggregate(
+    where: { status: { _eq: "pending" } }
+  ) {
+    aggregate { count }
+  }
+  
+  recentStatusChanges: users(
+    where: { statusChangedAt: { _gte: "now() - interval '30 days'" } }
+    orderBy: { statusChangedAt: DESC }
+    limit: 10
+  ) {
+    id
+    email
+    name
+    role
+    status
+    statusChangedAt
+    statusChangeReason
+  }
+  
+  staff: usersAggregate(
+    where: { isStaff: { _eq: true } }
+  ) {
+    aggregate { count }
+  }
+  
+  byRole: users {
+    role
+  }
+}
+
+# Get users requiring attention (locked, inactive, etc.)
+query GetUsersRequiringAttention($limit: Int = 20) {
+  locked: users(
+    where: { status: { _eq: "locked" } }
+    orderBy: { statusChangedAt: DESC }
+    limit: $limit
+  ) {
+    id
+    email
+    name
+    role
+    status
+    statusChangedAt
+    statusChangeReason
+  }
+  
+  inactive: users(
+    where: { status: { _eq: "inactive" } }
+    orderBy: { deactivatedAt: DESC }
+    limit: $limit
+  ) {
+    id
+    email
+    name
+    role
+    status
+    deactivatedAt
+    statusChangeReason
+  }
+  
+  pending: users(
+    where: { status: { _eq: "pending" } }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+  ) {
+    id
+    email
+    name
+    role
+    status
+    createdAt
+  }
+}
+
+# Get user status history for audit purposes
+query GetUserStatusHistory(
+  $userId: uuid!
+  $startDate: timestamptz
+  $endDate: timestamptz
+  $limit: Int = 50
+) {
+  # Current user status
+  user: userById(id: $userId) {
+    id
+    email
+    name
+    role
+    status
+    isActive
+    statusChangedAt
+    statusChangedBy
+    statusChangeReason
+    deactivatedAt
+    deactivatedBy
+    createdAt
+    updatedAt
+  }
+  
+  # Note: Audit logs query removed - will be implemented when audit.audit_log table is properly exposed
+}
+
+# Search users with advanced filtering
+query SearchUsersAdvanced(
+  $searchTerm: String
+  $statuses: [user_status_enum!]
+  $roles: [user_role!]
+  $isStaff: Boolean
+  $limit: Int = 20
+) {
+  users(
+    where: {
+      _and: [
+        {
+          _or: [
+            { email: { _ilike: "%${searchTerm}%" } }
+            { name: { _ilike: "%${searchTerm}%" } }
+          ]
+        }
+        { status: { _in: $statuses } }
+        { role: { _in: $roles } }
+        { isStaff: { _eq: $isStaff } }
+      ]
+    }
+    orderBy: { updatedAt: DESC }
+    limit: $limit
+  ) {
+    id
+    email
+    name
+    role
+    status
+    isActive
+    isStaff
+    statusChangedAt
+    statusChangeReason
+    deactivatedAt
+    createdAt
+  }
+}
+
+# Get user details with status information
+query GetUserWithStatusDetails($userId: uuid!) {
+  userById(id: $userId) {
+    id
+    email
+    name
+    role
+    status
+    isActive
+    isStaff
+    clerkUserId
+    statusChangedAt
+    statusChangedBy
+    statusChangeReason
+    deactivatedAt
+    deactivatedBy
+    createdAt
+    updatedAt
   }
 }
 

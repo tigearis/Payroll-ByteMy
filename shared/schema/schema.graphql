@@ -622,6 +622,21 @@ input IntervalComparisonExp {
   _nin: [interval!]
 }
 
+"""
+Boolean expression to compare columns of type "invitation_status_enum". All fields are combined with logical 'AND'.
+"""
+input InvitationStatusEnumComparisonExp {
+  _eq: invitation_status_enum
+  _gt: invitation_status_enum
+  _gte: invitation_status_enum
+  _in: [invitation_status_enum!]
+  _isNull: Boolean
+  _lt: invitation_status_enum
+  _lte: invitation_status_enum
+  _neq: invitation_status_enum
+  _nin: [invitation_status_enum!]
+}
+
 input JsonbCastExp {
   String: StringComparisonExp
 }
@@ -899,6 +914,21 @@ input UserRoleComparisonExp {
   _lte: user_role
   _neq: user_role
   _nin: [user_role!]
+}
+
+"""
+Boolean expression to compare columns of type "user_status_enum". All fields are combined with logical 'AND'.
+"""
+input UserStatusEnumComparisonExp {
+  _eq: user_status_enum
+  _gt: user_status_enum
+  _gte: user_status_enum
+  _in: [user_status_enum!]
+  _isNull: Boolean
+  _lt: user_status_enum
+  _lte: user_status_enum
+  _neq: user_status_enum
+  _nin: [user_status_enum!]
 }
 
 """
@@ -6737,6 +6767,8 @@ type holidaysVarianceFields {
 scalar inet
 
 scalar interval
+
+scalar invitation_status_enum
 
 scalar json
 
@@ -21312,6 +21344,7 @@ type userInvitations {
     """JSON select path"""
     path: String
   ): jsonb
+  invitationStatus: invitation_status_enum!
   invitedAt: timestamptz!
   invitedBy: uuid!
   """An object relationship"""
@@ -21321,6 +21354,9 @@ type userInvitations {
   managerId: uuid
   """An object relationship"""
   managerUser: users
+  revokeReason: String
+  revokedAt: timestamptz
+  revokedBy: uuid
   status: String!
   updatedAt: timestamptz!
 }
@@ -21394,6 +21430,7 @@ input userInvitationsBoolExp {
   firstName: StringComparisonExp
   id: UuidComparisonExp
   invitationMetadata: JsonbComparisonExp
+  invitationStatus: InvitationStatusEnumComparisonExp
   invitedAt: TimestamptzComparisonExp
   invitedBy: UuidComparisonExp
   invitedByUser: usersBoolExp
@@ -21401,6 +21438,9 @@ input userInvitationsBoolExp {
   lastName: StringComparisonExp
   managerId: UuidComparisonExp
   managerUser: usersBoolExp
+  revokeReason: StringComparisonExp
+  revokedAt: TimestamptzComparisonExp
+  revokedBy: UuidComparisonExp
   status: StringComparisonExp
   updatedAt: TimestamptzComparisonExp
 }
@@ -21451,6 +21491,7 @@ input userInvitationsInsertInput {
   firstName: String
   id: uuid
   invitationMetadata: jsonb
+  invitationStatus: invitation_status_enum
   invitedAt: timestamptz
   invitedBy: uuid
   invitedByUser: usersObjRelInsertInput
@@ -21458,6 +21499,9 @@ input userInvitationsInsertInput {
   lastName: String
   managerId: uuid
   managerUser: usersObjRelInsertInput
+  revokeReason: String
+  revokedAt: timestamptz
+  revokedBy: uuid
   status: String
   updatedAt: timestamptz
 }
@@ -21473,11 +21517,15 @@ type userInvitationsMaxFields {
   expiresAt: timestamptz
   firstName: String
   id: uuid
+  invitationStatus: invitation_status_enum
   invitedAt: timestamptz
   invitedBy: uuid
   invitedRole: String
   lastName: String
   managerId: uuid
+  revokeReason: String
+  revokedAt: timestamptz
+  revokedBy: uuid
   status: String
   updatedAt: timestamptz
 }
@@ -21495,11 +21543,15 @@ input userInvitationsMaxOrderBy {
   expiresAt: OrderBy
   firstName: OrderBy
   id: OrderBy
+  invitationStatus: OrderBy
   invitedAt: OrderBy
   invitedBy: OrderBy
   invitedRole: OrderBy
   lastName: OrderBy
   managerId: OrderBy
+  revokeReason: OrderBy
+  revokedAt: OrderBy
+  revokedBy: OrderBy
   status: OrderBy
   updatedAt: OrderBy
 }
@@ -21515,11 +21567,15 @@ type userInvitationsMinFields {
   expiresAt: timestamptz
   firstName: String
   id: uuid
+  invitationStatus: invitation_status_enum
   invitedAt: timestamptz
   invitedBy: uuid
   invitedRole: String
   lastName: String
   managerId: uuid
+  revokeReason: String
+  revokedAt: timestamptz
+  revokedBy: uuid
   status: String
   updatedAt: timestamptz
 }
@@ -21537,11 +21593,15 @@ input userInvitationsMinOrderBy {
   expiresAt: OrderBy
   firstName: OrderBy
   id: OrderBy
+  invitationStatus: OrderBy
   invitedAt: OrderBy
   invitedBy: OrderBy
   invitedRole: OrderBy
   lastName: OrderBy
   managerId: OrderBy
+  revokeReason: OrderBy
+  revokedAt: OrderBy
+  revokedBy: OrderBy
   status: OrderBy
   updatedAt: OrderBy
 }
@@ -21578,6 +21638,7 @@ input userInvitationsOrderBy {
   firstName: OrderBy
   id: OrderBy
   invitationMetadata: OrderBy
+  invitationStatus: OrderBy
   invitedAt: OrderBy
   invitedBy: OrderBy
   invitedByUser: usersOrderBy
@@ -21585,6 +21646,9 @@ input userInvitationsOrderBy {
   lastName: OrderBy
   managerId: OrderBy
   managerUser: usersOrderBy
+  revokeReason: OrderBy
+  revokedAt: OrderBy
+  revokedBy: OrderBy
   status: OrderBy
   updatedAt: OrderBy
 }
@@ -21624,6 +21688,8 @@ enum userInvitationsSelectColumn {
   """column name"""
   invitationMetadata
   """column name"""
+  invitationStatus
+  """column name"""
   invitedAt
   """column name"""
   invitedBy
@@ -21633,6 +21699,12 @@ enum userInvitationsSelectColumn {
   lastName
   """column name"""
   managerId
+  """column name"""
+  revokeReason
+  """column name"""
+  revokedAt
+  """column name"""
+  revokedBy
   """column name"""
   status
   """column name"""
@@ -21653,11 +21725,15 @@ input userInvitationsSetInput {
   firstName: String
   id: uuid
   invitationMetadata: jsonb
+  invitationStatus: invitation_status_enum
   invitedAt: timestamptz
   invitedBy: uuid
   invitedRole: String
   lastName: String
   managerId: uuid
+  revokeReason: String
+  revokedAt: timestamptz
+  revokedBy: uuid
   status: String
   updatedAt: timestamptz
 }
@@ -21684,11 +21760,15 @@ input userInvitationsStreamCursorValueInput {
   firstName: String
   id: uuid
   invitationMetadata: jsonb
+  invitationStatus: invitation_status_enum
   invitedAt: timestamptz
   invitedBy: uuid
   invitedRole: String
   lastName: String
   managerId: uuid
+  revokeReason: String
+  revokedAt: timestamptz
+  revokedBy: uuid
   status: String
   updatedAt: timestamptz
 }
@@ -21718,6 +21798,8 @@ enum userInvitationsUpdateColumn {
   """column name"""
   invitationMetadata
   """column name"""
+  invitationStatus
+  """column name"""
   invitedAt
   """column name"""
   invitedBy
@@ -21727,6 +21809,12 @@ enum userInvitationsUpdateColumn {
   lastName
   """column name"""
   managerId
+  """column name"""
+  revokeReason
+  """column name"""
+  revokedAt
+  """column name"""
+  revokedBy
   """column name"""
   status
   """column name"""
@@ -22005,6 +22093,8 @@ input userRolesUpdates {
 }
 
 scalar user_role
+
+scalar user_status_enum
 
 """
 columns and relationships of "users"
@@ -22423,6 +22513,14 @@ type users {
   ): payrollsAggregate!
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role!
+  """Current user status - must be consistent with isActive field"""
+  status: user_status_enum!
+  """Reason for the status change (for audit purposes)"""
+  statusChangeReason: String
+  """Timestamp when status was last changed"""
+  statusChangedAt: timestamptz
+  """User ID who changed the status"""
+  statusChangedBy: uuid
   """An array relationship"""
   targetedPermissionAudits(
     """distinct select on columns"""
@@ -22749,6 +22847,10 @@ input usersBoolExp {
   primaryConsultantPayrolls: payrollsBoolExp
   primaryConsultantPayrollsAggregate: payrollsAggregateBoolExp
   role: UserRoleComparisonExp
+  status: UserStatusEnumComparisonExp
+  statusChangeReason: StringComparisonExp
+  statusChangedAt: TimestamptzComparisonExp
+  statusChangedBy: UuidComparisonExp
   targetedPermissionAudits: permissionAuditLogsBoolExp
   targetedPermissionAuditsAggregate: permissionAuditLogsAggregateBoolExp
   updatedAt: TimestamptzComparisonExp
@@ -22832,6 +22934,14 @@ input usersInsertInput {
   primaryConsultantPayrolls: payrollsArrRelInsertInput
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
+  """Current user status - must be consistent with isActive field"""
+  status: user_status_enum
+  """Reason for the status change (for audit purposes)"""
+  statusChangeReason: String
+  """Timestamp when status was last changed"""
+  statusChangedAt: timestamptz
+  """User ID who changed the status"""
+  statusChangedBy: uuid
   targetedPermissionAudits: permissionAuditLogsArrRelInsertInput
   """Timestamp when the user was last updated"""
   updatedAt: timestamptz
@@ -22866,6 +22976,14 @@ type usersMaxFields {
   name: String
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
+  """Current user status - must be consistent with isActive field"""
+  status: user_status_enum
+  """Reason for the status change (for audit purposes)"""
+  statusChangeReason: String
+  """Timestamp when status was last changed"""
+  statusChangedAt: timestamptz
+  """User ID who changed the status"""
+  statusChangedBy: uuid
   """Timestamp when the user was last updated"""
   updatedAt: timestamptz
   """User's unique username for login"""
@@ -22894,6 +23012,14 @@ input usersMaxOrderBy {
   name: OrderBy
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: OrderBy
+  """Current user status - must be consistent with isActive field"""
+  status: OrderBy
+  """Reason for the status change (for audit purposes)"""
+  statusChangeReason: OrderBy
+  """Timestamp when status was last changed"""
+  statusChangedAt: OrderBy
+  """User ID who changed the status"""
+  statusChangedBy: OrderBy
   """Timestamp when the user was last updated"""
   updatedAt: OrderBy
   """User's unique username for login"""
@@ -22920,6 +23046,14 @@ type usersMinFields {
   name: String
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
+  """Current user status - must be consistent with isActive field"""
+  status: user_status_enum
+  """Reason for the status change (for audit purposes)"""
+  statusChangeReason: String
+  """Timestamp when status was last changed"""
+  statusChangedAt: timestamptz
+  """User ID who changed the status"""
+  statusChangedBy: uuid
   """Timestamp when the user was last updated"""
   updatedAt: timestamptz
   """User's unique username for login"""
@@ -22948,6 +23082,14 @@ input usersMinOrderBy {
   name: OrderBy
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: OrderBy
+  """Current user status - must be consistent with isActive field"""
+  status: OrderBy
+  """Reason for the status change (for audit purposes)"""
+  statusChangeReason: OrderBy
+  """Timestamp when status was last changed"""
+  statusChangedAt: OrderBy
+  """User ID who changed the status"""
+  statusChangedBy: OrderBy
   """Timestamp when the user was last updated"""
   updatedAt: OrderBy
   """User's unique username for login"""
@@ -23012,6 +23154,10 @@ input usersOrderBy {
   originalConsultantAuditTrailAggregate: payrollAssignmentAuditsAggregateOrderBy
   primaryConsultantPayrollsAggregate: payrollsAggregateOrderBy
   role: OrderBy
+  status: OrderBy
+  statusChangeReason: OrderBy
+  statusChangedAt: OrderBy
+  statusChangedBy: OrderBy
   targetedPermissionAuditsAggregate: permissionAuditLogsAggregateOrderBy
   updatedAt: OrderBy
   userInvitationsAcceptedByAggregate: userInvitationsAggregateOrderBy
@@ -23192,6 +23338,14 @@ enum usersSelectColumn {
   """column name"""
   role
   """column name"""
+  status
+  """column name"""
+  statusChangeReason
+  """column name"""
+  statusChangedAt
+  """column name"""
+  statusChangedBy
+  """column name"""
   updatedAt
   """column name"""
   username
@@ -23242,6 +23396,14 @@ input usersSetInput {
   name: String
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
+  """Current user status - must be consistent with isActive field"""
+  status: user_status_enum
+  """Reason for the status change (for audit purposes)"""
+  statusChangeReason: String
+  """Timestamp when status was last changed"""
+  statusChangedAt: timestamptz
+  """User ID who changed the status"""
+  statusChangedBy: uuid
   """Timestamp when the user was last updated"""
   updatedAt: timestamptz
   """User's unique username for login"""
@@ -23281,6 +23443,14 @@ input usersStreamCursorValueInput {
   name: String
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
+  """Current user status - must be consistent with isActive field"""
+  status: user_status_enum
+  """Reason for the status change (for audit purposes)"""
+  statusChangeReason: String
+  """Timestamp when status was last changed"""
+  statusChangedAt: timestamptz
+  """User ID who changed the status"""
+  statusChangedBy: uuid
   """Timestamp when the user was last updated"""
   updatedAt: timestamptz
   """User's unique username for login"""
@@ -23315,6 +23485,14 @@ enum usersUpdateColumn {
   name
   """column name"""
   role
+  """column name"""
+  status
+  """column name"""
+  statusChangeReason
+  """column name"""
+  statusChangedAt
+  """column name"""
+  statusChangedBy
   """column name"""
   updatedAt
   """column name"""

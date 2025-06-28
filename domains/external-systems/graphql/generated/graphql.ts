@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-06-27T13:10:30.805Z
+ * Generated: 2025-06-28T07:49:35.092Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -45,6 +45,7 @@ export type Scalars = {
   date: { input: string; output: string; }
   inet: { input: any; output: any; }
   interval: { input: any; output: any; }
+  invitation_status_enum: { input: any; output: any; }
   json: { input: any; output: any; }
   jsonb: { input: any; output: any; }
   leave_status_enum: { input: any; output: any; }
@@ -57,6 +58,7 @@ export type Scalars = {
   timestamp: { input: any; output: any; }
   timestamptz: { input: string; output: string; }
   user_role: { input: any; output: any; }
+  user_status_enum: { input: any; output: any; }
   uuid: { input: string; output: string; }
 };
 
@@ -445,6 +447,19 @@ export type IntervalComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['interval']['input']>>;
 };
 
+/** Boolean expression to compare columns of type "invitation_status_enum". All fields are combined with logical 'AND'. */
+export type InvitationStatusEnumComparisonExp = {
+  _eq?: InputMaybe<Scalars['invitation_status_enum']['input']>;
+  _gt?: InputMaybe<Scalars['invitation_status_enum']['input']>;
+  _gte?: InputMaybe<Scalars['invitation_status_enum']['input']>;
+  _in?: InputMaybe<Array<Scalars['invitation_status_enum']['input']>>;
+  _isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['invitation_status_enum']['input']>;
+  _lte?: InputMaybe<Scalars['invitation_status_enum']['input']>;
+  _neq?: InputMaybe<Scalars['invitation_status_enum']['input']>;
+  _nin?: InputMaybe<Array<Scalars['invitation_status_enum']['input']>>;
+};
+
 export type JsonbCastExp = {
   String?: InputMaybe<StringComparisonExp>;
 };
@@ -674,6 +689,19 @@ export type UserRoleComparisonExp = {
   _lte?: InputMaybe<Scalars['user_role']['input']>;
   _neq?: InputMaybe<Scalars['user_role']['input']>;
   _nin?: InputMaybe<Array<Scalars['user_role']['input']>>;
+};
+
+/** Boolean expression to compare columns of type "user_status_enum". All fields are combined with logical 'AND'. */
+export type UserStatusEnumComparisonExp = {
+  _eq?: InputMaybe<Scalars['user_status_enum']['input']>;
+  _gt?: InputMaybe<Scalars['user_status_enum']['input']>;
+  _gte?: InputMaybe<Scalars['user_status_enum']['input']>;
+  _in?: InputMaybe<Array<Scalars['user_status_enum']['input']>>;
+  _isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['user_status_enum']['input']>;
+  _lte?: InputMaybe<Scalars['user_status_enum']['input']>;
+  _neq?: InputMaybe<Scalars['user_status_enum']['input']>;
+  _nin?: InputMaybe<Array<Scalars['user_status_enum']['input']>>;
 };
 
 /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
@@ -8741,6 +8769,7 @@ export type UserInvitationsBoolExp = {
   firstName?: InputMaybe<StringComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   invitationMetadata?: InputMaybe<JsonbComparisonExp>;
+  invitationStatus?: InputMaybe<InvitationStatusEnumComparisonExp>;
   invitedAt?: InputMaybe<TimestamptzComparisonExp>;
   invitedBy?: InputMaybe<UuidComparisonExp>;
   invitedByUser?: InputMaybe<UsersBoolExp>;
@@ -8748,6 +8777,9 @@ export type UserInvitationsBoolExp = {
   lastName?: InputMaybe<StringComparisonExp>;
   managerId?: InputMaybe<UuidComparisonExp>;
   managerUser?: InputMaybe<UsersBoolExp>;
+  revokeReason?: InputMaybe<StringComparisonExp>;
+  revokedAt?: InputMaybe<TimestamptzComparisonExp>;
+  revokedBy?: InputMaybe<UuidComparisonExp>;
   status?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
@@ -8786,6 +8818,7 @@ export type UserInvitationsInsertInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invitationMetadata?: InputMaybe<Scalars['jsonb']['input']>;
+  invitationStatus?: InputMaybe<Scalars['invitation_status_enum']['input']>;
   invitedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   invitedBy?: InputMaybe<Scalars['uuid']['input']>;
   invitedByUser?: InputMaybe<UsersObjRelInsertInput>;
@@ -8793,6 +8826,9 @@ export type UserInvitationsInsertInput = {
   lastName?: InputMaybe<Scalars['String']['input']>;
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   managerUser?: InputMaybe<UsersObjRelInsertInput>;
+  revokeReason?: InputMaybe<Scalars['String']['input']>;
+  revokedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  revokedBy?: InputMaybe<Scalars['uuid']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -8808,11 +8844,15 @@ export type UserInvitationsMaxOrderBy = {
   expiresAt?: InputMaybe<OrderBy>;
   firstName?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  invitationStatus?: InputMaybe<OrderBy>;
   invitedAt?: InputMaybe<OrderBy>;
   invitedBy?: InputMaybe<OrderBy>;
   invitedRole?: InputMaybe<OrderBy>;
   lastName?: InputMaybe<OrderBy>;
   managerId?: InputMaybe<OrderBy>;
+  revokeReason?: InputMaybe<OrderBy>;
+  revokedAt?: InputMaybe<OrderBy>;
+  revokedBy?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -8828,11 +8868,15 @@ export type UserInvitationsMinOrderBy = {
   expiresAt?: InputMaybe<OrderBy>;
   firstName?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  invitationStatus?: InputMaybe<OrderBy>;
   invitedAt?: InputMaybe<OrderBy>;
   invitedBy?: InputMaybe<OrderBy>;
   invitedRole?: InputMaybe<OrderBy>;
   lastName?: InputMaybe<OrderBy>;
   managerId?: InputMaybe<OrderBy>;
+  revokeReason?: InputMaybe<OrderBy>;
+  revokedAt?: InputMaybe<OrderBy>;
+  revokedBy?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -8857,6 +8901,7 @@ export type UserInvitationsOrderBy = {
   firstName?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   invitationMetadata?: InputMaybe<OrderBy>;
+  invitationStatus?: InputMaybe<OrderBy>;
   invitedAt?: InputMaybe<OrderBy>;
   invitedBy?: InputMaybe<OrderBy>;
   invitedByUser?: InputMaybe<UsersOrderBy>;
@@ -8864,6 +8909,9 @@ export type UserInvitationsOrderBy = {
   lastName?: InputMaybe<OrderBy>;
   managerId?: InputMaybe<OrderBy>;
   managerUser?: InputMaybe<UsersOrderBy>;
+  revokeReason?: InputMaybe<OrderBy>;
+  revokedAt?: InputMaybe<OrderBy>;
+  revokedBy?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -8901,6 +8949,8 @@ export type UserInvitationsSelectColumn =
   /** column name */
   | 'invitationMetadata'
   /** column name */
+  | 'invitationStatus'
+  /** column name */
   | 'invitedAt'
   /** column name */
   | 'invitedBy'
@@ -8910,6 +8960,12 @@ export type UserInvitationsSelectColumn =
   | 'lastName'
   /** column name */
   | 'managerId'
+  /** column name */
+  | 'revokeReason'
+  /** column name */
+  | 'revokedAt'
+  /** column name */
+  | 'revokedBy'
   /** column name */
   | 'status'
   /** column name */
@@ -8928,11 +8984,15 @@ export type UserInvitationsSetInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invitationMetadata?: InputMaybe<Scalars['jsonb']['input']>;
+  invitationStatus?: InputMaybe<Scalars['invitation_status_enum']['input']>;
   invitedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   invitedBy?: InputMaybe<Scalars['uuid']['input']>;
   invitedRole?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   managerId?: InputMaybe<Scalars['uuid']['input']>;
+  revokeReason?: InputMaybe<Scalars['String']['input']>;
+  revokedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  revokedBy?: InputMaybe<Scalars['uuid']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -8957,11 +9017,15 @@ export type UserInvitationsStreamCursorValueInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invitationMetadata?: InputMaybe<Scalars['jsonb']['input']>;
+  invitationStatus?: InputMaybe<Scalars['invitation_status_enum']['input']>;
   invitedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   invitedBy?: InputMaybe<Scalars['uuid']['input']>;
   invitedRole?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   managerId?: InputMaybe<Scalars['uuid']['input']>;
+  revokeReason?: InputMaybe<Scalars['String']['input']>;
+  revokedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  revokedBy?: InputMaybe<Scalars['uuid']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -8989,6 +9053,8 @@ export type UserInvitationsUpdateColumn =
   /** column name */
   | 'invitationMetadata'
   /** column name */
+  | 'invitationStatus'
+  /** column name */
   | 'invitedAt'
   /** column name */
   | 'invitedBy'
@@ -8998,6 +9064,12 @@ export type UserInvitationsUpdateColumn =
   | 'lastName'
   /** column name */
   | 'managerId'
+  /** column name */
+  | 'revokeReason'
+  /** column name */
+  | 'revokedAt'
+  /** column name */
+  | 'revokedBy'
   /** column name */
   | 'status'
   /** column name */
@@ -9270,6 +9342,10 @@ export type UsersBoolExp = {
   primaryConsultantPayrolls?: InputMaybe<PayrollsBoolExp>;
   primaryConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   role?: InputMaybe<UserRoleComparisonExp>;
+  status?: InputMaybe<UserStatusEnumComparisonExp>;
+  statusChangeReason?: InputMaybe<StringComparisonExp>;
+  statusChangedAt?: InputMaybe<TimestamptzComparisonExp>;
+  statusChangedBy?: InputMaybe<UuidComparisonExp>;
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsBoolExp>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
@@ -9341,6 +9417,14 @@ export type UsersInsertInput = {
   primaryConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
+  /** Current user status - must be consistent with isActive field */
+  status?: InputMaybe<Scalars['user_status_enum']['input']>;
+  /** Reason for the status change (for audit purposes) */
+  statusChangeReason?: InputMaybe<Scalars['String']['input']>;
+  /** Timestamp when status was last changed */
+  statusChangedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** User ID who changed the status */
+  statusChangedBy?: InputMaybe<Scalars['uuid']['input']>;
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -9375,6 +9459,14 @@ export type UsersMaxOrderBy = {
   name?: InputMaybe<OrderBy>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<OrderBy>;
+  /** Current user status - must be consistent with isActive field */
+  status?: InputMaybe<OrderBy>;
+  /** Reason for the status change (for audit purposes) */
+  statusChangeReason?: InputMaybe<OrderBy>;
+  /** Timestamp when status was last changed */
+  statusChangedAt?: InputMaybe<OrderBy>;
+  /** User ID who changed the status */
+  statusChangedBy?: InputMaybe<OrderBy>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<OrderBy>;
   /** User's unique username for login */
@@ -9401,6 +9493,14 @@ export type UsersMinOrderBy = {
   name?: InputMaybe<OrderBy>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<OrderBy>;
+  /** Current user status - must be consistent with isActive field */
+  status?: InputMaybe<OrderBy>;
+  /** Reason for the status change (for audit purposes) */
+  statusChangeReason?: InputMaybe<OrderBy>;
+  /** Timestamp when status was last changed */
+  statusChangedAt?: InputMaybe<OrderBy>;
+  /** User ID who changed the status */
+  statusChangedBy?: InputMaybe<OrderBy>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<OrderBy>;
   /** User's unique username for login */
@@ -9451,6 +9551,10 @@ export type UsersOrderBy = {
   originalConsultantAuditTrailAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateOrderBy>;
   primaryConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   role?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  statusChangeReason?: InputMaybe<OrderBy>;
+  statusChangedAt?: InputMaybe<OrderBy>;
+  statusChangedBy?: InputMaybe<OrderBy>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
@@ -9566,6 +9670,14 @@ export type UsersSelectColumn =
   /** column name */
   | 'role'
   /** column name */
+  | 'status'
+  /** column name */
+  | 'statusChangeReason'
+  /** column name */
+  | 'statusChangedAt'
+  /** column name */
+  | 'statusChangedBy'
+  /** column name */
   | 'updatedAt'
   /** column name */
   | 'username'
@@ -9610,6 +9722,14 @@ export type UsersSetInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
+  /** Current user status - must be consistent with isActive field */
+  status?: InputMaybe<Scalars['user_status_enum']['input']>;
+  /** Reason for the status change (for audit purposes) */
+  statusChangeReason?: InputMaybe<Scalars['String']['input']>;
+  /** Timestamp when status was last changed */
+  statusChangedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** User ID who changed the status */
+  statusChangedBy?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User's unique username for login */
@@ -9647,6 +9767,14 @@ export type UsersStreamCursorValueInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
+  /** Current user status - must be consistent with isActive field */
+  status?: InputMaybe<Scalars['user_status_enum']['input']>;
+  /** Reason for the status change (for audit purposes) */
+  statusChangeReason?: InputMaybe<Scalars['String']['input']>;
+  /** Timestamp when status was last changed */
+  statusChangedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** User ID who changed the status */
+  statusChangedBy?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User's unique username for login */
@@ -9679,6 +9807,14 @@ export type UsersUpdateColumn =
   | 'name'
   /** column name */
   | 'role'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'statusChangeReason'
+  /** column name */
+  | 'statusChangedAt'
+  /** column name */
+  | 'statusChangedBy'
   /** column name */
   | 'updatedAt'
   /** column name */
@@ -10465,7 +10601,7 @@ export type GetDashboardStatsOptimizedQuery = { __typename?: 'query_root', clien
 export type GetClientsDashboardStatsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetClientsDashboardStatsQuery = { __typename?: 'query_root', activeClientsCount: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null }, payrollsAggregate: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', sum?: { __typename?: 'payrollsSumFields', employeeCount?: number | null } | null } | null }, clientsNeedingAttention: Array<{ __typename?: 'clients', id: string, name: string }> };
+export type GetClientsDashboardStatsQuery = { __typename?: 'query_root', activeClientsCount: { __typename?: 'clientsAggregate', aggregate?: { __typename?: 'clientsAggregateFields', count: number } | null }, totalPayrollsCount: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, totalEmployeesSum: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', sum?: { __typename?: 'payrollsSumFields', employeeCount?: number | null } | null } | null }, clientsNeedingAttention: Array<{ __typename?: 'clients', id: string, name: string }> };
 
 export type GetCurrentUserQueryVariables = Exact<{
   userId: Scalars['uuid']['input'];
@@ -10628,7 +10764,7 @@ export const LogAuditEventDocument = {"kind":"Document","definitions":[{"kind":"
 export const RefreshDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RefreshData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]} as unknown as DocumentNode<RefreshDataMutation, RefreshDataMutationVariables>;
 export const GetDashboardMetricsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardMetrics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrollsAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_nin"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Completed","block":false},{"kind":"StringValue","value":"Failed","block":false}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalEmployeesAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcomingPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_nin"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Completed","block":false},{"kind":"StringValue","value":"Failed","block":false},{"kind":"StringValue","value":"Cancelled","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetDashboardMetricsQuery, GetDashboardMetricsQueryVariables>;
 export const GetDashboardStatsOptimizedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardStatsOptimized"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalPayrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcomingPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetDashboardStatsOptimizedQuery, GetDashboardStatsOptimizedQueryVariables>;
-export const GetClientsDashboardStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientsDashboardStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"activeClientsCount"},"name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"clientsNeedingAttention"},"name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrolls"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetClientsDashboardStatsQuery, GetClientsDashboardStatsQueryVariables>;
+export const GetClientsDashboardStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientsDashboardStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"activeClientsCount"},"name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalPayrollsCount"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalEmployeesSum"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"clientsNeedingAttention"},"name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrolls"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetClientsDashboardStatsQuery, GetClientsDashboardStatsQueryVariables>;
 export const GetCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"user"},"name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
 export const GetUsersForDropdownDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersForDropdown"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"user_role"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetUsersForDropdownQuery, GetUsersForDropdownQueryVariables>;
 export const GetSystemHealthDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSystemHealth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"databaseHealth"},"name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"recentActivity"},"name":{"kind":"Name","value":"auditLogsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '1 hour'","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetSystemHealthQuery, GetSystemHealthQueryVariables>;

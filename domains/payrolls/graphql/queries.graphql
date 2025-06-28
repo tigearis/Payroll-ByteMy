@@ -141,6 +141,27 @@ query GetPayrollDashboardStats {
     }
   }
   
+  totalEmployees: payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
+  ) {
+    aggregate {
+      sum {
+        employeeCount
+      }
+    }
+  }
+  
+  pendingPayrolls: payrollsAggregate(
+    where: { 
+      supersededDate: { _isNull: true }
+      status: { _eq: "Implementation" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
   processingPayrolls: payrollsAggregate(
     where: { 
       supersededDate: { _isNull: true }

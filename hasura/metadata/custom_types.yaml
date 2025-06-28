@@ -180,6 +180,32 @@ custom_types:
           description: "Holiday event"
         - value: "leave"
           description: "Leave event"
+
+    - name: UserStatusEnum
+      description: "User account status"
+      values:
+        - value: "pending"
+          description: "User account is pending activation"
+        - value: "active"
+          description: "User account is active"
+        - value: "inactive"
+          description: "User account is deactivated"
+        - value: "locked"
+          description: "User account is locked"
+
+    - name: InvitationStatusEnum
+      description: "User invitation status"
+      values:
+        - value: "pending"
+          description: "Invitation is pending acceptance"
+        - value: "accepted"
+          description: "Invitation has been accepted"
+        - value: "expired"
+          description: "Invitation has expired"
+        - value: "revoked"
+          description: "Invitation has been revoked"
+        - value: "cancelled"
+          description: "Invitation has been cancelled"
   # Optional: Custom Input/Output Objects can be defined here if needed
   # objects: []
   # input_objects: []

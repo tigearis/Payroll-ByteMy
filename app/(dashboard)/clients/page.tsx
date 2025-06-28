@@ -306,8 +306,8 @@ function ClientsPage() {
   // Minimal client-side processing for display purposes only
   const displayClients = clients.map((client: any) => ({
     ...client,
-    payrollCount: client.payrollCount?.aggregate?.count || 0,
-    totalEmployees: client.totalEmployees?.aggregate?.sum?.employeeCount || 0
+    payrollCount: client.payrollsAggregate?.aggregate?.count || 0,
+    totalEmployees: 0 // Not available per client in current query
   }));
 
   // Client-side payroll count filtering (since it requires aggregation)
@@ -382,8 +382,8 @@ function ClientsPage() {
   // Get summary statistics from dedicated stats query
   const totalClients = statsData?.activeClientsCount?.aggregate?.count || 0;
   const activeClients = totalClients; // This query already filters for active clients
-  const totalPayrolls = 0; // Not available in current query structure
-  const totalEmployees = 0; // Not available in current query, would need separate query
+  const totalPayrolls = statsData?.totalPayrollsCount?.aggregate?.count || 0;
+  const totalEmployees = statsData?.totalEmployeesSum?.aggregate?.sum?.employeeCount || 0;
 
 
   // Use useEffect to reset page when filters change
@@ -418,7 +418,7 @@ function ClientsPage() {
               <div className="flex items-center space-x-2">
                 <Users className="w-4 h-4 text-gray-400" />
                 <span className="text-gray-600">
-                  {client.payrollCount?.aggregate?.count || 0} payrolls
+                  {client.payrollCount || 0} payrolls
                 </span>
               </div>
             </div>
@@ -487,7 +487,7 @@ function ClientsPage() {
               <div className="flex items-center space-x-4">
                 <div className="text-right text-sm">
                   <p className="font-medium text-gray-900">
-                    {client.payrollCount?.aggregate?.count || 0} payrolls
+                    {client.payrollCount || 0} payrolls
                   </p>
                   <p className="text-gray-500">
                     {client.active ? "Active" : "Inactive"} client

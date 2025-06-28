@@ -63,7 +63,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PayrollsTable } from "@/domains/payrolls/components/payrolls-table";
-import { GetPayrollsPaginatedDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GetPayrollsPaginatedDocument, GetPayrollDashboardStatsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useUserRole } from "@/hooks/use-user-role";
 import { useCachedQuery } from "@/hooks/use-strategic-query";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
@@ -406,6 +406,12 @@ export default function PayrollsPage() {
     fetchPolicy: "cache-and-network"
   });
 
+  // Get dashboard stats for accurate totals
+  const { data: statsData, loading: statsLoading, error: statsError } = useQuery(GetPayrollDashboardStatsDocument, {
+    errorPolicy: "all",
+    fetchPolicy: "cache-and-network"
+  });
+
   const payrolls = data?.payrolls || [];
   const totalCount = data?.payrollsAggregate?.aggregate?.count || 0;
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -415,9 +421,17 @@ export default function PayrollsPage() {
       if (!payrollDates || payrollDates.length === 0) return null;
       const today = new Date();
       const futureDates = payrollDates
-        .filter(date => date.adjustedEftDate && new Date(date.adjustedEftDate) >= today)
-        .sort((a, b) => new Date(a.adjustedEftDate).getTime() - new Date(b.adjustedEftDate).getTime());
-      return futureDates.length > 0 ? futureDates[0].adjustedEftDate : null;
+        .filter(date => {
+          // Use adjustedEftDate if available, otherwise fall back to originalEftDate
+          const eftDate = date.adjustedEftDate || date.originalEftDate;
+          return eftDate && new Date(eftDate) >= today;
+        })
+        .sort((a, b) => {
+          const dateA = a.adjustedEftDate || a.originalEftDate;
+          const dateB = b.adjustedEftDate || b.originalEftDate;
+          return new Date(dateA).getTime() - new Date(dateB).getTime();
+        });
+      return futureDates.length > 0 ? (futureDates[0].adjustedEftDate || futureDates[0].originalEftDate) : null;
     };
 
     return payrolls.map((payroll: any) => {
@@ -446,14 +460,12 @@ export default function PayrollsPage() {
   }, [payrolls]);
 
   const payrollsList = data?.payrolls || [];
-  const { activePayrolls, totalEmployees, totalClients, pendingPayrolls } = useMemo(() => {
-    return {
-      activePayrolls: payrollsList.filter((p: any) => p.status === "Active").length,
-      totalEmployees: payrollsList.reduce((sum: number, p: any) => sum + (p.employeeCount || 0), 0),
-      totalClients: new Set(payrollsList.map((p: any) => p.client?.id).filter(Boolean)).size,
-      pendingPayrolls: payrollsList.filter((p: any) => ["Implementation"].includes(p.status || "Implementation")).length
-    };
-  }, [payrollsList]);
+  
+  // Use dashboard stats for accurate totals instead of paginated data
+  const totalPayrollsCount = statsData?.totalPayrolls?.aggregate?.count || 0;
+  const activePayrolls = statsData?.activePayrolls?.aggregate?.count || 0;
+  const totalEmployees = statsData?.totalEmployees?.aggregate?.sum?.employeeCount || 0;
+  const pendingPayrolls = statsData?.pendingPayrolls?.aggregate?.count || 0;
 
   useEffect(() => {
     setCurrentPage(1);
@@ -535,13 +547,13 @@ export default function PayrollsPage() {
     );
   }
 
-  if (error && !payrolls.length) {
+  if ((error && !payrolls.length) || statsError) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
           <AlertTriangle className="w-8 h-8 mx-auto text-destructive" />
           <p className="text-destructive">
-            Error loading payrolls: {error.message}
+            Error loading payrolls: {error?.message || statsError?.message}
           </p>
           <Button onClick={() => refetch()} variant="outline">
             <RefreshCw className="w-4 h-4 mr-2" />
@@ -581,7 +593,7 @@ export default function PayrollsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Payrolls</p>
-                  <p className="text-2xl font-bold text-gray-900">{payrollsList.length}</p>
+                  <p className="text-2xl font-bold text-gray-900">{totalPayrollsCount}</p>
                 </div>
                 <FileText className="w-8 h-8 text-blue-600" />
               </div>
@@ -625,11 +637,12 @@ export default function PayrollsPage() {
           </Card>
         </div>
 
-        {/* Main content */}
+        {/* Filters and Controls */}
         <Card>
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex flex-col sm:flex-row gap-4">
+                {/* Search */}
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
@@ -640,6 +653,7 @@ export default function PayrollsPage() {
                   />
                 </div>
                 
+                {/* Advanced Filters Button */}
                 <Button
                   variant="outline"
                   onClick={() => setShowFilters(!showFilters)}
@@ -649,7 +663,14 @@ export default function PayrollsPage() {
                   Filters
                   {hasActiveFilters && (
                     <Badge variant="secondary" className="ml-2 text-xs">
-                      Active
+                      {[
+                        searchTerm,
+                        statusFilter.length > 0,
+                        clientFilter.length > 0,
+                        consultantFilter.length > 0,
+                        payCycleFilter.length > 0,
+                        dateTypeFilter.length > 0,
+                      ].filter(Boolean).length}
                     </Badge>
                   )}
                 </Button>
@@ -660,14 +681,128 @@ export default function PayrollsPage() {
                     Clear
                   </Button>
                 )}
+
+                {/* Sort Dropdown */}
+                <Select
+                  value={`${sortField}-${sortDirection}`}
+                  onValueChange={value => {
+                    const [field, direction] = value.split("-");
+                    setSortField(field);
+                    setSortDirection(direction as "ASC" | "DESC");
+                  }}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Sort by..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="name-ASC">Name A-Z</SelectItem>
+                    <SelectItem value="name-DESC">Name Z-A</SelectItem>
+                    <SelectItem value="client-ASC">Client A-Z</SelectItem>
+                    <SelectItem value="client-DESC">Client Z-A</SelectItem>
+                    <SelectItem value="status-ASC">Status A-Z</SelectItem>
+                    <SelectItem value="status-DESC">Status Z-A</SelectItem>
+                    <SelectItem value="employees-ASC">Employees ↑</SelectItem>
+                    <SelectItem value="employees-DESC">Employees ↓</SelectItem>
+                    <SelectItem value="lastUpdated-ASC">Updated ↑</SelectItem>
+                    <SelectItem value="lastUpdated-DESC">Updated ↓</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* View Mode Toggle */}
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant={viewMode === "cards" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("cards")}
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "table" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("table")}
+                >
+                  <TableIcon className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                >
+                  <List className="w-4 h-4" />
+                </Button>
               </div>
             </div>
 
-            {/* Rest of the component would continue here */}
+            {/* Advanced Filter Dropdowns */}
+            {showFilters && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t mt-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Status</label>
+                  <MultiSelect
+                    options={uniqueStatuses.map(status => ({ value: status, label: status }))}
+                    selected={statusFilter}
+                    onSelectionChange={setStatusFilter}
+                    placeholder="All statuses"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Client</label>
+                  <MultiSelect
+                    options={uniqueClients.map(client => ({ value: client.id, label: client.name }))}
+                    selected={clientFilter}
+                    onSelectionChange={setClientFilter}
+                    placeholder="All clients"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Consultant</label>
+                  <MultiSelect
+                    options={uniqueConsultants.map(consultant => ({ value: consultant.id, label: consultant.name }))}
+                    selected={consultantFilter}
+                    onSelectionChange={setConsultantFilter}
+                    placeholder="All consultants"
+                  />
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Content based on view mode */}
+        {loading || statsLoading ? (
+          <Card>
+            <CardContent className="p-12">
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : payrolls.length === 0 ? (
+          <Card>
+            <CardContent className="p-12">
+              <div className="text-center">
+                <FileText className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  {hasActiveFilters ? "No payrolls found" : "No payrolls yet"}
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  {hasActiveFilters
+                    ? "Try adjusting your search criteria or filters"
+                    : "Get started by adding your first payroll"}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div>
             {viewMode === "table" && (
               <PayrollsTable
                 payrolls={payrollsList}
-                loading={!!loading}
+                loading={!!loading || !!statsLoading}
                 onRefresh={refetch}
                 selectedPayrolls={selectedPayrolls}
                 onSelectPayroll={handleSelectPayroll}
@@ -678,8 +813,21 @@ export default function PayrollsPage() {
                 onSort={handleSort}
               />
             )}
-          </CardContent>
-        </Card>
+
+            {/* TODO: Add card and list views similar to clients page */}
+            {viewMode === "cards" && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Card view coming soon!</p>
+              </div>
+            )}
+
+            {viewMode === "list" && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">List view coming soon!</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
