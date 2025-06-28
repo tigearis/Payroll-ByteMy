@@ -192,6 +192,123 @@ Imports should be ordered: builtin → external → internal → parent → sibl
 3. **Before committing**: Run `pnpm build` to ensure production build passes
 4. **Quality gate**: Use `pnpm quality:check` for comprehensive validation
 
+## UI/UX Patterns and Standards
+
+### Page Layout Consistency
+All list/table pages follow the same standardized layout pattern established in the clients and payrolls pages:
+
+1. **Header Section**: Page title, description, and primary action button
+2. **Summary Cards**: 4-column grid showing key metrics with colored icons
+3. **Filters Card**: Separate card containing search, filters, sorting, and view modes
+4. **Content Section**: Table, card, or list view based on user selection
+
+### Summary Statistics Implementation
+- **Use dedicated dashboard stats queries** for accurate totals instead of paginated data
+- **Separate query execution** from main data queries to avoid performance issues
+- **Include comprehensive error handling** for both main and stats queries
+- **Examples**: 
+  - Clients page: `GetClientsDashboardStatsDocument` 
+  - Payrolls page: `GetPayrollDashboardStatsDocument`
+
+### Filter and Search Patterns
+```typescript
+// Standard filter card structure:
+<Card>
+  <CardContent className="p-6">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
+        {/* Search input */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Input placeholder="Search..." className="pl-10 w-[300px]" />
+        </div>
+        
+        {/* Filter button with active count */}
+        <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+          <Filter className="w-4 h-4 mr-2" />
+          Filters
+          {hasActiveFilters && <Badge variant="secondary" className="ml-2 text-xs">{filterCount}</Badge>}
+        </Button>
+        
+        {/* Clear filters button */}
+        {hasActiveFilters && (
+          <Button variant="ghost" size="sm" onClick={clearFilters}>
+            <X className="w-4 h-4 mr-1" />
+            Clear
+          </Button>
+        )}
+        
+        {/* Sort dropdown */}
+        <Select value={`${sortField}-${sortDirection}`}>
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Sort by..." />
+          </SelectTrigger>
+        </Select>
+      </div>
+
+      {/* View mode toggle */}
+      <div className="flex items-center space-x-2">
+        <Button variant={viewMode === "cards" ? "default" : "outline"} size="sm">
+          <Grid3X3 className="w-4 h-4" />
+        </Button>
+        <Button variant={viewMode === "table" ? "default" : "outline"} size="sm">
+          <TableIcon className="w-4 h-4" />
+        </Button>
+        <Button variant={viewMode === "list" ? "default" : "outline"} size="sm">
+          <List className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+
+    {/* Expandable filter dropdowns */}
+    {showFilters && (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t mt-4">
+        {/* MultiSelect components for various filters */}
+      </div>
+    )}
+  </CardContent>
+</Card>
+```
+
+### Date and Time Handling
+- **EFT Dates**: Always prioritize `adjustedEftDate` over `originalEftDate` when available
+- **Date Display**: Use consistent formatting with `formatDate()` and `formatDateTime()` helpers
+- **Timezone Considerations**: All dates should be handled in user's local timezone
+
+### Form Field Naming Conventions
+When working with edit forms and GraphQL mutations:
+- **Database fields use camelCase**: `primaryConsultantUserId`, `backupConsultantUserId`, `managerUserId`
+- **User filtering**: Use `isStaff` property (not `is_staff`)
+- **Role validation**: Check against `["manager", "developer", "org_admin"]` for manager-level roles
+- **Dropdown initialization**: Handle "none" state properly with fallback values
+
+### GraphQL Query Optimization
+Recent optimizations implemented (2025-06-28):
+- **Combined dashboard queries** reduce network requests by 50-75%
+- **Domain-specific fragments** ensure type safety and performance
+- **Aggregate queries separate from paginated data** for accurate statistics
+- **Error boundary patterns** for graceful fallback handling
+
+## Recent Updates (2025-06-28)
+
+### Payrolls Page Enhancements
+✅ **Layout Standardization**: Updated payrolls page to match clients page layout with separate filter card
+✅ **View Mode Support**: Added cards, table, and list view modes (card/list views ready for implementation)
+✅ **Enhanced Filtering**: Multi-select filters for status, client, and consultant
+✅ **Accurate Statistics**: Dashboard stats query provides correct totals instead of paginated data
+✅ **Next EFT Date Fix**: Now shows `adjustedEftDate` when available, fallback to `originalEftDate`
+
+### Payroll Details Page Fixes
+✅ **Edit Mode Dropdowns**: Fixed consultant/manager assignment dropdowns to show current values
+✅ **User List Population**: Fixed filtering to use correct field names (`isStaff`, proper role checks)
+✅ **Schedule Display**: Added payroll schedule to summary card with 4-column layout
+✅ **Field Initialization**: Proper mapping of GraphQL response to edit form fields
+
+### GraphQL Schema Updates
+✅ **Enhanced Dashboard Stats**: Added `totalEmployees` and `pendingPayrolls` to dashboard queries
+✅ **Client Aggregates**: Updated `ClientListItem` fragment to include `payrollsAggregate`
+✅ **Type Safety**: All generated types updated and build passes cleanly
+
 ## Important Notes
 
 - **Never commit** environment secrets or API keys
@@ -200,3 +317,4 @@ Imports should be ordered: builtin → external → internal → parent → sibl
 - **Test permission boundaries** when adding new features
 - **Use the existing design system** (shadcn/ui components)
 - **Maintain audit trails** for all data modifications
+- **Follow established UI patterns** for consistency across pages

@@ -33,11 +33,11 @@ export const GET = withAuth(
 
       // Get user by email address
       try {
-        const users = await client.users.getUserList({
+        const { data } = await client.users.getUserList({
           emailAddress: [email],
         });
 
-        if (users.data.length === 0) {
+        if (data.length === 0) {
           return NextResponse.json({
             exists: false,
             onboardingComplete: false,
@@ -46,7 +46,7 @@ export const GET = withAuth(
           });
         }
 
-        const user = users.data[0];
+        const user = data[0];
         const metadata = user.publicMetadata || {};
 
         return NextResponse.json({

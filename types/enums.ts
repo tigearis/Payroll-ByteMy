@@ -63,3 +63,10 @@ export enum LeaveStatus {
   Rejected = "rejected",
   Cancelled = "cancelled",
 }
+
+export enum AuditAction {
+  InvitationListViewed = "invitation_list_viewed",
+  InvitationRevoked = "invitation_revoked",
+  InvitationResent = "invitation_resent",
+  // ...other actions
+}

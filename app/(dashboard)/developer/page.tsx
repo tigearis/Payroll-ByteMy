@@ -247,6 +247,56 @@ function DeveloperPageContent() {
         </CardContent>
       </Card>
 
+      {/* User Creation Diagnostics */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            User Creation Diagnostics
+          </CardTitle>
+          <CardDescription>
+            Step-by-step testing and debugging of the user creation flow
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h4 className="font-medium mb-2">Production Debug Tool</h4>
+              <p className="text-sm text-gray-600 mb-3">
+                Comprehensive testing suite for the user creation flow. Test each step individually:
+                JWT token validation, role authorization, API connectivity, database operations, 
+                Clerk integration, and full flow simulation.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                <div className="text-sm">
+                  <strong>Tests Available:</strong>
+                  <ul className="mt-1 space-y-1 text-xs text-gray-600">
+                    <li>• Environment configuration check</li>
+                    <li>• JWT token generation & validation</li>
+                    <li>• API route connectivity testing</li>
+                    <li>• Role-based authorization checks</li>
+                  </ul>
+                </div>
+                <div className="text-sm">
+                  <strong>Advanced Features:</strong>
+                  <ul className="mt-1 space-y-1 text-xs text-gray-600">
+                    <li>• Input validation testing</li>
+                    <li>• Database connection verification</li>
+                    <li>• Clerk API integration testing</li>
+                    <li>• Full user creation simulation</li>
+                  </ul>
+                </div>
+              </div>
+              <Button asChild>
+                <a href="/developer/diagnostics/user-creation">
+                  Open User Creation Diagnostics
+                </a>
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Debug Permissions */}
       <Card>
         <CardHeader>

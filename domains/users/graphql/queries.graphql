@@ -94,7 +94,7 @@ query GetStaffDetailComplete($id: uuid!) {
     clerkUserId
     createdAt
     updatedAt
-    
+
     # Manager relationship
     managerUser {
       id
@@ -102,7 +102,7 @@ query GetStaffDetailComplete($id: uuid!) {
       email
       role
     }
-    
+
     # Direct reports (if this user is a manager)
     managedUsers {
       id
@@ -112,13 +112,13 @@ query GetStaffDetailComplete($id: uuid!) {
       isActive
     }
   }
-  
+
   # User's effective permissions (combines GetUserEffectivePermissions)
   userPermissions: userRoles(where: { userId: { _eq: $id } }) {
     roleId
     userId
   }
-  
+
   # Permission overrides (combines GetUserPermissionOverrides)
   permissionOverrides(where: { userId: { _eq: $id } }) {
     id
@@ -129,7 +129,7 @@ query GetStaffDetailComplete($id: uuid!) {
     createdAt
     createdBy
   }
-  
+
   # Recent audit activity for this user
   userActivity: auditLogs(
     where: { userId: { _eq: $id } }
@@ -142,7 +142,7 @@ query GetStaffDetailComplete($id: uuid!) {
     eventTime
     success
   }
-  
+
   # Payrolls this user is involved with
   managedPayrolls: payrolls(
     where: {
@@ -844,6 +844,129 @@ query GetUserWorkload($id: uuid!) {
       client {
         name
       }
+    }
+  }
+}
+
+query GetInvitationsWithStatus(
+  $statuses: [invitation_status_enum!]
+  $limit: Int = 50
+  $offset: Int = 0
+) {
+  userInvitations(
+    where: { invitationStatus: { _in: $statuses } }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitedRole
+    invitationStatus
+    invitedAt
+    expiresAt
+    revokedAt
+    revokeReason
+    invitedByUser {
+      id
+      name
+      email
+    }
+  }
+  userInvitationsAggregate(where: { invitationStatus: { _in: $statuses } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetInvitationDashboardStats {
+  pending: userInvitationsAggregate(
+    where: { invitationStatus: { _eq: "pending" }, expiresAt: { _gt: "now()" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  expired: userInvitationsAggregate(
+    where: { invitationStatus: { _eq: "expired" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  accepted: userInvitationsAggregate(
+    where: { invitationStatus: { _eq: "accepted" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  revoked: userInvitationsAggregate(
+    where: { invitationStatus: { _eq: "revoked" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  expiringSoon: userInvitationsAggregate(
+    where: {
+      invitationStatus: { _eq: "pending" }
+      expiresAt: { _gt: "now()", _lt: "now() + interval '7 days'" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  recentInvitations: userInvitations(
+    where: { createdAt: { _gte: "now() - interval '30 days'" } }
+    orderBy: { createdAt: DESC }
+    limit: 10
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitationStatus
+    createdAt
+    expiresAt
+    invitedByUser {
+      name
+      email
+    }
+  }
+
+  byStatus: userInvitationsAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetExpiringInvitations($daysUntilExpiry: interval!) {
+  userInvitations(
+    where: {
+      invitationStatus: { _eq: "pending" }
+      expiresAt: { _gt: "now()", _lt: "now() + $daysUntilExpiry" }
+    }
+    orderBy: { expiresAt: ASC }
+  ) {
+    id
+    email
+    firstName
+    lastName
+    expiresAt
+    invitedByUser {
+      name
+      email
     }
   }
 }

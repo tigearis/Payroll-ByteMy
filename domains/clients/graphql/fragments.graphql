@@ -37,6 +37,11 @@ fragment ClientSummary on clients {
 fragment ClientListItem on clients {
   ...ClientBasic
   # Optimized field selection for list performance
+  payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
+    aggregate {
+      count
+    }
+  }
 }
 
 # ============================================

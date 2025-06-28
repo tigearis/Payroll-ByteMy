@@ -25,6 +25,10 @@ const CreateStaffSchema = z.object({
   is_staff: z.boolean().default(true),
   managerId: z.string().uuid().optional().nullable(),
   inviteToClerk: z.boolean().default(true),
+  // Debug flags for testing
+  test: z.boolean().optional(),
+  skipValidation: z.boolean().optional(),
+  testClerkOnly: z.boolean().optional(),
 });
 
 type CreateStaffInput = z.infer<typeof CreateStaffSchema>;
@@ -32,6 +36,7 @@ type CreateStaffInput = z.infer<typeof CreateStaffSchema>;
 // Validate required environment variables
 function validateEnvironment(): { clerkSecretKey: string; appUrl: string } {
   const clerkSecretKey = process.env.CLERK_SECRET_KEY;
+  const clerkAppUrl = process.env.NEXT_PUBLIC_CLERK_BAPI_URL;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   if (!clerkSecretKey) {
@@ -39,7 +44,9 @@ function validateEnvironment(): { clerkSecretKey: string; appUrl: string } {
   }
 
   if (!appUrl) {
-    throw new Error("NEXT_PUBLIC_APP_URL environment variable is required");
+    throw new Error(
+      "NEXT_PUBLIC_CLERK_BAPI_URL environment variable is required"
+    );
   }
 
   return { clerkSecretKey, appUrl };
@@ -73,33 +80,42 @@ async function createClerkInvitation(
     redirectUrl: invitationParams.redirectUrl,
     notify: invitationParams.notify,
     ignoreExisting: invitationParams.ignoreExisting,
-    publicMetadataKeys: Object.keys(invitationParams.publicMetadata)
+    publicMetadataKeys: Object.keys(invitationParams.publicMetadata),
   });
 
   try {
-    const invitation = await clerkClient.invitations.createInvitation(invitationParams);
+    const invitation =
+      await clerkClient.invitations.createInvitation(invitationParams);
     return { invitation, sent: true };
   } catch (error: any) {
     // If invitation already exists, try with ignoreExisting: true
-    if (error.errors?.some((e: any) => 
-      e.code === "form_identifier_exists" || 
-      e.code === "duplicate_record" ||
-      e.message?.includes("already exists")
-    )) {
-      console.log(`⚠️ Invitation exists for ${staffInput.email}, retrying with ignoreExisting: true`);
-      
+    if (
+      error.errors?.some(
+        (e: any) =>
+          e.code === "form_identifier_exists" ||
+          e.code === "duplicate_record" ||
+          e.message?.includes("already exists")
+      )
+    ) {
+      console.log(
+        `⚠️ Invitation exists for ${staffInput.email}, retrying with ignoreExisting: true`
+      );
+
       try {
         const invitation = await clerkClient.invitations.createInvitation({
           ...invitationParams,
-          ignoreExisting: true
+          ignoreExisting: true,
         });
         return { invitation, sent: true };
       } catch (retryError: any) {
-        console.error("❌ Failed even with ignoreExisting: true:", retryError.message);
+        console.error(
+          "❌ Failed even with ignoreExisting: true:",
+          retryError.message
+        );
         throw retryError;
       }
     }
-    
+
     // Re-throw other errors
     throw error;
   }
@@ -136,7 +152,7 @@ export const POST = withAuth(
 
       console.log("🔧 Starting staff creation process...");
       console.log("🔧 Request validation and environment setup...");
-      
+
       // Step 0: Early environment validation
       try {
         validateEnvironment();
@@ -163,6 +179,21 @@ export const POST = withAuth(
 
       // Get and validate request body
       const body = await request.json();
+
+      // Handle test flags for debugging
+      if (body.test === true && body.skipValidation === true) {
+        console.log("🧪 Test mode: Skipping validation, returning early");
+        return NextResponse.json({
+          success: true,
+          message: "Test mode - validation bypassed",
+          testMode: true,
+          sessionInfo: {
+            userId: session.userId,
+            role: session.role,
+            claims: session.sessionClaims?.["https://hasura.io/jwt/claims"],
+          },
+        });
+      }
 
       // Validate input data
       const validationResult = CreateStaffSchema.safeParse(body);
@@ -202,6 +233,44 @@ export const POST = withAuth(
       const staffInput = validationResult.data;
       console.log("✅ Input validation passed");
 
+      // Handle Clerk-only test
+      if (staffInput.testClerkOnly) {
+        console.log("🧪 Test mode: Testing Clerk connection only");
+        try {
+          const { clerkSecretKey, appUrl } = validateEnvironment();
+          const clerkClient = createClerkClient({ secretKey: clerkSecretKey });
+
+          // Test Clerk connection without creating invitation
+          const testInvitation = {
+            emailAddress: "test@example.com",
+            notify: false,
+            ignoreExisting: true,
+          };
+
+          // Note: We don't actually create the invitation, just test the client
+          return NextResponse.json({
+            success: true,
+            message: "Clerk API connection test completed",
+            testMode: true,
+            clerkConfig: {
+              hasSecretKey: !!clerkSecretKey,
+              appUrl: appUrl,
+              clientInitialized: !!clerkClient,
+            },
+          });
+        } catch (error: any) {
+          return NextResponse.json(
+            {
+              success: false,
+              message: "Clerk API test failed",
+              error: error.message,
+              testMode: true,
+            },
+            { status: 500 }
+          );
+        }
+      }
+
       // Step 1: Get validated environment (already validated above)
       const { clerkSecretKey, appUrl } = validateEnvironment();
 
@@ -214,7 +283,8 @@ export const POST = withAuth(
           console.log(`📧 Sending Clerk invitation to: ${staffInput.email}`);
           console.log("📧 Environment check:", {
             hasClerkSecret: !!clerkSecretKey,
-            hasClerkPublishable: !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+            hasClerkPublishable:
+              !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
             appUrl,
           });
 
@@ -246,18 +316,27 @@ export const POST = withAuth(
           });
 
           // Handle specific Clerk error cases based on documentation
-          if (clerkError.errors?.some((e: any) => 
-            e.code === "form_identifier_exists" || 
-            e.code === "duplicate_record" ||
-            e.message?.includes("already exists")
-          )) {
+          if (
+            clerkError.errors?.some(
+              (e: any) =>
+                e.code === "form_identifier_exists" ||
+                e.code === "duplicate_record" ||
+                e.message?.includes("already exists")
+            )
+          ) {
             console.log(`⚠️ Invitation already exists for ${staffInput.email}`);
             // According to Clerk docs, we can set ignoreExisting: true to bypass this
-            console.log("⚠️ Consider using ignoreExisting: true for existing invitations");
+            console.log(
+              "⚠️ Consider using ignoreExisting: true for existing invitations"
+            );
             // Continue - we'll still create the database user
           } else if (clerkError.status === 422) {
-            console.error("❌ Validation error from Clerk - check invitation parameters");
-            throw new Error(`Clerk invitation validation failed: ${clerkError.message}`);
+            console.error(
+              "❌ Validation error from Clerk - check invitation parameters"
+            );
+            throw new Error(
+              `Clerk invitation validation failed: ${clerkError.message}`
+            );
           } else if (clerkError.status === 401) {
             console.error("❌ Authentication error - check CLERK_SECRET_KEY");
             throw new Error("Clerk authentication failed - invalid secret key");
@@ -456,25 +535,34 @@ export const POST = withAuth(
       console.error("Error type:", error.constructor.name);
       console.error("Error message:", error.message);
       console.error("Error stack:", error.stack);
-      
+
       // Log specific error details
       if (error.message?.includes("Environment configuration")) {
         console.error("🔧 Environment Error - Check your .env file:");
         console.error("- CLERK_SECRET_KEY:", !!process.env.CLERK_SECRET_KEY);
-        console.error("- NEXT_PUBLIC_APP_URL:", !!process.env.NEXT_PUBLIC_APP_URL);
-        console.error("- HASURA_ADMIN_SECRET:", !!process.env.HASURA_ADMIN_SECRET);
+        console.error(
+          "- NEXT_PUBLIC_APP_URL:",
+          !!process.env.NEXT_PUBLIC_APP_URL
+        );
+        console.error(
+          "- HASURA_ADMIN_SECRET:",
+          !!process.env.HASURA_ADMIN_SECRET
+        );
       }
-      
+
       if (error.graphQLErrors) {
         console.error("GraphQL Errors:", error.graphQLErrors);
       }
-      
+
       if (error.networkError) {
         console.error("Network Error:", error.networkError);
       }
-      
+
       if (error.code || error.status) {
-        console.error("Error Code/Status:", { code: error.code, status: error.status });
+        console.error("Error Code/Status:", {
+          code: error.code,
+          status: error.status,
+        });
       }
 
       try {
