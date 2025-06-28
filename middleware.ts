@@ -29,7 +29,7 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Get complete auth data using auth() instead of auth.protect()
   try {
-    const { userId, sessionClaims, redirectToSignIn } = await auth();
+    const { userId, sessionClaims, redirectToSignIn, getToken } = await auth();
 
     // Handle unauthenticated users
     if (!userId) {
@@ -40,25 +40,43 @@ export default clerkMiddleware(async (auth, req) => {
       return redirectToSignIn();
     }
 
+    // Get JWT token to access claims
+    const token = await getToken({ template: "hasura" });
+    
     // Get complete session data
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
     const publicMetadata = sessionClaims?.publicMetadata as any;
     
+    // If sessionClaims doesn't have JWT claims, try to get them from the token
+    let jwtClaims = hasuraClaims;
+    if (!jwtClaims && token) {
+      // Decode the JWT token to get claims
+      try {
+        const base64Payload = token.split('.')[1];
+        const decodedPayload = JSON.parse(atob(base64Payload));
+        jwtClaims = decodedPayload["https://hasura.io/jwt/claims"];
+      } catch (error) {
+        console.error("Failed to decode JWT token:", error);
+      }
+    }
+    
     // DETAILED DEBUG LOGGING
     console.log("🔍 DETAILED SESSION DEBUG:", {
       hasSessionClaims: !!sessionClaims,
+      hasToken: !!token,
       hasuraClaims: hasuraClaims,
+      jwtClaims: jwtClaims,
       publicMetadata: publicMetadata,
-      jwtUserId: hasuraClaims?.["x-hasura-user-id"],
-      jwtRole: hasuraClaims?.["x-hasura-default-role"], 
+      jwtUserId: jwtClaims?.["x-hasura-user-id"],
+      jwtRole: jwtClaims?.["x-hasura-default-role"], 
       metadataRole: publicMetadata?.role,
       metadataDatabaseId: publicMetadata?.databaseId
     });
     
-    // Check if we have complete user data
-    const hasCompleteJWTClaims = hasuraClaims?.["x-hasura-user-id"] && hasuraClaims?.["x-hasura-default-role"];
+    // Check if we have complete user data (use jwtClaims instead of hasuraClaims)
+    const hasCompleteJWTClaims = jwtClaims?.["x-hasura-user-id"] && jwtClaims?.["x-hasura-default-role"];
     const hasCompleteMetadata = publicMetadata?.databaseId && publicMetadata?.role;
-    const userRole = hasuraClaims?.["x-hasura-default-role"] || publicMetadata?.role;
+    const userRole = jwtClaims?.["x-hasura-default-role"] || publicMetadata?.role;
     
     console.log("🔍 COMPLETENESS CHECK:", {
       hasCompleteJWTClaims,
@@ -102,9 +120,9 @@ export default clerkMiddleware(async (auth, req) => {
     console.log("🔍 Auth details:", {
       userId: userId.substring(0, 8) + "...",
       userRole: finalUserRole,
-      hasJwtClaims: !!hasuraClaims,
+      hasJwtClaims: !!jwtClaims,
       hasMetadata: !!publicMetadata,
-      jwtRole: hasuraClaims?.["x-hasura-default-role"],
+      jwtRole: jwtClaims?.["x-hasura-default-role"],
       metadataRole: publicMetadata?.role,
       pathname,
       method: req.method,
