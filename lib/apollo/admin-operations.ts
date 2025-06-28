@@ -67,16 +67,12 @@ export class AdminOperationsService {
   // Execute admin query with permission check
   async executeAdminQuery<T = any>(
     query: any,
-    variables?: any,
-    options?: { skipAuth?: boolean }
+    variables?: any
   ): Promise<{ data?: T; errors?: readonly any[] }> {
-    // Skip auth check only for system operations (webhooks, cron jobs)
-    if (!options?.skipAuth) {
-      const { isValid } = await this.validateAdminAccess();
+    const { isValid } = await this.validateAdminAccess();
 
-      if (!isValid) {
-        throw new Error("Insufficient permissions for admin access");
-      }
+    if (!isValid) {
+      throw new Error("Insufficient permissions for admin access");
     }
 
     try {
@@ -96,16 +92,12 @@ export class AdminOperationsService {
   // Execute admin mutation with permission check
   async executeAdminMutation<T = any>(
     mutation: any,
-    variables?: any,
-    options?: { skipAuth?: boolean }
+    variables?: any
   ): Promise<{ data?: T; errors?: readonly any[] }> {
-    // Skip auth check only for system operations
-    if (!options?.skipAuth) {
-      const { isValid } = await this.validateAdminAccess();
+    const { isValid } = await this.validateAdminAccess();
 
-      if (!isValid) {
-        throw new Error("Insufficient permissions for admin access");
-      }
+    if (!isValid) {
+      throw new Error("Insufficient permissions for admin access");
     }
 
     try {
@@ -130,23 +122,25 @@ export class AdminOperationsService {
     managerId?: string,
     imageUrl?: string
   ) {
-    const { isValid } = await this.validateAdminAccess();
-    if (!isValid && !clerkUserId.startsWith("webhook_")) {
-      throw new Error("Unauthorized: Cannot sync users without admin access");
+    // For webhook operations, we validate admin access in the calling webhook handler
+    // This ensures webhook authentication is handled at the webhook level
+    if (!clerkUserId.startsWith("webhook_")) {
+      const { isValid } = await this.validateAdminAccess();
+      if (!isValid) {
+        throw new Error("Unauthorized: Cannot sync users without admin access");
+      }
     }
 
     // Check if user exists by Clerk ID first
     const { data: clerkUserData } = await this.executeAdminQuery(
       GetUserByClerkIdDocument,
-      { clerkUserId },
-      { skipAuth: clerkUserId.startsWith("webhook_") }
+      { clerkUserId }
     );
 
     // Check if user exists by email as fallback
     const { data: _emailUserData } = await this.executeAdminQuery(
       GetUserByEmailDocument,
-      { email },
-      { skipAuth: clerkUserId.startsWith("webhook_") }
+      { email }
     );
 
     const existingUser = clerkUserData?.users?.[0];
@@ -163,8 +157,7 @@ export class AdminOperationsService {
             managerId,
             image: imageUrl,
           },
-        },
-        { skipAuth: clerkUserId.startsWith("webhook_") }
+        }
       );
 
       return updateData?.updateUser;
@@ -182,8 +175,7 @@ export class AdminOperationsService {
             image: imageUrl,
             isStaff: true,
           },
-        },
-        { skipAuth: clerkUserId.startsWith("webhook_") }
+        }
       );
 
       return createData?.insertUser;
@@ -298,27 +290,24 @@ export const adminOperationsService: Pick<
 > = {
   executeAdminQuery: async <T = any>(
     query: any,
-    variables?: any,
-    options?: { skipAuth?: boolean }
+    variables?: any
   ): Promise<{ data?: T; errors?: readonly any[] }> => {
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return _adminOperationsService.executeAdminQuery(query, variables, options);
+    return _adminOperationsService.executeAdminQuery(query, variables);
   },
   
   executeAdminMutation: async <T = any>(
     mutation: any,
-    variables?: any,
-    options?: { skipAuth?: boolean }
+    variables?: any
   ): Promise<{ data?: T; errors?: readonly any[] }> => {
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
     return _adminOperationsService.executeAdminMutation(
       mutation,
-      variables,
-      options
+      variables
     );
   },
 

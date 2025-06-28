@@ -9,6 +9,7 @@ import {
   GetUserPermissionOverridesDocument 
 } from '@/domains/permissions/graphql/generated/graphql';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { roleSecurityMonitor } from '@/lib/security/role-monitoring';
 
 // Enhanced permission types
 export interface EffectivePermission {
@@ -107,14 +108,32 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
   const databaseId = user?.publicMetadata?.databaseId as string || null;
   const userRole = useMemo(() => {
     // Prefer database user role for security
-    if (databaseUser?.role) {
-      return databaseUser.role as Role;
-    }
-    // Fallback to session claims
+    const dbRole = databaseUser?.role;
     const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const claimsRole = claims?.["x-hasura-default-role"] as Role;
-    return claimsRole || "viewer";
-  }, [databaseUser?.role, sessionClaims]);
+    const jwtRole = claims?.["x-hasura-default-role"];
+    
+    // Monitor for role mismatches
+    if (dbRole && jwtRole && dbRole !== jwtRole && userId && databaseId) {
+      roleSecurityMonitor.monitorRoleMismatch({
+        userId: databaseId,
+        clerkUserId: userId,
+        jwtRole,
+        databaseRole: dbRole,
+        requestPath: window?.location?.pathname || 'unknown',
+        ipAddress: 'client-side',
+        userAgent: navigator?.userAgent || 'unknown',
+        timestamp: new Date()
+      }).catch(error => {
+        console.error('Failed to monitor role mismatch:', error);
+      });
+    }
+    
+    if (dbRole) {
+      return dbRole as Role;
+    }
+    
+    return (jwtRole as Role) || "viewer";
+  }, [databaseUser?.role, sessionClaims, userId, databaseId]);
   
   // Has valid database user for security checks
   const hasValidDatabaseUser = !dbUserLoading && !!databaseUser && !dbUserError;

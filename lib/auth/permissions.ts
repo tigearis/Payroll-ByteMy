@@ -333,6 +333,33 @@ export function sanitizeUserRole(role: unknown): Role {
   return "viewer";
 }
 
+// Get allowed roles based on role hierarchy
+// This function returns all roles that a user can assume based on their current role
+export function getAllowedRoles(userRole: Role): Role[] {
+  const roleLevel = ROLE_HIERARCHY[userRole] || 0;
+  
+  // User can assume their own role and any role below their level
+  const allowedRoles: Role[] = [];
+  
+  for (const [role, level] of Object.entries(ROLE_HIERARCHY)) {
+    if (level <= roleLevel) {
+      allowedRoles.push(role as Role);
+    }
+  }
+  
+  // Sort by hierarchy level (highest to lowest)
+  return allowedRoles.sort((a, b) => ROLE_HIERARCHY[b] - ROLE_HIERARCHY[a]);
+}
+
+// Role hierarchy for allowed roles computation
+export const ROLE_ALLOWED_ROLES: Record<Role, Role[]> = {
+  developer: ["developer", "org_admin", "manager", "consultant", "viewer"],
+  org_admin: ["org_admin", "manager", "consultant", "viewer"],
+  manager: ["manager", "consultant", "viewer"],
+  consultant: ["consultant", "viewer"],
+  viewer: ["viewer"],
+};
+
 // Define permission action types
 export enum PermissionAction {
   Create = "create",
