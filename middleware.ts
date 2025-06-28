@@ -1,172 +1,108 @@
-/**
- * Enterprise-grade authentication middleware for Payroll Matrix
- *
- * This middleware provides comprehensive security and audit logging for all routes
- * with SOC2 compliance, role-based access control, and intelligent response handling.
- *
- * Features:
- * - Centralized route configuration using /config/routes.ts
- * - Role-based access control with 5-tier hierarchy
- * - SOC2-compliant audit logging for all authentication events
- * - Smart response strategy (JSON for APIs, redirects for browser)
- * - Non-blocking audit performance with Promise-based logging
- * - Comprehensive error handling and recovery
- *
- * @author Claude Code (2025-06-28)
- * @see /config/routes.ts - Route configuration and matchers
- * @see /lib/auth/permissions.ts - Role hierarchy and permission utilities
- * @see /lib/services/audit.service.ts - Non-blocking audit logging service
- */
-
+// middleware.ts – SOC2-compliant route protection with role-based access control
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { AuditService } from "@/lib/services/audit.service";
-import { routes, getRequiredRole, isProtectedRoute } from "@/config/routes";
-import { getRoleLevel, hasRoleLevel, type Role } from "@/lib/auth/permissions";
+import { routes, getRequiredRole } from "./config/routes";
+import { AuditService } from "./lib/services/audit.service";
+import { ROLE_HIERARCHY, type Role } from "./lib/auth/permissions";
 
-/**
- * Enhanced authentication middleware with 3-phase implementation:
- * Phase 1: Audit logging integration
- * Phase 2: Centralized route configuration
- * Phase 3: Smart response strategy
- */
+// ================================
+// MIDDLEWARE FUNCTION
+// ================================
+
 export default clerkMiddleware(async (auth, req) => {
-  try {
-    const url = new URL(req.url);
-    const pathname = url.pathname;
+  const pathname = req.nextUrl.pathname;
 
-    // Phase 2: Centralized route configuration
-    // Skip public routes using centralized configuration from /config/routes.ts
-    if (routes.public(req)) return NextResponse.next();
-
-    // Skip system routes (they handle their own auth mechanisms)
-    if (routes.system(req)) return NextResponse.next();
-
-    // Get auth state for protected routes (following Clerk docs pattern)
-    const authObject = await auth();
-    const { sessionClaims } = authObject;
-
-    // Check if user is authenticated for protected routes
-    if (!authObject.userId) {
-      // Phase 1: Audit logging for authentication failures
-      AuditService.logAuthFailure(req, "authentication_failed");
-
-      // Phase 3: Smart response strategy based on route type
-      if (pathname.startsWith("/api/")) {
-        // API routes receive structured JSON error responses
-        return new NextResponse(
-          JSON.stringify({
-            error: "Unauthorized",
-            message: "Authentication required",
-            code: "AUTHENTICATION_REQUIRED",
-          }),
-          {
-            status: 401,
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      } else {
-        // Browser routes get user-friendly redirect with return URL
-        return NextResponse.redirect(
-          new URL(
-            `/sign-in?redirect_url=${encodeURIComponent(pathname)}`,
-            req.url
-          )
-        );
-      }
-    }
-
-    // Phase 2: Role extraction following Clerk documentation pattern
-    const userRole = (sessionClaims?.['x-hasura-default-role'] || 'viewer') as Role;
-    
-    // Debug logging for role extraction issues
-    if (!sessionClaims?.["x-hasura-default-role"]) {
-      console.warn('[MIDDLEWARE] Missing x-hasura-default-role in session claims:', {
-        userId: authObject.userId,
-        pathname,
-        extractedRole: userRole,
-        sessionClaims: JSON.stringify(sessionClaims, null, 2)
-      });
-    }
-
-    // Phase 2: Determine required role using centralized route configuration
-    const requiredRole = getRequiredRole(pathname);
-
-    // Role-based access control with comprehensive audit logging
-    if (requiredRole && !hasRoleLevel(userRole, requiredRole)) {
-      // Phase 1: Audit logging for access denials (SOC2 compliance)
-      AuditService.logAccessDenied(
-        req,
-        userRole,
-        requiredRole,
-        authObject.userId
-      );
-
-      // Phase 3: Smart response strategy for different client types
-      if (pathname.startsWith("/api/")) {
-        // API routes receive detailed JSON error responses
-        return new NextResponse(
-          JSON.stringify({
-            error: "Forbidden",
-            message: `Insufficient permissions. Required role: ${requiredRole}, current role: ${userRole}`,
-            code: "INSUFFICIENT_PERMISSIONS",
-            requiredRole,
-            currentRole: userRole,
-          }),
-          {
-            status: 403,
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      } else {
-        // Browser routes get user-friendly redirect with context
-        return NextResponse.redirect(
-          new URL(
-            `/unauthorized?reason=${requiredRole}_required&current=${userRole}`,
-            req.url
-          )
-        );
-      }
-    }
-
-    // Phase 1: Successful access audit logging (non-blocking for performance)
-    AuditService.logAccess(authObject, req);
-
-    // User authenticated and authorized - proceed to route
-    return NextResponse.next();
-  } catch (error) {
-    // Comprehensive error handling to prevent middleware crashes
-    console.error("[MIDDLEWARE] Unexpected error:", error);
-
-    // Phase 1: Audit logging for unexpected errors (critical for monitoring)
-    AuditService.logAuthFailure(
-      req,
-      `middleware_error: ${error instanceof Error ? error.message : "unknown"}`
-    );
-
-    // Fail-safe strategy: Allow request to proceed but log the incident
-    // This ensures the application remains functional even if middleware encounters issues
-    // In high-security environments, consider returning an error response instead
+  // Skip public routes entirely
+  if (routes.public(req)) {
     return NextResponse.next();
   }
+
+  // Allow system routes to handle their own authentication
+  if (routes.system(req)) {
+    return NextResponse.next();
+  }
+
+  let authResult = null;
+
+  try {
+    // Determine required role for the route
+    const requiredRole = getRequiredRole(pathname);
+
+    if (!requiredRole) {
+      // No specific role required, just ensure user is authenticated
+      authResult = await auth.protect();
+    } else {
+      // Protect route but we'll do role checking separately
+      // (Clerk's role-based protection doesn't align with our custom hierarchy)
+      authResult = await auth.protect();
+
+      if (authResult?.userId) {
+        // Extract user role from session claims
+        const userRole = (authResult.sessionClaims?.[
+          "https://hasura.io/jwt/claims"
+        ]?.["x-hasura-default-role"] ||
+          authResult.sessionClaims?.metadata?.role ||
+          "viewer") as string;
+
+        // Check if user has sufficient role level using role hierarchy
+        const userLevel = ROLE_HIERARCHY[userRole as Role] || 0;
+        const requiredLevel = ROLE_HIERARCHY[requiredRole] || 999;
+        const hasValidRole = userLevel >= requiredLevel;
+
+        if (!hasValidRole) {
+          console.warn(
+            `🚫 Access denied: ${userRole} insufficient for ${requiredRole} (${pathname})`
+          );
+
+          // Log access denial
+          AuditService.logAccessDenied(
+            req,
+            userRole,
+            requiredRole,
+            authResult.userId
+          );
+
+          // Return 403 for API routes, redirect to unauthorized for pages
+          if (pathname.startsWith("/api")) {
+            return NextResponse.json(
+              {
+                error: "Insufficient permissions",
+                required: requiredRole,
+                current: userRole,
+              },
+              { status: 403 }
+            );
+          } else {
+            return NextResponse.redirect(new URL("/unauthorized", req.url));
+          }
+        }
+      }
+    }
+
+    // Non-blocking audit logging for successful access
+    if (authResult?.userId) {
+      AuditService.logAccess(authResult, req);
+    }
+  } catch (error) {
+    console.error("🔒 Middleware auth error:", error);
+
+    // Log authentication failure
+    AuditService.logAuthFailure(
+      req,
+      error instanceof Error ? error.message : "Unknown auth error"
+    );
+
+    // Let Clerk handle the redirect for unauthenticated users
+    throw error;
+  }
+
+  return NextResponse.next();
 });
 
-/**
- * Middleware configuration
- *
- * Matcher pattern excludes static assets for optimal performance:
- * - _next/* - Next.js internal files
- * - Static assets (images, fonts, styles, scripts)
- * - Document files (csv, docx, xlsx, zip)
- *
- * Includes:
- * - All API routes (/api/*, /trpc/*)
- * - All application pages and dynamic routes
- */
+// ================================
+// MIDDLEWARE CONFIG
+// ================================
+
 export const config = {
   matcher: [
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",

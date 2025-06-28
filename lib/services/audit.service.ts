@@ -195,6 +195,7 @@ export class AuditService {
     // Consistent with middleware.ts role extraction pattern
     return (
       authResult.sessionClaims?.["x-hasura-default-role"] ||
+      authResult.sessionClaims?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"] ||
       authResult.sessionClaims?.metadata?.role ||
       "unknown"
     );
