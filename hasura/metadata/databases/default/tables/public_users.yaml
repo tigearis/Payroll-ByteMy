@@ -49,6 +49,9 @@ object_relationships:
         remote_table:
           name: users
           schema: public
+  - name: user
+    using:
+      foreign_key_constraint_on: status_changed_by
 array_relationships:
   - name: assignedRoles
     using:
@@ -166,6 +169,13 @@ array_relationships:
         table:
           name: permission_audit_log
           schema: public
+  - name: userInvitations
+    using:
+      foreign_key_constraint_on:
+        column: revoked_by
+        table:
+          name: user_invitations
+          schema: public
   - name: userInvitationsAcceptedBy
     using:
       foreign_key_constraint_on:
@@ -214,6 +224,13 @@ array_relationships:
         column: user_id
         table:
           name: work_schedule
+          schema: public
+  - name: users
+    using:
+      foreign_key_constraint_on:
+        column: status_changed_by
+        table:
+          name: users
           schema: public
 insert_permissions:
   - role: developer

@@ -85,6 +85,9 @@ object_relationships:
         remote_table:
           name: users
           schema: public
+  - name: user
+    using:
+      foreign_key_constraint_on: revoked_by
 insert_permissions:
   - role: developer
     permission:
