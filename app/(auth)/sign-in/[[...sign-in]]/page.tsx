@@ -117,10 +117,10 @@ export default function SignInPage() {
             <Image
               src="/bytemy-payroll-logo.png"
               alt="ByteMy Logo"
-              width={300}
-              height={90}
+              width={600}
+              height={180}
               priority
-              className="h-20 w-auto"
+              className="h-auto w-auto"
             />
           </div>
 
