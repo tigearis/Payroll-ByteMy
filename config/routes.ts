@@ -17,6 +17,7 @@ export const routes = {
     "/api/webhooks/clerk(.*)",
     "/_next(.*)",
     "/favicon.ico",
+    "/dashboard(.*)",
   ]),
 
   // Developer-only routes (highest privilege level)
@@ -82,7 +83,7 @@ export const routes = {
 export const routeRoleRequirements: Record<string, Role> = {
   // Developer-only access
   "/developer": "developer",
-  "/api/developer": "developer", 
+  "/api/developer": "developer",
   "/api/dev": "developer",
 
   // Admin access required
@@ -94,7 +95,7 @@ export const routeRoleRequirements: Record<string, Role> = {
   // Manager access required
   "/staff": "manager",
   "/api/staff": "manager",
-  "/invitations": "manager", 
+  "/invitations": "manager",
   "/api/invitations": "manager",
 
   // All other protected routes - any authenticated user (consultant level and above)
@@ -117,12 +118,12 @@ export function getRequiredRole(pathname: string): Role | null {
   const isPublicRoute = [
     "/",
     "/sign-in",
-    "/sign-up", 
+    "/sign-up",
     "/accept-invitation",
     "/api/clerk-webhooks",
     "/api/webhooks/clerk",
     "/_next",
-    "/favicon.ico"
+    "/favicon.ico",
   ].some(route => pathname === route || pathname.startsWith(route + "/"));
 
   if (isPublicRoute) {
@@ -130,7 +131,9 @@ export function getRequiredRole(pathname: string): Role | null {
   }
 
   // Check specific role requirements
-  for (const [routePrefix, requiredRole] of Object.entries(routeRoleRequirements)) {
+  for (const [routePrefix, requiredRole] of Object.entries(
+    routeRoleRequirements
+  )) {
     if (pathname.startsWith(routePrefix)) {
       return requiredRole;
     }
@@ -150,12 +153,12 @@ export function isProtectedRoute(pathname: string): boolean {
   const isPublicRoute = [
     "/",
     "/sign-in",
-    "/sign-up", 
+    "/sign-up",
     "/accept-invitation",
     "/api/clerk-webhooks",
     "/api/webhooks/clerk",
     "/_next",
-    "/favicon.ico"
+    "/favicon.ico",
   ].some(route => pathname === route || pathname.startsWith(route + "/"));
 
   if (isPublicRoute) {
@@ -167,7 +170,7 @@ export function isProtectedRoute(pathname: string): boolean {
     "/api/cron",
     "/api/signed",
     "/api/commit-payroll-assignments",
-    "/api/holidays"
+    "/api/holidays",
   ].some(route => pathname.startsWith(route));
 
   if (isSystemRoute) {
@@ -180,32 +183,46 @@ export function isProtectedRoute(pathname: string): boolean {
 
 /**
  * Gets the access level category for a route
- * @param pathname - The request pathname  
+ * @param pathname - The request pathname
  * @returns The access level category
  */
 export function getRouteCategory(pathname: string): keyof typeof routes {
   if (!isProtectedRoute(pathname)) return "public";
-  
-  if (pathname.startsWith("/developer") || pathname.startsWith("/api/developer") || pathname.startsWith("/api/dev")) {
+
+  if (
+    pathname.startsWith("/developer") ||
+    pathname.startsWith("/api/developer") ||
+    pathname.startsWith("/api/dev")
+  ) {
     return "developer";
   }
-  
-  if (pathname.startsWith("/admin") || pathname.startsWith("/security") || pathname.startsWith("/api/admin") || pathname.startsWith("/api/audit")) {
+
+  if (
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/security") ||
+    pathname.startsWith("/api/admin") ||
+    pathname.startsWith("/api/audit")
+  ) {
     return "admin";
   }
-  
-  if (pathname.startsWith("/staff") || pathname.startsWith("/api/staff") || pathname.startsWith("/invitations") || pathname.startsWith("/api/invitations")) {
+
+  if (
+    pathname.startsWith("/staff") ||
+    pathname.startsWith("/api/staff") ||
+    pathname.startsWith("/invitations") ||
+    pathname.startsWith("/api/invitations")
+  ) {
     return "manager";
   }
 
   const isSystemRoute = [
     "/api/cron",
-    "/api/signed", 
+    "/api/signed",
     "/api/commit-payroll-assignments",
-    "/api/holidays"
+    "/api/holidays",
   ].some(route => pathname.startsWith(route));
 
   if (isSystemRoute) return "system";
-  
+
   return "protected";
 }
