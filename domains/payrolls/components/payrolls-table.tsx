@@ -42,6 +42,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+// Payroll cycle constants for formatting display names
+const PAYROLL_CYCLES = [
+  { id: "weekly", name: "Weekly" },
+  { id: "fortnightly", name: "Fortnightly" },
+  { id: "bi_monthly", name: "Bi-Monthly" },
+  { id: "monthly", name: "Monthly" },
+  { id: "quarterly", name: "Quarterly" },
+  { id: "annually", name: "Annually" },
+];
+
 // Payroll status configuration
 const getStatusConfig = (status: string) => {
   const configs = {
@@ -126,6 +136,29 @@ const formatDate = (date: string | Date) => {
     month: "short",
     year: "numeric",
   });
+};
+
+// Format payroll cycle for display
+const formatPayrollCycle = (payroll: any) => {
+  // Check if we have a formatted version already
+  if (payroll.payrollCycleFormatted) {
+    return payroll.payrollCycleFormatted;
+  }
+
+  // Get the cycle name from the relationship
+  const cycleEnum = payroll?.payrollCycle?.name;
+  if (cycleEnum) {
+    const cycle = PAYROLL_CYCLES.find(c => c.id === cycleEnum);
+    return cycle ? cycle.name : cycleEnum;
+  }
+
+  // Fallback to cycleId if available
+  if (payroll?.cycleId) {
+    const cycle = PAYROLL_CYCLES.find(c => c.id === payroll.cycleId);
+    return cycle ? cycle.name : `${payroll.cycleId} (Unknown)`;
+  }
+
+  return "Not configured";
 };
 
 const getPriorityColor = (priority: string) => {
@@ -383,9 +416,7 @@ export function PayrollsTable({
                           <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4 text-gray-500" />
                             <span className="font-medium">
-                              {payroll.payrollCycleFormatted ||
-                                payroll.payrollCycle?.name ||
-                                "Not configured"}
+                              {formatPayrollCycle(payroll)}
                             </span>
                           </div>
                         </TableCell>
