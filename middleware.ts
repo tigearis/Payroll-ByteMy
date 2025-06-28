@@ -1,90 +1,69 @@
-// middleware.ts – SOC2-compliant route protection with role-based access control
-import { clerkMiddleware } from "@clerk/nextjs/server";
+// middleware.ts – SOC2-compliant route protection with audit logging
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { routes, getRequiredRole } from "./config/routes";
-import { AuditService } from "./lib/services/audit.service";
-import { ROLE_HIERARCHY, type Role } from "./lib/auth/permissions";
+import {
+  AuditAction,
+  DataClassification,
+  auditLogger,
+} from "./lib/security/audit/logger";
+
+// ================================
+// ROUTE MATCHERS
+// ================================
+
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/accept-invitation(.*)",
+  "/api/clerk-webhooks(.*)",
+  "/_next(.*)",
+  "/favicon.ico",
+]);
 
 // ================================
 // MIDDLEWARE FUNCTION
 // ================================
 
 export default clerkMiddleware(async (auth, req) => {
-  const pathname = req.nextUrl.pathname;
-  
-  // Skip public routes entirely
-  if (routes.public(req)) {
-    return NextResponse.next();
-  }
+  if (isPublicRoute(req)) return NextResponse.next();
 
-  // Allow system routes to handle their own authentication
-  if (routes.system(req)) {
-    return NextResponse.next();
-  }
+  const authResult = await auth.protect();
 
-  let authResult = null;
+  if (authResult?.userId) {
+    const isApi = req.nextUrl.pathname.startsWith("/api");
 
-  try {
-    // Determine required role for the route
-    const requiredRole = getRequiredRole(pathname);
-    
-    if (!requiredRole) {
-      // No specific role required, just ensure user is authenticated
-      authResult = await auth.protect();
-    } else {
-      // Protect route but we'll do role checking separately
-      // (Clerk's role-based protection doesn't align with our custom hierarchy)
-      authResult = await auth.protect();
-      
-      if (authResult?.userId) {
-        // Extract user role from session claims
-        const userRole = (
-          authResult.sessionClaims?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"] ||
-          authResult.sessionClaims?.metadata?.role ||
-          "viewer"
-        ) as string;
+    const shouldLog =
+      !req.nextUrl.pathname.includes("_next") &&
+      !req.nextUrl.pathname.includes("favicon");
 
-        // Check if user has sufficient role level using role hierarchy
-        const userLevel = ROLE_HIERARCHY[userRole as Role] || 0;
-        const requiredLevel = ROLE_HIERARCHY[requiredRole] || 999;
-        const hasValidRole = userLevel >= requiredLevel;
-
-        if (!hasValidRole) {
-          console.warn(`🚫 Access denied: ${userRole} insufficient for ${requiredRole} (${pathname})`);
-          
-          // Log access denial
-          AuditService.logAccessDenied(req, userRole, requiredRole, authResult.userId);
-          
-          // Return 403 for API routes, redirect to unauthorized for pages
-          if (pathname.startsWith("/api")) {
-            return NextResponse.json(
-              { 
-                error: "Insufficient permissions",
-                required: requiredRole,
-                current: userRole
-              },
-              { status: 403 }
-            );
-          } else {
-            return NextResponse.redirect(new URL("/unauthorized", req.url));
-          }
-        }
+    if (shouldLog) {
+      try {
+        await auditLogger.logAuditEvent({
+          userId: authResult.userId,
+          userRole:
+            (
+              authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any
+            )?.["x-hasura-default-role"] ||
+            authResult.sessionClaims?.metadata?.role ||
+            "unknown",
+          action: AuditAction.READ,
+          entityType: isApi ? "api_route" : "page_route",
+          entityId: req.nextUrl.pathname,
+          dataClassification: DataClassification.LOW,
+          requestId: crypto.randomUUID(),
+          success: true,
+          method: req.method,
+          userAgent:
+            req.headers.get("user-agent")?.substring(0, 100) || "unknown",
+          ipAddress:
+            req.headers.get("x-forwarded-for") ||
+            req.headers.get("x-real-ip") ||
+            "unknown",
+        });
+      } catch (err) {
+        console.error("[AUDIT] Failed to log middleware access:", err);
       }
     }
-
-    // Non-blocking audit logging for successful access
-    if (authResult?.userId) {
-      AuditService.logAccess(authResult, req);
-    }
-
-  } catch (error) {
-    console.error("🔒 Middleware auth error:", error);
-    
-    // Log authentication failure
-    AuditService.logAuthFailure(req, error instanceof Error ? error.message : "Unknown auth error");
-    
-    // Let Clerk handle the redirect for unauthenticated users
-    throw error;
   }
 
   return NextResponse.next();
