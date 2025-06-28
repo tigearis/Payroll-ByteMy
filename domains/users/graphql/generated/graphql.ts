@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-06-28T07:49:35.091Z
+ * Generated: 2025-06-28T11:24:34.708Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -8782,6 +8782,7 @@ export type UserInvitationsBoolExp = {
   revokedBy?: InputMaybe<UuidComparisonExp>;
   status?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
 };
 
 /** unique or primary key constraints on table "user_invitations" */
@@ -8831,6 +8832,7 @@ export type UserInvitationsInsertInput = {
   revokedBy?: InputMaybe<Scalars['uuid']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
 };
 
 /** order by max() on columns of table "user_invitations" */
@@ -8914,6 +8916,7 @@ export type UserInvitationsOrderBy = {
   revokedBy?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
 };
 
 /** primary key columns input for table: user_invitations */
@@ -9349,8 +9352,11 @@ export type UsersBoolExp = {
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsBoolExp>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userInvitations?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsAcceptedBy?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
+  userInvitationsAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userInvitationsInvitedBy?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsInvitedByAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userInvitationsMangerId?: InputMaybe<UserInvitationsBoolExp>;
@@ -9364,6 +9370,8 @@ export type UsersBoolExp = {
   userWorkSchedules?: InputMaybe<WorkSchedulesBoolExp>;
   userWorkSchedulesAggregate?: InputMaybe<WorkSchedulesAggregateBoolExp>;
   username?: InputMaybe<StringComparisonExp>;
+  users?: InputMaybe<UsersBoolExp>;
+  usersAggregate?: InputMaybe<UsersAggregateBoolExp>;
 };
 
 /** unique or primary key constraints on table "users" */
@@ -9428,6 +9436,8 @@ export type UsersInsertInput = {
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userInvitations?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userInvitationsAcceptedBy?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userInvitationsInvitedBy?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userInvitationsMangerId?: InputMaybe<UserInvitationsArrRelInsertInput>;
@@ -9437,6 +9447,7 @@ export type UsersInsertInput = {
   userWorkSchedules?: InputMaybe<WorkSchedulesArrRelInsertInput>;
   /** User's unique username for login */
   username?: InputMaybe<Scalars['String']['input']>;
+  users?: InputMaybe<UsersArrRelInsertInput>;
 };
 
 /** order by max() on columns of table "users" */
@@ -9557,7 +9568,9 @@ export type UsersOrderBy = {
   statusChangedBy?: InputMaybe<OrderBy>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
   userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
+  userInvitationsAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userInvitationsInvitedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userInvitationsMangerIdAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userLeaveRecordsAggregate?: InputMaybe<LeaveAggregateOrderBy>;
@@ -9565,6 +9578,7 @@ export type UsersOrderBy = {
   userPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
   userWorkSchedulesAggregate?: InputMaybe<WorkSchedulesAggregateOrderBy>;
   username?: InputMaybe<OrderBy>;
+  usersAggregate?: InputMaybe<UsersAggregateOrderBy>;
 };
 
 /** primary key columns input for table: users */

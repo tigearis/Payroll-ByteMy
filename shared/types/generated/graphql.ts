@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-06-28T07:49:35.085Z
+ * Generated: 2025-06-28T11:24:34.690Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -15513,9 +15513,9 @@ export type Query_Root = {
   userById?: Maybe<Users>;
   /** fetch data from the table: "user_invitations" using primary key columns */
   userInvitationById?: Maybe<UserInvitations>;
-  /** fetch data from the table: "user_invitations" */
+  /** An array relationship */
   userInvitations: Array<UserInvitations>;
-  /** fetch aggregated fields from the table: "user_invitations" */
+  /** An aggregate relationship */
   userInvitationsAggregate: UserInvitationsAggregate;
   /** fetch data from the table: "user_roles" using primary key columns */
   userRoleById?: Maybe<UserRoles>;
@@ -15525,9 +15525,9 @@ export type Query_Root = {
   userRolesAggregate: UserRolesAggregate;
   /** fetch data from the table: "neon_auth.users_sync" using primary key columns */
   userSyncById?: Maybe<AuthUsersSync>;
-  /** fetch data from the table: "users" */
+  /** An array relationship */
   users: Array<Users>;
-  /** fetch aggregated fields from the table: "users" */
+  /** An aggregate relationship */
   usersAggregate: UsersAggregate;
   /** fetch data from the table: "users_role_backup" */
   usersRoleBackups: Array<UsersRoleBackup>;
@@ -18098,9 +18098,9 @@ export type Subscription_Root = {
   userById?: Maybe<Users>;
   /** fetch data from the table: "user_invitations" using primary key columns */
   userInvitationById?: Maybe<UserInvitations>;
-  /** fetch data from the table: "user_invitations" */
+  /** An array relationship */
   userInvitations: Array<UserInvitations>;
-  /** fetch aggregated fields from the table: "user_invitations" */
+  /** An aggregate relationship */
   userInvitationsAggregate: UserInvitationsAggregate;
   /** fetch data from the table in a streaming manner: "user_invitations" */
   userInvitationsStream: Array<UserInvitations>;
@@ -18114,9 +18114,9 @@ export type Subscription_Root = {
   userRolesStream: Array<UserRoles>;
   /** fetch data from the table: "neon_auth.users_sync" using primary key columns */
   userSyncById?: Maybe<AuthUsersSync>;
-  /** fetch data from the table: "users" */
+  /** An array relationship */
   users: Array<Users>;
-  /** fetch aggregated fields from the table: "users" */
+  /** An aggregate relationship */
   usersAggregate: UsersAggregate;
   /** fetch data from the table in a streaming manner: "users_role_backup" */
   usersRoleBackupStream: Array<UsersRoleBackup>;
@@ -19832,6 +19832,8 @@ export type UserInvitations = {
   revokedBy?: Maybe<Scalars['uuid']['output']>;
   status: Scalars['String']['output'];
   updatedAt: Scalars['timestamptz']['output'];
+  /** An object relationship */
+  user?: Maybe<Users>;
 };
 
 
@@ -19921,6 +19923,7 @@ export type UserInvitationsBoolExp = {
   revokedBy?: InputMaybe<UuidComparisonExp>;
   status?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
 };
 
 /** unique or primary key constraints on table "user_invitations" */
@@ -19970,6 +19973,7 @@ export type UserInvitationsInsertInput = {
   revokedBy?: InputMaybe<Scalars['uuid']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
 };
 
 /** aggregate max on columns */
@@ -20112,6 +20116,7 @@ export type UserInvitationsOrderBy = {
   revokedBy?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
 };
 
 /** primary key columns input for table: user_invitations */
@@ -20616,10 +20621,16 @@ export type Users = {
   targetedPermissionAuditsAggregate: PermissionAuditLogsAggregate;
   /** Timestamp when the user was last updated */
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  user?: Maybe<Users>;
+  /** An array relationship */
+  userInvitations: Array<UserInvitations>;
   /** An array relationship */
   userInvitationsAcceptedBy: Array<UserInvitations>;
   /** An aggregate relationship */
   userInvitationsAcceptedByAggregate: UserInvitationsAggregate;
+  /** An aggregate relationship */
+  userInvitationsAggregate: UserInvitationsAggregate;
   /** An array relationship */
   userInvitationsInvitedBy: Array<UserInvitations>;
   /** An aggregate relationship */
@@ -20646,6 +20657,10 @@ export type Users = {
   userWorkSchedulesAggregate: WorkSchedulesAggregate;
   /** User's unique username for login */
   username?: Maybe<Scalars['String']['output']>;
+  /** An array relationship */
+  users: Array<Users>;
+  /** An aggregate relationship */
+  usersAggregate: UsersAggregate;
 };
 
 
@@ -20970,6 +20985,16 @@ export type UsersTargetedPermissionAuditsAggregateArgs = {
 
 
 /** columns and relationships of "users" */
+export type UsersUserInvitationsArgs = {
+  distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserInvitationsOrderBy>>;
+  where?: InputMaybe<UserInvitationsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
 export type UsersUserInvitationsAcceptedByArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -20981,6 +21006,16 @@ export type UsersUserInvitationsAcceptedByArgs = {
 
 /** columns and relationships of "users" */
 export type UsersUserInvitationsAcceptedByAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserInvitationsOrderBy>>;
+  where?: InputMaybe<UserInvitationsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserInvitationsAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -21108,6 +21143,26 @@ export type UsersUserWorkSchedulesAggregateArgs = {
   where?: InputMaybe<WorkSchedulesBoolExp>;
 };
 
+
+/** columns and relationships of "users" */
+export type UsersUsersArgs = {
+  distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UsersOrderBy>>;
+  where?: InputMaybe<UsersBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUsersAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UsersOrderBy>>;
+  where?: InputMaybe<UsersBoolExp>;
+};
+
 /** aggregated selection of "users" */
 export type UsersAggregate = {
   __typename?: 'usersAggregate';
@@ -21226,8 +21281,11 @@ export type UsersBoolExp = {
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsBoolExp>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userInvitations?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsAcceptedBy?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
+  userInvitationsAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userInvitationsInvitedBy?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsInvitedByAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userInvitationsMangerId?: InputMaybe<UserInvitationsBoolExp>;
@@ -21241,6 +21299,8 @@ export type UsersBoolExp = {
   userWorkSchedules?: InputMaybe<WorkSchedulesBoolExp>;
   userWorkSchedulesAggregate?: InputMaybe<WorkSchedulesAggregateBoolExp>;
   username?: InputMaybe<StringComparisonExp>;
+  users?: InputMaybe<UsersBoolExp>;
+  usersAggregate?: InputMaybe<UsersAggregateBoolExp>;
 };
 
 /** unique or primary key constraints on table "users" */
@@ -21305,6 +21365,8 @@ export type UsersInsertInput = {
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userInvitations?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userInvitationsAcceptedBy?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userInvitationsInvitedBy?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userInvitationsMangerId?: InputMaybe<UserInvitationsArrRelInsertInput>;
@@ -21314,6 +21376,7 @@ export type UsersInsertInput = {
   userWorkSchedules?: InputMaybe<WorkSchedulesArrRelInsertInput>;
   /** User's unique username for login */
   username?: InputMaybe<Scalars['String']['input']>;
+  users?: InputMaybe<UsersArrRelInsertInput>;
 };
 
 /** aggregate max on columns */
@@ -21513,7 +21576,9 @@ export type UsersOrderBy = {
   statusChangedBy?: InputMaybe<OrderBy>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
   userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
+  userInvitationsAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userInvitationsInvitedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userInvitationsMangerIdAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userLeaveRecordsAggregate?: InputMaybe<LeaveAggregateOrderBy>;
@@ -21521,6 +21586,7 @@ export type UsersOrderBy = {
   userPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
   userWorkSchedulesAggregate?: InputMaybe<WorkSchedulesAggregateOrderBy>;
   username?: InputMaybe<OrderBy>;
+  usersAggregate?: InputMaybe<UsersAggregateOrderBy>;
 };
 
 /** primary key columns input for table: users */

@@ -17556,9 +17556,7 @@ type query_root {
   fetch data from the table: "user_invitations" using primary key columns
   """
   userInvitationById(id: uuid!): userInvitations
-  """
-  fetch data from the table: "user_invitations"
-  """
+  """An array relationship"""
   userInvitations(
     """distinct select on columns"""
     distinctOn: [userInvitationsSelectColumn!]
@@ -17571,9 +17569,7 @@ type query_root {
     """filter the rows returned"""
     where: userInvitationsBoolExp
   ): [userInvitations!]!
-  """
-  fetch aggregated fields from the table: "user_invitations"
-  """
+  """An aggregate relationship"""
   userInvitationsAggregate(
     """distinct select on columns"""
     distinctOn: [userInvitationsSelectColumn!]
@@ -17625,9 +17621,7 @@ type query_root {
     """Unique identifier from the authentication provider"""
     id: String!
   ): authUsersSync
-  """
-  fetch data from the table: "users"
-  """
+  """An array relationship"""
   users(
     """distinct select on columns"""
     distinctOn: [usersSelectColumn!]
@@ -17640,9 +17634,7 @@ type query_root {
     """filter the rows returned"""
     where: usersBoolExp
   ): [users!]!
-  """
-  fetch aggregated fields from the table: "users"
-  """
+  """An aggregate relationship"""
   usersAggregate(
     """distinct select on columns"""
     distinctOn: [usersSelectColumn!]
@@ -20901,9 +20893,7 @@ type subscription_root {
   fetch data from the table: "user_invitations" using primary key columns
   """
   userInvitationById(id: uuid!): userInvitations
-  """
-  fetch data from the table: "user_invitations"
-  """
+  """An array relationship"""
   userInvitations(
     """distinct select on columns"""
     distinctOn: [userInvitationsSelectColumn!]
@@ -20916,9 +20906,7 @@ type subscription_root {
     """filter the rows returned"""
     where: userInvitationsBoolExp
   ): [userInvitations!]!
-  """
-  fetch aggregated fields from the table: "user_invitations"
-  """
+  """An aggregate relationship"""
   userInvitationsAggregate(
     """distinct select on columns"""
     distinctOn: [userInvitationsSelectColumn!]
@@ -20992,9 +20980,7 @@ type subscription_root {
     """Unique identifier from the authentication provider"""
     id: String!
   ): authUsersSync
-  """
-  fetch data from the table: "users"
-  """
+  """An array relationship"""
   users(
     """distinct select on columns"""
     distinctOn: [usersSelectColumn!]
@@ -21007,9 +20993,7 @@ type subscription_root {
     """filter the rows returned"""
     where: usersBoolExp
   ): [users!]!
-  """
-  fetch aggregated fields from the table: "users"
-  """
+  """An aggregate relationship"""
   usersAggregate(
     """distinct select on columns"""
     distinctOn: [usersSelectColumn!]
@@ -21359,6 +21343,8 @@ type userInvitations {
   revokedBy: uuid
   status: String!
   updatedAt: timestamptz!
+  """An object relationship"""
+  user: users
 }
 
 """
@@ -21443,6 +21429,7 @@ input userInvitationsBoolExp {
   revokedBy: UuidComparisonExp
   status: StringComparisonExp
   updatedAt: TimestamptzComparisonExp
+  user: usersBoolExp
 }
 
 """
@@ -21504,6 +21491,7 @@ input userInvitationsInsertInput {
   revokedBy: uuid
   status: String
   updatedAt: timestamptz
+  user: usersObjRelInsertInput
 }
 
 """aggregate max on columns"""
@@ -21651,6 +21639,7 @@ input userInvitationsOrderBy {
   revokedBy: OrderBy
   status: OrderBy
   updatedAt: OrderBy
+  user: usersOrderBy
 }
 
 """primary key columns input for table: user_invitations"""
@@ -22549,6 +22538,21 @@ type users {
   ): permissionAuditLogsAggregate!
   """Timestamp when the user was last updated"""
   updatedAt: timestamptz
+  """An object relationship"""
+  user: users
+  """An array relationship"""
+  userInvitations(
+    """distinct select on columns"""
+    distinctOn: [userInvitationsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [userInvitationsOrderBy!]
+    """filter the rows returned"""
+    where: userInvitationsBoolExp
+  ): [userInvitations!]!
   """An array relationship"""
   userInvitationsAcceptedBy(
     """distinct select on columns"""
@@ -22564,6 +22568,19 @@ type users {
   ): [userInvitations!]!
   """An aggregate relationship"""
   userInvitationsAcceptedByAggregate(
+    """distinct select on columns"""
+    distinctOn: [userInvitationsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [userInvitationsOrderBy!]
+    """filter the rows returned"""
+    where: userInvitationsBoolExp
+  ): userInvitationsAggregate!
+  """An aggregate relationship"""
+  userInvitationsAggregate(
     """distinct select on columns"""
     distinctOn: [userInvitationsSelectColumn!]
     """limit the number of rows returned"""
@@ -22733,6 +22750,32 @@ type users {
   ): workSchedulesAggregate!
   """User's unique username for login"""
   username: String
+  """An array relationship"""
+  users(
+    """distinct select on columns"""
+    distinctOn: [usersSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [usersOrderBy!]
+    """filter the rows returned"""
+    where: usersBoolExp
+  ): [users!]!
+  """An aggregate relationship"""
+  usersAggregate(
+    """distinct select on columns"""
+    distinctOn: [usersSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [usersOrderBy!]
+    """filter the rows returned"""
+    where: usersBoolExp
+  ): usersAggregate!
 }
 
 """
@@ -22854,8 +22897,11 @@ input usersBoolExp {
   targetedPermissionAudits: permissionAuditLogsBoolExp
   targetedPermissionAuditsAggregate: permissionAuditLogsAggregateBoolExp
   updatedAt: TimestamptzComparisonExp
+  user: usersBoolExp
+  userInvitations: userInvitationsBoolExp
   userInvitationsAcceptedBy: userInvitationsBoolExp
   userInvitationsAcceptedByAggregate: userInvitationsAggregateBoolExp
+  userInvitationsAggregate: userInvitationsAggregateBoolExp
   userInvitationsInvitedBy: userInvitationsBoolExp
   userInvitationsInvitedByAggregate: userInvitationsAggregateBoolExp
   userInvitationsMangerId: userInvitationsBoolExp
@@ -22869,6 +22915,8 @@ input usersBoolExp {
   userWorkSchedules: workSchedulesBoolExp
   userWorkSchedulesAggregate: workSchedulesAggregateBoolExp
   username: StringComparisonExp
+  users: usersBoolExp
+  usersAggregate: usersAggregateBoolExp
 }
 
 """
@@ -22945,6 +22993,8 @@ input usersInsertInput {
   targetedPermissionAudits: permissionAuditLogsArrRelInsertInput
   """Timestamp when the user was last updated"""
   updatedAt: timestamptz
+  user: usersObjRelInsertInput
+  userInvitations: userInvitationsArrRelInsertInput
   userInvitationsAcceptedBy: userInvitationsArrRelInsertInput
   userInvitationsInvitedBy: userInvitationsArrRelInsertInput
   userInvitationsMangerId: userInvitationsArrRelInsertInput
@@ -22954,6 +23004,7 @@ input usersInsertInput {
   userWorkSchedules: workSchedulesArrRelInsertInput
   """User's unique username for login"""
   username: String
+  users: usersArrRelInsertInput
 }
 
 """aggregate max on columns"""
@@ -23160,7 +23211,9 @@ input usersOrderBy {
   statusChangedBy: OrderBy
   targetedPermissionAuditsAggregate: permissionAuditLogsAggregateOrderBy
   updatedAt: OrderBy
+  user: usersOrderBy
   userInvitationsAcceptedByAggregate: userInvitationsAggregateOrderBy
+  userInvitationsAggregate: userInvitationsAggregateOrderBy
   userInvitationsInvitedByAggregate: userInvitationsAggregateOrderBy
   userInvitationsMangerIdAggregate: userInvitationsAggregateOrderBy
   userLeaveRecordsAggregate: leaveAggregateOrderBy
@@ -23168,6 +23221,7 @@ input usersOrderBy {
   userPermissionOverridesAggregate: permissionOverridesAggregateOrderBy
   userWorkSchedulesAggregate: workSchedulesAggregateOrderBy
   username: OrderBy
+  usersAggregate: usersAggregateOrderBy
 }
 
 """primary key columns input for table: users"""
