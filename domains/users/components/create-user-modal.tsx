@@ -99,7 +99,7 @@ export function CreateUserModal({
     }
 
     setIsSubmitting(true);
-    
+
     console.log("🚀 Starting user creation process...");
     console.log("📋 Form data:", {
       firstName: data.firstName,
@@ -109,44 +109,47 @@ export function CreateUserModal({
       isStaff: data.isStaff,
       managerId: data.managerId,
     });
-    
+
     try {
       // Get Clerk token for API authentication with refresh leeway
       console.log("🔑 Getting Clerk token...");
-      const token = await getToken({ 
+      const token = await getToken({
         template: "hasura",
-        leewayInSeconds: 60 // Request fresh token 60 seconds before expiry
+        leewayInSeconds: 60, // Request fresh token 60 seconds before expiry
       });
-      
+
       console.log("🔑 Token status:", {
         hasToken: !!token,
         tokenLength: token?.length,
-        tokenPrefix: token?.substring(0, 20) + "..."
+        tokenPrefix: token?.substring(0, 20) + "...",
       });
-      
+
       if (!token) {
         console.error("❌ No authentication token available");
-        toast.error("Authentication token not available. Please refresh and try again.");
+        toast.error(
+          "Authentication token not available. Please refresh and try again."
+        );
         return;
       }
-      
+
       const requestBody = {
         name: `${data.firstName} ${data.lastName}`.trim(),
         email: data.email,
         role: data.role,
-        is_staff: data.isStaff,
-        managerId: data.managerId && data.managerId !== "none" ? data.managerId : null,
+        isStaff: data.isStaff,
+        managerId:
+          data.managerId && data.managerId !== "none" ? data.managerId : null,
         inviteToClerk: true, // Send Clerk invitation
       };
-      
+
       console.log("📤 Request details:", {
         url: "/api/staff/create",
         method: "POST",
         hasAuthHeader: !!token,
         bodyKeys: Object.keys(requestBody),
-        body: requestBody
+        body: requestBody,
       });
-      
+
       // Call the API route which handles both Clerk invitation and database creation
       const response = await fetch("/api/staff/create", {
         method: "POST",
@@ -161,27 +164,32 @@ export function CreateUserModal({
         status: response.status,
         statusText: response.statusText,
         ok: response.ok,
-        headers: Object.fromEntries(response.headers.entries())
+        headers: Object.fromEntries(response.headers.entries()),
       });
 
       // Check if response is OK first
       if (!response.ok) {
-        console.error("❌ Response not OK:", response.status, response.statusText);
-        
+        console.error(
+          "❌ Response not OK:",
+          response.status,
+          response.statusText
+        );
+
         // Try to get error text, fallback to status text
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
         let errorDetails = null;
-        
+
         try {
           const errorText = await response.text();
           console.log("📥 Error response body:", errorText);
-          
+
           if (errorText) {
             // Try to parse as JSON for structured error
             try {
               const errorData = JSON.parse(errorText);
               console.log("📥 Parsed error data:", errorData);
-              errorMessage = errorData.error || errorData.details || errorMessage;
+              errorMessage =
+                errorData.error || errorData.details || errorMessage;
               errorDetails = errorData;
             } catch (parseError) {
               console.log("📥 Error text (not JSON):", errorText);
@@ -193,13 +201,16 @@ export function CreateUserModal({
           console.error("❌ Failed to read error response:", readError);
           // If we can't read the response, use the status
         }
-        
+
         // Special handling for 405 Method Not Allowed
         if (response.status === 405) {
-          console.error("🚫 405 Method Not Allowed - Route may not support POST or middleware issue");
-          errorMessage = "Method not allowed. Check if the API route supports POST requests.";
+          console.error(
+            "🚫 405 Method Not Allowed - Route may not support POST or middleware issue"
+          );
+          errorMessage =
+            "Method not allowed. Check if the API route supports POST requests.";
         }
-        
+
         throw new Error(errorMessage);
       }
 
@@ -208,7 +219,7 @@ export function CreateUserModal({
       try {
         const responseText = await response.text();
         console.log("📥 Success response body:", responseText);
-        
+
         if (!responseText) {
           throw new Error("Empty response from server");
         }
@@ -224,10 +235,10 @@ export function CreateUserModal({
           ? `Staff member created and invitation sent to ${data.email}!`
           : `Staff member ${data.firstName} ${data.lastName} created successfully!`
       );
-      
+
       // Refresh the staff list
       await refetchUsers();
-      
+
       form.reset();
       onClose();
     } catch (error) {
@@ -237,8 +248,9 @@ export function CreateUserModal({
         message: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : "No stack trace",
       });
-      
-      const errorMessage = error instanceof Error ? error.message : "Failed to create user";
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to create user";
       toast.error(`User creation failed: ${errorMessage}`);
     } finally {
       console.log("🏁 User creation process finished");
@@ -412,7 +424,9 @@ export function CreateUserModal({
                         Staff Member
                       </FormLabel>
                       <FormDescription className="text-sm text-muted-foreground">
-                        Mark this user as a staff member. Staff members have additional privileges and can be assigned to manage clients and payrolls.
+                        Mark this user as a staff member. Staff members have
+                        additional privileges and can be assigned to manage
+                        clients and payrolls.
                       </FormDescription>
                     </div>
                   </FormItem>
@@ -440,7 +454,9 @@ export function CreateUserModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="none">No manager assigned</SelectItem>
+                          <SelectItem value="none">
+                            No manager assigned
+                          </SelectItem>
                           {managers.map(manager => (
                             <SelectItem key={manager.id} value={manager.id}>
                               <div className="flex flex-col">

@@ -1,116 +1,114 @@
-// middleware.ts – SOC2-compliant route protection with audit logging
+// Enhanced middleware with role-based protection
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import {
-  AuditAction,
-  DataClassification,
-  auditLogger,
-} from "./lib/security/audit/logger";
+import { routes, getRequiredRole, getRouteCategory } from "./config/routes";
 
-// ================================
-// ROUTE MATCHERS
-// ================================
-
-const isPublicRoute = createRouteMatcher([
-  "/",
-  "/sign-in(.*)",
-  "/accept-invitation(.*)",
-  "/api/clerk-webhooks(.*)",
-  "/_next(.*)",
-  "/favicon.ico",
-]);
-
-// ================================
-// HELPER FUNCTION
-// ================================
-
-/**
- * Extract database user ID from auth result
- * Uses the same extraction pattern as useCurrentUser hook
- */
-function extractDatabaseUserId(authResult: any): string | null {
-  if (!authResult?.userId) return null;
-
-  // Extract from JWT claims (primary method)
-  const hasuraClaims = authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-  const jwtUserId = hasuraClaims?.["x-hasura-user-id"] as string;
-  
-  // Extract from metadata (fallback)
-  const metadataUserId = authResult.sessionClaims?.metadata?.databaseId as string;
-  
-  // Return the database UUID (not Clerk user ID)
-  const databaseUserId = jwtUserId || metadataUserId;
-  
-  // Validate it looks like a UUID (36 characters)
-  if (databaseUserId && typeof databaseUserId === "string" && databaseUserId.length === 36) {
-    return databaseUserId;
-  }
-  
-  return null;
-}
-
-// ================================
-// MIDDLEWARE FUNCTION
-// ================================
-
+// Define the middleware
 export default clerkMiddleware(async (auth, req) => {
-  if (isPublicRoute(req)) return NextResponse.next();
+  const { pathname } = req.nextUrl;
 
-  const authResult = await auth.protect();
+  console.log("🔒 Enhanced middleware processing:", {
+    pathname,
+    method: req.method,
+  });
 
-  if (authResult?.userId) {
-    const isApi = req.nextUrl.pathname.startsWith("/api");
+  // Skip public routes
+  if (routes.public(req)) {
+    console.log("✅ Public route, allowing access");
+    return NextResponse.next();
+  }
 
-    const shouldLog =
-      !req.nextUrl.pathname.includes("_next") &&
-      !req.nextUrl.pathname.includes("favicon");
+  // Skip system routes (they handle their own auth)
+  if (routes.system(req)) {
+    console.log("⚙️ System route, allowing access");
+    return NextResponse.next();
+  }
 
-    if (shouldLog) {
-      try {
-        const databaseUserId = extractDatabaseUserId(authResult);
-        
-        // Only log if we have a valid database user ID
-        if (databaseUserId) {
-          await auditLogger.logAuditEvent({
-            userId: databaseUserId, // Use database UUID instead of Clerk user ID
-            userRole:
-              (
-                authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any
-              )?.["x-hasura-default-role"] ||
-              authResult.sessionClaims?.metadata?.role ||
-              "unknown",
-            action: AuditAction.READ,
-            entityType: isApi ? "api_route" : "page_route",
-            entityId: req.nextUrl.pathname,
-            dataClassification: DataClassification.LOW,
-            requestId: crypto.randomUUID(),
-            success: true,
-            method: req.method,
-            userAgent:
-              req.headers.get("user-agent")?.substring(0, 100) || "unknown",
-            ipAddress:
-              req.headers.get("x-forwarded-for") ||
-              req.headers.get("x-real-ip") ||
-              "unknown",
-          });
+  // Protect all other routes
+  try {
+    const authResult = await auth.protect();
+    
+    if (!authResult?.userId) {
+      console.log("❌ No user ID found");
+      return NextResponse.redirect(new URL("/sign-in", req.url));
+    }
+
+    // Extract user role from JWT claims
+    const hasuraClaims = authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any;
+    const userRole = hasuraClaims?.["x-hasura-default-role"] || "viewer";
+
+    console.log("🔍 Auth details:", {
+      userId: authResult.userId.substring(0, 8) + "...",
+      userRole,
+      pathname,
+      method: req.method,
+    });
+
+    // Get required role for this route
+    const requiredRole = getRequiredRole(pathname);
+    
+    if (requiredRole) {
+      // Check if user has sufficient role
+      const roleHierarchy = {
+        viewer: 1,
+        consultant: 2,
+        manager: 3,
+        org_admin: 4,
+        developer: 5,
+      };
+
+      const userLevel = roleHierarchy[userRole as keyof typeof roleHierarchy] || 0;
+      const requiredLevel = roleHierarchy[requiredRole as keyof typeof roleHierarchy] || 999;
+
+      if (userLevel < requiredLevel) {
+        console.log("❌ Insufficient permissions:", {
+          userRole,
+          userLevel,
+          requiredRole,
+          requiredLevel,
+        });
+
+        // Return JSON error for API routes, redirect for pages
+        if (pathname.startsWith("/api/")) {
+          return NextResponse.json(
+            {
+              error: "Forbidden",
+              message: `Insufficient permissions. Required: ${requiredRole}, Current: ${userRole}`,
+              code: "INSUFFICIENT_PERMISSIONS",
+              requiredRole,
+              currentRole: userRole,
+            },
+            { status: 403 }
+          );
         } else {
-          console.warn("[AUDIT] No valid database user ID found for audit logging", {
-            clerkUserId: authResult.userId,
-            sessionClaims: authResult.sessionClaims
-          });
+          return NextResponse.redirect(
+            new URL(`/unauthorized?reason=role_required&current=${userRole}&required=${requiredRole}`, req.url)
+          );
         }
-      } catch (err) {
-        console.error("[AUDIT] Failed to log middleware access:", err);
       }
     }
+
+    console.log("✅ Access granted");
+    return NextResponse.next();
+
+  } catch (error) {
+    console.error("❌ Auth error:", error);
+    
+    // Return JSON error for API routes, redirect for pages
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        {
+          error: "Unauthorized",
+          message: "Authentication required",
+          code: "AUTHENTICATION_REQUIRED",
+        },
+        { status: 401 }
+      );
+    } else {
+      return NextResponse.redirect(new URL("/sign-in", req.url));
+    }
   }
-
-  return NextResponse.next();
 });
-
-// ================================
-// MIDDLEWARE CONFIG
-// ================================
 
 export const config = {
   matcher: [
