@@ -82,6 +82,25 @@ fragment PayrollTableRow on payrolls {
   goLiveDate
   processingTime
   versionNumber
+  
+  # Payroll cycle for schedule column
+  cycleId
+  payrollCycle {
+    id
+    name
+    description
+  }
+  
+  # Next EFT date - get the next upcoming payroll date
+  nextPayrollDate: payrollDates(
+    where: { originalEftDate: { _gte: "now()" } }
+    orderBy: { originalEftDate: ASC }
+    limit: 1
+  ) {
+    originalEftDate
+    adjustedEftDate
+    processingDate
+  }
 }
 
 # Payroll dashboard card

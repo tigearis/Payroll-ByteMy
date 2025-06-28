@@ -4,12 +4,10 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
-import { format } from "date-fns";
 import {
   PlusCircle,
   Search,
   Filter,
-  Download,
   Upload,
   Clock,
   CheckCircle,
@@ -20,35 +18,20 @@ import {
   FileText,
   Calculator,
   X,
-  ChevronUp,
   ChevronDown,
-  Columns,
-  Building2,
   Users,
-  MoreHorizontal,
-  Edit,
-  Copy,
   Grid3X3,
   TableIcon,
   List,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { toast } from "sonner";
 
 import { PayrollUpdatesListener } from "@/components/real-time-updates";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -63,9 +46,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PayrollsTable } from "@/domains/payrolls/components/payrolls-table";
-import { GetPayrollsPaginatedDocument, GetPayrollDashboardStatsDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import {
+  GetPayrollsPaginatedDocument,
+  GetPayrollDashboardStatsDocument,
+} from "@/domains/payrolls/graphql/generated/graphql";
 import { useUserRole } from "@/hooks/use-user-role";
-import { useCachedQuery } from "@/hooks/use-strategic-query";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
 
 type ViewMode = "cards" | "table" | "list";
@@ -321,7 +306,7 @@ export default function PayrollsPage() {
   // ==========================================
   // ALL HOOKS MUST BE CALLED FIRST - NO EARLY RETURNS BEFORE THIS SECTION
   // ==========================================
-  
+
   // State hooks
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
@@ -353,8 +338,8 @@ export default function PayrollsPage() {
           { name: { _ilike: `%${searchTerm}%` } },
           { client: { name: { _ilike: `%${searchTerm}%` } } },
           { primaryConsultant: { name: { _ilike: `%${searchTerm}%` } } },
-          { backupConsultant: { name: { _ilike: `%${searchTerm}%` } } }
-        ]
+          { backupConsultant: { name: { _ilike: `%${searchTerm}%` } } },
+        ],
       });
     }
     if (statusFilter.length > 0) {
@@ -367,8 +352,8 @@ export default function PayrollsPage() {
       conditions.push({
         _or: [
           { primaryConsultantUserId: { _in: consultantFilter } },
-          { backupConsultantUserId: { _in: consultantFilter } }
-        ]
+          { backupConsultantUserId: { _in: consultantFilter } },
+        ],
       });
     }
     if (payCycleFilter.length > 0) {
@@ -378,7 +363,14 @@ export default function PayrollsPage() {
       conditions.push({ payrollDateType: { name: { _in: dateTypeFilter } } });
     }
     return conditions.length > 0 ? { _and: conditions } : {};
-  }, [searchTerm, statusFilter, clientFilter, consultantFilter, payCycleFilter, dateTypeFilter]);
+  }, [
+    searchTerm,
+    statusFilter,
+    clientFilter,
+    consultantFilter,
+    payCycleFilter,
+    dateTypeFilter,
+  ]);
 
   const orderByConditions = useMemo(() => {
     const sortMap: Record<string, string> = {
@@ -387,7 +379,7 @@ export default function PayrollsPage() {
       consultant: "primaryConsultant.name",
       employees: "employeeCount",
       lastUpdated: "updatedAt",
-      status: "status"
+      status: "status",
     };
     const field = sortMap[sortField] || "updatedAt";
     return [{ [field]: sortDirection }];
@@ -395,21 +387,28 @@ export default function PayrollsPage() {
 
   const offset = (currentPage - 1) * pageSize;
 
-  const { data, loading, error, refetch } = useQuery(GetPayrollsPaginatedDocument, {
-    variables: {
-      limit: pageSize,
-      offset: offset,
-      where: whereConditions,
-      orderBy: orderByConditions
-    },
-    errorPolicy: "all",
-    fetchPolicy: "cache-and-network"
-  });
+  const { data, loading, error, refetch } = useQuery(
+    GetPayrollsPaginatedDocument,
+    {
+      variables: {
+        limit: pageSize,
+        offset: offset,
+        where: whereConditions,
+        orderBy: orderByConditions,
+      },
+      errorPolicy: "all",
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   // Get dashboard stats for accurate totals
-  const { data: statsData, loading: statsLoading, error: statsError } = useQuery(GetPayrollDashboardStatsDocument, {
+  const {
+    data: statsData,
+    loading: statsLoading,
+    error: statsError,
+  } = useQuery(GetPayrollDashboardStatsDocument, {
     errorPolicy: "all",
-    fetchPolicy: "cache-and-network"
+    fetchPolicy: "cache-and-network",
   });
 
   const payrolls = data?.payrolls || [];
@@ -431,7 +430,9 @@ export default function PayrollsPage() {
           const dateB = b.adjustedEftDate || b.originalEftDate;
           return new Date(dateA).getTime() - new Date(dateB).getTime();
         });
-      return futureDates.length > 0 ? (futureDates[0].adjustedEftDate || futureDates[0].originalEftDate) : null;
+      return futureDates.length > 0
+        ? futureDates[0].adjustedEftDate || futureDates[0].originalEftDate
+        : null;
     };
 
     return payrolls.map((payroll: any) => {
@@ -440,7 +441,8 @@ export default function PayrollsPage() {
         ...payroll,
         employeeCount,
         payrollCycleFormatted: formatPayrollCycle(payroll),
-        priority: employeeCount > 50 ? "high" : employeeCount > 20 ? "medium" : "low",
+        priority:
+          employeeCount > 50 ? "high" : employeeCount > 20 ? "medium" : "low",
         progress: getStatusConfig(payroll.status || "Implementation").progress,
         nextEftDate: getNextEftDate(payroll.payrollDates),
         lastUpdated: new Date(payroll.updatedAt || payroll.createdAt),
@@ -449,53 +451,96 @@ export default function PayrollsPage() {
     });
   }, [payrolls]);
 
-  const { uniqueStatuses, uniqueClients, uniqueConsultants, uniquePayCycles, uniqueDateTypes } = useMemo(() => {
+  const {
+    uniqueStatuses,
+    uniqueClients,
+    uniqueConsultants,
+    uniquePayCycles,
+    uniqueDateTypes,
+  } = useMemo(() => {
     return {
-      uniqueStatuses: Array.from(new Set(payrolls.map((p: any) => p.status || "Implementation"))) as string[],
-      uniqueClients: Array.from(new Map(payrolls.filter((p: any) => p.client?.id).map((p: any) => [p.client.id, p.client])).values()) as any[],
-      uniqueConsultants: Array.from(new Map(payrolls.filter((p: any) => p.primaryConsultant?.id).map((p: any) => [p.primaryConsultant.id, p.primaryConsultant])).values()) as any[],
-      uniquePayCycles: Array.from(new Set(payrolls.map((p: any) => p.payrollCycle?.name).filter(Boolean))) as string[],
-      uniqueDateTypes: Array.from(new Set(payrolls.map((p: any) => p.payrollDateType?.name).filter(Boolean))) as string[]
+      uniqueStatuses: Array.from(
+        new Set(payrolls.map((p: any) => p.status || "Implementation"))
+      ) as string[],
+      uniqueClients: Array.from(
+        new Map(
+          payrolls
+            .filter((p: any) => p.client?.id)
+            .map((p: any) => [p.client.id, p.client])
+        ).values()
+      ) as any[],
+      uniqueConsultants: Array.from(
+        new Map(
+          payrolls
+            .filter((p: any) => p.primaryConsultant?.id)
+            .map((p: any) => [p.primaryConsultant.id, p.primaryConsultant])
+        ).values()
+      ) as any[],
+      uniquePayCycles: Array.from(
+        new Set(payrolls.map((p: any) => p.payrollCycle?.name).filter(Boolean))
+      ) as string[],
+      uniqueDateTypes: Array.from(
+        new Set(
+          payrolls.map((p: any) => p.payrollDateType?.name).filter(Boolean)
+        )
+      ) as string[],
     };
   }, [payrolls]);
 
   const payrollsList = data?.payrolls || [];
-  
+
   // Use dashboard stats for accurate totals instead of paginated data
   const totalPayrollsCount = statsData?.totalPayrolls?.aggregate?.count || 0;
   const activePayrolls = statsData?.activePayrolls?.aggregate?.count || 0;
-  const totalEmployees = statsData?.totalEmployees?.aggregate?.sum?.employeeCount || 0;
+  const totalEmployees =
+    statsData?.totalEmployees?.aggregate?.sum?.employeeCount || 0;
   const pendingPayrolls = statsData?.pendingPayrolls?.aggregate?.count || 0;
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter.length, clientFilter.length, consultantFilter.length, payCycleFilter.length, dateTypeFilter.length]);
+  }, [
+    searchTerm,
+    statusFilter.length,
+    clientFilter.length,
+    consultantFilter.length,
+    payCycleFilter.length,
+    dateTypeFilter.length,
+  ]);
 
-  const handleSelectAll = useCallback((checked: boolean) => {
-    if (checked) {
-      setSelectedPayrolls(displayPayrolls.map((p: any) => p.id));
-    } else {
-      setSelectedPayrolls([]);
-    }
-  }, [displayPayrolls]);
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
+      if (checked) {
+        setSelectedPayrolls(displayPayrolls.map((p: any) => p.id));
+      } else {
+        setSelectedPayrolls([]);
+      }
+    },
+    [displayPayrolls]
+  );
 
-  const handleSelectPayroll = useCallback((payrollId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedPayrolls(prev => [...prev, payrollId]);
-    } else {
-      setSelectedPayrolls(prev => prev.filter(id => id !== payrollId));
-    }
-  }, []);
+  const handleSelectPayroll = useCallback(
+    (payrollId: string, checked: boolean) => {
+      if (checked) {
+        setSelectedPayrolls(prev => [...prev, payrollId]);
+      } else {
+        setSelectedPayrolls(prev => prev.filter(id => id !== payrollId));
+      }
+    },
+    []
+  );
 
-  const handleSort = useCallback((field: string) => {
-    if (sortField === field) {
-      setSortDirection(prev => prev === "ASC" ? "DESC" : "ASC");
-    } else {
-      setSortField(field);
-      setSortDirection("ASC");
-    }
-    setCurrentPage(1);
-  }, [sortField]);
+  const handleSort = useCallback(
+    (field: string) => {
+      if (sortField === field) {
+        setSortDirection(prev => (prev === "ASC" ? "DESC" : "ASC"));
+      } else {
+        setSortField(field);
+        setSortDirection("ASC");
+      }
+      setCurrentPage(1);
+    },
+    [sortField]
+  );
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
@@ -519,7 +564,13 @@ export default function PayrollsPage() {
   const hasAdminAccess = hasPermission("admin:manage");
   const canManagePayrolls = checkPermission("payroll", "write").granted;
   const canViewAdvanced = checkPermission("admin", "manage").granted;
-  const hasActiveFilters = searchTerm || statusFilter.length > 0 || clientFilter.length > 0 || consultantFilter.length > 0 || payCycleFilter.length > 0 || dateTypeFilter.length > 0;
+  const hasActiveFilters =
+    searchTerm ||
+    statusFilter.length > 0 ||
+    clientFilter.length > 0 ||
+    consultantFilter.length > 0 ||
+    payCycleFilter.length > 0 ||
+    dateTypeFilter.length > 0;
 
   // ==========================================
   // EARLY RETURNS AFTER ALL HOOKS
@@ -592,20 +643,28 @@ export default function PayrollsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Payrolls</p>
-                  <p className="text-2xl font-bold text-gray-900">{totalPayrollsCount}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Payrolls
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {totalPayrollsCount}
+                  </p>
                 </div>
                 <FileText className="w-8 h-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Active Payrolls</p>
-                  <p className="text-2xl font-bold text-gray-900">{activePayrolls}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Active Payrolls
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {activePayrolls}
+                  </p>
                 </div>
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
@@ -616,22 +675,14 @@ export default function PayrollsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Employees</p>
-                  <p className="text-2xl font-bold text-gray-900">{totalEmployees}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Employees
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {totalEmployees}
+                  </p>
                 </div>
                 <Users className="w-8 h-8 text-purple-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Pending Payrolls</p>
-                  <p className="text-2xl font-bold text-gray-900">{pendingPayrolls}</p>
-                </div>
-                <Clock className="w-8 h-8 text-orange-600" />
               </div>
             </CardContent>
           </Card>
@@ -652,7 +703,7 @@ export default function PayrollsPage() {
                     className="pl-10 w-[300px]"
                   />
                 </div>
-                
+
                 {/* Advanced Filters Button */}
                 <Button
                   variant="outline"
@@ -663,14 +714,16 @@ export default function PayrollsPage() {
                   Filters
                   {hasActiveFilters && (
                     <Badge variant="secondary" className="ml-2 text-xs">
-                      {[
-                        searchTerm,
-                        statusFilter.length > 0,
-                        clientFilter.length > 0,
-                        consultantFilter.length > 0,
-                        payCycleFilter.length > 0,
-                        dateTypeFilter.length > 0,
-                      ].filter(Boolean).length}
+                      {
+                        [
+                          searchTerm,
+                          statusFilter.length > 0,
+                          clientFilter.length > 0,
+                          consultantFilter.length > 0,
+                          payCycleFilter.length > 0,
+                          dateTypeFilter.length > 0,
+                        ].filter(Boolean).length
+                      }
                     </Badge>
                   )}
                 </Button>
@@ -739,9 +792,14 @@ export default function PayrollsPage() {
             {showFilters && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t mt-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Status</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Status
+                  </label>
                   <MultiSelect
-                    options={uniqueStatuses.map(status => ({ value: status, label: status }))}
+                    options={uniqueStatuses.map(status => ({
+                      value: status,
+                      label: status,
+                    }))}
                     selected={statusFilter}
                     onSelectionChange={setStatusFilter}
                     placeholder="All statuses"
@@ -749,9 +807,14 @@ export default function PayrollsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Client</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Client
+                  </label>
                   <MultiSelect
-                    options={uniqueClients.map(client => ({ value: client.id, label: client.name }))}
+                    options={uniqueClients.map(client => ({
+                      value: client.id,
+                      label: client.name,
+                    }))}
                     selected={clientFilter}
                     onSelectionChange={setClientFilter}
                     placeholder="All clients"
@@ -759,9 +822,14 @@ export default function PayrollsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Consultant</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Consultant
+                  </label>
                   <MultiSelect
-                    options={uniqueConsultants.map(consultant => ({ value: consultant.id, label: consultant.name }))}
+                    options={uniqueConsultants.map(consultant => ({
+                      value: consultant.id,
+                      label: consultant.name,
+                    }))}
                     selected={consultantFilter}
                     onSelectionChange={setConsultantFilter}
                     placeholder="All consultants"

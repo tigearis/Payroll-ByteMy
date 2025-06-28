@@ -51,8 +51,8 @@ export default function AuditLogPage() {
   const [page, setPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterAction, setFilterAction] = useState<string>("all");
-  const [filterClassification, setFilterClassification] =
-    useState<string>("all");
+  // Classification filter removed - not available on audit logs
+  // const [filterClassification, setFilterClassification] = useState<string>("all");
   const [filterSuccess, setFilterSuccess] = useState<string>("all");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -62,9 +62,9 @@ export default function AuditLogPage() {
 
   if (searchTerm) {
     where._or = [
-      { user: { email: { _ilike: `%${searchTerm}%` } } },
-      { entity_type: { _ilike: `%${searchTerm}%` } },
-      { entity_id: { _eq: searchTerm } },
+      { userEmail: { _ilike: `%${searchTerm}%` } },
+      { resourceType: { _ilike: `%${searchTerm}%` } },
+      { resourceId: { _eq: searchTerm } },
     ];
   }
 
@@ -72,20 +72,21 @@ export default function AuditLogPage() {
     where.action = { _eq: filterAction };
   }
 
-  if (filterClassification !== "all") {
-    where.data_classification = { _eq: filterClassification };
-  }
+  // Classification filter removed - not available on audit logs
+  // if (filterClassification !== "all") {
+  //   where.dataClassification = { _eq: filterClassification };
+  // }
 
   if (filterSuccess !== "all") {
     where.success = { _eq: filterSuccess === "success" };
   }
 
   if (dateFrom) {
-    where.created_at = { ...where.created_at, _gte: dateFrom };
+    where.eventTime = { ...where.eventTime, _gte: dateFrom };
   }
 
   if (dateTo) {
-    where.created_at = { ...where.created_at, _lte: dateTo };
+    where.eventTime = { ...where.eventTime, _lte: dateTo };
   }
 
   // Use strategic query for audit logs with real-time capabilities
@@ -142,18 +143,19 @@ export default function AuditLogPage() {
     }
   };
 
-  const getClassificationColor = (classification: string) => {
-    switch (classification) {
-      case "CRITICAL":
-        return "destructive";
-      case "HIGH":
-        return "secondary";
-      case "MEDIUM":
-        return "outline";
-      default:
-        return "default";
-    }
-  };
+  // Classification function removed - not available on audit logs
+  // const getClassificationColor = (classification: string) => {
+  //   switch (classification) {
+  //     case "CRITICAL":
+  //       return "destructive";
+  //     case "HIGH":
+  //       return "secondary";
+  //     case "MEDIUM":
+  //       return "outline";
+  //     default:
+  //       return "default";
+  //   }
+  // };
 
   return (
     <div className="space-y-6">
@@ -211,24 +213,7 @@ export default function AuditLogPage() {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label>Classification</Label>
-              <Select
-                value={filterClassification}
-                onValueChange={setFilterClassification}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Classifications</SelectItem>
-                  <SelectItem value="CRITICAL">Critical</SelectItem>
-                  <SelectItem value="HIGH">High</SelectItem>
-                  <SelectItem value="MEDIUM">Medium</SelectItem>
-                  <SelectItem value="LOW">Low</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Classification filter removed - not available on audit logs */}
 
             <div className="space-y-2">
               <Label>Status</Label>
@@ -296,7 +281,7 @@ export default function AuditLogPage() {
                       <TableHead>User</TableHead>
                       <TableHead>Action</TableHead>
                       <TableHead>Entity</TableHead>
-                      <TableHead>Classification</TableHead>
+                      {/* Classification column removed - not available on audit logs */}
                       <TableHead>Status</TableHead>
                       <TableHead>IP Address</TableHead>
                     </TableRow>
@@ -305,16 +290,18 @@ export default function AuditLogPage() {
                     {data?.auditLogs?.map((entry: any) => (
                       <TableRow key={entry.id}>
                         <TableCell className="font-mono text-sm">
-                          {format(
-                            new Date(entry.created_at),
-                            "yyyy-MM-dd HH:mm:ss"
-                          )}
+                          {entry.eventTime && !isNaN(new Date(entry.eventTime).getTime()) 
+                            ? format(
+                                new Date(entry.eventTime),
+                                "yyyy-MM-dd HH:mm:ss"
+                              )
+                            : "Invalid date"}
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium">{entry.user?.email}</p>
+                            <p className="font-medium">{entry.userEmail}</p>
                             <p className="text-sm text-muted-foreground">
-                              {entry.userrole}
+                              {entry.userRole}
                             </p>
                           </div>
                         </TableCell>
@@ -325,23 +312,15 @@ export default function AuditLogPage() {
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium">{entry.entity_type}</p>
-                            {entry.entity_id && (
+                            <p className="font-medium">{entry.resourceType}</p>
+                            {entry.resourceId && (
                               <p className="text-xs text-muted-foreground font-mono">
-                                {entry.entity_id}
+                                {entry.resourceId}
                               </p>
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={getClassificationColor(
-                              entry.data_classification
-                            )}
-                          >
-                            {entry.data_classification}
-                          </Badge>
-                        </TableCell>
+                        {/* Classification column removed - not available on audit logs */}
                         <TableCell>
                           {entry.success ? (
                             <Badge variant="outline" className="text-green-600">
@@ -350,16 +329,16 @@ export default function AuditLogPage() {
                           ) : (
                             <div>
                               <Badge variant="destructive">Failed</Badge>
-                              {entry.error_message && (
+                              {entry.errorMessage && (
                                 <p className="text-xs text-destructive mt-1">
-                                  {entry.error_message}
+                                  {entry.errorMessage}
                                 </p>
                               )}
                             </div>
                           )}
                         </TableCell>
                         <TableCell className="font-mono text-sm">
-                          {entry.ip_address || "-"}
+                          {entry.ipAddress || "-"}
                         </TableCell>
                       </TableRow>
                     ))}
