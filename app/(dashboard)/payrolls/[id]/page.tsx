@@ -558,7 +558,7 @@ function EnhancedCalendar({
 // Helper function to get cycle name from payroll data
 const getCycleName = (payroll: any) => {
   // Check nested object first - this contains the enum value like 'weekly', 'fortnightly', etc.
-  const cycleEnum = payroll?.payroll_cycle?.name;
+  const cycleEnum = payroll?.payrollCycle?.name;
   if (cycleEnum) {
     // Look up the display name in our constants
     const cycle = PAYROLL_CYCLES.find(c => c.id === cycleEnum);
@@ -566,7 +566,7 @@ const getCycleName = (payroll: any) => {
   }
 
   // Fallback to cycle_id lookup if nested object not available
-  if (payroll?.cycle_id) {
+  if (payroll?.cycleId) {
     const cycle = PAYROLL_CYCLES.find(c => c.id === payroll.cycleId);
     return cycle ? cycle.name : `${payroll.cycleId} (Unknown)`;
   }

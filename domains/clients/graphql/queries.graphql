@@ -102,7 +102,7 @@ query GetClientById($id: uuid!) {
       orderBy: { createdAt: DESC }
       limit: 10
     ) {
-      ...PayrollMinimal
+      ...PayrollListItem
     }
 
     # Related notes would be queried separately through the notes table

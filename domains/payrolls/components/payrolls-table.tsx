@@ -439,8 +439,8 @@ export function PayrollsTable({
                           <div className="flex items-center gap-2">
                             <CalendarDays className="w-4 h-4 text-gray-500" />
                             <span className="text-sm">
-                              {payroll.nextEftDate
-                                ? formatDate(payroll.nextEftDate)
+                              {payroll.nextPayrollDate?.[0]?.adjustedEftDate || payroll.nextPayrollDate?.[0]?.originalEftDate
+                                ? formatDate(payroll.nextPayrollDate[0]?.adjustedEftDate || payroll.nextPayrollDate[0]?.originalEftDate)
                                 : "Not scheduled"}
                             </span>
                           </div>

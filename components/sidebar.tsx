@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { ThemeToggle } from "./theme-toggle";
@@ -86,7 +85,7 @@ const allRoutes = [
     hidden: true, // Temporarily hidden - may use in the future
   },
   {
-    href: "/developer/diagnostics/user-creation",
+    href: "/developer",
     label: "Debug Tools",
     icon: Code,
     checkAccess: (auth: any) => auth.userRole === "developer",
@@ -120,7 +119,7 @@ export function Sidebar() {
     if (route.hidden) {
       return false;
     }
-    
+
     if (!authContext.isLoading && authContext.isAuthenticated) {
       return route.checkAccess(authContext);
     }
@@ -194,7 +193,11 @@ export function Sidebar() {
           className="ml-auto"
           onClick={toggleSidebar}
         >
-          {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          {sidebarCollapsed ? (
+            <ChevronRight size={16} />
+          ) : (
+            <ChevronLeft size={16} />
+          )}
         </Button>
       </div>
       <ScrollArea className="flex-1">
@@ -203,17 +206,21 @@ export function Sidebar() {
             <Button
               key={route.href}
               variant={pathname === route.href ? "secondary" : "ghost"}
-              className={cn("justify-start", sidebarCollapsed && "justify-center")}
+              className={cn(
+                "justify-start",
+                sidebarCollapsed && "justify-center"
+              )}
               asChild
             >
               <Link href={route.href}>
                 <route.icon className="h-4 w-4" />
-                {!sidebarCollapsed && <span className="ml-2">{route.label}</span>}
+                {!sidebarCollapsed && (
+                  <span className="ml-2">{route.label}</span>
+                )}
               </Link>
             </Button>
           ))}
         </nav>
-
 
         {/* Optional: Show role indicator */}
         {!sidebarCollapsed && (

@@ -173,6 +173,9 @@ fragment PayrollListItem on payrolls {
   primaryConsultant {
     ...UserMinimal
   }
+  backupConsultant {
+    ...UserMinimal
+  }
   manager {
     ...UserMinimal
   }
@@ -293,7 +296,12 @@ fragment AuditLogEntry on auditLogs {
   errorMessage
   ipAddress
   userAgent
+  requestId
+  sessionId
   metadata
+  oldValues
+  newValues
+  createdAt
 }
 
 # Auth event
