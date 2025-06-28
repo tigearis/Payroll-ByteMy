@@ -8,6 +8,7 @@ import { extractClientInfo } from "../utils/client-info";
 import { monitorRequest } from "../security/enhanced-route-monitor";
 // Import comprehensive permission system
 import { Role, ROLE_HIERARCHY } from "./permissions";
+import { validateJWTClaims } from "./jwt-validation";
 
 /**
  * Represents an authenticated user session with role and permission information
@@ -77,25 +78,31 @@ export async function requireAuth(
       throw new Error("Unauthorized: No active session");
     }
 
-    // Extract role from JWT - use x-hasura-default-role as primary source
-    const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const userRole = (
-      hasuraClaims?.["x-hasura-default-role"] ||
-      (sessionClaims?.metadata as any)?.role ||
-      (sessionClaims?.metadata as any)?.defaultrole ||
-      (sessionClaims as any)?.role ||
-      "viewer"
-    ) as string;
+    // Validate JWT claims for security
+    const { clientIP, userAgent } = extractClientInfo(request);
+    const validationResult = await validateJWTClaims(sessionClaims, {
+      userId,
+      ipAddress: clientIP,
+      userAgent,
+      requestPath: request.nextUrl.pathname
+    });
+
+    if (!validationResult.isValid) {
+      console.error("🚨 JWT validation failed:", validationResult.errors);
+      throw new Error(`JWT validation failed: ${validationResult.errors.join(", ")}`);
+    }
+
+    // Extract role from validated JWT claims
+    const hasuraClaims = validationResult.claims;
+    const userRole = hasuraClaims?.["x-hasura-default-role"] || "viewer";
 
     // Debug logging for role extraction
-    console.log("🔍 Auth Debug (using x-hasura-default-role):", {
+    console.log("🔍 Auth Debug (JWT validated):", {
       userId: `${userId?.substring(0, 8)}...`,
-      jwtVersion: hasuraClaims ? "v1" : sessionClaims?.metadata ? "v2" : "unknown",
-      hasMetadata: !!sessionClaims?.metadata,
       hasHasuraClaims: !!hasuraClaims,
       defaultRole: hasuraClaims?.["x-hasura-default-role"],
       allowedRoles: hasuraClaims?.["x-hasura-allowed-roles"],
-      finalUserRole: userRole,
+      validationWarnings: validationResult.warnings,
       sessionId: sessionClaims?.sid,
     });
     const userEmail = sessionClaims?.email as string;

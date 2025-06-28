@@ -6,6 +6,7 @@ import {
   DataClassification,
   auditLogger,
 } from "./lib/security/audit/logger";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 // ================================
 // ROUTE MATCHERS
@@ -32,20 +33,27 @@ function extractDatabaseUserId(authResult: any): string | null {
   if (!authResult?.userId) return null;
 
   // Extract from JWT claims (primary method)
-  const hasuraClaims = authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any;
+  const hasuraClaims = authResult.sessionClaims?.[
+    "https://hasura.io/jwt/claims"
+  ] as any;
   const jwtUserId = hasuraClaims?.["x-hasura-user-id"] as string;
-  
+
   // Extract from metadata (fallback)
-  const metadataUserId = authResult.sessionClaims?.metadata?.databaseId as string;
-  
+  const metadataUserId = authResult.sessionClaims?.metadata
+    ?.databaseId as string;
+
   // Return the database UUID (not Clerk user ID)
   const databaseUserId = jwtUserId || metadataUserId;
-  
+
   // Validate it looks like a UUID (36 characters)
-  if (databaseUserId && typeof databaseUserId === "string" && databaseUserId.length === 36) {
+  if (
+    databaseUserId &&
+    typeof databaseUserId === "string" &&
+    databaseUserId.length === 36
+  ) {
     return databaseUserId;
   }
-  
+
   return null;
 }
 
@@ -68,14 +76,16 @@ export default clerkMiddleware(async (auth, req) => {
     if (shouldLog) {
       try {
         const databaseUserId = extractDatabaseUserId(authResult);
-        
+
         // Only log if we have a valid database user ID
         if (databaseUserId) {
           await auditLogger.logAuditEvent({
             userId: databaseUserId, // Use database UUID instead of Clerk user ID
             userRole:
               (
-                authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any
+                authResult.sessionClaims?.[
+                  "https://hasura.io/jwt/claims"
+                ] as any
               )?.["x-hasura-default-role"] ||
               authResult.sessionClaims?.metadata?.role ||
               "unknown",
@@ -94,10 +104,13 @@ export default clerkMiddleware(async (auth, req) => {
               "unknown",
           });
         } else {
-          console.warn("[AUDIT] No valid database user ID found for audit logging", {
-            clerkUserId: authResult.userId,
-            sessionClaims: authResult.sessionClaims
-          });
+          console.warn(
+            "[AUDIT] No valid database user ID found for audit logging",
+            {
+              clerkUserId: authResult.userId,
+              sessionClaims: authResult.sessionClaims,
+            }
+          );
         }
       } catch (err) {
         console.error("[AUDIT] Failed to log middleware access:", err);

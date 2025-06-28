@@ -2,6 +2,7 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { routes, getRequiredRole, getRouteCategory } from "./config/routes";
+import { hasRoleLevel } from "./lib/auth/permissions";
 
 // Define the middleware
 export default clerkMiddleware(async (auth, req) => {
@@ -27,45 +28,36 @@ export default clerkMiddleware(async (auth, req) => {
   // Protect all other routes
   try {
     const authResult = await auth.protect();
-    
+
     if (!authResult?.userId) {
       console.log("❌ No user ID found");
       return NextResponse.redirect(new URL("/sign-in", req.url));
     }
 
-    // Extract user role from JWT claims
-    const hasuraClaims = authResult.sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const userRole = hasuraClaims?.["x-hasura-default-role"] || "viewer";
+    // Get user role from session claims (server-side)
+    const sessionClaims = authResult.sessionClaims;
+    const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
+    const userRole = hasuraClaims?.["x-hasura-default-role"] || 
+                     sessionClaims?.publicMetadata?.role ||
+                     "viewer";
 
     console.log("🔍 Auth details:", {
       userId: authResult.userId.substring(0, 8) + "...",
       userRole,
+      hasJwtClaims: !!hasuraClaims,
       pathname,
       method: req.method,
     });
 
     // Get required role for this route
     const requiredRole = getRequiredRole(pathname);
-    
+
     if (requiredRole) {
-      // Check if user has sufficient role
-      const roleHierarchy = {
-        viewer: 1,
-        consultant: 2,
-        manager: 3,
-        org_admin: 4,
-        developer: 5,
-      };
-
-      const userLevel = roleHierarchy[userRole as keyof typeof roleHierarchy] || 0;
-      const requiredLevel = roleHierarchy[requiredRole as keyof typeof roleHierarchy] || 999;
-
-      if (userLevel < requiredLevel) {
+      // Check if user has sufficient role using the centralized function
+      if (!hasRoleLevel(userRole, requiredRole)) {
         console.log("❌ Insufficient permissions:", {
           userRole,
-          userLevel,
           requiredRole,
-          requiredLevel,
         });
 
         // Return JSON error for API routes, redirect for pages
@@ -82,7 +74,10 @@ export default clerkMiddleware(async (auth, req) => {
           );
         } else {
           return NextResponse.redirect(
-            new URL(`/unauthorized?reason=role_required&current=${userRole}&required=${requiredRole}`, req.url)
+            new URL(
+              `/unauthorized?reason=role_required&current=${userRole}&required=${requiredRole}`,
+              req.url
+            )
           );
         }
       }
@@ -90,10 +85,9 @@ export default clerkMiddleware(async (auth, req) => {
 
     console.log("✅ Access granted");
     return NextResponse.next();
-
   } catch (error) {
     console.error("❌ Auth error:", error);
-    
+
     // Return JSON error for API routes, redirect for pages
     if (pathname.startsWith("/api/")) {
       return NextResponse.json(

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withSecureCronAuth } from "@/lib/auth/secure-cron-auth";
 
 // NOTE: This query calls a database function for system maintenance
 // cleanup_old_payroll_dates is a PostgreSQL function, not a GraphQL operation
@@ -28,15 +29,9 @@ const GET_CLEANUP_STATS_QUERY = `
   }
 `;
 
-export async function POST(request: NextRequest) {
+export const POST = withSecureCronAuth(async (request: NextRequest, authData) => {
   try {
-    // Verify this is a legitimate cron request
-    const cronSecret = request.headers.get("x-cron-secret");
-    if (cronSecret !== process.env.CRON_SECRET) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    console.log("🧹 Starting payroll date cleanup...");
+    console.log(`🧹 Starting payroll date cleanup (operation: ${authData.operation})...`);
 
     // Get Hasura admin token for database operations
     const hasuraAdminSecret = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
@@ -122,7 +117,7 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET endpoint for cleanup preview (dry run)
 export async function GET(request: NextRequest) {

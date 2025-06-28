@@ -7,7 +7,7 @@ import {
   UserRole,
 } from "@/domains/users/services/user-sync";
 import { withAuth } from "@/lib/auth/api-auth";
-import { getPermissionsForRole } from "@/lib/auth/permissions";
+import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/permissions";
 import {
   auditLogger,
   LogLevel,
@@ -65,6 +65,7 @@ async function createClerkInvitation(
     publicMetadata: {
       role: staffInput.role,
       permissions: getPermissionsForRole(staffInput.role),
+      allowedRoles: getAllowedRoles(staffInput.role), // ✅ NEW: Dynamic allowed roles
       isStaff: staffInput.is_staff,
       managerId: staffInput.managerId,
       invitedBy: session.userId,
