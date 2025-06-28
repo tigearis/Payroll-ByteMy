@@ -9,7 +9,7 @@ import {
   GetUserPermissionOverridesDocument 
 } from '@/domains/permissions/graphql/generated/graphql';
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { roleSecurityMonitor } from '@/lib/security/role-monitoring';
+import { clientRoleSecurityMonitor } from '@/lib/security/role-monitoring-client';
 
 // Enhanced permission types
 export interface EffectivePermission {
@@ -114,7 +114,7 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     
     // Monitor for role mismatches
     if (dbRole && jwtRole && dbRole !== jwtRole && userId && databaseId) {
-      roleSecurityMonitor.monitorRoleMismatch({
+      clientRoleSecurityMonitor.monitorRoleMismatch({
         userId: databaseId,
         clerkUserId: userId,
         jwtRole,

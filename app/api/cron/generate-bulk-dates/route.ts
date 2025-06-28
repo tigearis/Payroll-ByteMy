@@ -61,8 +61,7 @@ export async function POST(request: NextRequest) {
     const { data: coverageData, errors: coverageErrors } =
       await adminOperationsService.executeAdminQuery(
         CHECK_COVERAGE_QUERY,
-        {},
-        { skipAuth: true } // System operation
+        {}
       );
 
     if (coverageErrors) {
@@ -79,8 +78,7 @@ export async function POST(request: NextRequest) {
     // Get current stats
     const { data: statsData } = await adminOperationsService.executeAdminQuery(
       GET_STATS_QUERY,
-      {},
-      { skipAuth: true }
+      {}
     );
 
     const stats = statsData?.get_payroll_date_stats?.[0];
@@ -103,8 +101,7 @@ export async function POST(request: NextRequest) {
     const { data: generateData, errors: generateErrors } =
       await adminOperationsService.executeAdminQuery(
         GENERATE_BULK_DATES_QUERY,
-        { yearsAhead },
-        { skipAuth: true }
+        { yearsAhead }
       );
 
     if (generateErrors) {
@@ -172,8 +169,7 @@ export async function GET(request: NextRequest) {
     // Get current stats only
     const { data: statsData } = await adminOperationsService.executeAdminQuery(
       GET_STATS_QUERY,
-      {},
-      { skipAuth: true }
+      {}
     );
 
     const stats = statsData?.get_payroll_date_stats?.[0];
