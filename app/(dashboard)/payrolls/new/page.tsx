@@ -27,7 +27,7 @@ import {
 
 import { CreatePayrollDocument, GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetClientsSimpleDocument } from "@/domains/clients/graphql/generated/graphql";
-import { GetUsersForDropdownDocument } from "@/domains/users/graphql/generated/graphql";
+import { GetUsersForDropdownDomainDocument } from "@/domains/users/graphql/generated/graphql";
 
 // Hardcoded options for cycles and date types (these should ideally come from the database)
 const PAYROLL_CYCLES = [
@@ -492,7 +492,7 @@ export default function NewPayrollPage() {
 
   // GraphQL operations
   const { data: clientsData } = useQuery(GetClientsSimpleDocument);
-  const { data: usersData } = useQuery(GetUsersForDropdownDocument);
+  const { data: usersData } = useQuery(GetUsersForDropdownDomainDocument);
 
   const [createPayroll] = useMutation(CreatePayrollDocument);
 
