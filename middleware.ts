@@ -150,8 +150,9 @@ export default clerkMiddleware(
     } else {
       return NextResponse.redirect(new URL("/sign-in", req.url));
     }
-  },
-  { debug: true }
+  }
+},
+{ debug: true }
 );
 
 export const config = {
