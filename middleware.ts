@@ -1,4 +1,4 @@
-// Enhanced middleware with role-based protection
+// Enhanced middleware with role-based protection and OAuth flow handling
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { routes, getRequiredRole } from "./config/routes";
@@ -29,7 +29,20 @@ export default clerkMiddleware(
       return NextResponse.next();
     }
 
-    // Get complete auth data using centralized token utilities
+    // Enhanced OAuth flow detection
+    const isOAuthFlow =
+      req.nextUrl.searchParams.has("oauth_callback") ||
+      req.nextUrl.searchParams.has("__clerk_db_jwt") ||
+      req.nextUrl.searchParams.has("__clerk_handshake") ||
+      req.nextUrl.searchParams.has("__clerk_redirect_url") ||
+      req.headers.get("referer")?.includes("clerk.") ||
+      req.headers.get("referer")?.includes("accounts.dev") ||
+      req.headers.get("referer")?.includes("clerk.accounts.dev") ||
+      pathname.includes("sso-callback") ||
+      pathname.includes("oauth") ||
+      pathname.includes("clerk");
+
+    // Get complete auth data using centralised token utilities
     try {
       const { redirectToSignIn } = await auth();
       const {
@@ -43,13 +56,22 @@ export default clerkMiddleware(
       // Handle unauthenticated users
       if (!userId) {
         console.log("❌ No user ID found:", error);
+
+        // During OAuth flow, allow some time for authentication to complete
+        if (isOAuthFlow) {
+          console.log(
+            "🔄 OAuth flow detected, allowing unauthenticated access temporarily"
+          );
+          return NextResponse.next();
+        }
+
         if (pathname.startsWith("/api/")) {
           return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
         return redirectToSignIn();
       }
 
-      // If we don't have complete user data, allow only sync-related paths
+      // If we don't have complete user data, handle carefully
       if (!hasCompleteData) {
         const allowedIncompleteDataPaths = [
           "/dashboard",
@@ -58,17 +80,29 @@ export default clerkMiddleware(
           "/api/webhooks/clerk",
           "/profile",
           "/settings",
+          // Add OAuth-related paths
+          "/sso-callback",
+          "/oauth",
+          "/auth/callback",
         ];
 
         const isAllowedPath = allowedIncompleteDataPaths.some(
           path => pathname === path || pathname.startsWith(path)
         );
 
-        // Check if this might be an OAuth flow
-        const isOAuthFlow =
-          req.nextUrl.searchParams.has("oauth_callback") ||
-          req.headers.get("referer")?.includes("clerk.") ||
-          req.headers.get("referer")?.includes("accounts.dev");
+        // Allow OAuth flows to complete without interruption
+        if (isOAuthFlow) {
+          console.log(
+            "🔄 OAuth flow in progress, allowing access for completion",
+            {
+              pathname,
+              hasCompleteData,
+              userId: userId.substring(0, 8) + "...",
+              error,
+            }
+          );
+          return NextResponse.next();
+        }
 
         if (isAllowedPath) {
           console.log("⏳ Session not fully loaded, allowing sync path", {
@@ -76,10 +110,27 @@ export default clerkMiddleware(
             hasCompleteData,
             userId: userId.substring(0, 8) + "...",
             error,
-            isOAuthFlow,
           });
           return NextResponse.next();
         } else {
+          // Add a delay before redirecting to allow for session loading
+          // Check if this is a fresh session that might still be loading
+          const sessionAge = claims?.iat
+            ? Date.now() / 1000 - claims.iat
+            : Infinity;
+          const isRecentSession = sessionAge < 30; // Less than 30 seconds old
+
+          if (isRecentSession) {
+            console.log(
+              "⏳ Recent session detected, allowing time for data sync",
+              {
+                sessionAge,
+                pathname,
+              }
+            );
+            return NextResponse.next();
+          }
+
           // FIX: Only redirect if NOT already on dashboard to prevent redirect loops
           if (pathname !== "/dashboard") {
             console.log(
@@ -94,7 +145,6 @@ export default clerkMiddleware(
                 pathname,
                 hasCompleteData,
                 userId: userId.substring(0, 8) + "...",
-                isOAuthFlow,
               }
             );
             return NextResponse.next();
@@ -109,7 +159,7 @@ export default clerkMiddleware(
       const requiredRole = getRequiredRole(pathname);
 
       if (requiredRole) {
-        // Check if user has sufficient role using the centralized function
+        // Check if user has sufficient role using the centralised function
         if (!hasRoleLevel(finalUserRole as Role, requiredRole)) {
           console.log("❌ Insufficient permissions:", {
             userRole: finalUserRole,
@@ -131,7 +181,7 @@ export default clerkMiddleware(
           } else {
             return NextResponse.redirect(
               new URL(
-                `/unauthorized?reason=role_required&current=${finalUserRole}&required=${requiredRole}`,
+                `/unauthorised?reason=role_required&current=${finalUserRole}&required=${requiredRole}`,
                 req.url
               )
             );
@@ -143,6 +193,14 @@ export default clerkMiddleware(
       return NextResponse.next();
     } catch (error) {
       console.error("❌ Auth error:", error);
+
+      // During OAuth flow, be more lenient with errors
+      if (isOAuthFlow) {
+        console.log(
+          "🔄 OAuth flow detected, allowing access despite auth error"
+        );
+        return NextResponse.next();
+      }
 
       // Return JSON error for API routes, redirect for pages
       if (pathname.startsWith("/api/")) {
