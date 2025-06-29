@@ -35,6 +35,17 @@ export function useUserRole() {
     userName,
   } = useAuthContext();
 
+  // Debug logging for developer role issue
+  console.log("🔍 useUserRole Debug:", {
+    userRole,
+    isLoading,
+    userId,
+    userEmail,
+    hasAdminPermission: hasPermission("admin:manage"),
+    hasPayrollWrite: hasPermission("payroll:write"),
+    hasPayrollAssign: hasPermission("payroll:assign"),
+  });
+
   const [isUpdating, setIsUpdating] = useState(false);
   
   // GraphQL mutations

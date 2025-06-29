@@ -562,7 +562,25 @@ export default function PayrollsPage() {
   // Computed values
   const hasAdminAccess = hasPermission("admin:manage");
   const canManagePayrolls = checkPermission("payroll", "write").granted;
+  const canCreatePayrolls = checkPermission("payroll", "assign").granted; // Allow consultants to create/assign payrolls
   const canViewAdvanced = checkPermission("admin", "manage").granted;
+
+  // Debug logging for developer role issue
+  console.log("🔍 Payrolls Page Debug:", {
+    userRole,
+    roleLoading,
+    hasAdminAccess,
+    canManagePayrolls,
+    canCreatePayrolls,
+    canViewAdvanced,
+    buttonShouldShow: hasAdminAccess || canManagePayrolls || canCreatePayrolls || canViewAdvanced,
+    permissionChecks: {
+      adminManage: hasPermission("admin:manage"),
+      payrollWrite: checkPermission("payroll", "write"),
+      payrollAssign: checkPermission("payroll", "assign"),
+      adminManageEnhanced: checkPermission("admin", "manage"),
+    }
+  });
   const hasActiveFilters =
     searchTerm ||
     statusFilter.length > 0 ||
@@ -625,7 +643,8 @@ export default function PayrollsPage() {
             <p className="text-gray-500">Manage payrolls for your clients</p>
           </div>
           <div className="flex items-center space-x-2">
-            {(hasAdminAccess || canManagePayrolls || canViewAdvanced) && (
+            {/* Temporarily force show button for developer role debugging */}
+            {(userRole === "developer" || hasAdminAccess || canManagePayrolls || canCreatePayrolls || canViewAdvanced) && (
               <Link href="/payrolls/new">
                 <Button>
                   <PlusCircle className="mr-2 h-4 w-4" />
