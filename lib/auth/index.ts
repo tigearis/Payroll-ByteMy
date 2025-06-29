@@ -62,31 +62,38 @@ export { useSimpleAuth as useEnhancedPermissions } from './simple-auth-context';
 /**
  * Migration helpers for transitioning from complex to simple auth
  */
+
+// Import hasRoleLevel directly to ensure it's available
+import { hasRoleLevel as checkRoleLevel } from './simple-permissions';
+
+// Permission to role mapping
+const permissionToRoleMap: Record<string, SimpleRole> = {
+  'staff:read': 'manager',
+  'staff:write': 'manager', 
+  'staff:delete': 'org_admin',
+  'client:read': 'consultant',
+  'client:write': 'manager',
+  'client:delete': 'org_admin',
+  'admin:manage': 'org_admin',
+  'settings:write': 'org_admin',
+  'developer:access': 'developer',
+  'payroll:read': 'consultant',
+  'payroll:write': 'manager',
+  'audit:read': 'org_admin',
+  'security:manage': 'org_admin',
+};
+
+// Legacy permission checker function
+function hasPermission(permission: string, userRole: SimpleRole): boolean {
+  const requiredRole = permissionToRoleMap[permission];
+  if (!requiredRole) {
+    console.warn(`Unknown permission: ${permission}, defaulting to admin`);
+    return checkRoleLevel(userRole, 'org_admin');
+  }
+  return checkRoleLevel(userRole, requiredRole);
+}
+
 export const migration = {
-  // Map complex permissions to simple role checks
-  permissionToRole: {
-    'staff:read': 'manager',
-    'staff:write': 'manager', 
-    'staff:delete': 'org_admin',
-    'client:read': 'consultant',
-    'client:write': 'manager',
-    'client:delete': 'org_admin',
-    'admin:manage': 'org_admin',
-    'settings:write': 'org_admin',
-    'developer:access': 'developer',
-    'payroll:read': 'consultant',
-    'payroll:write': 'manager',
-    'audit:read': 'org_admin',
-    'security:manage': 'org_admin',
-  } as Record<string, SimpleRole>,
-  
-  // Legacy permission checker (for gradual migration)
-  hasPermission: (permission: string, userRole: SimpleRole): boolean => {
-    const requiredRole = migration.permissionToRole[permission];
-    if (!requiredRole) {
-      console.warn(`Unknown permission: ${permission}, defaulting to admin`);
-      return hasRoleLevel(userRole, 'org_admin');
-    }
-    return hasRoleLevel(userRole, requiredRole);
-  },
+  permissionToRole: permissionToRoleMap,
+  hasPermission,
 };
