@@ -103,7 +103,7 @@ async function getSession(): Promise<SimpleSession | null> {
     const databaseId = claims?.["x-hasura-user-id"];
     
     // Get role from metadata as fallback
-    const metadataRole = sessionClaims?.publicMetadata?.role as string;
+    const metadataRole = (sessionClaims?.publicMetadata as any)?.role as string;
     
     const userRole = sanitizeRole(jwtRole || metadataRole);
     
