@@ -707,9 +707,9 @@ export default function NewPayrollPage() {
             ? "DOW"
             : null),
         dateValue: formData.dateValue ? parseInt(formData.dateValue) : null,
-        primaryConsultantId: formData.primaryConsultantId || null,
-        backupConsultantId: formData.backupConsultantId || null,
-        managerId: formData.managerId || null,
+        primaryConsultantUserId: formData.primaryConsultantId || null,
+        backupConsultantUserId: formData.backupConsultantId || null,
+        managerUserId: formData.managerId || null,
         processingDaysBeforeEft: parseInt(formData.processingDaysBeforeEft),
         // Add fortnightly week if applicable
         ...(formData.cycleId === "fortnightly" && {

@@ -4,16 +4,17 @@ import { NextResponse } from "next/server";
 import { routes, getRequiredRole } from "./config/routes";
 import { hasRoleLevel } from "./lib/auth/permissions";
 
-// Define the middleware
-export default clerkMiddleware(async (auth, req) => {
-  const { pathname } = req.nextUrl;
+// Define the middleware with debug mode
+export default clerkMiddleware(
+  async (auth, req) => {
+    const { pathname } = req.nextUrl;
 
-  console.log("🔒 MIDDLEWARE STARTED:", {
-    pathname,
-    method: req.method,
-    url: req.url,
-    timestamp: new Date().toISOString()
-  });
+    console.log("🔒 MIDDLEWARE STARTED:", {
+      pathname,
+      method: req.method,
+      url: req.url,
+      timestamp: new Date().toISOString()
+    });
 
   // Skip public routes
   if (routes.public(req)) {
@@ -149,8 +150,9 @@ export default clerkMiddleware(async (auth, req) => {
     } else {
       return NextResponse.redirect(new URL("/sign-in", req.url));
     }
-  }
-});
+  },
+  { debug: true }
+);
 
 export const config = {
   matcher: [
