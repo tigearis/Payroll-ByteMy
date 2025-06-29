@@ -120,9 +120,25 @@ export function Sidebar() {
       return false;
     }
 
-    if (!authContext.isLoading && authContext.isAuthenticated) {
+    // CRITICAL: Show dashboard while loading
+    if (route.href === "/dashboard" && authContext.isLoading) {
+      return true;
+    }
+
+    // If still loading, don't filter out routes yet
+    if (authContext.isLoading) {
+      console.log(`⏳ Auth loading, temporarily showing route: ${route.label}`);
+      return true; // Show routes while loading to prevent flashing
+    }
+
+    if (authContext.isAuthenticated) {
       try {
         const hasAccess = route.checkAccess(authContext);
+        console.log(`🔍 Route access check for ${route.label}:`, {
+          hasAccess,
+          userRole: authContext.userRole,
+          required: route.checkAccess.toString()
+        });
         return hasAccess;
       } catch (error) {
         console.error(`❌ Error checking access for ${route.label}:`, error);
