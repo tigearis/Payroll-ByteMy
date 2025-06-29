@@ -16,6 +16,21 @@ import {
   hasRoleLevel,
 } from "./permissions";
 
+// Type definitions
+interface HasuraJWTClaims {
+  "x-hasura-user-id": string;
+  "x-hasura-default-role": string;
+  "x-hasura-allowed-roles": string[];
+  "x-hasura-clerk-user-id": string;
+}
+
+interface UserPublicMetadata {
+  role?: Role;
+  permissions?: Permission[];
+  permissionOverrides?: Permission[];
+  databaseId?: string;
+}
+
 // Simplified auth context interface
 export interface AuthContextType {
   // Authentication state
@@ -88,6 +103,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Prefer database user role for security
     const dbRole = databaseUser?.role;
     if (dbRole) {
+      console.log("🔍 Using database role:", dbRole);
       return dbRole as Role;
     }
 
@@ -96,9 +112,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
       "https://hasura.io/jwt/claims"
     ] as HasuraJWTClaims;
     const jwtRole = claims?.["x-hasura-default-role"];
+    
+    // Also check public metadata
+    const metadataRole = user?.publicMetadata?.role as Role;
+    
+    const finalRole = (jwtRole as Role) || metadataRole || "viewer";
+    
+    console.log("🔍 Role determination:", {
+      dbRole,
+      jwtRole,
+      metadataRole,
+      finalRole,
+      hasDatabase: !!databaseUser,
+      hasClaims: !!claims,
+      hasMetadata: !!user?.publicMetadata
+    });
 
-    return (jwtRole as Role) || "viewer";
-  }, [databaseUser?.role, sessionClaims]);
+    return finalRole;
+  }, [databaseUser?.role, sessionClaims, user?.publicMetadata]);
 
   // Check if we have a valid authenticated user
   const isValidUser = !dbUserLoading && !!databaseUser && !dbUserError;
@@ -118,7 +149,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const hasPermission = useCallback(
     (permission: Permission): boolean => {
       // SECURITY: Always deny if not authenticated or no valid database user
-      if (!isSignedIn || !isClerkLoaded || !isValidUser) return false;
+      // BUT: Allow developer role to bypass database check temporarily
+      if (!isSignedIn || !isClerkLoaded) return false;
+      
+      // Special case: developer role has all permissions even if DB not loaded
+      if (userRole === "developer" && isSignedIn) {
+        console.log(`✅ Developer role detected, granting permission: ${permission}`);
+        return true;
+      }
+      
+      if (!isValidUser) return false;
 
       // Check permission overrides first (they take precedence)
       if (permissionOverrides.includes(permission)) {
@@ -134,6 +174,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isValidUser,
       userPermissions,
       permissionOverrides,
+      userRole,
     ]
   );
 

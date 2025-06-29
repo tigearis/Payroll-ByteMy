@@ -110,9 +110,14 @@ export default clerkMiddleware(
           path => pathname === path || pathname.startsWith(path)
         );
 
-        // CRITICAL: Always allow dashboard access to prevent redirect loops
-        if (pathname === "/dashboard" || pathname.startsWith("/dashboard")) {
-          console.log("⏳ Dashboard access allowed for sync completion");
+        // CRITICAL: Always allow dashboard and developer access to prevent redirect loops
+        if (
+          pathname === "/dashboard" || 
+          pathname.startsWith("/dashboard") ||
+          pathname === "/developer" ||
+          pathname.startsWith("/developer")
+        ) {
+          console.log("⏳ Dashboard/Developer access allowed for sync completion");
           return NextResponse.next();
         }
 
