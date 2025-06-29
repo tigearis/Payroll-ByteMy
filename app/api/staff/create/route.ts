@@ -140,7 +140,8 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 export const POST = withAuth(
-  async (request: NextRequest, session) => {
+  async (request: NextRequest, authContext) => {
+    const session = authContext.session; // Extract session from EnhancedAuthSession
     console.log("🔧 =========================");
     console.log("🔧 STAFF CREATION STARTING");
     console.log("🔧 POST HANDLER CALLED SUCCESSFULLY");

@@ -1,0 +1,14 @@
+
+> payroll-bytemy@0.1.0 dev /Users/nathanharris/Payroll/Payroll-ByteMy
+> next dev --port 3000
+
+   ▲ Next.js 15.3.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.64:3000
+   - Environments: .env.development.local, .env.local, .env
+
+ ✓ Starting...
+   Using tsconfig file: ./tsconfig.json
+ ✓ Ready in 1718ms
+ ✓ Compiled /middleware in 453ms (271 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (146kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
