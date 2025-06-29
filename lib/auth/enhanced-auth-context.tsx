@@ -453,6 +453,15 @@ export function useAuthContext(): EnhancedAuthContextType {
   return context;
 }
 
+// Permissions-focused hook (alias for useEnhancedAuth)
+export function useEnhancedPermissions(): EnhancedAuthContextType {
+  const context = useContext(EnhancedAuthContext);
+  if (!context) {
+    throw new Error('useEnhancedPermissions must be used within an EnhancedAuthProvider');
+  }
+  return context;
+}
+
 // Alias for backward compatibility
 export const AuthProvider = EnhancedAuthProvider;
 export type AuthContextType = EnhancedAuthContextType;
