@@ -119,6 +119,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.2.5",
     "@radix-ui/react-tabs": "^1.1.12",
+    "@svgr/webpack": "^8.1.0",
     "@tanstack/react-table": "^8.21.3",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -130,6 +131,7 @@
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "critters": "^0.0.25",
     "date-fns": "^4.1.0",
     "fs": "0.0.1-security",
     "graphql": "^16.11.0",
@@ -142,6 +144,7 @@
     "next": "15.3.4",
     "next-themes": "^0.4.6",
     "pg": "^8.16.0",
+    "raw-loader": "^4.0.2",
     "react": "19.1.0",
     "react-day-picker": "^9.5.2",
     "react-dom": "19.1.0",
@@ -158,6 +161,7 @@
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",
     "vercel": "^43.3.0",
+    "webpack-bundle-analyzer": "^4.10.2",
     "yaml": "^2.8.0"
   },
   "devDependencies": {

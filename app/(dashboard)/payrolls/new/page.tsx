@@ -25,37 +25,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { CreatePayrollDocument, GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { CreatePayrollDocument, GeneratePayrollDatesDocument, GetPayrollCyclesDocument, GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetClientsSimpleDocument } from "@/domains/clients/graphql/generated/graphql";
 import { GetUsersForDropdownDomainDocument } from "@/domains/users/graphql/generated/graphql";
 
-// Hardcoded options for cycles and date types (these should ideally come from the database)
-const PAYROLL_CYCLES = [
-  { id: "weekly", name: "Weekly" },
-  { id: "fortnightly", name: "Fortnightly" },
-  { id: "bi_monthly", name: "Bi-Monthly" },
-  { id: "monthly", name: "Monthly" },
-  { id: "quarterly", name: "Quarterly" },
-];
-
-const PAYROLL_DATE_TYPES = {
-  weekly: [], // No date type dropdown needed - auto DOW
-  fortnightly: [], // No date type dropdown needed - auto DOW
-  bi_monthly: [
-    { id: "SOM", name: "Start of Month" },
-    { id: "EOM", name: "End of Month" },
-  ],
-  monthly: [
-    { id: "SOM", name: "Start of Month" },
-    { id: "EOM", name: "End of Month" },
-    { id: "fixed", name: "Fixed Date" },
-  ],
-  quarterly: [
-    { id: "SOM", name: "Start of Month" },
-    { id: "EOM", name: "End of Month" },
-    { id: "fixed", name: "Fixed Date" },
-  ],
-};
+// Day of week options for weekly payrolls
 
 const WEEKDAYS = [
   { value: "1", label: "Monday" },
@@ -493,8 +467,48 @@ export default function NewPayrollPage() {
   // GraphQL operations
   const { data: clientsData } = useQuery(GetClientsSimpleDocument);
   const { data: usersData } = useQuery(GetUsersForDropdownDomainDocument);
+  const { data: cyclesData } = useQuery(GetPayrollCyclesDocument);
+  const { data: dateTypesData } = useQuery(GetPayrollDateTypesDocument);
 
   const [createPayroll] = useMutation(CreatePayrollDocument);
+
+  // Helper function to get date type UUID by name
+  const getDateTypeIdByName = (name: string): string | null => {
+    if (!dateTypesData?.payrollDateTypes) return null;
+    const dateType = dateTypesData.payrollDateTypes.find(
+      (dt: any) => dt.name.toLowerCase() === name.toLowerCase()
+    );
+    return dateType?.id || null;
+  };
+
+  // Helper function to get cycle ID by name
+  const getCycleIdByName = (name: string): string | null => {
+    if (!cyclesData?.payrollCycles) return null;
+    const cycle = cyclesData.payrollCycles.find(
+      (c: any) => c.name.toLowerCase() === name.toLowerCase()
+    );
+    return cycle?.id || null;
+  };
+
+  // Helper function to get cycle name by ID
+  const getCycleNameById = (id: string): string | null => {
+    if (!cyclesData?.payrollCycles) return null;
+    const cycle = cyclesData.payrollCycles.find((c: any) => c.id === id);
+    return cycle?.name?.toLowerCase() || null;
+  };
+
+  // Helper function to check if cycle needs date type selection
+  const cycleNeedsDateType = (cycleId: string): boolean => {
+    const cycleName = getCycleNameById(cycleId);
+    return cycleName ? ["bi_monthly", "monthly", "quarterly"].includes(cycleName) : false;
+  };
+
+  // Helper function to get date type name by ID
+  const getDateTypeNameById = (id: string): string | null => {
+    if (!dateTypesData?.payrollDateTypes) return null;
+    const dateType = dateTypesData.payrollDateTypes.find((dt: any) => dt.id === id);
+    return dateType?.name?.toLowerCase() || null;
+  };
 
   // Lazy query for generating payroll dates after creation
   const [generatePayrollDates] = useLazyQuery(GeneratePayrollDatesDocument, {
@@ -537,17 +551,51 @@ export default function NewPayrollPage() {
   );
 
   // Get available date types based on selected cycle
-  const availableDateTypes = formData.cycleId
-    ? PAYROLL_DATE_TYPES[formData.cycleId as keyof typeof PAYROLL_DATE_TYPES] ||
-      []
-    : [];
+  const getAvailableDateTypes = () => {
+    if (!formData.cycleId || !dateTypesData?.payrollDateTypes) return [];
+    
+    const cycleName = getCycleNameById(formData.cycleId);
+    if (!cycleName) return [];
+    
+    // For weekly and fortnightly cycles, no date type selection needed (auto DOW)
+    if (["weekly", "fortnightly"].includes(cycleName)) {
+      return [];
+    }
+    
+    // For other cycles, return appropriate date types
+    const allDateTypes = dateTypesData.payrollDateTypes;
+    
+    if (cycleName === "bi_monthly") {
+      return allDateTypes.filter((dt: any) => 
+        ["som", "eom"].includes(dt.name.toLowerCase())
+      );
+    }
+    
+    if (["monthly", "quarterly"].includes(cycleName)) {
+      return allDateTypes.filter((dt: any) => 
+        ["som", "eom", "fixed_date"].includes(dt.name.toLowerCase())
+      );
+    }
+    
+    return allDateTypes;
+  };
+
+  const availableDateTypes = getAvailableDateTypes();
 
   // Reset date type and value when cycle changes
   const handleCycleChange = (value: string) => {
+    const cycleName = getCycleNameById(value);
+    
+    // For weekly and fortnightly cycles, automatically set to "dow" date type
+    let autoDateTypeId = "";
+    if (cycleName && ["weekly", "fortnightly"].includes(cycleName)) {
+      autoDateTypeId = getDateTypeIdByName("dow") || "";
+    }
+    
     setFormData(prev => ({
       ...prev,
       cycleId: value,
-      dateTypeId: value === "weekly" || value === "fortnightly" ? "DOW" : "",
+      dateTypeId: autoDateTypeId,
       dateValue: "",
       fortnightlyWeek: "",
     }));
@@ -574,8 +622,10 @@ export default function NewPayrollPage() {
       );
     }
 
+    const cycleName = getCycleNameById(cycleId);
+
     // Weekly: Only day of week selection
-    if (cycleId === "weekly") {
+    if (cycleName === "weekly") {
       return (
         <div className="space-y-2">
           <Label htmlFor="weekday">Day of Week</Label>
@@ -600,7 +650,7 @@ export default function NewPayrollPage() {
     }
 
     // Fortnightly: Calendar selection for week type and day of week
-    if (cycleId === "fortnightly") {
+    if (cycleName === "fortnightly") {
       return (
         <div className="space-y-2">
           <Label htmlFor="fortnightly-calendar">Select Week & Day</Label>
@@ -616,13 +666,13 @@ export default function NewPayrollPage() {
     }
 
     // Bi-Monthly: Only SOM/EOM selection (no date value needed)
-    if (cycleId === "bi_monthly") {
+    if (cycleName === "bi_monthly") {
       return (
         <div className="mt-1">
           <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
-            {formData.dateTypeId === "SOM" &&
+            {getDateTypeNameById(formData.dateTypeId || "") === "som" &&
               "1st and 15th of each month (14th in February)"}
-            {formData.dateTypeId === "EOM" &&
+            {getDateTypeNameById(formData.dateTypeId || "") === "eom" &&
               "30th and 15th of each month (14th & 28th in February)"}
             {!formData.dateTypeId && "Select date type above"}
           </p>
@@ -631,10 +681,11 @@ export default function NewPayrollPage() {
     }
 
     // Monthly/Quarterly: Handle SOM, EOM, or Fixed Date
-    if (cycleId === "monthly" || cycleId === "quarterly") {
+    if (cycleName === "monthly" || cycleName === "quarterly") {
       const { dateTypeId } = formData;
+      const dateTypeName = getDateTypeNameById(dateTypeId || "");
 
-      if (dateTypeId === "SOM") {
+      if (dateTypeName === "som") {
         return (
           <div className="mt-1">
             <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
@@ -644,7 +695,7 @@ export default function NewPayrollPage() {
         );
       }
 
-      if (dateTypeId === "EOM") {
+      if (dateTypeName === "eom") {
         return (
           <div className="mt-1">
             <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
@@ -654,7 +705,7 @@ export default function NewPayrollPage() {
         );
       }
 
-      if (dateTypeId === "fixed") {
+      if (dateTypeName === "fixed_date") {
         return (
           <div className="space-y-2">
             <Label htmlFor="fixed-date-calendar">Select Day of Month</Label>
@@ -701,11 +752,7 @@ export default function NewPayrollPage() {
         clientId: formData.clientId,
         name: formData.name.trim(),
         cycleId: formData.cycleId,
-        dateTypeId:
-          formData.dateTypeId ||
-          (formData.cycleId === "weekly" || formData.cycleId === "fortnightly"
-            ? "DOW"
-            : null),
+        dateTypeId: formData.dateTypeId || null,
         dateValue: formData.dateValue ? parseInt(formData.dateValue) : null,
         primaryConsultantUserId: formData.primaryConsultantId || null,
         backupConsultantUserId: formData.backupConsultantId || null,
@@ -886,7 +933,7 @@ export default function NewPayrollPage() {
                       <SelectValue placeholder="Select cycle..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {PAYROLL_CYCLES.map(cycle => (
+                      {cyclesData?.payrollCycles?.map((cycle: any) => (
                         <SelectItem key={cycle.id} value={cycle.id}>
                           {cycle.name}
                         </SelectItem>
@@ -896,9 +943,7 @@ export default function NewPayrollPage() {
                 </div>
 
                 {/* Only show date type for cycles that need it */}
-                {(formData.cycleId === "bi_monthly" ||
-                  formData.cycleId === "monthly" ||
-                  formData.cycleId === "quarterly") && (
+                {formData.cycleId && cycleNeedsDateType(formData.cycleId) && (
                   <div>
                     <Label htmlFor="date-type-id">Date Type *</Label>
                     <Select
