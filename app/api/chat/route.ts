@@ -2,7 +2,6 @@
 import { openai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
-
 import { withAuth } from "@/lib/auth/api-auth";
 import {
   auditLogger,

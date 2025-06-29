@@ -52,6 +52,12 @@ const eslintConfig = [
           format: ["camelCase", "UPPER_CASE", "PascalCase"],
           // Allow underscore prefix for intentionally unused variables
           leadingUnderscore: "allow",
+          filter: {
+            // Allow snake_case for external API data (Clerk webhooks, database columns, etc.)
+            regex:
+              "^(external_accounts|email_addresses|first_name|last_name|image_url|phone_numbers|public_metadata|private_metadata|unsafe_metadata|created_at|updated_at|last_sign_in_at|banned|locked|verification|backup_codes|totp|web3_wallets|passkeys|organization_memberships|affected_assignments|cycle_id|date_type_id)$",
+            match: false,
+          },
         },
         {
           selector: "function",
@@ -60,6 +66,12 @@ const eslintConfig = [
         {
           selector: "typeLike",
           format: ["PascalCase"],
+          filter: {
+            // Ignore GraphQL/Hasura generated type patterns - comprehensive list
+            regex:
+              "^(query_root.*|subscription_root.*|mutation_root.*|.*StreamCursorValueInput|.*StreamCursorInput|.*StreamArgs|.*InsertInput|.*UpdateInput|.*SetInput|.*OnConflictInput|.*AggregateFields|.*MinFields|.*MaxFields|.*AvgFields|.*SumFields|.*StddevFields|.*StddevPopFields|.*StddevSampFields|.*VarianceFields|.*VarPopFields|.*VarSampFields|.*BoolExp|.*OrderBy|.*PkColumnsInput|.*ArgsInput|.*WhereUniqueInput|.*Args|.*Aggregate.*|.*MutationResponse|.*SelectColumn|.*UpdateColumn|.*Constraint|.*IncInput|.*AppendInput|.*PrependInput|.*DeleteAtPathInput|.*DeleteElemInput|.*DeleteKeyInput|.*Updates|users.*|roles.*|resources.*|permissions.*|userRoles.*|rolePermissions.*|userInvitations.*|userAccessSummaries.*|slowQueries.*|workSchedules.*|usersRoleBackup.*)$",
+            match: false,
+          },
         },
         {
           selector: "import",
@@ -101,8 +113,23 @@ const eslintConfig = [
         },
         {
           selector: "parameter",
+          format: ["camelCase", "PascalCase"],
+          leadingUnderscore: "allow", // Allow _param for intentionally unused parameters
+          filter: {
+            // Allow PascalCase for React component parameters (HOCs)
+            regex: "^(Component|WrappedComponent|.*Component)$",
+            match: true,
+          },
+        },
+        {
+          selector: "parameter",
           format: ["camelCase"],
           leadingUnderscore: "allow", // Allow _param for intentionally unused parameters
+          filter: {
+            // Apply camelCase to non-component parameters
+            regex: "^(Component|WrappedComponent|.*Component)$",
+            match: false,
+          },
         },
       ],
 
@@ -177,7 +204,18 @@ const eslintConfig = [
   // GRAPHQL-SPECIFIC OVERRIDES
   // ================================
   {
-    files: ["**/graphql/**/*.ts", "**/*.generated.ts", "**/generated/**/*.ts"],
+    files: [
+      "**/graphql/**/*.ts",
+      "**/*.generated.ts",
+      "**/generated/**/*.ts",
+      // Add more comprehensive patterns for GraphQL/Hasura generated files
+      "**/*generated*.ts",
+      "**/*-generated.ts",
+      "**/lib/apollo/**/*.ts", // Apollo client files often contain generated types
+      "**/domains/*/graphql/**/*.ts", // Domain-specific GraphQL files
+      "**/shared/schema/**/*.ts", // Schema files with generated types
+      "**/shared/types/**/*.ts", // Generated type files
+    ],
     rules: {
       "@typescript-eslint/naming-convention": "off", // Disable all naming conventions for GraphQL files
     },
@@ -189,9 +227,9 @@ const eslintConfig = [
     },
   },
   {
-    files: ["**/shared/types/**/*.ts", "**/types/**/*.ts"],
+    files: ["**/types/**/*.ts"],
     rules: {
-      "@typescript-eslint/naming-convention": "off", // Disable for shared type files (often contain GraphQL types)
+      "@typescript-eslint/naming-convention": "off", // Disable for type files (may contain GraphQL types)
     },
   },
   {

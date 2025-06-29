@@ -9,14 +9,14 @@ import {
 
 interface CreatePayrollInput {
   name: string;
-  client_id: string;
-  cycle_id: string;
-  date_type_id: string;
-  date_value: number;
-  start_date: string;
-  primary_consultant_user_id?: string;
-  backup_consultant_user_id?: string;
-  manager_user_id?: string;
+  clientId: string;
+  cycleId: string;
+  dateTypeId: string;
+  dateValue: number;
+  startDate: string;
+  primaryConsultantUserId?: string;
+  backupConsultantUserId?: string;
+  managerUserId?: string;
   active?: boolean;
 }
 
@@ -38,10 +38,10 @@ export function usePayrollCreation() {
         variables: {
           object: {
             name: input.name,
-            clientId: input.client_id,
-            cycleId: input.cycle_id,
-            primaryConsultantUserId: input.primary_consultant_user_id || null,
-            managerUserId: input.manager_user_id || null,
+            clientId: input.clientId,
+            cycleId: input.cycleId,
+            primaryConsultantUserId: input.primaryConsultantUserId || null,
+            managerUserId: input.managerUserId || null,
             // Note: processing_days_before_eft field may need schema update
           },
         },
@@ -68,7 +68,7 @@ export function usePayrollCreation() {
         const datesResult = await generateDates({
           variables: {
             payrollId: payrollId,
-            startDate: input.start_date,
+            startDate: input.startDate,
             endDate: "", // Will use default 2 years
             maxDates: 104, // ~2 years for weekly payrolls
           },

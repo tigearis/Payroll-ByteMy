@@ -970,3 +970,63 @@ query GetExpiringInvitations($daysUntilExpiry: interval!) {
     }
   }
 }
+
+# User Status Management Queries for /api/users/manage
+query GetUsersByStatus(
+  $statuses: [user_status_enum!]
+  $limit: Int = 50
+  $offset: Int = 0
+) {
+  users(
+    where: { status: { _in: $statuses } }
+    orderBy: { updatedAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    email
+    name
+    role
+    status
+    isActive
+    isStaff
+    statusChangedAt
+    statusChangeReason
+    deactivatedAt
+    createdAt
+  }
+  usersAggregate(
+    where: { status: { _in: $statuses } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetUserWithStatusDetails($userId: uuid!) {
+  userById(id: $userId) {
+    id
+    email
+    name
+    role
+    status
+    isActive
+    isStaff
+    clerkUserId
+    statusChangedAt
+    statusChangedBy
+    statusChangeReason
+    deactivatedAt
+    deactivatedBy
+    createdAt
+    updatedAt
+  }
+}
+
+query GetCurrentUserRoleForManagement($userId: uuid!) {
+  userById(id: $userId) {
+    id
+    role
+  }
+}

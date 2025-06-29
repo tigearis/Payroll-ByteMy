@@ -26,7 +26,6 @@
 
 import { ApolloLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-
 import type { UnifiedClientOptions } from "../types";
 
 /**

@@ -1,9 +1,7 @@
-import { useState, useCallback } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { useAuth } from "@clerk/nextjs";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { useUserRole } from "@/hooks/use-user-role";
-
 import {
   GetUsersDocument,
   GetManagersDocument,
@@ -12,6 +10,7 @@ import {
   DeactivateUserDocument,
   GetUserStatsDocument,
 } from "@/domains/users/graphql/generated/graphql";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export type UserRole =
   | "developer"

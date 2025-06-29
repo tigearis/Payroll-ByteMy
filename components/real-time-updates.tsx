@@ -1,7 +1,6 @@
 // components/real-time-updates.tsx
 import { DocumentNode } from "@apollo/client";
 import { ReactNode } from "react";
-
 import { 
   PayrollSubscriptionDocument,
   GetPayrollsDocument

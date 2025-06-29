@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { toast } from "sonner";
+import { useCachedQuery } from "@/hooks/use-strategic-query";
 import {
   GetPendingInvitationsDocument,
   GetExpiredInvitationsDocument,
@@ -7,7 +8,6 @@ import {
   CancelUserInvitationDocument,
   MarkExpiredInvitationsDocument,
 } from "../graphql/generated/graphql";
-import { useCachedQuery } from "@/hooks/use-strategic-query";
 
 export interface InvitationListOptions {
   view?: "pending" | "expired" | "all";

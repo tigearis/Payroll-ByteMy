@@ -1,16 +1,13 @@
 // lib/security/api-signing.ts
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
-
 import { NextRequest, NextResponse } from "next/server";
-
+import { ApiResponses } from "@/lib/api-responses";
 import {
   auditLogger,
   LogLevel,
   LogCategory,
   SOC2EventType,
 } from "./audit/logger";
-
-import { ApiResponses } from "@/lib/api-responses";
 
 // Configuration for API signing
 const SIGNING_CONFIG = {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { adminApolloClient } from '@/lib/apollo/unified-client';
+import { executeTypedQuery } from '@/lib/apollo/query-helpers';
+import { withAuth } from '@/lib/auth/api-auth';
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from '@/lib/security/audit/logger';
 import { gql } from '@apollo/client';
 
@@ -119,12 +119,8 @@ const GET_USER_STATUS_TRENDS = gql`
   }
 `;
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, session) => {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
 
     const { searchParams } = new URL(request.url);
     const includeAttention = searchParams.get('includeAttention') === 'true';
@@ -133,9 +129,7 @@ export async function GET(request: NextRequest) {
     const trendsDays = parseInt(searchParams.get('trendsDays') || '30');
 
     // Get dashboard statistics
-    const { data: statsData } = await adminApolloClient.query({
-      query: GET_USER_STATUS_DASHBOARD_STATS,
-    });
+    const statsData = await executeTypedQuery(GET_USER_STATUS_DASHBOARD_STATS);
 
     // Calculate role distribution
     const roleDistribution = statsData.byRole.reduce((acc: Record<string, number>, user: any) => {
@@ -145,19 +139,18 @@ export async function GET(request: NextRequest) {
 
     let usersRequiringAttention = null;
     if (includeAttention) {
-      const { data: attentionData } = await adminApolloClient.query({
-        query: GET_USERS_REQUIRING_ATTENTION,
-        variables: { limit: attentionLimit },
-      });
-      usersRequiringAttention = attentionData;
+      usersRequiringAttention = await executeTypedQuery(
+        GET_USERS_REQUIRING_ATTENTION,
+        { limit: attentionLimit }
+      );
     }
 
     let statusTrends = null;
     if (includeTrends) {
-      const { data: trendsData } = await adminApolloClient.query({
-        query: GET_USER_STATUS_TRENDS,
-        variables: { days: trendsDays },
-      });
+      const trendsData = await executeTypedQuery(
+        GET_USER_STATUS_TRENDS,
+        { days: trendsDays }
+      );
 
       // Process trends data
       const trendsByDay = trendsData.statusChanges.reduce((acc: Record<string, any>, change: any) => {
@@ -208,7 +201,7 @@ export async function GET(request: NextRequest) {
       category: LogCategory.AUTHENTICATION,
       complianceNote: 'User status dashboard accessed',
       success: true,
-      userId,
+      userId: session.userId,
       resourceType: 'user_status_dashboard',
       action: 'dashboard_view',
       metadata: {
@@ -227,4 +220,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

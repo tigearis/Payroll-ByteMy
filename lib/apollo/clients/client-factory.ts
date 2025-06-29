@@ -6,7 +6,6 @@
 
 import { ApolloClient, from, split } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
-
 import { createUnifiedCache } from "../cache";
 import {
   createAuthLink,

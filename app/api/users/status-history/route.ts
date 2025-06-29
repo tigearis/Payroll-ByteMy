@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { adminApolloClient } from '@/lib/apollo/unified-client';
+import { z } from 'zod';
+import { executeTypedQuery } from '@/lib/apollo/query-helpers';
+import { withAuth } from '@/lib/auth/api-auth';
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from '@/lib/security/audit/logger';
 import { gql } from '@apollo/client';
-import { z } from 'zod';
 
 const GET_USER_STATUS_HISTORY = gql`
   query GetUserStatusHistory(
@@ -88,12 +88,8 @@ const SearchUsersSchema = z.object({
   limit: z.number().min(1).max(100).optional(),
 });
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, session) => {
   try {
-    const { userId: currentUserId } = await auth();
-    if (!currentUserId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
 
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action') || 'history';
@@ -109,10 +105,10 @@ export async function GET(request: NextRequest) {
         limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 20,
       });
 
-      const { data } = await adminApolloClient.query({
-        query: SEARCH_USERS_ADVANCED,
-        variables: validatedParams,
-      });
+      const data = await executeTypedQuery(
+        SEARCH_USERS_ADVANCED,
+        validatedParams
+      );
 
       await auditLogger.logSOC2Event({
         level: LogLevel.INFO,
@@ -120,7 +116,7 @@ export async function GET(request: NextRequest) {
         category: LogCategory.AUTHENTICATION,
         complianceNote: 'Advanced user search performed',
         success: true,
-        userId: currentUserId,
+        userId: session.userId,
         resourceType: 'user_search',
         action: 'advanced_search',
         metadata: validatedParams,
@@ -140,14 +136,14 @@ export async function GET(request: NextRequest) {
       limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 50,
     });
 
-    const { data } = await adminApolloClient.query({
-      query: GET_USER_STATUS_HISTORY,
-      variables: {
+    const data = await executeTypedQuery(
+      GET_USER_STATUS_HISTORY,
+      {
         ...validatedParams,
         startDate: validatedParams.startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days ago
         endDate: validatedParams.endDate || new Date().toISOString(),
-      },
-    });
+      }
+    );
 
     if (!data.user) {
       return NextResponse.json(
@@ -165,7 +161,7 @@ export async function GET(request: NextRequest) {
       category: LogCategory.AUDIT,
       complianceNote: 'User status history accessed for audit review',
       success: true,
-      userId: currentUserId,
+      userId: session.userId,
       resourceId: validatedParams.userId,
       resourceType: 'user_status_history',
       action: 'status_history_view',
@@ -208,4 +204,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

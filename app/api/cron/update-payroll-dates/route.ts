@@ -2,7 +2,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { format, addMonths } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
-
 import { UpdatePayrollStatusDocument as UPDATE_PAYROLL_STATUS } from "@/domains/payrolls";
 import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { serverApolloClient } from "@/lib/apollo/unified-client";

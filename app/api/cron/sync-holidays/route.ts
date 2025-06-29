@@ -1,6 +1,5 @@
 // app/api/cron/sync-holidays/route.ts
 import { NextResponse } from "next/server";
-
 import { syncAustralianHolidays } from "@/domains/external-systems/services/holiday-sync-service";
 import {
   auditLogger,

@@ -3,14 +3,13 @@
 
 import { RefreshCw } from "lucide-react";
 import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
-import { useCacheInvalidation } from "@/hooks/use-cache-invalidation";
-import { cn } from "@/lib/utils";
 import { 
   GetPayrollsDocument,
   GetPayrollsByMonthDocument
 } from "@/domains/payrolls/graphql/generated/graphql";
+import { useCacheInvalidation } from "@/hooks/use-cache-invalidation";
+import { cn } from "@/lib/utils";
 
 interface RefreshButtonProps {
   /**

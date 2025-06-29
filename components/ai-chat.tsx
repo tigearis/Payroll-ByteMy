@@ -3,12 +3,12 @@
 
 import type React from "react";
 import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 
-export function AIChat() {
+function AIChat() {
   const [messages, setMessages] = useState<
     { role: "system" | "user"; content: string }[]
   >([]);
@@ -83,5 +83,22 @@ export function AIChat() {
         </form>
       </CardContent>
     </Card>
+  );
+}
+
+export { AIChat };
+
+// Protected AI Chat component - requires elevated permissions
+export function ProtectedAIChat() {
+  return (
+    <PermissionGuard permission="admin:manage" fallback={
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardContent className="p-6 text-center text-gray-500">
+          <p>AI Chat requires administrator permissions</p>
+        </CardContent>
+      </Card>
+    }>
+      <AIChat />
+    </PermissionGuard>
   );
 }

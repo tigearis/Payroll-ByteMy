@@ -4,7 +4,7 @@
 import { Loader2, Save } from "lucide-react";
 import { useState } from "react";
 import type React from "react";
-
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,7 +27,6 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserRoleManagement } from "@/domains/users/components/user-role-management";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 import { useAuthContext } from "@/lib/auth";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 

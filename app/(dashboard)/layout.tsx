@@ -2,7 +2,6 @@
 "use client";
 
 import type React from "react";
-
 import { DashboardShell } from "@/components/dashboard-shell";
 import { Sidebar } from "@/components/sidebar";
 import { ClientWrapper } from "@/domains/clients/components/client-wrapper";

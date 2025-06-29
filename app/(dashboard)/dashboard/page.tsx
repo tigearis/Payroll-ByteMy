@@ -3,7 +3,6 @@
 
 import { useQuery } from "@apollo/client";
 import { CalendarDays, Users, Calculator } from "lucide-react";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UrgentAlerts } from "@/components/urgent-alerts";

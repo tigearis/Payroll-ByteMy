@@ -2,10 +2,13 @@
 
 import { Trash2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useInvitationManagement } from "@/domains/auth";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
+
 
 interface Invitation {
   id: string;
@@ -29,6 +32,11 @@ interface InvitationManagementTableProps {
 export function InvitationManagementTable({
   view,
 }: InvitationManagementTableProps) {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('staff:write')) {
+    return null;
+  }
   const { getInvitations, cleanupExpiredInvitations, loading, errors } =
     useInvitationManagement();
 

@@ -19,9 +19,8 @@ import {
   Legend,
   LegendProps,
 } from "recharts";
-
-import { Card, CardHeader, CardTitle, CardContent } from "./design-system";
 import { cn } from "@/lib/utils";
+import { Card, CardHeader, CardTitle, CardContent } from "./design-system";
 
 
 // Create a namespace to alias recharts components for type safety

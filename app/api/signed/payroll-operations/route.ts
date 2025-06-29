@@ -1,20 +1,23 @@
+import { withAuth } from "@/lib/auth/api-auth";
 // app/api/signed/payroll-operations/route.ts
 import { NextRequest, NextResponse } from "next/server";
-
-import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { 
   ProcessPayrollBatchDocument,
+  type ProcessPayrollBatchMutation,
   ApprovePayrollBatchDocument,
-  GeneratePayrollReportDocument 
+  type ApprovePayrollBatchMutation,
+  GeneratePayrollReportDocument,
+  type GeneratePayrollReportQuery
 } from "@/domains/payrolls/graphql/generated/graphql";
+import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withSignatureValidation } from "@/lib/security/api-signing";
-import { PersistentAPIKeyManager } from "@/lib/security/persistent-api-keys";
 import {
   auditLogger,
   LogLevel,
   LogCategory,
   SOC2EventType,
 } from "@/lib/security/audit/logger";
+import { PersistentAPIKeyManager } from "@/lib/security/persistent-api-keys";
 
 // Sensitive payroll operations handler
 const handlePayrollOperations = withSignatureValidation(
@@ -54,16 +57,16 @@ const handlePayrollOperations = withSignatureValidation(
             );
           }
 
-          const result = await adminApolloClient.mutate({
-            mutation: ProcessPayrollBatchDocument,
-            variables: { payrollIds, processedBy },
-          });
+          const data = await executeTypedMutation<ProcessPayrollBatchMutation>(
+            ProcessPayrollBatchDocument,
+            { payrollIds, processedBy }
+          );
 
           return NextResponse.json({
             success: true,
             operation: "process_batch",
-            affected_rows: result.data?.bulkUpdatePayrolls?.affectedRows || 0,
-            payrolls: result.data?.bulkUpdatePayrolls?.returning || [],
+            affected_rows: data?.bulkUpdatePayrolls?.affectedRows || 0,
+            payrolls: data?.bulkUpdatePayrolls?.returning || [],
           });
         }
 
@@ -77,16 +80,16 @@ const handlePayrollOperations = withSignatureValidation(
             );
           }
 
-          const result = await adminApolloClient.mutate({
-            mutation: ApprovePayrollBatchDocument,
-            variables: { payrollIds, approvedBy },
-          });
+          const data = await executeTypedMutation<ApprovePayrollBatchMutation>(
+            ApprovePayrollBatchDocument,
+            { payrollIds, approvedBy }
+          );
 
           return NextResponse.json({
             success: true,
             operation: "approve_batch",
-            affected_rows: result.data?.bulkUpdatePayrolls?.affectedRows || 0,
-            payrolls: result.data?.bulkUpdatePayrolls?.returning || [],
+            affected_rows: data?.bulkUpdatePayrolls?.affectedRows || 0,
+            payrolls: data?.bulkUpdatePayrolls?.returning || [],
           });
         }
 
@@ -100,14 +103,14 @@ const handlePayrollOperations = withSignatureValidation(
             );
           }
 
-          const result = await adminApolloClient.query({
-            query: GeneratePayrollReportDocument,
-            variables: { startDate, endDate },
-            fetchPolicy: "no-cache",
-          });
+          const data = await executeTypedQuery<GeneratePayrollReportQuery>(
+            GeneratePayrollReportDocument,
+            { startDate, endDate },
+            { fetchPolicy: "no-cache" }
+          );
 
-          const payrolls = result.data?.payrolls || [];
-          const recordCount = result.data?.reportMetadata?.aggregate?.count || 0;
+          const payrolls = data?.payrolls || [];
+          const recordCount = data?.reportMetadata?.aggregate?.count || 0;
 
           // Log data access for compliance
           const clientInfo = auditLogger.extractClientInfo(request);

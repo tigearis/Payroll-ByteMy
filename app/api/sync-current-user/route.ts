@@ -1,7 +1,7 @@
+import { withAuth } from "@/lib/auth/api-auth";
 // app/api/sync-current-user/route.ts
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-
 import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 
 async function handleSync(req: NextRequest) {

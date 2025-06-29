@@ -32,7 +32,6 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -87,10 +86,9 @@ import {
   UpdateClientStatusDocument,
   ArchiveClientDocument,
 } from "@/domains/clients/graphql/generated/graphql";
-import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
+import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
-
 import { safeFormatDate } from "@/lib/utils/date-utils";
 
 // Helper function to format payroll cycle information

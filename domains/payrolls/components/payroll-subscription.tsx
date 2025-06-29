@@ -1,7 +1,6 @@
 // components/payroll-subscription.tsx
 import { useSubscription } from "@apollo/client";
 import { ApolloQueryResult } from "@apollo/client";
-
 import { PayrollUpdatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 type RefetchFunction = () => Promise<ApolloQueryResult<unknown>>; // Use a more specific type if possible

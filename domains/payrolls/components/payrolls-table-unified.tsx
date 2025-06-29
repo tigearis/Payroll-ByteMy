@@ -1,5 +1,7 @@
 "use client";
 
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
 import {
   Clock,
   CheckCircle,
@@ -12,7 +14,6 @@ import {
   CalendarDays,
 } from "lucide-react";
 import Link from "next/link";
-
 import {
   UnifiedDataTable,
   DataTableColumn,
@@ -124,6 +125,11 @@ export function PayrollsTableUnified({
   sortDirection,
   onSort,
 }: PayrollsTableProps) {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('payroll:read')) {
+    return null;
+  }
   // Create cell renderers with status config
   const cellRenderers = createCellRenderers<Payroll>(payrollStatusConfig);
 

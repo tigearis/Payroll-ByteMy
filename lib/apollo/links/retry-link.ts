@@ -21,7 +21,6 @@
 
 import { ApolloLink } from "@apollo/client";
 import { RetryLink } from "@apollo/client/link/retry";
-
 import type { UnifiedClientOptions } from "../types";
 
 /**

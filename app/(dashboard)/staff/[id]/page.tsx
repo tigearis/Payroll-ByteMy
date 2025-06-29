@@ -31,8 +31,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useAuthContext } from "@/lib/auth";
-
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,9 +52,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -63,15 +59,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import { PermissionGuard } from "@/components/auth/permission-guard";
-
-import {
-  GetStaffDetailCompleteDocument,
-  UpdateUserDocument,
-  UpdateUserRoleDocument,
-  GetAllUsersListDocument,
-} from "@/domains/users/graphql/generated/graphql";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   GetUserEffectivePermissionsDocument,
   GetUserPermissionOverridesDocument,
@@ -80,6 +71,13 @@ import {
   RemovePermissionOverrideDocument,
   GetPermissionsDocument,
 } from "@/domains/permissions/graphql/generated/graphql";
+import {
+  GetStaffDetailCompleteDocument,
+  UpdateUserDocument,
+  UpdateUserRoleDocument,
+  GetAllUsersListDocument,
+} from "@/domains/users/graphql/generated/graphql";
+import { useAuthContext } from "@/lib/auth";
 import { ALL_PERMISSIONS, ROLE_PERMISSIONS, PERMISSION_CATEGORIES } from "@/lib/auth/permissions";
 
 // Role options

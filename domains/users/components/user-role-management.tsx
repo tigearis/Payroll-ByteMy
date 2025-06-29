@@ -1,6 +1,8 @@
 // components/user-role-management.tsx
 "use client";
 
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
 import {
   Edit,
   MoreHorizontal,
@@ -9,7 +11,6 @@ import {
   UserPlus,
 } from "lucide-react";
 import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -113,6 +114,12 @@ const roles = [
 ];
 
 export function UserRoleManagement() {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('staff:write')) {
+    return null;
+  }
+
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [isAddRoleOpen, setIsAddRoleOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"users" | "roles">("users");

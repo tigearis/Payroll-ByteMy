@@ -1,9 +1,10 @@
 // app/api/auth/log-event/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { CreateAuthEventDocument } from "@/domains/audit/graphql/generated/graphql";
+import { CreateAuthEventDocument, type CreateAuthEventMutation } from "@/domains/audit/graphql/generated/graphql";
+import { GetUserByClerkIdDocument, type GetUserByClerkIdQuery } from "@/domains/users/graphql/generated/graphql";
+import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
 
 const AuthEventSchema = z.object({
@@ -42,16 +43,12 @@ const AuthEventSchema = z.object({
   }).optional()
 });
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest, { userId: clerkUserId }) => {
   try {
     const body = await request.json();
     const validatedData = AuthEventSchema.parse(body);
     
     const { eventType, authMethod, success, failureReason, metadata, clientInfo } = validatedData;
-
-    // Get user information from Clerk
-    const authResult = await auth();
-    const clerkUserId = authResult.userId;
 
     // Extract client information
     const userAgent = clientInfo?.userAgent || request.headers.get("user-agent") || undefined;
@@ -136,23 +133,17 @@ export async function POST(request: NextRequest) {
     if (clerkUserId) {
       try {
         // Get the database user ID first
-        const { data: userData } = await adminApolloClient.query({
-          query: gql`
-            query GetUserByClerkId($clerkUserId: String!) {
-              users(where: { clerkUserId: { _eq: $clerkUserId } }, limit: 1) {
-                id
-              }
-            }
-          `,
-          variables: { clerkUserId }
-        });
+        const userData = await executeTypedQuery<GetUserByClerkIdQuery>(
+          GetUserByClerkIdDocument,
+          { clerkUserId }
+        );
 
         const databaseUserId = userData?.users?.[0]?.id;
 
         if (databaseUserId) {
-          await adminApolloClient.mutate({
-            mutation: CreateAuthEventDocument,
-            variables: {
+          await executeTypedMutation<CreateAuthEventMutation>(
+            CreateAuthEventDocument,
+            {
               userId: databaseUserId,
               eventType,
               success,
@@ -165,7 +156,7 @@ export async function POST(request: NextRequest) {
                 ...metadata
               }
             }
-          });
+          );
         }
       } catch (dbError) {
         console.warn("Failed to log auth event to database:", dbError);
@@ -210,7 +201,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-// Import gql for the inline query (this is acceptable for a simple user lookup)
-import { gql } from "@apollo/client";
+});

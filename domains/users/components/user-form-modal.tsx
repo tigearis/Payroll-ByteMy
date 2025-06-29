@@ -1,13 +1,14 @@
 // @ts-nocheck
 "use client";
 
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, User, Mail, Shield, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -104,6 +105,11 @@ export function UserFormModal({
   user,
   onSuccess,
 }: UserFormModalProps) {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('staff:write')) {
+    return null;
+  }
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {

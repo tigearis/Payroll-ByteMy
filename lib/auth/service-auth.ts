@@ -19,8 +19,8 @@
  */
 
 import { NextRequest } from 'next/server';
-import { extractClientInfo } from '@/lib/utils/client-info';
 import { auditLogger, LogLevel, LogCategory, AuditAction, DataClassification } from '@/lib/security/audit/logger';
+import { extractClientInfo } from '@/lib/utils/client-info';
 
 // Types for service authentication
 export interface ServiceAuthConfig {

@@ -4,7 +4,6 @@ import { useSignUp, useUser } from "@clerk/nextjs";
 import { useSearchParams, useRouter } from "next/navigation";
 import * as React from "react";
 import { Suspense, useState, useEffect } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,

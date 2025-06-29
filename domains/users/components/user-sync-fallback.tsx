@@ -2,8 +2,6 @@
 "use client";
 
 import { AlertTriangle } from "lucide-react";
-
-import { SyncUserButton } from "./sync-user-button";
 import {
   Card,
   CardContent,
@@ -11,12 +9,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { SyncUserButton } from "./sync-user-button";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
 
 interface UserSyncFallbackProps {
   clerkUserId?: string;
 }
 
 export function UserSyncFallback({ clerkUserId }: UserSyncFallbackProps) {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('staff:read')) {
+    return null;
+  }
   return (
     <div className="flex items-center justify-center min-h-[60vh] p-4">
       <Card className="max-w-md w-full">

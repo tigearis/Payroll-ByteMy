@@ -1,21 +1,21 @@
 "use client";
 
-import React, { useState } from 'react';
 import { AlertTriangle, Shield, Zap, Code, TestTube, BookOpen } from 'lucide-react';
+import React, { useState } from 'react';
 
 // Import test components
-import { JWTTestPanel } from './test-components/jwt-test-panel';
-import { HasuraWebSocketTest } from './test-components/hasura-websocket-test';
-import { DirectWebSocketTest } from './test-components/direct-websocket-test';
-import { SubscriptionTest } from './test-components/subscription-test';
-import { SimpleWebSocketTest } from './test-components/simple-websocket-test';
 
 // Import examples
-import { EnhancedUsersList } from './examples/enhanced-users-list';
-import { GracefulClientsList } from './examples/graceful-clients-list';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { EnhancedUsersList } from './examples/enhanced-users-list';
+import { GracefulClientsList } from './examples/graceful-clients-list';
+import { DirectWebSocketTest } from './test-components/direct-websocket-test';
+import { HasuraWebSocketTest } from './test-components/hasura-websocket-test';
+import { JWTTestPanel } from './test-components/jwt-test-panel';
+import { SimpleWebSocketTest } from './test-components/simple-websocket-test';
+import { SubscriptionTest } from './test-components/subscription-test';
 
 export const UnifiedDevDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');

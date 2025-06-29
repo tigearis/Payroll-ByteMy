@@ -12,18 +12,18 @@ import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
 import { 
+  authenticateServiceRequest, 
+  ServiceOperation,
+  logServiceAuth 
+} from "@/lib/auth/service-auth";
+import { auditLogger, LogLevel, SOC2EventType, LogCategory } from '@/lib/security/audit/logger';
+import { 
   enhancedSyncUser, 
   validateBidirectionalSync,
   SyncError,
   withUserSyncLock,
   updateSyncState 
 } from "@/lib/services/enhanced-sync";
-import { 
-  authenticateServiceRequest, 
-  ServiceOperation,
-  logServiceAuth 
-} from "@/lib/auth/service-auth";
-import { auditLogger, LogLevel, SOC2EventType, LogCategory } from '@/lib/security/audit/logger';
 
 // Webhook event type definitions
 type WebhookEvent = {

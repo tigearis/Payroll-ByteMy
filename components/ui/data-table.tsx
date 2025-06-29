@@ -12,7 +12,6 @@ import {
   ColumnFiltersState,
 } from "@tanstack/react-table";
 import React from "react";
-
 import { Button } from "./design-system";
 
 interface DataTableProps<TData, TValue> {

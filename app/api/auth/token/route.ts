@@ -2,13 +2,12 @@
 import { auth } from "@clerk/nextjs/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-
+import { ApiResponses } from "@/lib/api-responses";
 import {
   logFailedLogin,
   logTokenRefresh,
 } from "@/lib/security/auth-audit";
 import { extractClientInfo } from "@/lib/utils/client-info";
-import { ApiResponses } from "@/lib/api-responses";
 
 export async function GET(req: NextRequest) {
   console.log("🔍 Token endpoint called");

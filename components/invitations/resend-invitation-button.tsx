@@ -4,6 +4,7 @@ import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useInvitationResend } from "@/domains/auth";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 
 interface Invitation {
   id: string;
@@ -30,6 +31,26 @@ interface ResendInvitationButtonProps {
 }
 
 export function ResendInvitationButton({
+  invitation,
+  onResent,
+  variant = "outline",
+  size = "sm",
+  disabled = false,
+}: ResendInvitationButtonProps) {
+  return (
+    <PermissionGuard permission="staff:write">
+      <ResendInvitationButtonInner
+        invitation={invitation}
+        onResent={onResent}
+        variant={variant}
+        size={size}
+        disabled={disabled}
+      />
+    </PermissionGuard>
+  );
+}
+
+function ResendInvitationButtonInner({
   invitation,
   onResent,
   variant = "outline",

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { withAuthParams, AuthSession } from "@/lib/auth/api-auth";
 import {
   auditLogger,

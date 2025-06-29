@@ -2,11 +2,10 @@
 
 import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
+import { useSignUp } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useCallback } from "react";
-import { useSignUp } from "@clerk/nextjs";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,

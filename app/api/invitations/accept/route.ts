@@ -1,12 +1,16 @@
 // app/api/invitations/accept/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import {
   GetInvitationByTicketDocument,
   CompleteInvitationAcceptanceDocument,
   AssignInvitationRoleDocument,
   GetAllRolesDocument,
+  type GetInvitationByTicketQuery,
+  type CompleteInvitationAcceptanceMutation,
+  type AssignInvitationRoleMutation,
+  type GetAllRolesQuery,
 } from "@/domains/auth/graphql/generated/graphql";
 import {
   auditLogger,
@@ -29,10 +33,10 @@ export async function POST(request: NextRequest) {
       AcceptInvitationSchema.parse(body);
 
     // 1. Validate and get invitation details
-    const { data: invitationData } = await adminApolloClient.query({
-      query: GetInvitationByTicketDocument,
-      variables: { clerkTicket },
-    });
+    const invitationData = await executeTypedQuery<GetInvitationByTicketQuery>(
+      GetInvitationByTicketDocument,
+      { clerkTicket }
+    );
 
     const invitation = invitationData.userInvitations[0];
     if (!invitation) {
@@ -92,9 +96,9 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Get role ID for assignment
-    const { data: rolesData } = await adminApolloClient.query({
-      query: GetAllRolesDocument,
-    });
+    const rolesData = await executeTypedQuery<GetAllRolesQuery>(
+      GetAllRolesDocument
+    );
 
     const targetRole = rolesData.roles.find(
       (role: any) => role.name === invitation.invitedRole
@@ -107,15 +111,15 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Complete invitation acceptance (creates user)
-    const { data: acceptanceData } = await adminApolloClient.mutate({
-      mutation: CompleteInvitationAcceptanceDocument,
-      variables: {
+    const acceptanceData = await executeTypedMutation<CompleteInvitationAcceptanceMutation>(
+      CompleteInvitationAcceptanceDocument,
+      {
         invitationId: invitation.id,
         clerkUserId,
         userEmail,
         userName,
-      },
-    });
+      }
+    );
 
     const createdUser = acceptanceData?.insertUser;
     if (!createdUser) {
@@ -123,14 +127,14 @@ export async function POST(request: NextRequest) {
     }
 
     // 6. Assign role to the newly created user
-    await adminApolloClient.mutate({
-      mutation: AssignInvitationRoleDocument,
-      variables: {
+    await executeTypedMutation<AssignInvitationRoleMutation>(
+      AssignInvitationRoleDocument,
+      {
         userId: createdUser.id,
         roleId: targetRole.id,
         invitationId: invitation.id,
-      },
-    });
+      }
+    );
 
     // 7. Log successful invitation acceptance
     await auditLogger.logSOC2Event({

@@ -1,18 +1,17 @@
 "use client";
 
-import React, { useState } from 'react';
+import { useQuery } from '@apollo/client';
 import { Users, Shield, Search, Settings } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from 'react';
+import { PermissionOverrideManager } from '@/components/admin/permission-override-manager';
+import { PermissionGuard } from '@/components/auth/permission-guard';
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-
-import { PermissionOverrideManager } from '@/components/admin/permission-override-manager';
 import { GetUsersDocument } from '@/domains/users/graphql/generated/graphql';
-import { useQuery } from '@apollo/client';
 import { useAuthContext } from '@/lib/auth/enhanced-auth-context';
-import { PermissionGuard } from '@/components/auth/permission-guard';
 
 export default function PermissionsAdminPage() {
   const { hasPermission: _hasPermission } = useAuthContext();

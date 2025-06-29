@@ -1,16 +1,17 @@
 import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-
 import {
   GetUsersWithFilteringDocument,
   GetManagersDocument,
+  type GetUsersWithFilteringQuery,
+  type GetManagersQuery,
 } from "@/domains/users/graphql/generated/graphql";
 import {
   getUserPermissions,
   canAssignRole,
   UserRole,
 } from "@/domains/users/services/user-sync";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
 import { getPermissionsForRole } from "@/lib/auth/permissions";
 import {
@@ -107,42 +108,27 @@ export const GET = withAuth(
 
       console.log(`📋 Fetching users for ${session.role} with filters:`, where);
 
-      // Execute query with error handling for usersAggregate permissions
-      const { data, errors } = await adminApolloClient.query({
-        query: GetUsersWithFilteringDocument,
-        variables: { limit, offset, where },
-        fetchPolicy: "network-only",
-        errorPolicy: "all",
-      });
-
-      // Check if there are permission-related errors specifically for usersAggregate
-      const hasAggregatePermissionError = errors?.some(error => 
-        error.message.includes('usersAggregate') && 
-        error.message.includes('not found')
+      // Execute query with modern helper
+      const data = await executeTypedQuery<GetUsersWithFilteringQuery>(
+        GetUsersWithFilteringDocument,
+        { limit, offset, where },
+        { fetchPolicy: "network-only" }
       );
 
-      if (errors && !hasAggregatePermissionError) {
-        console.error("GraphQL errors:", errors);
-        return NextResponse.json(
-          { error: "Failed to fetch users", details: errors },
-          { status: 500 }
-        );
-      }
-
-      if (hasAggregatePermissionError) {
-        console.log("⚠️ usersAggregate not available for current user role, using estimated count");
-      }
+      // Check if usersAggregate is available (permissions-based)
+      const hasExactCount = data.usersAggregate?.aggregate?.count !== undefined;
 
       // Also fetch managers for frontend dropdown
-      const { data: managersData } = await adminApolloClient.query({
-        query: GetManagersDocument,
-        fetchPolicy: "cache-first",
-      });
+      const managersData = await executeTypedQuery<GetManagersQuery>(
+        GetManagersDocument,
+        {},
+        { fetchPolicy: "cache-first" }
+      );
 
       return NextResponse.json({
         success: true,
         users: data.users || [],
-        totalCount: hasAggregatePermissionError ? (data.users?.length || 0) : (data.usersAggregate?.aggregate?.count || 0),
+        totalCount: hasExactCount ? (data.usersAggregate?.aggregate?.count || 0) : (data.users?.length || 0),
         managers: managersData?.users || [],
         pagination: {
           limit,
@@ -151,7 +137,7 @@ export const GET = withAuth(
         },
         currentUserRole: session.role,
         permissions,
-        hasExactCount: !hasAggregatePermissionError, // Let frontend know if count is exact or estimated
+        hasExactCount, // Let frontend know if count is exact or estimated
       });
     } catch (error) {
       console.error("❌ Error fetching users:", error);

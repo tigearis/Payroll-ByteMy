@@ -1,11 +1,14 @@
 "use client";
 
+import { UserPlus, Search, RefreshCcw, Edit, Trash2 } from "lucide-react";
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
-import { UserPlus, Search, RefreshCcw, Edit, Trash2 } from "lucide-react";
-import { useStaffManagement } from "@/hooks/use-staff-management";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -14,9 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useStaffManagement } from "@/hooks/use-staff-management";
 import { User } from "@/hooks/use-user-management";
 
 // Define a type that's compatible with both the User type and the GraphQL fragment
@@ -42,6 +43,22 @@ interface StaffManagementContentProps {
 }
 
 export function StaffManagementContent({
+  onAddStaff,
+  onEditStaff,
+  onDeleteStaff,
+}: StaffManagementContentProps = {}) {
+  return (
+    <PermissionGuard permission="staff:read">
+      <StaffManagementContentInner 
+        onAddStaff={onAddStaff}
+        onEditStaff={onEditStaff}
+        onDeleteStaff={onDeleteStaff}
+      />
+    </PermissionGuard>
+  );
+}
+
+function StaffManagementContentInner({
   onAddStaff,
   onEditStaff,
   onDeleteStaff,

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Note: RegeneratePayrollDatesDocument requires custom Hasura action implementation
+import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { adminOperationsService } from "@/lib/apollo/admin-operations";
 import { withAuth, checkRateLimit } from "@/lib/auth/api-auth";
-import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 export const POST = withAuth(
   async (request: NextRequest, session) => {

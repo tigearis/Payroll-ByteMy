@@ -1,10 +1,10 @@
 // components/export-csv.tsx
 
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
 import { useQuery } from "@apollo/client";
 import { format, parseISO } from "date-fns";
-
 import { Button } from "@/components/ui/button";
-
 import {
   GetPayrollDatesDocument,
   GetPayrollDatesQuery,
@@ -17,6 +17,11 @@ interface ExportCsvProps {
 }
 
 export function ExportCsv({ payrollId }: ExportCsvProps) {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('payroll:export')) {
+    return null;
+  }
   const { loading, error, data } = useQuery(GetPayrollDatesDocument, {
     variables: { payrollId },
     skip: !payrollId,

@@ -29,7 +29,6 @@
 "use client";
 
 import { Building2, Users, AlertCircle } from "lucide-react";
-
 import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

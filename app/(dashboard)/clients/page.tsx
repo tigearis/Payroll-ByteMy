@@ -1,8 +1,8 @@
 // app/(dashboard)/clients/page.tsx
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@apollo/client";
+import { useUser } from "@clerk/nextjs";
 import {
   PlusCircle,
   Search,
@@ -22,9 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useStrategicQuery } from "@/hooks/use-strategic-query";
 import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +50,7 @@ import {
 import { ClientsTable } from "@/domains/clients/components/clients-table";
 import { GetClientsListDocument, GetClientsDashboardStatsDocument } from "@/domains/clients/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
+import { useStrategicQuery } from "@/hooks/use-strategic-query";
 import { useUserRole } from "@/hooks/use-user-role";
 
 type ViewMode = "cards" | "table" | "list";

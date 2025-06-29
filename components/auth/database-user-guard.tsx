@@ -5,7 +5,6 @@ import { useUser } from "@clerk/nextjs";
 import { AlertTriangle, RefreshCw, UserX, Database } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
-
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

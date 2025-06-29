@@ -1,21 +1,23 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-
-import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
 import {
   GetUserForDeletionDocument,
   GetCurrentUserRoleDocument,
   DeactivateUserDocument,
   HardDeleteUserDocument,
-} from "@/domains/users";
+  type GetUserForDeletionQuery,
+  type GetCurrentUserRoleQuery,
+  type DeactivateUserMutation,
+  type HardDeleteUserMutation,
+} from "@/domains/users/graphql/generated/graphql";
 
 async function checkUserPermissions(clerkUserId: string) {
-  const { data } = await adminApolloClient.query({
-    query: GetCurrentUserRoleDocument,
-    variables: { clerkUserId },
-    fetchPolicy: "no-cache",
-  });
+  const data = await executeTypedQuery<GetCurrentUserRoleQuery>(
+    GetCurrentUserRoleDocument,
+    { clerkUserId }
+  );
 
   const currentUser = data?.users?.[0];
   if (!currentUser) {
@@ -76,11 +78,10 @@ export const POST = withAuth(
       }
 
       // Get user details and check dependencies
-      const { data: userData } = await adminApolloClient.query({
-        query: GetUserForDeletionDocument,
-        variables: { id: staffId },
-        fetchPolicy: "no-cache",
-      });
+      const userData = await executeTypedQuery<GetUserForDeletionQuery>(
+        GetUserForDeletionDocument,
+        { id: staffId }
+      );
 
       const user = userData?.userById;
       if (!user) {
@@ -163,10 +164,10 @@ export const POST = withAuth(
       if (forceHardDelete && permissions.canHardDelete) {
         // Hard delete (developers only)
         console.log("💥 Performing HARD DELETE (irreversible)");
-        const { data: deleteData } = await adminApolloClient.mutate({
-          mutation: HardDeleteUserDocument,
-          variables: { id: staffId },
-        });
+        const deleteData = await executeTypedMutation<HardDeleteUserMutation>(
+          HardDeleteUserDocument,
+          { id: staffId }
+        );
 
         result = deleteData?.deleteUserById;
         if (!result) {
@@ -192,13 +193,10 @@ export const POST = withAuth(
       } else {
         // Soft delete (deactivation)
         console.log("📝 Performing SOFT DELETE (deactivation)");
-        const { data: deactivateData } = await adminApolloClient.mutate({
-          mutation: DeactivateUserDocument,
-          variables: {
-            id: staffId,
-            deactivatedBy: userId,
-          },
-        });
+        const deactivateData = await executeTypedMutation<DeactivateUserMutation>(
+          DeactivateUserDocument,
+          { id: staffId }
+        );
 
         result = deactivateData?.updateUserById;
         if (!result) {
@@ -242,13 +240,8 @@ export const POST = withAuth(
 );
 
 // GET endpoint to check deletion status and dependencies
-export async function GET(req: NextRequest) {
+export const GET = withAuth(async (req, { session }) => {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
-
     const { searchParams } = new URL(req.url);
     const staffId = searchParams.get("staffId");
 
@@ -260,7 +253,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Check current user permissions
-    const permissions = await checkUserPermissions(userId);
+    const permissions = await checkUserPermissions(session.userId);
 
     if (!permissions.canDeactivate) {
       return NextResponse.json(
@@ -270,11 +263,10 @@ export async function GET(req: NextRequest) {
     }
 
     // Get user details and dependencies
-    const { data: userData } = await adminApolloClient.query({
-      query: GetUserForDeletionDocument,
-      variables: { id: staffId },
-      fetchPolicy: "no-cache",
-    });
+    const userData = await executeTypedQuery<GetUserForDeletionQuery>(
+      GetUserForDeletionDocument,
+      { id: staffId }
+    );
 
     const user = userData?.userById;
     if (!user) {
@@ -306,9 +298,6 @@ export async function GET(req: NextRequest) {
       });
       warnings.push("User manages other staff members who need a new manager");
     }
-
-    // Note: pendingLeaves functionality removed as it's not part of the current GraphQL schema
-    // TODO: Re-implement when leave management domain is added
 
     return NextResponse.json({
       user: {
@@ -346,4 +335,6 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, {
+  allowedRoles: ["developer", "org_admin"],
+});

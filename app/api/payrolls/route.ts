@@ -1,9 +1,8 @@
 // app/api/payrolls/route.ts
 import { NextRequest, NextResponse } from "next/server";
-
 import { GetPayrollsDocument, type GetPayrollsQuery } from '@/domains/payrolls/graphql/generated/graphql';
-import { withAuth } from "@/lib/auth/api-auth";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
 import { getSessionClaims } from "@/lib/auth/token-utils";
 
 export const GET = withAuth(

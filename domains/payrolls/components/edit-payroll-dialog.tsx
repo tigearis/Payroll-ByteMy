@@ -4,7 +4,6 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,6 +21,8 @@ import {
   GetPayrollsDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { handleGraphQLError } from "@/lib/utils/handle-graphql-error";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+
 
 interface EditPayrollDialogProps {
   payroll: {

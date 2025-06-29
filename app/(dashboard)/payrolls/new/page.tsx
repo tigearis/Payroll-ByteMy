@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,9 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { CreatePayrollDocument, GeneratePayrollDatesDocument, GetPayrollCyclesDocument, GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetClientsSimpleDocument } from "@/domains/clients/graphql/generated/graphql";
+import { CreatePayrollDocument, GeneratePayrollDatesDocument, GetPayrollCyclesDocument, GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetUsersForDropdownDomainDocument } from "@/domains/users/graphql/generated/graphql";
 
 // Day of week options for weekly payrolls

@@ -1,14 +1,13 @@
 import crypto from "crypto";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-
 import { rateLimiter } from "../middleware/rate-limiter";
 import { logUnauthorizedAccess } from "../security/auth-audit";
-import { extractClientInfo } from "../utils/client-info";
 import { monitorRequest } from "../security/enhanced-route-monitor";
+import { extractClientInfo } from "../utils/client-info";
 // Import comprehensive permission system
-import { Role, ROLE_HIERARCHY } from "./permissions";
 import { validateJWTClaims } from "./jwt-validation";
+import { Role, ROLE_HIERARCHY } from "./permissions";
 
 /**
  * Represents an authenticated user session with role and permission information
@@ -22,6 +21,15 @@ export interface AuthSession {
   email?: string;
   /** Raw session claims from the JWT token */
   sessionClaims?: any;
+  /** Database user ID from JWT claims */
+  databaseId: string;
+}
+
+/**
+ * Enhanced session object with nested session property for compatibility
+ */
+export interface EnhancedAuthSession {
+  session: AuthSession;
 }
 
 /**
@@ -128,11 +136,19 @@ export async function requireAuth(
       );
     }
 
+    // Extract database ID from JWT claims
+    const databaseId = hasuraClaims?.["x-hasura-user-id"];
+    
+    if (!databaseId) {
+      throw new Error("Database user ID not found in JWT claims");
+    }
+
     return {
       userId,
       role: userRole,
       email: userEmail,
       sessionClaims,
+      databaseId,
     };
   } catch (error: any) {
     console.error("Authentication error:", error.message);
@@ -207,7 +223,7 @@ export function forbiddenResponse(message: string = "Forbidden"): NextResponse {
 export function withAuth(
   handler: (
     request: NextRequest,
-    session: AuthSession
+    context: EnhancedAuthSession
   ) => Promise<NextResponse>,
   options?: {
     requiredRole?: string;
@@ -250,7 +266,7 @@ export function withAuth(
         }
       }
 
-      const response = await handler(request, session);
+      const response = await handler(request, { session });
 
       // Add rate limit headers to successful responses
       if (!options?.skipRateLimit) {

@@ -27,7 +27,6 @@
 
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
-
 import type { UnifiedClientOptions } from "../types";
 
 /**

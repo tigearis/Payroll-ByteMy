@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import { PermissionDenied } from "./permission-denied";
-import { UnauthorizedModal } from "./unauthorized-modal";
-import { useUnauthorizedModal } from "@/hooks/use-unauthorized-modal";
 import {
   useEnhancedPermissions,
   type PermissionResult,
 } from "@/hooks/use-enhanced-permissions";
+import { useUnauthorizedModal } from "@/hooks/use-unauthorized-modal";
 import type { UnauthorizedReason } from "@/lib/auth/unauthorized-handler";
+import { PermissionDenied } from "./permission-denied";
+import { UnauthorizedModal } from "./unauthorized-modal";
 
 interface ModalPermissionGuardProps {
   resource?: string;

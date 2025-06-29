@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { StaffManagementContent } from "@/components/staff-management-content";
-import { ErrorBoundaryWrapper } from "@/components/error-boundary";
-import { CreateUserModal } from "@/domains/users/components/create-user-modal";
+import { useState } from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { ErrorBoundaryWrapper } from "@/components/error-boundary";
+import { StaffManagementContent } from "@/components/staff-management-content";
+import { CreateUserModal } from "@/domains/users/components/create-user-modal";
 import { useUserManagement } from "@/hooks/use-user-management";
 import { Role } from "@/types/enums";
 

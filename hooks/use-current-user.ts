@@ -1,7 +1,6 @@
-import { useAuth, useUser, useSession } from "@clerk/nextjs";
 import { useQuery } from "@apollo/client";
+import { useAuth, useUser, useSession } from "@clerk/nextjs";
 import { useMemo } from "react";
-
 import { GetCurrentUserDocument } from "@/domains/users/graphql/generated/graphql";
 
 /**

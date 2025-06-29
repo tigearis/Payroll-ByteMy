@@ -1,43 +1,15 @@
 // app/api/cron/generate-batch/route.ts
-import { gql } from "@apollo/client";
-import { auth } from "@clerk/nextjs/server";
 import { format, addMonths } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
+import { 
+  GeneratePayrollDatesQueryDocument,
+  type GeneratePayrollDatesQuery
+} from "@/domains/payrolls/graphql/generated/graphql";
+import { executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
 
-import { adminApolloClient } from "@/lib/apollo/unified-client"; // Updated import to use the unified client
-import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
-
-export async function POST(req: NextRequest) {
+export const POST = withAuth(async (req: NextRequest) => {
   try {
-    // Authentication and authorization check
-    const { userId, getToken } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Check user permissions
-    const token = await getToken({ template: "hasura" });
-    let userRole = "viewer";
-
-    if (token) {
-      const tokenParts = token.split(".");
-      if (tokenParts.length >= 2) {
-        const payload = JSON.parse(
-          Buffer.from(tokenParts[1], "base64").toString()
-        );
-        const hasuraClaims = payload["https://hasura.io/jwt/claims"];
-        userRole =
-          hasuraClaims?.["x-hasura-default-role"] ||
-          "viewer";
-      }
-    }
-
-    // Only allow certain roles to generate dates
-    const allowedRoles = ["org_admin", "developer"];
-    if (!allowedRoles.includes(userRole)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
 
     // Parse request body
     const { payrollIds, startDate } = await req.json();
@@ -72,26 +44,16 @@ export async function POST(req: NextRequest) {
       try {
         console.log(`Processing payroll: ${payrollId}`);
 
-        // Generate dates using the admin Apollo client
-        const { data, errors } = await adminApolloClient.query({
-          query: GeneratePayrollDatesQueryDocument,
-          variables: {
+        // Generate dates using executeTypedQuery
+        const data = await executeTypedQuery<GeneratePayrollDatesQuery>(
+          GeneratePayrollDatesQueryDocument,
+          {
             payrollId,
             startDate: formatDate(start),
             endDate: formatDate(end),
           },
-          fetchPolicy: "network-only", // Always fetch fresh data for function calls
-        });
-
-        if (errors) {
-          console.error(`Errors for payroll ${payrollId}:`, errors);
-          results.failed++;
-          results.errors.push({
-            payrollId,
-            error: errors.map(e => e.message).join(", "),
-          });
-          continue;
-        }
+          { fetchPolicy: "network-only" }
+        );
 
         // Check if dates were generated successfully
         if (
@@ -138,4 +100,6 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, {
+  allowedRoles: ["org_admin", "developer"]
+});
