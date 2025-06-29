@@ -2,7 +2,7 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { routes, getRequiredRole } from "./config/routes";
-import { hasRoleLevel } from "./lib/auth/permissions";
+import { hasRoleLevel, sanitizeUserRole } from "./lib/auth/permissions";
 import { getJWTClaimsWithFallback } from "./lib/auth/token-utils";
 
 // Define the middleware with debug mode
@@ -110,7 +110,7 @@ export default clerkMiddleware(
 
       if (requiredRole) {
         // Check if user has sufficient role using the centralized function
-        if (!hasRoleLevel(finalUserRole, requiredRole)) {
+        if (!hasRoleLevel(finalUserRole as Role, requiredRole)) {
           console.log("❌ Insufficient permissions:", {
             userRole: finalUserRole,
             requiredRole,
