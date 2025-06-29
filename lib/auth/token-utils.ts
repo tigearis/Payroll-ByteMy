@@ -2,7 +2,10 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 import type { Permission, Role } from "./permissions";
 // Import shared JWT utilities
-import { decodeJWTToken, extractUserIdFromTokenPayload } from "./jwt-shared-utils";
+import {
+  decodeJWTToken,
+  extractUserIdFromTokenPayload,
+} from "./jwt-shared-utils";
 
 /**
  * Universal token utilities for JWT tokens and claims
@@ -238,7 +241,12 @@ export async function getSessionClaims(): Promise<ClaimsResult> {
       allowedRoles,
       permissionOverrides,
       ...(hasuraClaims && { hasuraClaims }),
-      hasCompleteData: !!(userId && role && hasuraClaims),
+      // Enhanced hasCompleteData logic - more forgiving for OAuth flows
+      hasCompleteData: !!(
+        userId &&
+        role &&
+        (hasuraClaims || publicMetadata?.role)
+      ),
     };
   } catch (error) {
     console.error("Failed to get session claims:", error);
