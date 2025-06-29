@@ -1,67 +1,23 @@
 // app/api/payrolls/route.ts
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { GetPayrollsDocument } from '@/domains/payrolls/graphql/generated/graphql';
-import { serverApolloClient } from "@/lib/apollo/unified-client";
+import { GetPayrollsDocument, type GetPayrollsQuery } from '@/domains/payrolls/graphql/generated/graphql';
 import { withAuth } from "@/lib/auth/api-auth";
+import { executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { getSessionClaims } from "@/lib/auth/token-utils";
 
 export const GET = withAuth(
   async (_req: NextRequest) => {
     try {
-      // Get Clerk authentication
-      const { userId, getToken, sessionClaims } = await auth();
+      // Execute authenticated GraphQL query with full type safety
+      const data = await executeTypedQuery<GetPayrollsQuery>(GetPayrollsDocument);
 
-      // Check if user is authenticated
-      if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
+      // Get role for debug info (optional)
+      const { role: userRole } = await getSessionClaims();
 
-      // TEMPORARY: Extract role for debugging
-      const hasuraClaims = sessionClaims?.[
-        "https://hasura.io/jwt/claims"
-      ] as any;
-      const userRole = (hasuraClaims?.["x-hasura-default-role"] ||
-        (sessionClaims?.metadata as any)?.role ||
-        (sessionClaims?.metadata as any)?.defaultrole ||
-        (sessionClaims as any)?.role) as string;
-
-      console.log("🔍 PAYROLL ROUTE - User role debug:", {
-        userId: `${userId?.substring(0, 8)}...`,
+      console.log("🔍 PAYROLL ROUTE - Success:", {
+        payrollCount: data.payrolls?.length,
         userRole,
-        hasMetadata: !!sessionClaims?.metadata,
-        hasHasuraClaims: !!hasuraClaims,
-        v2DefaultRole: (sessionClaims?.metadata as any)?.defaultrole,
-        v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
-      });
-
-      // Get Hasura token
-      const token = await getToken({ template: "hasura" });
-
-      // Ensure we have a token
-      if (!token) {
-        return NextResponse.json(
-          { error: "Failed to obtain authentication token" },
-          { status: 401 }
-        );
-      }
-
-      console.log("🔍 PAYROLL ROUTE - Token info:", {
-        hasToken: !!token,
-        tokenLength: token?.length,
-      });
-
-      // Create server-side Apollo client
-      const client = serverApolloClient;
-
-      // Execute GraphQL query
-      const { data } = await client.query({
-        query: GetPayrollsDocument,
-        context: {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
       });
 
       return NextResponse.json({
@@ -69,8 +25,7 @@ export const GET = withAuth(
         // TEMPORARY: Include debug info
         debug: {
           userRole,
-          hasToken: !!token,
-          tokenLength: token?.length,
+          payrollCount: data.payrolls?.length,
         },
       });
     } catch (error) {

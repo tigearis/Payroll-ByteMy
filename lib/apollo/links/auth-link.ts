@@ -50,6 +50,19 @@ export function createAuthLink(options: UnifiedClientOptions): ApolloLink {
         }
       }
 
+      // Server context: Pass through headers provided by API routes
+      // API routes will provide the authorization header via context
+      if (options.context === "server" && typeof window === "undefined") {
+        // Server context relies on headers being passed from API routes
+        // Don't try to call auth() here as it may not work in all contexts
+        return {
+          headers: {
+            ...headers,
+            // Headers will be provided by the API route via context
+          },
+        };
+      }
+
       // Client context uses enhanced Clerk JWT token retrieval
       if (typeof window !== "undefined") {
         let token = null;

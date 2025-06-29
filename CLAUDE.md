@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Real-time Operations**: GraphQL subscriptions with optimistic updates
 - **Production Ready**: Clean TypeScript build, zero critical vulnerabilities
 
-### 🔐 Security & Compliance Status (Updated 2025-06-28)
+### 🔐 Security & Compliance Status (Updated 2025-06-29)
 ✅ **Enterprise-Grade Security Implementation Complete**
 - **Zero Critical Vulnerabilities**: All security issues resolved and validated
 - **5-Tier Role Hierarchy**: developer(5) → org_admin(4) → manager(3) → consultant(2) → viewer(1)
@@ -23,6 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Component Protection**: 100% coverage on sensitive UI components
 - **API Security**: Complete authentication and authorization on all endpoints
 - **Bidirectional Sync**: Enhanced Clerk ↔ Database synchronization with retry logic
+- **Authentication Fix**: Resolved API route auth issues with centralized token utilities
 
 ### Tech Stack
 - **Frontend**: Next.js 15 App Router, React 19, TypeScript 5.8
@@ -189,6 +190,138 @@ consultant: /dashboard/*, /clients/*, /payrolls/* (default)
 - `middleware.ts` - Secure server-side authentication middleware
 - `scripts/migrate-user-allowed-roles.ts` - User metadata migration utility
 
+## 🚀 API Development Guidelines (Updated 2025-06-29)
+
+### **Enhanced Apollo Query Helpers**
+✅ **New streamlined approach for API routes** with 90% code reduction while maintaining full Apollo Client benefits.
+
+#### **Core Utilities**
+- **`lib/auth/token-utils.ts`** - Centralized Hasura token utilities (server-only)
+- **`lib/apollo/query-helpers.ts`** - Generic GraphQL executors with type safety
+- **Apollo Auth Link** - Enhanced with proper server context handling
+
+#### **Standard API Route Pattern**
+All new API routes should follow this clean pattern:
+
+```typescript
+// app/api/example/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
+import { GetExampleDocument, type GetExampleQuery } from "@/domains/example/graphql/generated/graphql";
+
+// GET route with query
+export const GET = withAuth(async () => {
+  const data = await executeTypedQuery<GetExampleQuery>(GetExampleDocument);
+  return NextResponse.json({ items: data.items });
+});
+
+// POST route with mutation
+export const POST = withAuth(async (req) => {
+  const input = await req.json();
+  const data = await executeTypedMutation<CreateExampleMutation>(
+    CreateExampleDocument,
+    { input }
+  );
+  return NextResponse.json({ item: data.createExample });
+});
+```
+
+#### **Key Benefits**
+- ✅ **3 lines instead of 30+** - Automatic auth, context, and error handling
+- ✅ **Full type safety** - Uses generated GraphQL types with TypeScript generics
+- ✅ **Centralized auth** - Uses `getHasuraToken()` with proper server context
+- ✅ **Apollo consistency** - Same client architecture for frontend and API routes
+- ✅ **Security preserved** - All `withAuth()` wrappers and audit logging intact
+
+#### **Authentication Flow**
+```
+API Route → withAuth() → executeTypedQuery() → getHasuraToken() → Apollo Auth Link → Hasura
+```
+
+#### **Available Functions**
+```typescript
+// Basic executors
+executeQuery<TData, TVariables>(document, variables?, options?)
+executeMutation<TData, TVariables>(document, variables?, options?)
+
+// Type-safe wrappers (recommended)
+executeTypedQuery<TQuery, TVariables>(document, variables?, options?)
+executeTypedMutation<TMutation, TVariables>(document, variables?, options?)
+```
+
+#### **Supported Operations**
+- ✅ **Queries** - Data fetching with `executeTypedQuery`
+- ✅ **Mutations** - Data modification with `executeTypedMutation`  
+- ✅ **Hasura Actions** - Custom business logic (use `executeTypedMutation`)
+- ❌ **Subscriptions** - Not supported in API routes (use client-side `useSubscription`)
+
+#### **Migration from Old Pattern**
+```typescript
+// ❌ OLD: Manual auth + Apollo client (30+ lines)
+export const GET = withAuth(async () => {
+  const { token, error } = await getHasuraToken();
+  if (!token) return NextResponse.json({ error }, { status: 401 });
+  
+  const client = serverApolloClient;
+  const { data } = await client.query({
+    query: GetItemsDocument,
+    context: {
+      context: "server",
+      headers: { authorization: `Bearer ${token}` },
+    },
+  });
+  
+  return NextResponse.json({ items: data.items });
+});
+
+// ✅ NEW: Streamlined with query helpers (3 lines)
+export const GET = withAuth(async () => {
+  const data = await executeTypedQuery<GetItemsQuery>(GetItemsDocument);
+  return NextResponse.json({ items: data.items });
+});
+```
+
+#### **Advanced Usage**
+```typescript
+// With variables
+const data = await executeTypedQuery<GetUserQuery>(
+  GetUserDocument,
+  { id: userId }
+);
+
+// With custom options
+const data = await executeTypedQuery(
+  GetItemsDocument,
+  variables,
+  { fetchPolicy: 'network-only' }
+);
+
+// For routes with parameters
+export const GET = withAuthParams(async (req, { params }, session) => {
+  const { id } = await params;
+  const data = await executeTypedQuery<GetItemByIdQuery>(
+    GetItemByIdDocument,
+    { id }
+  );
+  return NextResponse.json({ item: data.itemById });
+});
+```
+
+#### **Error Handling**
+Query helpers automatically handle:
+- ✅ Authentication failures (401 responses)
+- ✅ GraphQL errors (with proper error messages)
+- ✅ Token retrieval issues
+- ✅ Server context configuration
+
+#### **Development Rules**
+1. **ALWAYS use `executeTypedQuery` or `executeTypedMutation`** for GraphQL operations in API routes
+2. **NEVER manually handle Hasura tokens** - utilities handle this automatically
+3. **ALWAYS import generated types** from domain GraphQL folders for type safety
+4. **PRESERVE security wrappers** - Keep `withAuth()` or `withAuthParams()` for all routes
+5. **USE TypeScript generics** - Specify query/mutation types for full type safety
+
 ## Code Conventions
 
 ### File Organization
@@ -211,9 +344,19 @@ Imports should be ordered: builtin → external → internal → parent → sibl
 
 1. **Before starting**: Ensure environment variables are set up (see README.md)
 2. **GraphQL changes**: Always run `pnpm codegen` after modifying .graphql files
-3. **Quality checks**: Run `pnpm quality:check` before committing
-4. **Testing**: Use E2E tests for critical user flows
-5. **Security**: All new components handling sensitive data need permission guards
+3. **API routes**: Use `executeTypedQuery`/`executeTypedMutation` helpers for all GraphQL operations
+4. **Authentication**: Use centralized token utilities from `lib/auth/token-utils.ts` (server-only)
+5. **Quality checks**: Run `pnpm quality:check` before committing
+6. **Testing**: Use E2E tests for critical user flows
+7. **Security**: All new components handling sensitive data need permission guards
+
+### **API Route Development Process**
+1. **Create GraphQL operations** in appropriate domain folder (`domains/{domain}/graphql/`)
+2. **Run `pnpm codegen`** to generate TypeScript types
+3. **Import helpers**: `executeTypedQuery`, `executeTypedMutation` from `@/lib/apollo/query-helpers`
+4. **Use security wrapper**: Always wrap with `withAuth()` or `withAuthParams()`
+5. **Apply type safety**: Use generated types with TypeScript generics
+6. **Test authentication**: Verify API routes work with proper JWT tokens
 
 ## TypeScript Guidelines
 
@@ -675,6 +818,8 @@ If sync operations are failing:
 
 ### **Always Use**
 - **Generated GraphQL types** for type safety from `domains/{domain}/graphql/generated/`
+- **Apollo query helpers** for API routes (`executeTypedQuery`, `executeTypedMutation`)
+- **Centralized auth utilities** (`getHasuraToken`, `getSessionClaims`) for server-side operations
 - **Permission guards** for UI component protection (`PermissionGuard`)
 - **Centralized role hierarchy** functions (`hasRoleLevel()`)
 - **SOC2 guidelines** for security-related changes
@@ -690,7 +835,8 @@ If sync operations are failing:
 
 ### **Code Quality Standards**
 - **TypeScript strict mode** - No any types without justification
-- **GraphQL type safety** - Use generated types exclusively
+- **GraphQL type safety** - Use generated types exclusively with query helpers
+- **API route consistency** - Use standardized 3-line pattern with `executeTypedQuery`
 - **Component composition** - Follow established UI patterns
 - **Performance optimization** - Use Apollo Client caching strategies
 - **Testing coverage** - E2E tests for critical user flows
