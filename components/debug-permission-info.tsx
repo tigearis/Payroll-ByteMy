@@ -3,8 +3,9 @@
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useUserRole } from "@/hooks/use-user-role";
 import { useAuthContext } from "@/lib/auth";
+import { DeveloperOnly } from "@/components/auth/developer-only";
 
-export function DebugPermissionInfo() {
+function DebugPermissionInfoInner() {
   const { isLoaded: authLoaded, userId, has } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
   const permissions = useUserRole();
@@ -59,5 +60,13 @@ export function DebugPermissionInfo() {
         <div className="ml-2">User Role: {authContext.userRole || "None"}</div>
       </div>
     </div>
+  );
+}
+
+export function DebugPermissionInfo() {
+  return (
+    <DeveloperOnly>
+      <DebugPermissionInfoInner />
+    </DeveloperOnly>
   );
 }

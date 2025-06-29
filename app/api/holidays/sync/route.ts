@@ -1,15 +1,11 @@
 // app/api/holidays/sync/route.ts
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "@/lib/auth/api-auth";
 import { syncAustralianHolidays } from "@/domains/external-systems/services/holiday-sync-service";
 
-export async function POST(req: NextRequest) {
-  try {
-    // Check authentication
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+export const POST = withAuth(
+  async (req: NextRequest, session) => {
+    try {
 
     // Check if force sync is requested via query parameter or request body
     const url = new URL(req.url);
@@ -26,7 +22,7 @@ export async function POST(req: NextRequest) {
     const forceSync = forceFromQuery || forceFromBody;
 
     console.log(
-      `🚀 Manual holiday sync started by user ${userId} (force: ${forceSync})`
+      `🚀 Manual holiday sync started by user ${session.userId} (force: ${forceSync})`
     );
 
     // Trigger holiday sync with duplicate checking
@@ -41,22 +37,26 @@ export async function POST(req: NextRequest) {
         totalAffected: result.totalAffected,
         skippedCount: result.skippedCount,
         forceSync,
-        userId,
+        userId: session.userId,
         results: result.results,
       },
     });
-  } catch (error) {
-    console.error("❌ Manual holiday sync error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to sync holidays",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
+    } catch (error) {
+      console.error("❌ Manual holiday sync error:", error);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to sync holidays",
+          details: error instanceof Error ? error.message : "Unknown error",
+        },
+        { status: 500 }
+      );
+    }
+  },
+  {
+    allowedRoles: ["developer", "org_admin"], // Only developers and admins can manually sync holidays
   }
-}
+);
 
 // Usage examples:
 // - Normal sync (skips if data exists): POST /api/holidays/sync

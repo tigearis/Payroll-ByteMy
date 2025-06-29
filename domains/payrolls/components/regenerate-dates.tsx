@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import {
   GeneratePayrollDatesQueryDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 
 interface RegenerateDatesProps {
   payrollId: string;
@@ -67,7 +68,8 @@ export function RegenerateDates({
   };
 
   return (
-    <div>
+    <PermissionGuard permission="payroll:write">
+      <div>
       {!isDialogOpen ? (
         <Button variant="outline" onClick={() => setIsDialogOpen(true)}>
           Regenerate Dates
@@ -111,5 +113,6 @@ export function RegenerateDates({
         </div>
       )}
     </div>
+    </PermissionGuard>
   );
 }

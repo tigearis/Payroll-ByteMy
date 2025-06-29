@@ -1,59 +1,33 @@
-// app/api/cron/update-payroll-dates/route.ts
-import { auth } from "@clerk/nextjs/server";
 import { format, addMonths } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
+import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
+import { 
+  GeneratePayrollDatesQueryDocument,
+  type GeneratePayrollDatesQueryQuery
+} from "@/domains/payrolls/graphql/generated/graphql";
 import { UpdatePayrollStatusDocument as UPDATE_PAYROLL_STATUS } from "@/domains/payrolls";
-import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
-import { serverApolloClient } from "@/lib/apollo/unified-client";
 
-export async function POST(req: NextRequest) {
-  try {
-    // Authentication and authorization check
-    const { userId, getToken } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Get Hasura token
-    const token = await getToken({ template: "hasura" });
-
-    if (!token) {
-      return NextResponse.json(
-        { error: "Failed to obtain authentication token" },
-        { status: 401 }
-      );
-    }
-
-    // Initialize Apollo Client
-    const client = serverApolloClient;
-
-    // Parse request body
+export const POST = withAuth(
+  async (req) => {
     const {
       payrollIds,
-      updateStatus = false, // Optional flag to update status
-      newStatus = "Active", // Default new status
+      updateStatus = false,
+      newStatus = "Active",
     } = await req.json();
 
-    // Validate input
     if (!payrollIds || !Array.isArray(payrollIds) || payrollIds.length === 0) {
       return NextResponse.json(
-        {
-          error: "Invalid input: Provide an array of payroll IDs",
-        },
+        { error: "Invalid input: Provide an array of payroll IDs" },
         { status: 400 }
       );
     }
 
-    // Set up date range for generated dates
     const startDate = new Date();
-    const endDate = addMonths(startDate, 12); // Generate 12 months of dates
-
-    // Format dates as YYYY-MM-DD
+    const endDate = addMonths(startDate, 12);
     const formattedStart = format(startDate, "yyyy-MM-dd");
     const formattedEnd = format(endDate, "yyyy-MM-dd");
 
-    // Process each payroll
     const results = {
       total: payrollIds.length,
       processed: 0,
@@ -63,84 +37,35 @@ export async function POST(req: NextRequest) {
 
     for (const payrollId of payrollIds) {
       try {
-        console.log(`Processing payroll: ${payrollId}`);
-
-        // Generate dates using Apollo query
-        const { data: dateData, errors: dateErrors } = await client.query({
-          query: GeneratePayrollDatesQueryDocument,
-          variables: {
+        const dateData = await executeTypedQuery<GeneratePayrollDatesQueryQuery>(
+          GeneratePayrollDatesQueryDocument,
+          {
             payrollId,
             startDate: formattedStart,
             endDate: formattedEnd,
-          },
-          context: {
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          },
-          fetchPolicy: "network-only",
-        });
+          }
+        );
 
-        if (dateErrors) {
-          console.error(
-            `Date Generation Errors for payroll ${payrollId}:`,
-            dateErrors
-          );
-          results.failed++;
-          results.errors.push({
-            payrollId,
-            error: dateErrors.map(e => e.message).join(", "),
-          });
-          continue;
-        }
-
-        // Optional status update
         if (updateStatus) {
           try {
-            const { data: _statusData, errors: statusErrors } =
-              await client.mutate({
-                mutation: UPDATE_PAYROLL_STATUS,
-                variables: {
-                  id: payrollId,
-                  status: newStatus,
-                },
-                context: {
-                  headers: {
-                    authorization: `Bearer ${token}`,
-                  },
-                },
-              });
-
-            if (statusErrors) {
-              console.warn(
-                `Status update errors for payroll ${payrollId}:`,
-                statusErrors
-              );
-            }
+            await executeTypedMutation(UPDATE_PAYROLL_STATUS, {
+              id: payrollId,
+              status: newStatus,
+            });
           } catch (statusUpdateError) {
-            console.error(
-              `Error updating status for payroll ${payrollId}:`,
-              statusUpdateError
-            );
+            console.error(`Error updating status for payroll ${payrollId}:`, statusUpdateError);
           }
         }
 
-        // Check if dates were generated
         const generatedDates = dateData?.generatePayrollDates;
         if (!generatedDates || generatedDates.length === 0) {
-          console.warn(`No dates generated for payroll: ${payrollId}`);
           results.failed++;
-          results.errors.push({
-            payrollId,
-            error: "No dates generated",
-          });
+          results.errors.push({ payrollId, error: "No dates generated" });
           continue;
         }
 
         results.processed++;
-        console.log(`Successfully processed payroll: ${payrollId}`);
       } catch (error) {
-        console.error(`Error processing payroll ${payrollId}:`, error);
         results.failed++;
         results.errors.push({
           payrollId,
@@ -149,7 +74,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Prepare and return response
     return NextResponse.json({
       success: results.processed > 0,
       message: `Processed ${results.processed} of ${results.total} payrolls`,
@@ -158,14 +82,6 @@ export async function POST(req: NextRequest) {
       failed: results.failed,
       errors: results.errors.length > 0 ? results.errors : undefined,
     });
-  } catch (error) {
-    console.error("Error in payroll processing:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to process payrolls",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  { allowedRoles: ["developer", "org_admin"] }
+);

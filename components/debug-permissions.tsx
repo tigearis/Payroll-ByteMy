@@ -2,8 +2,9 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useUserRole } from "@/hooks/use-user-role";
+import { DeveloperOnly } from "@/components/auth/developer-only";
 
-export function DebugPermissions() {
+function DebugPermissionsInner() {
   const permissions = useUserRole();
   const { user, isLoaded } = useUser();
 
@@ -28,5 +29,13 @@ export function DebugPermissions() {
         )}
       </div>
     </div>
+  );
+}
+
+export function DebugPermissions() {
+  return (
+    <DeveloperOnly>
+      <DebugPermissionsInner />
+    </DeveloperOnly>
   );
 }

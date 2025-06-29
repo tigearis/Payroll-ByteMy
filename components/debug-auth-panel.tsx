@@ -2,6 +2,7 @@
 
 import { useAuth, useUser, useSession } from "@clerk/nextjs";
 import { useState } from "react";
+import { DeveloperOnly } from "@/components/auth/developer-only";
 
 /**
  * Authentication Debug Panel
@@ -9,7 +10,7 @@ import { useState } from "react";
  * Add this component to any page to debug authentication issues
  * Usage: <AuthDebugPanel />
  */
-export function AuthDebugPanel() {
+function AuthDebugPanelInner() {
   const { userId, isLoaded, sessionClaims, getToken } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
   const { session } = useSession();
@@ -129,5 +130,13 @@ export function AuthDebugPanel() {
         </div>
       </div>
     </div>
+  );
+}
+
+export function AuthDebugPanel() {
+  return (
+    <DeveloperOnly>
+      <AuthDebugPanelInner />
+    </DeveloperOnly>
   );
 }

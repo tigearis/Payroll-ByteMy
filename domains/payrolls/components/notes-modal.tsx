@@ -17,6 +17,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { UpdatePayrollDateNotesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 
 interface Note {
   id: string;
@@ -69,7 +70,8 @@ export function NotesModal({ note, refetchNotes, trigger }: NotesModalProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <PermissionGuard permission="payroll:write">
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="ghost" size="sm">
@@ -121,5 +123,6 @@ export function NotesModal({ note, refetchNotes, trigger }: NotesModalProps) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </PermissionGuard>
   );
 }

@@ -11,6 +11,7 @@ import {
   GetPayrollsMissingDatesDocument,
   GetPayrollsDocument,
 } from '@/domains/payrolls/graphql/generated/graphql';
+import { PermissionGuard } from "@/components/auth/permission-guard";
 
 interface GenerateMissingDatesButtonProps {
   payrollIds: string[];
@@ -18,6 +19,20 @@ interface GenerateMissingDatesButtonProps {
 }
 
 export function GenerateMissingDatesButton({
+  payrollIds,
+  onSuccess,
+}: GenerateMissingDatesButtonProps) {
+  return (
+    <PermissionGuard permission="payroll:write">
+      <GenerateMissingDatesButtonInner
+        payrollIds={payrollIds}
+        onSuccess={onSuccess}
+      />
+    </PermissionGuard>
+  );
+}
+
+function GenerateMissingDatesButtonInner({
   payrollIds,
   onSuccess,
 }: GenerateMissingDatesButtonProps) {

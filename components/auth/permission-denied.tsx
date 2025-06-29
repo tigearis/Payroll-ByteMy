@@ -3,7 +3,7 @@
 import { ShieldX, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import type { PermissionResult } from "@/hooks/use-enhanced-permissions";
+// PermissionResult type is now available globally from types/global.d.ts
 
 interface PermissionDeniedProps {
   result: PermissionResult;

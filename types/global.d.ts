@@ -1,86 +1,88 @@
 // types/global.d.ts
 // Global type declarations for the Payroll ByteMy system
-// Re-exports Hasura-generated enums and defines global utility types
+// Centralised type definitions for consistency across the application
 
-import type { 
-  CustomPermission, 
-  Role as AuthRole,
-  UserMetadata as AuthUserMetadata 
-} from "./permissions";
-
-// Import generated GraphQL types (these will include Hasura enum types)
-// Note: Update these import paths based on your actual generated types location
+// Import generated GraphQL types from Hasura
 import type {
   PayrollStatus as GraphQLPayrollStatus,
   PayrollCycleType as GraphQLPayrollCycleType,
   PayrollDateType as GraphQLPayrollDateType,
   LeaveStatus as GraphQLLeaveStatus,
-  UserRole as GraphQLUserRole,
   PermissionAction as GraphQLPermissionAction,
-  Status as GraphQLStatus
+  Status as GraphQLStatus,
 } from "../shared/types/generated/graphql";
+
+// Import auth-specific types
+import type {
+  Permission,
+  Role as AuthRole,
+  UserMetadata as AuthUserMetadata,
+} from "./permissions";
 
 export {};
 
 declare global {
   // ===========================
-  // Re-export Hasura Enums Globally
+  // HASURA ENUM RE-EXPORTS
   // ===========================
-  
-  // Business enums from Hasura
+
+  // Business domain enums from Hasura GraphQL schema
   type PayrollStatus = GraphQLPayrollStatus;
   type PayrollCycleType = GraphQLPayrollCycleType;
   type PayrollDateType = GraphQLPayrollDateType;
   type LeaveStatus = GraphQLLeaveStatus;
-  type Role = AuthRole; // Use auth system Role type
   type PermissionAction = GraphQLPermissionAction;
   type Status = GraphQLStatus;
-  
-  // Weekday enums (from Hasura custom types)
+  type Role = AuthRole;
+
+  // Custom business enums
   type BusinessWeekday = "1" | "2" | "3" | "4" | "5";
   type FortnightlyWeek = "A" | "B";
-  
+  type EntityType = "payroll" | "client";
+  type EventType = "payroll" | "holiday" | "leave";
+  type LeaveType = "Annual" | "Sick" | "Other";
+
   // ===========================
-  // Global Scalar Type Aliases
+  // SCALAR TYPE ALIASES
   // ===========================
-  
+
   type UUID = string;
   type Timestamp = string;
   type Timestamptz = string;
   type DateString = string;
   type JSONValue = any;
   type Numeric = number | string;
-  
-  // ===========================
-  // Clerk Integration Types
-  // ===========================
-  
-  interface ClerkAuthorization {
-    role: Role;
-    permission: CustomPermission;
-  }
 
-  // Enhanced JWT claims structure for custom permissions
-  interface CustomJwtSessionClaims {
-    "https://hasura.io/jwt/claims": {
-      metadata: UserPublicMetadata;
-      "x-hasura-role": Role;
-      "x-hasura-user-id": string;
-      "x-hasura-default-role": "viewer";
-      "x-hasura-allowed-roles": Role[];
-      "x-hasura-clerk-user-id": string;
-    };
-    metadata: UserPublicMetadata;
-  }
+  // ===========================
+  // CLERK AUTHENTICATION TYPES
+  // ===========================
 
+  /**
+   * User public metadata structure (stored in Clerk and used in JWT)
+   * This data is accessible client-side and included in JWT tokens
+   */
   interface UserPublicMetadata extends AuthUserMetadata {
-    // Additional UI-specific fields
+    // Database identifier (used as x-hasura-user-id)
+    databaseId?: string;
+
+    // Role and permissions (used in JWT claims)
+    role?: Role;
+    allowedRoles?: Role[] | string;
+    
+    // Enhanced permission overrides (included in JWT template)
+    permissionOverrides?: Permission[];
+
+    // Additional business fields
     onboardingComplete?: boolean;
     department?: string;
     employeeId?: string;
     startDate?: string;
   }
 
+  /**
+   * User private metadata structure (stored in Clerk, not in JWT)
+   * This data is only accessible server-side
+   */
   interface UserPrivateMetadata {
     securitySettings?: {
       mfaEnabled: boolean;
@@ -94,25 +96,124 @@ declare global {
     };
   }
 
-  // ===========================
-  // Common Entity Types
-  // ===========================
-  
-  // Note entity type enum (should be added to Hasura)
-  type EntityType = "payroll" | "client";
-  
-  // Event type enum (should be added to Hasura)
-  type EventType = "payroll" | "holiday" | "leave";
-  
-  // Leave type enum (already in Hasura)
-  type LeaveType = "Annual" | "Sick" | "Other";
+  /**
+   * Hasura JWT claims structure (matches your Clerk template exactly)
+   * This is what gets embedded in the JWT token
+   */
+  interface HasuraJWTClaims {
+    "x-hasura-user-id": string; // {{user.public_metadata.databaseId}}
+    "x-hasura-default-role": string; // {{user.public_metadata.role || 'viewer'}}
+    "x-hasura-allowed-roles": string; // {{user.public_metadata.allowedRoles || 'viewer'}}
+    "x-hasura-clerk-user-id": string; // {{user.id}}
+    "x-hasura-permission-overrides": string; // {{user.public_metadata.permissionOverrides}} as JSON string
+  }
+
+  /**
+   * Complete session claims structure from Clerk
+   * This is what you get from auth() or useAuth()
+   */
+  interface ClerkSessionClaims {
+    "https://hasura.io/jwt/claims": HasuraJWTClaims;
+    publicMetadata: UserPublicMetadata;
+    privateMetadata: UserPrivateMetadata;
+    // Additional Clerk standard claims
+    sub: string;
+    iat: number;
+    exp: number;
+    iss: string;
+    aud: string;
+  }
 
   // ===========================
-  // Global Interfaces
+  // TOKEN & AUTH UTILITY TYPES
   // ===========================
-  
+
   /**
-   * PayrollDate interface (used globally)
+   * Result type for token operations
+   */
+  interface TokenResult {
+    token: string | null;
+    userId: string | null; // Database ID (from public_metadata.databaseId)
+    clerkUserId: string | null; // Clerk user ID
+    error?: string;
+  }
+
+
+  /**
+   * Authorization headers for API requests
+   */
+  interface AuthHeaders {
+    authorization?: string;
+  }
+
+  /**
+   * Complete authorization context
+   */
+  interface AuthorizationContext {
+    userId: string | null;
+    clerkUserId: string | null;
+    role: string;
+    allowedRoles: string[];
+    permissionOverrides: Permission[] | null;
+  }
+
+  /**
+   * Enhanced claims result with permission overrides
+   */
+  interface ClaimsResult {
+    userId: string | null; // Database ID
+    clerkUserId: string | null; // Clerk user ID
+    claims: any;
+    role: string;
+    allowedRoles: string[];
+    permissionOverrides?: Permission[] | null;
+    hasuraClaims?: HasuraJWTClaims;
+    hasCompleteData?: boolean;
+    error?: string;
+  }
+
+  /**
+   * Enhanced permission context for contextual permission checking
+   */
+  interface PermissionContext {
+    clientId?: string;
+    payrollId?: string;
+    userId?: string;
+    organizationId?: string;
+    resourceType?: 'client' | 'payroll' | 'user' | 'organization';
+    resourceId?: string;
+  }
+
+  /**
+   * Permission validation result with detailed feedback
+   */
+  interface PermissionValidationResult {
+    hasPermission: boolean;
+    reason?: string;
+    suggestedAction?: string;
+    requiredRole?: Role;
+    currentRole?: Role;
+    missingPermissions?: string[];
+  }
+
+  /**
+   * Enhanced permission check result for UI components
+   */
+  interface PermissionResult {
+    granted: boolean;
+    reason?: string | undefined;
+    requiredRole?: string;
+    currentRole?: string;
+    suggestions?: string[];
+    context?: Record<string, any>;
+  }
+
+  // ===========================
+  // BUSINESS ENTITY INTERFACES
+  // ===========================
+
+  /**
+   * PayrollDate interface for scheduling
    * @security MEDIUM - Internal scheduling data
    */
   interface PayrollDate {
@@ -124,5 +225,111 @@ declare global {
     notes?: string;
     createdAt: Timestamptz;
     updatedAt: Timestamptz;
+  }
+
+  /**
+   * Base entity interface for common fields
+   */
+  interface BaseEntity {
+    id: UUID;
+    createdAt: Timestamptz;
+    updatedAt: Timestamptz;
+    createdBy?: UUID;
+    updatedBy?: UUID;
+  }
+
+  /**
+   * Audit trail interface
+   */
+  interface AuditLog extends BaseEntity {
+    entityType: EntityType;
+    entityId: UUID;
+    action: string;
+    oldValues?: JSONValue;
+    newValues?: JSONValue;
+    userId: UUID;
+  }
+
+  // ===========================
+  // UTILITY HELPER TYPES
+  // ===========================
+
+  /**
+   * Make specific properties optional
+   */
+  type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+  /**
+   * Make specific properties required
+   */
+  type RequiredBy<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+  /**
+   * Extract enum values as union type
+   */
+  type EnumValues<T> = T[keyof T];
+
+  /**
+   * API response wrapper
+   */
+  interface ApiResponse<T = any> {
+    data?: T;
+    error?: {
+      message: string;
+      code?: string;
+      details?: any;
+    };
+    success: boolean;
+  }
+
+  /**
+   * Pagination metadata
+   */
+  interface PaginationMeta {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  }
+
+  /**
+   * Paginated response
+   */
+  interface PaginatedResponse<T> extends ApiResponse<T[]> {
+    meta: PaginationMeta;
+  }
+
+  // ===========================
+  // FORM & VALIDATION TYPES
+  // ===========================
+
+  /**
+   * Form field error
+   */
+  interface FieldError {
+    field: string;
+    message: string;
+    code?: string;
+  }
+
+  /**
+   * Validation result
+   */
+  interface ValidationResult {
+    isValid: boolean;
+    errors: FieldError[];
+  }
+
+  /**
+   * Form state for complex forms
+   */
+  interface FormState<T = any> {
+    data: T;
+    errors: FieldError[];
+    isSubmitting: boolean;
+    isValid: boolean;
+    isDirty: boolean;
   }
 }

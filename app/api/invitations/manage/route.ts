@@ -16,7 +16,7 @@ import {
   LogCategory,
 } from "@/lib/security/audit/logger";
 
-export const GET = withAuth(async (request, { session }) => {
+export const GET = withAuth(async (request, session) => {
   try {
     const { searchParams } = new URL(request.url);
     const statuses = searchParams.get("statuses")?.split(",") || ["pending"];
@@ -61,7 +61,7 @@ export const GET = withAuth(async (request, { session }) => {
   }
 }, { allowedRoles: ["manager", "org_admin", "developer"] });
 
-export const POST = withAuth(async (request, { session }) => {
+export const POST = withAuth(async (request, session) => {
   try {
     const body = await request.json();
     const { action, invitationId, ...params } = body;

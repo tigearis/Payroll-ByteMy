@@ -39,6 +39,7 @@ import {
   Manager,
   UserPermissions,
 } from "@/hooks/use-user-management";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 
 const editUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -62,6 +63,28 @@ interface EditUserModalProps {
 }
 
 export function EditUserModal({
+  isOpen,
+  onClose,
+  user,
+  managers,
+  permissions,
+  currentUserRole,
+}: EditUserModalProps) {
+  return (
+    <PermissionGuard permission="staff:write">
+      <EditUserModalInner
+        isOpen={isOpen}
+        onClose={onClose}
+        user={user}
+        managers={managers}
+        permissions={permissions}
+        currentUserRole={currentUserRole}
+      />
+    </PermissionGuard>
+  );
+}
+
+function EditUserModalInner({
   isOpen,
   onClose,
   user,

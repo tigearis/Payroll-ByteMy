@@ -23,6 +23,7 @@ import {
 import Link from "next/link";
 import React, { useState } from "react";
 import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -829,11 +830,28 @@ function ClientsPage() {
   );
 }
 
-// Export component wrapped with GraphQL error boundary
+// Export component wrapped with GraphQL error boundary and permission guard
 export default function ClientsPageWithErrorBoundary() {
   return (
-    <GraphQLErrorBoundary>
-      <ClientsPage />
-    </GraphQLErrorBoundary>
+    <PermissionGuard 
+      permission="client:read"
+      fallback={
+        <div className="container mx-auto p-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center text-muted-foreground">
+                You don't have permission to access client management.
+                <br />
+                This feature requires client read permissions.
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <GraphQLErrorBoundary>
+        <ClientsPage />
+      </GraphQLErrorBoundary>
+    </PermissionGuard>
   );
 }

@@ -49,8 +49,7 @@ import {
   GetPayrollsPaginatedDocument,
   GetPayrollDashboardStatsDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
-import { useUserRole } from "@/hooks/use-user-role";
+import { useAuthContext } from "@/lib/auth/enhanced-auth-context";
 
 type ViewMode = "cards" | "table" | "list";
 
@@ -325,8 +324,7 @@ export default function PayrollsPage() {
   );
 
   // Custom hooks
-  const { hasPermission, userRole, isLoading: roleLoading } = useUserRole();
-  const { checkPermission } = useEnhancedPermissions();
+  const { hasPermission, userRole, isLoading: roleLoading } = useAuthContext();
 
   // All remaining hooks BEFORE any conditional logic
   const whereConditions = useMemo(() => {
@@ -561,9 +559,9 @@ export default function PayrollsPage() {
 
   // Computed values
   const hasAdminAccess = hasPermission("admin:manage");
-  const canManagePayrolls = checkPermission("payroll", "write").granted;
-  const canCreatePayrolls = checkPermission("payroll", "assign").granted; // Allow consultants to create/assign payrolls
-  const canViewAdvanced = checkPermission("admin", "manage").granted;
+  const canManagePayrolls = hasPermission("payroll:write");
+  const canCreatePayrolls = hasPermission("payroll:assign"); // Allow consultants to create/assign payrolls
+  const canViewAdvanced = hasPermission("admin:manage");
 
   // Debug logging for developer role issue
   console.log("🔍 Payrolls Page Debug:", {
@@ -576,9 +574,9 @@ export default function PayrollsPage() {
     buttonShouldShow: hasAdminAccess || canManagePayrolls || canCreatePayrolls || canViewAdvanced,
     permissionChecks: {
       adminManage: hasPermission("admin:manage"),
-      payrollWrite: checkPermission("payroll", "write"),
-      payrollAssign: checkPermission("payroll", "assign"),
-      adminManageEnhanced: checkPermission("admin", "manage"),
+      payrollWrite: hasPermission("payroll:write"),
+      payrollAssign: hasPermission("payroll:assign"),
+      adminManageEnhanced: hasPermission("admin:manage"),
     }
   });
   const hasActiveFilters =

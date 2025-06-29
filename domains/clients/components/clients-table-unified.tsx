@@ -17,6 +17,7 @@ import {
   StatusConfig,
   createCellRenderers,
 } from "@/components/ui/unified-data-table";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 
 // Client data type (based on existing client structure)
 interface Client {
@@ -185,7 +186,11 @@ export function ClientsTableUnified({
     ...(visibleColumns && { visibleColumns }),
   };
 
-  return <UnifiedDataTable {...tableProps} />;
+  return (
+    <PermissionGuard permission="client:read">
+      <UnifiedDataTable {...tableProps} />
+    </PermissionGuard>
+  );
 }
 
 export default ClientsTableUnified;

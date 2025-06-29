@@ -50,6 +50,7 @@ import {
   GetPayrollsByMonthQuery,
   UpdatePayrollDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 
 type ViewPeriod = "week" | "fortnight" | "month";
 type TableOrientation = "consultants-as-columns" | "consultants-as-rows";
@@ -150,8 +151,6 @@ export default function AdvancedPayrollScheduler() {
     dragOverCell: null,
   });
 
-  // Add state for debug mode
-  const [debugMode, setDebugMode] = useState(false);
 
   // Calculate date range
   const dateRange = useMemo(() => {
@@ -1118,12 +1117,14 @@ export default function AdvancedPayrollScheduler() {
             {/* Preview Mode Actions */}
             {!isPreviewMode ? (
               <div className="ml-auto">
-                <Button
-                  onClick={enterPreviewMode}
-                  disabled={loading || updating}
-                >
-                  Edit Schedule
-                </Button>
+                <PermissionGuard permission="payroll:write">
+                  <Button
+                    onClick={enterPreviewMode}
+                    disabled={loading || updating}
+                  >
+                    Edit Schedule
+                  </Button>
+                </PermissionGuard>
               </div>
             ) : (
               <div className="flex items-center gap-2 ml-auto">
@@ -1137,23 +1138,25 @@ export default function AdvancedPayrollScheduler() {
                     Save failed
                   </Badge>
                 )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={revertChanges}
-                  disabled={updating}
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={commitChanges}
-                  disabled={updating || pendingChanges.length === 0}
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {updating ? "Saving..." : "Save Changes"}
-                </Button>
+                <PermissionGuard permission="payroll:write">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={revertChanges}
+                    disabled={updating}
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={commitChanges}
+                    disabled={updating || pendingChanges.length === 0}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {updating ? "Saving..." : "Save Changes"}
+                  </Button>
+                </PermissionGuard>
               </div>
             )}
           </div>

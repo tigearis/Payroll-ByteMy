@@ -20,7 +20,7 @@ interface ExportPdfProps {
 export function ExportPdf({ payrollId }: ExportPdfProps) {
   const { hasPermission } = useEnhancedPermissions();
   
-  if (!hasPermission('payroll:export')) {
+  if (!hasPermission('reports:export')) {
     return null;
   }
   const { data } = useQuery(GetPayrollDatesDocument, {

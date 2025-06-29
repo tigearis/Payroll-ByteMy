@@ -1,15 +1,17 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { GetCurrentUserDocument } from "@/domains/users/graphql/generated/graphql";
-import { validateJWTClaims } from "@/lib/auth/jwt-validation";
+import { executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
+import { GetCurrentUserDocument, type GetCurrentUserQuery } from "@/domains/users/graphql/generated/graphql";
 import { sanitizeUserRole, hasRoleLevel, ROLE_HIERARCHY, Role } from "@/lib/auth/permissions";
+import { getJWTClaimsWithFallback } from "@/lib/auth/token-utils";
 
 /**
  * Comprehensive debug endpoint for role assignment troubleshooting
  * This endpoint provides detailed information about user authentication,
  * JWT claims, database user data, and role mismatches.
  */
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest) => {
   try {
     console.log("🔍 Role Assignment Debug endpoint called");
 
@@ -25,101 +27,52 @@ export async function GET(request: NextRequest) {
       }, { status: 401 });
     }
 
-    // Step 2: Extract all possible role sources
+    // Step 2: Use centralized token utilities for comprehensive debugging  
+    const claimsResult = await getJWTClaimsWithFallback();
+    
+    // Legacy session claims for comparison
     const { sessionClaims, userId: clerkUserId } = authResult;
-    
-    // Get Hasura token and decode it
-    let hasuraToken = null;
-    let hasuraTokenPayload = null;
-    let hasuraTokenError = null;
-    
-    try {
-      hasuraToken = await authResult.getToken({ template: "hasura" });
-      if (hasuraToken) {
-        const [header, payload] = hasuraToken.split(".");
-        hasuraTokenPayload = JSON.parse(Buffer.from(payload, "base64").toString());
-      }
-    } catch (error) {
-      hasuraTokenError = error instanceof Error ? error.message : "Unknown error";
-    }
 
-    // Extract Hasura claims from session
-    const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-
-    // Step 3: Role extraction from all sources (same logic as middleware)
+    // Step 3: Role extraction from all sources
     const roleExtraction = {
-      // Primary sources (middleware logic)
-      hasuraJwtDefaultRole: hasuraClaims?.["x-hasura-default-role"],
+      tokenUtilityRole: claimsResult.role,
+      tokenUtilityComplete: claimsResult.hasCompleteData,
+      tokenUtilityError: claimsResult.error,
+      tokenUtilityUserId: claimsResult.userId,
+      hasuraJwtDefaultRole: sessionClaims?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"],
       publicMetadataRole: (sessionClaims?.publicMetadata as any)?.role,
-      
-      // Alternative sources
-      hasuraTokenRole: hasuraTokenPayload?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"],
       clerkUserPublicMetadataRole: clerkUser?.publicMetadata?.role,
-      clerkUserPrivateMetadataRole: clerkUser?.privateMetadata?.role,
-      sessionMetadataRole: (sessionClaims?.metadata as any)?.role,
-      
-      // Legacy sources
-      directSessionRole: (sessionClaims as any)?.role,
-      hasuraAllowedRoles: hasuraClaims?.["x-hasura-allowed-roles"],
+      hasuraAllowedRoles: claimsResult.claims?.["x-hasura-allowed-roles"],
     };
 
-    // Step 4: Calculate final role (middleware logic)
-    const finalRole = hasuraClaims?.["x-hasura-default-role"] || 
-                     (sessionClaims?.publicMetadata as any)?.role ||
-                     "viewer";
+    // Step 4: Calculate final role (using centralized utility)
+    const finalRole = claimsResult.role || "viewer";
 
     // Step 5: Database user lookup
     let databaseUser = null;
     let databaseError = null;
     const databaseUserId = clerkUser?.publicMetadata?.databaseId as string ||
-                          hasuraClaims?.["x-hasura-user-id"];
+                          claimsResult.claims?.["x-hasura-user-id"];
 
     try {
       if (databaseUserId) {
-        // This is a server-side call, so we need to use fetch instead of Apollo
-        const hasuraResponse = await fetch(process.env.HASURA_GRAPHQL_ENDPOINT!, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-hasura-admin-secret': process.env.HASURA_GRAPHQL_ADMIN_SECRET!,
-          },
-          body: JSON.stringify({
-            query: `
-              query GetUser($userId: uuid!) {
-                user: users_by_pk(id: $userId) {
-                  id
-                  email
-                  firstName
-                  lastName
-                  role
-                  isActive
-                  createdAt
-                  updatedAt
-                }
-              }
-            `,
-            variables: { userId: databaseUserId }
-          })
-        });
-
-        const hasuraData = await hasuraResponse.json();
-        if (hasuraData.data?.user) {
-          databaseUser = hasuraData.data.user;
-        } else if (hasuraData.errors) {
-          databaseError = hasuraData.errors[0]?.message || "GraphQL error";
-        }
+        const userData = await executeTypedQuery<GetCurrentUserQuery>(
+          GetCurrentUserDocument,
+          { userId: databaseUserId }
+        );
+        databaseUser = userData?.user || null;
       }
     } catch (error) {
       databaseError = error instanceof Error ? error.message : "Database lookup failed";
     }
 
-    // Step 6: JWT validation
-    const jwtValidation = await validateJWTClaims(sessionClaims, {
-      userId: clerkUserId,
-      requestPath: request.nextUrl.pathname,
-      ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
-      userAgent: request.headers.get('user-agent') || 'unknown',
-    });
+    // Step 6: JWT validation (using token utility results)
+    const jwtValidation = {
+      isValid: claimsResult.hasCompleteData && !claimsResult.error,
+      errors: claimsResult.error ? [claimsResult.error] : [],
+      warnings: [],
+      claims: claimsResult.claims
+    };
 
     // Step 7: Role consistency analysis
     const roleConsistency = {
@@ -143,8 +96,8 @@ export async function GET(request: NextRequest) {
       wouldRedirect: !hasRoleLevel(finalRole as Role, "consultant"),
       redirectUrl: `/unauthorized?reason=role_required&current=${finalRole}&required=consultant`,
       middlewareLogic: {
-        step1_hasuraClaims: !!hasuraClaims,
-        step2_defaultRole: hasuraClaims?.["x-hasura-default-role"],
+        step1_hasuraClaims: !!claimsResult.claims,
+        step2_defaultRole: claimsResult.claims?.["x-hasura-default-role"],
         step3_publicMetadata: (sessionClaims?.publicMetadata as any)?.role,
         step4_fallback: "viewer",
         step5_finalRole: finalRole,
@@ -159,12 +112,8 @@ export async function GET(request: NextRequest) {
     };
 
     // Analyze issues
-    if (!hasuraToken) {
-      diagnostics.issues.push("No Hasura JWT token available - JWT template not configured");
-      diagnostics.recommendations.push("Configure JWT template in Clerk dashboard");
-    }
 
-    if (!hasuraClaims) {
+    if (!claimsResult.claims) {
       diagnostics.issues.push("No Hasura claims in session - JWT template issue");
       diagnostics.recommendations.push("Update JWT template to include Hasura claims");
     }
@@ -208,15 +157,13 @@ export async function GET(request: NextRequest) {
       // JWT analysis
       jwtAnalysis: {
         hasSessionClaims: !!sessionClaims,
-        hasHasuraClaims: !!hasuraClaims,
-        hasToken: !!hasuraToken,
-        tokenError: hasuraTokenError,
+        hasHasuraClaims: !!claimsResult.claims,
         validation: jwtValidation,
         claimsStructure: {
           hasuraJwtClaimsKey: "https://hasura.io/jwt/claims",
           hasClaimsAtKey: !!sessionClaims?.["https://hasura.io/jwt/claims"],
           claimsKeys: sessionClaims ? Object.keys(sessionClaims) : [],
-          hasuraClaimsKeys: hasuraClaims ? Object.keys(hasuraClaims) : [],
+          hasuraClaimsKeys: claimsResult.claims ? Object.keys(claimsResult.claims) : [],
         }
       },
 
@@ -258,11 +205,7 @@ export async function GET(request: NextRequest) {
           // Sanitize sensitive data
           sub: (sessionClaims as any).sub?.substring(0, 8) + "...",
         } : null,
-        hasuraClaims,
-        hasuraTokenPayload: hasuraTokenPayload ? {
-          ...hasuraTokenPayload,
-          sub: hasuraTokenPayload.sub?.substring(0, 8) + "...",
-        } : null,
+        hasuraClaims: claimsResult.claims,
       }
     };
 
@@ -283,19 +226,13 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
     }, { status: 500 });
   }
-}
+}, { allowedRoles: ["developer"] });
 
 /**
  * POST endpoint to trigger user sync and re-run diagnostics
  */
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest) => {
   try {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
-
     // Trigger user sync
     const syncResponse = await fetch(new URL("/api/fix-user-sync", request.url), {
       method: "POST",
@@ -330,4 +267,4 @@ export async function POST(request: NextRequest) {
       message: error instanceof Error ? error.message : "Unknown error",
     }, { status: 500 });
   }
-}
+}, { allowedRoles: ["developer"] });

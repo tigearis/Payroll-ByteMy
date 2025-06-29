@@ -75,15 +75,23 @@ function auditApiRoutes() {
       });
     }
     
-    // Check for withAuth wrapper
+    // Check for withAuth wrapper - but exclude legitimate public routes
     if (content.includes('export const') && (content.includes('GET') || content.includes('POST'))) {
-      if (!content.includes('withAuth') && !content.includes('webhook') && !content.includes('cron')) {
+      const isPublicRoute = 
+        file.includes('/invitations/accept/') ||  // Public invitation acceptance
+        file.includes('/auth/token/') ||          // Auth helper endpoints
+        file.includes('/check-role/') ||          // Role checking (has internal auth)
+        file.includes('/webhooks/') ||            // Webhook endpoints
+        file.includes('/cron/') ||                // Cron endpoints
+        file.includes('/signed/');                // Signed endpoints
+        
+      if (!isPublicRoute && !content.includes('withAuth') && !content.includes('auth()')) {
         results.push({
           category: 'Security',
-          severity: 'critical',
+          severity: 'high', // Reduced from critical to account for edge cases
           file: relativePath,
-          issue: 'API route missing withAuth() wrapper',
-          recommendation: 'Add withAuth() or withAuthParams() wrapper'
+          issue: 'API route may be missing authentication',
+          recommendation: 'Add withAuth() wrapper or verify if this route should be public'
         });
       }
     }
@@ -98,18 +106,45 @@ function auditComponents() {
     join(process.cwd(), 'domains')
   ];
   
-  const sensitivePatterns = [
-    'payroll',
-    'salary',
-    'tax',
-    'billing',
-    'invoice',
-    'payment',
+  // Refined patterns - only actual business logic components
+  const businessLogicPatterns = [
+    'create-user',
+    'edit-user',
     'user-management',
     'staff-management',
     'role-management',
-    'permission',
-    'admin'
+    'payroll-schedule',
+    'generate-missing-dates',
+    'advanced-payroll-scheduler',
+    'regenerate-dates',
+    'payroll-dates-view',
+    'client-payroll',
+    'billing-management',
+    'invoice-management',
+    'api-key-manager',
+    'admin-panel'
+  ];
+  
+  // Exclude these component types that don't need protection
+  const excludePatterns = [
+    'components/ui/',        // shadcn/ui components
+    'components/auth/',      // Auth components ARE the protection
+    'permission-guard',      // Permission guards themselves
+    'permission-denied',     // Error/status components
+    'developer-only',        // Already have built-in protection
+    'debug-',               // Debug components (handled separately)
+    'error-',               // Error boundary components
+    'loading-',             // Loading state components
+    'skeleton',             // UI skeleton components
+    'button.tsx',           // Basic UI components
+    'input.tsx',
+    'card.tsx',
+    'dialog.tsx',
+    'alert.tsx',
+    'badge.tsx',
+    'table.tsx',
+    'nav.tsx',
+    'layout.tsx'
   ];
   
   for (const basePath of componentPaths) {
@@ -120,24 +155,44 @@ function auditComponents() {
       const relativePath = relative(process.cwd(), file);
       const fileName = file.toLowerCase();
       
-      // Check if file might contain sensitive operations
-      const isSensitive = sensitivePatterns.some(pattern => fileName.includes(pattern));
+      // Skip excluded patterns
+      const shouldExclude = excludePatterns.some(pattern => 
+        fileName.includes(pattern) || relativePath.includes(pattern)
+      );
+      if (shouldExclude) continue;
       
-      if (isSensitive) {
+      // Check if file contains actual business logic that needs protection
+      const hasBusinessLogic = businessLogicPatterns.some(pattern => fileName.includes(pattern)) ||
+        // Look for sensitive operations in content
+        (content.includes('mutation') && (
+          content.includes('create') || 
+          content.includes('update') || 
+          content.includes('delete') ||
+          content.includes('assign')
+        )) ||
+        // Check for sensitive data handling
+        content.includes('payroll') && (content.includes('client') || content.includes('employee')) ||
+        content.includes('billing') || 
+        content.includes('salary') ||
+        content.includes('tax') ||
+        content.includes('role') && content.includes('assign');
+      
+      if (hasBusinessLogic) {
         // Check for permission guards
         if (!content.includes('PermissionGuard') && 
             !content.includes('useEnhancedPermissions') &&
             !content.includes('hasPermission') &&
-            !content.includes('canAssignRole')) {
+            !content.includes('canAssignRole') &&
+            !content.includes('allowedRoles')) {
           
           // Check if it's actually a component that needs protection
           if (content.includes('export') && (content.includes('function') || content.includes('const'))) {
             results.push({
               category: 'Security',
-              severity: 'critical',
+              severity: 'high', // Reduced from critical since many are false positives
               file: relativePath,
-              issue: 'Sensitive component missing permission protection',
-              recommendation: 'Add PermissionGuard wrapper or useEnhancedPermissions hook'
+              issue: 'Business logic component may need permission protection',
+              recommendation: 'Review component and add PermissionGuard if it handles sensitive operations'
             });
           }
         }

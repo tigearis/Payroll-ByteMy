@@ -1,517 +1,69 @@
 {
-  "timestamp": "2025-06-29T06:43:41.431Z",
+  "timestamp": "2025-06-29T13:45:20.739Z",
   "summary": {
-    "total": 1702,
-    "critical": 72,
-    "high": 0,
-    "medium": 1630,
+    "total": 1668,
+    "critical": 0,
+    "high": 8,
+    "medium": 1660,
     "low": 0
   },
   "byCategory": {
     "Security": [
       {
         "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/database-user-guard.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/mfa-setup.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/permission-denied.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/session-monitor.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/step-up-auth.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/strict-database-guard.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/token-refresh-boundary.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/unauthorized-modal.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/dashboard-shell.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/debug/auth-debug-panel.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/debug-auth-panel.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/debug-permission-info.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/debug-permissions.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "components/dev/actor-token-manager.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
-        "file": "components/error-boundary.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/graphql-error-boundary.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/markdown-viewer.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "components/modal-form.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
-        "file": "components/performance-optimized-page.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "components/real-time-updates.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "components/recent-activity.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
-        "file": "components/refresh-button.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/theme-toggle.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/alert-dialog.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/alert.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/aspect-ratio.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/avatar.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/badge.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/button.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/card.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/chart.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/checkbox.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/data-table.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/design-system.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/dialog.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/dropdown-menu.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/error.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/form.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/icons.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/input.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/label.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/loading-states.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/metrics-panel.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/modal.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/popover.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/progress.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/resizable.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/scroll-area.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/select.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/separator.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/skeleton.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/sonner.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/switch.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/table.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/tabs.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/textarea.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/unified-data-table.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/clients/components/client-card.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/clients/components/client-payroll-table.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/clients/components/client-wrapper.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/clients/components/clients-table-unified.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/clients/components/clients-table.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/notes/components/notes-list.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/payrolls/components/generate-missing-dates-button.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/payrolls/components/notes-modal.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/payrolls/components/payroll-dates-view.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "domains/payrolls/components/payroll-schedule-view.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "domains/payrolls/components/payroll-subscription.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "domains/payrolls/components/payroll-version-history.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "domains/payrolls/components/payrolls-missing-dates.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/payrolls/components/regenerate-dates.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       }
     ],
     "TypeScript": [
@@ -568,6 +120,246 @@
         "severity": "medium",
         "file": "__tests__/graphql/setup.ts",
         "line": 96,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 115,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 116,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 143,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 155,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 158,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 163,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 166,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 169,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 178,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 179,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 185,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 259,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 306,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 328,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 350,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 366,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 370,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 374,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 379,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 388,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 391,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 399,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 405,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 415,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 418,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 423,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 430,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 443,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 444,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 445,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -743,7 +535,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/check-role/route.ts",
-        "line": 63,
+        "line": 46,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -911,7 +703,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/invitations/create/route.ts",
-        "line": 68,
+        "line": 67,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -991,7 +783,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 177,
+        "line": 178,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -999,7 +791,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 278,
+        "line": 279,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -1007,7 +799,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 325,
+        "line": 326,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -1015,7 +807,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 338,
+        "line": 339,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -1023,7 +815,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 405,
+        "line": 406,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -1031,7 +823,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 496,
+        "line": 497,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10519,7 +10311,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/auth/api-auth.ts",
-        "line": 23,
+        "line": 22,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10527,7 +10319,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/auth/api-auth.ts",
-        "line": 153,
+        "line": 144,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10535,7 +10327,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/auth/api-auth.ts",
-        "line": 284,
+        "line": 275,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10543,31 +10335,15 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/auth/api-auth.ts",
-        "line": 410,
+        "line": 401,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
       {
         "category": "TypeScript",
         "severity": "medium",
-        "file": "lib/auth/jwt-validation.ts",
-        "line": 35,
-        "issue": "Using any type",
-        "recommendation": "Replace with specific type or unknown"
-      },
-      {
-        "category": "TypeScript",
-        "severity": "medium",
-        "file": "lib/auth/jwt-validation.ts",
-        "line": 186,
-        "issue": "Using any type",
-        "recommendation": "Replace with specific type or unknown"
-      },
-      {
-        "category": "TypeScript",
-        "severity": "medium",
-        "file": "lib/auth/jwt-validation.ts",
-        "line": 242,
+        "file": "lib/auth/client-token-utils.ts",
+        "line": 10,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10600,6 +10376,22 @@
         "severity": "medium",
         "file": "lib/auth/service-auth.ts",
         "line": 165,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "lib/auth/token-utils.ts",
+        "line": 64,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "lib/auth/token-utils.ts",
+        "line": 155,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10687,7 +10479,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 85,
+        "line": 84,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10695,7 +10487,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 133,
+        "line": 132,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10703,7 +10495,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 177,
+        "line": 176,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10711,7 +10503,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 346,
+        "line": 345,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10719,7 +10511,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 421,
+        "line": 420,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10727,7 +10519,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 449,
+        "line": 448,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10735,7 +10527,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 642,
+        "line": 641,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10743,7 +10535,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 670,
+        "line": 669,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10751,7 +10543,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 684,
+        "line": 683,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -10911,7 +10703,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "scripts/audit-conformance.ts",
-        "line": 213,
+        "line": 268,
         "issue": "Using @ts-ignore",
         "recommendation": "Fix the underlying type issue instead"
       },
@@ -10919,7 +10711,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "scripts/audit-conformance.ts",
-        "line": 214,
+        "line": 269,
         "issue": "Using @ts-ignore",
         "recommendation": "Fix the underlying type issue instead"
       },
@@ -10927,7 +10719,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "scripts/audit-conformance.ts",
-        "line": 220,
+        "line": 275,
         "issue": "Using @ts-ignore",
         "recommendation": "Fix the underlying type issue instead"
       },
@@ -11806,6 +11598,22 @@
       {
         "category": "TypeScript",
         "severity": "medium",
+        "file": "types/global.d.ts",
+        "line": 166,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "types/global.d.ts",
+        "line": 280,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
         "file": "types/index.ts",
         "line": 232,
         "issue": "Using any type",
@@ -11991,7 +11799,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 160,
+        "line": 161,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -11999,7 +11807,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 306,
+        "line": 307,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12007,7 +11815,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 314,
+        "line": 315,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12015,7 +11823,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 327,
+        "line": 328,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12023,7 +11831,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 396,
+        "line": 397,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12031,7 +11839,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 467,
+        "line": 468,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12039,7 +11847,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 39,
+        "line": 40,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12047,7 +11855,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 135,
+        "line": 136,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12055,7 +11863,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 182,
+        "line": 196,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12063,7 +11871,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 230,
+        "line": 244,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12071,7 +11879,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 286,
+        "line": 300,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12079,7 +11887,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 351,
+        "line": 365,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12087,7 +11895,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 407,
+        "line": 421,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12095,7 +11903,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 450,
+        "line": 464,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12103,7 +11911,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 498,
+        "line": 512,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12111,7 +11919,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 551,
+        "line": 565,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12447,7 +12255,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 201,
+        "line": 200,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12455,7 +12263,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 333,
+        "line": 331,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12463,7 +12271,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 418,
+        "line": 416,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12471,7 +12279,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 437,
+        "line": 435,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12479,7 +12287,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 462,
+        "line": 460,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12487,7 +12295,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 467,
+        "line": 465,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12495,7 +12303,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 468,
+        "line": 466,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12503,7 +12311,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 474,
+        "line": 472,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12511,7 +12319,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 475,
+        "line": 473,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12519,7 +12327,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 479,
+        "line": 477,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12527,7 +12335,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 483,
+        "line": 481,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12535,7 +12343,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 512,
+        "line": 510,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12879,7 +12687,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "components/dev/actor-token-manager.tsx",
-        "line": 213,
+        "line": 214,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -12887,7 +12695,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "components/dev/actor-token-manager.tsx",
-        "line": 275,
+        "line": 276,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13111,7 +12919,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/clients/components/clients-table-unified.tsx",
-        "line": 137,
+        "line": 138,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13127,7 +12935,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 219,
+        "line": 218,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13135,7 +12943,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 233,
+        "line": 232,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13143,7 +12951,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 245,
+        "line": 244,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13151,7 +12959,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 253,
+        "line": 252,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13159,7 +12967,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 330,
+        "line": 329,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13167,7 +12975,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 379,
+        "line": 378,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13191,15 +12999,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-dates-view.tsx",
-        "line": 489,
-        "issue": "Using any type",
-        "recommendation": "Replace with specific type or unknown"
-      },
-      {
-        "category": "TypeScript",
-        "severity": "medium",
-        "file": "domains/payrolls/components/payroll-dates-view.tsx",
-        "line": 522,
+        "line": 490,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13215,7 +13015,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-dates-view.tsx",
-        "line": 535,
+        "line": 524,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13223,7 +13023,15 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-dates-view.tsx",
-        "line": 556,
+        "line": 536,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "domains/payrolls/components/payroll-dates-view.tsx",
+        "line": 557,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13351,7 +13159,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-schedule.tsx",
-        "line": 183,
+        "line": 184,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13359,7 +13167,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-schedule.tsx",
-        "line": 185,
+        "line": 186,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13367,7 +13175,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-schedule.tsx",
-        "line": 234,
+        "line": 235,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13375,7 +13183,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-schedule.tsx",
-        "line": 247,
+        "line": 248,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13383,7 +13191,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-schedule.tsx",
-        "line": 303,
+        "line": 304,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13455,23 +13263,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/auth/enhanced-auth-context.tsx",
-        "line": 20,
-        "issue": "Using any type",
-        "recommendation": "Replace with specific type or unknown"
-      },
-      {
-        "category": "TypeScript",
-        "severity": "medium",
-        "file": "lib/auth/enhanced-auth-context.tsx",
-        "line": 41,
-        "issue": "Using any type",
-        "recommendation": "Replace with specific type or unknown"
-      },
-      {
-        "category": "TypeScript",
-        "severity": "medium",
-        "file": "lib/auth/enhanced-auth-context.tsx",
-        "line": 190,
+        "line": 26,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -13558,513 +13350,65 @@
     ]
   },
   "bySeverity": {
-    "critical": [
+    "critical": [],
+    "high": [
       {
         "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/database-user-guard.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/mfa-setup.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/permission-denied.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/session-monitor.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/step-up-auth.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/strict-database-guard.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/token-refresh-boundary.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/auth/unauthorized-modal.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/dashboard-shell.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/debug/auth-debug-panel.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/debug-auth-panel.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/debug-permission-info.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/debug-permissions.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "components/dev/actor-token-manager.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
-        "file": "components/error-boundary.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/graphql-error-boundary.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/markdown-viewer.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "components/modal-form.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
-        "file": "components/performance-optimized-page.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "components/real-time-updates.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "components/recent-activity.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
-        "file": "components/refresh-button.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/theme-toggle.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/alert-dialog.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/alert.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/aspect-ratio.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/avatar.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/badge.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/button.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/card.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/chart.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/checkbox.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/data-table.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/design-system.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/dialog.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/dropdown-menu.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/error.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/form.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/icons.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/input.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/label.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/loading-states.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/metrics-panel.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/modal.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/popover.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/progress.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/resizable.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/scroll-area.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/select.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/separator.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/skeleton.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/sonner.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/switch.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/table.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/tabs.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/textarea.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "components/ui/unified-data-table.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/clients/components/client-card.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/clients/components/client-payroll-table.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/clients/components/client-wrapper.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/clients/components/clients-table-unified.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/clients/components/clients-table.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/notes/components/notes-list.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/payrolls/components/generate-missing-dates-button.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/payrolls/components/notes-modal.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/payrolls/components/payroll-dates-view.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "domains/payrolls/components/payroll-schedule-view.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "domains/payrolls/components/payroll-subscription.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "domains/payrolls/components/payroll-version-history.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       },
       {
         "category": "Security",
-        "severity": "critical",
+        "severity": "high",
         "file": "domains/payrolls/components/payrolls-missing-dates.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-      },
-      {
-        "category": "Security",
-        "severity": "critical",
-        "file": "domains/payrolls/components/regenerate-dates.tsx",
-        "issue": "Sensitive component missing permission protection",
-        "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+        "issue": "Business logic component may need permission protection",
+        "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
       }
     ],
-    "high": [],
     "medium": [
       {
         "category": "TypeScript",
@@ -14119,6 +13463,246 @@
         "severity": "medium",
         "file": "__tests__/graphql/setup.ts",
         "line": 96,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 115,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 116,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 143,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 155,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 158,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 163,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 166,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 169,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 178,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 179,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 185,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 259,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 306,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 328,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 350,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 366,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 370,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 374,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 379,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 388,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 391,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 399,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 405,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 415,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 418,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 423,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 430,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 443,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 444,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "app/api/audit/compliance-report/route-v2.ts",
+        "line": 445,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -14294,7 +13878,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/check-role/route.ts",
-        "line": 63,
+        "line": 46,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -14462,7 +14046,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/invitations/create/route.ts",
-        "line": 68,
+        "line": 67,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -14542,7 +14126,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 177,
+        "line": 178,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -14550,7 +14134,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 278,
+        "line": 279,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -14558,7 +14142,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 325,
+        "line": 326,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -14566,7 +14150,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 338,
+        "line": 339,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -14574,7 +14158,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 405,
+        "line": 406,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -14582,7 +14166,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/api/staff/create/route.ts",
-        "line": 496,
+        "line": 497,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24070,7 +23654,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/auth/api-auth.ts",
-        "line": 23,
+        "line": 22,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24078,7 +23662,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/auth/api-auth.ts",
-        "line": 153,
+        "line": 144,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24086,7 +23670,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/auth/api-auth.ts",
-        "line": 284,
+        "line": 275,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24094,31 +23678,15 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/auth/api-auth.ts",
-        "line": 410,
+        "line": 401,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
       {
         "category": "TypeScript",
         "severity": "medium",
-        "file": "lib/auth/jwt-validation.ts",
-        "line": 35,
-        "issue": "Using any type",
-        "recommendation": "Replace with specific type or unknown"
-      },
-      {
-        "category": "TypeScript",
-        "severity": "medium",
-        "file": "lib/auth/jwt-validation.ts",
-        "line": 186,
-        "issue": "Using any type",
-        "recommendation": "Replace with specific type or unknown"
-      },
-      {
-        "category": "TypeScript",
-        "severity": "medium",
-        "file": "lib/auth/jwt-validation.ts",
-        "line": 242,
+        "file": "lib/auth/client-token-utils.ts",
+        "line": 10,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24151,6 +23719,22 @@
         "severity": "medium",
         "file": "lib/auth/service-auth.ts",
         "line": 165,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "lib/auth/token-utils.ts",
+        "line": 64,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "lib/auth/token-utils.ts",
+        "line": 155,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24238,7 +23822,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 85,
+        "line": 84,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24246,7 +23830,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 133,
+        "line": 132,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24254,7 +23838,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 177,
+        "line": 176,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24262,7 +23846,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 346,
+        "line": 345,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24270,7 +23854,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 421,
+        "line": 420,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24278,7 +23862,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 449,
+        "line": 448,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24286,7 +23870,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 642,
+        "line": 641,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24294,7 +23878,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 670,
+        "line": 669,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24302,7 +23886,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/security/enhanced-route-monitor.ts",
-        "line": 684,
+        "line": 683,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -24462,7 +24046,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "scripts/audit-conformance.ts",
-        "line": 213,
+        "line": 268,
         "issue": "Using @ts-ignore",
         "recommendation": "Fix the underlying type issue instead"
       },
@@ -24470,7 +24054,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "scripts/audit-conformance.ts",
-        "line": 214,
+        "line": 269,
         "issue": "Using @ts-ignore",
         "recommendation": "Fix the underlying type issue instead"
       },
@@ -24478,7 +24062,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "scripts/audit-conformance.ts",
-        "line": 220,
+        "line": 275,
         "issue": "Using @ts-ignore",
         "recommendation": "Fix the underlying type issue instead"
       },
@@ -25357,6 +24941,22 @@
       {
         "category": "TypeScript",
         "severity": "medium",
+        "file": "types/global.d.ts",
+        "line": 166,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "types/global.d.ts",
+        "line": 280,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
         "file": "types/index.ts",
         "line": 232,
         "issue": "Using any type",
@@ -25542,7 +25142,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 160,
+        "line": 161,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25550,7 +25150,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 306,
+        "line": 307,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25558,7 +25158,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 314,
+        "line": 315,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25566,7 +25166,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 327,
+        "line": 328,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25574,7 +25174,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 396,
+        "line": 397,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25582,7 +25182,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/clients/page.tsx",
-        "line": 467,
+        "line": 468,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25590,7 +25190,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 39,
+        "line": 40,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25598,7 +25198,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 135,
+        "line": 136,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25606,7 +25206,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 182,
+        "line": 196,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25614,7 +25214,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 230,
+        "line": 244,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25622,7 +25222,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 286,
+        "line": 300,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25630,7 +25230,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 351,
+        "line": 365,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25638,7 +25238,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 407,
+        "line": 421,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25646,7 +25246,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 450,
+        "line": 464,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25654,7 +25254,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 498,
+        "line": 512,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25662,7 +25262,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-        "line": 551,
+        "line": 565,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -25998,7 +25598,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 201,
+        "line": 200,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26006,7 +25606,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 333,
+        "line": 331,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26014,7 +25614,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 418,
+        "line": 416,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26022,7 +25622,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 437,
+        "line": 435,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26030,7 +25630,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 462,
+        "line": 460,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26038,7 +25638,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 467,
+        "line": 465,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26046,7 +25646,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 468,
+        "line": 466,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26054,7 +25654,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 474,
+        "line": 472,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26062,7 +25662,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 475,
+        "line": 473,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26070,7 +25670,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 479,
+        "line": 477,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26078,7 +25678,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 483,
+        "line": 481,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26086,7 +25686,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "app/(dashboard)/payrolls/page.tsx",
-        "line": 512,
+        "line": 510,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26430,7 +26030,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "components/dev/actor-token-manager.tsx",
-        "line": 213,
+        "line": 214,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26438,7 +26038,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "components/dev/actor-token-manager.tsx",
-        "line": 275,
+        "line": 276,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26662,7 +26262,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/clients/components/clients-table-unified.tsx",
-        "line": 137,
+        "line": 138,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26678,7 +26278,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 219,
+        "line": 218,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26686,7 +26286,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 233,
+        "line": 232,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26694,7 +26294,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 245,
+        "line": 244,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26702,7 +26302,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 253,
+        "line": 252,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26710,7 +26310,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 330,
+        "line": 329,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26718,7 +26318,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-        "line": 379,
+        "line": 378,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26742,15 +26342,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-dates-view.tsx",
-        "line": 489,
-        "issue": "Using any type",
-        "recommendation": "Replace with specific type or unknown"
-      },
-      {
-        "category": "TypeScript",
-        "severity": "medium",
-        "file": "domains/payrolls/components/payroll-dates-view.tsx",
-        "line": 522,
+        "line": 490,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26766,7 +26358,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-dates-view.tsx",
-        "line": 535,
+        "line": 524,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26774,7 +26366,15 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-dates-view.tsx",
-        "line": 556,
+        "line": 536,
+        "issue": "Using any type",
+        "recommendation": "Replace with specific type or unknown"
+      },
+      {
+        "category": "TypeScript",
+        "severity": "medium",
+        "file": "domains/payrolls/components/payroll-dates-view.tsx",
+        "line": 557,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26902,7 +26502,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-schedule.tsx",
-        "line": 183,
+        "line": 184,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26910,7 +26510,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-schedule.tsx",
-        "line": 185,
+        "line": 186,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26918,7 +26518,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-schedule.tsx",
-        "line": 234,
+        "line": 235,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26926,7 +26526,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-schedule.tsx",
-        "line": 247,
+        "line": 248,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -26934,7 +26534,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "domains/payrolls/components/payroll-schedule.tsx",
-        "line": 303,
+        "line": 304,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -27006,23 +26606,7 @@
         "category": "TypeScript",
         "severity": "medium",
         "file": "lib/auth/enhanced-auth-context.tsx",
-        "line": 20,
-        "issue": "Using any type",
-        "recommendation": "Replace with specific type or unknown"
-      },
-      {
-        "category": "TypeScript",
-        "severity": "medium",
-        "file": "lib/auth/enhanced-auth-context.tsx",
-        "line": 41,
-        "issue": "Using any type",
-        "recommendation": "Replace with specific type or unknown"
-      },
-      {
-        "category": "TypeScript",
-        "severity": "medium",
-        "file": "lib/auth/enhanced-auth-context.tsx",
-        "line": 190,
+        "line": 26,
         "issue": "Using any type",
         "recommendation": "Replace with specific type or unknown"
       },
@@ -27112,507 +26696,59 @@
   "details": [
     {
       "category": "Security",
-      "severity": "critical",
-      "file": "components/auth/database-user-guard.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/auth/mfa-setup.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/auth/permission-denied.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/auth/session-monitor.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/auth/step-up-auth.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/auth/strict-database-guard.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/auth/token-refresh-boundary.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/auth/unauthorized-modal.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/dashboard-shell.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/debug/auth-debug-panel.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/debug-auth-panel.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/debug-permission-info.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/debug-permissions.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
+      "severity": "high",
       "file": "components/dev/actor-token-manager.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+      "issue": "Business logic component may need permission protection",
+      "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
     },
     {
       "category": "Security",
-      "severity": "critical",
-      "file": "components/error-boundary.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/graphql-error-boundary.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/markdown-viewer.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
+      "severity": "high",
       "file": "components/modal-form.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+      "issue": "Business logic component may need permission protection",
+      "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
     },
     {
       "category": "Security",
-      "severity": "critical",
-      "file": "components/performance-optimized-page.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
+      "severity": "high",
       "file": "components/real-time-updates.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+      "issue": "Business logic component may need permission protection",
+      "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
     },
     {
       "category": "Security",
-      "severity": "critical",
+      "severity": "high",
       "file": "components/recent-activity.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+      "issue": "Business logic component may need permission protection",
+      "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
     },
     {
       "category": "Security",
-      "severity": "critical",
-      "file": "components/refresh-button.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/theme-toggle.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/alert-dialog.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/alert.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/aspect-ratio.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/avatar.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/badge.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/button.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/card.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/chart.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/checkbox.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/data-table.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/design-system.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/dialog.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/dropdown-menu.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/error.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/form.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/icons.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/input.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/label.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/loading-states.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/metrics-panel.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/modal.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/popover.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/progress.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/resizable.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/scroll-area.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/select.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/separator.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/skeleton.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/sonner.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/switch.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/table.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/tabs.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/textarea.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "components/ui/unified-data-table.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/clients/components/client-card.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/clients/components/client-payroll-table.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/clients/components/client-wrapper.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/clients/components/clients-table-unified.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/clients/components/clients-table.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/notes/components/notes-list.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/payrolls/components/generate-missing-dates-button.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/payrolls/components/notes-modal.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/payrolls/components/payroll-dates-view.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
+      "severity": "high",
       "file": "domains/payrolls/components/payroll-schedule-view.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+      "issue": "Business logic component may need permission protection",
+      "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
     },
     {
       "category": "Security",
-      "severity": "critical",
+      "severity": "high",
       "file": "domains/payrolls/components/payroll-subscription.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+      "issue": "Business logic component may need permission protection",
+      "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
     },
     {
       "category": "Security",
-      "severity": "critical",
+      "severity": "high",
       "file": "domains/payrolls/components/payroll-version-history.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+      "issue": "Business logic component may need permission protection",
+      "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
     },
     {
       "category": "Security",
-      "severity": "critical",
+      "severity": "high",
       "file": "domains/payrolls/components/payrolls-missing-dates.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
-    },
-    {
-      "category": "Security",
-      "severity": "critical",
-      "file": "domains/payrolls/components/regenerate-dates.tsx",
-      "issue": "Sensitive component missing permission protection",
-      "recommendation": "Add PermissionGuard wrapper or useEnhancedPermissions hook"
+      "issue": "Business logic component may need permission protection",
+      "recommendation": "Review component and add PermissionGuard if it handles sensitive operations"
     },
     {
       "category": "TypeScript",
@@ -27667,6 +26803,246 @@
       "severity": "medium",
       "file": "__tests__/graphql/setup.ts",
       "line": 96,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 115,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 116,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 143,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 155,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 158,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 163,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 166,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 169,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 178,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 179,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 185,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 259,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 306,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 328,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 350,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 366,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 370,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 374,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 379,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 388,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 391,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 399,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 405,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 415,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 418,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 423,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 430,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 443,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 444,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "app/api/audit/compliance-report/route-v2.ts",
+      "line": 445,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -27842,7 +27218,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/api/check-role/route.ts",
-      "line": 63,
+      "line": 46,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -28010,7 +27386,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/api/invitations/create/route.ts",
-      "line": 68,
+      "line": 67,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -28090,7 +27466,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/api/staff/create/route.ts",
-      "line": 177,
+      "line": 178,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -28098,7 +27474,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/api/staff/create/route.ts",
-      "line": 278,
+      "line": 279,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -28106,7 +27482,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/api/staff/create/route.ts",
-      "line": 325,
+      "line": 326,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -28114,7 +27490,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/api/staff/create/route.ts",
-      "line": 338,
+      "line": 339,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -28122,7 +27498,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/api/staff/create/route.ts",
-      "line": 405,
+      "line": 406,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -28130,7 +27506,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/api/staff/create/route.ts",
-      "line": 496,
+      "line": 497,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37618,7 +36994,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/auth/api-auth.ts",
-      "line": 23,
+      "line": 22,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37626,7 +37002,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/auth/api-auth.ts",
-      "line": 153,
+      "line": 144,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37634,7 +37010,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/auth/api-auth.ts",
-      "line": 284,
+      "line": 275,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37642,31 +37018,15 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/auth/api-auth.ts",
-      "line": 410,
+      "line": 401,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
     {
       "category": "TypeScript",
       "severity": "medium",
-      "file": "lib/auth/jwt-validation.ts",
-      "line": 35,
-      "issue": "Using any type",
-      "recommendation": "Replace with specific type or unknown"
-    },
-    {
-      "category": "TypeScript",
-      "severity": "medium",
-      "file": "lib/auth/jwt-validation.ts",
-      "line": 186,
-      "issue": "Using any type",
-      "recommendation": "Replace with specific type or unknown"
-    },
-    {
-      "category": "TypeScript",
-      "severity": "medium",
-      "file": "lib/auth/jwt-validation.ts",
-      "line": 242,
+      "file": "lib/auth/client-token-utils.ts",
+      "line": 10,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37699,6 +37059,22 @@
       "severity": "medium",
       "file": "lib/auth/service-auth.ts",
       "line": 165,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "lib/auth/token-utils.ts",
+      "line": 64,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "lib/auth/token-utils.ts",
+      "line": 155,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37786,7 +37162,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/security/enhanced-route-monitor.ts",
-      "line": 85,
+      "line": 84,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37794,7 +37170,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/security/enhanced-route-monitor.ts",
-      "line": 133,
+      "line": 132,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37802,7 +37178,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/security/enhanced-route-monitor.ts",
-      "line": 177,
+      "line": 176,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37810,7 +37186,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/security/enhanced-route-monitor.ts",
-      "line": 346,
+      "line": 345,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37818,7 +37194,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/security/enhanced-route-monitor.ts",
-      "line": 421,
+      "line": 420,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37826,7 +37202,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/security/enhanced-route-monitor.ts",
-      "line": 449,
+      "line": 448,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37834,7 +37210,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/security/enhanced-route-monitor.ts",
-      "line": 642,
+      "line": 641,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37842,7 +37218,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/security/enhanced-route-monitor.ts",
-      "line": 670,
+      "line": 669,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -37850,7 +37226,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/security/enhanced-route-monitor.ts",
-      "line": 684,
+      "line": 683,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -38010,7 +37386,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "scripts/audit-conformance.ts",
-      "line": 213,
+      "line": 268,
       "issue": "Using @ts-ignore",
       "recommendation": "Fix the underlying type issue instead"
     },
@@ -38018,7 +37394,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "scripts/audit-conformance.ts",
-      "line": 214,
+      "line": 269,
       "issue": "Using @ts-ignore",
       "recommendation": "Fix the underlying type issue instead"
     },
@@ -38026,7 +37402,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "scripts/audit-conformance.ts",
-      "line": 220,
+      "line": 275,
       "issue": "Using @ts-ignore",
       "recommendation": "Fix the underlying type issue instead"
     },
@@ -38905,6 +38281,22 @@
     {
       "category": "TypeScript",
       "severity": "medium",
+      "file": "types/global.d.ts",
+      "line": 166,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "types/global.d.ts",
+      "line": 280,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
       "file": "types/index.ts",
       "line": 232,
       "issue": "Using any type",
@@ -39090,7 +38482,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/clients/page.tsx",
-      "line": 160,
+      "line": 161,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39098,7 +38490,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/clients/page.tsx",
-      "line": 306,
+      "line": 307,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39106,7 +38498,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/clients/page.tsx",
-      "line": 314,
+      "line": 315,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39114,7 +38506,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/clients/page.tsx",
-      "line": 327,
+      "line": 328,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39122,7 +38514,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/clients/page.tsx",
-      "line": 396,
+      "line": 397,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39130,7 +38522,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/clients/page.tsx",
-      "line": 467,
+      "line": 468,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39138,7 +38530,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-      "line": 39,
+      "line": 40,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39146,7 +38538,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-      "line": 135,
+      "line": 136,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39154,7 +38546,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-      "line": 182,
+      "line": 196,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39162,7 +38554,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-      "line": 230,
+      "line": 244,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39170,7 +38562,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-      "line": 286,
+      "line": 300,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39178,7 +38570,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-      "line": 351,
+      "line": 365,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39186,7 +38578,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-      "line": 407,
+      "line": 421,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39194,7 +38586,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-      "line": 450,
+      "line": 464,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39202,7 +38594,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-      "line": 498,
+      "line": 512,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39210,7 +38602,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/developer/diagnostics/user-creation/page.tsx",
-      "line": 551,
+      "line": 565,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39546,7 +38938,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 201,
+      "line": 200,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39554,7 +38946,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 333,
+      "line": 331,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39562,7 +38954,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 418,
+      "line": 416,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39570,7 +38962,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 437,
+      "line": 435,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39578,7 +38970,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 462,
+      "line": 460,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39586,7 +38978,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 467,
+      "line": 465,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39594,7 +38986,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 468,
+      "line": 466,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39602,7 +38994,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 474,
+      "line": 472,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39610,7 +39002,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 475,
+      "line": 473,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39618,7 +39010,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 479,
+      "line": 477,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39626,7 +39018,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 483,
+      "line": 481,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39634,7 +39026,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "app/(dashboard)/payrolls/page.tsx",
-      "line": 512,
+      "line": 510,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39978,7 +39370,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "components/dev/actor-token-manager.tsx",
-      "line": 213,
+      "line": 214,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -39986,7 +39378,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "components/dev/actor-token-manager.tsx",
-      "line": 275,
+      "line": 276,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40210,7 +39602,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/clients/components/clients-table-unified.tsx",
-      "line": 137,
+      "line": 138,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40226,7 +39618,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-      "line": 219,
+      "line": 218,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40234,7 +39626,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-      "line": 233,
+      "line": 232,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40242,7 +39634,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-      "line": 245,
+      "line": 244,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40250,7 +39642,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-      "line": 253,
+      "line": 252,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40258,7 +39650,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-      "line": 330,
+      "line": 329,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40266,7 +39658,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/advanced-payroll-scheduler.tsx",
-      "line": 379,
+      "line": 378,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40290,15 +39682,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/payroll-dates-view.tsx",
-      "line": 489,
-      "issue": "Using any type",
-      "recommendation": "Replace with specific type or unknown"
-    },
-    {
-      "category": "TypeScript",
-      "severity": "medium",
-      "file": "domains/payrolls/components/payroll-dates-view.tsx",
-      "line": 522,
+      "line": 490,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40314,7 +39698,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/payroll-dates-view.tsx",
-      "line": 535,
+      "line": 524,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40322,7 +39706,15 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/payroll-dates-view.tsx",
-      "line": 556,
+      "line": 536,
+      "issue": "Using any type",
+      "recommendation": "Replace with specific type or unknown"
+    },
+    {
+      "category": "TypeScript",
+      "severity": "medium",
+      "file": "domains/payrolls/components/payroll-dates-view.tsx",
+      "line": 557,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40450,7 +39842,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/payroll-schedule.tsx",
-      "line": 183,
+      "line": 184,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40458,7 +39850,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/payroll-schedule.tsx",
-      "line": 185,
+      "line": 186,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40466,7 +39858,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/payroll-schedule.tsx",
-      "line": 234,
+      "line": 235,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40474,7 +39866,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/payroll-schedule.tsx",
-      "line": 247,
+      "line": 248,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40482,7 +39874,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "domains/payrolls/components/payroll-schedule.tsx",
-      "line": 303,
+      "line": 304,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },
@@ -40554,23 +39946,7 @@
       "category": "TypeScript",
       "severity": "medium",
       "file": "lib/auth/enhanced-auth-context.tsx",
-      "line": 20,
-      "issue": "Using any type",
-      "recommendation": "Replace with specific type or unknown"
-    },
-    {
-      "category": "TypeScript",
-      "severity": "medium",
-      "file": "lib/auth/enhanced-auth-context.tsx",
-      "line": 41,
-      "issue": "Using any type",
-      "recommendation": "Replace with specific type or unknown"
-    },
-    {
-      "category": "TypeScript",
-      "severity": "medium",
-      "file": "lib/auth/enhanced-auth-context.tsx",
-      "line": 190,
+      "line": 26,
       "issue": "Using any type",
       "recommendation": "Replace with specific type or unknown"
     },

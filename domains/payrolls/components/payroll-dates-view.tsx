@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -652,7 +653,8 @@ export function PayrollDatesView({
   }
 
   return (
-    <div className="w-full">
+    <PermissionGuard permission="payroll:read">
+      <div className="w-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Payroll Dates</h2>
         <div className="flex items-center gap-2">
@@ -720,5 +722,6 @@ export function PayrollDatesView({
         </TabsContent>
       </Tabs>
     </div>
+    </PermissionGuard>
   );
 }

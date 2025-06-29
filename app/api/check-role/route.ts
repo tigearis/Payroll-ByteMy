@@ -1,63 +1,46 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "@/lib/auth/api-auth";
+import { getJWTClaimsWithFallback } from "@/lib/auth/token-utils";
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, session) => {
   try {
     console.log("🔍 Role check endpoint called");
 
-    const { userId, sessionClaims, getToken } = await auth();
+    // Get additional claims info for debugging
+    const claimsResult = await getJWTClaimsWithFallback();
 
-    console.log("🔍 Auth data:", {
-      hasUserId: !!userId,
-      hasSessionClaims: !!sessionClaims,
-      userId: `${userId?.substring(0, 8)}...`,
+    console.log("🔍 Session and claims results:", {
+      hasUserId: !!session.userId,
+      sessionRole: session.role,
+      claimsRole: claimsResult.role,
+      hasCompleteData: claimsResult.hasCompleteData,
+      userId: session.userId ? `${session.userId.substring(0, 8)}...` : null,
     });
 
-    if (!userId) {
-      return NextResponse.json(
-        {
-          error: "Not authenticated",
-          userId: null,
-          role: null,
-        },
-        { status: 401 }
-      );
-    }
-
-    // Extract role from JWT (same logic as api-auth.ts) - FIXED ORDER
-    const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const userRole = // Use x-hasura-default-role as primary source
-      (hasuraClaims?.["x-hasura-default-role"] ||
-        (sessionClaims?.metadata as any)?.role ||
-        (sessionClaims?.metadata as any)?.defaultrole ||
-        (sessionClaims as any)?.role) as string;
-
-    // Get Hasura token
-    const token = await getToken({ template: "hasura" });
+    // Use session role as primary, claims as fallback
+    const userRole = session.role || claimsResult.role || "viewer";
 
     console.log("🔍 Role extraction result:", {
       userRole,
-      hasToken: !!token,
-      tokenLength: token?.length,
-      hasMetadata: !!sessionClaims?.metadata,
-      hasHasuraClaims: !!hasuraClaims,
-      v2DefaultRole: (sessionClaims?.metadata as any)?.defaultrole,
-      v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
+      sessionRole: session.role,
+      databaseId: session.databaseId,
+      hasCompleteData: claimsResult.hasCompleteData,
+      claimsError: claimsResult.error,
     });
 
     return NextResponse.json({
       success: true,
-      userId,
+      userId: session.userId,
       role: userRole,
-      hasToken: !!token,
-      tokenLength: token?.length,
+      databaseId: session.databaseId,
+      hasCompleteData: claimsResult.hasCompleteData,
       debug: {
-        hasMetadata: !!sessionClaims?.metadata,
-        hasHasuraClaims: !!hasuraClaims,
-        v2DefaultRole: (sessionClaims?.metadata as any)?.defaultrole,
-        v1DefaultRole: hasuraClaims?.["x-hasura-default-role"],
-        v1Role: hasuraClaims?.["x-hasura-default-role"],
-        sessionId: sessionClaims?.sid,
+        hasHasuraClaims: !!claimsResult.claims,
+        v1DefaultRole: claimsResult.claims?.["x-hasura-default-role"],
+        v1Role: claimsResult.claims?.["x-hasura-default-role"],
+        extractedRole: claimsResult.role,
+        sessionRole: session.role,
+        claimsError: claimsResult.error,
       },
     });
   } catch (error: any) {
@@ -71,4 +54,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
