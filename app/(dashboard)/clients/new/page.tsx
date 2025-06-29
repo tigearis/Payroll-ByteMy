@@ -69,10 +69,10 @@ const WEEKDAYS = [
   { value: "5", label: "Friday" },
 ];
 
-const MONTH_DAYS = Array.from({ length: 31 }, (_, i) => ({
-  value: (i + 1).toString(),
-  label: `${i + 1}${getOrdinalSuffix(i + 1)}`,
-}));
+// const MONTH_DAYS = Array.from({ length: 31 }, (_, i) => ({
+//   value: (i + 1).toString(),
+//   label: `${i + 1}${getOrdinalSuffix(i + 1)}`,
+// }));
 
 function getOrdinalSuffix(num: number): string {
   const j = num % 10;
@@ -224,9 +224,9 @@ function EnhancedCalendar({
 
   // Get first day of the month and calculate calendar grid
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+  // const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
   const firstDayWeekday = firstDayOfMonth.getDay();
-  const daysInMonth = lastDayOfMonth.getDate();
+  // const daysInMonth = lastDayOfMonth.getDate();
 
   // Calculate calendar grid start (Sunday = 0)
   const calendarStart = new Date(firstDayOfMonth);
@@ -475,10 +475,10 @@ function EnhancedCalendar({
   );
 }
 
-const BI_MONTHLY_SOM_INFO =
-  "1st and 15th (14th in February) with Next Business Day rule";
-const BI_MONTHLY_EOM_INFO =
-  "30th and 15th (14th in February) with Previous Business Day rule";
+// const BI_MONTHLY_SOM_INFO =
+//   "1st and 15th (14th in February) with Next Business Day rule";
+// const BI_MONTHLY_EOM_INFO =
+//   "30th and 15th (14th in February) with Previous Business Day rule";
 
 export default function NewClientPage() {
   const router = useRouter();
