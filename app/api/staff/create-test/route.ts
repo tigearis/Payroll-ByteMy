@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Direct POST without withAuth wrapper
 export async function POST(request: NextRequest) {

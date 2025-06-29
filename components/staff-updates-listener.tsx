@@ -1,6 +1,6 @@
 import { DocumentNode } from "@apollo/client";
-
 import { RealTimeUpdates } from "@/components/real-time-updates";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { 
   ActiveUsersDocument,
   GetStaffListDocument,
@@ -20,11 +20,13 @@ export function StaffUpdatesListener({
   onUpdate?: (data: any) => void;
 }) {
   return (
-    <RealTimeUpdates
-      subscription={ActiveUsersDocument}
-      refetchQueries={refetchQueries}
-      showToasts={showToasts}
-      {...(onUpdate && { onUpdate })}
-    />
+    <PermissionGuard permission="staff:read">
+      <RealTimeUpdates
+        subscription={ActiveUsersDocument}
+        refetchQueries={refetchQueries}
+        showToasts={showToasts}
+        {...(onUpdate && { onUpdate })}
+      />
+    </PermissionGuard>
   );
 }

@@ -1,9 +1,8 @@
 // app/api/payrolls/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-
 import { GetPayrollByIdDocument as GET_PAYROLL_BY_ID, type GetPayrollByIdQuery } from "@/domains/payrolls";
-import { withAuthParams } from "@/lib/auth/api-auth";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { withAuthParams } from "@/lib/auth/api-auth";
 
 export const GET = withAuthParams(
   async (

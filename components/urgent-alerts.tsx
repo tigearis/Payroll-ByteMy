@@ -3,13 +3,12 @@
 
 import { format } from "date-fns";
 import { CalendarDays, User } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { GetUserUpcomingPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useStrategicQuery } from "@/hooks/use-strategic-query";
-
 import {
   UserUpcomingPayroll,
   UserUpcomingPayrollsData,
@@ -61,6 +60,14 @@ function getUserRole(
 }
 
 export function UrgentAlerts() {
+  return (
+    <PermissionGuard permission="payroll:read">
+      <UrgentAlertsInner />
+    </PermissionGuard>
+  );
+}
+
+function UrgentAlertsInner() {
   const { currentUserId, loading: userLoading } = useCurrentUser();
   const today = new Date().toISOString().split("T")[0];
 

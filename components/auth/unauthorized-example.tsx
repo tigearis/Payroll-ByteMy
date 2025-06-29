@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { UnauthorizedModal } from "@/components/auth/unauthorized-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UnauthorizedModal } from "@/components/auth/unauthorized-modal";
 import { useUnauthorizedModal } from "@/hooks/use-unauthorized-modal";
 import { navigateToUnauthorized } from "@/lib/auth/unauthorized-handler";
 

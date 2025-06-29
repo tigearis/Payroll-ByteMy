@@ -1,5 +1,7 @@
 "use client";
 
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
 import {
   MoreHorizontal,
   Download,
@@ -21,7 +23,6 @@ import {
   CalendarDays,
 } from "lucide-react";
 import Link from "next/link";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -255,6 +256,11 @@ export function PayrollsTable({
   sortDirection = "ASC",
   onSort,
 }: PayrollsTableProps) {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('payroll:read')) {
+    return null;
+  }
   const renderSortableHeader = (label: string, field: string) => {
     const column = COLUMN_DEFINITIONS.find(col => col.key === field);
     if (!column?.sortable || !onSort) {

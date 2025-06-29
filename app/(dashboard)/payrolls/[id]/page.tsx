@@ -1,7 +1,6 @@
 // app/(dashboard)/payrolls/[id]/page.tsx
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
 
 // Import role enums
@@ -27,10 +26,9 @@ import {
   Shield,
 } from "lucide-react";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useAuthContext } from "@/lib/auth";
-
 import { ExportCsv } from "@/components/export-csv";
 import { ExportPdf } from "@/components/export-pdf";
 import { Badge } from "@/components/ui/badge";
@@ -67,7 +65,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import { PayrollDatesView } from "@/domains/payrolls/components/payroll-dates-view";
 import { PayrollVersionHistory } from "@/domains/payrolls/components/payroll-version-history";
-
 import {
   GetPayrollByIdDocument,
   GetPayrollForEditDocument,
@@ -79,16 +76,17 @@ import {
 // Import additional documents separately to avoid potential module resolution issues
 import { GetPayrollCyclesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generated/graphql";
-import { GetAllUsersListDocument } from "@/domains/users/graphql/generated/graphql";
 import { GetLatestPayrollVersionDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GetAllUsersListDocument } from "@/domains/users/graphql/generated/graphql";
 import {
   usePayrollVersioning,
   usePayrollStatusUpdate,
   getVersionReason,
 } from "@/hooks/use-payroll-versioning";
-import { PayrollCycleType, PayrollDateType } from "@/types/enums";
 import { useFreshQuery } from "@/hooks/use-strategic-query";
+import { useAuthContext } from "@/lib/auth";
+import { PayrollCycleType, PayrollDateType } from "@/types/enums";
 
 // Add error boundary component for debugging
 function ErrorBoundary({ children }: { children: React.ReactNode }) {
@@ -565,7 +563,7 @@ const getCycleName = (payroll: any) => {
     return cycle ? cycle.name : cycleEnum; // Return display name like 'Weekly' or fallback to enum
   }
 
-  // Fallback to cycle_id lookup if nested object not available
+  // Fallback to cycleId lookup if nested object not available
   if (payroll?.cycleId) {
     const cycle = PAYROLL_CYCLES.find(c => c.id === payroll.cycleId);
     return cycle ? cycle.name : `${payroll.cycleId} (Unknown)`;
@@ -1184,16 +1182,16 @@ export default function PayrollPage() {
       setEditedPayroll({
         ...payroll,
         // Ensure field names match the form - use the actual field names from schema
-        cycle_id: (payroll as any).cycleId || "",
-        date_type_id: (payroll as any).dateTypeId || "",
-        date_value: (payroll as any).dateValue?.toString() || "",
+        cycleId: (payroll as any).cycleId || "",
+        dateTypeId: (payroll as any).dateTypeId || "",
+        dateValue: (payroll as any).dateValue?.toString() || "",
         fortnightlyWeek: "", // Add fortnightly week field
-        primary_consultant_user_id: (payroll as any).primaryConsultantUserId || "",
-        backup_consultant_user_id: (payroll as any).backupConsultantUserId || "",
-        manager_user_id: (payroll as any).managerUserId || "",
-        processing_days_before_eft:
+        primaryConsultantUserId: (payroll as any).primaryConsultantUserId || "",
+        backupConsultantUserId: (payroll as any).backupConsultantUserId || "",
+        managerUserId: (payroll as any).managerUserId || "",
+        processingDaysBeforeEft:
           payroll.processingDaysBeforeEft?.toString() || "",
-        go_live_date: (payroll as any).goLiveDate || "",
+        goLiveDate: (payroll as any).goLiveDate || "",
       });
     }
   }, [data, editedPayroll.id]);
@@ -1209,26 +1207,26 @@ export default function PayrollPage() {
   const handleCycleChange = (value: string) => {
     setEditedPayroll((prev: any) => ({
       ...prev,
-      cycle_id: value,
-      date_type_id:
+      cycleId: value,
+      dateTypeId:
         value === PayrollCycleType.Weekly ||
         value === PayrollCycleType.Fortnightly
           ? "DOW"
           : "",
-      date_value: "",
+      dateValue: "",
       fortnightlyWeek: "", // Reset fortnightly week when cycle changes
     }));
   };
 
   const handleDateTypeChange = (value: string) => {
-    handleInputChange("date_type_id", value);
-    handleInputChange("date_value", "");
+    handleInputChange("dateTypeId", value);
+    handleInputChange("dateValue", "");
   };
 
   // Get available date types based on selected cycle (same as creation page)
-  const availableDateTypes = editedPayroll.cycle_id
+  const availableDateTypes = editedPayroll.cycleId
     ? PAYROLL_DATE_TYPES[
-        editedPayroll.cycle_id as keyof typeof PAYROLL_DATE_TYPES
+        editedPayroll.cycleId as keyof typeof PAYROLL_DATE_TYPES
       ] || []
     : [];
 
@@ -1237,17 +1235,17 @@ export default function PayrollPage() {
   const staffUsers = users.filter((user: any) => user.isStaff === true);
   const availablePrimaryConsultants = staffUsers;
   const availableBackupConsultants = staffUsers.filter(
-    (user: any) => user.id !== editedPayroll.primary_consultant_user_id
+    (user: any) => user.id !== editedPayroll.primaryConsultantUserId
   );
   const availableManagers = staffUsers.filter((user: any) =>
-    ["manager", "developer", "org_admin"].includes(user.role)
+    ["manager", "developer", "orgAdmin"].includes(user.role)
   );
 
   // Enhanced renderDateValueInput with same logic as creation page
   const renderDateValueInput = () => {
-    const { cycle_id } = editedPayroll;
+    const { cycleId } = editedPayroll;
 
-    if (!cycle_id) {
+    if (!cycleId) {
       return (
         <Input
           id="date-value"
@@ -1259,13 +1257,13 @@ export default function PayrollPage() {
     }
 
     // Weekly: Only day of week selection
-    if (cycle_id === PayrollCycleType.Weekly) {
+    if (cycleId === PayrollCycleType.Weekly) {
       return (
         <div className="space-y-2">
           <Label htmlFor="weekday">Day of Week</Label>
           <Select
-            value={editedPayroll.date_value}
-            onValueChange={value => handleInputChange("date_value", value)}
+            value={editedPayroll.dateValue}
+            onValueChange={value => handleInputChange("dateValue", value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select day of week..." />
@@ -1283,31 +1281,31 @@ export default function PayrollPage() {
     }
 
     // Fortnightly: Enhanced calendar selection for week type and day of week
-    if (cycle_id === PayrollCycleType.Fortnightly) {
+    if (cycleId === PayrollCycleType.Fortnightly) {
       return (
         <div className="space-y-2">
           <Label htmlFor="fortnightly-calendar">Select Week & Day</Label>
           <EnhancedCalendar
             mode="fortnightly"
             selectedWeek={editedPayroll.fortnightlyWeek}
-            selectedDay={editedPayroll.date_value}
+            selectedDay={editedPayroll.dateValue}
             onWeekSelect={week => handleInputChange("fortnightlyWeek", week)}
-            onDaySelect={day => handleInputChange("date_value", day)}
+            onDaySelect={day => handleInputChange("dateValue", day)}
           />
         </div>
       );
     }
 
     // Bi-Monthly: Only SOM/EOM selection (no date value needed)
-    if (cycle_id === PayrollCycleType.BiMonthly) {
+    if (cycleId === PayrollCycleType.BiMonthly) {
       return (
         <div className="mt-1">
           <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
-            {editedPayroll.date_type_id === PayrollDateType.SOM &&
+            {editedPayroll.dateTypeId === PayrollDateType.SOM &&
               "1st and 15th of each month (14th in February)"}
-            {editedPayroll.date_type_id === PayrollDateType.EOM &&
+            {editedPayroll.dateTypeId === PayrollDateType.EOM &&
               "30th and 15th of each month (14th & 28th in February)"}
-            {!editedPayroll.date_type_id && "Select date type above"}
+            {!editedPayroll.dateTypeId && "Select date type above"}
           </p>
         </div>
       );
@@ -1315,12 +1313,12 @@ export default function PayrollPage() {
 
     // Monthly/Quarterly: Handle SOM, EOM, or Fixed Date
     if (
-      cycle_id === PayrollCycleType.Monthly ||
-      cycle_id === PayrollCycleType.Quarterly
+      cycleId === PayrollCycleType.Monthly ||
+      cycleId === PayrollCycleType.Quarterly
     ) {
-      const { date_type_id } = editedPayroll;
+      const { dateTypeId } = editedPayroll;
 
-      if (date_type_id === PayrollDateType.SOM) {
+      if (dateTypeId === PayrollDateType.SOM) {
         return (
           <div className="mt-1">
             <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
@@ -1330,7 +1328,7 @@ export default function PayrollPage() {
         );
       }
 
-      if (date_type_id === PayrollDateType.EOM) {
+      if (dateTypeId === PayrollDateType.EOM) {
         return (
           <div className="mt-1">
             <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
@@ -1340,14 +1338,14 @@ export default function PayrollPage() {
         );
       }
 
-      if (date_type_id === PayrollDateType.FixedDate) {
+      if (dateTypeId === PayrollDateType.FixedDate) {
         return (
           <div className="space-y-2">
             <Label htmlFor="fixed-date-calendar">Select Day of Month</Label>
             <EnhancedCalendar
               mode="fixed"
-              selectedDay={editedPayroll.date_value}
-              onDaySelect={day => handleInputChange("date_value", day)}
+              selectedDay={editedPayroll.dateValue}
+              onDaySelect={day => handleInputChange("dateValue", day)}
             />
           </div>
         );
@@ -1449,8 +1447,8 @@ export default function PayrollPage() {
       let dateTypeId = originalDateTypeId;
 
       // Check if cycle changed by comparing IDs
-      if (editedPayroll.cycle_id !== originalCycleId) {
-        const newCycleId = getCycleIdFromName(editedPayroll.cycle_id);
+      if (editedPayroll.cycleId !== originalCycleId) {
+        const newCycleId = getCycleIdFromName(editedPayroll.cycleId);
         if (!newCycleId) {
           toast.error("Invalid payroll cycle selected");
           return;
@@ -1459,8 +1457,8 @@ export default function PayrollPage() {
       }
 
       // Check if date type changed by comparing IDs
-      if (editedPayroll.date_type_id !== originalDateTypeId) {
-        const newDateTypeId = getDateTypeIdFromName(editedPayroll.date_type_id);
+      if (editedPayroll.dateTypeId !== originalDateTypeId) {
+        const newDateTypeId = getDateTypeIdFromName(editedPayroll.dateTypeId);
         if (!newDateTypeId) {
           toast.error("Invalid date type selected");
           return;
@@ -1477,8 +1475,8 @@ export default function PayrollPage() {
       // Check if any schedule-related fields changed
       const cycleChanged = cycleId !== originalCycleId;
       const dateTypeChanged = dateTypeId !== originalDateTypeId;
-      const dateValueChanged = editedPayroll.date_value
-        ? parseInt(editedPayroll.date_value) !== originalDateValue
+      const dateValueChanged = editedPayroll.dateValue
+        ? parseInt(editedPayroll.dateValue) !== originalDateValue
         : originalDateValue !== null && originalDateValue !== undefined;
 
       const scheduleChanged =
@@ -1490,14 +1488,14 @@ export default function PayrollPage() {
         name: editedPayroll.name.trim(),
         cycleId,
         dateTypeId,
-        dateValue: editedPayroll.date_value
-          ? parseInt(editedPayroll.date_value)
+        dateValue: editedPayroll.dateValue
+          ? parseInt(editedPayroll.dateValue)
           : null,
-        primaryConsultantId: editedPayroll.primary_consultant_user_id || null,
-        backupConsultantId: editedPayroll.backup_consultant_user_id || null,
-        managerId: editedPayroll.manager_user_id || null,
-        processingDaysBeforeEft: editedPayroll.processing_days_before_eft
-          ? parseInt(editedPayroll.processing_days_before_eft)
+        primaryConsultantId: editedPayroll.primaryConsultantUserId || null,
+        backupConsultantId: editedPayroll.backupConsultantUserId || null,
+        managerId: editedPayroll.managerUserId || null,
+        processingDaysBeforeEft: editedPayroll.processingDaysBeforeEft
+          ? parseInt(editedPayroll.processingDaysBeforeEft)
           : null,
         status: (payroll as any).status || "Implementation", // Include current status to prevent null error
       };
@@ -1541,13 +1539,13 @@ export default function PayrollPage() {
 
       // Check each field and only include if changed
       if (scheduleChangeData.cycleId !== (payroll as any).cycleId) {
-        editedFields.cycle_id = scheduleChangeData.cycleId;
+        editedFields.cycleId = scheduleChangeData.cycleId;
       }
       if (scheduleChangeData.dateTypeId !== (payroll as any).dateTypeId) {
-        editedFields.date_type_id = scheduleChangeData.dateTypeId;
+        editedFields.dateTypeId = scheduleChangeData.dateTypeId;
       }
       if (scheduleChangeData.dateValue !== (payroll as any).dateValue) {
-        editedFields.date_value = scheduleChangeData.dateValue;
+        editedFields.dateValue = scheduleChangeData.dateValue;
       }
       if (scheduleChangeData.name !== (payroll as any).name) {
         editedFields.name = scheduleChangeData.name;
@@ -1556,24 +1554,24 @@ export default function PayrollPage() {
         scheduleChangeData.primaryConsultantId !==
         (payroll as any).primaryConsultantUserId
       ) {
-        editedFields.primary_consultant_user_id =
+        editedFields.primaryConsultantUserId =
           scheduleChangeData.primaryConsultantId;
       }
       if (
         scheduleChangeData.backupConsultantId !==
         (payroll as any).backupConsultantUserId
       ) {
-        editedFields.backup_consultant_user_id =
+        editedFields.backupConsultantUserId =
           scheduleChangeData.backupConsultantId;
       }
       if (scheduleChangeData.managerId !== (payroll as any).managerUserId) {
-        editedFields.manager_user_id = scheduleChangeData.managerId;
+        editedFields.managerUserId = scheduleChangeData.managerId;
       }
       if (
         scheduleChangeData.processingDaysBeforeEft !==
         (payroll as any).processingDaysBeforeEft
       ) {
-        editedFields.processing_days_before_eft =
+        editedFields.processingDaysBeforeEft =
           scheduleChangeData.processingDaysBeforeEft;
       }
 
@@ -2067,7 +2065,7 @@ export default function PayrollPage() {
                             <div>
                               <Label htmlFor="cycle-id">Payroll Cycle *</Label>
                               <Select
-                                value={editedPayroll.cycle_id || ""}
+                                value={editedPayroll.cycleId || ""}
                                 onValueChange={value =>
                                   handleCycleChange(value)
                                 }
@@ -2086,15 +2084,15 @@ export default function PayrollPage() {
                             </div>
 
                             {/* Only show date type for cycles that need it */}
-                            {(editedPayroll.cycle_id === "bi_monthly" ||
-                              editedPayroll.cycle_id === "monthly" ||
-                              editedPayroll.cycle_id === "quarterly") && (
+                            {(editedPayroll.cycleId === "bi_monthly" ||
+                              editedPayroll.cycleId === "monthly" ||
+                              editedPayroll.cycleId === "quarterly") && (
                               <div>
                                 <Label htmlFor="date-type-id">
                                   Date Type *
                                 </Label>
                                 <Select
-                                  value={editedPayroll.date_type_id || ""}
+                                  value={editedPayroll.dateTypeId || ""}
                                   onValueChange={value =>
                                     handleDateTypeChange(value)
                                   }
@@ -2117,8 +2115,8 @@ export default function PayrollPage() {
                             )}
 
                             {/* Show processing days in the second column if no date type needed */}
-                            {(editedPayroll.cycle_id === "weekly" ||
-                              editedPayroll.cycle_id === "fortnightly") && (
+                            {(editedPayroll.cycleId === "weekly" ||
+                              editedPayroll.cycleId === "fortnightly") && (
                               <div>
                                 <Label htmlFor="processing-days">
                                   Processing Days Before EFT *
@@ -2128,12 +2126,11 @@ export default function PayrollPage() {
                                   type="number"
                                   placeholder="e.g., 3"
                                   value={
-                                    editedPayroll.processing_days_before_eft ||
-                                    ""
+                                    editedPayroll.processingDaysBeforeEft || ""
                                   }
                                   onChange={e =>
                                     handleInputChange(
-                                      "processing_days_before_eft",
+                                      "processingDaysBeforeEft",
                                       e.target.value
                                     )
                                   }
@@ -2152,9 +2149,9 @@ export default function PayrollPage() {
                           </div>
 
                           {/* Processing days for cycles that have date type dropdown */}
-                          {(editedPayroll.cycle_id === "bi_monthly" ||
-                            editedPayroll.cycle_id === "monthly" ||
-                            editedPayroll.cycle_id === "quarterly") && (
+                          {(editedPayroll.cycleId === "bi_monthly" ||
+                            editedPayroll.cycleId === "monthly" ||
+                            editedPayroll.cycleId === "quarterly") && (
                             <div>
                               <Label htmlFor="processing-days">
                                 Processing Days Before EFT *
@@ -2164,11 +2161,11 @@ export default function PayrollPage() {
                                 type="number"
                                 placeholder="e.g., 3"
                                 value={
-                                  editedPayroll.processing_days_before_eft || ""
+                                  editedPayroll.processingDaysBeforeEft || ""
                                 }
                                 onChange={e =>
                                   handleInputChange(
-                                    "processing_days_before_eft",
+                                    "processingDaysBeforeEft",
                                     e.target.value
                                   )
                                 }
@@ -2178,7 +2175,7 @@ export default function PayrollPage() {
                           )}
 
                           {/* Add quarterly note */}
-                          {editedPayroll.cycle_id === "quarterly" && (
+                          {editedPayroll.cycleId === "quarterly" && (
                             <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
                               <p className="text-sm text-blue-700">
                                 <strong>Quarterly Processing:</strong> Payrolls
@@ -2201,11 +2198,12 @@ export default function PayrollPage() {
                               </Label>
                               <Select
                                 value={
-                                  editedPayroll.primary_consultant_user_id || "none"
+                                  editedPayroll.primaryConsultantUserId ||
+                                  "none"
                                 }
                                 onValueChange={value =>
                                   handleInputChange(
-                                    "primary_consultant_user_id",
+                                    "primaryConsultantUserId",
                                     value === "none" ? "" : value
                                   )
                                 }
@@ -2240,12 +2238,11 @@ export default function PayrollPage() {
                               </Label>
                               <Select
                                 value={
-                                  editedPayroll.backup_consultant_user_id ||
-                                  "none"
+                                  editedPayroll.backupConsultantUserId || "none"
                                 }
                                 onValueChange={value =>
                                   handleInputChange(
-                                    "backup_consultant_user_id",
+                                    "backupConsultantUserId",
                                     value === "none" ? "" : value
                                   )
                                 }
@@ -2268,20 +2265,20 @@ export default function PayrollPage() {
                                   )}
                                 </SelectContent>
                               </Select>
-                              {editedPayroll.primary_consultant_user_id &&
+                              {editedPayroll.primaryConsultantUserId &&
                                 availableBackupConsultants.length === 0 && (
                                   <p className="text-xs text-amber-600 mt-1">
                                     ⚠️ No other staff members available -
                                     primary consultant cannot be backup
                                   </p>
                                 )}
-                              {!editedPayroll.primary_consultant_user_id && (
+                              {!editedPayroll.primaryConsultantUserId && (
                                 <p className="text-xs text-gray-500 mt-1">
                                   Select primary consultant first to see
                                   available backup options
                                 </p>
                               )}
-                              {editedPayroll.primary_consultant_user_id &&
+                              {editedPayroll.primaryConsultantUserId &&
                                 availableBackupConsultants.length > 0 && (
                                   <p className="text-xs text-gray-500 mt-1">
                                     Cannot select the same person as primary
@@ -2293,10 +2290,10 @@ export default function PayrollPage() {
                             <div>
                               <Label htmlFor="manager">Manager</Label>
                               <Select
-                                value={editedPayroll.manager_user_id || "none"}
+                                value={editedPayroll.managerUserId || "none"}
                                 onValueChange={value =>
                                   handleInputChange(
-                                    "manager_user_id",
+                                    "managerUserId",
                                     value === "none" ? "" : value
                                   )
                                 }

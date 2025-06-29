@@ -11,7 +11,9 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-
+import { DeveloperOnly } from "@/components/auth/developer-only";
+import { DebugPermissionInfo } from "@/components/debug-permission-info";
+import { DebugPermissions } from "@/components/debug-permissions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,9 +27,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { DebugPermissions } from "@/components/debug-permissions";
-import { DebugPermissionInfo } from "@/components/debug-permission-info";
-import { DeveloperOnly } from "@/components/auth/developer-only";
 
 // Conditionally import ActorTokenManager only in development
 let ActorTokenManager: React.ComponentType | null = null;

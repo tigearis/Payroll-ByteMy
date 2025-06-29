@@ -194,3 +194,114 @@ mutation ResendInvitationEnhanced(
     expiresAt
   }
 }
+
+# User Status Management Mutations for /api/users/manage
+mutation DeactivateUserWithReason(
+  $userId: uuid!
+  $reason: String!
+  $deactivatedBy: uuid!
+  $deactivatedByString: String!
+) {
+  updateUserById(
+    pkColumns: { id: $userId }
+    _set: {
+      status: "inactive"
+      isActive: false
+      deactivatedAt: "now()"
+      deactivatedBy: $deactivatedByString
+      statusChangeReason: $reason
+      statusChangedAt: "now()"
+      statusChangedBy: $deactivatedBy
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    name
+    status
+    isActive
+    deactivatedAt
+    statusChangeReason
+    statusChangedAt
+  }
+}
+
+mutation LockUserWithReason(
+  $userId: uuid!
+  $reason: String!
+  $lockedBy: uuid!
+) {
+  updateUserById(
+    pkColumns: { id: $userId }
+    _set: {
+      status: "locked"
+      isActive: false
+      statusChangeReason: $reason
+      statusChangedAt: "now()"
+      statusChangedBy: $lockedBy
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    name
+    status
+    isActive
+    statusChangeReason
+    statusChangedAt
+  }
+}
+
+mutation UnlockUserWithReason(
+  $userId: uuid!
+  $reason: String!
+  $unlockedBy: uuid!
+) {
+  updateUserById(
+    pkColumns: { id: $userId }
+    _set: {
+      status: "active"
+      isActive: true
+      statusChangeReason: $reason
+      statusChangedAt: "now()"
+      statusChangedBy: $unlockedBy
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    name
+    status
+    isActive
+    statusChangeReason
+    statusChangedAt
+  }
+}
+
+mutation ReactivateUserWithReason(
+  $userId: uuid!
+  $reason: String!
+  $reactivatedBy: uuid!
+) {
+  updateUserById(
+    pkColumns: { id: $userId }
+    _set: {
+      status: "active"
+      isActive: true
+      deactivatedAt: null
+      deactivatedBy: null
+      statusChangeReason: $reason
+      statusChangedAt: "now()"
+      statusChangedBy: $reactivatedBy
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    email
+    name
+    status
+    isActive
+    statusChangeReason
+    statusChangedAt
+  }
+}

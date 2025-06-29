@@ -4,8 +4,6 @@
 import { Search, Download } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { useCachedQuery } from "@/hooks/use-strategic-query";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,9 +29,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSmartPolling } from "@/hooks/use-polling";
-
 import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { useSmartPolling } from "@/hooks/use-polling";
+import { useCachedQuery } from "@/hooks/use-strategic-query";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
+
 
 interface PayrollListCardProps {
   searchQuery: string;
@@ -44,6 +45,11 @@ export function PayrollListCard({
   searchQuery,
   onSearchChange,
 }: PayrollListCardProps) {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('payroll:read')) {
+    return null;
+  }
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
   const [selectedClient, setSelectedClient] = useState("all");
   const [selectedPayroll, setSelectedPayroll] = useState("all");

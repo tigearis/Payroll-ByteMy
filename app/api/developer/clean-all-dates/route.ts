@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-
+import { CleanAllPayrollDatesDocument } from "@/domains/audit/graphql/generated/graphql";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth, checkRateLimit } from "@/lib/auth/api-auth";
-import { CleanAllPayrollDatesDocument } from "@/domains/audit/graphql/generated/graphql";
 
 export const POST = withAuth(
   async (request: NextRequest, session) => {

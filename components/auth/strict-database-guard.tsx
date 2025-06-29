@@ -3,7 +3,6 @@
 
 import { useUser } from "@clerk/nextjs";
 import React, { useEffect, useState } from "react";
-
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 // Cache duration for database verification (10 minutes)

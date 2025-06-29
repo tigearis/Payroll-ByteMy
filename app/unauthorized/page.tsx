@@ -4,7 +4,7 @@ import { AlertTriangle, ArrowLeft, Shield } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useEffect } from "react";
-
+import { UnauthorizedModal } from "@/components/auth/unauthorized-modal";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { UnauthorizedModal } from "@/components/auth/unauthorized-modal";
 import { useUnauthorizedModal } from "@/hooks/use-unauthorized-modal";
 
 function UnauthorizedContent() {

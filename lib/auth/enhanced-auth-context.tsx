@@ -1,15 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { useUser, useAuth } from '@clerk/nextjs';
-import { Permission, Role, sanitizeUserRole, getPermissionsForRole, hasRoleLevel } from './permissions';
+import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode, useMemo } from 'react';
 import { 
   GetUserEffectivePermissionsDocument,
   GetUserPermissionOverridesDocument 
 } from '@/domains/permissions/graphql/generated/graphql';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { clientRoleSecurityMonitor } from '@/lib/security/role-monitoring-client';
+import { Permission, Role, sanitizeUserRole, getPermissionsForRole, hasRoleLevel } from './permissions';
 
 // Enhanced permission types
 export interface EffectivePermission {

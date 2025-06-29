@@ -1,6 +1,5 @@
 // lib/security/auth-audit.ts - Authentication audit logging functions
 import { NextRequest } from "next/server";
-
 import {
   auditLogger,
   LogLevel,

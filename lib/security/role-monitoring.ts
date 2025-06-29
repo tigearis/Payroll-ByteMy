@@ -3,10 +3,10 @@
  * Monitors and alerts on suspicious role-related activities
  */
 
-import { auditLogger, LogLevel, SOC2EventType, LogCategory } from './audit/logger';
-import { Role, getAllowedRoles, hasRoleLevel } from '../auth/permissions';
-import { adminApolloClient } from '../apollo/unified-client';
 import { gql } from '@apollo/client';
+import { adminApolloClient } from '../apollo/unified-client';
+import { Role, getAllowedRoles, hasRoleLevel } from '../auth/permissions';
+import { auditLogger, LogLevel, SOC2EventType, LogCategory } from './audit/logger';
 
 export interface RoleMismatchEvent {
   userId: string;

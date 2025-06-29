@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-
 import { Button } from "@/components/ui/button";
 
 export function SimpleWebSocketTest() {

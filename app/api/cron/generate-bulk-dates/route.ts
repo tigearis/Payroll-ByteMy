@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
-
 import { adminOperationsService } from "@/lib/apollo/admin-operations";
 import { validateCronRequest } from "@/lib/auth/api-auth";
 

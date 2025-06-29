@@ -1,10 +1,9 @@
 // components/dashboard-shell.tsx
 import type React from "react";
-
-import { Sidebar } from "./sidebar";
 import { MainNav } from "@/components/main-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserNav } from "@/domains/users/components/user-nav";
+import { Sidebar } from "./sidebar";
 
 
 interface DashboardShellProps {

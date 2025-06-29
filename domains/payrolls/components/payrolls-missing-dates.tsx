@@ -4,7 +4,6 @@
 import { useQuery, useLazyQuery } from "@apollo/client";
 import { useEffect } from "react";
 import { toast } from "sonner";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,13 +22,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSmartPolling } from "@/hooks/use-polling";
-import { useUserRole } from "@/hooks/use-user-role";
-
 import {
   GetPayrollsMissingDatesDocument,
   GeneratePayrollDatesQueryDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
+import { useSmartPolling } from "@/hooks/use-polling";
+import { useUserRole } from "@/hooks/use-user-role";
+
 
 interface PayrollWithDateCount {
   id: string;

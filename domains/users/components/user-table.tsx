@@ -1,5 +1,7 @@
 "use client";
 
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
 import { useAuth } from "@clerk/nextjs";
 import {
   MoreHorizontal,
@@ -13,7 +15,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,11 @@ export function UserTable({
   currentUserRole,
   permissions,
 }: UserTableProps) {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('staff:read')) {
+    return null;
+  }
   const { userId } = useAuth(); // Get current user's Clerk ID
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);

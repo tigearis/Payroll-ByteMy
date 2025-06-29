@@ -25,7 +25,6 @@
 import { useQuery, gql } from "@apollo/client";
 import { RefreshCcw, User } from "lucide-react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isAuthError } from "@/lib/utils/handle-graphql-error";

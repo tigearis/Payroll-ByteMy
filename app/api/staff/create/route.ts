@@ -1,12 +1,13 @@
 import { createClerkClient } from "@clerk/backend";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-
 import {
   syncUserWithDatabase,
   UserRole,
 } from "@/domains/users/services/user-sync";
 import { withAuth } from "@/lib/auth/api-auth";
+import { executeTypedMutation } from "@/lib/apollo/query-helpers";
+import { CreateUserByEmailDocument, type CreateUserByEmailMutation } from "@/domains/users/graphql/generated/graphql";
 import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/permissions";
 import {
   auditLogger,
@@ -372,50 +373,7 @@ export const POST = withAuth(
         console.log(`💾 Creating database user for: ${staffInput.email}`);
 
         // Create database user (invitation will be linked when user signs up)
-        console.log(
-          "💾 Using server Apollo client like working payroll routes..."
-        );
-        const { serverApolloClient } = await import(
-          "@/lib/apollo/unified-client"
-        );
-        const { auth } = await import("@clerk/nextjs/server");
-
-        // Get Clerk authentication token (same as working payroll routes)
-        const authInstance = await auth();
-        const token = await authInstance.getToken({ template: "hasura" });
-
-        console.log("💾 Authentication details:", {
-          hasToken: !!token,
-          tokenLength: token?.length,
-          hasuraUrl: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
-          hasAdminSecret: !!process.env.HASURA_ADMIN_SECRET,
-        });
-
-        // Get Apollo Client with proper authentication
-        let apolloClient;
-        let authHeaders = {};
-
-        if (token) {
-          console.log("💾 Using user token for GraphQL authentication");
-          apolloClient = serverApolloClient;
-          authHeaders = { authorization: `Bearer ${token}` };
-        } else if (process.env.HASURA_ADMIN_SECRET) {
-          console.log("💾 Using admin client as fallback for user creation");
-          const { adminApolloClient } = await import(
-            "@/lib/apollo/unified-client"
-          );
-          apolloClient = adminApolloClient;
-          // Admin client uses the secret internally, no additional headers needed
-        } else {
-          throw new Error(
-            "No authentication token available and no admin secret configured"
-          );
-        }
-
-        // Import generated GraphQL operation
-        const { CreateUserByEmailDocument } = await import(
-          "@/domains/users/graphql/generated/graphql"
-        );
+        console.log("💾 Creating user in database with modern GraphQL pattern...");
 
         console.log("💾 Executing GraphQL mutation with variables:", {
           name: staffInput.name,
@@ -425,33 +383,22 @@ export const POST = withAuth(
           managerId: staffInput.managerId || null,
         });
 
-        const { data, errors } = await apolloClient.mutate({
-          mutation: CreateUserByEmailDocument,
-          variables: {
+        const data = await executeTypedMutation<CreateUserByEmailMutation>(
+          CreateUserByEmailDocument,
+          {
             name: staffInput.name,
             email: staffInput.email,
             role: staffInput.role,
             isStaff: staffInput.is_staff,
             managerId: staffInput.managerId || null,
             clerkUserId: null, // Will be set when user accepts invitation
-          },
-          ...(Object.keys(authHeaders).length > 0
-            ? { context: { headers: authHeaders } }
-            : {}),
-        });
+          }
+        );
 
         console.log("💾 GraphQL mutation result:", {
           hasData: !!data,
-          hasErrors: !!errors,
-          errors,
           data,
         });
-
-        if (errors) {
-          throw new Error(
-            `Database user creation failed: ${errors.map(e => e.message).join(", ")}`
-          );
-        }
 
         databaseUser = data?.insertUser;
         console.log(`✅ Created database user successfully`);

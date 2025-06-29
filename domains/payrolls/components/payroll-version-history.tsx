@@ -1,15 +1,14 @@
 "use client";
 
+import { useLazyQuery } from "@apollo/client";
 import { Calendar, Clock, GitBranch } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useLazyQuery } from "@apollo/client";
 import { toast } from "sonner";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { usePayrollVersionHistory, usePayrollVersioning } from "@/hooks/use-payroll-versioning";
 import { GetPayrollByIdDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { usePayrollVersionHistory, usePayrollVersioning } from "@/hooks/use-payroll-versioning";
 
 // Local date formatting function
 const formatDate = (dateString: string) => {

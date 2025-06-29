@@ -4,8 +4,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { adminApolloClient } from '@/lib/apollo/unified-client';
+import { z } from 'zod';
+import { executeTypedQuery, executeTypedMutation } from '@/lib/apollo/query-helpers';
+import { withAuth } from '@/lib/auth/api-auth';
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from '@/lib/security/audit/logger';
 import { 
   enhancedSyncUser, 
@@ -13,8 +14,8 @@ import {
   getSyncState,
   updateSyncState 
 } from '@/lib/services/enhanced-sync';
+
 import { gql } from '@apollo/client';
-import { z } from 'zod';
 
 // GraphQL operations for reconciliation
 const GET_ALL_USERS_WITH_SYNC_STATE = gql`
@@ -106,19 +107,17 @@ function canPerformReconciliation(userRole: string): boolean {
   return ['developer', 'org_admin'].includes(userRole);
 }
 
+const GET_CURRENT_USER_ROLE = gql`
+  query GetCurrentUserRole($userId: String!) {
+    users(where: { clerkUserId: { _eq: $userId } }) {
+      role
+    }
+  }
+`;
+
 async function getCurrentUserRole(userId: string): Promise<string | null> {
   try {
-    const { data } = await adminApolloClient.query({
-      query: gql`
-        query GetCurrentUserRole($userId: String!) {
-          users(where: { clerkUserId: { _eq: $userId } }) {
-            role
-          }
-        }
-      `,
-      variables: { userId }
-    });
-    
+    const data = await executeTypedQuery(GET_CURRENT_USER_ROLE, { userId });
     return data?.users?.[0]?.role || null;
   } catch (error) {
     console.error('Failed to get user role:', error);
@@ -126,15 +125,10 @@ async function getCurrentUserRole(userId: string): Promise<string | null> {
   }
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest, session) => {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     // Check user permissions
-    const userRole = await getCurrentUserRole(userId);
+    const userRole = await getCurrentUserRole(session.userId);
     if (!userRole || !canPerformReconciliation(userRole)) {
       return NextResponse.json({ 
         error: 'Insufficient permissions. Only developers and org admins can perform sync reconciliation.' 
@@ -188,7 +182,7 @@ export async function POST(request: NextRequest) {
       category: LogCategory.AUTHENTICATION,
       complianceNote: `Manual sync reconciliation performed: ${action}`,
       success: result.success,
-      userId,
+      userId: session.userId,
       resourceType: 'sync_reconciliation',
       action: `reconcile_${action}`,
       metadata: {
@@ -206,7 +200,7 @@ export async function POST(request: NextRequest) {
       ...result,
       action,
       duration,
-      performedBy: userId,
+      performedBy: session.userId,
       performedAt: new Date().toISOString(),
       dryRun
     });
@@ -226,7 +220,9 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, {
+  allowedRoles: ["developer", "org_admin"]
+});
 
 // Reconciliation action implementations
 
@@ -234,11 +230,11 @@ async function validateAllUsers(limit: number, dryRun: boolean): Promise<any> {
   console.log(`🔍 Validating sync state for up to ${limit} users (dry run: ${dryRun})`);
 
   try {
-    const { data } = await adminApolloClient.query({
-      query: GET_ALL_USERS_WITH_SYNC_STATE,
-      variables: { limit },
-      fetchPolicy: 'network-only'
-    });
+    const data = await executeTypedQuery(
+      GET_ALL_USERS_WITH_SYNC_STATE,
+      { limit },
+      { fetchPolicy: 'network-only' }
+    );
 
     const users = data?.users || [];
     const total = data?.usersAggregate?.aggregate?.count || 0;
@@ -352,11 +348,11 @@ async function syncAllFailedUsers(limit: number, dryRun: boolean): Promise<any> 
   console.log(`🔄 Syncing failed users (limit: ${limit}, dry run: ${dryRun})`);
 
   try {
-    const { data } = await adminApolloClient.query({
-      query: GET_INCONSISTENT_USERS,
-      variables: { limit },
-      fetchPolicy: 'network-only'
-    });
+    const data = await executeTypedQuery(
+      GET_INCONSISTENT_USERS,
+      { limit },
+      { fetchPolicy: 'network-only' }
+    );
 
     const failedUsers = data?.userSyncStates || [];
     const results = [];
@@ -463,11 +459,11 @@ async function bulkValidateUsers(limit: number, dryRun: boolean): Promise<any> {
   console.log(`🔍 Bulk validating users (limit: ${limit}, dry run: ${dryRun})`);
 
   try {
-    const { data } = await adminApolloClient.query({
-      query: GET_INCONSISTENT_USERS,
-      variables: { limit },
-      fetchPolicy: 'network-only'
-    });
+    const data = await executeTypedQuery(
+      GET_INCONSISTENT_USERS,
+      { limit },
+      { fetchPolicy: 'network-only' }
+    );
 
     const users = data?.userSyncStates || [];
     const validationResults = [];

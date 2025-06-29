@@ -1,19 +1,6 @@
 "use client";
 
-import * as React from "react";
-import { useState, useMemo, useEffect } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  RotateCcw,
-  Save,
-  Users,
-  Clock,
-  FileText,
-  RefreshCw,
-  UserX,
-  Calendar,
-} from "lucide-react";
+import { useQuery, useMutation } from "@apollo/client";
 import {
   format,
   addDays,
@@ -29,13 +16,25 @@ import {
   isWithinInterval,
   isWeekend,
 } from "date-fns";
-import { useQuery, useMutation } from "@apollo/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
+  Save,
+  Users,
+  Clock,
+  FileText,
+  RefreshCw,
+  UserX,
+  Calendar,
+} from "lucide-react";
+import * as React from "react";
+import { useState, useMemo, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-// Import lucide-react icons with explicit typing
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -44,7 +43,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// Import lucide-react icons with explicit typing
 import {
   GetPayrollsByMonthDocument,
   GetPayrollsByMonthQuery,

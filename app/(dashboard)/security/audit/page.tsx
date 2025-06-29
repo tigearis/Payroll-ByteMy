@@ -10,7 +10,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,13 +36,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import {
   GetAuditLogsDocument,
   SubscribeToAuditLogsDocument,
 } from "@/domains/audit/graphql/generated/graphql";
-import { OrderBy } from "@/shared/types/generated/graphql";
 import { useStrategicQuery } from "@/hooks/use-strategic-query";
+import { OrderBy } from "@/shared/types/generated/graphql";
 
 const ITEMS_PER_PAGE = 50;
 

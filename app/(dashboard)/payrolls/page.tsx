@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useMemo, useCallback } from "react";
-
 import { PayrollUpdatesListener } from "@/components/real-time-updates";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -50,8 +49,8 @@ import {
   GetPayrollsPaginatedDocument,
   GetPayrollDashboardStatsDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import { useUserRole } from "@/hooks/use-user-role";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
+import { useUserRole } from "@/hooks/use-user-role";
 
 type ViewMode = "cards" | "table" | "list";
 

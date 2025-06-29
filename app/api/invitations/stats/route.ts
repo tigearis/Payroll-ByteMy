@@ -1,41 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
+import {
+  GetExpiringInvitationsDocument,
+  GetInvitationDashboardStatsDocument,
+  type GetInvitationDashboardStatsQuery,
+  type GetExpiringInvitationsQuery,
+} from "@/domains/users/graphql/generated/graphql";
+import { executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
 import {
   auditLogger,
   LogLevel,
   SOC2EventType,
   LogCategory,
 } from "@/lib/security/audit/logger";
-import {
-  GetExpiringInvitationsDocument,
-  GetInvitationDashboardStatsDocument,
-} from "@/domains/users/graphql/generated/graphql";
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, { userId }) => {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { searchParams } = new URL(request.url);
     const includeExpiring = searchParams.get("includeExpiring") === "true";
     const daysUntilExpiry = searchParams.get("daysUntilExpiry") || "7";
 
     // Get dashboard statistics
-    const { data: statsData } = await adminApolloClient.query({
-      query: GetInvitationDashboardStatsDocument,
-    });
+    const statsData = await executeTypedQuery<GetInvitationDashboardStatsQuery>(
+      GetInvitationDashboardStatsDocument
+    );
 
     let expiringInvitations: any[] = [];
     if (includeExpiring) {
-      const { data: expiringData } = await adminApolloClient.query({
-        query: GetExpiringInvitationsDocument,
-        variables: {
+      const expiringData = await executeTypedQuery<GetExpiringInvitationsQuery>(
+        GetExpiringInvitationsDocument,
+        {
           daysUntilExpiry: `${daysUntilExpiry} days`,
-        },
-      });
+        }
+      );
       expiringInvitations = expiringData.userInvitations;
     }
 
@@ -76,4 +73,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

@@ -1,7 +1,6 @@
 // app/api/update-user-role/route.ts
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-
 import { withAuth } from "@/lib/auth/api-auth";
 import { getPermissionsForRole } from "@/lib/auth/permissions";
 

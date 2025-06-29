@@ -3,8 +3,8 @@
  * Provides security validation for JWT tokens and claims
  */
 
-import { Role, isValidUserRole, getAllowedRoles } from './permissions';
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from '@/lib/security/audit/logger';
+import { Role, isValidUserRole, getAllowedRoles } from './permissions';
 
 export interface JWTClaims {
   'x-hasura-user-id'?: string;

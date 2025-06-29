@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,13 +42,13 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { useUserRole } from "@/hooks/use-user-role";
-import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 import { 
   GetUserProfileSettingsDocument,
   UpdateUserProfileDocument
 } from "@/domains/users";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useUserRole } from "@/hooks/use-user-role";
+import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 
 interface ProfileForm {
   firstName: string;

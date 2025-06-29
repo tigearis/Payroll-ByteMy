@@ -1,17 +1,18 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-
+import { 
+  GetUserByIdCompleteDocument,
+  GetUserByClerkIdCompleteDocument,
+  type GetUserByIdCompleteQuery,
+  type GetUserByClerkIdCompleteQuery,
+} from "@/domains/users/graphql/generated/graphql";
 import {
   getUserPermissions,
   canAssignRole,
   UserRole,
   updateUserRole,
 } from "@/domains/users/services/user-sync";
-import { 
-  GetUserByIdCompleteDocument,
-  GetUserByClerkIdCompleteDocument 
-} from "@/domains/users/graphql/generated/graphql";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuthParams } from "@/lib/auth/api-auth";
 import {
   auditLogger,
@@ -90,37 +91,24 @@ export async function GET(
     console.log(`👤 Fetching user details for: ${targetId}`);
 
     let userData;
-    let errors;
 
     // Determine if ID is UUID (database ID) or Clerk ID
     if (isUUID(targetId)) {
       // Database ID
-      const result = await adminApolloClient.query({
-        query: GetUserByIdCompleteDocument,
-        variables: { id: targetId },
-        fetchPolicy: "network-only",
-        errorPolicy: "all",
-      });
-      userData = result.data?.userById;
-      errors = result.errors;
+      const result = await executeTypedQuery<GetUserByIdCompleteQuery>(
+        GetUserByIdCompleteDocument,
+        { id: targetId },
+        { fetchPolicy: "network-only" }
+      );
+      userData = result?.userById;
     } else {
       // Clerk ID
-      const result = await adminApolloClient.query({
-        query: GetUserByClerkIdCompleteDocument,
-        variables: { clerkId: targetId },
-        fetchPolicy: "network-only",
-        errorPolicy: "all",
-      });
-      userData = result.data?.users?.[0];
-      errors = result.errors;
-    }
-
-    if (errors) {
-      console.error("GraphQL errors:", errors);
-      return NextResponse.json(
-        { error: "Failed to fetch user", details: errors },
-        { status: 500 }
+      const result = await executeTypedQuery<GetUserByClerkIdCompleteQuery>(
+        GetUserByClerkIdCompleteDocument,
+        { clerkId: targetId },
+        { fetchPolicy: "network-only" }
       );
+      userData = result?.users?.[0];
     }
 
     if (!userData) {

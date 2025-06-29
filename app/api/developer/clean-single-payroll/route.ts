@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { withAuth } from "@/lib/auth/api-auth";
 
 export const POST = withAuth(

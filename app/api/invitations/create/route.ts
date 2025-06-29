@@ -1,12 +1,17 @@
 // app/api/invitations/create/route.ts
-import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { CreateUserInvitationDocument, ValidateInvitationRolePermissionsDocument } from "@/domains/auth/graphql/generated/graphql";
+import { 
+  CreateUserInvitationDocument, 
+  ValidateInvitationRolePermissionsDocument,
+  type CreateUserInvitationMutation,
+  type ValidateInvitationRolePermissionsQuery
+} from "@/domains/auth/graphql/generated/graphql";
+import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
-import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
 import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/permissions";
+import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
 
 const CreateInvitationSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -39,13 +44,13 @@ async function POST(request: NextRequest) {
       const { email, firstName, lastName, role, managerId, metadata } = validatedData;
 
       // 1. Validate role assignment permissions
-      const { data: permissionData } = await adminApolloClient.query({
-        query: ValidateInvitationRolePermissionsDocument,
-        variables: {
+      const permissionData = await executeTypedQuery<ValidateInvitationRolePermissionsQuery>(
+        ValidateInvitationRolePermissionsDocument,
+        {
           invitedRole: role,
           invitedBy: databaseUserId
         }
-      });
+      );
 
       // Check if user has permission to assign this role
       const userRoles = permissionData.users[0]?.assignedRoles || [];
@@ -105,9 +110,9 @@ async function POST(request: NextRequest) {
       });
 
       // 3. Store invitation in database with enhanced status tracking
-      const { data: invitationData } = await adminApolloClient.mutate({
-        mutation: CreateUserInvitationDocument,
-        variables: {
+      const invitationData = await executeTypedMutation<CreateUserInvitationMutation>(
+        CreateUserInvitationDocument,
+        {
           email,
           firstName,
           lastName,
@@ -121,7 +126,7 @@ async function POST(request: NextRequest) {
           status: "pending", // Legacy status field
           invitationStatus: "pending" // New enhanced status enum
         }
-      });
+      );
 
       if (!invitationData?.insertUserInvitation) {
         throw new Error("Failed to create invitation in database");

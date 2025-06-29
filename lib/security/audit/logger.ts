@@ -5,18 +5,17 @@
  */
 
 import "server-only";
+import { gql } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
-import { gql } from "@apollo/client";
-import { extractClientInfo as getClientInfo } from "@/lib/utils/client-info";
-
-import { adminApolloClient } from "@/lib/apollo/unified-client";
 import {
   LogAuditEventDocument,
   LogAuthEventDocument,
   type LogAuditEventMutationVariables,
   type LogAuthEventMutationVariables,
 } from "@/domains/audit/graphql/generated/graphql";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { extractClientInfo as getClientInfo } from "@/lib/utils/client-info";
 
 // ================================
 // TYPES AND ENUMS

@@ -1,10 +1,10 @@
 import { useMutation } from "@apollo/client";
 import { toast } from "sonner";
+import { useCachedQuery } from "@/hooks/use-strategic-query";
 import {
   ResendUserInvitationDocument,
   GetInvitationByIdDocument,
 } from "../graphql/generated/graphql";
-import { useCachedQuery } from "@/hooks/use-strategic-query";
 
 export interface ResendInvitationData {
   invitationId: string;

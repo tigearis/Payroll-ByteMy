@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useUserManagement } from "./use-user-management";
 
 interface UseStaffManagementOptions {

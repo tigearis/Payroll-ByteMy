@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,6 +53,14 @@ const AVAILABLE_PERMISSIONS = [
 ];
 
 export function APIKeyManager() {
+  return (
+    <PermissionGuard permission="admin:manage">
+      <APIKeyManagerInner />
+    </PermissionGuard>
+  );
+}
+
+function APIKeyManagerInner() {
   const { hasAdminAccess } = useAuthContext();
   const [apiKeys, setApiKeys] = useState<APIKey[]>([]);
   const [isLoading, setIsLoading] = useState(true);

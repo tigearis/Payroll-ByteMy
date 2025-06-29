@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-
 import { useAuthContext, type Role as UserRole } from "@/lib/auth";
 
 interface PermissionGuardProps {

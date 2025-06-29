@@ -1,31 +1,14 @@
 // app/api/payrolls/schedule/route.ts
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
+import { 
+  GeneratePayrollDatesQueryDocument,
+  type GeneratePayrollDatesQueryQuery 
+} from "@/domains/payrolls/graphql/generated/graphql";
 
-export async function GET(req: NextRequest) {
+export const GET = withAuth(async (req: NextRequest, { session }) => {
   try {
-    // Check authentication with Clerk
-    const { userId, sessionClaims } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Check user role
-    const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const userRole = claims?.["x-hasura-default-role"];
-
-    if (
-      !["developer", "org_admin", "manager", "consultant"].includes(userRole)
-    ) {
-      return NextResponse.json(
-        { error: "Insufficient permissions" },
-        { status: 403 }
-      );
-    }
-
     // Get query parameters
     const url = new URL(req.url);
     const payrollId = url.searchParams.get("payrollId");
@@ -52,18 +35,17 @@ export async function GET(req: NextRequest) {
 
     try {
       // Generate payroll dates using Hasura function
-      const result = await adminApolloClient.query({
-        query: GeneratePayrollDatesQueryDocument,
-        variables: {
+      const result = await executeTypedQuery<GeneratePayrollDatesQueryQuery>(
+        GeneratePayrollDatesQueryDocument,
+        {
           payrollId,
           startDate: startDate.split('T')[0], // Ensure date format
           endDate: calculatedEndDate,
           maxDates: parseInt(maxDates),
-        },
-        fetchPolicy: "no-cache",
-      });
+        }
+      );
 
-      const generatedDates = result.data?.generatePayrollDates || [];
+      const generatedDates = result.generatePayrollDates || [];
 
       return NextResponse.json({
         success: true,
@@ -100,4 +82,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, { allowedRoles: ["consultant", "manager", "org_admin", "developer"] });

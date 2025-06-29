@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { useState } from "react";
 import { toast } from "sonner";
-import { useAuthContext } from "@/lib/auth";
-
 import {
   UpdateUserDocument,
 } from "@/domains/users/graphql/generated/graphql";
+import { useAuthContext } from "@/lib/auth";
+
 
 export interface UserRoleInfo {
   userId: string;

@@ -1,15 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useState, useMemo, useEffect } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Filter,
-  Clock,
-  AlertTriangle,
-  CheckCircle,
-} from "lucide-react";
+import { useQuery } from "@apollo/client";
 import {
   format,
   addMonths,
@@ -21,10 +12,18 @@ import {
   startOfWeek,
   endOfWeek,
 } from "date-fns";
-import { useQuery } from "@apollo/client";
-import { GetPayrollsByMonthDocument } from "../graphql/generated/graphql";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+} from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import type React from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -33,6 +32,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GetPayrollsByMonthDocument } from "../graphql/generated/graphql";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+
 
 // Import generated GraphQL operations from the payrolls domain
 
@@ -90,6 +92,12 @@ type Payroll = any;
 type Holiday = any;
 
 export function PayrollSchedule() {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('payroll:read')) {
+    return null;
+  }
+
   const [currentView, setCurrentView] = useState<CalendarView>("month");
   const [weekOrientation, setWeekOrientation] =
     useState<WeekOrientation>("days-as-rows");

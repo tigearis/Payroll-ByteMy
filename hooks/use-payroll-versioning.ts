@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { toast } from "sonner";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { AddPayrollNoteDocument } from "@/domains/notes/graphql/generated/graphql";
 import {
   UpdatePayrollDocument,
   CreatePayrollDocument,
@@ -8,7 +8,7 @@ import {
   GetPayrollVersionsDocument,
   GetLatestPayrollVersionDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import { AddPayrollNoteDocument } from "@/domains/notes/graphql/generated/graphql";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 /**
  * Payroll Versioning Hook - Complete Field Requirements
@@ -16,23 +16,23 @@ import { AddPayrollNoteDocument } from "@/domains/notes/graphql/generated/graphq
  * When creating a new payroll version, ALL fields must be properly handled:
  *
  * REQUIRED FIELDS (will cause errors if missing):
- * - client_id: Must exist (inherited from current payroll)
- * - cycle_id: Must exist (inherited from current payroll)
- * - processing_days_before_eft: Defaults to 4 if null
- * - created_by_user_id: Must be provided (current user ID)
- * - employee_count: Defaults to 0 if null
- * - go_live_date: Must be provided
+ * - clientId: Must exist (inherited from current payroll)
+ * - cycleId: Must exist (inherited from current payroll)
+ * - processingDaysBeforeEft: Defaults to 4 if null
+ * - createdByUserId: Must be provided (current user ID)
+ * - employeeCount: Defaults to 0 if null
+ * - goLiveDate: Must be provided
  *
  * DATE REGENERATION LOGIC:
- * - If go_live_date is in the past or today:
+ * - If goLiveDate is in the past or today:
  *   * Supersede old payroll from TODAY
  *   * Delete old payroll dates from TODAY forward
  *   * Generate new payroll dates from TODAY forward
  *
- * - If go_live_date is in the future:
- *   * Supersede old payroll from go_live_date
- *   * Delete old payroll dates from go_live_date forward
- *   * Generate new payroll dates from go_live_date forward
+ * - If goLiveDate is in the future:
+ *   * Supersede old payroll from goLiveDate
+ *   * Delete old payroll dates from goLiveDate forward
+ *   * Generate new payroll dates from goLiveDate forward
  *
  * USAGE EXAMPLE:
  * ```typescript
@@ -43,16 +43,18 @@ import { AddPayrollNoteDocument } from "@/domains/notes/graphql/generated/graphq
  *     currentPayroll,
  *     {
  *       name: "Updated Payroll Name",
- *       employee_count: 25,
- *       processing_days_before_eft: 3
+ *       employeeCount: 25,
+ *       processingDaysBeforeEft: 3
  *     },
- *     "2024-02-15", // go_live_date
- *     "schedule_change" // version_reason
+ *     "2024-02-15", // goLiveDate
+ *     "schedule_change" // versionReason
  *   );
  *
  *   const result = await savePayrollEdit(input);
  *   if (result.success) {
- *     console.log(`Version ${result.versionNumber} created with ${result.employeeCount} employees`);
+ *     console.log(
+ *       `Version ${result.versionNumber} created with ${result.employeeCount} employees`
+ *     );
  *   }
  * };
  * ```
@@ -61,15 +63,15 @@ interface SavePayrollEditInput {
   currentPayroll: any;
   editedFields: {
     name?: string;
-    client_id?: string;
-    cycle_id?: string;
-    date_type_id?: string;
-    date_value?: number;
-    primary_consultant_user_id?: string;
-    backup_consultant_user_id?: string;
-    manager_user_id?: string;
-    processing_days_before_eft?: number;
-    employee_count?: number;
+    clientId?: string;
+    cycleId?: string;
+    dateTypeId?: string;
+    dateValue?: number;
+    primaryConsultantUserId?: string;
+    backupConsultantUserId?: string;
+    managerUserId?: string;
+    processingDaysBeforeEft?: number;
+    employeeCount?: number;
     status?: string;
   };
   goLiveDate: string;
@@ -127,7 +129,7 @@ export function usePayrollVersioning() {
           "Payroll must have a client assigned before creating a version"
         );
       }
-      if (!currentPayroll.cycle_id) {
+      if (!currentPayroll.cycleId) {
         throw new Error(
           "Payroll must have a cycle assigned before creating a version"
         );
@@ -140,8 +142,8 @@ export function usePayrollVersioning() {
 
       // Ensure processing_days_before_eft has a valid value (matches database NOT NULL constraint)
       const processingDaysBeforeEft =
-        editedFields.processing_days_before_eft !== undefined
-          ? editedFields.processing_days_before_eft
+        editedFields.processingDaysBeforeEft !== undefined
+          ? editedFields.processingDaysBeforeEft
           : currentPayroll.processing_days_before_eft || 4; // Default to 4 if null
 
       if (
@@ -153,8 +155,8 @@ export function usePayrollVersioning() {
 
       // Ensure employee_count has a valid value
       const employeeCount =
-        editedFields.employee_count !== undefined
-          ? editedFields.employee_count
+        editedFields.employeeCount !== undefined
+          ? editedFields.employeeCount
           : currentPayroll.employee_count || 0; // Default to 0 if null
 
       // Determine date regeneration logic based on go_live_date
@@ -220,32 +222,32 @@ export function usePayrollVersioning() {
         version_number: (currentPayroll.version_number || 1) + 1,
         go_live_date: goLiveDate,
         name: editedFields.name || currentPayroll.name,
-        client_id: editedFields.client_id || currentPayroll.client_id, // This is now guaranteed to exist
-        cycle_id: editedFields.cycle_id || currentPayroll.cycle_id, // This is now guaranteed to exist
-        date_type_id:
-          editedFields.date_type_id || currentPayroll.date_type_id || null,
-        date_value:
-          editedFields.date_value !== undefined
-            ? editedFields.date_value
-            : currentPayroll.date_value || null,
-        primary_consultant_user_id:
-          editedFields.primary_consultant_user_id !== undefined
-            ? editedFields.primary_consultant_user_id
-            : currentPayroll.primary_consultant_user_id || null,
-        backup_consultant_user_id:
-          editedFields.backup_consultant_user_id !== undefined
-            ? editedFields.backup_consultant_user_id
-            : currentPayroll.backup_consultant_user_id || null,
-        manager_user_id:
-          editedFields.manager_user_id !== undefined
-            ? editedFields.manager_user_id
-            : currentPayroll.manager_user_id || null,
-        processing_days_before_eft: processingDaysBeforeEft,
+        clientId: editedFields.clientId || currentPayroll.clientId, // This is now guaranteed to exist
+        cycleId: editedFields.cycleId || currentPayroll.cycleId, // This is now guaranteed to exist
+        dateTypeId:
+          editedFields.dateTypeId || currentPayroll.dateTypeId || null,
+        dateValue:
+          editedFields.dateValue !== undefined
+            ? editedFields.dateValue
+            : currentPayroll.dateValue || null,
+        primaryConsultantUserId:
+          editedFields.primaryConsultantUserId !== undefined
+            ? editedFields.primaryConsultantUserId
+            : currentPayroll.primaryConsultantUserId || null,
+        backupConsultantUserId:
+          editedFields.backupConsultantUserId !== undefined
+            ? editedFields.backupConsultantUserId
+            : currentPayroll.backupConsultantUserId || null,
+        managerUserId:
+          editedFields.managerUserId !== undefined
+            ? editedFields.managerUserId
+            : currentPayroll.managerUserId || null,
+        processingDaysBeforeEft: processingDaysBeforeEft,
         status:
           editedFields.status || currentPayroll.status || "Implementation", // Use provided status or fallback
         version_reason: versionReason,
         created_by_user_id: createdByUserId, // Now required
-        employee_count: employeeCount, // Now properly handled with default 0
+        employeeCount: employeeCount, // Now properly handled with default 0
       };
 
       console.log("📋 New version data:", newVersionData);
@@ -358,11 +360,15 @@ export function usePayrollVersioning() {
   };
 
   // Helper function to create processing notes
-  const addProcessingNote = async (payrollId: string, content: string, isImportant = false) => {
+  const addProcessingNote = async (
+    payrollId: string,
+    content: string,
+    isImportant = false
+  ) => {
     if (!currentUserId) {
       return { success: false, error: "User ID is required" };
     }
-    
+
     try {
       const result = await createProcessingNotes({
         variables: {
@@ -427,12 +433,7 @@ export function requiresVersioning(
   originalPayroll: any,
   changes: any
 ): boolean {
-  const versioningFields = [
-    "cycle_id",
-    "date_type_id",
-    "date_value",
-    "client_id",
-  ];
+  const versioningFields = ["cycleId", "dateTypeId", "dateValue", "clientId"];
 
   return versioningFields.some(field => {
     const originalValue = originalPayroll[field];
@@ -443,16 +444,16 @@ export function requiresVersioning(
 
 // Helper function to get version reason based on changes
 export function getVersionReason(changes: any): string {
-  if (changes.cycle_id || changes.date_type_id || changes.date_value) {
+  if (changes.cycleId || changes.dateTypeId || changes.dateValue) {
     return "schedule_change";
   }
-  if (changes.client_id) {
+  if (changes.clientId) {
     return "client_change";
   }
   if (
-    changes.primary_consultant_user_id ||
-    changes.backup_consultant_user_id ||
-    changes.manager_user_id
+    changes.primaryConsultantUserId ||
+    changes.backupConsultantUserId ||
+    changes.managerUserId
   ) {
     return "consultant_change";
   }

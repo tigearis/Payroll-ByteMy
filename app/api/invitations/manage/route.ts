@@ -1,40 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
+import {
+  GetInvitationsWithStatusDocument,
+  ResendInvitationEnhancedDocument,
+  RevokeInvitationDocument,
+  type GetInvitationsWithStatusQuery,
+  type ResendInvitationEnhancedMutation,
+  type RevokeInvitationMutation,
+} from "@/domains/users/graphql/generated/graphql";
 import {
   auditLogger,
   LogLevel,
   SOC2EventType,
   LogCategory,
 } from "@/lib/security/audit/logger";
-import {
-  GetInvitationsWithStatusDocument,
-  ResendInvitationEnhancedDocument,
-  RevokeInvitationDocument,
-} from "@/domains/users/graphql/generated/graphql";
 
-// GraphQL operations for invitation management
-
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request, { session }) => {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { searchParams } = new URL(request.url);
     const statuses = searchParams.get("statuses")?.split(",") || ["pending"];
     const limit = parseInt(searchParams.get("limit") || "50");
     const offset = parseInt(searchParams.get("offset") || "0");
 
-    const { data } = await adminApolloClient.query({
-      query: GetInvitationsWithStatusDocument,
-      variables: {
+    const data = await executeTypedQuery<GetInvitationsWithStatusQuery>(
+      GetInvitationsWithStatusDocument,
+      {
         statuses,
         limit,
         offset,
-      },
-    });
+      }
+    );
 
     // Log audit event
     await auditLogger.logSOC2Event({
@@ -43,7 +39,7 @@ export async function GET(request: NextRequest) {
       category: LogCategory.SYSTEM_ACCESS,
       complianceNote: "User invitation list viewed",
       success: true,
-      userId,
+      userId: session.databaseId,
       resourceType: "user_invitation",
       action: "list_view",
       metadata: { statuses, limit, offset },
@@ -63,15 +59,10 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, { allowedRoles: ["manager", "org_admin", "developer"] });
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request, { session }) => {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body = await request.json();
     const { action, invitationId, ...params } = body;
 
@@ -89,14 +80,14 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const { data: revokeData } = await adminApolloClient.mutate({
-          mutation: RevokeInvitationDocument,
-          variables: {
+        const revokeData = await executeTypedMutation<RevokeInvitationMutation>(
+          RevokeInvitationDocument,
+          {
             invitationId,
             revokeReason,
-            revokedBy: userId,
-          },
-        });
+            revokedBy: session.databaseId,
+          }
+        );
         result = revokeData?.updateUserInvitationById;
         soc2EventType = SOC2EventType.USER_UPDATED;
         complianceNote = "User invitation revoked";
@@ -111,15 +102,15 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const { data: resendData } = await adminApolloClient.mutate({
-          mutation: ResendInvitationEnhancedDocument,
-          variables: {
+        const resendData = await executeTypedMutation<ResendInvitationEnhancedMutation>(
+          ResendInvitationEnhancedDocument,
+          {
             invitationId,
             newExpiresAt,
             newClerkTicket,
             newClerkInvitationId,
-          },
-        });
+          }
+        );
         result = resendData?.updateUserInvitationById;
         soc2EventType = SOC2EventType.USER_UPDATED;
         complianceNote = "User invitation resent";
@@ -136,7 +127,7 @@ export async function POST(request: NextRequest) {
       category: LogCategory.SYSTEM_ACCESS,
       complianceNote,
       success: true,
-      userId,
+      userId: session.databaseId,
       resourceType: "user_invitation",
       resourceId: invitationId,
       action: action,
@@ -156,4 +147,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, { allowedRoles: ["manager", "org_admin", "developer"] });

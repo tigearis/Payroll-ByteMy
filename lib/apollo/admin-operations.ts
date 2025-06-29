@@ -6,18 +6,17 @@
  * unified client approach.
  */
 
-import { auth } from "@clerk/nextjs/server";
 import { gql } from "@apollo/client";
-
-import { adminApolloClient } from "./unified-client";
-import { ApiResponses } from "@/lib/api-responses";
+import { auth } from "@clerk/nextjs/server";
+import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
   CreateUserDocument,
   UpdateUserDocument,
   GetUserByClerkIdDocument,
   GetUserByEmailDocument,
 } from "@/domains/users/graphql/generated/graphql";
-import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { ApiResponses } from "@/lib/api-responses";
+import { adminApolloClient } from "./unified-client";
 
 // Define allowed roles for admin operations
 const ADMIN_ROLES = ["developer", "org_admin"];

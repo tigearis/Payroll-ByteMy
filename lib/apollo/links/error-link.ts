@@ -22,8 +22,6 @@
 
 import { ApolloLink } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
-
-import type { UnifiedClientOptions } from "../types";
 import {
   handleGraphQLError,
   isPermissionError,
@@ -31,6 +29,7 @@ import {
   getSimpleErrorMessage,
   type GraphQLErrorDetails,
 } from "@/lib/utils/handle-graphql-error";
+import type { UnifiedClientOptions } from "../types";
 
 /**
  * Enhanced error handling using comprehensive error handler

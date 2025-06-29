@@ -5,8 +5,7 @@ import { useQuery, useMutation } from "@apollo/client";
 import { Edit, AlertTriangle, Save, X, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useCurrentUser } from "@/hooks/use-current-user";
-
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -25,17 +24,16 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 
 // Use domain GraphQL operations
-import { NoteFromGraphQL, NotesListWithAddProps } from "@/domains/notes/types";
 import {
   GetNotesExtractedQuery,
   GetNotesExtractedDocument,
   UpdateNoteExtractedDocument,
   AddNoteExtractedDocument,
 } from "@/domains/notes/graphql/generated/graphql";
-
+import { NoteFromGraphQL, NotesListWithAddProps } from "@/domains/notes/types";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { safeFormatDateTime } from "@/lib/utils/date-utils";
 
 export function NotesList({

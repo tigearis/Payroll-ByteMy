@@ -1,3 +1,4 @@
+import { withAuth } from "@/lib/auth/api-auth";
 import { NextResponse } from "next/server";
 
 // This is a fallback route used during the build process

@@ -1,7 +1,7 @@
 import "server-only";
 import { DocumentNode } from '@apollo/client';
-import { serverApolloClient } from './unified-client';
 import { getHasuraToken } from '@/lib/auth/token-utils';
+import { serverApolloClient } from './unified-client';
 
 /**
  * Apollo Query Helpers for Server-Side Operations

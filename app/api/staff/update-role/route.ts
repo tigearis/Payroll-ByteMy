@@ -1,27 +1,20 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-
-import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
-
-// Import domain operations
 import { 
   UpdateStaffRoleDocument, 
-  GetUserClerkIdDocument 
+  GetUserClerkIdDocument,
+  type UpdateStaffRoleMutation,
+  type GetUserClerkIdQuery
 } from "@/domains/users/graphql/generated/graphql";
 
+// Import domain operations
+
 export const POST = withAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, { session }) => {
     try {
       console.log("🔧 API called: /api/staff/update-role");
-
-      const { userId } = await auth();
-      if (!userId) {
-        return NextResponse.json(
-          { error: "Not authenticated" },
-          { status: 401 }
-        );
-      }
 
       const body = await req.json();
       const { staffId, newRole } = body;
@@ -36,11 +29,10 @@ export const POST = withAuth(
       console.log(`🔄 Updating staff ${staffId} role to ${newRole}`);
 
       // First, get the user's Clerk ID from the database
-      const { data: userData } = await adminApolloClient.query({
-        query: GetUserClerkIdDocument,
-        variables: { id: staffId },
-        fetchPolicy: "no-cache",
-      });
+      const userData = await executeTypedQuery<GetUserClerkIdQuery>(
+        GetUserClerkIdDocument,
+        { id: staffId }
+      );
 
       const user = userData?.userById;
       if (!user) {
@@ -52,13 +44,13 @@ export const POST = withAuth(
 
       // Update database first
       console.log("📝 Updating database...");
-      const { data: updateData } = await adminApolloClient.mutate({
-        mutation: UpdateStaffRoleDocument,
-        variables: {
+      const updateData = await executeTypedMutation<UpdateStaffRoleMutation>(
+        UpdateStaffRoleDocument,
+        {
           id: staffId,
           role: newRole,
-        },
-      });
+        }
+      );
 
       const updatedUser = updateData?.updateUserById;
       if (!updatedUser) {
@@ -90,7 +82,7 @@ export const POST = withAuth(
             privateMetadata: {
               ...clerkUser.privateMetadata,
               lastRoleUpdateAt: new Date().toISOString(),
-              updatedBy: userId,
+              updatedBy: session.userId,
             },
           });
 
@@ -122,6 +114,6 @@ export const POST = withAuth(
     }
   },
   {
-    requiredRole: "manager",
+    allowedRoles: ["manager", "org_admin", "developer"],
   }
 );

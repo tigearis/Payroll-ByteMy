@@ -1,11 +1,11 @@
 // components/export-pdf.tsx
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
 import { useQuery } from "@apollo/client";
 import { format, parseISO } from "date-fns";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
-
 import { Button } from "@/components/ui/button";
-
 import {
   GetPayrollDatesDocument,
   GetPayrollDatesQuery,
@@ -18,6 +18,11 @@ interface ExportPdfProps {
 }
 
 export function ExportPdf({ payrollId }: ExportPdfProps) {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('payroll:export')) {
+    return null;
+  }
   const { data } = useQuery(GetPayrollDatesDocument, {
     variables: { payrollId },
     skip: !payrollId,

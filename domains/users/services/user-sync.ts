@@ -1,7 +1,6 @@
 // lib/user-sync.ts
 import { gql } from "@apollo/client";
 import { clerkClient } from "@clerk/nextjs/server";
-
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/permissions";
 

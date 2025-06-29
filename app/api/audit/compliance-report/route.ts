@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-
-import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { withAuth } from "@/lib/auth/api-auth";
 import {
-  ComplianceAuditLogsDocument
+  ComplianceAuditLogsDocument,
+  type ComplianceAuditLogsQuery
 } from "@/domains/audit/graphql/generated/graphql";
+import { executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
 import {
   auditLogger,
   LogLevel,
@@ -65,13 +65,13 @@ export const POST = withAuth(
       };
 
       // Generate report based on type - using available audit log data
-      const auditResult = await adminApolloClient.query({
-        query: ComplianceAuditLogsDocument,
-        variables: { startDate, endDate },
-      });
+      const auditData = await executeTypedQuery<ComplianceAuditLogsQuery>(
+        ComplianceAuditLogsDocument,
+        { startDate, endDate }
+      );
 
-      reportData.auditLogs = auditResult.data.auditLogs;
-      reportData.auditSummary = { aggregate: { count: auditResult.data.auditLogs.length } };
+      reportData.auditLogs = auditData.auditLogs;
+      reportData.auditSummary = { aggregate: { count: auditData.auditLogs.length } };
 
       // Generate basic summary for all report types
       summary.totalAuditLogs = reportData.auditSummary.aggregate.count;

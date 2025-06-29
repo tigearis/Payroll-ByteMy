@@ -3,8 +3,8 @@
  * Helper functions for using design tokens in components
  */
 
-import { tokens } from "./tokens";
 import { cn } from "@/lib/utils";
+import { tokens } from "./tokens";
 
 // Re-export cn for convenience
 export { cn };

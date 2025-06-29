@@ -2,7 +2,8 @@
 "use client";
 
 import React, { useState } from "react";
-
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -46,6 +47,12 @@ const payrollTaxThresholds: Record<string, number> = {
 };
 
 export function AustralianTaxCalculator() {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('payroll:read')) {
+    return null;
+  }
+
   const [state, setState] = useState<string>("NSW");
   const [annualPayroll, setAnnualPayroll] = useState<number | "">("");
   const [payrollTax, setPayrollTax] = useState<number>(0);

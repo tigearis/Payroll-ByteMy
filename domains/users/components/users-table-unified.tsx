@@ -1,5 +1,7 @@
 "use client";
 
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
 import {
   Shield,
   UserCheck,
@@ -9,7 +11,6 @@ import {
   Mail,
   Calendar,
 } from "lucide-react";
-
 import {
   UnifiedDataTable,
   DataTableColumn,
@@ -102,6 +103,11 @@ export function UsersTableUnified({
   onEditUser,
   onViewUser,
 }: UsersTableProps) {
+  const { hasPermission } = useEnhancedPermissions();
+  
+  if (!hasPermission('staff:read')) {
+    return null;
+  }
   // Create cell renderers with combined status configs
   const cellRenderers = createCellRenderers<User>({
     ...userStatusConfig,

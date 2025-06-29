@@ -3,7 +3,6 @@
 
 import { ApolloProvider } from "@apollo/client";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
-
 import { StrictDatabaseGuard } from "@/components/auth/strict-database-guard";
 import { TokenRefreshBoundary } from "@/components/auth/token-refresh-boundary";
 import { ErrorBoundary } from "@/components/error-boundary";

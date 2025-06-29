@@ -1,6 +1,6 @@
 import React from "react";
-import { PermissionDenied } from "./permission-denied";
 import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
+import { PermissionDenied } from "./permission-denied";
 
 interface DeveloperOnlyProps {
   children: React.ReactNode;

@@ -1,12 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   CheckCircle, 
   XCircle, 
@@ -19,6 +13,12 @@ import {
   Copy,
   ExternalLink
 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface DebugData {
   timestamp: string;

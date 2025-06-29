@@ -2,7 +2,6 @@
 
 import { useSubscription, useQuery } from "@apollo/client";
 import { formatDistanceToNow, format, subHours, subDays } from "date-fns";
-import { useMemo, useState, useEffect } from "react";
 import {
   AlertTriangle,
   Shield,
@@ -17,7 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
+import { useMemo, useState, useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,9 +34,9 @@ import {
   FailedOperationsStreamDocument,
   CriticalDataAccessStreamDocument,
 } from "@/domains/audit/graphql/generated/graphql";
-import { useAuthContext } from "@/lib/auth";
-import { useSecureSubscription } from "@/hooks/use-subscription-permissions";
 import { useStrategicQuery } from "@/hooks/use-strategic-query";
+import { useSecureSubscription } from "@/hooks/use-subscription-permissions";
+import { useAuthContext } from "@/lib/auth";
 
 export default function SecurityDashboard() {
   // State for WebSocket connection status

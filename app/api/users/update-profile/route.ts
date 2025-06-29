@@ -1,6 +1,5 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
-
 import { ApiResponses, handleApiError } from "@/lib/api-responses";
 
 interface UpdateProfileRequest {

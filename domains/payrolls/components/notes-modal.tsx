@@ -1,12 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { toast } from "sonner";
 import { Edit, Save, X } from "lucide-react";
-
-import { UpdatePayrollDateNotesDocument } from "@/domains/payrolls/graphql/generated/graphql";
-
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,8 +14,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { UpdatePayrollDateNotesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 interface Note {
   id: string;

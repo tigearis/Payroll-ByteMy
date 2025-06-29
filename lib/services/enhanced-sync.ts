@@ -6,10 +6,10 @@
 
 import { gql } from '@apollo/client';
 import { clerkClient } from '@clerk/nextjs/server';
+import type { UserRole } from '@/domains/users/services/user-sync';
 import { adminApolloClient } from '@/lib/apollo/unified-client';
 import { getPermissionsForRole } from '@/lib/auth/permissions';
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from '@/lib/security/audit/logger';
-import type { UserRole } from '@/domains/users/services/user-sync';
 
 // ================================
 // TYPES AND INTERFACES

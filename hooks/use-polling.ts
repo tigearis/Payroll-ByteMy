@@ -1,10 +1,10 @@
 // hooks/usePolling.ts
-import { useEffect, useRef } from "react";
 import {
   ApolloQueryResult,
   OperationVariables,
   QueryResult,
 } from "@apollo/client";
+import { useEffect, useRef } from "react";
 
 /**
  * Options for the useSmartPolling hook

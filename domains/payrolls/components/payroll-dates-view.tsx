@@ -25,8 +25,6 @@ import {
 } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
-
-import { NotesModal } from "./notes-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,11 +43,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import {
   GetPayrollFamilyDatesDocument,
   GetPayrollDatesDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
+import { NotesModal } from "./notes-modal";
 // Fragment masking disabled - no longer needed
 
 interface PayrollDate {
