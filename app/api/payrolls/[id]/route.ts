@@ -1,10 +1,9 @@
 // app/api/payrolls/[id]/route.ts
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import { GetPayrollByIdDocument as GET_PAYROLL_BY_ID } from "@/domains/payrolls";
-import { serverApolloClient } from "@/lib/apollo/unified-client";
+import { GetPayrollByIdDocument as GET_PAYROLL_BY_ID, type GetPayrollByIdQuery } from "@/domains/payrolls";
 import { withAuthParams } from "@/lib/auth/api-auth";
+import { executeTypedQuery } from "@/lib/apollo/query-helpers";
 
 export const GET = withAuthParams(
   async (
@@ -19,18 +18,11 @@ export const GET = withAuthParams(
         return NextResponse.json({ error: "Missing ID" }, { status: 400 });
       }
 
-      // Get Clerk authentication token
-      const authInstance = await auth();
-      const token = await authInstance.getToken({ template: "hasura" });
-
-      // Get Apollo Client
-      const client = serverApolloClient;
-
-      const { data } = await client.query({
-        query: GET_PAYROLL_BY_ID,
-        variables: { id },
-        context: { headers: { authorization: `Bearer ${token}` } },
-      });
+      // Execute authenticated GraphQL query with full type safety
+      const data = await executeTypedQuery<GetPayrollByIdQuery>(
+        GET_PAYROLL_BY_ID,
+        { id }
+      );
 
       if (!data.payrollById) {
         return NextResponse.json({ error: "Not Found" }, { status: 404 });

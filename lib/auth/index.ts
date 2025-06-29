@@ -22,5 +22,8 @@ export {
   sanitizeUserRole
 } from './permissions';
 
+// Server-side token utilities (server-only exports)
+// These should be imported directly from './token-utils' in server contexts
+
 // Re-export commonly used Clerk hooks for convenience
 export { useAuth, useUser } from '@clerk/nextjs';
