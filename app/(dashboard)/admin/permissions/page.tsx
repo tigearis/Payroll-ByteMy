@@ -11,10 +11,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { GetUsersDocument } from '@/domains/users/graphql/generated/graphql';
-import { useAuthContext } from '@/lib/auth/enhanced-auth-context';
+import { useAuthContext, migration } from '@/lib/auth';
 
 export default function PermissionsAdminPage() {
-  const { hasPermission: _hasPermission } = useAuthContext();
+  const { userRole } = useAuthContext();
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -36,7 +36,7 @@ export default function PermissionsAdminPage() {
   const selectedUser = users.find(u => u.id === selectedUserId);
 
   return (
-    <PermissionGuard permission="admin:manage" fallback={
+    <PermissionGuard role="org_admin" fallback={
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="p-6">

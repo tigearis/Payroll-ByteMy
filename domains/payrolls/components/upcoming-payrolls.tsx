@@ -2,7 +2,7 @@
 "use client";
 
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
+import { useEnhancedPermissions } from "@/lib/auth";
 import { useQuery } from "@apollo/client";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";

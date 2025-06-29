@@ -2,7 +2,7 @@
 "use client";
 
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
+import { useEnhancedPermissions } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, User, Mail, Shield, Users } from "lucide-react";
 import { useState, useEffect } from "react";

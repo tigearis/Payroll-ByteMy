@@ -2,7 +2,7 @@
 "use client";
 
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
+import { useEnhancedPermissions } from "@/lib/auth";
 import {
   Edit,
   MoreHorizontal,

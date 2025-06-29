@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useInvitationManagement } from "@/domains/auth";
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
+import { useEnhancedPermissions } from "@/lib/auth";
 
 
 interface Invitation {

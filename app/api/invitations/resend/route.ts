@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
-import { hasRoleLevel } from "@/lib/auth/permissions";
+import { hasRoleLevel } from "@/lib/auth/simple-permissions";
 import { 
   GetInvitationByIdDocument,
   ResendUserInvitationDocument,
@@ -13,7 +13,7 @@ import {
   type ResendUserInvitationMutation,
   type ValidateInvitationRolePermissionsQuery
 } from "@/domains/auth/graphql/generated/graphql";
-import { getPermissionsForRole, Role } from "@/lib/auth/permissions";
+import { getPermissionsForRole, Role } from "@/lib/auth/simple-permissions";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
 
 const ResendInvitationSchema = z.object({

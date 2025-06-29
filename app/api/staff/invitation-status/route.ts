@@ -1,7 +1,7 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/lib/auth/api-auth";
-import { getPermissionsForRole } from "@/lib/auth/permissions";
+import { getPermissionsForRole } from "@/lib/auth/simple-permissions";
 
 export const GET = withAuth(
   async (req: NextRequest) => {

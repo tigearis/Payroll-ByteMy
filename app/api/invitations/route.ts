@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
-import { hasRoleLevel } from "@/lib/auth/permissions";
+import { hasRoleLevel } from "@/lib/auth/simple-permissions";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
 import { 
   GetPendingInvitationsDocument,

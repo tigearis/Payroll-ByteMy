@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
 import { GetCurrentUserDocument, type GetCurrentUserQuery } from "@/domains/users/graphql/generated/graphql";
-import { sanitizeUserRole, hasRoleLevel, ROLE_HIERARCHY, Role } from "@/lib/auth/permissions";
+import { sanitizeUserRole, hasRoleLevel, ROLE_HIERARCHY, Role } from "@/lib/auth/simple-permissions";
 import { getJWTClaimsWithFallback } from "@/lib/auth/token-utils";
 
 /**

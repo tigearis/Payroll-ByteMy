@@ -1,7 +1,7 @@
 // components/export-csv.tsx
 
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
+import { useEnhancedPermissions } from "@/lib/auth";
 import { useQuery } from "@apollo/client";
 import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";

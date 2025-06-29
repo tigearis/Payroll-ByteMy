@@ -8,7 +8,7 @@ import {
 import { withAuth } from "@/lib/auth/api-auth";
 import { executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { CreateUserByEmailDocument, type CreateUserByEmailMutation } from "@/domains/users/graphql/generated/graphql";
-import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/permissions";
+import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/simple-permissions";
 import {
   auditLogger,
   LogLevel,
