@@ -123,6 +123,21 @@ async function createClerkInvitation(
 }
 
 // Secure staff creation endpoint - admin only
+// Handle CORS preflight requests
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production' 
+        ? process.env.NEXT_PUBLIC_APP_URL || 'https://payroll.app.bytemy.com.au'
+        : 'http://localhost:3000',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+      'Access-Control-Allow-Credentials': 'true',
+    },
+  });
+}
+
 export const POST = withAuth(
   async (request: NextRequest, session) => {
     console.log("🔧 =========================");
