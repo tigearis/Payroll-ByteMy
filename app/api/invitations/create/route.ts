@@ -10,7 +10,7 @@ import {
 } from "@/domains/auth/graphql/generated/graphql";
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
-import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/permissions";
+import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/simple-permissions";
 import { auditLogger, LogLevel, SOC2EventType, LogCategory } from "@/lib/security/audit/logger";
 
 const CreateInvitationSchema = z.object({

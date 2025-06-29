@@ -7,7 +7,7 @@ import { StrictDatabaseGuard } from "@/components/auth/strict-database-guard";
 import { TokenRefreshBoundary } from "@/components/auth/token-refresh-boundary";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
-import { AuthProvider } from "@/lib/auth/enhanced-auth-context";
+import { AuthProvider } from "@/lib/auth";
 import { LayoutPreferencesProvider } from "@/lib/preferences/layout-preferences";
 
 // ================================

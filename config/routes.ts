@@ -1,6 +1,6 @@
 // config/routes.ts - Centralized route configuration for middleware
 import { createRouteMatcher } from "@clerk/nextjs/server";
-import type { Role } from "@/lib/auth/permissions";
+import type { SimpleRole as Role } from "@/lib/auth/simple-permissions";
 
 // ================================
 // ROUTE MATCHERS BY ACCESS LEVEL

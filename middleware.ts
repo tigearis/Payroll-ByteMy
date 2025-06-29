@@ -1,8 +1,8 @@
 // Enhanced middleware with role-based protection and OAuth flow handling
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { routes, getRequiredRole } from "./config/routes";
-import { hasRoleLevel } from "./lib/auth/permissions";
+import { routes } from "./config/routes";
+import { hasRoleLevel, getRequiredRole } from "./lib/auth/simple-permissions";
 
 export default clerkMiddleware(
   async (auth, req) => {

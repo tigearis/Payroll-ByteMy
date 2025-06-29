@@ -1,29 +1,92 @@
-// Authentication module barrel export - CLIENT SIDE ONLY
-// This provides a clean import interface for all authentication functionality
+/**
+ * Simplified Authentication Module Exports
+ * 
+ * Clean barrel export for the simplified authentication system.
+ * Replaces the complex lib/auth/index.ts with basic auth functionality.
+ */
 
-export { 
-  useAuthContext,
-  useEnhancedAuth,
-  EnhancedAuthProvider as AuthProvider,
-  type EnhancedAuthContextType as AuthContextType,
-  type EffectivePermission,
-  type UserPermissionOverride
-} from './enhanced-auth-context';
-
+// Core authentication context and hooks
 export {
-  type Role,
-  type Permission,
-  ALL_PERMISSIONS,
-  ROLE_HIERARCHY,
-  ROLE_PERMISSIONS,
-  ROUTE_PERMISSIONS,
-  getPermissionsForRole,
+  SimpleAuthProvider as AuthProvider,
+  useSimpleAuth as useAuthContext,
+  useSimpleAuth as useEnhancedAuth,
+  type SimpleAuthContextType as AuthContextType,
+} from './simple-auth-context';
+
+// Simplified permissions and roles
+export {
+  type SimpleRole as Role,
+  SIMPLE_ROLE_HIERARCHY as ROLE_HIERARCHY,
   hasRoleLevel,
-  sanitizeUserRole
-} from './permissions';
+  isAdmin,
+  isManager,
+  isDeveloper,
+  canManageUsers,
+  canManageSystem,
+  getAccessLevels,
+  sanitizeRole,
+  getRoleDisplayName,
+  getAssignableRoles,
+  getRequiredRole,
+  isPublicRoute,
+  SIMPLE_ROUTE_REQUIREMENTS as ROUTE_REQUIREMENTS,
+} from './simple-permissions';
 
-// Server-side token utilities (server-only exports)
-// These should be imported directly from './token-utils' in server contexts
+// Client token utilities (preserved)
+export {
+  getClientToken,
+  refreshClientToken,
+  clearClientTokens,
+} from './client-token-utils';
 
-// Re-export commonly used Clerk hooks for convenience
-export { useAuth, useUser } from '@clerk/nextjs';
+// Note: Server-only token utilities (getHasuraToken, etc.) should be imported directly from './token-utils' in server contexts
+
+// Clerk re-exports for convenience
+export { useAuth as useClerkAuth, useUser } from '@clerk/nextjs';
+
+// Type utilities
+export type {
+  SimpleRole,
+  SimpleAccessLevels,
+  SimpleAuditEvent,
+  SimpleAuditLog,
+} from './simple-permissions';
+
+// Backward compatibility type aliases
+export type Permission = string; // Generic permission string
+export type EnhancedAuthContextType = SimpleAuthContextType;
+
+// Additional backward compatibility exports - reusing the same function
+export { useSimpleAuth as useEnhancedPermissions } from './simple-auth-context';
+
+/**
+ * Migration helpers for transitioning from complex to simple auth
+ */
+export const migration = {
+  // Map complex permissions to simple role checks
+  permissionToRole: {
+    'staff:read': 'manager',
+    'staff:write': 'manager', 
+    'staff:delete': 'org_admin',
+    'client:read': 'consultant',
+    'client:write': 'manager',
+    'client:delete': 'org_admin',
+    'admin:manage': 'org_admin',
+    'settings:write': 'org_admin',
+    'developer:access': 'developer',
+    'payroll:read': 'consultant',
+    'payroll:write': 'manager',
+    'audit:read': 'org_admin',
+    'security:manage': 'org_admin',
+  } as Record<string, SimpleRole>,
+  
+  // Legacy permission checker (for gradual migration)
+  hasPermission: (permission: string, userRole: SimpleRole): boolean => {
+    const requiredRole = migration.permissionToRole[permission];
+    if (!requiredRole) {
+      console.warn(`Unknown permission: ${permission}, defaulting to admin`);
+      return hasRoleLevel(userRole, 'org_admin');
+    }
+    return hasRoleLevel(userRole, requiredRole);
+  },
+};

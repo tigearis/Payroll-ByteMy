@@ -1,6 +1,6 @@
 // lib/middleware/rate-limiter.ts - Comprehensive rate limiting middleware
 import { NextRequest, NextResponse } from "next/server";
-import { EnhancedRouteMonitor } from "../security/enhanced-route-monitor";
+// Note: Simplified rate limiting without enhanced monitoring
 
 export interface RateLimitConfig {
   requests: number;
@@ -23,7 +23,6 @@ export class RateLimiter {
     string,
     { count: number; resetTime: number }
   >();
-  private monitor = EnhancedRouteMonitor.getInstance();
 
   // Comprehensive rate limits by route pattern
   private readonly ROUTE_LIMITS: { [pattern: string]: RateLimitConfig } = {

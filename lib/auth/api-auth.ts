@@ -2,11 +2,10 @@ import crypto from "crypto";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimiter } from "../middleware/rate-limiter";
-import { logUnauthorizedAccess } from "../security/auth-audit";
-import { monitorRequest } from "../security/enhanced-route-monitor";
+import { auditLogger } from "../security/audit/logger";
 import { extractClientInfo } from "../utils/client-info";
-// Import comprehensive permission system
-import { Role, hasRoleLevel } from "./permissions";
+// Import simplified permission system
+import { hasRoleLevel, type SimpleRole as Role } from "./simple-permissions";
 
 /**
  * Represents an authenticated user session with role and permission information
@@ -220,7 +219,6 @@ export function withAuth(
         const rateLimitResponse = await rateLimiter.applyRateLimit(request);
         if (rateLimitResponse) {
           console.log("⚡ Rate limit exceeded for:", request.url);
-          await monitorRequest(request, undefined, startTime, false);
           return rateLimitResponse;
         }
       }
@@ -240,7 +238,6 @@ export function withAuth(
             session.userId,
             request.url
           );
-          await monitorRequest(request, session.userId, startTime, false);
           return userRateLimitResponse;
         }
       }
@@ -257,7 +254,6 @@ export function withAuth(
       }
 
       // Monitor successful request
-      await monitorRequest(request, session.userId, startTime, true);
 
       return response;
     } catch (error: any) {
@@ -267,45 +263,27 @@ export function withAuth(
       const { clientIP: ipAddress, userAgent } = extractClientInfo(request);
 
       // Monitor failed request
-      await monitorRequest(request, undefined, startTime, false);
 
       if (error.message.includes("Unauthorized")) {
         // Log unauthorized access attempt
-        await logUnauthorizedAccess(
-          request.nextUrl.pathname,
-          undefined,
-          undefined,
+        await auditLogger.logSecurity('access_denied', undefined, {
+          endpoint: request.nextUrl.pathname,
+          method: request.method,
+          errorMessage: error.message,
           ipAddress,
           userAgent,
-          request,
-          {
-            requiredRole: options?.requiredRole,
-            allowedRoles: options?.allowedRoles,
-            errorMessage: error.message,
-            endpoint: request.nextUrl.pathname,
-            method: request.method,
-          }
-        );
+        });
         return unauthorizedResponse(error.message);
       }
       if (error.message.includes("Forbidden")) {
         // Log forbidden access attempt
-        await logUnauthorizedAccess(
-          request.nextUrl.pathname,
-          undefined,
-          undefined,
+        await auditLogger.logSecurity('access_denied', undefined, {
+          endpoint: request.nextUrl.pathname,
+          method: request.method,
+          errorMessage: error.message,
           ipAddress,
           userAgent,
-          request,
-          {
-            requiredRole: options?.requiredRole,
-            allowedRoles: options?.allowedRoles,
-            errorMessage: error.message,
-            endpoint: request.nextUrl.pathname,
-            method: request.method,
-            accessType: "insufficient_permissions",
-          }
-        );
+        });
         return forbiddenResponse(error.message);
       }
       // Generic error
@@ -346,7 +324,6 @@ export function withAuthParams<T = any>(
         const rateLimitResponse = await rateLimiter.applyRateLimit(request);
         if (rateLimitResponse) {
           console.log("⚡ Rate limit exceeded for:", request.url);
-          await monitorRequest(request, undefined, startTime, false);
           return rateLimitResponse;
         }
       }
@@ -366,7 +343,6 @@ export function withAuthParams<T = any>(
             session.userId,
             request.url
           );
-          await monitorRequest(request, session.userId, startTime, false);
           return userRateLimitResponse;
         }
       }
@@ -383,7 +359,6 @@ export function withAuthParams<T = any>(
       }
 
       // Monitor successful request
-      await monitorRequest(request, session.userId, startTime, true);
 
       return response;
     } catch (error: any) {
@@ -393,45 +368,27 @@ export function withAuthParams<T = any>(
       const { clientIP: ipAddress, userAgent } = extractClientInfo(request);
 
       // Monitor failed request
-      await monitorRequest(request, undefined, startTime, false);
 
       if (error.message.includes("Unauthorized")) {
         // Log unauthorized access attempt
-        await logUnauthorizedAccess(
-          request.nextUrl.pathname,
-          undefined,
-          undefined,
+        await auditLogger.logSecurity('access_denied', undefined, {
+          endpoint: request.nextUrl.pathname,
+          method: request.method,
+          errorMessage: error.message,
           ipAddress,
           userAgent,
-          request,
-          {
-            requiredRole: options?.requiredRole,
-            allowedRoles: options?.allowedRoles,
-            errorMessage: error.message,
-            endpoint: request.nextUrl.pathname,
-            method: request.method,
-          }
-        );
+        });
         return unauthorizedResponse(error.message);
       }
       if (error.message.includes("Forbidden")) {
         // Log forbidden access attempt
-        await logUnauthorizedAccess(
-          request.nextUrl.pathname,
-          undefined,
-          undefined,
+        await auditLogger.logSecurity('access_denied', undefined, {
+          endpoint: request.nextUrl.pathname,
+          method: request.method,
+          errorMessage: error.message,
           ipAddress,
           userAgent,
-          request,
-          {
-            requiredRole: options?.requiredRole,
-            allowedRoles: options?.allowedRoles,
-            errorMessage: error.message,
-            endpoint: request.nextUrl.pathname,
-            method: request.method,
-            accessType: "insufficient_permissions",
-          }
-        );
+        });
         return forbiddenResponse(error.message);
       }
       // Generic error

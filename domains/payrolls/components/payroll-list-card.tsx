@@ -33,7 +33,7 @@ import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphq
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useCachedQuery } from "@/hooks/use-strategic-query";
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth/enhanced-auth-context";
+import { useEnhancedPermissions } from "@/lib/auth";
 
 
 interface PayrollListCardProps {

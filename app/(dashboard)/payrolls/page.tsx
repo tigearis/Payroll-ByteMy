@@ -49,7 +49,7 @@ import {
   GetPayrollsPaginatedDocument,
   GetPayrollDashboardStatsDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import { useAuthContext } from "@/lib/auth/enhanced-auth-context";
+import { useAuthContext } from "@/lib/auth";
 
 type ViewMode = "cards" | "table" | "list";
 

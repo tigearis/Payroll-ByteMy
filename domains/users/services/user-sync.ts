@@ -2,7 +2,7 @@
 import { gql } from "@apollo/client";
 import { clerkClient } from "@clerk/nextjs/server";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/permissions";
+import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/simple-permissions";
 
 // Define user role hierarchy for permission checking
 // These must match the Hasura database enum values exactly

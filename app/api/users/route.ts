@@ -13,7 +13,7 @@ import {
 } from "@/domains/users/services/user-sync";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
-import { getPermissionsForRole } from "@/lib/auth/permissions";
+import { getPermissionsForRole } from "@/lib/auth/simple-permissions";
 import {
   auditLogger,
   LogLevel,
