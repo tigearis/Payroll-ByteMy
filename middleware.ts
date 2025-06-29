@@ -3,7 +3,7 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { routes, getRequiredRole } from "./config/routes";
 import { hasRoleLevel } from "./lib/auth/permissions";
-import { getJWTClaimsWithFallback } from "./lib/auth/token-utils";
+import { getSessionClaims } from "./lib/auth/token-utils";
 
 // Define the middleware with debug mode
 export default clerkMiddleware(
@@ -51,7 +51,7 @@ export default clerkMiddleware(
         role: userRole,
         hasCompleteData,
         error,
-      } = await getJWTClaimsWithFallback();
+      } = await getSessionClaims();
 
       // Handle unauthenticated users
       if (!userId) {
