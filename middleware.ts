@@ -2,7 +2,7 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { routes, getRequiredRole } from "./config/routes";
-import { hasRoleLevel, sanitizeUserRole } from "./lib/auth/permissions";
+import { hasRoleLevel } from "./lib/auth/permissions";
 import { getJWTClaimsWithFallback } from "./lib/auth/token-utils";
 
 // Define the middleware with debug mode
