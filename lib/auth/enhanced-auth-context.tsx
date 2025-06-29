@@ -1,39 +1,24 @@
 "use client";
 
-import { useQuery } from '@apollo/client';
-import { useUser, useAuth } from '@clerk/nextjs';
-import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode, useMemo } from 'react';
-import { 
-  GetUserEffectivePermissionsDocument,
-  GetUserPermissionOverridesDocument 
-} from '@/domains/permissions/graphql/generated/graphql';
-import { useCurrentUser } from '@/hooks/use-current-user';
-import { clientRoleSecurityMonitor } from '@/lib/security/role-monitoring-client';
-import { Permission, Role, sanitizeUserRole, getPermissionsForRole, hasRoleLevel } from './permissions';
+import { useUser, useAuth } from "@clerk/nextjs";
+import {
+  createContext,
+  useContext,
+  type ReactNode,
+  useMemo,
+  useCallback,
+} from "react";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import {
+  Permission,
+  Role,
+  getPermissionsForRole,
+  hasRoleLevel,
+} from "./permissions";
 
-// Enhanced permission types
-export interface EffectivePermission {
-  resource: string;
-  operation: string;
-  granted: boolean;
-  source: 'role' | 'override';
-  conditions?: any;
-  expiresAt?: string;
-}
-
-export interface UserPermissionOverride {
-  id: string;
-  resource: string;
-  operation: string;
-  granted: boolean;
-  reason: string;
-  expiresAt?: string;
-  createdAt: string;
-  createdBy?: string;
-}
-
-export interface EnhancedAuthContextType {
-  // Authentication state (from original)
+// Simplified auth context interface
+export interface AuthContextType {
+  // Authentication state
   isAuthenticated: boolean;
   isLoading: boolean;
   isLoaded: boolean;
@@ -44,54 +29,40 @@ export interface EnhancedAuthContextType {
   userName: string | null;
   userRole: Role;
   databaseId: string | null;
-  
-  // Role and permissions (from original)
-  userPermissions: string[];
-  hasPermission: (permission: string) => boolean;
-  hasAnyPermission: (permissions: string[]) => boolean;
-  hasRole: (roles: Role[]) => boolean;
-  
-  // Admin access checks (from original)
+
+  // Core permissions
+  userPermissions: Permission[];
+  permissionOverrides: Permission[];
+  hasPermission: (permission: Permission) => boolean;
+  hasAnyPermission: (permissions: Permission[]) => boolean;
+  hasRole: (role: Role) => boolean;
+  hasRoleLevel: (requiredRole: Role) => boolean;
+
+  // Common access checks
   hasAdminAccess: boolean;
   canManageUsers: boolean;
   canManageClients: boolean;
   canProcessPayrolls: boolean;
   canViewFinancials: boolean;
-  
-  // Enhanced permissions
-  effectivePermissions: EffectivePermission[];
-  permissionOverrides: UserPermissionOverride[];
-  isPermissionsLoading: boolean;
-  
-  // Enhanced permission checking functions
-  hasResourcePermission: (resource: string, action: string) => boolean;
-  canAccessResource: (resource: string) => boolean;
-  
-  // Permission details for admin interfaces
-  getPermissionDetails: (permission: Permission) => EffectivePermission | null;
-  getRolePermissions: () => EffectivePermission[];
-  getOverridePermissions: () => EffectivePermission[];
-  
+
   // Utility functions
-  refreshPermissions: () => Promise<void>;
-  hasRoleLevel: (requiredRole: Role) => boolean;
   signOut: () => Promise<void>;
-  refreshUserData: () => Promise<void>;
+  refreshUserData: () => void;
 }
 
-const EnhancedAuthContext = createContext<EnhancedAuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-interface EnhancedAuthProviderProps {
+interface AuthProviderProps {
   children: ReactNode;
 }
 
-export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
-  const { 
-    isLoaded: isClerkLoaded, 
-    isSignedIn, 
+export function AuthProvider({ children }: AuthProviderProps) {
+  const {
+    isLoaded: isClerkLoaded,
+    isSignedIn,
     userId,
     signOut: clerkSignOut,
-    sessionClaims 
+    sessionClaims,
   } = useAuth();
   const { user } = useUser();
   const {
@@ -99,259 +70,121 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     loading: dbUserLoading,
     error: dbUserError,
   } = useCurrentUser();
-  
-  // State for enhanced permissions
-  const [effectivePermissions, setEffectivePermissions] = useState<EffectivePermission[]>([]);
-  const [permissionOverrides, setPermissionOverrides] = useState<UserPermissionOverride[]>([]);
 
-  // Extract user details
-  const databaseId = user?.publicMetadata?.databaseId as string || null;
-  const userRole = useMemo(() => {
+  // Extract database ID from JWT claims or user metadata
+  const databaseId = useMemo(() => {
+    const claims = sessionClaims?.[
+      "https://hasura.io/jwt/claims"
+    ] as HasuraJWTClaims;
+    return (
+      claims?.["x-hasura-user-id"] ||
+      (user?.publicMetadata?.databaseId as string) ||
+      null
+    );
+  }, [sessionClaims, user?.publicMetadata?.databaseId]);
+
+  // Determine user role with security priority
+  const userRole = useMemo((): Role => {
     // Prefer database user role for security
     const dbRole = databaseUser?.role;
-    const claims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const jwtRole = claims?.["x-hasura-default-role"];
-    
-    // Monitor for role mismatches
-    if (dbRole && jwtRole && dbRole !== jwtRole && userId && databaseId) {
-      clientRoleSecurityMonitor.monitorRoleMismatch({
-        userId: databaseId,
-        clerkUserId: userId,
-        jwtRole,
-        databaseRole: dbRole,
-        requestPath: window?.location?.pathname || 'unknown',
-        ipAddress: 'client-side',
-        userAgent: navigator?.userAgent || 'unknown',
-        timestamp: new Date()
-      }).catch(error => {
-        console.error('Failed to monitor role mismatch:', error);
-      });
-    }
-    
     if (dbRole) {
       return dbRole as Role;
     }
-    
+
+    // Fallback to JWT claims
+    const claims = sessionClaims?.[
+      "https://hasura.io/jwt/claims"
+    ] as HasuraJWTClaims;
+    const jwtRole = claims?.["x-hasura-default-role"];
+
     return (jwtRole as Role) || "viewer";
-  }, [databaseUser?.role, sessionClaims, userId, databaseId]);
-  
-  // Has valid database user for security checks
-  const hasValidDatabaseUser = !dbUserLoading && !!databaseUser && !dbUserError;
+  }, [databaseUser?.role, sessionClaims]);
 
-  // GraphQL queries for permission data
-  const { 
-    data: permissionsData, 
-    loading: permissionsLoading, 
-    refetch: refetchPermissions 
-  } = useQuery(GetUserEffectivePermissionsDocument, {
-    variables: { userId: databaseId || '' },
-    skip: !databaseId,
-    errorPolicy: 'all'
-  });
+  // Check if we have a valid authenticated user
+  const isValidUser = !dbUserLoading && !!databaseUser && !dbUserError;
 
-  const { 
-    data: overridesData, 
-    loading: overridesLoading,
-    refetch: refetchOverrides 
-  } = useQuery(GetUserPermissionOverridesDocument, {
-    variables: { userId: databaseId || '' },
-    skip: !databaseId,
-    errorPolicy: 'all'
-  });
-
-  // Process effective permissions from database
-  useEffect(() => {
-    if (permissionsData) {
-      const permissions: EffectivePermission[] = [];
-      
-      // Add role-based permissions (simplified - would need proper role permission lookup)
-      // For now, using the existing static permission system as fallback
-      
-      // Add permission overrides
-      if (permissionsData.permissionOverrides) {
-        permissionsData.permissionOverrides.forEach(override => {
-          permissions.push({
-            resource: override.resource,
-            operation: override.operation,
-            granted: override.granted,
-            source: 'override',
-            conditions: override.conditions
-          });
-        });
-      }
-      
-      setEffectivePermissions(permissions);
-    }
-  }, [permissionsData]);
-
-  // Process permission overrides
-  useEffect(() => {
-    if (overridesData?.permissionOverrides) {
-      const overrides = overridesData.permissionOverrides.map((override: any) => ({
-        id: override.id,
-        resource: override.resource,
-        operation: override.operation,
-        granted: override.granted,
-        reason: override.reason || '',
-        ...(override.expiresAt && { expiresAt: override.expiresAt }),
-        createdAt: override.createdAt,
-        ...(override.createdBy && { createdBy: override.createdBy })
-      }));
-      
-      setPermissionOverrides(overrides);
-    }
-  }, [overridesData]);
-
-  // Convert legacy permission format to resource:action
-  const parsePermission = useCallback((permission: Permission): { resource: string; action: string } => {
-    const [resource, action] = permission.split(':');
-    return { resource, action };
-  }, []);
-
-  // Check resource-level permission
-  const hasResourcePermission = useCallback((resource: string, action: string): boolean => {
-    // Check if any effective permission grants this resource:action
-    const matchingPermissions = effectivePermissions.filter(
-      perm => perm.resource === resource && perm.operation === action
-    );
-
-    if (matchingPermissions.length === 0) {
-      // No specific permission found, check role fallback
-      const { ROLE_PERMISSIONS } = require('./permissions');
-      const legacyPermission = `${resource}:${action}` as Permission;
-      return ROLE_PERMISSIONS[userRole]?.permissions.includes(legacyPermission) || false;
-    }
-
-    // If we have explicit permissions, use them
-    // Grants override denies, denies override role permissions
-    const hasGrant = matchingPermissions.some(perm => perm.granted === true);
-    const hasDeny = matchingPermissions.some(perm => perm.granted === false);
-    
-    if (hasDeny && !hasGrant) {
-      return false; // Explicitly denied
-    }
-    
-    return hasGrant || matchingPermissions.some(perm => perm.granted);
-  }, [effectivePermissions, userRole]);
-
-  // Check if user has specific permission (unified approach)
-  const hasPermission = useCallback((permission: string): boolean => {
-    // SECURITY: ALWAYS deny if not authenticated
-    if (!isSignedIn || !isClerkLoaded) return false;
-    
-    // SECURITY: ALWAYS deny if user doesn't exist in database
-    if (!hasValidDatabaseUser) return false;
-
-    // First check database overrides if available
-    if (effectivePermissions.length > 0) {
-      const { resource, action } = parsePermission(permission as Permission);
-      return hasResourcePermission(resource, action);
-    }
-    
-    // Fallback to static permission system
-    const userPermissions = getPermissionsForRole(userRole);
-    return userPermissions.includes(permission as Permission);
-  }, [effectivePermissions, userRole, parsePermission, isSignedIn, isClerkLoaded, hasValidDatabaseUser, hasResourcePermission]);
-
-  // Check if user can access any operation on a resource
-  const canAccessResource = useCallback((resource: string): boolean => {
-    return effectivePermissions.some(perm => 
-      perm.resource === resource && perm.granted
-    );
-  }, [effectivePermissions]);
-
-  // Get detailed permission information
-  const getPermissionDetails = useCallback((permission: Permission): EffectivePermission | null => {
-    const { resource, action } = parsePermission(permission);
-    return effectivePermissions.find(
-      perm => perm.resource === resource && perm.operation === action
-    ) || null;
-  }, [effectivePermissions, parsePermission]);
-
-  // Get permissions by source
-  const getRolePermissions = useCallback((): EffectivePermission[] => {
-    return effectivePermissions.filter(perm => perm.source === 'role');
-  }, [effectivePermissions]);
-
-  const getOverridePermissions = useCallback((): EffectivePermission[] => {
-    return effectivePermissions.filter(perm => perm.source === 'override');
-  }, [effectivePermissions]);
-
-  // Permission check functions from original auth context
-  const hasAnyPermission = useCallback((requiredPermissions: string[]): boolean => {
-    return requiredPermissions.some(permission => hasPermission(permission));
-  }, [hasPermission]);
-
-  const hasRole = useCallback((roles: Role[]): boolean => {
-    // SECURITY: ALWAYS deny if not authenticated
-    if (!isSignedIn || !isClerkLoaded) return false;
-    // SECURITY: ALWAYS deny if user doesn't exist in database
-    if (!hasValidDatabaseUser) return false;
-    return roles.includes(userRole);
-  }, [isSignedIn, isClerkLoaded, hasValidDatabaseUser, userRole]);
-
-  // Role level checking
-  const hasRoleLevelCheck = useCallback((requiredRole: Role): boolean => {
-    return hasRoleLevel(userRole, requiredRole);
-  }, [userRole]);
-
-  // Memoize permissions to prevent unnecessary recalculations
+  // Get user permissions based on role
   const userPermissions = useMemo(() => {
     return getPermissionsForRole(userRole);
   }, [userRole]);
 
-  // Computed permissions from original auth context
-  const computedPermissions = useMemo(() => {
-    if (!userRole) return {};
+  // Get permission overrides from user metadata
+  const permissionOverrides = useMemo(() => {
+    const metadata = user?.publicMetadata as UserPublicMetadata | undefined;
+    return metadata?.permissionOverrides || [];
+  }, [user?.publicMetadata]);
 
-    const rolePermissions = getPermissionsForRole(userRole);
+  // Core permission checking function with overrides support
+  const hasPermission = useCallback(
+    (permission: Permission): boolean => {
+      // SECURITY: Always deny if not authenticated or no valid database user
+      if (!isSignedIn || !isClerkLoaded || !isValidUser) return false;
+
+      // Check permission overrides first (they take precedence)
+      if (permissionOverrides.includes(permission)) {
+        return true;
+      }
+
+      // Fall back to role-based permissions
+      return userPermissions.includes(permission);
+    },
+    [
+      isSignedIn,
+      isClerkLoaded,
+      isValidUser,
+      userPermissions,
+      permissionOverrides,
+    ]
+  );
+
+  // Check multiple permissions (OR logic)
+  const hasAnyPermission = useCallback(
+    (permissions: Permission[]): boolean => {
+      return permissions.some(permission => hasPermission(permission));
+    },
+    [hasPermission]
+  );
+
+  // Check if user has specific role
+  const hasRole = useCallback(
+    (role: Role): boolean => {
+      if (!isValidUser) return false;
+      return userRole === role;
+    },
+    [isValidUser, userRole]
+  );
+
+  // Check if user has role level or higher
+  const hasRoleLevelCheck = useCallback(
+    (requiredRole: Role): boolean => {
+      if (!isValidUser) return false;
+      return hasRoleLevel(userRole, requiredRole);
+    },
+    [userRole, isValidUser]
+  );
+
+  // Computed access permissions
+  const accessPermissions = useMemo(() => {
+    if (!isValidUser) {
+      return {
+        hasAdminAccess: false,
+        canManageUsers: false,
+        canManageClients: false,
+        canProcessPayrolls: false,
+        canViewFinancials: false,
+      };
+    }
 
     return {
-      // Staff management
-      canManageStaff: rolePermissions.includes("staff:write"),
-      canViewStaff: rolePermissions.includes("staff:read"),
-      canInviteStaff: rolePermissions.includes("staff:invite"),
-
-      // Client management
-      canManageClients: rolePermissions.includes("client:write"),
-      canViewClients: rolePermissions.includes("client:read"),
-
-      // Payroll operations
-      canProcessPayrolls: rolePermissions.includes("payroll:write"),
-      canViewPayrolls: rolePermissions.includes("payroll:read"),
-
-      // System administration
-      canManageSettings: rolePermissions.includes("settings:write"),
-      canAccessAdmin: rolePermissions.includes("admin:manage"),
-
-      // Reporting
-      canViewReports: rolePermissions.includes("reports:read"),
-      canExportReports: rolePermissions.includes("reports:export"),
-
-      // Audit
-      canViewAudit: rolePermissions.includes("audit:read"),
-      canManageAudit: rolePermissions.includes("audit:write"),
-
-      // Role-based checks
-      isDeveloper: userRole === "developer",
-      isAdministrator: userRole === "org_admin",
-      isManager: userRole === "manager",
-      isConsultant: userRole === "consultant",
-      isViewer: userRole === "viewer",
-
-      // Role hierarchy checks
       hasAdminAccess: hasRoleLevel(userRole, "org_admin"),
-      hasManagerAccess: hasRoleLevel(userRole, "manager"),
-
-      // User management (staff management)
-      canManageUsers: rolePermissions.includes("staff:write"),
-
-      // Financial access
-      canViewFinancials: rolePermissions.includes("reports:read"),
+      canManageUsers: userPermissions.includes("staff:write"),
+      canManageClients: userPermissions.includes("client:write"),
+      canProcessPayrolls: userPermissions.includes("payroll:write"),
+      canViewFinancials: userPermissions.includes("reports:read"),
     };
-  }, [userRole]);
+  }, [userRole, userPermissions, isValidUser]);
 
-  // Enhanced sign out
+  // Utility functions
   const signOut = useCallback(async () => {
     try {
       await clerkSignOut({ redirectUrl: "/" });
@@ -360,29 +193,12 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     }
   }, [clerkSignOut]);
 
-  // Refresh user data
-  const refreshUserData = useCallback(async () => {
-    try {
-      // Force a refetch of the current user data
-      window.location.reload();
-    } catch (error) {
-      console.error("Error refreshing user data:", error);
-      throw error;
-    }
+  const refreshUserData = useCallback(() => {
+    window.location.reload();
   }, []);
 
-  // Refresh permissions from database
-  const refreshPermissions = useCallback(async (): Promise<void> => {
-    if (databaseId) {
-      await Promise.all([
-        refetchPermissions(),
-        refetchOverrides()
-      ]);
-    }
-  }, [databaseId, refetchPermissions, refetchOverrides]);
-
-  const contextValue: EnhancedAuthContextType = {
-    // Authentication state (from original)
+  const contextValue: AuthContextType = {
+    // Authentication state
     isAuthenticated: !!isSignedIn,
     isLoading: !isClerkLoaded || dbUserLoading,
     isLoaded: isClerkLoaded,
@@ -393,77 +209,41 @@ export function EnhancedAuthProvider({ children }: EnhancedAuthProviderProps) {
     userName: user?.fullName || user?.firstName || null,
     userRole,
     databaseId,
-    
-    // Role and permissions (from original)
+
+    // Core permissions
     userPermissions,
+    permissionOverrides,
     hasPermission,
     hasAnyPermission,
     hasRole,
-    
-    // Admin access checks (from original)
-    hasAdminAccess: computedPermissions.hasAdminAccess || false,
-    canManageUsers: computedPermissions.canManageUsers || false,
-    canManageClients: computedPermissions.canManageClients || false,
-    canProcessPayrolls: computedPermissions.canProcessPayrolls || false,
-    canViewFinancials: computedPermissions.canViewFinancials || false,
-    
-    // Enhanced permissions
-    effectivePermissions,
-    permissionOverrides,
-    isPermissionsLoading: permissionsLoading || overridesLoading,
-    
-    // Enhanced permission checking functions
-    hasResourcePermission,
-    canAccessResource,
-    
-    // Permission details
-    getPermissionDetails,
-    getRolePermissions,
-    getOverridePermissions,
-    
-    // Utility functions
-    refreshPermissions,
     hasRoleLevel: hasRoleLevelCheck,
+
+    // Access permissions
+    ...accessPermissions,
+
+    // Utility functions
     signOut,
     refreshUserData,
   };
 
   return (
-    <EnhancedAuthContext.Provider value={contextValue}>
-      {children}
-    </EnhancedAuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 
-// Hook to use the enhanced auth context
-export function useEnhancedAuth(): EnhancedAuthContextType {
-  const context = useContext(EnhancedAuthContext);
+// Single hook to use auth context
+export function useAuthContext(): AuthContextType {
+  const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useEnhancedAuth must be used within an EnhancedAuthProvider');
+    throw new Error("useAuthContext must be used within an AuthProvider");
   }
   return context;
 }
 
-// Main auth context hook (replaces original useAuthContext)
-export function useAuthContext(): EnhancedAuthContextType {
-  const context = useContext(EnhancedAuthContext);
-  if (!context) {
-    throw new Error('useAuthContext must be used within an EnhancedAuthProvider');
-  }
-  return context;
-}
+// Backward compatibility aliases (all point to the same hook)
+export const useEnhancedAuth = useAuthContext;
+export const useEnhancedPermissions = useAuthContext;
 
-// Permissions-focused hook (alias for useEnhancedAuth)
-export function useEnhancedPermissions(): EnhancedAuthContextType {
-  const context = useContext(EnhancedAuthContext);
-  if (!context) {
-    throw new Error('useEnhancedPermissions must be used within an EnhancedAuthProvider');
-  }
-  return context;
-}
-
-// Alias for backward compatibility
-export const AuthProvider = EnhancedAuthProvider;
-export type AuthContextType = EnhancedAuthContextType;
-
-// Types are already exported via interface declarations above
+// Type exports
+export type EnhancedAuthContextType = AuthContextType;
+export const EnhancedAuthProvider = AuthProvider;

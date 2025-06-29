@@ -19,7 +19,7 @@ interface ExportCsvProps {
 export function ExportCsv({ payrollId }: ExportCsvProps) {
   const { hasPermission } = useEnhancedPermissions();
   
-  if (!hasPermission('payroll:export')) {
+  if (!hasPermission('reports:export')) {
     return null;
   }
   const { loading, error, data } = useQuery(GetPayrollDatesDocument, {

@@ -27,6 +27,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { GetUsersWithFilteringDocument } from "@/domains/users/graphql/generated/graphql";
 import { useActorTokens } from "@/hooks/use-actor-tokens";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
+import { DeveloperOnly } from "@/components/auth/developer-only";
 
 interface User {
   id: string;
@@ -42,7 +43,7 @@ interface User {
  * Provides a UI for developers to create and manage actor tokens for user impersonation.
  * This is useful for testing different user roles and debugging user-specific issues.
  */
-export function ActorTokenManager() {
+function ActorTokenManagerInner() {
   const { isSignedIn, userId } = useAuth();
   const {
     createActorToken,
@@ -395,5 +396,19 @@ await page.goto(actorToken.usage.consumeUrl);
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export function ActorTokenManager() {
+  return (
+    <DeveloperOnly fallback={
+      <Alert className="m-4">
+        <AlertDescription>
+          Access denied. Developer role required for user impersonation tools.
+        </AlertDescription>
+      </Alert>
+    }>
+      <ActorTokenManagerInner />
+    </DeveloperOnly>
   );
 }

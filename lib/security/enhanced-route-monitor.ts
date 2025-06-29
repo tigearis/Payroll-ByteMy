@@ -47,7 +47,6 @@ class EnhancedRouteMonitor {
   private readonly RATE_LIMITS: {
     [key: string]: { requests: number; window: number };
   } = {
-    "/api/auth/token": { requests: 10, window: 60000 }, // 10 requests per minute
     "/api/users": { requests: 50, window: 60000 }, // 50 requests per minute
     "/api/staff/create": { requests: 5, window: 300000 }, // 5 requests per 5 minutes
     "/api/audit/compliance-report": { requests: 3, window: 300000 }, // 3 requests per 5 minutes

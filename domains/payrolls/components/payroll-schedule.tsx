@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GetPayrollsByMonthDocument } from "../graphql/generated/graphql";
+import { useAuthContext } from "@/lib/auth/enhanced-auth-context";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 
 
@@ -92,7 +93,7 @@ type Payroll = any;
 type Holiday = any;
 
 export function PayrollSchedule() {
-  const { hasPermission } = useEnhancedPermissions();
+  const { hasPermission } = useAuthContext();
   
   if (!hasPermission('payroll:read')) {
     return null;

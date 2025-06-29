@@ -3,6 +3,7 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { routes, getRequiredRole } from "./config/routes";
 import { hasRoleLevel } from "./lib/auth/permissions";
+import { getJWTClaimsWithFallback } from "./lib/auth/token-utils";
 
 // Define the middleware with debug mode
 export default clerkMiddleware(
@@ -28,46 +29,22 @@ export default clerkMiddleware(
     return NextResponse.next();
   }
 
-  // Get complete auth data using auth() instead of auth.protect()
+  // Get complete auth data using centralized token utilities
   try {
-    const { userId, sessionClaims, redirectToSignIn, getToken } = await auth();
+    const { redirectToSignIn } = await auth();
+    const { userId, claims, role: userRole, hasCompleteData, error } = await getJWTClaimsWithFallback();
 
     // Handle unauthenticated users
     if (!userId) {
-      console.log("❌ No user ID found");
+      console.log("❌ No user ID found:", error);
       if (pathname.startsWith("/api/")) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
       return redirectToSignIn();
     }
-
-    // Get JWT token to access claims
-    const token = await getToken({ template: "hasura" });
-    
-    // Get complete session data
-    const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const publicMetadata = sessionClaims?.publicMetadata as any;
-    
-    // If sessionClaims doesn't have JWT claims, try to get them from the token
-    let jwtClaims = hasuraClaims;
-    if (!jwtClaims && token) {
-      // Decode the JWT token to get claims
-      try {
-        const base64Payload = token.split('.')[1];
-        const decodedPayload = JSON.parse(atob(base64Payload));
-        jwtClaims = decodedPayload["https://hasura.io/jwt/claims"];
-      } catch (error) {
-        console.error("Failed to decode JWT token:", error);
-      }
-    }
-    
-    // Check if we have complete user data (use jwtClaims instead of hasuraClaims)
-    const hasCompleteJWTClaims = jwtClaims?.["x-hasura-user-id"] && jwtClaims?.["x-hasura-default-role"];
-    const hasCompleteMetadata = publicMetadata?.databaseId && publicMetadata?.role;
-    const userRole = jwtClaims?.["x-hasura-default-role"] || publicMetadata?.role;
     
     // If we don't have complete user data, allow only sync-related paths
-    if (!hasCompleteJWTClaims && !hasCompleteMetadata) {
+    if (!hasCompleteData) {
       const allowedIncompleteDataPaths = [
         "/dashboard",
         "/api/sync-current-user", 
@@ -84,9 +61,9 @@ export default clerkMiddleware(
       if (isAllowedPath) {
         console.log("⏳ Session not fully loaded, allowing sync path", {
           pathname,
-          hasJwtClaims: hasCompleteJWTClaims,
-          hasMetadata: hasCompleteMetadata,
-          userId: userId.substring(0, 8) + "..."
+          hasCompleteData,
+          userId: userId.substring(0, 8) + "...",
+          error
         });
         return NextResponse.next();
       } else {

@@ -2,19 +2,21 @@
 
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { extractJWTClaims } from "@/lib/auth/client-token-utils";
+import { DeveloperOnly } from "@/components/auth/developer-only";
 
 /**
  * Temporary debugging component to help diagnose authentication issues
  * Add this to your layout temporarily to see what's happening
  */
-export function AuthDebugPanel() {
+function AuthDebugPanelInner() {
   const { userId, isLoaded, sessionClaims, isSignedIn } = useAuth();
   const { user } = useUser();
   const { currentUser, loading, error, databaseUserId } = useCurrentUser();
 
-  // Extract JWT claims manually
-  const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-  const extractedUserId = hasuraClaims?.["x-hasura-user-id"];
+  // Use centralized client-side token utilities
+  const claimsResult = extractJWTClaims(sessionClaims);
+  const { claims: hasuraClaims, role: extractedRole, userId: extractedUserId, hasCompleteData, error: claimsError } = claimsResult;
 
   if (!isSignedIn) {
     return null; // Don't show debug panel if not signed in
@@ -36,11 +38,14 @@ export function AuthDebugPanel() {
         </div>
 
         <div>
-          <strong>JWT Claims:</strong>
+          <strong>JWT Claims (Enhanced):</strong>
           <ul className="ml-2">
             <li>Has Session Claims: {sessionClaims ? "✅" : "❌"}</li>
             <li>Has Hasura Claims: {hasuraClaims ? "✅" : "❌"}</li>
+            <li>Extracted Role: {extractedRole || "❌ None"}</li>
             <li>Extracted DB ID: {extractedUserId || "❌ None"}</li>
+            <li>Complete Data: {hasCompleteData ? "✅" : "❌"}</li>
+            <li>Claims Error: {claimsError || "None"}</li>
             <li>Expected DB ID: d9ac8a7b-f679-49a1-8c99-837eb977578b</li>
             <li>
               IDs Match:{" "}
@@ -130,5 +135,13 @@ export function AuthDebugPanel() {
         </div>
       </div>
     </div>
+  );
+}
+
+export function AuthDebugPanel() {
+  return (
+    <DeveloperOnly>
+      <AuthDebugPanelInner />
+    </DeveloperOnly>
   );
 }

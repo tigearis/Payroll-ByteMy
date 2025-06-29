@@ -127,16 +127,30 @@ addTest("API signing endpoints require admin access", async () => {
   }
 });
 
-// Test 4: Token management endpoints respond correctly
-addTest("Token management endpoints functional", async () => {
-  const response = await makeRequest("/api/auth/token", { method: "GET" });
+// Test 4: Check role endpoint responds correctly
+addTest("Role check endpoint functional", async () => {
+  const response = await makeRequest("/api/check-role", { method: "GET" });
 
   // Should require authentication
   if (response.status === 401) {
-    console.log("   ✓ Token endpoint requires authentication");
+    console.log("   ✓ Role check endpoint requires authentication");
   } else {
     throw new Error(
-      `Token endpoint should require auth, got ${response.status}`
+      `Role check endpoint should require auth, got ${response.status}`
+    );
+  }
+});
+
+// Test 4b: Verify removed auth token endpoint is gone
+addTest("Removed auth token endpoint no longer exists", async () => {
+  const response = await makeRequest("/api/auth/token", { method: "GET" });
+
+  // Should return 404 since route was removed
+  if (response.status === 404) {
+    console.log("   ✓ Auth token endpoint successfully removed");
+  } else {
+    throw new Error(
+      `Auth token endpoint should be removed (404), got ${response.status}`
     );
   }
 });

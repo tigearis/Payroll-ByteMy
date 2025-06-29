@@ -1,6 +1,5 @@
 import React from "react";
-import { useEnhancedPermissions } from "@/hooks/use-enhanced-permissions";
-import { PermissionDenied } from "./permission-denied";
+import { useAuthContext } from "@/lib/auth/enhanced-auth-context";
 
 interface DeveloperOnlyProps {
   children: React.ReactNode;
@@ -12,16 +11,10 @@ interface DeveloperOnlyProps {
  * Provides a standardized way to show developer-only content
  */
 export function DeveloperOnly({ children, fallback }: DeveloperOnlyProps) {
-  const { checkPermission } = useEnhancedPermissions();
+  const { userRole } = useAuthContext();
   
-  const systemAdminPermission = checkPermission("system", "admin");
-  
-  if (!systemAdminPermission.granted) {
-    return fallback || (
-      <PermissionDenied 
-        result={systemAdminPermission}
-      />
-    );
+  if (userRole !== "developer") {
+    return fallback || null;
   }
 
   return <>{children}</>;

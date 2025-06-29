@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
+import { decodeJWTToken } from "@/lib/auth/client-token-utils";
 import { 
   CheckCircle2, 
   XCircle, 
@@ -157,24 +158,37 @@ export default function UserCreationDiagnosticsPage() {
         throw new Error("Failed to generate JWT token");
       }
 
-      // Decode token to show claims
-      const parts = token.split('.');
-      const payload = JSON.parse(atob(parts[1]));
+      // Use centralized JWT decoding utility
+      const decodeResult = decodeJWTToken(token);
+      
+      // Extract expiry from token for detailed info
+      let expiresAt = "Unknown";
+      try {
+        const parts = token.split('.');
+        const payload = JSON.parse(atob(parts[1]));
+        expiresAt = new Date(payload.exp * 1000).toISOString();
+      } catch (e) {
+        console.warn("Could not extract expiry from token");
+      }
 
       updateLastResult({
         status: "success",
         message: "JWT token generated successfully",
         details: {
           tokenLength: token.length,
-          hasuraClaims: payload["https://hasura.io/jwt/claims"],
-          expiresAt: new Date(payload.exp * 1000).toISOString()
+          hasuraClaims: decodeResult.claims,
+          extractedRole: decodeResult.role,
+          extractedUserId: decodeResult.userId,
+          hasCompleteData: decodeResult.hasCompleteData,
+          decodeError: decodeResult.error,
+          expiresAt
         },
         logs: [
           `✓ Token generated: ${token.length} characters`,
-          `✓ User ID: ${payload["https://hasura.io/jwt/claims"]?.["x-hasura-user-id"]}`,
-          `✓ Default Role: ${payload["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"]}`,
-          `✓ Allowed Roles: ${JSON.stringify(payload["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"])}`,
-          `✓ Expires: ${new Date(payload.exp * 1000).toLocaleString()}`
+          `✓ User ID: ${decodeResult.userId || "Not found"}`,
+          `✓ Default Role: ${decodeResult.role || "Not found"}`,
+          `✓ Allowed Roles: ${JSON.stringify(decodeResult.claims?.["x-hasura-allowed-roles"] || [])}`,
+          `✓ Expires: ${expiresAt}`
         ]
       });
 
@@ -274,12 +288,12 @@ export default function UserCreationDiagnosticsPage() {
           status: response.status,
           response: data,
           currentRole: userRole,
-          hasCreatePermission: hasPermission("staff:create")
+          hasCreatePermission: hasPermission("staff:write")
         },
         logs: [
           `✓ POST request authorized`,
           `✓ Current role: ${userRole}`,
-          `✓ Has staff:create permission: ${hasPermission("staff:create")}`,
+          `✓ Has staff:write permission: ${hasPermission("staff:write")}`,
           `✓ Response status: ${response.status}`
         ]
       });

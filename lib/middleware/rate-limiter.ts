@@ -28,11 +28,6 @@ export class RateLimiter {
   // Comprehensive rate limits by route pattern
   private readonly ROUTE_LIMITS: { [pattern: string]: RateLimitConfig } = {
     // Authentication routes - strictest limits
-    "/api/auth/token": {
-      requests: 10,
-      window: 60000,
-      message: "Too many token requests",
-    },
     "/api/auth/debug-token": { requests: 3, window: 60000 },
     "/api/auth/log-event": { requests: 20, window: 60000 }, // Higher limit for auth events
 

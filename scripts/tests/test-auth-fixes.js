@@ -129,14 +129,14 @@ addTest("API signing endpoints require admin access", async () => {
 
 // Test 4: Token management endpoints respond correctly
 addTest("Token management endpoints functional", async () => {
-  const response = await makeRequest("/api/auth/token", { method: "GET" });
+  const response = await makeRequest("/api/check-role", { method: "GET" });
 
   // Should require authentication
   if (response.status === 401) {
-    console.log("   ✓ Token endpoint requires authentication");
+    console.log("   ✓ Role check endpoint requires authentication");
   } else {
     throw new Error(
-      `Token endpoint should require auth, got ${response.status}`
+      `Role check endpoint should require auth, got ${response.status}`
     );
   }
 });

@@ -74,87 +74,10 @@ export function PermissionGuard({
   return <>{children}</>;
 }
 
-// Specific permission guards for common use cases
-export function AdminGuard({
-  children,
-  fallback = null,
-}: {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}) {
-  return (
-    <PermissionGuard roles={["org_admin"]} fallback={fallback}>
-      {children}
-    </PermissionGuard>
-  );
-}
-
-export function ManagerGuard({
-  children,
-  fallback = null,
-}: {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}) {
-  return (
-    <PermissionGuard roles={["org_admin", "manager"]} fallback={fallback}>
-      {children}
-    </PermissionGuard>
-  );
-}
-
-export function StaffManagerGuard({
-  children,
-  fallback = null,
-}: {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}) {
-  return (
-    <PermissionGuard permission="staff:write" fallback={fallback}>
-      {children}
-    </PermissionGuard>
-  );
-}
-
-export function ClientManagerGuard({
-  children,
-  fallback = null,
-}: {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}) {
-  return (
-    <PermissionGuard permission="client:write" fallback={fallback}>
-      {children}
-    </PermissionGuard>
-  );
-}
-
-export function PayrollProcessorGuard({
-  children,
-  fallback = null,
-}: {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}) {
-  return (
-    <PermissionGuard permission="payroll:write" fallback={fallback}>
-      {children}
-    </PermissionGuard>
-  );
-}
-
-export function DeveloperGuard({
-  children,
-  fallback = null,
-}: {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}) {
-  return (
-    <PermissionGuard roles={["developer"]} fallback={fallback}>
-      {children}
-    </PermissionGuard>
-  );
-}
+// Common permission patterns - use these as examples:
+// Admin only: <PermissionGuard roles={["org_admin"]} />
+// Manager+: <PermissionGuard roles={["org_admin", "manager"]} />
+// Staff management: <PermissionGuard permission="staff:write" />
+// Client management: <PermissionGuard permission="client:write" />
+// Payroll processing: <PermissionGuard permission="payroll:write" />
+// Developer only: <PermissionGuard roles={["developer"]} />

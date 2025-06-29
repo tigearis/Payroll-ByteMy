@@ -43,10 +43,11 @@ interface NewKey {
 }
 
 const AVAILABLE_PERMISSIONS = [
-  "payroll:process",
+  "payroll:read",
+  "payroll:write",
   "payroll:approve",
-  "payroll:export",
-  "staff:create",
+  "reports:export",
+  "staff:write",
   "staff:delete",
   "audit:read",
   "admin:manage",

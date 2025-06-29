@@ -25,8 +25,8 @@ const criticalComponents: ComponentFix[] = [
   
   // Financial components
   { file: 'components/australian-tax-calculator.tsx', permission: 'payroll:read' },
-  { file: 'components/export-csv.tsx', permission: 'payroll:export' },
-  { file: 'components/export-pdf.tsx', permission: 'payroll:export' },
+  { file: 'components/export-csv.tsx', permission: 'reports:export' },
+  { file: 'components/export-pdf.tsx', permission: 'reports:export' },
   
   // User management components
   { file: 'domains/users/components/user-table.tsx', permission: 'staff:read' },

@@ -1,39 +1,23 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "@/lib/auth/api-auth";
+import { getJWTClaimsWithFallback } from "@/lib/auth/token-utils";
 
 // Debug endpoint to check authentication and route access
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest, session) => {
   console.log("🔍 DEBUG: Staff create route accessed");
   console.log("🔍 Request method:", request.method);
   console.log("🔍 Request URL:", request.url);
   
   try {
-    // Get authentication data
-    const { userId, sessionClaims, getToken } = await auth();
+    // Use centralized token utilities for debugging
+    const claimsResult = await getJWTClaimsWithFallback();
     
-    console.log("🔍 Auth data:", {
-      hasUserId: !!userId,
-      hasSessionClaims: !!sessionClaims,
-      userIdPreview: userId?.substring(0, 8) + "..."
-    });
-    
-    // Get JWT token
-    const token = await getToken({ template: "hasura" });
-    console.log("🔍 Token:", {
-      hasToken: !!token,
-      tokenLength: token?.length
-    });
-    
-    // Get JWT claims
-    const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const publicMetadata = sessionClaims?.publicMetadata as any;
-    
-    console.log("🔍 Claims data:", {
-      hasHasuraClaims: !!hasuraClaims,
-      hasPublicMetadata: !!publicMetadata,
-      defaultRole: hasuraClaims?.["x-hasura-default-role"],
-      allowedRoles: hasuraClaims?.["x-hasura-allowed-roles"],
-      metadataRole: publicMetadata?.role
+    console.log("🔍 Claims utility result:", {
+      hasUserId: !!claimsResult.userId,
+      hasClaims: !!claimsResult.claims,
+      role: claimsResult.role,
+      hasCompleteData: claimsResult.hasCompleteData,
+      claimsError: claimsResult.error
     });
     
     // Try to get request body
@@ -49,11 +33,11 @@ export async function POST(request: NextRequest) {
       success: true,
       debug: {
         method: request.method,
-        hasAuth: !!userId,
-        userRole: hasuraClaims?.["x-hasura-default-role"] || publicMetadata?.role || "unknown",
-        allowedRoles: hasuraClaims?.["x-hasura-allowed-roles"] || [],
-        hasToken: !!token,
+        hasAuth: !!session.userId,
+        userRole: session.role || "unknown",
+        hasCompleteData: claimsResult.hasCompleteData,
         bodyKeys: Object.keys(body || {}),
+        claimsError: claimsResult.error,
         timestamp: new Date().toISOString()
       }
     });
@@ -69,4 +53,4 @@ export async function POST(request: NextRequest) {
       }
     }, { status: 500 });
   }
-}
+}, { allowedRoles: ["developer"] });

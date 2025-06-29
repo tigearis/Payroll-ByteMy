@@ -26,9 +26,8 @@ const CreateInvitationSchema = z.object({
 
 async function POST(request: NextRequest) {
   return withAuth(async (request, authUser) => {
-    // Extract database user ID from JWT claims first
-    const hasuraClaims = authUser.sessionClaims?.["https://hasura.io/jwt/claims"] as any;
-    const databaseUserId = hasuraClaims?.["x-hasura-user-id"];
+    // Use enhanced session data instead of manual claims extraction
+    const databaseUserId = authUser.databaseId;
     
     if (!databaseUserId) {
       return NextResponse.json(

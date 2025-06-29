@@ -39,6 +39,7 @@ import {
   Manager,
   UserPermissions,
 } from "@/hooks/use-user-management";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 
 const createUserSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -62,6 +63,26 @@ interface CreateUserModalProps {
 }
 
 export function CreateUserModal({
+  isOpen,
+  onClose,
+  managers,
+  permissions,
+  currentUserRole,
+}: CreateUserModalProps) {
+  return (
+    <PermissionGuard permission="staff:write">
+      <CreateUserModalInner
+        isOpen={isOpen}
+        onClose={onClose}
+        managers={managers}
+        permissions={permissions}
+        currentUserRole={currentUserRole}
+      />
+    </PermissionGuard>
+  );
+}
+
+function CreateUserModalInner({
   isOpen,
   onClose,
   managers,

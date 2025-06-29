@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useInvitationAcceptance } from "@/domains/auth/hooks/use-invitation-acceptance";
+import { decodeJWTToken } from "@/lib/auth/client-token-utils";
 
 interface InvitationData {
   email?: string;
@@ -104,19 +105,25 @@ function AcceptInvitationContent() {
           return;
         }
 
-        // Get the payload part (second part of JWT)
-        const payloadPart = tokenParts[1];
-
-        // Add padding if needed for base64 decoding
-        const paddedPayload =
-          payloadPart + "=".repeat((4 - (payloadPart.length % 4)) % 4);
-
-        // Try to decode the JWT token to get invitation metadata
-        const payload = JSON.parse(atob(paddedPayload));
-        console.log("Invitation payload:", payload);
-
-        // Set the invitation data for potential future use
-        setInvitationData(payload);
+        // Use centralized JWT decoding utility
+        const decodeResult = decodeJWTToken(ticket);
+        
+        if (decodeResult.error) {
+          console.error("Error decoding invitation token:", decodeResult.error);
+        } else {
+          console.log("Decoded invitation data:", {
+            role: decodeResult.role,
+            userId: decodeResult.userId,
+            hasCompleteData: decodeResult.hasCompleteData
+          });
+          
+          // Set the invitation data for potential future use
+          setInvitationData({
+            role: decodeResult.role,
+            userId: decodeResult.userId,
+            ...decodeResult.claims
+          });
+        }
 
         // For now, we'll need to fetch the actual invitation details from Clerk
         // since the JWT might not contain the metadata directly

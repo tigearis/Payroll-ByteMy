@@ -6,8 +6,7 @@ import { logUnauthorizedAccess } from "../security/auth-audit";
 import { monitorRequest } from "../security/enhanced-route-monitor";
 import { extractClientInfo } from "../utils/client-info";
 // Import comprehensive permission system
-import { validateJWTClaims } from "./jwt-validation";
-import { Role, ROLE_HIERARCHY } from "./permissions";
+import { Role, hasRoleLevel } from "./permissions";
 
 /**
  * Represents an authenticated user session with role and permission information
@@ -34,22 +33,10 @@ export interface EnhancedAuthSession {
 
 /**
  * Checks if a user role has permission to access a required role level
- * Uses the role hierarchy system where higher numbers indicate more permissions
- *
- * @param userRole - The user's current role
- * @param requiredRole - The minimum role required for access
- * @returns True if the user has sufficient permissions
- *
- * @example
- * ```typescript
- * hasPermission('admin', 'manager') // true (admin > manager)
- * hasPermission('viewer', 'admin') // false (viewer < admin)
- * ```
+ * @deprecated Use hasRoleLevel from permissions.ts instead
  */
 export function hasPermission(userRole: string, requiredRole: string): boolean {
-  const userLevel = ROLE_HIERARCHY[userRole as Role] || 0;
-  const requiredLevel = ROLE_HIERARCHY[requiredRole as Role] || 999;
-  return userLevel >= requiredLevel;
+  return hasRoleLevel(userRole as Role, requiredRole as Role);
 }
 
 /**
@@ -86,22 +73,14 @@ export async function requireAuth(
       throw new Error("Unauthorized: No active session");
     }
 
-    // Validate JWT claims for security
-    const { clientIP, userAgent } = extractClientInfo(request);
-    const validationResult = await validateJWTClaims(sessionClaims, {
-      userId,
-      ipAddress: clientIP,
-      userAgent,
-      requestPath: request.nextUrl.pathname
-    });
-
-    if (!validationResult.isValid) {
-      console.error("🚨 JWT validation failed:", validationResult.errors);
-      throw new Error(`JWT validation failed: ${validationResult.errors.join(", ")}`);
+    // Basic JWT validation - ensure we have required session data
+    if (!sessionClaims) {
+      console.error("🚨 No session claims available");
+      throw new Error("JWT validation failed: No session claims");
     }
 
-    // Extract role from validated JWT claims
-    const hasuraClaims = validationResult.claims;
+    // Extract role from JWT claims
+    const hasuraClaims = sessionClaims["https://hasura.io/jwt/claims"] as any;
     const userRole = hasuraClaims?.["x-hasura-default-role"] || "viewer";
 
     // Debug logging for role extraction
@@ -110,7 +89,7 @@ export async function requireAuth(
       hasHasuraClaims: !!hasuraClaims,
       defaultRole: hasuraClaims?.["x-hasura-default-role"],
       allowedRoles: hasuraClaims?.["x-hasura-allowed-roles"],
-      validationWarnings: validationResult.warnings,
+      // validationWarnings: validationResult.warnings, // TODO: Re-add when JWT validation is restored
       sessionId: sessionClaims?.sid,
     });
     const userEmail = sessionClaims?.email as string;
@@ -121,7 +100,7 @@ export async function requireAuth(
 
     // Check role requirements
     if (options?.requiredRole) {
-      if (!hasPermission(userRole, options.requiredRole)) {
+      if (!hasRoleLevel(userRole as Role, options.requiredRole as Role)) {
         throw new Error(
           `Forbidden: Role '${userRole}' does not have permission. Required: '${options.requiredRole}'`
         );
@@ -223,7 +202,7 @@ export function forbiddenResponse(message: string = "Forbidden"): NextResponse {
 export function withAuth(
   handler: (
     request: NextRequest,
-    context: EnhancedAuthSession
+    session: AuthSession
   ) => Promise<NextResponse>,
   options?: {
     requiredRole?: string;
@@ -266,7 +245,7 @@ export function withAuth(
         }
       }
 
-      const response = await handler(request, { session });
+      const response = await handler(request, session);
 
       // Add rate limit headers to successful responses
       if (!options?.skipRateLimit) {

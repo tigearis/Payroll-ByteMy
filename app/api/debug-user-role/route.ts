@@ -1,48 +1,52 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "@/lib/auth/api-auth";
+import { getJWTClaimsWithFallback } from "@/lib/auth/token-utils";
 
 /**
  * Debug endpoint to check user role and JWT claims
  * Helps diagnose middleware authentication issues
  */
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, session) => {
   try {
     console.log("🔍 Debug user role endpoint called");
 
-    // Get current auth state
-    const authResult = await auth();
+    // Get additional debugging info
+    const claimsResult = await getJWTClaimsWithFallback();
     const user = await currentUser();
 
-    if (!authResult.userId) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
-
-    // Get session claims
+    // Legacy auth for comparison
+    const authResult = await auth();
     const { sessionClaims } = authResult;
 
-    // Try to get Hasura token
-    let hasuraToken = null;
+    // Get fresh token for debugging
     let hasuraTokenPayload = null;
-    try {
-      hasuraToken = await authResult.getToken({ template: "hasura" });
-      if (hasuraToken) {
+    const { getToken } = await auth();
+    const token = await getToken({ template: "hasura" });
+    
+    if (token) {
+      try {
         hasuraTokenPayload = JSON.parse(
-          Buffer.from(hasuraToken.split(".")[1], "base64").toString()
+          Buffer.from(token.split(".")[1], "base64").toString()
         );
+      } catch (decodeError) {
+        console.warn("Failed to decode token:", decodeError);
       }
-    } catch (error) {
-      console.warn("Failed to get Hasura token:", error);
     }
 
-    // Extract role from various sources
+    // Extract role from various sources (enhanced with token utilities)
     const roleExtraction = {
-      directClaim: sessionClaims?.["x-hasura-default-role"],
+      // Session and token utility results (NEW - centralized approach)
+      sessionRole: session.role,
+      sessionDatabaseId: session.databaseId,
+      tokenUtilityRole: claimsResult.role,
+      tokenUtilityComplete: claimsResult.hasCompleteData,
+      tokenUtilityError: claimsResult.error,
+      
+      // Legacy sources (for debugging comparison)
       hasuraJwtClaim: sessionClaims?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"],
-      metadataRole: sessionClaims?.metadata?.role,
       publicMetadataRole: user?.publicMetadata?.role,
-      privateMetadataRole: user?.privateMetadata?.role,
-      hasuraTokenRole: hasuraTokenPayload?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"] || 
-                       hasuraTokenPayload?.metadata?.defaultrole,
+      hasuraTokenRole: hasuraTokenPayload?.["https://hasura.io/jwt/claims"]?.["x-hasura-default-role"],
     };
 
     const debugInfo = {
@@ -59,7 +63,7 @@ export async function GET(request: NextRequest) {
       ),
       publicMetadata: user?.publicMetadata,
       sessionClaims,
-      hasuraTokenPresent: !!hasuraToken,
+      hasuraTokenPresent: !!token,
       hasuraTokenPayload: hasuraTokenPayload ? {
         ...hasuraTokenPayload,
         // Remove sensitive data for logging
@@ -75,10 +79,10 @@ export async function GET(request: NextRequest) {
       success: true,
       debug: debugInfo,
       recommendations: {
-        hasRole: !!roleExtraction.directClaim || !!roleExtraction.hasuraJwtClaim,
+        hasRole: !!roleExtraction.tokenUtilityRole || !!roleExtraction.hasuraJwtClaim,
         needsSync: !roleExtraction.publicMetadataRole,
         syncEndpoint: "/api/fix-user-sync",
-        hasuraTemplateConfigured: !!hasuraToken,
+        hasuraTemplateConfigured: !!token,
       }
     });
 
@@ -92,4 +96,6 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+}, {
+  allowedRoles: ["developer"], // Only developers can access debug endpoints
+});
