@@ -122,15 +122,6 @@ async function createClerkInvitation(
   }
 }
 
-// GET method to help Next.js recognize this route
-export async function GET(request: NextRequest) {
-  return NextResponse.json({
-    error: "Method not allowed",
-    message: "This endpoint only supports POST requests for creating staff members",
-    allowedMethods: ["POST"]
-  }, { status: 405 });
-}
-
 // Secure staff creation endpoint - admin only
 export const POST = withAuth(
   async (request: NextRequest, session) => {
