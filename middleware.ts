@@ -3,9 +3,7 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { routes, getRequiredRole } from "./config/routes";
 import { hasRoleLevel } from "./lib/auth/permissions";
-import { getSessionClaims } from "./lib/auth/token-utils";
 
-// Define the middleware with debug mode
 export default clerkMiddleware(
   async (auth, req) => {
     const { pathname } = req.nextUrl;
@@ -23,7 +21,7 @@ export default clerkMiddleware(
       return NextResponse.next();
     }
 
-    // Skip system routes (they handle their own auth)
+    // Skip system routes
     if (routes.system(req)) {
       console.log("⚙️ System route, allowing access");
       return NextResponse.next();
@@ -42,22 +40,14 @@ export default clerkMiddleware(
       pathname.includes("oauth") ||
       pathname.includes("clerk");
 
-    // Get complete auth data using centralised token utilities
     try {
-      const { redirectToSignIn } = await auth();
-      const {
-        userId,
-        claims,
-        role: userRole,
-        hasCompleteData,
-        error,
-      } = await getSessionClaims();
+      // Use auth() directly in middleware context - THIS IS THE KEY FIX
+      const { userId, sessionClaims, redirectToSignIn } = await auth();
 
       // Handle unauthenticated users
       if (!userId) {
-        console.log("❌ No user ID found:", error);
+        console.log("❌ No user ID found");
 
-        // During OAuth flow, allow some time for authentication to complete
         if (isOAuthFlow) {
           console.log(
             "🔄 OAuth flow detected, allowing unauthenticated access temporarily"
@@ -71,7 +61,24 @@ export default clerkMiddleware(
         return redirectToSignIn();
       }
 
-      // If we don't have complete user data, handle carefully
+      // Extract role from session claims directly
+      const publicMetadata = sessionClaims?.publicMetadata as any;
+      const hasuraClaims = sessionClaims?.[
+        "https://hasura.io/jwt/claims"
+      ] as any;
+
+      const userRole =
+        hasuraClaims?.["x-hasura-default-role"] ||
+        publicMetadata?.role ||
+        "viewer";
+
+      const hasCompleteData = !!(
+        userId &&
+        userRole &&
+        (hasuraClaims || publicMetadata?.role)
+      );
+
+      // Handle incomplete data
       if (!hasCompleteData) {
         const allowedIncompleteDataPaths = [
           "/dashboard",
@@ -80,7 +87,6 @@ export default clerkMiddleware(
           "/api/webhooks/clerk",
           "/profile",
           "/settings",
-          // Add OAuth-related paths
           "/sso-callback",
           "/oauth",
           "/auth/callback",
@@ -90,102 +96,43 @@ export default clerkMiddleware(
           path => pathname === path || pathname.startsWith(path)
         );
 
-        // Allow OAuth flows to complete without interruption
-        if (isOAuthFlow) {
-          console.log(
-            "🔄 OAuth flow in progress, allowing access for completion",
-            {
-              pathname,
-              hasCompleteData,
-              userId: userId.substring(0, 8) + "...",
-              error,
-            }
-          );
+        if (isOAuthFlow || isAllowedPath) {
+          console.log("⏳ Allowing access for sync/OAuth completion");
           return NextResponse.next();
         }
 
-        if (isAllowedPath) {
-          console.log("⏳ Session not fully loaded, allowing sync path", {
-            pathname,
-            hasCompleteData,
-            userId: userId.substring(0, 8) + "...",
-            error,
-          });
-          return NextResponse.next();
+        if (pathname !== "/dashboard") {
+          console.log("⏳ Redirecting to dashboard for sync");
+          return NextResponse.redirect(new URL("/dashboard", req.url));
         } else {
-          // Add a delay before redirecting to allow for session loading
-          // Check if this is a fresh session that might still be loading
-          const sessionAge = claims?.iat
-            ? Date.now() / 1000 - claims.iat
-            : Infinity;
-          const isRecentSession = sessionAge < 30; // Less than 30 seconds old
-
-          if (isRecentSession) {
-            console.log(
-              "⏳ Recent session detected, allowing time for data sync",
-              {
-                sessionAge,
-                pathname,
-              }
-            );
-            return NextResponse.next();
-          }
-
-          // FIX: Only redirect if NOT already on dashboard to prevent redirect loops
-          if (pathname !== "/dashboard") {
-            console.log(
-              "⏳ Session not fully loaded, redirecting to dashboard for sync"
-            );
-            return NextResponse.redirect(new URL("/dashboard", req.url));
-          } else {
-            // Already on dashboard, allow access for sync to complete
-            console.log(
-              "⏳ Already on dashboard, allowing access for sync completion",
-              {
-                pathname,
-                hasCompleteData,
-                userId: userId.substring(0, 8) + "...",
-              }
-            );
-            return NextResponse.next();
-          }
+          console.log("⏳ On dashboard, allowing sync completion");
+          return NextResponse.next();
         }
       }
 
-      // Now we have complete user data
-      const finalUserRole = userRole || "viewer";
-
-      // Get required role for this route
+      // Check role-based permissions
       const requiredRole = getRequiredRole(pathname);
+      if (requiredRole && !hasRoleLevel(userRole, requiredRole)) {
+        console.log("❌ Insufficient permissions:", { userRole, requiredRole });
 
-      if (requiredRole) {
-        // Check if user has sufficient role using the centralised function
-        if (!hasRoleLevel(finalUserRole as Role, requiredRole)) {
-          console.log("❌ Insufficient permissions:", {
-            userRole: finalUserRole,
-            requiredRole,
-          });
-
-          // Return JSON error for API routes, redirect for pages
-          if (pathname.startsWith("/api/")) {
-            return NextResponse.json(
-              {
-                error: "Forbidden",
-                message: `Insufficient permissions. Required: ${requiredRole}, Current: ${finalUserRole}`,
-                code: "INSUFFICIENT_PERMISSIONS",
-                requiredRole,
-                currentRole: finalUserRole,
-              },
-              { status: 403 }
-            );
-          } else {
-            return NextResponse.redirect(
-              new URL(
-                `/unauthorised?reason=role_required&current=${finalUserRole}&required=${requiredRole}`,
-                req.url
-              )
-            );
-          }
+        if (pathname.startsWith("/api/")) {
+          return NextResponse.json(
+            {
+              error: "Forbidden",
+              message: `Insufficient permissions. Required: ${requiredRole}, Current: ${userRole}`,
+              code: "INSUFFICIENT_PERMISSIONS",
+              requiredRole,
+              currentRole: userRole,
+            },
+            { status: 403 }
+          );
+        } else {
+          return NextResponse.redirect(
+            new URL(
+              `/unauthorised?reason=role_required&current=${userRole}&required=${requiredRole}`,
+              req.url
+            )
+          );
         }
       }
 
@@ -194,7 +141,6 @@ export default clerkMiddleware(
     } catch (error) {
       console.error("❌ Auth error:", error);
 
-      // During OAuth flow, be more lenient with errors
       if (isOAuthFlow) {
         console.log(
           "🔄 OAuth flow detected, allowing access despite auth error"
@@ -202,7 +148,6 @@ export default clerkMiddleware(
         return NextResponse.next();
       }
 
-      // Return JSON error for API routes, redirect for pages
       if (pathname.startsWith("/api/")) {
         return NextResponse.json(
           {
@@ -221,5 +166,8 @@ export default clerkMiddleware(
 );
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+  ],
 };
