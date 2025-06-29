@@ -99,10 +99,11 @@ export function StrictDatabaseGuard({ children }: StrictDatabaseGuardProps) {
     }
     
     if (clerkLoaded && clerkUser && !gracePeriodEnded) {
-      // Give authentication flow minimal time to settle (reduced from 3s to 500ms)
+      // Give authentication flow minimal time to settle
+      // Increased to 1500ms to handle OAuth flows better
       const timer = setTimeout(() => {
         setGracePeriodEnded(true);
-      }, 500);
+      }, 1500);
 
       return () => clearTimeout(timer);
     }

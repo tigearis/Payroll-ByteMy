@@ -42,7 +42,7 @@ export default clerkMiddleware(
 
     try {
       // Use auth() directly in middleware context - THIS IS THE KEY FIX
-      const { userId, sessionClaims, redirectToSignIn } = await auth();
+      const { userId, sessionClaims, redirectToSignIn, getToken } = await auth();
 
       // Handle unauthenticated users
       if (!userId) {
@@ -61,11 +61,25 @@ export default clerkMiddleware(
         return redirectToSignIn();
       }
 
+      // CRITICAL: Use getToken() to retrieve JWT claims for OAuth flows
+      const token = await getToken({ template: "hasura" });
+      
       // Extract role from session claims directly
       const publicMetadata = sessionClaims?.publicMetadata as any;
-      const hasuraClaims = sessionClaims?.[
+      let hasuraClaims = sessionClaims?.[
         "https://hasura.io/jwt/claims"
       ] as any;
+
+      // If sessionClaims doesn't have JWT claims, decode from token (OAuth fix)
+      if (!hasuraClaims && token) {
+        try {
+          const base64Payload = token.split('.')[1];
+          const decodedPayload = JSON.parse(atob(base64Payload));
+          hasuraClaims = decodedPayload["https://hasura.io/jwt/claims"];
+        } catch (error) {
+          console.error("Failed to decode JWT token:", error);
+        }
+      }
 
       const userRole =
         hasuraClaims?.["x-hasura-default-role"] ||
@@ -96,18 +110,20 @@ export default clerkMiddleware(
           path => pathname === path || pathname.startsWith(path)
         );
 
+        // CRITICAL: Always allow dashboard access to prevent redirect loops
+        if (pathname === "/dashboard" || pathname.startsWith("/dashboard")) {
+          console.log("⏳ Dashboard access allowed for sync completion");
+          return NextResponse.next();
+        }
+
         if (isOAuthFlow || isAllowedPath) {
           console.log("⏳ Allowing access for sync/OAuth completion");
           return NextResponse.next();
         }
 
-        if (pathname !== "/dashboard") {
-          console.log("⏳ Redirecting to dashboard for sync");
-          return NextResponse.redirect(new URL("/dashboard", req.url));
-        } else {
-          console.log("⏳ On dashboard, allowing sync completion");
-          return NextResponse.next();
-        }
+        // Only redirect to dashboard if not already there
+        console.log("⏳ Redirecting to dashboard for sync");
+        return NextResponse.redirect(new URL("/dashboard", req.url));
       }
 
       // Check role-based permissions
@@ -167,7 +183,13 @@ export default clerkMiddleware(
 
 export const config = {
   matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|css|js)$).*)",
   ],
 };
