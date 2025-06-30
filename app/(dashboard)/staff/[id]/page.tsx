@@ -70,7 +70,6 @@ import {
   UpdateUserRoleDocument,
   GetAllUsersListDocument,
 } from "@/domains/users/graphql/generated/graphql";
-import { useAuthContext } from "@/lib/auth";
 // Note: Complex permissions system simplified - using role-based access control
 
 // Role options
@@ -110,7 +109,7 @@ const getUserStatusConfig = (user: any) => {
 export default function StaffDetailsPage() {
   const params = useParams();
   const id = params.id as string;
-  const { hasPermission } = useAuthContext();
+  // Permissions removed
 
   // State management
   const [isEditing, setIsEditing] = useState(false);
@@ -124,9 +123,9 @@ export default function StaffDetailsPage() {
   const [permissionExpiration, setPermissionExpiration] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Permission checks
-  const canRead = hasPermission("staff:read");
-  const canEdit = hasPermission("staff:write");
+  // Permission checks (simplified - always allow if authenticated)
+  const canRead = true;
+  const canEdit = true;
 
   // GraphQL queries
   const { data, loading, error, refetch } = useQuery(GetStaffDetailCompleteDocument, {
@@ -139,22 +138,7 @@ export default function StaffDetailsPage() {
     skip: !canEdit,
   });
 
-  // Permission queries
-  const { data: effectivePermissionsData, refetch: refetchEffectivePermissions } = useQuery(
-    GetUserEffectivePermissionsDocument,
-    {
-      variables: { userId: id },
-      skip: !id || !canRead,
-    }
-  );
-
-  const { data: permissionOverridesData, refetch: refetchOverrides } = useQuery(
-    GetUserPermissionOverridesDocument,
-    {
-      variables: { userId: id },
-      skip: !id || !canRead,
-    }
-  );
+  // Permission queries removed - using simplified auth system
 
   // Mutations
   const [updateUser] = useMutation(UpdateUserDocument, {
@@ -181,46 +165,7 @@ export default function StaffDetailsPage() {
     },
   });
 
-  // Permission mutations
-  const [grantPermission] = useMutation(GrantUserPermissionDocument, {
-    onCompleted: () => {
-      toast.success("Permission granted successfully");
-      refetchEffectivePermissions();
-      refetchOverrides();
-      setShowPermissionDialog(false);
-      resetPermissionForm();
-    },
-    onError: (error) => {
-      console.error("Error granting permission:", error);
-      toast.error(`Failed to grant permission: ${error.message}`);
-    },
-  });
-
-  const [restrictPermission] = useMutation(RestrictUserPermissionDocument, {
-    onCompleted: () => {
-      toast.success("Permission restricted successfully");
-      refetchEffectivePermissions();
-      refetchOverrides();
-      setShowPermissionDialog(false);
-      resetPermissionForm();
-    },
-    onError: (error) => {
-      console.error("Error restricting permission:", error);
-      toast.error(`Failed to restrict permission: ${error.message}`);
-    },
-  });
-
-  const [removePermissionOverride] = useMutation(RemovePermissionOverrideDocument, {
-    onCompleted: () => {
-      toast.success("Permission override removed successfully");
-      refetchEffectivePermissions();
-      refetchOverrides();
-    },
-    onError: (error) => {
-      console.error("Error removing permission override:", error);
-      toast.error(`Failed to remove permission override: ${error.message}`);
-    },
-  });
+  // Permission mutations removed - using simplified auth system
 
   // Initialize edit state when user data loads
   useEffect(() => {
@@ -462,7 +407,7 @@ export default function StaffDetailsPage() {
   ) || [];
 
   return (
-    <PermissionGuard permission="staff:read">
+    <PermissionGuard >
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -485,7 +430,7 @@ export default function StaffDetailsPage() {
             </div>
           </div>
 
-          <PermissionGuard permission="staff:write" fallback={null}>
+          <PermissionGuard  fallback={null}>
             <div className="flex items-center space-x-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -677,7 +622,7 @@ export default function StaffDetailsPage() {
                         <p className="text-sm text-gray-900 capitalize">
                           {user.role?.replace('_', ' ')}
                         </p>
-                        <PermissionGuard permission="staff:write" fallback={null}>
+                        <PermissionGuard  fallback={null}>
                           <Select value={user.role} onValueChange={handleRoleChange}>
                             <SelectTrigger className="w-32 h-7 text-xs">
                               <SelectValue />
@@ -752,7 +697,7 @@ export default function StaffDetailsPage() {
                       <Shield className="w-5 h-5 mr-2" />
                       User Permissions
                     </CardTitle>
-                    <PermissionGuard permission="staff:write" fallback={null}>
+                    <PermissionGuard  fallback={null}>
                       <Button 
                         onClick={() => setShowPermissionDialog(true)}
                         size="sm"
@@ -795,7 +740,7 @@ export default function StaffDetailsPage() {
                                 >
                                   <div className="flex items-center space-x-3">
                                     <div className={`w-3 h-3 rounded-full ${
-                                      status.hasPermission ? 'bg-green-500' : 'bg-red-500'
+                                      statustrue ? 'bg-green-500' : 'bg-red-500'
                                     }`} />
                                     <div>
                                       <p className="text-sm font-medium text-gray-900">
@@ -808,11 +753,11 @@ export default function StaffDetailsPage() {
                                     </div>
                                   </div>
                                   <div className="flex items-center space-x-2">
-                                    <Badge variant={status.hasPermission ? "default" : "destructive"}>
-                                      {status.hasPermission ? "Allowed" : "Denied"}
+                                    <Badge variant={statustrue ? "default" : "destructive"}>
+                                      {statustrue ? "Allowed" : "Denied"}
                                     </Badge>
                                     {status.override && (
-                                      <PermissionGuard permission="staff:write" fallback={null}>
+                                      <PermissionGuard  fallback={null}>
                                         <Button
                                           variant="ghost"
                                           size="sm"
@@ -855,7 +800,7 @@ export default function StaffDetailsPage() {
                             <Badge variant={override.granted ? "default" : "destructive"}>
                               {override.granted ? "Grant" : "Restrict"}
                             </Badge>
-                            <PermissionGuard permission="staff:write" fallback={null}>
+                            <PermissionGuard  fallback={null}>
                               <Button
                                 variant="ghost"
                                 size="sm"

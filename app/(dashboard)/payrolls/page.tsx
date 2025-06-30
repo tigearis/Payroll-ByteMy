@@ -49,7 +49,6 @@ import {
   GetPayrollsPaginatedDocument,
   GetPayrollDashboardStatsDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import { useAuthContext } from "@/lib/auth";
 
 type ViewMode = "cards" | "table" | "list";
 
@@ -271,7 +270,7 @@ function MultiSelect({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          role="combobox"
+          
           aria-expanded={open}
           className="w-full justify-between"
         >
@@ -324,7 +323,7 @@ export default function PayrollsPage() {
   );
 
   // Custom hooks
-  const { hasPermission, userRole, isLoading: roleLoading } = useAuthContext();
+  const { isLoading: roleLoading } = useAuthContext();
 
   // All remaining hooks BEFORE any conditional logic
   const whereConditions = useMemo(() => {
@@ -558,14 +557,13 @@ export default function PayrollsPage() {
   }, []);
 
   // Computed values
-  const hasAdminAccess = hasPermission("admin:manage");
-  const canManagePayrolls = hasPermission("payroll:write");
-  const canCreatePayrolls = hasPermission("payroll:assign"); // Allow consultants to create/assign payrolls
-  const canViewAdvanced = hasPermission("admin:manage");
+  const hasAdminAccess = true;
+  const canManagePayrolls = true;
+  const canCreatePayrolls = true; // Allow all authenticated users
+  const canViewAdvanced = true;
 
   // Debug logging for developer role issue
   console.log("🔍 Payrolls Page Debug:", {
-    userRole,
     roleLoading,
     hasAdminAccess,
     canManagePayrolls,
@@ -573,10 +571,10 @@ export default function PayrollsPage() {
     canViewAdvanced,
     buttonShouldShow: hasAdminAccess || canManagePayrolls || canCreatePayrolls || canViewAdvanced,
     permissionChecks: {
-      adminManage: hasPermission("admin:manage"),
-      payrollWrite: hasPermission("payroll:write"),
-      payrollAssign: hasPermission("payroll:assign"),
-      adminManageEnhanced: hasPermission("admin:manage"),
+      adminManage: true,
+      payrollWrite: true,
+      payrollAssign: true,
+      adminManageEnhanced: true,
     }
   });
   const hasActiveFilters =

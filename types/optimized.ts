@@ -53,7 +53,6 @@ export type {
 export type {
   Role,
   CustomPermission,
-} from './permissions';
 
 // ===========================
 // Re-exports for Backward Compatibility

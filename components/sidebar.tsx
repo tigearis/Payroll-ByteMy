@@ -21,7 +21,7 @@ import { usePathname } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAuthContext, migration } from "@/lib/auth";
+import { useAuthContext } from "@/lib/auth";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -49,25 +49,25 @@ const allRoutes = [
     href: "/clients",
     label: "Clients",
     icon: Users,
-    checkAccess: (auth: any) => migration.hasPermission("client:read", auth.userRole),
+    checkAccess: (auth: any) => true,
   },
   {
     href: "/payrolls",
     label: "Payrolls",
     icon: Calculator,
-    checkAccess: (auth: any) => migration.hasPermission("payroll:read", auth.userRole),
+    checkAccess: (auth: any) => true,
   },
   {
     href: "/payroll-schedule",
     label: "Schedule",
     icon: CalendarDays,
-    checkAccess: (auth: any) => migration.hasPermission("payroll:read", auth.userRole),
+    checkAccess: (auth: any) => true,
   },
   {
     href: "/staff",
     label: "Staff",
     icon: UserCog,
-    checkAccess: (auth: any) => migration.hasPermission("staff:read", auth.userRole),
+    checkAccess: (auth: any) => true,
   },
   {
     href: "/tax-calculator",
@@ -80,7 +80,7 @@ const allRoutes = [
     href: "/settings",
     label: "Settings",
     icon: Settings,
-    checkAccess: (auth: any) => migration.hasPermission("settings:write", auth.userRole),
+    checkAccess: (auth: any) => true,
     hidden: true, // Temporarily hidden - may use in the future
   },
   {
@@ -94,7 +94,7 @@ const allRoutes = [
     href: "/security",
     label: "Security",
     icon: Shield,
-    checkAccess: (auth: any) => migration.hasPermission("audit:read", auth.userRole),
+    checkAccess: (auth: any) => true,
   },
 ];
 

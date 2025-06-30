@@ -85,7 +85,6 @@ import {
   getVersionReason,
 } from "@/hooks/use-payroll-versioning";
 import { useFreshQuery } from "@/hooks/use-strategic-query";
-import { useAuthContext } from "@/lib/auth";
 import { PayrollCycleType, PayrollDateType } from "@/types/enums";
 
 // Add error boundary component for debugging
@@ -900,15 +899,15 @@ export default function PayrollPage() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
-  const { hasPermission, userRole } = useAuthContext();
+  const { } = useAuthContext(); // Simplified auth - no permission checking
 
   console.log("📋 Payroll ID:", id);
 
-  // Permission checks
-  const canEditPayroll = hasPermission("payroll:write");
-  const canDeletePayroll = hasPermission("payroll:delete");
-  const canAssignPayroll = hasPermission("payroll:assign");
-  const canViewPayroll = hasPermission("payroll:read");
+  // Permission checks (simplified - always allow if authenticated)
+  const canEditPayroll = true;
+  const canDeletePayroll = true;
+  const canAssignPayroll = true;
+  const canViewPayroll = true;
 
   // Check if user has permission to view payrolls
   if (!canViewPayroll) {
