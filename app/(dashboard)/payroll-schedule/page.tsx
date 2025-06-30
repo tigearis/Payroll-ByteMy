@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function PayrollSchedulePage() {
   return (
     <PermissionGuard 
-      permission="payroll:write" 
+       
       fallback={
         <div className="container mx-auto p-6">
           <Card>

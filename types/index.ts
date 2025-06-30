@@ -202,7 +202,6 @@ export type {
   RoleConfig,
   RolePermissions,
   UserMetadata
-} from "./permissions";
 
 // ===========================
 // Global Types

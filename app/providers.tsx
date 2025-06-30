@@ -7,7 +7,7 @@ import { StrictDatabaseGuard } from "@/components/auth/strict-database-guard";
 import { TokenRefreshBoundary } from "@/components/auth/token-refresh-boundary";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
-import { AuthProvider } from "@/lib/auth";
+// Auth provider removed - using simplified Clerk-only auth
 import { LayoutPreferencesProvider } from "@/lib/preferences/layout-preferences";
 
 // ================================
@@ -48,13 +48,11 @@ export function Providers({ children }: ProvidersProps) {
     <ErrorBoundary>
       <ClerkProvider>
         <AuthenticatedApolloProvider>
-          <AuthProvider>
-            <TokenRefreshBoundary>
-              <LayoutPreferencesProvider>
-                <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
-              </LayoutPreferencesProvider>
-            </TokenRefreshBoundary>
-          </AuthProvider>
+          <TokenRefreshBoundary>
+            <LayoutPreferencesProvider>
+              <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
+            </LayoutPreferencesProvider>
+          </TokenRefreshBoundary>
         </AuthenticatedApolloProvider>
       </ClerkProvider>
     </ErrorBoundary>

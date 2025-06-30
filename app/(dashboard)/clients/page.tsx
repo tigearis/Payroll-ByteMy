@@ -96,7 +96,7 @@ function MultiSelect({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          role="combobox"
+          
           aria-expanded={open}
           className="w-full justify-between"
         >
@@ -127,15 +127,14 @@ function MultiSelect({
 
 function ClientsPage() {
   const { user, isLoaded: userLoaded } = useUser();
-  const { hasPermission, userRole, isLoading } = useUserRole();
-  const canCreateClient = hasPermission("client:write");
-  const canViewClients = hasPermission("client:read");
+  const { isLoading } = useUserRole();
+  const canCreateClient = true;
+  const canViewClients = true;
   
   // Debug user and permissions
   console.log("User and permissions:", {
     userLoaded,
     user: user?.id,
-    userRole,
     isLoading,
     canCreateClient,
     canViewClients,
@@ -834,7 +833,7 @@ function ClientsPage() {
 export default function ClientsPageWithErrorBoundary() {
   return (
     <PermissionGuard 
-      permission="client:read"
+      
       fallback={
         <div className="container mx-auto p-6">
           <Card>

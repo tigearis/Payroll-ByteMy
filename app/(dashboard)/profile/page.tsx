@@ -76,7 +76,7 @@ const statusMapping = {
 
 export default function ProfilePage() {
   const { currentUser, currentUserId, loading: userLoading } = useCurrentUser();
-  const { userRole } = useUserRole();
+  // Role checking removed
   const [activeTab, setActiveTab] = useState("overview");
 
   const { data, loading, error } = useQuery(GetUserProfileCompleteDocument, {

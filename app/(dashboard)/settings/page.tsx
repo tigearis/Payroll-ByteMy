@@ -27,7 +27,6 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserRoleManagement } from "@/domains/users/components/user-role-management";
-import { useAuthContext } from "@/lib/auth";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 
 const roles = ["developer", "org_admin", "manager", "consultant", "viewer"];
@@ -39,7 +38,7 @@ const features = [
 ];
 
 export default function SettingsPage() {
-  const { userRole, hasAdminAccess, isLoading: authLoading } = useAuthContext();
+  // Auth simplified - no permission checking needed
   const { layoutType, setLayoutType, sidebarCollapsed, setSidebarCollapsed, toggleSidebar } = useLayoutPreferences();
   const [isLoading, setIsLoading] = useState(false);
   const [roleAccess, setRoleAccess] = useState({
@@ -507,7 +506,7 @@ export default function SettingsPage() {
 
           <TabsContent value="users">
             <PermissionGuard 
-              permission="admin:manage"
+              
               fallback={
                 <Card>
                   <CardHeader>
@@ -542,7 +541,7 @@ export default function SettingsPage() {
 
           <TabsContent value="security">
             <PermissionGuard 
-              permission="security:write"
+              
               fallback={
                 <Card>
                   <CardHeader>
@@ -684,7 +683,7 @@ export default function SettingsPage() {
         </Tabs>
       </form>
       <PermissionGuard 
-        permission="admin:manage"
+        
         fallback={
           <Card>
             <CardHeader>
