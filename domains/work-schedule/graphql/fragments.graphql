@@ -1,179 +1,160 @@
-# Work Schedule Domain Fragments
+# Work Schedule Domain Fragments with Capacity Planning
 # Security Classification: MEDIUM - Employee scheduling and time management
-# SOC2 Compliance: Employee work hour data with privacy controls
-#
-# Consolidated fragment structure (reduced from 31 to 15 fragments)
-# Removed 9 unused fragments, consolidated 4 sets of near-duplicates
 
-# Core fragments (3)
-fragment WorkScheduleCore on workSchedules {
+# Core fragments with new capacity fields
+fragment WorkScheduleCore on workSchedule {
   id
   userId
   workDay
   workHours
+  adminTimeHours
+  payrollCapacityHours
+  usesDefaultAdminTime
   createdAt
   updatedAt
 }
 
-fragment WorkScheduleBasic on workSchedules {
+fragment WorkScheduleBasic on workSchedule {
   ...WorkScheduleCore
 }
 
-fragment WorkScheduleMinimal on workSchedules {
+fragment WorkScheduleMinimal on workSchedule {
   id
   userId
   workDay
   workHours
+  adminTimeHours
+  payrollCapacityHours
 }
 
-# User relationship fragments (4)
-fragment WorkScheduleWithUser on workSchedules {
+# User relationship fragments
+fragment WorkScheduleWithUser on workSchedule {
   ...WorkScheduleBasic
-  scheduleOwner {
+  user {
     id
     name
     email
     role
+    defaultAdminTimePercentage
   }
 }
 
-# Internal fragment for complete user details
-fragment WorkScheduleWithUserComplete on workSchedules {
+fragment WorkScheduleComplete on workSchedule {
   ...WorkScheduleBasic
-  workScheduleUser {
-    id
-    name
-    email
-    role
-    managerId
-    managerUser {
-      id
-      name
-      email
-    }
-  }
-}
-
-fragment WorkScheduleComplete on workSchedules {
-  ...WorkScheduleWithUserComplete
-}
-
-fragment TeamWorkSchedule on workSchedules {
-  ...WorkScheduleBasic
-  scheduleOwner {
+  user {
     id
     name
     email
     role
     managerId
+    defaultAdminTimePercentage
+    isStaff
   }
 }
 
-fragment ManagerWorkScheduleView on workSchedules {
+fragment TeamWorkSchedule on workSchedule {
   ...WorkScheduleBasic
-  workScheduleUser {
+  user {
     id
     name
     email
     role
+    managerId
+    defaultAdminTimePercentage
+    isStaff
   }
 }
 
-# View-specific fragments (5)
-fragment WorkScheduleListItem on workSchedules {
-  ...WorkScheduleMinimal
+# Capacity planning fragments
+fragment WorkScheduleCapacity on workSchedule {
+  id
+  userId
+  workDay
+  workHours
+  adminTimeHours
+  payrollCapacityHours
+  usesDefaultAdminTime
+  user {
+    id
+    name
+    defaultAdminTimePercentage
+  }
+}
+
+fragment WorkScheduleListItem on workSchedule {
+  ...WorkScheduleCapacity
+}
+
+fragment MyWorkSchedule on workSchedule {
+  ...WorkScheduleComplete
+}
+
+fragment WorkScheduleCalendarItem on workSchedule {
+  id
+  workDay
+  workHours
+  adminTimeHours
+  payrollCapacityHours
+  user {
+    id
+    name
+  }
+}
+
+fragment WorkScheduleMonthlyView on workSchedule {
+  ...WorkScheduleCalendarItem
+}
+
+fragment WorkScheduleConflictCheck on workSchedule {
+  id
+  userId
+  workDay
+  workHours
+  payrollCapacityHours
+}
+
+fragment WorkScheduleDashboardCard on workSchedule {
+  ...WorkScheduleCapacity
+  user {
+    id
+    name
+    email
+    role
+    defaultAdminTimePercentage
+    isStaff
+  }
+}
+
+fragment WorkScheduleWeeklyView on workSchedule {
+  ...WorkScheduleDashboardCard
+}
+
+# Audit and tracking fragments
+fragment WorkScheduleChangeLog on workSchedule {
+  id
+  userId
+  workDay
+  workHours
+  adminTimeHours
+  payrollCapacityHours
+  usesDefaultAdminTime
   createdAt
   updatedAt
-  scheduleOwner {
+}
+
+fragment WorkScheduleForAudit on workSchedule {
+  ...WorkScheduleChangeLog
+  user {
     id
     name
     role
   }
 }
 
-fragment WorkScheduleTableRow on workSchedules {
-  ...WorkScheduleListItem
-}
-
-fragment WorkScheduleDashboardCard on workSchedules {
-  ...WorkScheduleMinimal
-  scheduleOwner {
-    id
-    name
-  }
-}
-
-fragment WorkScheduleCalendarItem on workSchedules {
-  ...WorkScheduleMinimal
-  scheduleOwner {
-    id
-    name
-  }
-}
-
-fragment WorkScheduleWeeklyView on workSchedules {
-  ...WorkScheduleMinimal
-  createdAt
-  updatedAt
-}
-
-fragment WorkScheduleMonthlyView on workSchedules {
-  id
+fragment WorkSchedulePattern on workSchedule {
   workDay
   workHours
-  scheduleOwner {
-    id
-    name
-  }
-}
-
-# Specialized fragments (3)
-fragment WorkScheduleCapacity on workSchedules {
-  id
-  workDay
-  workHours
-  scheduleOwner {
-    id
-    name
-    role
-  }
-}
-
-fragment WorkScheduleConflictCheck on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-  scheduleOwner {
-    id
-    name
-  }
-}
-
-fragment WorkScheduleForAudit on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-  createdAt
-  updatedAt
-  # User details excluded for audit privacy
-}
-
-fragment WorkScheduleChangeLog on workSchedules {
-  id
-  userId
-  workDay
-  workHours
-  updatedAt
-}
-
-fragment WorkSchedulePattern on workSchedules {
-  workDay
-  workHours
-}
-
-# User-specific fragments (1) - consolidated MyWorkSchedule into WorkScheduleBasic usage
-fragment MyWorkSchedule on workSchedules {
-  ...WorkScheduleBasic
+  adminTimeHours
+  payrollCapacityHours
+  usesDefaultAdminTime
 }

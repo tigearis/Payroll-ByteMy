@@ -14,7 +14,7 @@ export const POST = withAuth(
 
     try {
       // Rate limiting - 20 requests per hour
-      if (!checkRateLimit(`regenerate-dates-${session.userId}`, 20, 3600000)) {
+      if (!checkRateLimit(`regenerate-dates-${session.userId}`, { limit: 20, windowMs: 3600000 })) {
         return NextResponse.json(
           {
             error: "Rate limit exceeded. Maximum 20 regenerations per hour.",
@@ -67,7 +67,6 @@ export const POST = withAuth(
         dateRange: { startDate, endDate },
         performedBy: {
           userId: session.userId,
-          role: session.role,
           timestamp: new Date().toISOString(),
         },
       });
@@ -81,6 +80,5 @@ export const POST = withAuth(
         { status: 500 }
       );
     }
-  },
-  { allowedRoles: ["developer", "manager"] } // Admins and managers can regenerate dates
+  }
 );

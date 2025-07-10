@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -26,6 +25,7 @@ import {
 } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,7 +48,7 @@ import {
   GetPayrollFamilyDatesDocument,
   GetPayrollDatesDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import { NotesModal } from "./notes-modal";
+import { NotesListModal } from "./notes-list-modal";
 // Fragment masking disabled - no longer needed
 
 interface PayrollDate {
@@ -264,25 +264,11 @@ function PayrollDatesTable({
       header: "Notes",
       cell: ({ row }) => (
         <div>
-          <NotesModal
-            note={{
-              id: row.original.id,
-              content: row.original.notes || "",
-            }}
+          <NotesListModal
+            payrollDateId={row.original.id}
+            existingNotes={row.original.notes}
+            payrollDate={row.original.adjusted_eft_date}
             refetchNotes={() => refetch()}
-            trigger={
-              row.original.notes ? (
-                <Button variant="ghost" size="sm" className="h-auto p-1">
-                  <div className="max-w-[150px] truncate text-left">
-                    {row.original.notes}
-                  </div>
-                </Button>
-              ) : (
-                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-600">
-                  Add note
-                </Button>
-              )
-            }
           />
         </div>
       ),

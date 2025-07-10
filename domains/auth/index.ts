@@ -32,8 +32,5 @@
 // Export domain-specific GraphQL operations and types
 export * from "./graphql/generated/graphql";
 
-// Hook exports
-export * from "./hooks";
-
 // Note: Fragment masking and gql utilities are exported from shared/types/generated
 // Import those directly when needed to avoid conflicts

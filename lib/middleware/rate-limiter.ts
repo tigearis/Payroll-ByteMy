@@ -240,7 +240,7 @@ export class RateLimiter {
   }
 
   private getRouteConfig(route: string): RateLimitConfig {
-    return this.ROUTE_LIMITS[route] || this.ROUTE_LIMITS.default;
+    return this.ROUTE_LIMITS[route] || this.ROUTELIMITS.default;
   }
 
   private generateKey(

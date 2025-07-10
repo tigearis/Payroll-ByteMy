@@ -28,7 +28,7 @@ import {
   isAuthError,
   getSimpleErrorMessage,
   type GraphQLErrorDetails,
-} from "@/lib/utils/handle-graphql-error";
+} from "../../utils/handle-graphql-error";
 import type { UnifiedClientOptions } from "../types";
 
 /**

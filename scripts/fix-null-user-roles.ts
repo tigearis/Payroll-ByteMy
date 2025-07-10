@@ -1,3 +1,4 @@
+// fix-null-user-roles.ts
 #!/usr/bin/env node
 import { config } from "dotenv";
 import { adminApolloClient } from "@/lib/apollo/unified-client";

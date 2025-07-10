@@ -3,13 +3,46 @@ table:
   schema: public
 configuration:
   column_config:
+    approval_date:
+      custom_name: approvalDate
+    approved_by:
+      custom_name: approvedBy
+    billing_plan_id:
+      custom_name: billingPlanId
+    client_id:
+      custom_name: clientId
+    created_at:
+      custom_name: createdAt
+    hourly_rate:
+      custom_name: hourlyRate
     invoice_id:
       custom_name: invoiceId
+    is_approved:
+      custom_name: isApproved
     payroll_id:
       custom_name: payrollId
+    service_name:
+      custom_name: serviceName
+    staff_user_id:
+      custom_name: staffUserId
+    total_amount:
+      custom_name: totalAmount
+    updated_at:
+      custom_name: updatedAt
   custom_column_names:
+    approval_date: approvalDate
+    approved_by: approvedBy
+    billing_plan_id: billingPlanId
+    client_id: clientId
+    created_at: createdAt
+    hourly_rate: hourlyRate
     invoice_id: invoiceId
+    is_approved: isApproved
     payroll_id: payrollId
+    service_name: serviceName
+    staff_user_id: staffUserId
+    total_amount: totalAmount
+    updated_at: updatedAt
   custom_name: billingItems
   custom_root_fields:
     delete: bulkDeleteBillingItems
@@ -22,9 +55,35 @@ configuration:
     update: bulkUpdateBillingItems
     update_by_pk: updateBillingItemById
 object_relationships:
+  - name: approver
+    using:
+      foreign_key_constraint_on: approved_by
+  - name: billingPlanItems
+    using:
+      foreign_key_constraint_on: billing_plan_id
+  - name: billingServicePlan
+    using:
+      foreign_key_constraint_on: service_id
+  - name: client
+    using:
+      foreign_key_constraint_on: client_id
   - name: relatedPayroll
     using:
       foreign_key_constraint_on: payroll_id
+  - name: staffUser
+    using:
+      foreign_key_constraint_on: staff_user_id
+  - name: user
+    using:
+      foreign_key_constraint_on: confirmed_by
+array_relationships:
+  - name: timeEntries
+    using:
+      foreign_key_constraint_on:
+        column: billing_item_id
+        table:
+          name: time_entries
+          schema: public
 insert_permissions:
   - role: developer
     permission:
@@ -35,8 +94,24 @@ select_permissions:
   - role: consultant
     permission:
       columns:
+        - id
         - invoice_id
         - payroll_id
+        - billing_plan_id
+        - client_id
+        - staff_user_id
+        - description
+        - quantity
+        - unit_price
+        - amount
+        - service_name
+        - hourly_rate
+        - total_amount
+        - is_approved
+        - approval_date
+        - approved_by
+        - created_at
+        - updated_at
       filter: {}
     comment: Consultants can view relevant data
   - role: developer
@@ -48,24 +123,72 @@ select_permissions:
   - role: manager
     permission:
       columns:
+        - id
         - invoice_id
         - payroll_id
+        - billing_plan_id
+        - client_id
+        - staff_user_id
+        - description
+        - quantity
+        - unit_price
+        - amount
+        - service_name
+        - hourly_rate
+        - total_amount
+        - is_approved
+        - approval_date
+        - approved_by
+        - created_at
+        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Managers can view all data
   - role: org_admin
     permission:
       columns:
+        - id
         - invoice_id
         - payroll_id
+        - billing_plan_id
+        - client_id
+        - staff_user_id
+        - description
+        - quantity
+        - unit_price
+        - amount
+        - service_name
+        - hourly_rate
+        - total_amount
+        - is_approved
+        - approval_date
+        - approved_by
+        - created_at
+        - updated_at
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all data
   - role: viewer
     permission:
       columns:
+        - id
         - invoice_id
         - payroll_id
+        - billing_plan_id
+        - client_id
+        - staff_user_id
+        - description
+        - quantity
+        - unit_price
+        - amount
+        - service_name
+        - hourly_rate
+        - total_amount
+        - is_approved
+        - approval_date
+        - approved_by
+        - created_at
+        - updated_at
       filter: {}
     comment: Viewers can see basic information
 update_permissions:

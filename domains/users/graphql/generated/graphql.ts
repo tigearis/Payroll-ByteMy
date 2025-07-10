@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-06-29T05:55:23.200Z
+ * Generated: 2025-07-10T12:45:08.643Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -57,9 +57,16 @@ export type Scalars = {
   permission_action: { input: any; output: any; }
   timestamp: { input: any; output: any; }
   timestamptz: { input: string; output: string; }
+  user_position: { input: any; output: any; }
   user_role: { input: any; output: any; }
   user_status_enum: { input: any; output: any; }
   uuid: { input: string; output: string; }
+};
+
+export type AssignmentCalendarInput = {
+  endDate: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 export type AuditEventInput = {
@@ -83,255 +90,6 @@ export type BigintComparisonExp = {
   _lte?: InputMaybe<Scalars['bigint']['input']>;
   _neq?: InputMaybe<Scalars['bigint']['input']>;
   _nin?: InputMaybe<Array<Scalars['bigint']['input']>>;
-};
-
-export type BillingInvoiceItemAggregateBoolExp = {
-  count?: InputMaybe<BillingInvoiceItemAggregateBoolExpCount>;
-};
-
-/** order by aggregate values of table "billing_invoice_item" */
-export type BillingInvoiceItemAggregateOrderBy = {
-  avg?: InputMaybe<BillingInvoiceItemAvgOrderBy>;
-  count?: InputMaybe<OrderBy>;
-  max?: InputMaybe<BillingInvoiceItemMaxOrderBy>;
-  min?: InputMaybe<BillingInvoiceItemMinOrderBy>;
-  stddev?: InputMaybe<BillingInvoiceItemStddevOrderBy>;
-  stddevPop?: InputMaybe<BillingInvoiceItemStddevPopOrderBy>;
-  stddevSamp?: InputMaybe<BillingInvoiceItemStddevSampOrderBy>;
-  sum?: InputMaybe<BillingInvoiceItemSumOrderBy>;
-  varPop?: InputMaybe<BillingInvoiceItemVarPopOrderBy>;
-  varSamp?: InputMaybe<BillingInvoiceItemVarSampOrderBy>;
-  variance?: InputMaybe<BillingInvoiceItemVarianceOrderBy>;
-};
-
-/** input type for inserting array relation for remote table "billing_invoice_item" */
-export type BillingInvoiceItemArrRelInsertInput = {
-  data: Array<BillingInvoiceItemInsertInput>;
-  /** upsert condition */
-  onConflict?: InputMaybe<BillingInvoiceItemOnConflict>;
-};
-
-/** order by avg() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemAvgOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** Boolean expression to filter rows from the table "billing_invoice_item". All fields are combined with a logical 'AND'. */
-export type BillingInvoiceItemBoolExp = {
-  _and?: InputMaybe<Array<BillingInvoiceItemBoolExp>>;
-  _not?: InputMaybe<BillingInvoiceItemBoolExp>;
-  _or?: InputMaybe<Array<BillingInvoiceItemBoolExp>>;
-  amount?: InputMaybe<NumericComparisonExp>;
-  billingInvoice?: InputMaybe<BillingInvoiceBoolExp>;
-  createdAt?: InputMaybe<TimestamptzComparisonExp>;
-  description?: InputMaybe<StringComparisonExp>;
-  id?: InputMaybe<UuidComparisonExp>;
-  invoiceId?: InputMaybe<UuidComparisonExp>;
-  quantity?: InputMaybe<IntComparisonExp>;
-  unitPrice?: InputMaybe<NumericComparisonExp>;
-  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
-
-/** unique or primary key constraints on table "billing_invoice_item" */
-export type BillingInvoiceItemConstraint =
-  /** unique or primary key constraint on columns "id" */
-  | 'billing_invoice_item_pkey'
-  | '%future added value';
-
-/** input type for incrementing numeric columns in table "billing_invoice_item" */
-export type BillingInvoiceItemIncInput = {
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-};
-
-/** input type for inserting data into table "billing_invoice_item" */
-export type BillingInvoiceItemInsertInput = {
-  billingInvoice?: InputMaybe<BillingInvoiceObjRelInsertInput>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** order by max() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemMaxOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  createdAt?: InputMaybe<OrderBy>;
-  description?: InputMaybe<OrderBy>;
-  id?: InputMaybe<OrderBy>;
-  invoiceId?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-  updatedAt?: InputMaybe<OrderBy>;
-};
-
-/** order by min() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemMinOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  createdAt?: InputMaybe<OrderBy>;
-  description?: InputMaybe<OrderBy>;
-  id?: InputMaybe<OrderBy>;
-  invoiceId?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-  updatedAt?: InputMaybe<OrderBy>;
-};
-
-/** on_conflict condition type for table "billing_invoice_item" */
-export type BillingInvoiceItemOnConflict = {
-  constraint: BillingInvoiceItemConstraint;
-  updateColumns?: Array<BillingInvoiceItemUpdateColumn>;
-  where?: InputMaybe<BillingInvoiceItemBoolExp>;
-};
-
-/** Ordering options when selecting data from "billing_invoice_item". */
-export type BillingInvoiceItemOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  billingInvoice?: InputMaybe<BillingInvoiceOrderBy>;
-  createdAt?: InputMaybe<OrderBy>;
-  description?: InputMaybe<OrderBy>;
-  id?: InputMaybe<OrderBy>;
-  invoiceId?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-  updatedAt?: InputMaybe<OrderBy>;
-};
-
-/** primary key columns input for table: billing_invoice_item */
-export type BillingInvoiceItemPkColumnsInput = {
-  id: Scalars['uuid']['input'];
-};
-
-/** select columns of table "billing_invoice_item" */
-export type BillingInvoiceItemSelectColumn =
-  /** column name */
-  | 'amount'
-  /** column name */
-  | 'createdAt'
-  /** column name */
-  | 'description'
-  /** column name */
-  | 'id'
-  /** column name */
-  | 'invoiceId'
-  /** column name */
-  | 'quantity'
-  /** column name */
-  | 'unitPrice'
-  /** column name */
-  | 'updatedAt'
-  | '%future added value';
-
-/** input type for updating data in table "billing_invoice_item" */
-export type BillingInvoiceItemSetInput = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** order by stddev() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemStddevOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** order by stddevPop() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemStddevPopOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** order by stddevSamp() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemStddevSampOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** Streaming cursor of the table "billing_invoice_item" */
-export type BillingInvoiceItemStreamCursorInput = {
-  /** Stream column input with initial value */
-  initialValue: BillingInvoiceItemStreamCursorValueInput;
-  /** cursor ordering */
-  ordering?: InputMaybe<CursorOrdering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type BillingInvoiceItemStreamCursorValueInput = {
-  amount?: InputMaybe<Scalars['numeric']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** order by sum() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemSumOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** update columns of table "billing_invoice_item" */
-export type BillingInvoiceItemUpdateColumn =
-  /** column name */
-  | 'createdAt'
-  /** column name */
-  | 'description'
-  /** column name */
-  | 'id'
-  /** column name */
-  | 'invoiceId'
-  /** column name */
-  | 'quantity'
-  /** column name */
-  | 'unitPrice'
-  /** column name */
-  | 'updatedAt'
-  | '%future added value';
-
-export type BillingInvoiceItemUpdates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<BillingInvoiceItemIncInput>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<BillingInvoiceItemSetInput>;
-  /** filter the rows which have to be updated */
-  where: BillingInvoiceItemBoolExp;
-};
-
-/** order by varPop() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemVarPopOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** order by varSamp() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemVarSampOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** order by variance() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemVarianceOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
@@ -380,11 +138,188 @@ export type BpcharComparisonExp = {
   _similar?: InputMaybe<Scalars['bpchar']['input']>;
 };
 
-export type ComplianceReportInput = {
-  endDate: Scalars['String']['input'];
-  includeDetails?: InputMaybe<Scalars['Boolean']['input']>;
-  reportType: Scalars['String']['input'];
-  startDate: Scalars['String']['input'];
+/** Boolean expression to filter rows from the table "client_services_with_rates". All fields are combined with a logical 'AND'. */
+export type ClientServicesWithRatesBoolExp = {
+  _and?: InputMaybe<Array<ClientServicesWithRatesBoolExp>>;
+  _not?: InputMaybe<ClientServicesWithRatesBoolExp>;
+  _or?: InputMaybe<Array<ClientServicesWithRatesBoolExp>>;
+  agreementId?: InputMaybe<UuidComparisonExp>;
+  billingFrequency?: InputMaybe<StringComparisonExp>;
+  billingUnit?: InputMaybe<StringComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  clientName?: InputMaybe<StringComparisonExp>;
+  customRate?: InputMaybe<NumericComparisonExp>;
+  effectiveDate?: InputMaybe<DateComparisonExp>;
+  effectiveRate?: InputMaybe<NumericComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isEnabled?: InputMaybe<BooleanComparisonExp>;
+  serviceDescription?: InputMaybe<StringComparisonExp>;
+  serviceId?: InputMaybe<UuidComparisonExp>;
+  serviceName?: InputMaybe<StringComparisonExp>;
+  standardRate?: InputMaybe<NumericComparisonExp>;
+};
+
+/** Ordering options when selecting data from "client_services_with_rates". */
+export type ClientServicesWithRatesOrderBy = {
+  agreementId?: InputMaybe<OrderBy>;
+  billingFrequency?: InputMaybe<OrderBy>;
+  billingUnit?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  clientName?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  effectiveDate?: InputMaybe<OrderBy>;
+  effectiveRate?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isEnabled?: InputMaybe<OrderBy>;
+  serviceDescription?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  serviceName?: InputMaybe<OrderBy>;
+  standardRate?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "client_services_with_rates" */
+export type ClientServicesWithRatesSelectColumn =
+  /** column name */
+  | 'agreementId'
+  /** column name */
+  | 'billingFrequency'
+  /** column name */
+  | 'billingUnit'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'clientName'
+  /** column name */
+  | 'customRate'
+  /** column name */
+  | 'effectiveDate'
+  /** column name */
+  | 'effectiveRate'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isEnabled'
+  /** column name */
+  | 'serviceDescription'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'serviceName'
+  /** column name */
+  | 'standardRate'
+  | '%future added value';
+
+/** Streaming cursor of the table "client_services_with_rates" */
+export type ClientServicesWithRatesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ClientServicesWithRatesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ClientServicesWithRatesStreamCursorValueInput = {
+  agreementId?: InputMaybe<Scalars['uuid']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  clientName?: InputMaybe<Scalars['String']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  effectiveDate?: InputMaybe<Scalars['date']['input']>;
+  effectiveRate?: InputMaybe<Scalars['numeric']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  serviceDescription?: InputMaybe<Scalars['String']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceName?: InputMaybe<Scalars['String']['input']>;
+  standardRate?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "consultant_capacity_overview". All fields are combined with a logical 'AND'. */
+export type ConsultantCapacityOverviewBoolExp = {
+  _and?: InputMaybe<Array<ConsultantCapacityOverviewBoolExp>>;
+  _not?: InputMaybe<ConsultantCapacityOverviewBoolExp>;
+  _or?: InputMaybe<Array<ConsultantCapacityOverviewBoolExp>>;
+  adminTimeHours?: InputMaybe<NumericComparisonExp>;
+  adminTimePercentageActual?: InputMaybe<NumericComparisonExp>;
+  defaultAdminTimePercentage?: InputMaybe<NumericComparisonExp>;
+  email?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  payrollCapacityHours?: InputMaybe<NumericComparisonExp>;
+  position?: InputMaybe<UserPositionComparisonExp>;
+  usesDefaultAdminTime?: InputMaybe<BooleanComparisonExp>;
+  workDay?: InputMaybe<StringComparisonExp>;
+  workHours?: InputMaybe<NumericComparisonExp>;
+};
+
+/** Ordering options when selecting data from "consultant_capacity_overview". */
+export type ConsultantCapacityOverviewOrderBy = {
+  adminTimeHours?: InputMaybe<OrderBy>;
+  adminTimePercentageActual?: InputMaybe<OrderBy>;
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  email?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  payrollCapacityHours?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
+  usesDefaultAdminTime?: InputMaybe<OrderBy>;
+  workDay?: InputMaybe<OrderBy>;
+  workHours?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "consultant_capacity_overview" */
+export type ConsultantCapacityOverviewSelectColumn =
+  /** column name */
+  | 'adminTimeHours'
+  /** column name */
+  | 'adminTimePercentageActual'
+  /** column name */
+  | 'defaultAdminTimePercentage'
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'payrollCapacityHours'
+  /** column name */
+  | 'position'
+  /** column name */
+  | 'usesDefaultAdminTime'
+  /** column name */
+  | 'workDay'
+  /** column name */
+  | 'workHours'
+  | '%future added value';
+
+/** Streaming cursor of the table "consultant_capacity_overview" */
+export type ConsultantCapacityOverviewStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ConsultantCapacityOverviewStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ConsultantCapacityOverviewStreamCursorValueInput = {
+  adminTimeHours?: InputMaybe<Scalars['numeric']['input']>;
+  adminTimePercentageActual?: InputMaybe<Scalars['numeric']['input']>;
+  defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  payrollCapacityHours?: InputMaybe<Scalars['numeric']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  usesDefaultAdminTime?: InputMaybe<Scalars['Boolean']['input']>;
+  workDay?: InputMaybe<Scalars['String']['input']>;
+  workHours?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** ordering argument of a cursor */
@@ -406,6 +341,940 @@ export type DateComparisonExp = {
   _lte?: InputMaybe<Scalars['date']['input']>;
   _neq?: InputMaybe<Scalars['date']['input']>;
   _nin?: InputMaybe<Array<Scalars['date']['input']>>;
+};
+
+export type EmailDraftsAggregateBoolExp = {
+  count?: InputMaybe<EmailDraftsAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "email_drafts" */
+export type EmailDraftsAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<EmailDraftsMaxOrderBy>;
+  min?: InputMaybe<EmailDraftsMinOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type EmailDraftsAppendInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  variableValues?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "email_drafts" */
+export type EmailDraftsArrRelInsertInput = {
+  data: Array<EmailDraftsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<EmailDraftsOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "email_drafts". All fields are combined with a logical 'AND'. */
+export type EmailDraftsBoolExp = {
+  _and?: InputMaybe<Array<EmailDraftsBoolExp>>;
+  _not?: InputMaybe<EmailDraftsBoolExp>;
+  _or?: InputMaybe<Array<EmailDraftsBoolExp>>;
+  businessContext?: InputMaybe<JsonbComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  emailTemplate?: InputMaybe<EmailTemplatesBoolExp>;
+  htmlContent?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  recipientEmails?: InputMaybe<StringArrayComparisonExp>;
+  scheduledFor?: InputMaybe<TimestamptzComparisonExp>;
+  subject?: InputMaybe<StringComparisonExp>;
+  templateId?: InputMaybe<UuidComparisonExp>;
+  textContent?: InputMaybe<StringComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+  variableValues?: InputMaybe<JsonbComparisonExp>;
+};
+
+/** unique or primary key constraints on table "email_drafts" */
+export type EmailDraftsConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'email_drafts_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type EmailDraftsDeleteAtPathInput = {
+  businessContext?: InputMaybe<Array<Scalars['String']['input']>>;
+  variableValues?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type EmailDraftsDeleteElemInput = {
+  businessContext?: InputMaybe<Scalars['Int']['input']>;
+  variableValues?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type EmailDraftsDeleteKeyInput = {
+  businessContext?: InputMaybe<Scalars['String']['input']>;
+  variableValues?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "email_drafts" */
+export type EmailDraftsInsertInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  emailTemplate?: InputMaybe<EmailTemplatesObjRelInsertInput>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+  variableValues?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** order by max() on columns of table "email_drafts" */
+export type EmailDraftsMaxOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "email_drafts" */
+export type EmailDraftsMinOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "email_drafts" */
+export type EmailDraftsOnConflict = {
+  constraint: EmailDraftsConstraint;
+  updateColumns?: Array<EmailDraftsUpdateColumn>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+/** Ordering options when selecting data from "email_drafts". */
+export type EmailDraftsOrderBy = {
+  businessContext?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  emailTemplate?: InputMaybe<EmailTemplatesOrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+  variableValues?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: email_drafts */
+export type EmailDraftsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type EmailDraftsPrependInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  variableValues?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "email_drafts" */
+export type EmailDraftsSelectColumn =
+  /** column name */
+  | 'businessContext'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'recipientEmails'
+  /** column name */
+  | 'scheduledFor'
+  /** column name */
+  | 'subject'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'textContent'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'userId'
+  /** column name */
+  | 'variableValues'
+  | '%future added value';
+
+/** input type for updating data in table "email_drafts" */
+export type EmailDraftsSetInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+  variableValues?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** Streaming cursor of the table "email_drafts" */
+export type EmailDraftsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: EmailDraftsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type EmailDraftsStreamCursorValueInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+  variableValues?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** update columns of table "email_drafts" */
+export type EmailDraftsUpdateColumn =
+  /** column name */
+  | 'businessContext'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'recipientEmails'
+  /** column name */
+  | 'scheduledFor'
+  /** column name */
+  | 'subject'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'textContent'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'userId'
+  /** column name */
+  | 'variableValues'
+  | '%future added value';
+
+export type EmailDraftsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<EmailDraftsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<EmailDraftsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<EmailDraftsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<EmailDraftsDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<EmailDraftsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<EmailDraftsSetInput>;
+  /** filter the rows which have to be updated */
+  where: EmailDraftsBoolExp;
+};
+
+export type EmailSendLogsAggregateBoolExp = {
+  count?: InputMaybe<EmailSendLogsAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "email_send_logs" */
+export type EmailSendLogsAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<EmailSendLogsMaxOrderBy>;
+  min?: InputMaybe<EmailSendLogsMinOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type EmailSendLogsAppendInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  resendResponse?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "email_send_logs" */
+export type EmailSendLogsArrRelInsertInput = {
+  data: Array<EmailSendLogsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<EmailSendLogsOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "email_send_logs". All fields are combined with a logical 'AND'. */
+export type EmailSendLogsBoolExp = {
+  _and?: InputMaybe<Array<EmailSendLogsBoolExp>>;
+  _not?: InputMaybe<EmailSendLogsBoolExp>;
+  _or?: InputMaybe<Array<EmailSendLogsBoolExp>>;
+  businessContext?: InputMaybe<JsonbComparisonExp>;
+  clickedAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  deliveredAt?: InputMaybe<TimestamptzComparisonExp>;
+  emailTemplate?: InputMaybe<EmailTemplatesBoolExp>;
+  errorMessage?: InputMaybe<StringComparisonExp>;
+  htmlContent?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  openedAt?: InputMaybe<TimestamptzComparisonExp>;
+  recipientEmails?: InputMaybe<StringArrayComparisonExp>;
+  resendEmailId?: InputMaybe<StringComparisonExp>;
+  resendResponse?: InputMaybe<JsonbComparisonExp>;
+  scheduledFor?: InputMaybe<TimestamptzComparisonExp>;
+  sendStatus?: InputMaybe<StringComparisonExp>;
+  senderUser?: InputMaybe<UsersBoolExp>;
+  senderUserId?: InputMaybe<UuidComparisonExp>;
+  sentAt?: InputMaybe<TimestamptzComparisonExp>;
+  subject?: InputMaybe<StringComparisonExp>;
+  templateId?: InputMaybe<UuidComparisonExp>;
+  textContent?: InputMaybe<StringComparisonExp>;
+};
+
+/** unique or primary key constraints on table "email_send_logs" */
+export type EmailSendLogsConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'email_send_logs_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type EmailSendLogsDeleteAtPathInput = {
+  businessContext?: InputMaybe<Array<Scalars['String']['input']>>;
+  resendResponse?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type EmailSendLogsDeleteElemInput = {
+  businessContext?: InputMaybe<Scalars['Int']['input']>;
+  resendResponse?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type EmailSendLogsDeleteKeyInput = {
+  businessContext?: InputMaybe<Scalars['String']['input']>;
+  resendResponse?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "email_send_logs" */
+export type EmailSendLogsInsertInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  clickedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deliveredAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  emailTemplate?: InputMaybe<EmailTemplatesObjRelInsertInput>;
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  openedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  resendEmailId?: InputMaybe<Scalars['String']['input']>;
+  resendResponse?: InputMaybe<Scalars['jsonb']['input']>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  sendStatus?: InputMaybe<Scalars['String']['input']>;
+  senderUser?: InputMaybe<UsersObjRelInsertInput>;
+  senderUserId?: InputMaybe<Scalars['uuid']['input']>;
+  sentAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** order by max() on columns of table "email_send_logs" */
+export type EmailSendLogsMaxOrderBy = {
+  clickedAt?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  deliveredAt?: InputMaybe<OrderBy>;
+  errorMessage?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  openedAt?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  resendEmailId?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  sendStatus?: InputMaybe<OrderBy>;
+  senderUserId?: InputMaybe<OrderBy>;
+  sentAt?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "email_send_logs" */
+export type EmailSendLogsMinOrderBy = {
+  clickedAt?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  deliveredAt?: InputMaybe<OrderBy>;
+  errorMessage?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  openedAt?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  resendEmailId?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  sendStatus?: InputMaybe<OrderBy>;
+  senderUserId?: InputMaybe<OrderBy>;
+  sentAt?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "email_send_logs" */
+export type EmailSendLogsOnConflict = {
+  constraint: EmailSendLogsConstraint;
+  updateColumns?: Array<EmailSendLogsUpdateColumn>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+/** Ordering options when selecting data from "email_send_logs". */
+export type EmailSendLogsOrderBy = {
+  businessContext?: InputMaybe<OrderBy>;
+  clickedAt?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  deliveredAt?: InputMaybe<OrderBy>;
+  emailTemplate?: InputMaybe<EmailTemplatesOrderBy>;
+  errorMessage?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  openedAt?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  resendEmailId?: InputMaybe<OrderBy>;
+  resendResponse?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  sendStatus?: InputMaybe<OrderBy>;
+  senderUser?: InputMaybe<UsersOrderBy>;
+  senderUserId?: InputMaybe<OrderBy>;
+  sentAt?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: email_send_logs */
+export type EmailSendLogsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type EmailSendLogsPrependInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  resendResponse?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "email_send_logs" */
+export type EmailSendLogsSelectColumn =
+  /** column name */
+  | 'businessContext'
+  /** column name */
+  | 'clickedAt'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'deliveredAt'
+  /** column name */
+  | 'errorMessage'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'openedAt'
+  /** column name */
+  | 'recipientEmails'
+  /** column name */
+  | 'resendEmailId'
+  /** column name */
+  | 'resendResponse'
+  /** column name */
+  | 'scheduledFor'
+  /** column name */
+  | 'sendStatus'
+  /** column name */
+  | 'senderUserId'
+  /** column name */
+  | 'sentAt'
+  /** column name */
+  | 'subject'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'textContent'
+  | '%future added value';
+
+/** input type for updating data in table "email_send_logs" */
+export type EmailSendLogsSetInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  clickedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deliveredAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  openedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  resendEmailId?: InputMaybe<Scalars['String']['input']>;
+  resendResponse?: InputMaybe<Scalars['jsonb']['input']>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  sendStatus?: InputMaybe<Scalars['String']['input']>;
+  senderUserId?: InputMaybe<Scalars['uuid']['input']>;
+  sentAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Streaming cursor of the table "email_send_logs" */
+export type EmailSendLogsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: EmailSendLogsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type EmailSendLogsStreamCursorValueInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  clickedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deliveredAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  openedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  resendEmailId?: InputMaybe<Scalars['String']['input']>;
+  resendResponse?: InputMaybe<Scalars['jsonb']['input']>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  sendStatus?: InputMaybe<Scalars['String']['input']>;
+  senderUserId?: InputMaybe<Scalars['uuid']['input']>;
+  sentAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** update columns of table "email_send_logs" */
+export type EmailSendLogsUpdateColumn =
+  /** column name */
+  | 'businessContext'
+  /** column name */
+  | 'clickedAt'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'deliveredAt'
+  /** column name */
+  | 'errorMessage'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'openedAt'
+  /** column name */
+  | 'recipientEmails'
+  /** column name */
+  | 'resendEmailId'
+  /** column name */
+  | 'resendResponse'
+  /** column name */
+  | 'scheduledFor'
+  /** column name */
+  | 'sendStatus'
+  /** column name */
+  | 'senderUserId'
+  /** column name */
+  | 'sentAt'
+  /** column name */
+  | 'subject'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'textContent'
+  | '%future added value';
+
+export type EmailSendLogsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<EmailSendLogsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<EmailSendLogsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<EmailSendLogsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<EmailSendLogsDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<EmailSendLogsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<EmailSendLogsSetInput>;
+  /** filter the rows which have to be updated */
+  where: EmailSendLogsBoolExp;
+};
+
+export type EmailTemplatesAggregateBoolExp = {
+  bool_and?: InputMaybe<EmailTemplatesAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<EmailTemplatesAggregateBoolExpBool_Or>;
+  count?: InputMaybe<EmailTemplatesAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "email_templates" */
+export type EmailTemplatesAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<EmailTemplatesMaxOrderBy>;
+  min?: InputMaybe<EmailTemplatesMinOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type EmailTemplatesAppendInput = {
+  availableVariables?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "email_templates" */
+export type EmailTemplatesArrRelInsertInput = {
+  data: Array<EmailTemplatesInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<EmailTemplatesOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "email_templates". All fields are combined with a logical 'AND'. */
+export type EmailTemplatesBoolExp = {
+  _and?: InputMaybe<Array<EmailTemplatesBoolExp>>;
+  _not?: InputMaybe<EmailTemplatesBoolExp>;
+  _or?: InputMaybe<Array<EmailTemplatesBoolExp>>;
+  approvedAt?: InputMaybe<TimestamptzComparisonExp>;
+  approvedByUser?: InputMaybe<UsersBoolExp>;
+  approvedByUserId?: InputMaybe<UuidComparisonExp>;
+  availableVariables?: InputMaybe<JsonbComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdByUser?: InputMaybe<UsersBoolExp>;
+  createdByUserId?: InputMaybe<UuidComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  emailDrafts?: InputMaybe<EmailDraftsBoolExp>;
+  emailDraftsAggregate?: InputMaybe<EmailDraftsAggregateBoolExp>;
+  emailSendLogs?: InputMaybe<EmailSendLogsBoolExp>;
+  emailSendLogsAggregate?: InputMaybe<EmailSendLogsAggregateBoolExp>;
+  htmlContent?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isSystemTemplate?: InputMaybe<BooleanComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  requiresApproval?: InputMaybe<BooleanComparisonExp>;
+  subjectTemplate?: InputMaybe<StringComparisonExp>;
+  textContent?: InputMaybe<StringComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  userFavorites?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+  userFavoritesAggregate?: InputMaybe<UserEmailTemplateFavoritesAggregateBoolExp>;
+};
+
+/** unique or primary key constraints on table "email_templates" */
+export type EmailTemplatesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'email_templates_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type EmailTemplatesDeleteAtPathInput = {
+  availableVariables?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type EmailTemplatesDeleteElemInput = {
+  availableVariables?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type EmailTemplatesDeleteKeyInput = {
+  availableVariables?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "email_templates" */
+export type EmailTemplatesInsertInput = {
+  approvedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedByUser?: InputMaybe<UsersObjRelInsertInput>;
+  approvedByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  availableVariables?: InputMaybe<Scalars['jsonb']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdByUser?: InputMaybe<UsersObjRelInsertInput>;
+  createdByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  emailDrafts?: InputMaybe<EmailDraftsArrRelInsertInput>;
+  emailSendLogs?: InputMaybe<EmailSendLogsArrRelInsertInput>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isSystemTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  requiresApproval?: InputMaybe<Scalars['Boolean']['input']>;
+  subjectTemplate?: InputMaybe<Scalars['String']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  userFavorites?: InputMaybe<UserEmailTemplateFavoritesArrRelInsertInput>;
+};
+
+/** order by max() on columns of table "email_templates" */
+export type EmailTemplatesMaxOrderBy = {
+  approvedAt?: InputMaybe<OrderBy>;
+  approvedByUserId?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdByUserId?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  subjectTemplate?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "email_templates" */
+export type EmailTemplatesMinOrderBy = {
+  approvedAt?: InputMaybe<OrderBy>;
+  approvedByUserId?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdByUserId?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  subjectTemplate?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** input type for inserting object relation for remote table "email_templates" */
+export type EmailTemplatesObjRelInsertInput = {
+  data: EmailTemplatesInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<EmailTemplatesOnConflict>;
+};
+
+/** on_conflict condition type for table "email_templates" */
+export type EmailTemplatesOnConflict = {
+  constraint: EmailTemplatesConstraint;
+  updateColumns?: Array<EmailTemplatesUpdateColumn>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
+};
+
+/** Ordering options when selecting data from "email_templates". */
+export type EmailTemplatesOrderBy = {
+  approvedAt?: InputMaybe<OrderBy>;
+  approvedByUser?: InputMaybe<UsersOrderBy>;
+  approvedByUserId?: InputMaybe<OrderBy>;
+  availableVariables?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdByUser?: InputMaybe<UsersOrderBy>;
+  createdByUserId?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  emailDraftsAggregate?: InputMaybe<EmailDraftsAggregateOrderBy>;
+  emailSendLogsAggregate?: InputMaybe<EmailSendLogsAggregateOrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isSystemTemplate?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  requiresApproval?: InputMaybe<OrderBy>;
+  subjectTemplate?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  userFavoritesAggregate?: InputMaybe<UserEmailTemplateFavoritesAggregateOrderBy>;
+};
+
+/** primary key columns input for table: email_templates */
+export type EmailTemplatesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type EmailTemplatesPrependInput = {
+  availableVariables?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "email_templates" */
+export type EmailTemplatesSelectColumn =
+  /** column name */
+  | 'approvedAt'
+  /** column name */
+  | 'approvedByUserId'
+  /** column name */
+  | 'availableVariables'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdByUserId'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemTemplate'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'requiresApproval'
+  /** column name */
+  | 'subjectTemplate'
+  /** column name */
+  | 'textContent'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** select "emailTemplatesAggregateBoolExpBool_andArgumentsColumns" columns of table "email_templates" */
+export type EmailTemplatesSelectColumnEmailTemplatesAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemTemplate'
+  /** column name */
+  | 'requiresApproval'
+  | '%future added value';
+
+/** select "emailTemplatesAggregateBoolExpBool_orArgumentsColumns" columns of table "email_templates" */
+export type EmailTemplatesSelectColumnEmailTemplatesAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemTemplate'
+  /** column name */
+  | 'requiresApproval'
+  | '%future added value';
+
+/** input type for updating data in table "email_templates" */
+export type EmailTemplatesSetInput = {
+  approvedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  availableVariables?: InputMaybe<Scalars['jsonb']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isSystemTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  requiresApproval?: InputMaybe<Scalars['Boolean']['input']>;
+  subjectTemplate?: InputMaybe<Scalars['String']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** Streaming cursor of the table "email_templates" */
+export type EmailTemplatesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: EmailTemplatesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type EmailTemplatesStreamCursorValueInput = {
+  approvedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  availableVariables?: InputMaybe<Scalars['jsonb']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isSystemTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  requiresApproval?: InputMaybe<Scalars['Boolean']['input']>;
+  subjectTemplate?: InputMaybe<Scalars['String']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** update columns of table "email_templates" */
+export type EmailTemplatesUpdateColumn =
+  /** column name */
+  | 'approvedAt'
+  /** column name */
+  | 'approvedByUserId'
+  /** column name */
+  | 'availableVariables'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdByUserId'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemTemplate'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'requiresApproval'
+  /** column name */
+  | 'subjectTemplate'
+  /** column name */
+  | 'textContent'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type EmailTemplatesUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<EmailTemplatesAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<EmailTemplatesDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<EmailTemplatesDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<EmailTemplatesDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<EmailTemplatesPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<EmailTemplatesSetInput>;
+  /** filter the rows which have to be updated */
+  where: EmailTemplatesBoolExp;
 };
 
 /** Boolean expression to compare columns of type "inet". All fields are combined with logical 'AND'. */
@@ -543,13 +1412,6 @@ export type OrderBy =
   | 'DESC_NULLS_LAST'
   | '%future added value';
 
-export type PayrollAssignmentInput = {
-  date: Scalars['String']['input'];
-  fromConsultantId: Scalars['String']['input'];
-  payrollId: Scalars['String']['input'];
-  toConsultantId: Scalars['String']['input'];
-};
-
 /** Boolean expression to compare columns of type "payroll_cycle_type". All fields are combined with logical 'AND'. */
 export type PayrollCycleTypeComparisonExp = {
   _eq?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
@@ -576,6 +1438,93 @@ export type PayrollDateTypeComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['payroll_date_type']['input']>>;
 };
 
+/** Boolean expression to filter rows from the table "payroll_profitability". All fields are combined with a logical 'AND'. */
+export type PayrollProfitabilityBoolExp = {
+  _and?: InputMaybe<Array<PayrollProfitabilityBoolExp>>;
+  _not?: InputMaybe<PayrollProfitabilityBoolExp>;
+  _or?: InputMaybe<Array<PayrollProfitabilityBoolExp>>;
+  billingItemsCount?: InputMaybe<BigintComparisonExp>;
+  billingStatus?: InputMaybe<StringComparisonExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  clientName?: InputMaybe<StringComparisonExp>;
+  employeeCount?: InputMaybe<IntComparisonExp>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  payrollName?: InputMaybe<StringComparisonExp>;
+  payslipCount?: InputMaybe<IntComparisonExp>;
+  revenuePerHour?: InputMaybe<NumericComparisonExp>;
+  timeEntriesCount?: InputMaybe<BigintComparisonExp>;
+  totalHours?: InputMaybe<NumericComparisonExp>;
+  totalRevenue?: InputMaybe<NumericComparisonExp>;
+};
+
+/** Ordering options when selecting data from "payroll_profitability". */
+export type PayrollProfitabilityOrderBy = {
+  billingItemsCount?: InputMaybe<OrderBy>;
+  billingStatus?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  clientName?: InputMaybe<OrderBy>;
+  employeeCount?: InputMaybe<OrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  payrollName?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+  revenuePerHour?: InputMaybe<OrderBy>;
+  timeEntriesCount?: InputMaybe<OrderBy>;
+  totalHours?: InputMaybe<OrderBy>;
+  totalRevenue?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "payroll_profitability" */
+export type PayrollProfitabilitySelectColumn =
+  /** column name */
+  | 'billingItemsCount'
+  /** column name */
+  | 'billingStatus'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'clientName'
+  /** column name */
+  | 'employeeCount'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'payrollName'
+  /** column name */
+  | 'payslipCount'
+  /** column name */
+  | 'revenuePerHour'
+  /** column name */
+  | 'timeEntriesCount'
+  /** column name */
+  | 'totalHours'
+  /** column name */
+  | 'totalRevenue'
+  | '%future added value';
+
+/** Streaming cursor of the table "payroll_profitability" */
+export type PayrollProfitabilityStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PayrollProfitabilityStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PayrollProfitabilityStreamCursorValueInput = {
+  billingItemsCount?: InputMaybe<Scalars['bigint']['input']>;
+  billingStatus?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  clientName?: InputMaybe<Scalars['String']['input']>;
+  employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  payrollName?: InputMaybe<Scalars['String']['input']>;
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
+  revenuePerHour?: InputMaybe<Scalars['numeric']['input']>;
+  timeEntriesCount?: InputMaybe<Scalars['bigint']['input']>;
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
+  totalRevenue?: InputMaybe<Scalars['numeric']['input']>;
+};
+
 /** Boolean expression to compare columns of type "payroll_status". All fields are combined with logical 'AND'. */
 export type PayrollStatusComparisonExp = {
   _eq?: InputMaybe<Scalars['payroll_status']['input']>;
@@ -600,6 +1549,189 @@ export type PermissionActionComparisonExp = {
   _lte?: InputMaybe<Scalars['permission_action']['input']>;
   _neq?: InputMaybe<Scalars['permission_action']['input']>;
   _nin?: InputMaybe<Array<Scalars['permission_action']['input']>>;
+};
+
+/** Boolean expression to filter rows from the table "position_admin_defaults". All fields are combined with a logical 'AND'. */
+export type PositionAdminDefaultsBoolExp = {
+  _and?: InputMaybe<Array<PositionAdminDefaultsBoolExp>>;
+  _not?: InputMaybe<PositionAdminDefaultsBoolExp>;
+  _or?: InputMaybe<Array<PositionAdminDefaultsBoolExp>>;
+  defaultAdminPercentage?: InputMaybe<NumericComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  position?: InputMaybe<UserPositionComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  updatedBy?: InputMaybe<UuidComparisonExp>;
+};
+
+/** unique or primary key constraints on table "position_admin_defaults" */
+export type PositionAdminDefaultsConstraint =
+  /** unique or primary key constraint on columns "position" */
+  | 'position_admin_defaults_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "position_admin_defaults" */
+export type PositionAdminDefaultsIncInput = {
+  defaultAdminPercentage?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "position_admin_defaults" */
+export type PositionAdminDefaultsInsertInput = {
+  defaultAdminPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** on_conflict condition type for table "position_admin_defaults" */
+export type PositionAdminDefaultsOnConflict = {
+  constraint: PositionAdminDefaultsConstraint;
+  updateColumns?: Array<PositionAdminDefaultsUpdateColumn>;
+  where?: InputMaybe<PositionAdminDefaultsBoolExp>;
+};
+
+/** Ordering options when selecting data from "position_admin_defaults". */
+export type PositionAdminDefaultsOrderBy = {
+  defaultAdminPercentage?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: position_admin_defaults */
+export type PositionAdminDefaultsPkColumnsInput = {
+  position: Scalars['user_position']['input'];
+};
+
+/** select columns of table "position_admin_defaults" */
+export type PositionAdminDefaultsSelectColumn =
+  /** column name */
+  | 'defaultAdminPercentage'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'position'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+/** input type for updating data in table "position_admin_defaults" */
+export type PositionAdminDefaultsSetInput = {
+  defaultAdminPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "position_admin_defaults" */
+export type PositionAdminDefaultsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PositionAdminDefaultsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PositionAdminDefaultsStreamCursorValueInput = {
+  defaultAdminPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "position_admin_defaults" */
+export type PositionAdminDefaultsUpdateColumn =
+  /** column name */
+  | 'defaultAdminPercentage'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'position'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+export type PositionAdminDefaultsUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<PositionAdminDefaultsIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<PositionAdminDefaultsSetInput>;
+  /** filter the rows which have to be updated */
+  where: PositionAdminDefaultsBoolExp;
+};
+
+/** Boolean expression to filter rows from the table "staff_billing_performance". All fields are combined with a logical 'AND'. */
+export type StaffBillingPerformanceBoolExp = {
+  _and?: InputMaybe<Array<StaffBillingPerformanceBoolExp>>;
+  _not?: InputMaybe<StaffBillingPerformanceBoolExp>;
+  _or?: InputMaybe<Array<StaffBillingPerformanceBoolExp>>;
+  billingItemsCreated?: InputMaybe<BigintComparisonExp>;
+  distinctClientsServed?: InputMaybe<BigintComparisonExp>;
+  payrollsWorked?: InputMaybe<BigintComparisonExp>;
+  revenuePerHour?: InputMaybe<NumericComparisonExp>;
+  staffId?: InputMaybe<UuidComparisonExp>;
+  staffName?: InputMaybe<StringComparisonExp>;
+  totalHoursLogged?: InputMaybe<NumericComparisonExp>;
+  totalRevenueGenerated?: InputMaybe<NumericComparisonExp>;
+};
+
+/** Ordering options when selecting data from "staff_billing_performance". */
+export type StaffBillingPerformanceOrderBy = {
+  billingItemsCreated?: InputMaybe<OrderBy>;
+  distinctClientsServed?: InputMaybe<OrderBy>;
+  payrollsWorked?: InputMaybe<OrderBy>;
+  revenuePerHour?: InputMaybe<OrderBy>;
+  staffId?: InputMaybe<OrderBy>;
+  staffName?: InputMaybe<OrderBy>;
+  totalHoursLogged?: InputMaybe<OrderBy>;
+  totalRevenueGenerated?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "staff_billing_performance" */
+export type StaffBillingPerformanceSelectColumn =
+  /** column name */
+  | 'billingItemsCreated'
+  /** column name */
+  | 'distinctClientsServed'
+  /** column name */
+  | 'payrollsWorked'
+  /** column name */
+  | 'revenuePerHour'
+  /** column name */
+  | 'staffId'
+  /** column name */
+  | 'staffName'
+  /** column name */
+  | 'totalHoursLogged'
+  /** column name */
+  | 'totalRevenueGenerated'
+  | '%future added value';
+
+/** Streaming cursor of the table "staff_billing_performance" */
+export type StaffBillingPerformanceStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: StaffBillingPerformanceStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type StaffBillingPerformanceStreamCursorValueInput = {
+  billingItemsCreated?: InputMaybe<Scalars['bigint']['input']>;
+  distinctClientsServed?: InputMaybe<Scalars['bigint']['input']>;
+  payrollsWorked?: InputMaybe<Scalars['bigint']['input']>;
+  revenuePerHour?: InputMaybe<Scalars['numeric']['input']>;
+  staffId?: InputMaybe<Scalars['uuid']['input']>;
+  staffName?: InputMaybe<Scalars['String']['input']>;
+  totalHoursLogged?: InputMaybe<Scalars['numeric']['input']>;
+  totalRevenueGenerated?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
@@ -652,6 +1784,70 @@ export type StringComparisonExp = {
   _similar?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** Boolean expression to filter rows from the table "team_capacity_by_position". All fields are combined with a logical 'AND'. */
+export type TeamCapacityByPositionBoolExp = {
+  _and?: InputMaybe<Array<TeamCapacityByPositionBoolExp>>;
+  _not?: InputMaybe<TeamCapacityByPositionBoolExp>;
+  _or?: InputMaybe<Array<TeamCapacityByPositionBoolExp>>;
+  avgAdminPercentage?: InputMaybe<NumericComparisonExp>;
+  consultantCount?: InputMaybe<BigintComparisonExp>;
+  position?: InputMaybe<UserPositionComparisonExp>;
+  totalAdminHours?: InputMaybe<NumericComparisonExp>;
+  totalPayrollCapacity?: InputMaybe<NumericComparisonExp>;
+  totalWorkHours?: InputMaybe<NumericComparisonExp>;
+};
+
+/** Ordering options when selecting data from "team_capacity_by_position". */
+export type TeamCapacityByPositionOrderBy = {
+  avgAdminPercentage?: InputMaybe<OrderBy>;
+  consultantCount?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
+  totalAdminHours?: InputMaybe<OrderBy>;
+  totalPayrollCapacity?: InputMaybe<OrderBy>;
+  totalWorkHours?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "team_capacity_by_position" */
+export type TeamCapacityByPositionSelectColumn =
+  /** column name */
+  | 'avgAdminPercentage'
+  /** column name */
+  | 'consultantCount'
+  /** column name */
+  | 'position'
+  /** column name */
+  | 'totalAdminHours'
+  /** column name */
+  | 'totalPayrollCapacity'
+  /** column name */
+  | 'totalWorkHours'
+  | '%future added value';
+
+/** Streaming cursor of the table "team_capacity_by_position" */
+export type TeamCapacityByPositionStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: TeamCapacityByPositionStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type TeamCapacityByPositionStreamCursorValueInput = {
+  avgAdminPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  consultantCount?: InputMaybe<Scalars['bigint']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  totalAdminHours?: InputMaybe<Scalars['numeric']['input']>;
+  totalPayrollCapacity?: InputMaybe<Scalars['numeric']['input']>;
+  totalWorkHours?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+export type TeamCapacityInput = {
+  endDate: Scalars['String']['input'];
+  period: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
+  teamIds: Array<Scalars['String']['input']>;
+};
+
 /** Boolean expression to compare columns of type "timestamp". All fields are combined with logical 'AND'. */
 export type TimestampComparisonExp = {
   _eq?: InputMaybe<Scalars['timestamp']['input']>;
@@ -676,6 +1872,161 @@ export type TimestamptzComparisonExp = {
   _lte?: InputMaybe<Scalars['timestamptz']['input']>;
   _neq?: InputMaybe<Scalars['timestamptz']['input']>;
   _nin?: InputMaybe<Array<Scalars['timestamptz']['input']>>;
+};
+
+export type UserEmailTemplateFavoritesAggregateBoolExp = {
+  count?: InputMaybe<UserEmailTemplateFavoritesAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<UserEmailTemplateFavoritesMaxOrderBy>;
+  min?: InputMaybe<UserEmailTemplateFavoritesMinOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesArrRelInsertInput = {
+  data: Array<UserEmailTemplateFavoritesInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<UserEmailTemplateFavoritesOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "user_email_template_favorites". All fields are combined with a logical 'AND'. */
+export type UserEmailTemplateFavoritesBoolExp = {
+  _and?: InputMaybe<Array<UserEmailTemplateFavoritesBoolExp>>;
+  _not?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+  _or?: InputMaybe<Array<UserEmailTemplateFavoritesBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  emailTemplate?: InputMaybe<EmailTemplatesBoolExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  templateId?: InputMaybe<UuidComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** unique or primary key constraints on table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'user_email_template_favorites_pkey'
+  /** unique or primary key constraint on columns "user_id", "template_id" */
+  | 'user_email_template_favorites_user_id_template_id_key'
+  | '%future added value';
+
+/** input type for inserting data into table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesInsertInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  emailTemplate?: InputMaybe<EmailTemplatesObjRelInsertInput>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** order by max() on columns of table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesMaxOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesMinOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesOnConflict = {
+  constraint: UserEmailTemplateFavoritesConstraint;
+  updateColumns?: Array<UserEmailTemplateFavoritesUpdateColumn>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+};
+
+/** Ordering options when selecting data from "user_email_template_favorites". */
+export type UserEmailTemplateFavoritesOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  emailTemplate?: InputMaybe<EmailTemplatesOrderBy>;
+  id?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: user_email_template_favorites */
+export type UserEmailTemplateFavoritesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesSelectColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** input type for updating data in table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesSetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: UserEmailTemplateFavoritesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type UserEmailTemplateFavoritesStreamCursorValueInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesUpdateColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+export type UserEmailTemplateFavoritesUpdates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<UserEmailTemplateFavoritesSetInput>;
+  /** filter the rows which have to be updated */
+  where: UserEmailTemplateFavoritesBoolExp;
+};
+
+/** Boolean expression to compare columns of type "user_position". All fields are combined with logical 'AND'. */
+export type UserPositionComparisonExp = {
+  _eq?: InputMaybe<Scalars['user_position']['input']>;
+  _gt?: InputMaybe<Scalars['user_position']['input']>;
+  _gte?: InputMaybe<Scalars['user_position']['input']>;
+  _in?: InputMaybe<Array<Scalars['user_position']['input']>>;
+  _isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['user_position']['input']>;
+  _lte?: InputMaybe<Scalars['user_position']['input']>;
+  _neq?: InputMaybe<Scalars['user_position']['input']>;
+  _nin?: InputMaybe<Array<Scalars['user_position']['input']>>;
 };
 
 /** Boolean expression to compare columns of type "user_role". All fields are combined with logical 'AND'. */
@@ -704,6 +2055,13 @@ export type UserStatusEnumComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['user_status_enum']['input']>>;
 };
 
+export type UtilizationStatsInput = {
+  endDate: Scalars['String']['input'];
+  period: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
 /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
 export type UuidComparisonExp = {
   _eq?: InputMaybe<Scalars['uuid']['input']>;
@@ -715,6 +2073,13 @@ export type UuidComparisonExp = {
   _lte?: InputMaybe<Scalars['uuid']['input']>;
   _neq?: InputMaybe<Scalars['uuid']['input']>;
   _nin?: InputMaybe<Array<Scalars['uuid']['input']>>;
+};
+
+export type WorkloadMetricsInput = {
+  endDate: Scalars['String']['input'];
+  period: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 export type AdjustmentRulesAggregateBoolExp = {
@@ -760,7 +2125,7 @@ export type AdjustmentRulesBoolExp = {
 
 /** unique or primary key constraints on table "adjustment_rules" */
 export type AdjustmentRulesConstraint =
-  /** unique or primary key constraint on columns "date_type_id", "cycle_id" */
+  /** unique or primary key constraint on columns "cycle_id", "date_type_id" */
   | 'adjustment_rules_cycle_id_date_type_id_key'
   /** unique or primary key constraint on columns "id" */
   | 'adjustment_rules_pkey'
@@ -1902,7 +3267,11 @@ export type BillingInvoiceArrRelInsertInput = {
 
 /** order by avg() on columns of table "billing_invoice" */
 export type BillingInvoiceAvgOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to filter rows from the table "billing_invoice". All fields are combined with a logical 'AND'. */
@@ -1910,11 +3279,10 @@ export type BillingInvoiceBoolExp = {
   _and?: InputMaybe<Array<BillingInvoiceBoolExp>>;
   _not?: InputMaybe<BillingInvoiceBoolExp>;
   _or?: InputMaybe<Array<BillingInvoiceBoolExp>>;
-  billingEventLogs?: InputMaybe<BillingEventLogsBoolExp>;
-  billingEventLogsAggregate?: InputMaybe<BillingEventLogsAggregateBoolExp>;
   billingInvoiceItems?: InputMaybe<BillingInvoiceItemBoolExp>;
   billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateBoolExp>;
   billingPeriodEnd?: InputMaybe<DateComparisonExp>;
+  billingPeriodId?: InputMaybe<UuidComparisonExp>;
   billingPeriodStart?: InputMaybe<DateComparisonExp>;
   client?: InputMaybe<ClientsBoolExp>;
   clientId?: InputMaybe<UuidComparisonExp>;
@@ -1922,29 +3290,39 @@ export type BillingInvoiceBoolExp = {
   currency?: InputMaybe<StringComparisonExp>;
   dueDate?: InputMaybe<DateComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
+  invoiceNumber?: InputMaybe<StringComparisonExp>;
   issuedDate?: InputMaybe<DateComparisonExp>;
   notes?: InputMaybe<StringComparisonExp>;
+  payrollCount?: InputMaybe<IntComparisonExp>;
   status?: InputMaybe<StringComparisonExp>;
   totalAmount?: InputMaybe<NumericComparisonExp>;
+  totalHours?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
 
 /** unique or primary key constraints on table "billing_invoice" */
 export type BillingInvoiceConstraint =
+  /** unique or primary key constraint on columns "invoice_number" */
+  | 'billing_invoice_invoice_number_key'
   /** unique or primary key constraint on columns "id" */
   | 'billing_invoice_pkey'
   | '%future added value';
 
 /** input type for incrementing numeric columns in table "billing_invoice" */
 export type BillingInvoiceIncInput = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<Scalars['Int']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** input type for inserting data into table "billing_invoice" */
 export type BillingInvoiceInsertInput = {
-  billingEventLogs?: InputMaybe<BillingEventLogsArrRelInsertInput>;
   billingInvoiceItems?: InputMaybe<BillingInvoiceItemArrRelInsertInput>;
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: InputMaybe<Scalars['uuid']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   client?: InputMaybe<ClientsObjRelInsertInput>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
@@ -1952,11 +3330,21 @@ export type BillingInvoiceInsertInput = {
   currency?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: InputMaybe<Scalars['String']['input']>;
   issuedDate?: InputMaybe<Scalars['date']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<Scalars['Int']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+export type BillingInvoiceItemAggregateBoolExp = {
+  count?: InputMaybe<BillingInvoiceItemAggregateBoolExpCount>;
 };
 
 export type BillingInvoiceItemAggregateBoolExpCount = {
@@ -1966,35 +3354,383 @@ export type BillingInvoiceItemAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+/** order by aggregate values of table "billing_invoice_item" */
+export type BillingInvoiceItemAggregateOrderBy = {
+  avg?: InputMaybe<BillingInvoiceItemAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<BillingInvoiceItemMaxOrderBy>;
+  min?: InputMaybe<BillingInvoiceItemMinOrderBy>;
+  stddev?: InputMaybe<BillingInvoiceItemStddevOrderBy>;
+  stddevPop?: InputMaybe<BillingInvoiceItemStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<BillingInvoiceItemStddevSampOrderBy>;
+  sum?: InputMaybe<BillingInvoiceItemSumOrderBy>;
+  varPop?: InputMaybe<BillingInvoiceItemVarPopOrderBy>;
+  varSamp?: InputMaybe<BillingInvoiceItemVarSampOrderBy>;
+  variance?: InputMaybe<BillingInvoiceItemVarianceOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "billing_invoice_item" */
+export type BillingInvoiceItemArrRelInsertInput = {
+  data: Array<BillingInvoiceItemInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<BillingInvoiceItemOnConflict>;
+};
+
+/** order by avg() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemAvgOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "billing_invoice_item". All fields are combined with a logical 'AND'. */
+export type BillingInvoiceItemBoolExp = {
+  _and?: InputMaybe<Array<BillingInvoiceItemBoolExp>>;
+  _not?: InputMaybe<BillingInvoiceItemBoolExp>;
+  _or?: InputMaybe<Array<BillingInvoiceItemBoolExp>>;
+  billingInvoice?: InputMaybe<BillingInvoiceBoolExp>;
+  billingItem?: InputMaybe<BillingItemsBoolExp>;
+  billingPeriodEnd?: InputMaybe<DateComparisonExp>;
+  billingPeriodStart?: InputMaybe<DateComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  descriptionOverride?: InputMaybe<StringComparisonExp>;
+  hourlyRate?: InputMaybe<NumericComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  invoiceId?: InputMaybe<UuidComparisonExp>;
+  itemId?: InputMaybe<UuidComparisonExp>;
+  lineItemType?: InputMaybe<StringComparisonExp>;
+  netAmount?: InputMaybe<NumericComparisonExp>;
+  quantityHours?: InputMaybe<NumericComparisonExp>;
+  taxAmount?: InputMaybe<NumericComparisonExp>;
+  totalAmount?: InputMaybe<NumericComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "billing_invoice_item" */
+export type BillingInvoiceItemConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'billing_invoice_item_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "billing_invoice_item" */
+export type BillingInvoiceItemIncInput = {
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  quantityHours?: InputMaybe<Scalars['numeric']['input']>;
+  taxAmount?: InputMaybe<Scalars['numeric']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "billing_invoice_item" */
+export type BillingInvoiceItemInsertInput = {
+  billingInvoice?: InputMaybe<BillingInvoiceObjRelInsertInput>;
+  billingItem?: InputMaybe<BillingItemsObjRelInsertInput>;
+  billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  descriptionOverride?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  itemId?: InputMaybe<Scalars['uuid']['input']>;
+  lineItemType?: InputMaybe<Scalars['String']['input']>;
+  quantityHours?: InputMaybe<Scalars['numeric']['input']>;
+  taxAmount?: InputMaybe<Scalars['numeric']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by max() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemMaxOrderBy = {
+  billingPeriodEnd?: InputMaybe<OrderBy>;
+  billingPeriodStart?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  descriptionOverride?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  invoiceId?: InputMaybe<OrderBy>;
+  itemId?: InputMaybe<OrderBy>;
+  lineItemType?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemMinOrderBy = {
+  billingPeriodEnd?: InputMaybe<OrderBy>;
+  billingPeriodStart?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  descriptionOverride?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  invoiceId?: InputMaybe<OrderBy>;
+  itemId?: InputMaybe<OrderBy>;
+  lineItemType?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "billing_invoice_item" */
+export type BillingInvoiceItemOnConflict = {
+  constraint: BillingInvoiceItemConstraint;
+  updateColumns?: Array<BillingInvoiceItemUpdateColumn>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+/** Ordering options when selecting data from "billing_invoice_item". */
+export type BillingInvoiceItemOrderBy = {
+  billingInvoice?: InputMaybe<BillingInvoiceOrderBy>;
+  billingItem?: InputMaybe<BillingItemsOrderBy>;
+  billingPeriodEnd?: InputMaybe<OrderBy>;
+  billingPeriodStart?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  descriptionOverride?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  invoiceId?: InputMaybe<OrderBy>;
+  itemId?: InputMaybe<OrderBy>;
+  lineItemType?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: billing_invoice_item */
+export type BillingInvoiceItemPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "billing_invoice_item" */
+export type BillingInvoiceItemSelectColumn =
+  /** column name */
+  | 'billingPeriodEnd'
+  /** column name */
+  | 'billingPeriodStart'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'descriptionOverride'
+  /** column name */
+  | 'hourlyRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'invoiceId'
+  /** column name */
+  | 'itemId'
+  /** column name */
+  | 'lineItemType'
+  /** column name */
+  | 'netAmount'
+  /** column name */
+  | 'quantityHours'
+  /** column name */
+  | 'taxAmount'
+  /** column name */
+  | 'totalAmount'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** input type for updating data in table "billing_invoice_item" */
+export type BillingInvoiceItemSetInput = {
+  billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  descriptionOverride?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  itemId?: InputMaybe<Scalars['uuid']['input']>;
+  lineItemType?: InputMaybe<Scalars['String']['input']>;
+  quantityHours?: InputMaybe<Scalars['numeric']['input']>;
+  taxAmount?: InputMaybe<Scalars['numeric']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by stddev() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemStddevOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemStddevPopOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemStddevSampOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "billingInvoiceItem" */
+export type BillingInvoiceItemStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: BillingInvoiceItemStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type BillingInvoiceItemStreamCursorValueInput = {
+  billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  descriptionOverride?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  itemId?: InputMaybe<Scalars['uuid']['input']>;
+  lineItemType?: InputMaybe<Scalars['String']['input']>;
+  netAmount?: InputMaybe<Scalars['numeric']['input']>;
+  quantityHours?: InputMaybe<Scalars['numeric']['input']>;
+  taxAmount?: InputMaybe<Scalars['numeric']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by sum() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemSumOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "billing_invoice_item" */
+export type BillingInvoiceItemUpdateColumn =
+  /** column name */
+  | 'billingPeriodEnd'
+  /** column name */
+  | 'billingPeriodStart'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'descriptionOverride'
+  /** column name */
+  | 'hourlyRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'invoiceId'
+  /** column name */
+  | 'itemId'
+  /** column name */
+  | 'lineItemType'
+  /** column name */
+  | 'quantityHours'
+  /** column name */
+  | 'taxAmount'
+  /** column name */
+  | 'totalAmount'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type BillingInvoiceItemUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<BillingInvoiceItemIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<BillingInvoiceItemSetInput>;
+  /** filter the rows which have to be updated */
+  where: BillingInvoiceItemBoolExp;
+};
+
+/** order by varPop() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemVarPopOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemVarSampOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemVarianceOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
 /** order by max() on columns of table "billing_invoice" */
 export type BillingInvoiceMaxOrderBy = {
   billingPeriodEnd?: InputMaybe<OrderBy>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   currency?: InputMaybe<OrderBy>;
   dueDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: InputMaybe<OrderBy>;
   issuedDate?: InputMaybe<OrderBy>;
   notes?: InputMaybe<OrderBy>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
 /** order by min() on columns of table "billing_invoice" */
 export type BillingInvoiceMinOrderBy = {
   billingPeriodEnd?: InputMaybe<OrderBy>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   currency?: InputMaybe<OrderBy>;
   dueDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: InputMaybe<OrderBy>;
   issuedDate?: InputMaybe<OrderBy>;
   notes?: InputMaybe<OrderBy>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -2014,9 +3750,9 @@ export type BillingInvoiceOnConflict = {
 
 /** Ordering options when selecting data from "billing_invoice". */
 export type BillingInvoiceOrderBy = {
-  billingEventLogsAggregate?: InputMaybe<BillingEventLogsAggregateOrderBy>;
   billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateOrderBy>;
   billingPeriodEnd?: InputMaybe<OrderBy>;
+  billingPeriodId?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
   client?: InputMaybe<ClientsOrderBy>;
   clientId?: InputMaybe<OrderBy>;
@@ -2024,10 +3760,13 @@ export type BillingInvoiceOrderBy = {
   currency?: InputMaybe<OrderBy>;
   dueDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  invoiceNumber?: InputMaybe<OrderBy>;
   issuedDate?: InputMaybe<OrderBy>;
   notes?: InputMaybe<OrderBy>;
+  payrollCount?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  totalHours?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -2041,6 +3780,8 @@ export type BillingInvoiceSelectColumn =
   /** column name */
   | 'billingPeriodEnd'
   /** column name */
+  | 'billingPeriodId'
+  /** column name */
   | 'billingPeriodStart'
   /** column name */
   | 'clientId'
@@ -2053,13 +3794,19 @@ export type BillingInvoiceSelectColumn =
   /** column name */
   | 'id'
   /** column name */
+  | 'invoiceNumber'
+  /** column name */
   | 'issuedDate'
   /** column name */
   | 'notes'
   /** column name */
+  | 'payrollCount'
+  /** column name */
   | 'status'
   /** column name */
   | 'totalAmount'
+  /** column name */
+  | 'totalHours'
   /** column name */
   | 'updatedAt'
   | '%future added value';
@@ -2067,32 +3814,52 @@ export type BillingInvoiceSelectColumn =
 /** input type for updating data in table "billing_invoice" */
 export type BillingInvoiceSetInput = {
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: InputMaybe<Scalars['uuid']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: InputMaybe<Scalars['String']['input']>;
   issuedDate?: InputMaybe<Scalars['date']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<Scalars['Int']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** order by stddev() on columns of table "billing_invoice" */
 export type BillingInvoiceStddevOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevPop() on columns of table "billing_invoice" */
 export type BillingInvoiceStddevPopOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevSamp() on columns of table "billing_invoice" */
 export type BillingInvoiceStddevSampOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "billingInvoice" */
@@ -2106,28 +3873,42 @@ export type BillingInvoiceStreamCursorInput = {
 /** Initial value of the column from where the streaming should start */
 export type BillingInvoiceStreamCursorValueInput = {
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: InputMaybe<Scalars['uuid']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: InputMaybe<Scalars['String']['input']>;
   issuedDate?: InputMaybe<Scalars['date']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<Scalars['Int']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** order by sum() on columns of table "billing_invoice" */
 export type BillingInvoiceSumOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "billing_invoice" */
 export type BillingInvoiceUpdateColumn =
   /** column name */
   | 'billingPeriodEnd'
+  /** column name */
+  | 'billingPeriodId'
   /** column name */
   | 'billingPeriodStart'
   /** column name */
@@ -2141,13 +3922,19 @@ export type BillingInvoiceUpdateColumn =
   /** column name */
   | 'id'
   /** column name */
+  | 'invoiceNumber'
+  /** column name */
   | 'issuedDate'
   /** column name */
   | 'notes'
   /** column name */
+  | 'payrollCount'
+  /** column name */
   | 'status'
   /** column name */
   | 'totalAmount'
+  /** column name */
+  | 'totalHours'
   /** column name */
   | 'updatedAt'
   | '%future added value';
@@ -2163,21 +3950,49 @@ export type BillingInvoiceUpdates = {
 
 /** order by varPop() on columns of table "billing_invoice" */
 export type BillingInvoiceVarPopOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** order by varSamp() on columns of table "billing_invoice" */
 export type BillingInvoiceVarSampOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** order by variance() on columns of table "billing_invoice" */
 export type BillingInvoiceVarianceOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 export type BillingItemsAggregateBoolExp = {
+  bool_and?: InputMaybe<BillingItemsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<BillingItemsAggregateBoolExpBool_Or>;
   count?: InputMaybe<BillingItemsAggregateBoolExpCount>;
+};
+
+export type BillingItemsAggregateBoolExpBool_And = {
+  arguments: BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingItemsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type BillingItemsAggregateBoolExpBool_Or = {
+  arguments: BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingItemsBoolExp>;
+  predicate: BooleanComparisonExp;
 };
 
 export type BillingItemsAggregateBoolExpCount = {
@@ -2212,7 +4027,9 @@ export type BillingItemsArrRelInsertInput = {
 /** order by avg() on columns of table "billing_items" */
 export type BillingItemsAvgOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
@@ -2222,14 +4039,37 @@ export type BillingItemsBoolExp = {
   _not?: InputMaybe<BillingItemsBoolExp>;
   _or?: InputMaybe<Array<BillingItemsBoolExp>>;
   amount?: InputMaybe<NumericComparisonExp>;
+  approvalDate?: InputMaybe<TimestamptzComparisonExp>;
+  approvedBy?: InputMaybe<UuidComparisonExp>;
+  approver?: InputMaybe<UsersBoolExp>;
+  billingPlanId?: InputMaybe<UuidComparisonExp>;
+  billingPlanItems?: InputMaybe<BillingPlansBoolExp>;
+  billingServicePlan?: InputMaybe<BillingPlansBoolExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  confirmedAt?: InputMaybe<TimestamptzComparisonExp>;
+  confirmedBy?: InputMaybe<UuidComparisonExp>;
   createdAt?: InputMaybe<TimestampComparisonExp>;
   description?: InputMaybe<StringComparisonExp>;
+  hourlyRate?: InputMaybe<NumericComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   invoiceId?: InputMaybe<UuidComparisonExp>;
+  isApproved?: InputMaybe<BooleanComparisonExp>;
+  notes?: InputMaybe<StringComparisonExp>;
   payrollId?: InputMaybe<UuidComparisonExp>;
   quantity?: InputMaybe<IntComparisonExp>;
   relatedPayroll?: InputMaybe<PayrollsBoolExp>;
+  serviceId?: InputMaybe<UuidComparisonExp>;
+  serviceName?: InputMaybe<StringComparisonExp>;
+  staffUser?: InputMaybe<UsersBoolExp>;
+  staffUserId?: InputMaybe<UuidComparisonExp>;
+  status?: InputMaybe<StringComparisonExp>;
+  timeEntries?: InputMaybe<TimeEntriesBoolExp>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
+  totalAmount?: InputMaybe<NumericComparisonExp>;
   unitPrice?: InputMaybe<NumericComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
 };
 
 /** unique or primary key constraints on table "billing_items" */
@@ -2240,44 +4080,121 @@ export type BillingItemsConstraint =
 
 /** input type for incrementing numeric columns in table "billing_items" */
 export type BillingItemsIncInput = {
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** input type for inserting data into table "billing_items" */
 export type BillingItemsInsertInput = {
+  approvalDate?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedBy?: InputMaybe<Scalars['uuid']['input']>;
+  approver?: InputMaybe<UsersObjRelInsertInput>;
+  billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
+  billingPlanItems?: InputMaybe<BillingPlansObjRelInsertInput>;
+  billingServicePlan?: InputMaybe<BillingPlansObjRelInsertInput>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Manager who confirmed this item */
+  confirmedBy?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  isApproved?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional notes about this billing item */
+  notes?: InputMaybe<Scalars['String']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
   relatedPayroll?: InputMaybe<PayrollsObjRelInsertInput>;
+  /** Reference to the service from service catalog */
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceName?: InputMaybe<Scalars['String']['input']>;
+  staffUser?: InputMaybe<UsersObjRelInsertInput>;
+  /** Staff member who performed the service */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Status: draft, confirmed, billed */
+  status?: InputMaybe<Scalars['String']['input']>;
+  timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
 };
 
 /** order by max() on columns of table "billing_items" */
 export type BillingItemsMaxOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  approvalDate?: InputMaybe<OrderBy>;
+  approvedBy?: InputMaybe<OrderBy>;
+  billingPlanId?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: InputMaybe<OrderBy>;
+  /** Manager who confirmed this item */
+  confirmedBy?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   invoiceId?: InputMaybe<OrderBy>;
+  /** Additional notes about this billing item */
+  notes?: InputMaybe<OrderBy>;
   payrollId?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  /** Reference to the service from service catalog */
+  serviceId?: InputMaybe<OrderBy>;
+  serviceName?: InputMaybe<OrderBy>;
+  /** Staff member who performed the service */
+  staffUserId?: InputMaybe<OrderBy>;
+  /** Status: draft, confirmed, billed */
+  status?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
 };
 
 /** order by min() on columns of table "billing_items" */
 export type BillingItemsMinOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  approvalDate?: InputMaybe<OrderBy>;
+  approvedBy?: InputMaybe<OrderBy>;
+  billingPlanId?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: InputMaybe<OrderBy>;
+  /** Manager who confirmed this item */
+  confirmedBy?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   invoiceId?: InputMaybe<OrderBy>;
+  /** Additional notes about this billing item */
+  notes?: InputMaybe<OrderBy>;
   payrollId?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  /** Reference to the service from service catalog */
+  serviceId?: InputMaybe<OrderBy>;
+  serviceName?: InputMaybe<OrderBy>;
+  /** Staff member who performed the service */
+  staffUserId?: InputMaybe<OrderBy>;
+  /** Status: draft, confirmed, billed */
+  status?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** input type for inserting object relation for remote table "billing_items" */
+export type BillingItemsObjRelInsertInput = {
+  data: BillingItemsInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<BillingItemsOnConflict>;
 };
 
 /** on_conflict condition type for table "billing_items" */
@@ -2290,14 +4207,36 @@ export type BillingItemsOnConflict = {
 /** Ordering options when selecting data from "billing_items". */
 export type BillingItemsOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  approvalDate?: InputMaybe<OrderBy>;
+  approvedBy?: InputMaybe<OrderBy>;
+  approver?: InputMaybe<UsersOrderBy>;
+  billingPlanId?: InputMaybe<OrderBy>;
+  billingPlanItems?: InputMaybe<BillingPlansOrderBy>;
+  billingServicePlan?: InputMaybe<BillingPlansOrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  confirmedAt?: InputMaybe<OrderBy>;
+  confirmedBy?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   invoiceId?: InputMaybe<OrderBy>;
+  isApproved?: InputMaybe<OrderBy>;
+  notes?: InputMaybe<OrderBy>;
   payrollId?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   relatedPayroll?: InputMaybe<PayrollsOrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  serviceName?: InputMaybe<OrderBy>;
+  staffUser?: InputMaybe<UsersOrderBy>;
+  staffUserId?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
 };
 
 /** primary key columns input for table: billing_items */
@@ -2310,50 +4249,119 @@ export type BillingItemsSelectColumn =
   /** column name */
   | 'amount'
   /** column name */
+  | 'approvalDate'
+  /** column name */
+  | 'approvedBy'
+  /** column name */
+  | 'billingPlanId'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'confirmedAt'
+  /** column name */
+  | 'confirmedBy'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'description'
+  /** column name */
+  | 'hourlyRate'
   /** column name */
   | 'id'
   /** column name */
   | 'invoiceId'
   /** column name */
+  | 'isApproved'
+  /** column name */
+  | 'notes'
+  /** column name */
   | 'payrollId'
   /** column name */
   | 'quantity'
   /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'serviceName'
+  /** column name */
+  | 'staffUserId'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'totalAmount'
+  /** column name */
   | 'unitPrice'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** select "billingItemsAggregateBoolExpBool_andArgumentsColumns" columns of table "billing_items" */
+export type BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'isApproved'
+  | '%future added value';
+
+/** select "billingItemsAggregateBoolExpBool_orArgumentsColumns" columns of table "billing_items" */
+export type BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'isApproved'
   | '%future added value';
 
 /** input type for updating data in table "billing_items" */
 export type BillingItemsSetInput = {
+  approvalDate?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedBy?: InputMaybe<Scalars['uuid']['input']>;
+  billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Manager who confirmed this item */
+  confirmedBy?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  isApproved?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional notes about this billing item */
+  notes?: InputMaybe<Scalars['String']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+  /** Reference to the service from service catalog */
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceName?: InputMaybe<Scalars['String']['input']>;
+  /** Staff member who performed the service */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Status: draft, confirmed, billed */
+  status?: InputMaybe<Scalars['String']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** order by stddev() on columns of table "billing_items" */
 export type BillingItemsStddevOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevPop() on columns of table "billing_items" */
 export type BillingItemsStddevPopOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevSamp() on columns of table "billing_items" */
 export type BillingItemsStddevSampOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
@@ -2368,38 +4376,91 @@ export type BillingItemsStreamCursorInput = {
 /** Initial value of the column from where the streaming should start */
 export type BillingItemsStreamCursorValueInput = {
   amount?: InputMaybe<Scalars['numeric']['input']>;
+  approvalDate?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedBy?: InputMaybe<Scalars['uuid']['input']>;
+  billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Manager who confirmed this item */
+  confirmedBy?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  isApproved?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional notes about this billing item */
+  notes?: InputMaybe<Scalars['String']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+  /** Reference to the service from service catalog */
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceName?: InputMaybe<Scalars['String']['input']>;
+  /** Staff member who performed the service */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Status: draft, confirmed, billed */
+  status?: InputMaybe<Scalars['String']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** order by sum() on columns of table "billing_items" */
 export type BillingItemsSumOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "billing_items" */
 export type BillingItemsUpdateColumn =
   /** column name */
+  | 'approvalDate'
+  /** column name */
+  | 'approvedBy'
+  /** column name */
+  | 'billingPlanId'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'confirmedAt'
+  /** column name */
+  | 'confirmedBy'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'description'
+  /** column name */
+  | 'hourlyRate'
   /** column name */
   | 'id'
   /** column name */
   | 'invoiceId'
   /** column name */
+  | 'isApproved'
+  /** column name */
+  | 'notes'
+  /** column name */
   | 'payrollId'
   /** column name */
   | 'quantity'
   /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'serviceName'
+  /** column name */
+  | 'staffUserId'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'totalAmount'
+  /** column name */
   | 'unitPrice'
+  /** column name */
+  | 'updatedAt'
   | '%future added value';
 
 export type BillingItemsUpdates = {
@@ -2414,22 +4475,231 @@ export type BillingItemsUpdates = {
 /** order by varPop() on columns of table "billing_items" */
 export type BillingItemsVarPopOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
 /** order by varSamp() on columns of table "billing_items" */
 export type BillingItemsVarSampOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
 /** order by variance() on columns of table "billing_items" */
 export type BillingItemsVarianceOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
+};
+
+export type BillingPeriodsAggregateBoolExp = {
+  count?: InputMaybe<BillingPeriodsAggregateBoolExpCount>;
+};
+
+export type BillingPeriodsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<BillingPeriodsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingPeriodsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+/** order by aggregate values of table "billing_periods" */
+export type BillingPeriodsAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<BillingPeriodsMaxOrderBy>;
+  min?: InputMaybe<BillingPeriodsMinOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "billing_periods" */
+export type BillingPeriodsArrRelInsertInput = {
+  data: Array<BillingPeriodsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<BillingPeriodsOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "billing_periods". All fields are combined with a logical 'AND'. */
+export type BillingPeriodsBoolExp = {
+  _and?: InputMaybe<Array<BillingPeriodsBoolExp>>;
+  _not?: InputMaybe<BillingPeriodsBoolExp>;
+  _or?: InputMaybe<Array<BillingPeriodsBoolExp>>;
+  billingInvoices?: InputMaybe<BillingInvoiceBoolExp>;
+  billingInvoicesAggregate?: InputMaybe<BillingInvoiceAggregateBoolExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  periodEnd?: InputMaybe<DateComparisonExp>;
+  periodStart?: InputMaybe<DateComparisonExp>;
+  status?: InputMaybe<StringComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "billing_periods" */
+export type BillingPeriodsConstraint =
+  /** unique or primary key constraint on columns "period_end", "period_start", "client_id" */
+  | 'billing_periods_client_id_period_start_period_end_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'billing_periods_pkey'
+  | '%future added value';
+
+/** input type for inserting data into table "billing_periods" */
+export type BillingPeriodsInsertInput = {
+  billingInvoices?: InputMaybe<BillingInvoiceArrRelInsertInput>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  /** Client this billing period is for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** End date of billing period */
+  periodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Start date of billing period */
+  periodStart?: InputMaybe<Scalars['date']['input']>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by max() on columns of table "billing_periods" */
+export type BillingPeriodsMaxOrderBy = {
+  /** Client this billing period is for */
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  /** End date of billing period */
+  periodEnd?: InputMaybe<OrderBy>;
+  /** Start date of billing period */
+  periodStart?: InputMaybe<OrderBy>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "billing_periods" */
+export type BillingPeriodsMinOrderBy = {
+  /** Client this billing period is for */
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  /** End date of billing period */
+  periodEnd?: InputMaybe<OrderBy>;
+  /** Start date of billing period */
+  periodStart?: InputMaybe<OrderBy>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "billing_periods" */
+export type BillingPeriodsOnConflict = {
+  constraint: BillingPeriodsConstraint;
+  updateColumns?: Array<BillingPeriodsUpdateColumn>;
+  where?: InputMaybe<BillingPeriodsBoolExp>;
+};
+
+/** Ordering options when selecting data from "billing_periods". */
+export type BillingPeriodsOrderBy = {
+  billingInvoicesAggregate?: InputMaybe<BillingInvoiceAggregateOrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  periodEnd?: InputMaybe<OrderBy>;
+  periodStart?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: billing_periods */
+export type BillingPeriodsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "billing_periods" */
+export type BillingPeriodsSelectColumn =
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'periodEnd'
+  /** column name */
+  | 'periodStart'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** input type for updating data in table "billing_periods" */
+export type BillingPeriodsSetInput = {
+  /** Client this billing period is for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** End date of billing period */
+  periodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Start date of billing period */
+  periodStart?: InputMaybe<Scalars['date']['input']>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** Streaming cursor of the table "billingPeriods" */
+export type BillingPeriodsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: BillingPeriodsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type BillingPeriodsStreamCursorValueInput = {
+  /** Client this billing period is for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** End date of billing period */
+  periodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Start date of billing period */
+  periodStart?: InputMaybe<Scalars['date']['input']>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** update columns of table "billing_periods" */
+export type BillingPeriodsUpdateColumn =
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'periodEnd'
+  /** column name */
+  | 'periodStart'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type BillingPeriodsUpdates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<BillingPeriodsSetInput>;
+  /** filter the rows which have to be updated */
+  where: BillingPeriodsBoolExp;
 };
 
 /** Boolean expression to filter rows from the table "billing_plan". All fields are combined with a logical 'AND'. */
@@ -2437,14 +4707,21 @@ export type BillingPlansBoolExp = {
   _and?: InputMaybe<Array<BillingPlansBoolExp>>;
   _not?: InputMaybe<BillingPlansBoolExp>;
   _or?: InputMaybe<Array<BillingPlansBoolExp>>;
+  billingPlanItems?: InputMaybe<BillingItemsBoolExp>;
+  billingPlanItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingServiceItems?: InputMaybe<BillingItemsBoolExp>;
+  billingServiceItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingUnit?: InputMaybe<StringComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
   clientBillingAssignments?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   clientBillingAssignmentsAggregate?: InputMaybe<ClientBillingAssignmentsAggregateBoolExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   currency?: InputMaybe<StringComparisonExp>;
   description?: InputMaybe<StringComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
   name?: InputMaybe<StringComparisonExp>;
-  ratePerPayroll?: InputMaybe<NumericComparisonExp>;
+  standardRate?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
 
@@ -2456,18 +4733,28 @@ export type BillingPlansConstraint =
 
 /** input type for incrementing numeric columns in table "billing_plan" */
 export type BillingPlansIncInput = {
-  ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
+  /** Standard rate for this service */
+  standardRate?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** input type for inserting data into table "billing_plan" */
 export type BillingPlansInsertInput = {
+  billingPlanItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  billingServiceItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  /** Unit of billing: Per Payroll, Per Payslip, Per Employee, Per Hour, Per State, Once Off, Per Month */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  /** Service category: Processing, Setup, Employee Management, Compliance, etc. */
+  category?: InputMaybe<Scalars['String']['input']>;
   clientBillingAssignments?: InputMaybe<ClientBillingAssignmentsArrRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether this service is currently available */
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
+  /** Standard rate for this service */
+  standardRate?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
@@ -2487,13 +4774,18 @@ export type BillingPlansOnConflict = {
 
 /** Ordering options when selecting data from "billing_plan". */
 export type BillingPlansOrderBy = {
+  billingPlanItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingServiceItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingUnit?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
   clientBillingAssignmentsAggregate?: InputMaybe<ClientBillingAssignmentsAggregateOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   currency?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
   name?: InputMaybe<OrderBy>;
-  ratePerPayroll?: InputMaybe<OrderBy>;
+  standardRate?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -2505,6 +4797,10 @@ export type BillingPlansPkColumnsInput = {
 /** select columns of table "billing_plan" */
 export type BillingPlansSelectColumn =
   /** column name */
+  | 'billingUnit'
+  /** column name */
+  | 'category'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'currency'
@@ -2513,21 +4809,30 @@ export type BillingPlansSelectColumn =
   /** column name */
   | 'id'
   /** column name */
+  | 'isActive'
+  /** column name */
   | 'name'
   /** column name */
-  | 'ratePerPayroll'
+  | 'standardRate'
   /** column name */
   | 'updatedAt'
   | '%future added value';
 
 /** input type for updating data in table "billing_plan" */
 export type BillingPlansSetInput = {
+  /** Unit of billing: Per Payroll, Per Payslip, Per Employee, Per Hour, Per State, Once Off, Per Month */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  /** Service category: Processing, Setup, Employee Management, Compliance, etc. */
+  category?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether this service is currently available */
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
+  /** Standard rate for this service */
+  standardRate?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
@@ -2541,17 +4846,28 @@ export type BillingPlansStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type BillingPlansStreamCursorValueInput = {
+  /** Unit of billing: Per Payroll, Per Payslip, Per Employee, Per Hour, Per State, Once Off, Per Month */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  /** Service category: Processing, Setup, Employee Management, Compliance, etc. */
+  category?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether this service is currently available */
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
+  /** Standard rate for this service */
+  standardRate?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** update columns of table "billing_plan" */
 export type BillingPlansUpdateColumn =
+  /** column name */
+  | 'billingUnit'
+  /** column name */
+  | 'category'
   /** column name */
   | 'createdAt'
   /** column name */
@@ -2561,9 +4877,11 @@ export type BillingPlansUpdateColumn =
   /** column name */
   | 'id'
   /** column name */
+  | 'isActive'
+  /** column name */
   | 'name'
   /** column name */
-  | 'ratePerPayroll'
+  | 'standardRate'
   /** column name */
   | 'updatedAt'
   | '%future added value';
@@ -2606,9 +4924,17 @@ export type ClientBillingAssignmentsAggregateBoolExpCount = {
 
 /** order by aggregate values of table "client_billing_assignment" */
 export type ClientBillingAssignmentsAggregateOrderBy = {
+  avg?: InputMaybe<ClientBillingAssignmentsAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<ClientBillingAssignmentsMaxOrderBy>;
   min?: InputMaybe<ClientBillingAssignmentsMinOrderBy>;
+  stddev?: InputMaybe<ClientBillingAssignmentsStddevOrderBy>;
+  stddevPop?: InputMaybe<ClientBillingAssignmentsStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<ClientBillingAssignmentsStddevSampOrderBy>;
+  sum?: InputMaybe<ClientBillingAssignmentsSumOrderBy>;
+  varPop?: InputMaybe<ClientBillingAssignmentsVarPopOrderBy>;
+  varSamp?: InputMaybe<ClientBillingAssignmentsVarSampOrderBy>;
+  variance?: InputMaybe<ClientBillingAssignmentsVarianceOrderBy>;
 };
 
 /** input type for inserting array relation for remote table "client_billing_assignment" */
@@ -2618,6 +4944,12 @@ export type ClientBillingAssignmentsArrRelInsertInput = {
   onConflict?: InputMaybe<ClientBillingAssignmentsOnConflict>;
 };
 
+/** order by avg() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsAvgOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
 /** Boolean expression to filter rows from the table "client_billing_assignment". All fields are combined with a logical 'AND'. */
 export type ClientBillingAssignmentsBoolExp = {
   _and?: InputMaybe<Array<ClientBillingAssignmentsBoolExp>>;
@@ -2625,12 +4957,16 @@ export type ClientBillingAssignmentsBoolExp = {
   _or?: InputMaybe<Array<ClientBillingAssignmentsBoolExp>>;
   assignedBillingPlan?: InputMaybe<BillingPlansBoolExp>;
   assignedClient?: InputMaybe<ClientsBoolExp>;
+  billingFrequency?: InputMaybe<StringComparisonExp>;
   billingPlanId?: InputMaybe<UuidComparisonExp>;
   clientId?: InputMaybe<UuidComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  customRate?: InputMaybe<NumericComparisonExp>;
+  effectiveDate?: InputMaybe<DateComparisonExp>;
   endDate?: InputMaybe<DateComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   isActive?: InputMaybe<BooleanComparisonExp>;
+  isEnabled?: InputMaybe<BooleanComparisonExp>;
   startDate?: InputMaybe<DateComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
@@ -2641,25 +4977,45 @@ export type ClientBillingAssignmentsConstraint =
   | 'client_billing_assignment_pkey'
   | '%future added value';
 
+/** input type for incrementing numeric columns in table "client_billing_assignment" */
+export type ClientBillingAssignmentsIncInput = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+};
+
 /** input type for inserting data into table "client_billing_assignment" */
 export type ClientBillingAssignmentsInsertInput = {
   assignedBillingPlan?: InputMaybe<BillingPlansObjRelInsertInput>;
   assignedClient?: InputMaybe<ClientsObjRelInsertInput>;
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: InputMaybe<Scalars['date']['input']>;
   endDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether this service is enabled for this client */
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   startDate?: InputMaybe<Scalars['date']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** order by max() on columns of table "client_billing_assignment" */
 export type ClientBillingAssignmentsMaxOrderBy = {
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: InputMaybe<OrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: InputMaybe<OrderBy>;
   endDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
@@ -2668,9 +5024,15 @@ export type ClientBillingAssignmentsMaxOrderBy = {
 
 /** order by min() on columns of table "client_billing_assignment" */
 export type ClientBillingAssignmentsMinOrderBy = {
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: InputMaybe<OrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: InputMaybe<OrderBy>;
   endDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
@@ -2688,12 +5050,16 @@ export type ClientBillingAssignmentsOnConflict = {
 export type ClientBillingAssignmentsOrderBy = {
   assignedBillingPlan?: InputMaybe<BillingPlansOrderBy>;
   assignedClient?: InputMaybe<ClientsOrderBy>;
+  billingFrequency?: InputMaybe<OrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  effectiveDate?: InputMaybe<OrderBy>;
   endDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   isActive?: InputMaybe<OrderBy>;
+  isEnabled?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -2706,17 +5072,25 @@ export type ClientBillingAssignmentsPkColumnsInput = {
 /** select columns of table "client_billing_assignment" */
 export type ClientBillingAssignmentsSelectColumn =
   /** column name */
+  | 'billingFrequency'
+  /** column name */
   | 'billingPlanId'
   /** column name */
   | 'clientId'
   /** column name */
   | 'createdAt'
   /** column name */
+  | 'customRate'
+  /** column name */
+  | 'effectiveDate'
+  /** column name */
   | 'endDate'
   /** column name */
   | 'id'
   /** column name */
   | 'isActive'
+  /** column name */
+  | 'isEnabled'
   /** column name */
   | 'startDate'
   /** column name */
@@ -2727,24 +5101,54 @@ export type ClientBillingAssignmentsSelectColumn =
 export type ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_AndArgumentsColumns =
   /** column name */
   | 'isActive'
+  /** column name */
+  | 'isEnabled'
   | '%future added value';
 
 /** select "clientBillingAssignmentsAggregateBoolExpBool_orArgumentsColumns" columns of table "client_billing_assignment" */
 export type ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_OrArgumentsColumns =
   /** column name */
   | 'isActive'
+  /** column name */
+  | 'isEnabled'
   | '%future added value';
 
 /** input type for updating data in table "client_billing_assignment" */
 export type ClientBillingAssignmentsSetInput = {
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: InputMaybe<Scalars['date']['input']>;
   endDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether this service is enabled for this client */
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   startDate?: InputMaybe<Scalars['date']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by stddev() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsStddevOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsStddevPopOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsStddevSampOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "clientBillingAssignments" */
@@ -2757,18 +5161,34 @@ export type ClientBillingAssignmentsStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type ClientBillingAssignmentsStreamCursorValueInput = {
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: InputMaybe<Scalars['date']['input']>;
   endDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether this service is enabled for this client */
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   startDate?: InputMaybe<Scalars['date']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
+/** order by sum() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsSumOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
 /** update columns of table "client_billing_assignment" */
 export type ClientBillingAssignmentsUpdateColumn =
+  /** column name */
+  | 'billingFrequency'
   /** column name */
   | 'billingPlanId'
   /** column name */
@@ -2776,11 +5196,17 @@ export type ClientBillingAssignmentsUpdateColumn =
   /** column name */
   | 'createdAt'
   /** column name */
+  | 'customRate'
+  /** column name */
+  | 'effectiveDate'
+  /** column name */
   | 'endDate'
   /** column name */
   | 'id'
   /** column name */
   | 'isActive'
+  /** column name */
+  | 'isEnabled'
   /** column name */
   | 'startDate'
   /** column name */
@@ -2788,10 +5214,30 @@ export type ClientBillingAssignmentsUpdateColumn =
   | '%future added value';
 
 export type ClientBillingAssignmentsUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<ClientBillingAssignmentsIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<ClientBillingAssignmentsSetInput>;
   /** filter the rows which have to be updated */
   where: ClientBillingAssignmentsBoolExp;
+};
+
+/** order by varPop() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsVarPopOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsVarSampOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsVarianceOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
 };
 
 export type ClientExternalSystemsAggregateBoolExp = {
@@ -2836,7 +5282,7 @@ export type ClientExternalSystemsBoolExp = {
 
 /** unique or primary key constraints on table "client_external_systems" */
 export type ClientExternalSystemsConstraint =
-  /** unique or primary key constraint on columns "client_id", "system_id" */
+  /** unique or primary key constraint on columns "system_id", "client_id" */
   | 'client_external_systems_client_id_system_id_key'
   /** unique or primary key constraint on columns "id" */
   | 'client_external_systems_pkey'
@@ -3045,8 +5491,12 @@ export type ClientsBoolExp = {
   active?: InputMaybe<BooleanComparisonExp>;
   billingAssignments?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   billingAssignmentsAggregate?: InputMaybe<ClientBillingAssignmentsAggregateBoolExp>;
-  billing_invoices?: InputMaybe<BillingInvoiceBoolExp>;
-  billing_invoicesAggregate?: InputMaybe<BillingInvoiceAggregateBoolExp>;
+  billingInvoices?: InputMaybe<BillingInvoiceBoolExp>;
+  billingInvoicesAggregate?: InputMaybe<BillingInvoiceAggregateBoolExp>;
+  billingItems?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingPeriods?: InputMaybe<BillingPeriodsBoolExp>;
+  billingPeriodsAggregate?: InputMaybe<BillingPeriodsAggregateBoolExp>;
   contactEmail?: InputMaybe<StringComparisonExp>;
   contactPerson?: InputMaybe<StringComparisonExp>;
   contactPhone?: InputMaybe<StringComparisonExp>;
@@ -3057,6 +5507,8 @@ export type ClientsBoolExp = {
   name?: InputMaybe<StringComparisonExp>;
   payrolls?: InputMaybe<PayrollsBoolExp>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
+  timeEntries?: InputMaybe<TimeEntriesBoolExp>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
 
@@ -3071,7 +5523,9 @@ export type ClientsInsertInput = {
   /** Whether the client is currently active */
   active?: InputMaybe<Scalars['Boolean']['input']>;
   billingAssignments?: InputMaybe<ClientBillingAssignmentsArrRelInsertInput>;
-  billing_invoices?: InputMaybe<BillingInvoiceArrRelInsertInput>;
+  billingInvoices?: InputMaybe<BillingInvoiceArrRelInsertInput>;
+  billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  billingPeriods?: InputMaybe<BillingPeriodsArrRelInsertInput>;
   /** Email address for the client contact */
   contactEmail?: InputMaybe<Scalars['String']['input']>;
   /** Primary contact person at the client */
@@ -3086,6 +5540,7 @@ export type ClientsInsertInput = {
   /** Client company name */
   name?: InputMaybe<Scalars['String']['input']>;
   payrolls?: InputMaybe<PayrollsArrRelInsertInput>;
+  timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
   /** Timestamp when the client was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -3144,7 +5599,9 @@ export type ClientsOnConflict = {
 export type ClientsOrderBy = {
   active?: InputMaybe<OrderBy>;
   billingAssignmentsAggregate?: InputMaybe<ClientBillingAssignmentsAggregateOrderBy>;
-  billing_invoicesAggregate?: InputMaybe<BillingInvoiceAggregateOrderBy>;
+  billingInvoicesAggregate?: InputMaybe<BillingInvoiceAggregateOrderBy>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingPeriodsAggregate?: InputMaybe<BillingPeriodsAggregateOrderBy>;
   contactEmail?: InputMaybe<OrderBy>;
   contactPerson?: InputMaybe<OrderBy>;
   contactPhone?: InputMaybe<OrderBy>;
@@ -3153,6 +5610,7 @@ export type ClientsOrderBy = {
   id?: InputMaybe<OrderBy>;
   name?: InputMaybe<OrderBy>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -3632,6 +6090,41 @@ export type DataAccessLogsUpdates = {
   _set?: InputMaybe<DataAccessLogsSetInput>;
   /** filter the rows which have to be updated */
   where: DataAccessLogsBoolExp;
+};
+
+export type EmailDraftsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<EmailDraftsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+export type EmailSendLogsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<EmailSendLogsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+export type EmailTemplatesAggregateBoolExpBool_And = {
+  arguments: EmailTemplatesSelectColumnEmailTemplatesAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<EmailTemplatesBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type EmailTemplatesAggregateBoolExpBool_Or = {
+  arguments: EmailTemplatesSelectColumnEmailTemplatesAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<EmailTemplatesBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type EmailTemplatesAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<EmailTemplatesBoolExp>;
+  predicate: IntComparisonExp;
 };
 
 /** Boolean expression to filter rows from the table "external_systems". All fields are combined with a logical 'AND'. */
@@ -4357,6 +6850,7 @@ export type LeaveBoolExp = {
   _and?: InputMaybe<Array<LeaveBoolExp>>;
   _not?: InputMaybe<LeaveBoolExp>;
   _or?: InputMaybe<Array<LeaveBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
   endDate?: InputMaybe<DateComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   leaveRequester?: InputMaybe<UsersBoolExp>;
@@ -4365,6 +6859,7 @@ export type LeaveBoolExp = {
   reason?: InputMaybe<StringComparisonExp>;
   startDate?: InputMaybe<DateComparisonExp>;
   status?: InputMaybe<LeaveStatusEnumComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
 };
 
@@ -4376,6 +6871,8 @@ export type LeaveConstraint =
 
 /** input type for inserting data into table "leave" */
 export type LeaveInsertInput = {
+  /** Timestamp when the leave request was created */
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Last day of the leave period */
   endDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the leave record */
@@ -4390,12 +6887,16 @@ export type LeaveInsertInput = {
   startDate?: InputMaybe<Scalars['date']['input']>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: InputMaybe<Scalars['leave_status_enum']['input']>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** order by max() on columns of table "leave" */
 export type LeaveMaxOrderBy = {
+  /** Timestamp when the leave request was created */
+  createdAt?: InputMaybe<OrderBy>;
   /** Last day of the leave period */
   endDate?: InputMaybe<OrderBy>;
   /** Unique identifier for the leave record */
@@ -4408,12 +6909,16 @@ export type LeaveMaxOrderBy = {
   startDate?: InputMaybe<OrderBy>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: InputMaybe<OrderBy>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: InputMaybe<OrderBy>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<OrderBy>;
 };
 
 /** order by min() on columns of table "leave" */
 export type LeaveMinOrderBy = {
+  /** Timestamp when the leave request was created */
+  createdAt?: InputMaybe<OrderBy>;
   /** Last day of the leave period */
   endDate?: InputMaybe<OrderBy>;
   /** Unique identifier for the leave record */
@@ -4426,6 +6931,8 @@ export type LeaveMinOrderBy = {
   startDate?: InputMaybe<OrderBy>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: InputMaybe<OrderBy>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: InputMaybe<OrderBy>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<OrderBy>;
 };
@@ -4439,6 +6946,7 @@ export type LeaveOnConflict = {
 
 /** Ordering options when selecting data from "leave". */
 export type LeaveOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
   endDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   leaveRequester?: InputMaybe<UsersOrderBy>;
@@ -4447,6 +6955,7 @@ export type LeaveOrderBy = {
   reason?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
 };
 
@@ -4458,6 +6967,8 @@ export type LeavePkColumnsInput = {
 
 /** select columns of table "leave" */
 export type LeaveSelectColumn =
+  /** column name */
+  | 'createdAt'
   /** column name */
   | 'endDate'
   /** column name */
@@ -4471,11 +6982,15 @@ export type LeaveSelectColumn =
   /** column name */
   | 'status'
   /** column name */
+  | 'updatedAt'
+  /** column name */
   | 'userId'
   | '%future added value';
 
 /** input type for updating data in table "leave" */
 export type LeaveSetInput = {
+  /** Timestamp when the leave request was created */
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Last day of the leave period */
   endDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the leave record */
@@ -4488,6 +7003,8 @@ export type LeaveSetInput = {
   startDate?: InputMaybe<Scalars['date']['input']>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: InputMaybe<Scalars['leave_status_enum']['input']>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<Scalars['uuid']['input']>;
 };
@@ -4502,6 +7019,8 @@ export type LeaveStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type LeaveStreamCursorValueInput = {
+  /** Timestamp when the leave request was created */
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Last day of the leave period */
   endDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the leave record */
@@ -4514,12 +7033,16 @@ export type LeaveStreamCursorValueInput = {
   startDate?: InputMaybe<Scalars['date']['input']>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: InputMaybe<Scalars['leave_status_enum']['input']>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** update columns of table "leave" */
 export type LeaveUpdateColumn =
+  /** column name */
+  | 'createdAt'
   /** column name */
   | 'endDate'
   /** column name */
@@ -4532,6 +7055,8 @@ export type LeaveUpdateColumn =
   | 'startDate'
   /** column name */
   | 'status'
+  /** column name */
+  | 'updatedAt'
   /** column name */
   | 'userId'
   | '%future added value';
@@ -5784,7 +8309,7 @@ export type PayrollDatesBoolExp = {
 
 /** unique or primary key constraints on table "payroll_dates" */
 export type PayrollDatesConstraint =
-  /** unique or primary key constraint on columns "original_eft_date", "payroll_id" */
+  /** unique or primary key constraint on columns "payroll_id", "original_eft_date" */
   | 'idx_unique_payroll_date'
   /** unique or primary key constraint on columns "id" */
   | 'payroll_dates_pkey'
@@ -5981,6 +8506,109 @@ export type PayrollDatesUpdates = {
   _set?: InputMaybe<PayrollDatesSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollDatesBoolExp;
+};
+
+export type PayrollRequiredSkillAggregateBoolExp = {
+  count?: InputMaybe<PayrollRequiredSkillAggregateBoolExpCount>;
+};
+
+export type PayrollRequiredSkillAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<PayrollRequiredSkillSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<PayrollRequiredSkillBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+/** order by aggregate values of table "payroll_required_skills" */
+export type PayrollRequiredSkillAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<PayrollRequiredSkillMaxOrderBy>;
+  min?: InputMaybe<PayrollRequiredSkillMinOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "payroll_required_skills" */
+export type PayrollRequiredSkillArrRelInsertInput = {
+  data: Array<PayrollRequiredSkillInsertInput>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_required_skills". All fields are combined with a logical 'AND'. */
+export type PayrollRequiredSkillBoolExp = {
+  _and?: InputMaybe<Array<PayrollRequiredSkillBoolExp>>;
+  _not?: InputMaybe<PayrollRequiredSkillBoolExp>;
+  _or?: InputMaybe<Array<PayrollRequiredSkillBoolExp>>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  requiredLevel?: InputMaybe<StringComparisonExp>;
+  requiringPayroll?: InputMaybe<PayrollsBoolExp>;
+  skillName?: InputMaybe<StringComparisonExp>;
+};
+
+/** input type for inserting data into table "payroll_required_skills" */
+export type PayrollRequiredSkillInsertInput = {
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  requiredLevel?: InputMaybe<Scalars['String']['input']>;
+  requiringPayroll?: InputMaybe<PayrollsObjRelInsertInput>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** order by max() on columns of table "payroll_required_skills" */
+export type PayrollRequiredSkillMaxOrderBy = {
+  payrollId?: InputMaybe<OrderBy>;
+  requiredLevel?: InputMaybe<OrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "payroll_required_skills" */
+export type PayrollRequiredSkillMinOrderBy = {
+  payrollId?: InputMaybe<OrderBy>;
+  requiredLevel?: InputMaybe<OrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+};
+
+/** Ordering options when selecting data from "payroll_required_skills". */
+export type PayrollRequiredSkillOrderBy = {
+  payrollId?: InputMaybe<OrderBy>;
+  requiredLevel?: InputMaybe<OrderBy>;
+  requiringPayroll?: InputMaybe<PayrollsOrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "payroll_required_skills" */
+export type PayrollRequiredSkillSelectColumn =
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'requiredLevel'
+  /** column name */
+  | 'skillName'
+  | '%future added value';
+
+/** input type for updating data in table "payroll_required_skills" */
+export type PayrollRequiredSkillSetInput = {
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  requiredLevel?: InputMaybe<Scalars['String']['input']>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Streaming cursor of the table "payrollRequiredSkill" */
+export type PayrollRequiredSkillStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PayrollRequiredSkillStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PayrollRequiredSkillStreamCursorValueInput = {
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  requiredLevel?: InputMaybe<Scalars['String']['input']>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PayrollRequiredSkillUpdates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<PayrollRequiredSkillSetInput>;
+  /** filter the rows which have to be updated */
+  where: PayrollRequiredSkillBoolExp;
 };
 
 /** Boolean expression to filter rows from the table "payroll_triggers_status". All fields are combined with a logical 'AND'. */
@@ -6375,14 +9003,25 @@ export type PayrollsArrRelInsertInput = {
 
 /** order by avg() on columns of table "payrolls" */
 export type PayrollsAvgOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
@@ -6391,10 +9030,13 @@ export type PayrollsBoolExp = {
   _and?: InputMaybe<Array<PayrollsBoolExp>>;
   _not?: InputMaybe<PayrollsBoolExp>;
   _or?: InputMaybe<Array<PayrollsBoolExp>>;
+  actualHours?: InputMaybe<NumericComparisonExp>;
+  actualRevenue?: InputMaybe<NumericComparisonExp>;
   backupConsultant?: InputMaybe<UsersBoolExp>;
   backupConsultantUserId?: InputMaybe<UuidComparisonExp>;
   billingItems?: InputMaybe<BillingItemsBoolExp>;
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingStatus?: InputMaybe<StringComparisonExp>;
   childPayrolls?: InputMaybe<PayrollsBoolExp>;
   childPayrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   client?: InputMaybe<ClientsBoolExp>;
@@ -6405,24 +9047,35 @@ export type PayrollsBoolExp = {
   dateTypeId?: InputMaybe<UuidComparisonExp>;
   dateValue?: InputMaybe<IntComparisonExp>;
   employeeCount?: InputMaybe<IntComparisonExp>;
+  estimatedHours?: InputMaybe<NumericComparisonExp>;
+  estimatedRevenue?: InputMaybe<NumericComparisonExp>;
   goLiveDate?: InputMaybe<DateComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
+  lastBilledDate?: InputMaybe<TimestamptzComparisonExp>;
   manager?: InputMaybe<UsersBoolExp>;
   managerUserId?: InputMaybe<UuidComparisonExp>;
   name?: InputMaybe<StringComparisonExp>;
+  newEmployees?: InputMaybe<IntComparisonExp>;
   parentPayroll?: InputMaybe<PayrollsBoolExp>;
   parentPayrollId?: InputMaybe<UuidComparisonExp>;
   payrollCycle?: InputMaybe<PayrollCyclesBoolExp>;
   payrollDateType?: InputMaybe<PayrollDateTypesBoolExp>;
   payrollDates?: InputMaybe<PayrollDatesBoolExp>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateBoolExp>;
+  payrollRequiredSkills?: InputMaybe<PayrollRequiredSkillBoolExp>;
+  payrollRequiredSkillsAggregate?: InputMaybe<PayrollRequiredSkillAggregateBoolExp>;
   payrollSystem?: InputMaybe<StringComparisonExp>;
+  payslipCount?: InputMaybe<IntComparisonExp>;
   primaryConsultant?: InputMaybe<UsersBoolExp>;
   primaryConsultantUserId?: InputMaybe<UuidComparisonExp>;
   processingDaysBeforeEft?: InputMaybe<IntComparisonExp>;
   processingTime?: InputMaybe<IntComparisonExp>;
+  profitMargin?: InputMaybe<NumericComparisonExp>;
   status?: InputMaybe<PayrollStatusComparisonExp>;
   supersededDate?: InputMaybe<DateComparisonExp>;
+  terminatedEmployees?: InputMaybe<IntComparisonExp>;
+  timeEntries?: InputMaybe<TimeEntriesBoolExp>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   versionNumber?: InputMaybe<IntComparisonExp>;
   versionReason?: InputMaybe<StringComparisonExp>;
@@ -6438,23 +9091,38 @@ export type PayrollsConstraint =
 
 /** input type for incrementing numeric columns in table "payrolls" */
 export type PayrollsIncInput = {
+  actualHours?: InputMaybe<Scalars['numeric']['input']>;
+  actualRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<Scalars['Int']['input']>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  estimatedHours?: InputMaybe<Scalars['numeric']['input']>;
+  estimatedRevenue?: InputMaybe<Scalars['numeric']['input']>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<Scalars['Int']['input']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<Scalars['Int']['input']>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<Scalars['Int']['input']>;
+  profitMargin?: InputMaybe<Scalars['numeric']['input']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<Scalars['Int']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** input type for inserting data into table "payrolls" */
 export type PayrollsInsertInput = {
+  actualHours?: InputMaybe<Scalars['numeric']['input']>;
+  actualRevenue?: InputMaybe<Scalars['numeric']['input']>;
   backupConsultant?: InputMaybe<UsersObjRelInsertInput>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: InputMaybe<Scalars['String']['input']>;
   childPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   client?: InputMaybe<ClientsObjRelInsertInput>;
   /** Reference to the client this payroll belongs to */
@@ -6470,22 +9138,30 @@ export type PayrollsInsertInput = {
   dateValue?: InputMaybe<Scalars['Int']['input']>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  estimatedHours?: InputMaybe<Scalars['numeric']['input']>;
+  estimatedRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** The date when the payroll went live in the system */
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the payroll */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  lastBilledDate?: InputMaybe<Scalars['timestamptz']['input']>;
   manager?: InputMaybe<UsersObjRelInsertInput>;
   /** Manager overseeing this payroll */
   managerUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Name of the payroll */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<Scalars['Int']['input']>;
   parentPayroll?: InputMaybe<PayrollsObjRelInsertInput>;
   parentPayrollId?: InputMaybe<Scalars['uuid']['input']>;
   payrollCycle?: InputMaybe<PayrollCyclesObjRelInsertInput>;
   payrollDateType?: InputMaybe<PayrollDateTypesObjRelInsertInput>;
   payrollDates?: InputMaybe<PayrollDatesArrRelInsertInput>;
+  payrollRequiredSkills?: InputMaybe<PayrollRequiredSkillArrRelInsertInput>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
   primaryConsultant?: InputMaybe<UsersObjRelInsertInput>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
@@ -6493,9 +9169,13 @@ export type PayrollsInsertInput = {
   processingDaysBeforeEft?: InputMaybe<Scalars['Int']['input']>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<Scalars['Int']['input']>;
+  profitMargin?: InputMaybe<Scalars['numeric']['input']>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: InputMaybe<Scalars['payroll_status']['input']>;
   supersededDate?: InputMaybe<Scalars['date']['input']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<Scalars['Int']['input']>;
+  timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
@@ -6504,8 +9184,12 @@ export type PayrollsInsertInput = {
 
 /** order by max() on columns of table "payrolls" */
 export type PayrollsMaxOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<OrderBy>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: InputMaybe<OrderBy>;
   /** Reference to the client this payroll belongs to */
   clientId?: InputMaybe<OrderBy>;
   /** Timestamp when the payroll was created */
@@ -6519,26 +9203,36 @@ export type PayrollsMaxOrderBy = {
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
   /** The date when the payroll went live in the system */
   goLiveDate?: InputMaybe<OrderBy>;
   /** Unique identifier for the payroll */
   id?: InputMaybe<OrderBy>;
+  lastBilledDate?: InputMaybe<OrderBy>;
   /** Manager overseeing this payroll */
   managerUserId?: InputMaybe<OrderBy>;
   /** Name of the payroll */
   name?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
   parentPayrollId?: InputMaybe<OrderBy>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: InputMaybe<OrderBy>;
   supersededDate?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
@@ -6547,8 +9241,12 @@ export type PayrollsMaxOrderBy = {
 
 /** order by min() on columns of table "payrolls" */
 export type PayrollsMinOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<OrderBy>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: InputMaybe<OrderBy>;
   /** Reference to the client this payroll belongs to */
   clientId?: InputMaybe<OrderBy>;
   /** Timestamp when the payroll was created */
@@ -6562,26 +9260,36 @@ export type PayrollsMinOrderBy = {
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
   /** The date when the payroll went live in the system */
   goLiveDate?: InputMaybe<OrderBy>;
   /** Unique identifier for the payroll */
   id?: InputMaybe<OrderBy>;
+  lastBilledDate?: InputMaybe<OrderBy>;
   /** Manager overseeing this payroll */
   managerUserId?: InputMaybe<OrderBy>;
   /** Name of the payroll */
   name?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
   parentPayrollId?: InputMaybe<OrderBy>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: InputMaybe<OrderBy>;
   supersededDate?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
@@ -6604,9 +9312,12 @@ export type PayrollsOnConflict = {
 
 /** Ordering options when selecting data from "payrolls". */
 export type PayrollsOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   backupConsultant?: InputMaybe<UsersOrderBy>;
   backupConsultantUserId?: InputMaybe<OrderBy>;
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingStatus?: InputMaybe<OrderBy>;
   childPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   client?: InputMaybe<ClientsOrderBy>;
   clientId?: InputMaybe<OrderBy>;
@@ -6616,23 +9327,32 @@ export type PayrollsOrderBy = {
   dateTypeId?: InputMaybe<OrderBy>;
   dateValue?: InputMaybe<OrderBy>;
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
   goLiveDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  lastBilledDate?: InputMaybe<OrderBy>;
   manager?: InputMaybe<UsersOrderBy>;
   managerUserId?: InputMaybe<OrderBy>;
   name?: InputMaybe<OrderBy>;
+  newEmployees?: InputMaybe<OrderBy>;
   parentPayroll?: InputMaybe<PayrollsOrderBy>;
   parentPayrollId?: InputMaybe<OrderBy>;
   payrollCycle?: InputMaybe<PayrollCyclesOrderBy>;
   payrollDateType?: InputMaybe<PayrollDateTypesOrderBy>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateOrderBy>;
+  payrollRequiredSkillsAggregate?: InputMaybe<PayrollRequiredSkillAggregateOrderBy>;
   payrollSystem?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
   primaryConsultant?: InputMaybe<UsersOrderBy>;
   primaryConsultantUserId?: InputMaybe<OrderBy>;
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   supersededDate?: InputMaybe<OrderBy>;
+  terminatedEmployees?: InputMaybe<OrderBy>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
   versionReason?: InputMaybe<OrderBy>;
@@ -6647,7 +9367,13 @@ export type PayrollsPkColumnsInput = {
 /** select columns of table "payrolls" */
 export type PayrollsSelectColumn =
   /** column name */
+  | 'actualHours'
+  /** column name */
+  | 'actualRevenue'
+  /** column name */
   | 'backupConsultantUserId'
+  /** column name */
+  | 'billingStatus'
   /** column name */
   | 'clientId'
   /** column name */
@@ -6663,17 +9389,27 @@ export type PayrollsSelectColumn =
   /** column name */
   | 'employeeCount'
   /** column name */
+  | 'estimatedHours'
+  /** column name */
+  | 'estimatedRevenue'
+  /** column name */
   | 'goLiveDate'
   /** column name */
   | 'id'
+  /** column name */
+  | 'lastBilledDate'
   /** column name */
   | 'managerUserId'
   /** column name */
   | 'name'
   /** column name */
+  | 'newEmployees'
+  /** column name */
   | 'parentPayrollId'
   /** column name */
   | 'payrollSystem'
+  /** column name */
+  | 'payslipCount'
   /** column name */
   | 'primaryConsultantUserId'
   /** column name */
@@ -6681,9 +9417,13 @@ export type PayrollsSelectColumn =
   /** column name */
   | 'processingTime'
   /** column name */
+  | 'profitMargin'
+  /** column name */
   | 'status'
   /** column name */
   | 'supersededDate'
+  /** column name */
+  | 'terminatedEmployees'
   /** column name */
   | 'updatedAt'
   /** column name */
@@ -6694,8 +9434,12 @@ export type PayrollsSelectColumn =
 
 /** input type for updating data in table "payrolls" */
 export type PayrollsSetInput = {
+  actualHours?: InputMaybe<Scalars['numeric']['input']>;
+  actualRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: InputMaybe<Scalars['String']['input']>;
   /** Reference to the client this payroll belongs to */
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the payroll was created */
@@ -6709,26 +9453,36 @@ export type PayrollsSetInput = {
   dateValue?: InputMaybe<Scalars['Int']['input']>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  estimatedHours?: InputMaybe<Scalars['numeric']['input']>;
+  estimatedRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** The date when the payroll went live in the system */
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the payroll */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  lastBilledDate?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Manager overseeing this payroll */
   managerUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Name of the payroll */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<Scalars['Int']['input']>;
   parentPayrollId?: InputMaybe<Scalars['uuid']['input']>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<Scalars['Int']['input']>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<Scalars['Int']['input']>;
+  profitMargin?: InputMaybe<Scalars['numeric']['input']>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: InputMaybe<Scalars['payroll_status']['input']>;
   supersededDate?: InputMaybe<Scalars['date']['input']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<Scalars['Int']['input']>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
@@ -6737,40 +9491,73 @@ export type PayrollsSetInput = {
 
 /** order by stddev() on columns of table "payrolls" */
 export type PayrollsStddevOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevPop() on columns of table "payrolls" */
 export type PayrollsStddevPopOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevSamp() on columns of table "payrolls" */
 export type PayrollsStddevSampOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
@@ -6784,8 +9571,12 @@ export type PayrollsStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type PayrollsStreamCursorValueInput = {
+  actualHours?: InputMaybe<Scalars['numeric']['input']>;
+  actualRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: InputMaybe<Scalars['String']['input']>;
   /** Reference to the client this payroll belongs to */
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the payroll was created */
@@ -6799,26 +9590,36 @@ export type PayrollsStreamCursorValueInput = {
   dateValue?: InputMaybe<Scalars['Int']['input']>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  estimatedHours?: InputMaybe<Scalars['numeric']['input']>;
+  estimatedRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** The date when the payroll went live in the system */
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the payroll */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  lastBilledDate?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Manager overseeing this payroll */
   managerUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Name of the payroll */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<Scalars['Int']['input']>;
   parentPayrollId?: InputMaybe<Scalars['uuid']['input']>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<Scalars['Int']['input']>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<Scalars['Int']['input']>;
+  profitMargin?: InputMaybe<Scalars['numeric']['input']>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: InputMaybe<Scalars['payroll_status']['input']>;
   supersededDate?: InputMaybe<Scalars['date']['input']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<Scalars['Int']['input']>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
@@ -6827,21 +9628,38 @@ export type PayrollsStreamCursorValueInput = {
 
 /** order by sum() on columns of table "payrolls" */
 export type PayrollsSumOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "payrolls" */
 export type PayrollsUpdateColumn =
   /** column name */
+  | 'actualHours'
+  /** column name */
+  | 'actualRevenue'
+  /** column name */
   | 'backupConsultantUserId'
+  /** column name */
+  | 'billingStatus'
   /** column name */
   | 'clientId'
   /** column name */
@@ -6857,17 +9675,27 @@ export type PayrollsUpdateColumn =
   /** column name */
   | 'employeeCount'
   /** column name */
+  | 'estimatedHours'
+  /** column name */
+  | 'estimatedRevenue'
+  /** column name */
   | 'goLiveDate'
   /** column name */
   | 'id'
+  /** column name */
+  | 'lastBilledDate'
   /** column name */
   | 'managerUserId'
   /** column name */
   | 'name'
   /** column name */
+  | 'newEmployees'
+  /** column name */
   | 'parentPayrollId'
   /** column name */
   | 'payrollSystem'
+  /** column name */
+  | 'payslipCount'
   /** column name */
   | 'primaryConsultantUserId'
   /** column name */
@@ -6875,9 +9703,13 @@ export type PayrollsUpdateColumn =
   /** column name */
   | 'processingTime'
   /** column name */
+  | 'profitMargin'
+  /** column name */
   | 'status'
   /** column name */
   | 'supersededDate'
+  /** column name */
+  | 'terminatedEmployees'
   /** column name */
   | 'updatedAt'
   /** column name */
@@ -6897,40 +9729,73 @@ export type PayrollsUpdates = {
 
 /** order by varPop() on columns of table "payrolls" */
 export type PayrollsVarPopOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
 /** order by varSamp() on columns of table "payrolls" */
 export type PayrollsVarSampOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
 /** order by variance() on columns of table "payrolls" */
 export type PayrollsVarianceOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
@@ -8174,7 +11039,7 @@ export type RolePermissionsBoolExp = {
 export type RolePermissionsConstraint =
   /** unique or primary key constraint on columns "id" */
   | 'role_permissions_pkey'
-  /** unique or primary key constraint on columns "permission_id", "role_id" */
+  /** unique or primary key constraint on columns "role_id", "permission_id" */
   | 'role_permissions_role_id_permission_id_key'
   | '%future added value';
 
@@ -8625,6 +11490,324 @@ export type SlowQueriesUpdates = {
   where: SlowQueriesBoolExp;
 };
 
+export type TimeEntriesAggregateBoolExp = {
+  count?: InputMaybe<TimeEntriesAggregateBoolExpCount>;
+};
+
+export type TimeEntriesAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<TimeEntriesBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+/** order by aggregate values of table "time_entries" */
+export type TimeEntriesAggregateOrderBy = {
+  avg?: InputMaybe<TimeEntriesAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<TimeEntriesMaxOrderBy>;
+  min?: InputMaybe<TimeEntriesMinOrderBy>;
+  stddev?: InputMaybe<TimeEntriesStddevOrderBy>;
+  stddevPop?: InputMaybe<TimeEntriesStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<TimeEntriesStddevSampOrderBy>;
+  sum?: InputMaybe<TimeEntriesSumOrderBy>;
+  varPop?: InputMaybe<TimeEntriesVarPopOrderBy>;
+  varSamp?: InputMaybe<TimeEntriesVarSampOrderBy>;
+  variance?: InputMaybe<TimeEntriesVarianceOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "time_entries" */
+export type TimeEntriesArrRelInsertInput = {
+  data: Array<TimeEntriesInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<TimeEntriesOnConflict>;
+};
+
+/** order by avg() on columns of table "time_entries" */
+export type TimeEntriesAvgOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "time_entries". All fields are combined with a logical 'AND'. */
+export type TimeEntriesBoolExp = {
+  _and?: InputMaybe<Array<TimeEntriesBoolExp>>;
+  _not?: InputMaybe<TimeEntriesBoolExp>;
+  _or?: InputMaybe<Array<TimeEntriesBoolExp>>;
+  billingItem?: InputMaybe<BillingItemsBoolExp>;
+  billingItemId?: InputMaybe<UuidComparisonExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  hoursSpent?: InputMaybe<NumericComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  payroll?: InputMaybe<PayrollsBoolExp>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  staffUserId?: InputMaybe<UuidComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  workDate?: InputMaybe<DateComparisonExp>;
+};
+
+/** unique or primary key constraints on table "time_entries" */
+export type TimeEntriesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'time_entries_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "time_entries" */
+export type TimeEntriesIncInput = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "time_entries" */
+export type TimeEntriesInsertInput = {
+  billingItem?: InputMaybe<BillingItemsObjRelInsertInput>;
+  /** Billing item this time relates to */
+  billingItemId?: InputMaybe<Scalars['uuid']['input']>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  /** Client this work was for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Description of work performed */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payroll?: InputMaybe<PayrollsObjRelInsertInput>;
+  /** Specific payroll job this relates to */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Staff member who worked on this */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  /** Date the work was performed */
+  workDate?: InputMaybe<Scalars['date']['input']>;
+};
+
+/** order by max() on columns of table "time_entries" */
+export type TimeEntriesMaxOrderBy = {
+  /** Billing item this time relates to */
+  billingItemId?: InputMaybe<OrderBy>;
+  /** Client this work was for */
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  /** Description of work performed */
+  description?: InputMaybe<OrderBy>;
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  /** Specific payroll job this relates to */
+  payrollId?: InputMaybe<OrderBy>;
+  /** Staff member who worked on this */
+  staffUserId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  /** Date the work was performed */
+  workDate?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "time_entries" */
+export type TimeEntriesMinOrderBy = {
+  /** Billing item this time relates to */
+  billingItemId?: InputMaybe<OrderBy>;
+  /** Client this work was for */
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  /** Description of work performed */
+  description?: InputMaybe<OrderBy>;
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  /** Specific payroll job this relates to */
+  payrollId?: InputMaybe<OrderBy>;
+  /** Staff member who worked on this */
+  staffUserId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  /** Date the work was performed */
+  workDate?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "time_entries" */
+export type TimeEntriesOnConflict = {
+  constraint: TimeEntriesConstraint;
+  updateColumns?: Array<TimeEntriesUpdateColumn>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+/** Ordering options when selecting data from "time_entries". */
+export type TimeEntriesOrderBy = {
+  billingItem?: InputMaybe<BillingItemsOrderBy>;
+  billingItemId?: InputMaybe<OrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  hoursSpent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  payroll?: InputMaybe<PayrollsOrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  staffUserId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  workDate?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: time_entries */
+export type TimeEntriesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "time_entries" */
+export type TimeEntriesSelectColumn =
+  /** column name */
+  | 'billingItemId'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'hoursSpent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'staffUserId'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'workDate'
+  | '%future added value';
+
+/** input type for updating data in table "time_entries" */
+export type TimeEntriesSetInput = {
+  /** Billing item this time relates to */
+  billingItemId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Client this work was for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Description of work performed */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Specific payroll job this relates to */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Staff member who worked on this */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Date the work was performed */
+  workDate?: InputMaybe<Scalars['date']['input']>;
+};
+
+/** order by stddev() on columns of table "time_entries" */
+export type TimeEntriesStddevOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "time_entries" */
+export type TimeEntriesStddevPopOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "time_entries" */
+export type TimeEntriesStddevSampOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "timeEntries" */
+export type TimeEntriesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: TimeEntriesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type TimeEntriesStreamCursorValueInput = {
+  /** Billing item this time relates to */
+  billingItemId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Client this work was for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Description of work performed */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Specific payroll job this relates to */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Staff member who worked on this */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Date the work was performed */
+  workDate?: InputMaybe<Scalars['date']['input']>;
+};
+
+/** order by sum() on columns of table "time_entries" */
+export type TimeEntriesSumOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "time_entries" */
+export type TimeEntriesUpdateColumn =
+  /** column name */
+  | 'billingItemId'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'hoursSpent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'staffUserId'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'workDate'
+  | '%future added value';
+
+export type TimeEntriesUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<TimeEntriesIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<TimeEntriesSetInput>;
+  /** filter the rows which have to be updated */
+  where: TimeEntriesBoolExp;
+};
+
+/** order by varPop() on columns of table "time_entries" */
+export type TimeEntriesVarPopOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "time_entries" */
+export type TimeEntriesVarSampOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "time_entries" */
+export type TimeEntriesVarianceOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
 /** Boolean expression to filter rows from the table "audit.user_access_summary". All fields are combined with a logical 'AND'. */
 export type UserAccessSummariesBoolExp = {
   _and?: InputMaybe<Array<UserAccessSummariesBoolExp>>;
@@ -8723,6 +11906,13 @@ export type UserAccessSummariesUpdates = {
   where: UserAccessSummariesBoolExp;
 };
 
+export type UserEmailTemplateFavoritesAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 export type UserInvitationsAggregateBoolExp = {
   count?: InputMaybe<UserInvitationsAggregateBoolExpCount>;
 };
@@ -8780,6 +11970,7 @@ export type UserInvitationsBoolExp = {
   revokeReason?: InputMaybe<StringComparisonExp>;
   revokedAt?: InputMaybe<TimestamptzComparisonExp>;
   revokedBy?: InputMaybe<UuidComparisonExp>;
+  revokedByUser?: InputMaybe<UsersBoolExp>;
   status?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   user?: InputMaybe<UsersBoolExp>;
@@ -8830,6 +12021,7 @@ export type UserInvitationsInsertInput = {
   revokeReason?: InputMaybe<Scalars['String']['input']>;
   revokedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   revokedBy?: InputMaybe<Scalars['uuid']['input']>;
+  revokedByUser?: InputMaybe<UsersObjRelInsertInput>;
   status?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   user?: InputMaybe<UsersObjRelInsertInput>;
@@ -8914,6 +12106,7 @@ export type UserInvitationsOrderBy = {
   revokeReason?: InputMaybe<OrderBy>;
   revokedAt?: InputMaybe<OrderBy>;
   revokedBy?: InputMaybe<OrderBy>;
+  revokedByUser?: InputMaybe<UsersOrderBy>;
   status?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   user?: InputMaybe<UsersOrderBy>;
@@ -9139,7 +12332,7 @@ export type UserRolesBoolExp = {
 export type UserRolesConstraint =
   /** unique or primary key constraint on columns "id" */
   | 'user_roles_pkey'
-  /** unique or primary key constraint on columns "user_id", "role_id" */
+  /** unique or primary key constraint on columns "role_id", "user_id" */
   | 'user_roles_user_id_role_id_key'
   | '%future added value';
 
@@ -9256,6 +12449,109 @@ export type UserRolesUpdates = {
   where: UserRolesBoolExp;
 };
 
+export type UserSkillAggregateBoolExp = {
+  count?: InputMaybe<UserSkillAggregateBoolExpCount>;
+};
+
+export type UserSkillAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<UserSkillSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<UserSkillBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+/** order by aggregate values of table "user_skills" */
+export type UserSkillAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<UserSkillMaxOrderBy>;
+  min?: InputMaybe<UserSkillMinOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "user_skills" */
+export type UserSkillArrRelInsertInput = {
+  data: Array<UserSkillInsertInput>;
+};
+
+/** Boolean expression to filter rows from the table "user_skills". All fields are combined with a logical 'AND'. */
+export type UserSkillBoolExp = {
+  _and?: InputMaybe<Array<UserSkillBoolExp>>;
+  _not?: InputMaybe<UserSkillBoolExp>;
+  _or?: InputMaybe<Array<UserSkillBoolExp>>;
+  proficiencyLevel?: InputMaybe<StringComparisonExp>;
+  skillName?: InputMaybe<StringComparisonExp>;
+  skilledUser?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** input type for inserting data into table "user_skills" */
+export type UserSkillInsertInput = {
+  proficiencyLevel?: InputMaybe<Scalars['String']['input']>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+  skilledUser?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** order by max() on columns of table "user_skills" */
+export type UserSkillMaxOrderBy = {
+  proficiencyLevel?: InputMaybe<OrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "user_skills" */
+export type UserSkillMinOrderBy = {
+  proficiencyLevel?: InputMaybe<OrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** Ordering options when selecting data from "user_skills". */
+export type UserSkillOrderBy = {
+  proficiencyLevel?: InputMaybe<OrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+  skilledUser?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "user_skills" */
+export type UserSkillSelectColumn =
+  /** column name */
+  | 'proficiencyLevel'
+  /** column name */
+  | 'skillName'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** input type for updating data in table "user_skills" */
+export type UserSkillSetInput = {
+  proficiencyLevel?: InputMaybe<Scalars['String']['input']>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "userSkill" */
+export type UserSkillStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: UserSkillStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type UserSkillStreamCursorValueInput = {
+  proficiencyLevel?: InputMaybe<Scalars['String']['input']>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+export type UserSkillUpdates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<UserSkillSetInput>;
+  /** filter the rows which have to be updated */
+  where: UserSkillBoolExp;
+};
+
 export type UsersAggregateBoolExp = {
   bool_and?: InputMaybe<UsersAggregateBoolExpBool_And>;
   bool_or?: InputMaybe<UsersAggregateBoolExpBool_Or>;
@@ -9285,9 +12581,17 @@ export type UsersAggregateBoolExpCount = {
 
 /** order by aggregate values of table "users" */
 export type UsersAggregateOrderBy = {
+  avg?: InputMaybe<UsersAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<UsersMaxOrderBy>;
   min?: InputMaybe<UsersMinOrderBy>;
+  stddev?: InputMaybe<UsersStddevOrderBy>;
+  stddevPop?: InputMaybe<UsersStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<UsersStddevSampOrderBy>;
+  sum?: InputMaybe<UsersSumOrderBy>;
+  varPop?: InputMaybe<UsersVarPopOrderBy>;
+  varSamp?: InputMaybe<UsersVarSampOrderBy>;
+  variance?: InputMaybe<UsersVarianceOrderBy>;
 };
 
 /** input type for inserting array relation for remote table "users" */
@@ -9297,17 +12601,31 @@ export type UsersArrRelInsertInput = {
   onConflict?: InputMaybe<UsersOnConflict>;
 };
 
+/** order by avg() on columns of table "users" */
+export type UsersAvgOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
 /** Boolean expression to filter rows from the table "users". All fields are combined with a logical 'AND'. */
 export type UsersBoolExp = {
   _and?: InputMaybe<Array<UsersBoolExp>>;
   _not?: InputMaybe<UsersBoolExp>;
   _or?: InputMaybe<Array<UsersBoolExp>>;
+  address?: InputMaybe<StringComparisonExp>;
   assignedRoles?: InputMaybe<UserRolesBoolExp>;
   assignedRolesAggregate?: InputMaybe<UserRolesAggregateBoolExp>;
   authoredNotes?: InputMaybe<NotesBoolExp>;
   authoredNotesAggregate?: InputMaybe<NotesAggregateBoolExp>;
   backupConsultantPayrolls?: InputMaybe<PayrollsBoolExp>;
   backupConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
+  billingItems?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingItemsConfirmedBy?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsConfirmedByAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingItemsUserId?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsUserIdAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  bio?: InputMaybe<StringComparisonExp>;
   clerkUserId?: InputMaybe<StringComparisonExp>;
   consultantAssignments?: InputMaybe<PayrollAssignmentsBoolExp>;
   consultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateBoolExp>;
@@ -9322,7 +12640,16 @@ export type UsersBoolExp = {
   createdPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateBoolExp>;
   deactivatedAt?: InputMaybe<TimestamptzComparisonExp>;
   deactivatedBy?: InputMaybe<StringComparisonExp>;
+  defaultAdminTimePercentage?: InputMaybe<NumericComparisonExp>;
   email?: InputMaybe<StringComparisonExp>;
+  emailDrafts?: InputMaybe<EmailDraftsBoolExp>;
+  emailDraftsAggregate?: InputMaybe<EmailDraftsAggregateBoolExp>;
+  emailSendLogs?: InputMaybe<EmailSendLogsBoolExp>;
+  emailSendLogsAggregate?: InputMaybe<EmailSendLogsAggregateBoolExp>;
+  emailTemplates?: InputMaybe<EmailTemplatesBoolExp>;
+  emailTemplatesAggregate?: InputMaybe<EmailTemplatesAggregateBoolExp>;
+  emailTemplatesCreatedByUserId?: InputMaybe<EmailTemplatesBoolExp>;
+  emailTemplatesCreatedByUserIdAggregate?: InputMaybe<EmailTemplatesAggregateBoolExp>;
   id?: InputMaybe<UuidComparisonExp>;
   image?: InputMaybe<StringComparisonExp>;
   isActive?: InputMaybe<BooleanComparisonExp>;
@@ -9342,6 +12669,8 @@ export type UsersBoolExp = {
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateBoolExp>;
   originalConsultantAuditTrail?: InputMaybe<PayrollAssignmentAuditsBoolExp>;
   originalConsultantAuditTrailAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateBoolExp>;
+  phone?: InputMaybe<StringComparisonExp>;
+  position?: InputMaybe<UserPositionComparisonExp>;
   primaryConsultantPayrolls?: InputMaybe<PayrollsBoolExp>;
   primaryConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   role?: InputMaybe<UserRoleComparisonExp>;
@@ -9349,29 +12678,35 @@ export type UsersBoolExp = {
   statusChangeReason?: InputMaybe<StringComparisonExp>;
   statusChangedAt?: InputMaybe<TimestamptzComparisonExp>;
   statusChangedBy?: InputMaybe<UuidComparisonExp>;
+  statusChangedByUser?: InputMaybe<UsersBoolExp>;
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsBoolExp>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateBoolExp>;
+  timeEntries?: InputMaybe<TimeEntriesBoolExp>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-  user?: InputMaybe<UsersBoolExp>;
+  userEmailTemplateFavorites?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+  userEmailTemplateFavoritesAggregate?: InputMaybe<UserEmailTemplateFavoritesAggregateBoolExp>;
   userInvitations?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsAcceptedBy?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userInvitationsAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userInvitationsInvitedBy?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsInvitedByAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
-  userInvitationsMangerId?: InputMaybe<UserInvitationsBoolExp>;
-  userInvitationsMangerIdAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
+  userInvitationsManagerId?: InputMaybe<UserInvitationsBoolExp>;
+  userInvitationsManagerIdAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userLeaveRecords?: InputMaybe<LeaveBoolExp>;
   userLeaveRecordsAggregate?: InputMaybe<LeaveAggregateBoolExp>;
   userPermissionAudits?: InputMaybe<PermissionAuditLogsBoolExp>;
   userPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateBoolExp>;
   userPermissionOverrides?: InputMaybe<PermissionOverridesBoolExp>;
   userPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateBoolExp>;
-  userWorkSchedules?: InputMaybe<WorkSchedulesBoolExp>;
-  userWorkSchedulesAggregate?: InputMaybe<WorkSchedulesAggregateBoolExp>;
+  userSkills?: InputMaybe<UserSkillBoolExp>;
+  userSkillsAggregate?: InputMaybe<UserSkillAggregateBoolExp>;
+  userWorkSchedules?: InputMaybe<WorkScheduleBoolExp>;
+  userWorkSchedulesAggregate?: InputMaybe<WorkScheduleAggregateBoolExp>;
   username?: InputMaybe<StringComparisonExp>;
-  users?: InputMaybe<UsersBoolExp>;
-  usersAggregate?: InputMaybe<UsersAggregateBoolExp>;
+  usersStatusChangedBy?: InputMaybe<UsersBoolExp>;
+  usersStatusChangedByAggregate?: InputMaybe<UsersAggregateBoolExp>;
 };
 
 /** unique or primary key constraints on table "users" */
@@ -9386,11 +12721,24 @@ export type UsersConstraint =
   | 'users_username_key'
   | '%future added value';
 
+/** input type for incrementing numeric columns in table "users" */
+export type UsersIncInput = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
+};
+
 /** input type for inserting data into table "users" */
 export type UsersInsertInput = {
+  /** User address or location */
+  address?: InputMaybe<Scalars['String']['input']>;
   assignedRoles?: InputMaybe<UserRolesArrRelInsertInput>;
   authoredNotes?: InputMaybe<NotesArrRelInsertInput>;
   backupConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
+  billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  billingItemsConfirmedBy?: InputMaybe<BillingItemsArrRelInsertInput>;
+  billingItemsUserId?: InputMaybe<BillingItemsArrRelInsertInput>;
+  /** User biography or description */
+  bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
   consultantAssignments?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
@@ -9402,8 +12750,14 @@ export type UsersInsertInput = {
   createdPermissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
+  emailDrafts?: InputMaybe<EmailDraftsArrRelInsertInput>;
+  emailSendLogs?: InputMaybe<EmailSendLogsArrRelInsertInput>;
+  emailTemplates?: InputMaybe<EmailTemplatesArrRelInsertInput>;
+  emailTemplatesCreatedByUserId?: InputMaybe<EmailTemplatesArrRelInsertInput>;
   /** Unique identifier for the user */
   id?: InputMaybe<Scalars['uuid']['input']>;
   /** URL to the user's profile image */
@@ -9422,6 +12776,10 @@ export type UsersInsertInput = {
   newConsultantAuditTrail?: InputMaybe<PayrollAssignmentAuditsArrRelInsertInput>;
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
   originalConsultantAuditTrail?: InputMaybe<PayrollAssignmentAuditsArrRelInsertInput>;
+  /** User contact phone number */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** Organizational position affecting admin time allocation */
+  position?: InputMaybe<Scalars['user_position']['input']>;
   primaryConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
@@ -9433,31 +12791,40 @@ export type UsersInsertInput = {
   statusChangedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User ID who changed the status */
   statusChangedBy?: InputMaybe<Scalars['uuid']['input']>;
+  statusChangedByUser?: InputMaybe<UsersObjRelInsertInput>;
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
+  timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  user?: InputMaybe<UsersObjRelInsertInput>;
+  userEmailTemplateFavorites?: InputMaybe<UserEmailTemplateFavoritesArrRelInsertInput>;
   userInvitations?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userInvitationsAcceptedBy?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userInvitationsInvitedBy?: InputMaybe<UserInvitationsArrRelInsertInput>;
-  userInvitationsMangerId?: InputMaybe<UserInvitationsArrRelInsertInput>;
+  userInvitationsManagerId?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userLeaveRecords?: InputMaybe<LeaveArrRelInsertInput>;
   userPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
   userPermissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
-  userWorkSchedules?: InputMaybe<WorkSchedulesArrRelInsertInput>;
+  userSkills?: InputMaybe<UserSkillArrRelInsertInput>;
+  userWorkSchedules?: InputMaybe<WorkScheduleArrRelInsertInput>;
   /** User's unique username for login */
   username?: InputMaybe<Scalars['String']['input']>;
-  users?: InputMaybe<UsersArrRelInsertInput>;
+  usersStatusChangedBy?: InputMaybe<UsersArrRelInsertInput>;
 };
 
 /** order by max() on columns of table "users" */
 export type UsersMaxOrderBy = {
+  /** User address or location */
+  address?: InputMaybe<OrderBy>;
+  /** User biography or description */
+  bio?: InputMaybe<OrderBy>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<OrderBy>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<OrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
   /** User's email address (unique) */
   email?: InputMaybe<OrderBy>;
   /** Unique identifier for the user */
@@ -9468,6 +12835,10 @@ export type UsersMaxOrderBy = {
   managerId?: InputMaybe<OrderBy>;
   /** User's full name */
   name?: InputMaybe<OrderBy>;
+  /** User contact phone number */
+  phone?: InputMaybe<OrderBy>;
+  /** Organizational position affecting admin time allocation */
+  position?: InputMaybe<OrderBy>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<OrderBy>;
   /** Current user status - must be consistent with isActive field */
@@ -9486,12 +12857,18 @@ export type UsersMaxOrderBy = {
 
 /** order by min() on columns of table "users" */
 export type UsersMinOrderBy = {
+  /** User address or location */
+  address?: InputMaybe<OrderBy>;
+  /** User biography or description */
+  bio?: InputMaybe<OrderBy>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<OrderBy>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<OrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
   /** User's email address (unique) */
   email?: InputMaybe<OrderBy>;
   /** Unique identifier for the user */
@@ -9502,6 +12879,10 @@ export type UsersMinOrderBy = {
   managerId?: InputMaybe<OrderBy>;
   /** User's full name */
   name?: InputMaybe<OrderBy>;
+  /** User contact phone number */
+  phone?: InputMaybe<OrderBy>;
+  /** Organizational position affecting admin time allocation */
+  position?: InputMaybe<OrderBy>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<OrderBy>;
   /** Current user status - must be consistent with isActive field */
@@ -9534,9 +12915,14 @@ export type UsersOnConflict = {
 
 /** Ordering options when selecting data from "users". */
 export type UsersOrderBy = {
+  address?: InputMaybe<OrderBy>;
   assignedRolesAggregate?: InputMaybe<UserRolesAggregateOrderBy>;
   authoredNotesAggregate?: InputMaybe<NotesAggregateOrderBy>;
   backupConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingItemsConfirmedByAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingItemsUserIdAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  bio?: InputMaybe<OrderBy>;
   clerkUserId?: InputMaybe<OrderBy>;
   consultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
   createdAssignmentAuditsAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateOrderBy>;
@@ -9546,7 +12932,12 @@ export type UsersOrderBy = {
   createdPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
   email?: InputMaybe<OrderBy>;
+  emailDraftsAggregate?: InputMaybe<EmailDraftsAggregateOrderBy>;
+  emailSendLogsAggregate?: InputMaybe<EmailSendLogsAggregateOrderBy>;
+  emailTemplatesAggregate?: InputMaybe<EmailTemplatesAggregateOrderBy>;
+  emailTemplatesCreatedByUserIdAggregate?: InputMaybe<EmailTemplatesAggregateOrderBy>;
   id?: InputMaybe<OrderBy>;
   image?: InputMaybe<OrderBy>;
   isActive?: InputMaybe<OrderBy>;
@@ -9560,25 +12951,30 @@ export type UsersOrderBy = {
   newConsultantAuditTrailAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateOrderBy>;
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
   originalConsultantAuditTrailAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateOrderBy>;
+  phone?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
   primaryConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   role?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   statusChangeReason?: InputMaybe<OrderBy>;
   statusChangedAt?: InputMaybe<OrderBy>;
   statusChangedBy?: InputMaybe<OrderBy>;
+  statusChangedByUser?: InputMaybe<UsersOrderBy>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateOrderBy>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-  user?: InputMaybe<UsersOrderBy>;
+  userEmailTemplateFavoritesAggregate?: InputMaybe<UserEmailTemplateFavoritesAggregateOrderBy>;
   userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userInvitationsAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userInvitationsInvitedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
-  userInvitationsMangerIdAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
+  userInvitationsManagerIdAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userLeaveRecordsAggregate?: InputMaybe<LeaveAggregateOrderBy>;
   userPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateOrderBy>;
   userPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
-  userWorkSchedulesAggregate?: InputMaybe<WorkSchedulesAggregateOrderBy>;
+  userSkillsAggregate?: InputMaybe<UserSkillAggregateOrderBy>;
+  userWorkSchedulesAggregate?: InputMaybe<WorkScheduleAggregateOrderBy>;
   username?: InputMaybe<OrderBy>;
-  usersAggregate?: InputMaybe<UsersAggregateOrderBy>;
+  usersStatusChangedByAggregate?: InputMaybe<UsersAggregateOrderBy>;
 };
 
 /** primary key columns input for table: users */
@@ -9660,6 +13056,10 @@ export type UsersRoleBackupUpdates = {
 /** select columns of table "users" */
 export type UsersSelectColumn =
   /** column name */
+  | 'address'
+  /** column name */
+  | 'bio'
+  /** column name */
   | 'clerkUserId'
   /** column name */
   | 'createdAt'
@@ -9667,6 +13067,8 @@ export type UsersSelectColumn =
   | 'deactivatedAt'
   /** column name */
   | 'deactivatedBy'
+  /** column name */
+  | 'defaultAdminTimePercentage'
   /** column name */
   | 'email'
   /** column name */
@@ -9681,6 +13083,10 @@ export type UsersSelectColumn =
   | 'managerId'
   /** column name */
   | 'name'
+  /** column name */
+  | 'phone'
+  /** column name */
+  | 'position'
   /** column name */
   | 'role'
   /** column name */
@@ -9715,12 +13121,18 @@ export type UsersSelectColumnUsersAggregateBoolExpBool_OrArgumentsColumns =
 
 /** input type for updating data in table "users" */
 export type UsersSetInput = {
+  /** User address or location */
+  address?: InputMaybe<Scalars['String']['input']>;
+  /** User biography or description */
+  bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
   /** Unique identifier for the user */
@@ -9734,6 +13146,10 @@ export type UsersSetInput = {
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   /** User's full name */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** User contact phone number */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** Organizational position affecting admin time allocation */
+  position?: InputMaybe<Scalars['user_position']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
   /** Current user status - must be consistent with isActive field */
@@ -9748,6 +13164,24 @@ export type UsersSetInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User's unique username for login */
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** order by stddev() on columns of table "users" */
+export type UsersStddevOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "users" */
+export type UsersStddevPopOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "users" */
+export type UsersStddevSampOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "users" */
@@ -9760,12 +13194,18 @@ export type UsersStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type UsersStreamCursorValueInput = {
+  /** User address or location */
+  address?: InputMaybe<Scalars['String']['input']>;
+  /** User biography or description */
+  bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
   /** Unique identifier for the user */
@@ -9779,6 +13219,10 @@ export type UsersStreamCursorValueInput = {
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   /** User's full name */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** User contact phone number */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** Organizational position affecting admin time allocation */
+  position?: InputMaybe<Scalars['user_position']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
   /** Current user status - must be consistent with isActive field */
@@ -9795,8 +13239,18 @@ export type UsersStreamCursorValueInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** order by sum() on columns of table "users" */
+export type UsersSumOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
 /** update columns of table "users" */
 export type UsersUpdateColumn =
+  /** column name */
+  | 'address'
+  /** column name */
+  | 'bio'
   /** column name */
   | 'clerkUserId'
   /** column name */
@@ -9805,6 +13259,8 @@ export type UsersUpdateColumn =
   | 'deactivatedAt'
   /** column name */
   | 'deactivatedBy'
+  /** column name */
+  | 'defaultAdminTimePercentage'
   /** column name */
   | 'email'
   /** column name */
@@ -9819,6 +13275,10 @@ export type UsersUpdateColumn =
   | 'managerId'
   /** column name */
   | 'name'
+  /** column name */
+  | 'phone'
+  /** column name */
+  | 'position'
   /** column name */
   | 'role'
   /** column name */
@@ -9836,68 +13296,110 @@ export type UsersUpdateColumn =
   | '%future added value';
 
 export type UsersUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<UsersIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<UsersSetInput>;
   /** filter the rows which have to be updated */
   where: UsersBoolExp;
 };
 
-export type WorkSchedulesAggregateBoolExp = {
-  count?: InputMaybe<WorkSchedulesAggregateBoolExpCount>;
+/** order by varPop() on columns of table "users" */
+export type UsersVarPopOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
 };
 
-export type WorkSchedulesAggregateBoolExpCount = {
-  arguments?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
+/** order by varSamp() on columns of table "users" */
+export type UsersVarSampOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "users" */
+export type UsersVarianceOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
+export type WorkScheduleAggregateBoolExp = {
+  bool_and?: InputMaybe<WorkScheduleAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<WorkScheduleAggregateBoolExpBool_Or>;
+  count?: InputMaybe<WorkScheduleAggregateBoolExpCount>;
+};
+
+export type WorkScheduleAggregateBoolExpBool_And = {
+  arguments: WorkScheduleSelectColumnWorkScheduleAggregateBoolExpBool_AndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
-  filter?: InputMaybe<WorkSchedulesBoolExp>;
+  filter?: InputMaybe<WorkScheduleBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type WorkScheduleAggregateBoolExpBool_Or = {
+  arguments: WorkScheduleSelectColumnWorkScheduleAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<WorkScheduleBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type WorkScheduleAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<WorkScheduleSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<WorkScheduleBoolExp>;
   predicate: IntComparisonExp;
 };
 
 /** order by aggregate values of table "work_schedule" */
-export type WorkSchedulesAggregateOrderBy = {
-  avg?: InputMaybe<WorkSchedulesAvgOrderBy>;
+export type WorkScheduleAggregateOrderBy = {
+  avg?: InputMaybe<WorkScheduleAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
-  max?: InputMaybe<WorkSchedulesMaxOrderBy>;
-  min?: InputMaybe<WorkSchedulesMinOrderBy>;
-  stddev?: InputMaybe<WorkSchedulesStddevOrderBy>;
-  stddevPop?: InputMaybe<WorkSchedulesStddevPopOrderBy>;
-  stddevSamp?: InputMaybe<WorkSchedulesStddevSampOrderBy>;
-  sum?: InputMaybe<WorkSchedulesSumOrderBy>;
-  varPop?: InputMaybe<WorkSchedulesVarPopOrderBy>;
-  varSamp?: InputMaybe<WorkSchedulesVarSampOrderBy>;
-  variance?: InputMaybe<WorkSchedulesVarianceOrderBy>;
+  max?: InputMaybe<WorkScheduleMaxOrderBy>;
+  min?: InputMaybe<WorkScheduleMinOrderBy>;
+  stddev?: InputMaybe<WorkScheduleStddevOrderBy>;
+  stddevPop?: InputMaybe<WorkScheduleStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<WorkScheduleStddevSampOrderBy>;
+  sum?: InputMaybe<WorkScheduleSumOrderBy>;
+  varPop?: InputMaybe<WorkScheduleVarPopOrderBy>;
+  varSamp?: InputMaybe<WorkScheduleVarSampOrderBy>;
+  variance?: InputMaybe<WorkScheduleVarianceOrderBy>;
 };
 
 /** input type for inserting array relation for remote table "work_schedule" */
-export type WorkSchedulesArrRelInsertInput = {
-  data: Array<WorkSchedulesInsertInput>;
+export type WorkScheduleArrRelInsertInput = {
+  data: Array<WorkScheduleInsertInput>;
   /** upsert condition */
-  onConflict?: InputMaybe<WorkSchedulesOnConflict>;
+  onConflict?: InputMaybe<WorkScheduleOnConflict>;
 };
 
 /** order by avg() on columns of table "work_schedule" */
-export type WorkSchedulesAvgOrderBy = {
+export type WorkScheduleAvgOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to filter rows from the table "work_schedule". All fields are combined with a logical 'AND'. */
-export type WorkSchedulesBoolExp = {
-  _and?: InputMaybe<Array<WorkSchedulesBoolExp>>;
-  _not?: InputMaybe<WorkSchedulesBoolExp>;
-  _or?: InputMaybe<Array<WorkSchedulesBoolExp>>;
+export type WorkScheduleBoolExp = {
+  _and?: InputMaybe<Array<WorkScheduleBoolExp>>;
+  _not?: InputMaybe<WorkScheduleBoolExp>;
+  _or?: InputMaybe<Array<WorkScheduleBoolExp>>;
+  adminTimeHours?: InputMaybe<NumericComparisonExp>;
   createdAt?: InputMaybe<TimestampComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
-  scheduleOwner?: InputMaybe<UsersBoolExp>;
+  payrollCapacityHours?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestampComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
   userId?: InputMaybe<UuidComparisonExp>;
+  usesDefaultAdminTime?: InputMaybe<BooleanComparisonExp>;
   workDay?: InputMaybe<StringComparisonExp>;
   workHours?: InputMaybe<NumericComparisonExp>;
-  workScheduleUser?: InputMaybe<UsersBoolExp>;
 };
 
 /** unique or primary key constraints on table "work_schedule" */
-export type WorkSchedulesConstraint =
+export type WorkScheduleConstraint =
   /** unique or primary key constraint on columns "user_id", "work_day" */
   | 'unique_user_work_day'
   /** unique or primary key constraint on columns "id" */
@@ -9905,35 +13407,48 @@ export type WorkSchedulesConstraint =
   | '%future added value';
 
 /** input type for incrementing numeric columns in table "work_schedule" */
-export type WorkSchedulesIncInput = {
+export type WorkScheduleIncInput = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<Scalars['numeric']['input']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** input type for inserting data into table "work_schedule" */
-export type WorkSchedulesInsertInput = {
+export type WorkScheduleInsertInput = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Unique identifier for the work schedule entry */
   id?: InputMaybe<Scalars['uuid']['input']>;
-  scheduleOwner?: InputMaybe<UsersObjRelInsertInput>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
   /** Reference to the user this schedule belongs to */
   userId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether to use position-based default admin time or custom override */
+  usesDefaultAdminTime?: InputMaybe<Scalars['Boolean']['input']>;
   /** Day of the week (Monday, Tuesday, etc.) */
   workDay?: InputMaybe<Scalars['String']['input']>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<Scalars['numeric']['input']>;
-  workScheduleUser?: InputMaybe<UsersObjRelInsertInput>;
 };
 
 /** order by max() on columns of table "work_schedule" */
-export type WorkSchedulesMaxOrderBy = {
+export type WorkScheduleMaxOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Unique identifier for the work schedule entry */
   id?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: InputMaybe<OrderBy>;
   /** Reference to the user this schedule belongs to */
@@ -9945,11 +13460,15 @@ export type WorkSchedulesMaxOrderBy = {
 };
 
 /** order by min() on columns of table "work_schedule" */
-export type WorkSchedulesMinOrderBy = {
+export type WorkScheduleMinOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Unique identifier for the work schedule entry */
   id?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: InputMaybe<OrderBy>;
   /** Reference to the user this schedule belongs to */
@@ -9961,56 +13480,82 @@ export type WorkSchedulesMinOrderBy = {
 };
 
 /** on_conflict condition type for table "work_schedule" */
-export type WorkSchedulesOnConflict = {
-  constraint: WorkSchedulesConstraint;
-  updateColumns?: Array<WorkSchedulesUpdateColumn>;
-  where?: InputMaybe<WorkSchedulesBoolExp>;
+export type WorkScheduleOnConflict = {
+  constraint: WorkScheduleConstraint;
+  updateColumns?: Array<WorkScheduleUpdateColumn>;
+  where?: InputMaybe<WorkScheduleBoolExp>;
 };
 
 /** Ordering options when selecting data from "work_schedule". */
-export type WorkSchedulesOrderBy = {
+export type WorkScheduleOrderBy = {
+  adminTimeHours?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
-  scheduleOwner?: InputMaybe<UsersOrderBy>;
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
   userId?: InputMaybe<OrderBy>;
+  usesDefaultAdminTime?: InputMaybe<OrderBy>;
   workDay?: InputMaybe<OrderBy>;
   workHours?: InputMaybe<OrderBy>;
-  workScheduleUser?: InputMaybe<UsersOrderBy>;
 };
 
 /** primary key columns input for table: work_schedule */
-export type WorkSchedulesPkColumnsInput = {
+export type WorkSchedulePkColumnsInput = {
   /** Unique identifier for the work schedule entry */
   id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "work_schedule" */
-export type WorkSchedulesSelectColumn =
+export type WorkScheduleSelectColumn =
+  /** column name */
+  | 'adminTimeHours'
   /** column name */
   | 'createdAt'
   /** column name */
   | 'id'
   /** column name */
+  | 'payrollCapacityHours'
+  /** column name */
   | 'updatedAt'
   /** column name */
   | 'userId'
+  /** column name */
+  | 'usesDefaultAdminTime'
   /** column name */
   | 'workDay'
   /** column name */
   | 'workHours'
   | '%future added value';
 
+/** select "workScheduleAggregateBoolExpBool_andArgumentsColumns" columns of table "work_schedule" */
+export type WorkScheduleSelectColumnWorkScheduleAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'usesDefaultAdminTime'
+  | '%future added value';
+
+/** select "workScheduleAggregateBoolExpBool_orArgumentsColumns" columns of table "work_schedule" */
+export type WorkScheduleSelectColumnWorkScheduleAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'usesDefaultAdminTime'
+  | '%future added value';
+
 /** input type for updating data in table "work_schedule" */
-export type WorkSchedulesSetInput = {
+export type WorkScheduleSetInput = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Unique identifier for the work schedule entry */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Reference to the user this schedule belongs to */
   userId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether to use position-based default admin time or custom override */
+  usesDefaultAdminTime?: InputMaybe<Scalars['Boolean']['input']>;
   /** Day of the week (Monday, Tuesday, etc.) */
   workDay?: InputMaybe<Scalars['String']['input']>;
   /** Number of hours worked on this day */
@@ -10018,41 +13563,59 @@ export type WorkSchedulesSetInput = {
 };
 
 /** order by stddev() on columns of table "work_schedule" */
-export type WorkSchedulesStddevOrderBy = {
+export type WorkScheduleStddevOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevPop() on columns of table "work_schedule" */
-export type WorkSchedulesStddevPopOrderBy = {
+export type WorkScheduleStddevPopOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevSamp() on columns of table "work_schedule" */
-export type WorkSchedulesStddevSampOrderBy = {
+export type WorkScheduleStddevSampOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
-/** Streaming cursor of the table "workSchedules" */
-export type WorkSchedulesStreamCursorInput = {
+/** Streaming cursor of the table "workSchedule" */
+export type WorkScheduleStreamCursorInput = {
   /** Stream column input with initial value */
-  initialValue: WorkSchedulesStreamCursorValueInput;
+  initialValue: WorkScheduleStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
 };
 
 /** Initial value of the column from where the streaming should start */
-export type WorkSchedulesStreamCursorValueInput = {
+export type WorkScheduleStreamCursorValueInput = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Unique identifier for the work schedule entry */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Reference to the user this schedule belongs to */
   userId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether to use position-based default admin time or custom override */
+  usesDefaultAdminTime?: InputMaybe<Scalars['Boolean']['input']>;
   /** Day of the week (Monday, Tuesday, etc.) */
   workDay?: InputMaybe<Scalars['String']['input']>;
   /** Number of hours worked on this day */
@@ -10060,89 +13623,111 @@ export type WorkSchedulesStreamCursorValueInput = {
 };
 
 /** order by sum() on columns of table "work_schedule" */
-export type WorkSchedulesSumOrderBy = {
+export type WorkScheduleSumOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "work_schedule" */
-export type WorkSchedulesUpdateColumn =
+export type WorkScheduleUpdateColumn =
+  /** column name */
+  | 'adminTimeHours'
   /** column name */
   | 'createdAt'
   /** column name */
   | 'id'
   /** column name */
+  | 'payrollCapacityHours'
+  /** column name */
   | 'updatedAt'
   /** column name */
   | 'userId'
+  /** column name */
+  | 'usesDefaultAdminTime'
   /** column name */
   | 'workDay'
   /** column name */
   | 'workHours'
   | '%future added value';
 
-export type WorkSchedulesUpdates = {
+export type WorkScheduleUpdates = {
   /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<WorkSchedulesIncInput>;
+  _inc?: InputMaybe<WorkScheduleIncInput>;
   /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<WorkSchedulesSetInput>;
+  _set?: InputMaybe<WorkScheduleSetInput>;
   /** filter the rows which have to be updated */
-  where: WorkSchedulesBoolExp;
+  where: WorkScheduleBoolExp;
 };
 
 /** order by varPop() on columns of table "work_schedule" */
-export type WorkSchedulesVarPopOrderBy = {
+export type WorkScheduleVarPopOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** order by varSamp() on columns of table "work_schedule" */
-export type WorkSchedulesVarSampOrderBy = {
+export type WorkScheduleVarSampOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** order by variance() on columns of table "work_schedule" */
-export type WorkSchedulesVarianceOrderBy = {
+export type WorkScheduleVarianceOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
-export type UserCoreFragment = { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
+export type UserCoreFragment = { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
 
-export type UserWithProfileFragment = { __typename?: 'users', username?: string | null, image?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
+export type UserWithProfileFragment = { __typename?: 'users', username?: string | null, image?: string | null, phone?: string | null, address?: string | null, bio?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
 
-export type UserWithRolesFragment = { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, assignedRoles: Array<{ __typename?: 'userRoles', id: string, roleId: string, assignedRole: { __typename?: 'roles', id: string, name: string, displayName: string, description?: string | null, priority: number, isSystemRole: boolean, assignedPermissions: Array<{ __typename?: 'rolePermissions', id: string, conditions?: any | null, permissionId: string, grantedPermission: { __typename?: 'permissions', id: string, action: any, description?: string | null, relatedResource: { __typename?: 'resources', id: string, name: string, displayName: string, description?: string | null } } }> } }> };
+export type UserWithRolesFragment = { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
 
-export type UserWithTeamFragment = { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
+export type UserWithTeamFragment = { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
 
-export type UserWithWorkScheduleFragment = { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, userWorkSchedules: Array<{ __typename?: 'workSchedules', id: string, workDay: string, workHours: number, createdAt?: any | null, updatedAt?: any | null }> };
+export type UserWithWorkScheduleFragment = { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, userWorkSchedules: Array<{ __typename?: 'workSchedule', id: string, workDay: string, workHours: number, adminTimeHours?: number | null, payrollCapacityHours?: number | null, usesDefaultAdminTime?: boolean | null, createdAt?: any | null, updatedAt?: any | null }> };
 
-export type UserWithPayrollsFragment = { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
+export type UserWithPayrollsFragment = { __typename?: 'users', id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
 
-export type UserWithAllRelationsFragment = { __typename?: 'users', username?: string | null, image?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, assignedRoles: Array<{ __typename?: 'userRoles', id: string, roleId: string, assignedRole: { __typename?: 'roles', id: string, name: string, displayName: string, description?: string | null, priority: number } }>, userWorkSchedules: Array<{ __typename?: 'workSchedules', id: string, workDay: string, workHours: number, createdAt?: any | null, updatedAt?: any | null }> };
+export type UserWithAllRelationsFragment = { __typename?: 'users', username?: string | null, image?: string | null, phone?: string | null, address?: string | null, bio?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, userWorkSchedules: Array<{ __typename?: 'workSchedule', id: string, workDay: string, workHours: number, adminTimeHours?: number | null, payrollCapacityHours?: number | null, usesDefaultAdminTime?: boolean | null, createdAt?: any | null, updatedAt?: any | null }> };
 
-export type UserBasicInfoFragment = { __typename?: 'users', id: string, name: string, email: string, role: any, username?: string | null, image?: string | null, isStaff?: boolean | null, isActive?: boolean | null, managerId?: string | null, clerkUserId?: string | null };
+export type UserBasicInfoFragment = { __typename?: 'users', id: string, name: string, email: string, role: any, position?: any | null, username?: string | null, image?: string | null, isStaff?: boolean | null, isActive?: boolean | null, managerId?: string | null, clerkUserId?: string | null };
 
-export type UserForStaffFragment = { __typename?: 'users', username?: string | null, image?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
+export type UserForStaffFragment = { __typename?: 'users', username?: string | null, image?: string | null, phone?: string | null, address?: string | null, bio?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null };
 
 export type UserForAuthFragment = { __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null, clerkUserId?: string | null };
 
 export type UserForAuditFragment = { __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null };
 
-export type UserRoleInfoFragment = { __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null, assignedRoles: Array<{ __typename?: 'userRoles', roleId: string, assignedRole: { __typename?: 'roles', name: string, description?: string | null } }> };
+export type UserRoleInfoFragment = { __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null };
 
-export type UserPermissionsInfoFragment = { __typename?: 'users', id: string, name: string, role: any, assignedRoles: Array<{ __typename?: 'userRoles', roleId: string, assignedRole: { __typename?: 'roles', name: string, assignedPermissions: Array<{ __typename?: 'rolePermissions', permissionId: string, grantedPermission: { __typename?: 'permissions', action: any, description?: string | null, relatedResource: { __typename?: 'resources', name: string } } }> } }> };
+export type UserPermissionsInfoFragment = { __typename?: 'users', id: string, name: string, role: any };
 
-export type UserSummaryFragment = { __typename?: 'users', id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null };
+export type UserSummaryFragment = { __typename?: 'users', id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null };
 
-export type UserListItemFragment = { __typename?: 'users', email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null };
+export type UserListItemFragment = { __typename?: 'users', email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null };
 
-export type UserDashboardCardFragment = { __typename?: 'users', id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string } | null };
+export type UserDashboardCardFragment = { __typename?: 'users', id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string } | null };
 
-export type UserTeamSummaryFragment = { __typename?: 'users', email: string, id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string } | null };
+export type UserTeamSummaryFragment = { __typename?: 'users', email: string, id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string } | null };
 
-export type UserTableRowFragment = { __typename?: 'users', email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string } | null };
+export type UserTableRowFragment = { __typename?: 'users', email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string } | null };
 
 export type CreateUserMutationVariables = Exact<{
   object: UsersInsertInput;
@@ -10209,12 +13794,11 @@ export type CreateUserByEmailMutation = { __typename?: 'mutation_root', insertUs
 
 export type UpdateUserProfileMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  image?: InputMaybe<Scalars['String']['input']>;
+  input: UsersSetInput;
 }>;
 
 
-export type UpdateUserProfileMutation = { __typename?: 'mutation_root', updateUserById?: { __typename?: 'users', username?: string | null, image?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null } | null };
+export type UpdateUserProfileMutation = { __typename?: 'mutation_root', updateUserById?: { __typename?: 'users', username?: string | null, image?: string | null, phone?: string | null, address?: string | null, bio?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null } | null };
 
 export type DeactivateUserMutationVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -10243,7 +13827,7 @@ export type UpdateStaffRoleMutationVariables = Exact<{
 }>;
 
 
-export type UpdateStaffRoleMutation = { __typename?: 'mutation_root', updateUserById?: { __typename?: 'users', createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string } | null };
+export type UpdateStaffRoleMutation = { __typename?: 'mutation_root', updateUserById?: { __typename?: 'users', managerId?: string | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string } | null };
 
 export type UpdateUserRoleFromClerkMutationVariables = Exact<{
   clerkUserId: Scalars['String']['input'];
@@ -10316,7 +13900,17 @@ export type GetUsersQueryVariables = Exact<{
 }>;
 
 
-export type GetUsersQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', username?: string | null, image?: string | null, managerId?: string | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string }> };
+export type GetUsersQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', username?: string | null, image?: string | null, managerId?: string | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string, role: any } | null }> };
+
+export type GetStaffWithRelationsOptimizedQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<UsersBoolExp>;
+  orderBy?: InputMaybe<Array<UsersOrderBy> | UsersOrderBy>;
+}>;
+
+
+export type GetStaffWithRelationsOptimizedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', id: string, name: string, email: string, role: any, username?: string | null, image?: string | null, isActive?: boolean | null, isStaff?: boolean | null, managerId?: string | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null } | null, managedUsers: Array<{ __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null }>, primaryConsultantPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', id: string, name: string }, nextPayrollDate: Array<{ __typename?: 'payrollDates', adjustedEftDate: string }> }>, backupConsultantPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', id: string, name: string } }>, userWorkSchedules: Array<{ __typename?: 'workSchedule', id: string, workDay: string, workHours: number, adminTimeHours?: number | null, payrollCapacityHours?: number | null }> }>, usersAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null }, activeStaff: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null }, managersCount: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
 
 export type GetUsersForDropdownDomainQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -10350,7 +13944,7 @@ export type GetStaffDetailCompleteQueryVariables = Exact<{
 }>;
 
 
-export type GetStaffDetailCompleteQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', id: string, name: string, email: string, role: any, username?: string | null, image?: string | null, isStaff?: boolean | null, isActive?: boolean | null, managerId?: string | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string, role: any } | null, managedUsers: Array<{ __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null }> } | null, userPermissions: Array<{ __typename?: 'userRoles', roleId: string, userId: string }>, permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, resource: string, granted: boolean, reason?: string | null, expiresAt?: string | null, createdAt: string, createdBy?: string | null }>, userActivity: Array<{ __typename?: 'auditLogs', id: string, action: string, resourceType: string, eventTime: string, success?: boolean | null }>, managedPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', id: string, name: string } }> };
+export type GetStaffDetailCompleteQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', id: string, name: string, email: string, role: any, username?: string | null, image?: string | null, isStaff?: boolean | null, isActive?: boolean | null, managerId?: string | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string, role: any } | null, managedUsers: Array<{ __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null }>, userSkills: Array<{ __typename?: 'userSkill', skillName?: string | null, proficiencyLevel?: string | null }> } | null, userPermissions: Array<{ __typename?: 'userRoles', roleId: string, userId: string }>, permissionOverrides: Array<{ __typename?: 'permissionOverrides', id: string, resource: string, granted: boolean, reason?: string | null, expiresAt?: string | null, createdAt: string, createdBy?: string | null }>, userActivity: Array<{ __typename?: 'auditLogs', id: string, action: string, resourceType: string, eventTime: string, success?: boolean | null }>, managedPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', id: string, name: string } }> };
 
 export type GetUserByClerkIdQueryVariables = Exact<{
   clerkUserId: Scalars['String']['input'];
@@ -10388,26 +13982,26 @@ export type GetUserProfileQueryVariables = Exact<{
 }>;
 
 
-export type GetUserProfileQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', username?: string | null, image?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null } | null };
+export type GetUserProfileQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', username?: string | null, image?: string | null, phone?: string | null, address?: string | null, bio?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null } | null };
 
 export type GetUsersWithRolesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUsersWithRolesQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null, assignedRoles: Array<{ __typename?: 'userRoles', roleId: string, assignedRole: { __typename?: 'roles', name: string, description?: string | null } }> }> };
+export type GetUsersWithRolesQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', id: string, name: string, email: string, role: any, isActive?: boolean | null }> };
 
 export type GetUserPermissionsQueryVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type GetUserPermissionsQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', id: string, name: string, role: any, assignedRoles: Array<{ __typename?: 'userRoles', roleId: string, assignedRole: { __typename?: 'roles', name: string, assignedPermissions: Array<{ __typename?: 'rolePermissions', permissionId: string, grantedPermission: { __typename?: 'permissions', action: any, description?: string | null, relatedResource: { __typename?: 'resources', name: string } } }> } }> } | null };
+export type GetUserPermissionsQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', id: string, name: string, role: any } | null };
 
 export type SearchUsersQueryVariables = Exact<{
   searchTerm: Scalars['String']['input'];
 }>;
 
 
-export type SearchUsersQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', username?: string | null, image?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null }> };
+export type SearchUsersQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', username?: string | null, image?: string | null, phone?: string | null, address?: string | null, bio?: string | null, id: string, name: string, email: string, isActive?: boolean | null, isStaff?: boolean | null, role: any, position?: any | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null }> };
 
 export type GetUsersForAuditQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -10494,7 +14088,7 @@ export type GetUserProfileCompleteQueryVariables = Exact<{
 }>;
 
 
-export type GetUserProfileCompleteQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', id: string, name: string, email: string, username?: string | null, image?: string | null, role: any, isStaff?: boolean | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, clerkUserId?: string | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string, image?: string | null } | null, primaryConsultantPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, employeeCount?: number | null, client: { __typename?: 'clients', name: string } }>, backupConsultantPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', name: string } }>, managedPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', name: string } }> } | null };
+export type GetUserProfileCompleteQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', id: string, name: string, email: string, username?: string | null, image?: string | null, phone?: string | null, address?: string | null, bio?: string | null, role: any, isStaff?: boolean | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, clerkUserId?: string | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string, image?: string | null } | null, managedUsers: Array<{ __typename?: 'users', id: string, name: string, email: string, role: any, image?: string | null, isActive?: boolean | null }>, primaryConsultantPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, employeeCount?: number | null, client: { __typename?: 'clients', id: string, name: string } }>, backupConsultantPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', id: string, name: string } }>, managedPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', id: string, name: string } }>, userWorkSchedules: Array<{ __typename?: 'workSchedule', id: string, workDay: string, workHours: number, createdAt?: any | null, updatedAt?: any | null }> } | null, userLeaves: Array<{ __typename?: 'leave', id: string, startDate: string, endDate: string, leaveType: string, status?: any | null, reason?: string | null }> };
 
 export type GetUserForDeletionQueryVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -10518,7 +14112,7 @@ export type GetUsersPaginatedQueryVariables = Exact<{
 }>;
 
 
-export type GetUsersPaginatedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null }>, usersAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
+export type GetUsersPaginatedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null }>, usersAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
 
 export type GetAllUsersPaginatedQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -10528,7 +14122,7 @@ export type GetAllUsersPaginatedQueryVariables = Exact<{
 }>;
 
 
-export type GetAllUsersPaginatedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string } | null }>, allUsersAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
+export type GetAllUsersPaginatedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string } | null }>, allUsersAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
 
 export type GetStaffPaginatedQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -10537,7 +14131,7 @@ export type GetStaffPaginatedQueryVariables = Exact<{
 }>;
 
 
-export type GetStaffPaginatedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null }>, staffAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
+export type GetStaffPaginatedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', createdAt?: string | null, email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null }>, staffAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
 
 export type SearchUsersPaginatedQueryVariables = Exact<{
   searchTerm: Scalars['String']['input'];
@@ -10546,7 +14140,7 @@ export type SearchUsersPaginatedQueryVariables = Exact<{
 }>;
 
 
-export type SearchUsersPaginatedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null }>, searchAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
+export type SearchUsersPaginatedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', createdAt?: string | null, email: string, managerId?: string | null, clerkUserId?: string | null, updatedAt?: string | null, id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null }>, searchAggregate: { __typename?: 'usersAggregate', aggregate?: { __typename?: 'usersAggregateFields', count: number } | null } };
 
 export type GetUserByIdCompleteQueryVariables = Exact<{
   id: Scalars['uuid']['input'];
@@ -10567,7 +14161,7 @@ export type GetUserClerkIdQueryVariables = Exact<{
 }>;
 
 
-export type GetUserClerkIdQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', id: string, name: string, email: string, role: any, clerkUserId?: string | null } | null };
+export type GetUserClerkIdQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', id: string, name: string, email: string, role: any, clerkUserId?: string | null, managerId?: string | null } | null };
 
 export type GetUsersQuickListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -10589,21 +14183,21 @@ export type GetUserCardQueryVariables = Exact<{
 }>;
 
 
-export type GetUserCardQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', email: string, id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
+export type GetUserCardQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', email: string, id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
 
 export type GetUserAssignmentDataQueryVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type GetUserAssignmentDataQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', email: string, id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null, activePayrollCount: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, backupPayrollCount: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null } } | null };
+export type GetUserAssignmentDataQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', email: string, id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null, activePayrollCount: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null }, backupPayrollCount: { __typename?: 'payrollsAggregate', aggregate?: { __typename?: 'payrollsAggregateFields', count: number } | null } } | null };
 
 export type GetUserWorkloadQueryVariables = Exact<{
   id: Scalars['uuid']['input'];
 }>;
 
 
-export type GetUserWorkloadQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', id: string, name: string, role: any, isActive?: boolean | null, isStaff?: boolean | null, primaryPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', name: string } }>, backupPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', name: string } }> } | null };
+export type GetUserWorkloadQuery = { __typename?: 'query_root', userById?: { __typename?: 'users', id: string, name: string, role: any, position?: any | null, isActive?: boolean | null, isStaff?: boolean | null, primaryPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', name: string } }>, backupPayrolls: Array<{ __typename?: 'payrolls', id: string, name: string, status: any, client: { __typename?: 'clients', name: string } }> } | null };
 
 export type GetInvitationsWithStatusQueryVariables = Exact<{
   statuses?: InputMaybe<Array<Scalars['invitation_status_enum']['input']> | Scalars['invitation_status_enum']['input']>;
@@ -10654,7 +14248,7 @@ export type UserUpdatesSubscriptionVariables = Exact<{
 }>;
 
 
-export type UserUpdatesSubscription = { __typename?: 'subscription_root', userById?: { __typename?: 'users', updatedAt?: string | null, username?: string | null, clerkUserId?: string | null, image?: string | null, isStaff?: boolean | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, createdAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null, assignedRoles: Array<{ __typename?: 'userRoles', assignedRole: { __typename?: 'roles', id: string, name: string, displayName: string } }> } | null };
+export type UserUpdatesSubscription = { __typename?: 'subscription_root', userById?: { __typename?: 'users', updatedAt?: string | null, clerkUserId?: string | null, image?: string | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, username?: string | null, isStaff?: boolean | null, createdAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
 
 export type ActiveUsersSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -10683,9 +14277,9 @@ export type UserBasicFragment = { __typename?: 'users', createdAt?: string | nul
 
 export type UserBaseFragment = { __typename?: 'users', createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string };
 
-export type UserWithRoleFragment = { __typename?: 'users', createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, assignedRoles: Array<{ __typename?: 'userRoles', assignedRole: { __typename?: 'roles', id: string, name: string, displayName: string } }> };
+export type UserWithRoleFragment = { __typename?: 'users', username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string };
 
-export type UserProfileFragment = { __typename?: 'users', username?: string | null, clerkUserId?: string | null, image?: string | null, isStaff?: boolean | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null, assignedRoles: Array<{ __typename?: 'userRoles', assignedRole: { __typename?: 'roles', id: string, name: string, displayName: string } }> };
+export type UserProfileFragment = { __typename?: 'users', clerkUserId?: string | null, image?: string | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null };
 
 export type UserSearchResultFragment = { __typename?: 'users', username?: string | null, isStaff?: boolean | null, role: any, isActive?: boolean | null, id: string, name: string, email: string };
 
@@ -10763,7 +14357,7 @@ export type GetCurrentUserQueryVariables = Exact<{
 }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'query_root', user?: { __typename?: 'users', username?: string | null, clerkUserId?: string | null, image?: string | null, isStaff?: boolean | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null, assignedRoles: Array<{ __typename?: 'userRoles', assignedRole: { __typename?: 'roles', id: string, name: string, displayName: string } }> } | null };
+export type GetCurrentUserQuery = { __typename?: 'query_root', user?: { __typename?: 'users', clerkUserId?: string | null, image?: string | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
 
 export type GetUsersForDropdownQueryVariables = Exact<{
   role?: InputMaybe<Scalars['user_role']['input']>;
@@ -10810,30 +14404,30 @@ export type PermissionChangeStreamSubscriptionVariables = Exact<{ [key: string]:
 
 export type PermissionChangeStreamSubscription = { __typename?: 'subscription_root', permissionChanges: Array<{ __typename?: 'permissionChanges', id: string, changedAt: string, changedByUserId: string, targetUserId?: string | null, targetRoleId?: string | null, changeType: string, permissionType?: string | null, oldPermissions?: any | null, newPermissions?: any | null, reason?: string | null, approvedByUserId?: string | null }> };
 
-export const UserCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserCoreFragment, unknown>;
-export const UserWithRolesFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRoles"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithRolesFragment, unknown>;
-export const UserWithTeamFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithTeam"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithTeamFragment, unknown>;
-export const UserWithWorkScheduleFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithWorkSchedule"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"userWorkSchedules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"workDay"}},{"kind":"Field","name":{"kind":"Name","value":"workHours"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithWorkScheduleFragment, unknown>;
-export const UserWithPayrollsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithPayrolls"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithPayrollsFragment, unknown>;
-export const UserWithProfileFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithProfileFragment, unknown>;
-export const UserWithAllRelationsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithAllRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithProfile"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"userWorkSchedules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"workDay"}},{"kind":"Field","name":{"kind":"Name","value":"workHours"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}}]} as unknown as DocumentNode<UserWithAllRelationsFragment, unknown>;
-export const UserBasicInfoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasicInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}}]}}]} as unknown as DocumentNode<UserBasicInfoFragment, unknown>;
-export const UserForStaffFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserForStaff"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithProfile"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}}]} as unknown as DocumentNode<UserForStaffFragment, unknown>;
+export const UserCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserCoreFragment, unknown>;
+export const UserWithRolesFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRoles"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithRolesFragment, unknown>;
+export const UserWithTeamFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithTeam"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithTeamFragment, unknown>;
+export const UserWithWorkScheduleFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithWorkSchedule"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"userWorkSchedules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"workDay"}},{"kind":"Field","name":{"kind":"Name","value":"workHours"}},{"kind":"Field","name":{"kind":"Name","value":"adminTimeHours"}},{"kind":"Field","name":{"kind":"Name","value":"payrollCapacityHours"}},{"kind":"Field","name":{"kind":"Name","value":"usesDefaultAdminTime"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithWorkScheduleFragment, unknown>;
+export const UserWithPayrollsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithPayrolls"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithPayrollsFragment, unknown>;
+export const UserWithProfileFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithProfileFragment, unknown>;
+export const UserWithAllRelationsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithAllRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithProfile"}},{"kind":"Field","name":{"kind":"Name","value":"userWorkSchedules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"workDay"}},{"kind":"Field","name":{"kind":"Name","value":"workHours"}},{"kind":"Field","name":{"kind":"Name","value":"adminTimeHours"}},{"kind":"Field","name":{"kind":"Name","value":"payrollCapacityHours"}},{"kind":"Field","name":{"kind":"Name","value":"usesDefaultAdminTime"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}}]}}]} as unknown as DocumentNode<UserWithAllRelationsFragment, unknown>;
+export const UserBasicInfoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasicInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}}]}}]} as unknown as DocumentNode<UserBasicInfoFragment, unknown>;
+export const UserForStaffFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserForStaff"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithProfile"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}}]}}]} as unknown as DocumentNode<UserForStaffFragment, unknown>;
 export const UserForAuthFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserForAuth"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}}]}}]} as unknown as DocumentNode<UserForAuthFragment, unknown>;
 export const UserForAuditFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserForAudit"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserForAuditFragment, unknown>;
-export const UserRoleInfoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<UserRoleInfoFragment, unknown>;
-export const UserPermissionsInfoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserPermissionsInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<UserPermissionsInfoFragment, unknown>;
-export const UserSummaryFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserSummaryFragment, unknown>;
-export const UserDashboardCardFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserDashboardCard"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserDashboardCardFragment, unknown>;
-export const UserTeamSummaryFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserTeamSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserTeamSummaryFragment, unknown>;
-export const UserListItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserListItemFragment, unknown>;
-export const UserTableRowFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserTableRow"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserListItem"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserTableRowFragment, unknown>;
+export const UserRoleInfoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserRoleInfoFragment, unknown>;
+export const UserPermissionsInfoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserPermissionsInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<UserPermissionsInfoFragment, unknown>;
+export const UserSummaryFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserSummaryFragment, unknown>;
+export const UserDashboardCardFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserDashboardCard"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserDashboardCardFragment, unknown>;
+export const UserTeamSummaryFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserTeamSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserTeamSummaryFragment, unknown>;
+export const UserListItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserListItemFragment, unknown>;
+export const UserTableRowFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserTableRow"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserListItem"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserTableRowFragment, unknown>;
 export const UserMinimalFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<UserMinimalFragment, unknown>;
 export const UserCoreSharedFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<UserCoreSharedFragment, unknown>;
 export const UserBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserBasicFragment, unknown>;
 export const UserBaseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserBaseFragment, unknown>;
-export const UserWithRoleFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithRoleFragment, unknown>;
-export const UserProfileFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}}]} as unknown as DocumentNode<UserProfileFragment, unknown>;
+export const UserWithRoleFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithRoleFragment, unknown>;
+export const UserProfileFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserProfileFragment, unknown>;
 export const UserSearchResultFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSearchResult"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserSearchResultFragment, unknown>;
 export const ClientMinimalFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<ClientMinimalFragment, unknown>;
 export const ClientBaseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"contactPerson"}},{"kind":"Field","name":{"kind":"Name","value":"contactPhone"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<ClientBaseFragment, unknown>;
@@ -10861,11 +14455,11 @@ export const UpdateUserRoleDocument = {"kind":"Document","definitions":[{"kind":
 export const BulkUpdateUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BulkUpdateUsers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"usersBoolExp"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"usersSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkUpdateUsers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}}]}},{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<BulkUpdateUsersMutation, BulkUpdateUsersMutationVariables>;
 export const CreateUserFromClerkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateUserFromClerk"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clerkId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"user_role"}},"defaultValue":{"kind":"StringValue","value":"viewer","block":false}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isStaff"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"defaultValue":{"kind":"BooleanValue","value":false}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"managerId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"image"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clerkUserId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clerkId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"isStaff"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isStaff"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"managerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"managerId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"image"},"value":{"kind":"Variable","name":{"kind":"Name","value":"image"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"onConflict"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"constraint"},"value":{"kind":"EnumValue","value":"users_clerk_user_id_key"}},{"kind":"ObjectField","name":{"kind":"Name","value":"updateColumns"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"name"},{"kind":"EnumValue","value":"email"},{"kind":"EnumValue","value":"image"},{"kind":"EnumValue","value":"updatedAt"}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<CreateUserFromClerkMutation, CreateUserFromClerkMutationVariables>;
 export const CreateUserByEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateUserByEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"user_role"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"managerId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isStaff"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"defaultValue":{"kind":"BooleanValue","value":true}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clerkUserId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"managerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"managerId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"isStaff"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isStaff"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"BooleanValue","value":true}},{"kind":"ObjectField","name":{"kind":"Name","value":"clerkUserId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clerkUserId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<CreateUserByEmailMutation, CreateUserByEmailMutationVariables>;
-export const UpdateUserProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserProfile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"image"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"image"},"value":{"kind":"Variable","name":{"kind":"Name","value":"image"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}}]} as unknown as DocumentNode<UpdateUserProfileMutation, UpdateUserProfileMutationVariables>;
+export const UpdateUserProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserProfile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"usersSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}}]}}]} as unknown as DocumentNode<UpdateUserProfileMutation, UpdateUserProfileMutationVariables>;
 export const DeactivateUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeactivateUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"deactivatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<DeactivateUserMutation, DeactivateUserMutationVariables>;
 export const ReactivateUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ReactivateUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"BooleanValue","value":true}},{"kind":"ObjectField","name":{"kind":"Name","value":"deactivatedAt"},"value":{"kind":"NullValue"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<ReactivateUserMutation, ReactivateUserMutationVariables>;
 export const HardDeleteUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"HardDeleteUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<HardDeleteUserMutation, HardDeleteUserMutationVariables>;
-export const UpdateStaffRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateStaffRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"user_role"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<UpdateStaffRoleMutation, UpdateStaffRoleMutationVariables>;
+export const UpdateStaffRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateStaffRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"user_role"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<UpdateStaffRoleMutation, UpdateStaffRoleMutationVariables>;
 export const UpdateUserRoleFromClerkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserRoleFromClerk"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clerkUserId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"user_role"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkUpdateUsers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clerkUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clerkUserId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}}]}},{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<UpdateUserRoleFromClerkMutation, UpdateUserRoleFromClerkMutationVariables>;
 export const RevokeInvitationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RevokeInvitation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"invitationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"revokeReason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"revokedBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserInvitationById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"invitationId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"invitationStatus"},"value":{"kind":"StringValue","value":"revoked","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"cancelled","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"revokedAt"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"revokedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"revokedBy"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"revokeReason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"revokeReason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"invitationStatus"}},{"kind":"Field","name":{"kind":"Name","value":"revokedAt"}},{"kind":"Field","name":{"kind":"Name","value":"revokeReason"}}]}}]}}]} as unknown as DocumentNode<RevokeInvitationMutation, RevokeInvitationMutationVariables>;
 export const ResendInvitationEnhancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ResendInvitationEnhanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"invitationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"newExpiresAt"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"newClerkTicket"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"newClerkInvitationId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserInvitationById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"invitationId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"Variable","name":{"kind":"Name","value":"newExpiresAt"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"clerkTicket"},"value":{"kind":"Variable","name":{"kind":"Name","value":"newClerkTicket"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"clerkInvitationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"newClerkInvitationId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"invitationStatus"},"value":{"kind":"StringValue","value":"pending","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"pending","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"invitationStatus"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}}]}}]}}]} as unknown as DocumentNode<ResendInvitationEnhancedMutation, ResendInvitationEnhancedMutationVariables>;
@@ -10873,22 +14467,23 @@ export const DeactivateUserWithReasonDocument = {"kind":"Document","definitions"
 export const LockUserWithReasonDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LockUserWithReason"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"lockedBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"locked","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"statusChangeReason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"statusChangedAt"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"statusChangedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"lockedBy"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangeReason"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangedAt"}}]}}]}}]} as unknown as DocumentNode<LockUserWithReasonMutation, LockUserWithReasonMutationVariables>;
 export const UnlockUserWithReasonDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UnlockUserWithReason"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"unlockedBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"active","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"BooleanValue","value":true}},{"kind":"ObjectField","name":{"kind":"Name","value":"statusChangeReason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"statusChangedAt"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"statusChangedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"unlockedBy"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangeReason"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangedAt"}}]}}]}}]} as unknown as DocumentNode<UnlockUserWithReasonMutation, UnlockUserWithReasonMutationVariables>;
 export const ReactivateUserWithReasonDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ReactivateUserWithReason"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reason"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reactivatedBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"active","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"BooleanValue","value":true}},{"kind":"ObjectField","name":{"kind":"Name","value":"deactivatedAt"},"value":{"kind":"NullValue"}},{"kind":"ObjectField","name":{"kind":"Name","value":"deactivatedBy"},"value":{"kind":"NullValue"}},{"kind":"ObjectField","name":{"kind":"Name","value":"statusChangeReason"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reason"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"statusChangedAt"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"statusChangedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reactivatedBy"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangeReason"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangedAt"}}]}}]}}]} as unknown as DocumentNode<ReactivateUserWithReasonMutation, ReactivateUserWithReasonMutationVariables>;
-export const GetUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"usersBoolExp"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<GetUsersQuery, GetUsersQueryVariables>;
+export const GetUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"usersBoolExp"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<GetUsersQuery, GetUsersQueryVariables>;
+export const GetStaffWithRelationsOptimizedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStaffWithRelationsOptimized"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"usersBoolExp"}},"defaultValue":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isStaff"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"usersOrderBy"}}}},"defaultValue":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"managedUsers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantPayrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"nextPayrollDate"},"name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantPayrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"3"}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"userWorkSchedules"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDay"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"workDay"}},{"kind":"Field","name":{"kind":"Name","value":"workHours"}},{"kind":"Field","name":{"kind":"Name","value":"adminTimeHours"}},{"kind":"Field","name":{"kind":"Name","value":"payrollCapacityHours"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeStaff"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isStaff"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"managersCount"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"manager","block":false},{"kind":"StringValue","value":"org_admin","block":false},{"kind":"StringValue","value":"developer","block":false}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetStaffWithRelationsOptimizedQuery, GetStaffWithRelationsOptimizedQueryVariables>;
 export const GetUsersForDropdownDomainDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersForDropdownDomain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]} as unknown as DocumentNode<GetUsersForDropdownDomainQuery, GetUsersForDropdownDomainQueryVariables>;
 export const GetManagersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetManagers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"manager","block":false},{"kind":"StringValue","value":"org_admin","block":false}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<GetManagersQuery, GetManagersQueryVariables>;
 export const GetUserCountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserCount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"usersAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetUserCountQuery, GetUserCountQueryVariables>;
 export const GetActiveUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetActiveUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBase"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}}]} as unknown as DocumentNode<GetActiveUsersQuery, GetActiveUsersQueryVariables>;
 export const GetUserByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]}}]} as unknown as DocumentNode<GetUserByIdQuery, GetUserByIdQueryVariables>;
-export const GetStaffDetailCompleteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStaffDetailComplete"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}},{"kind":"Field","name":{"kind":"Name","value":"managedUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userPermissions"},"name":{"kind":"Name","value":"userRoles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userActivity"},"name":{"kind":"Name","value":"auditLogs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"managedPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"primaryConsultantUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"backupConsultantUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"managerUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetStaffDetailCompleteQuery, GetStaffDetailCompleteQueryVariables>;
+export const GetStaffDetailCompleteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStaffDetailComplete"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}},{"kind":"Field","name":{"kind":"Name","value":"managedUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"userSkills"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"skillName"}},{"kind":"Field","name":{"kind":"Name","value":"proficiencyLevel"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userPermissions"},"name":{"kind":"Name","value":"userRoles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userActivity"},"name":{"kind":"Name","value":"auditLogs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"success"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"managedPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"primaryConsultantUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"backupConsultantUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"managerUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetStaffDetailCompleteQuery, GetStaffDetailCompleteQueryVariables>;
 export const GetUserByClerkIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserByClerkId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clerkUserId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clerkUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clerkUserId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}}]}}]}}]} as unknown as DocumentNode<GetUserByClerkIdQuery, GetUserByClerkIdQueryVariables>;
 export const GetUserByEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserByEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]}}]} as unknown as DocumentNode<GetUserByEmailQuery, GetUserByEmailQueryVariables>;
 export const GetStaffListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStaffList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"consultant","block":false},{"kind":"StringValue","value":"manager","block":false},{"kind":"StringValue","value":"org_admin","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]}}]} as unknown as DocumentNode<GetStaffListQuery, GetStaffListQueryVariables>;
 export const GetStaffByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStaffById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetStaffByIdQuery, GetStaffByIdQueryVariables>;
 export const GetAllUsersListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllUsersList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}}]}}]}}]} as unknown as DocumentNode<GetAllUsersListQuery, GetAllUsersListQueryVariables>;
-export const GetUserProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserProfile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}}]} as unknown as DocumentNode<GetUserProfileQuery, GetUserProfileQueryVariables>;
-export const GetUsersWithRolesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersWithRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleInfo"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<GetUsersWithRolesQuery, GetUsersWithRolesQueryVariables>;
-export const GetUserPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserPermissions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserPermissionsInfo"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserPermissionsInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roleId"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionId"}},{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relatedResource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetUserPermissionsQuery, GetUserPermissionsQueryVariables>;
-export const SearchUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchUsers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"username"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"50"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}}]} as unknown as DocumentNode<SearchUsersQuery, SearchUsersQueryVariables>;
+export const GetUserProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserProfile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}}]}}]} as unknown as DocumentNode<GetUserProfileQuery, GetUserProfileQueryVariables>;
+export const GetUsersWithRolesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersWithRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRoleInfo"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRoleInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<GetUsersWithRolesQuery, GetUsersWithRolesQueryVariables>;
+export const GetUserPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserPermissions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserPermissionsInfo"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserPermissionsInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<GetUserPermissionsQuery, GetUserPermissionsQueryVariables>;
+export const SearchUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchUsers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"username"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"50"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCore"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}}]}}]} as unknown as DocumentNode<SearchUsersQuery, SearchUsersQueryVariables>;
 export const GetUsersForAuditDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersForAudit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserForAudit"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserForAudit"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<GetUsersForAuditQuery, GetUsersForAuditQueryVariables>;
 export const GetUserStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"usersAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeUsers"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"byRole"},"name":{"kind":"Name","value":"usersAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}}]}},{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetUserStatsQuery, GetUserStatsQueryVariables>;
 export const GetUserSessionInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserSessionInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<GetUserSessionInfoQuery, GetUserSessionInfoQueryVariables>;
@@ -10901,29 +14496,29 @@ export const GetUsersWithFilteringDocument = {"kind":"Document","definitions":[{
 export const GetDeveloperManagersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDeveloperManagers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"developer","block":false},{"kind":"StringValue","value":"manager","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]} as unknown as DocumentNode<GetDeveloperManagersQuery, GetDeveloperManagersQueryVariables>;
 export const GetUserRoleSecureDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserRoleSecure"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<GetUserRoleSecureQuery, GetUserRoleSecureQueryVariables>;
 export const GetUserRoleFallbackSecureDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserRoleFallbackSecure"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}}]}}]}}]} as unknown as DocumentNode<GetUserRoleFallbackSecureQuery, GetUserRoleFallbackSecureQueryVariables>;
-export const GetUserProfileCompleteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserProfileComplete"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantPayrolls"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantPayrolls"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"managedPayrolls"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetUserProfileCompleteQuery, GetUserProfileCompleteQueryVariables>;
+export const GetUserProfileCompleteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserProfileComplete"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}},{"kind":"Field","name":{"kind":"Name","value":"managedUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantPayrolls"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantPayrolls"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"managedPayrolls"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"userWorkSchedules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"workDay"}},{"kind":"Field","name":{"kind":"Name","value":"workHours"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"userLeaves"},"name":{"kind":"Name","value":"leave"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"startDate"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"leaveType"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}}]}}]}}]} as unknown as DocumentNode<GetUserProfileCompleteQuery, GetUserProfileCompleteQueryVariables>;
 export const GetUserForDeletionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserForDeletion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"primaryConsultantUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"backupConsultantUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"managerUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}}]}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"subordinates"},"name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"managerId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<GetUserForDeletionQuery, GetUserForDeletionQueryVariables>;
 export const GetCurrentUserRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUserRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clerkUserId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clerkUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clerkUserId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserRoleQuery, GetCurrentUserRoleQueryVariables>;
-export const GetUsersPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"20"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"usersBoolExp"}},"defaultValue":{"kind":"ObjectValue","fields":[]}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"usersOrderBy"}}}},"defaultValue":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"Variable","name":{"kind":"Name","value":"where"}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserListItem"}}]}},{"kind":"Field","name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"Variable","name":{"kind":"Name","value":"where"}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetUsersPaginatedQuery, GetUsersPaginatedQueryVariables>;
-export const GetAllUsersPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllUsersPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"20"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"usersBoolExp"}},"defaultValue":{"kind":"ObjectValue","fields":[]}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"usersOrderBy"}}}},"defaultValue":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserTableRow"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"allUsersAggregate"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserTableRow"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserListItem"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetAllUsersPaginatedQuery, GetAllUsersPaginatedQueryVariables>;
-export const GetStaffPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStaffPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"20"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"usersBoolExp"}},"defaultValue":{"kind":"ObjectValue","fields":[]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"consultant","block":false},{"kind":"StringValue","value":"manager","block":false},{"kind":"StringValue","value":"org_admin","block":false}]}}]}}]},{"kind":"Variable","name":{"kind":"Name","value":"where"}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserListItem"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"staffAggregate"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"consultant","block":false},{"kind":"StringValue","value":"manager","block":false},{"kind":"StringValue","value":"org_admin","block":false}]}}]}}]},{"kind":"Variable","name":{"kind":"Name","value":"where"}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetStaffPaginatedQuery, GetStaffPaginatedQueryVariables>;
-export const SearchUsersPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchUsersPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"20"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"username"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserListItem"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"searchAggregate"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"username"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<SearchUsersPaginatedQuery, SearchUsersPaginatedQueryVariables>;
+export const GetUsersPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"20"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"usersBoolExp"}},"defaultValue":{"kind":"ObjectValue","fields":[]}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"usersOrderBy"}}}},"defaultValue":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"Variable","name":{"kind":"Name","value":"where"}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserListItem"}}]}},{"kind":"Field","name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"Variable","name":{"kind":"Name","value":"where"}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetUsersPaginatedQuery, GetUsersPaginatedQueryVariables>;
+export const GetAllUsersPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllUsersPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"20"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"usersBoolExp"}},"defaultValue":{"kind":"ObjectValue","fields":[]}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"usersOrderBy"}}}},"defaultValue":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserTableRow"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"allUsersAggregate"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserTableRow"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserListItem"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetAllUsersPaginatedQuery, GetAllUsersPaginatedQueryVariables>;
+export const GetStaffPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStaffPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"20"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"usersBoolExp"}},"defaultValue":{"kind":"ObjectValue","fields":[]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"consultant","block":false},{"kind":"StringValue","value":"manager","block":false},{"kind":"StringValue","value":"org_admin","block":false}]}}]}}]},{"kind":"Variable","name":{"kind":"Name","value":"where"}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserListItem"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"staffAggregate"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"consultant","block":false},{"kind":"StringValue","value":"manager","block":false},{"kind":"StringValue","value":"org_admin","block":false}]}}]}}]},{"kind":"Variable","name":{"kind":"Name","value":"where"}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetStaffPaginatedQuery, GetStaffPaginatedQueryVariables>;
+export const SearchUsersPaginatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchUsersPaginated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"20"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"username"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserListItem"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"searchAggregate"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"username"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<SearchUsersPaginatedQuery, SearchUsersPaginatedQueryVariables>;
 export const GetUserByIdCompleteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserByIdComplete"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]}}]} as unknown as DocumentNode<GetUserByIdCompleteQuery, GetUserByIdCompleteQueryVariables>;
 export const GetUserByClerkIdCompleteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserByClerkIdComplete"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clerkId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clerkUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clerkId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]}}]} as unknown as DocumentNode<GetUserByClerkIdCompleteQuery, GetUserByClerkIdCompleteQueryVariables>;
-export const GetUserClerkIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserClerkId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}}]}}]}}]} as unknown as DocumentNode<GetUserClerkIdQuery, GetUserClerkIdQueryVariables>;
+export const GetUserClerkIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserClerkId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}}]}}]}}]} as unknown as DocumentNode<GetUserClerkIdQuery, GetUserClerkIdQueryVariables>;
 export const GetUsersQuickListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersQuickList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetUsersQuickListQuery, GetUsersQuickListQueryVariables>;
 export const GetStaffQuickListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStaffQuickList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"consultant","block":false},{"kind":"StringValue","value":"manager","block":false},{"kind":"StringValue","value":"org_admin","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetStaffQuickListQuery, GetStaffQuickListQueryVariables>;
 export const GetManagersQuickListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetManagersQuickList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"manager","block":false},{"kind":"StringValue","value":"org_admin","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetManagersQuickListQuery, GetManagersQuickListQueryVariables>;
-export const GetUserCardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserCard"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetUserCardQuery, GetUserCardQueryVariables>;
-export const GetUserAssignmentDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserAssignmentData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrollCount"},"name":{"kind":"Name","value":"primaryConsultantPayrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"backupPayrollCount"},"name":{"kind":"Name","value":"backupConsultantPayrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<GetUserAssignmentDataQuery, GetUserAssignmentDataQueryVariables>;
-export const GetUserWorkloadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserWorkload"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","alias":{"kind":"Name","value":"primaryPayrolls"},"name":{"kind":"Name","value":"primaryConsultantPayrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"backupPayrolls"},"name":{"kind":"Name","value":"backupConsultantPayrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<GetUserWorkloadQuery, GetUserWorkloadQueryVariables>;
+export const GetUserCardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserCard"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetUserCardQuery, GetUserCardQueryVariables>;
+export const GetUserAssignmentDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserAssignmentData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrollCount"},"name":{"kind":"Name","value":"primaryConsultantPayrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"backupPayrollCount"},"name":{"kind":"Name","value":"backupConsultantPayrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<GetUserAssignmentDataQuery, GetUserAssignmentDataQueryVariables>;
+export const GetUserWorkloadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserWorkload"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserSummary"}},{"kind":"Field","alias":{"kind":"Name","value":"primaryPayrolls"},"name":{"kind":"Name","value":"primaryConsultantPayrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"backupPayrolls"},"name":{"kind":"Name","value":"backupConsultantPayrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<GetUserWorkloadQuery, GetUserWorkloadQueryVariables>;
 export const GetInvitationsWithStatusDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetInvitationsWithStatus"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"invitation_status_enum"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userInvitations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"invitationStatus"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"invitedRole"}},{"kind":"Field","name":{"kind":"Name","value":"invitationStatus"}},{"kind":"Field","name":{"kind":"Name","value":"invitedAt"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"revokedAt"}},{"kind":"Field","name":{"kind":"Name","value":"revokeReason"}},{"kind":"Field","name":{"kind":"Name","value":"invitedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"userInvitationsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"invitationStatus"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetInvitationsWithStatusQuery, GetInvitationsWithStatusQueryVariables>;
 export const GetInvitationDashboardStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetInvitationDashboardStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"pending"},"name":{"kind":"Name","value":"userInvitationsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"invitationStatus"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"pending","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"expired"},"name":{"kind":"Name","value":"userInvitationsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"invitationStatus"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"expired","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"accepted"},"name":{"kind":"Name","value":"userInvitationsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"invitationStatus"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"accepted","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"revoked"},"name":{"kind":"Name","value":"userInvitationsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"invitationStatus"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"revoked","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"expiringSoon"},"name":{"kind":"Name","value":"userInvitationsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"invitationStatus"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"pending","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"_lt"},"value":{"kind":"StringValue","value":"now() + interval '7 days'","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"recentInvitations"},"name":{"kind":"Name","value":"userInvitations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '30 days'","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"invitationStatus"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"invitedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"byStatus"},"name":{"kind":"Name","value":"userInvitationsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetInvitationDashboardStatsQuery, GetInvitationDashboardStatsQueryVariables>;
 export const GetExpiringInvitationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetExpiringInvitations"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"daysUntilExpiry"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"interval"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userInvitations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"invitationStatus"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"pending","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gt"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"_lt"},"value":{"kind":"StringValue","value":"now() + $daysUntilExpiry","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"expiresAt"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"invitedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<GetExpiringInvitationsQuery, GetExpiringInvitationsQueryVariables>;
 export const GetUsersByStatusDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersByStatus"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"user_status_enum"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangedAt"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangeReason"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetUsersByStatusQuery, GetUsersByStatusQueryVariables>;
 export const GetUserWithStatusDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserWithStatusDetails"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangedAt"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangedBy"}},{"kind":"Field","name":{"kind":"Name","value":"statusChangeReason"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetUserWithStatusDetailsQuery, GetUserWithStatusDetailsQueryVariables>;
 export const GetCurrentUserRoleForManagementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUserRoleForManagement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserRoleForManagementQuery, GetCurrentUserRoleForManagementQueryVariables>;
-export const UserUpdatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"UserUpdates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserProfile"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]} as unknown as DocumentNode<UserUpdatesSubscription, UserUpdatesSubscriptionVariables>;
+export const UserUpdatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"UserUpdates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserProfile"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]} as unknown as DocumentNode<UserUpdatesSubscription, UserUpdatesSubscriptionVariables>;
 export const ActiveUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"ActiveUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ActiveUsersSubscription, ActiveUsersSubscriptionVariables>;
 export const UserAuthEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"UserAuthEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"authEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}}]}}]}}]} as unknown as DocumentNode<UserAuthEventsSubscription, UserAuthEventsSubscriptionVariables>;
 export const PermissionOverrideChangesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"PermissionOverrideChanges"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"permissionOverrides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<PermissionOverrideChangesSubscription, PermissionOverrideChangesSubscriptionVariables>;
@@ -10932,7 +14527,7 @@ export const RefreshDataDocument = {"kind":"Document","definitions":[{"kind":"Op
 export const GetDashboardMetricsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardMetrics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrollsAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_nin"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Completed","block":false},{"kind":"StringValue","value":"Failed","block":false}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalEmployeesAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcomingPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_nin"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Completed","block":false},{"kind":"StringValue","value":"Failed","block":false},{"kind":"StringValue","value":"Cancelled","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetDashboardMetricsQuery, GetDashboardMetricsQueryVariables>;
 export const GetDashboardStatsOptimizedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardStatsOptimized"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalPayrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcomingPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetDashboardStatsOptimizedQuery, GetDashboardStatsOptimizedQueryVariables>;
 export const GetClientsDashboardStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientsDashboardStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"activeClientsCount"},"name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalPayrollsCount"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalEmployeesSum"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"clientsNeedingAttention"},"name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrolls"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetClientsDashboardStatsQuery, GetClientsDashboardStatsQueryVariables>;
-export const GetCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"user"},"name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
+export const GetCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"user"},"name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
 export const GetUsersForDropdownDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersForDropdown"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"user_role"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetUsersForDropdownQuery, GetUsersForDropdownQueryVariables>;
 export const GetSystemHealthDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSystemHealth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"databaseHealth"},"name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"recentActivity"},"name":{"kind":"Name","value":"auditLogsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '1 hour'","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetSystemHealthQuery, GetSystemHealthQueryVariables>;
 export const GlobalSearchDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GlobalSearch"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"contactEmail"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"client"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<GlobalSearchQuery, GlobalSearchQueryVariables>;

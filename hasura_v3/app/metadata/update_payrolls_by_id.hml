@@ -1,0 +1,1247 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_actual_hours
+  description: Update the 'actual_hours' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: bigdecimal
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_actual_hours
+    inputTypeName: update_column_payrolls_actual_hours_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_actual_hours
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_actual_hours
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_actual_revenue
+  description: Update the 'actual_revenue' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: bigdecimal
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_actual_revenue
+    inputTypeName: update_column_payrolls_actual_revenue_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_actual_revenue
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_actual_revenue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_backup_consultant_user_id
+  description: Update the 'backup_consultant_user_id' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_backup_consultant_user_id
+    inputTypeName: update_column_payrolls_backup_consultant_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_backup_consultant_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_backup_consultant_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_billing_status
+  description: Update the 'billing_status' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_billing_status
+    inputTypeName: update_column_payrolls_billing_status_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_billing_status
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_billing_status
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_client_id
+  description: Update the 'client_id' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_client_id
+    inputTypeName: update_column_payrolls_client_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_client_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_client_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_created_at
+  description: Update the 'created_at' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_created_at
+    inputTypeName: update_column_payrolls_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_created_by_user_id
+  description: Update the 'created_by_user_id' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_created_by_user_id
+    inputTypeName: update_column_payrolls_created_by_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_created_by_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_created_by_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_cycle_id
+  description: Update the 'cycle_id' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_cycle_id
+    inputTypeName: update_column_payrolls_cycle_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_cycle_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_cycle_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_date_type_id
+  description: Update the 'date_type_id' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_date_type_id
+    inputTypeName: update_column_payrolls_date_type_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_date_type_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_date_type_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_date_value
+  description: Update the 'date_value' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: int_32
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_date_value
+    inputTypeName: update_column_payrolls_date_value_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_date_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_date_value
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_employee_count
+  description: Update the 'employee_count' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: int_32
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_employee_count
+    inputTypeName: update_column_payrolls_employee_count_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_employee_count
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_employee_count
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_estimated_hours
+  description: Update the 'estimated_hours' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: bigdecimal
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_estimated_hours
+    inputTypeName: update_column_payrolls_estimated_hours_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_estimated_hours
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_estimated_hours
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_estimated_revenue
+  description: Update the 'estimated_revenue' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: bigdecimal
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_estimated_revenue
+    inputTypeName: update_column_payrolls_estimated_revenue_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_estimated_revenue
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_estimated_revenue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_go_live_date
+  description: Update the 'go_live_date' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: date
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_go_live_date
+    inputTypeName: update_column_payrolls_go_live_date_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_go_live_date
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_go_live_date
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_id
+  description: Update the 'id' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_id
+    inputTypeName: update_column_payrolls_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_last_billed_date
+  description: Update the 'last_billed_date' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_last_billed_date
+    inputTypeName: update_column_payrolls_last_billed_date_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_last_billed_date
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_last_billed_date
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_manager_user_id
+  description: Update the 'manager_user_id' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_manager_user_id
+    inputTypeName: update_column_payrolls_manager_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_manager_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_manager_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_name
+  description: Update the 'name' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_name
+    inputTypeName: update_column_payrolls_name_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_name
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_new_employees
+  description: Update the 'new_employees' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: int_32
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_new_employees
+    inputTypeName: update_column_payrolls_new_employees_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_new_employees
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_new_employees
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_parent_payroll_id
+  description: Update the 'parent_payroll_id' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_parent_payroll_id
+    inputTypeName: update_column_payrolls_parent_payroll_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_parent_payroll_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_parent_payroll_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_payroll_system
+  description: Update the 'payroll_system' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_payroll_system
+    inputTypeName: update_column_payrolls_payroll_system_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_payroll_system
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_payroll_system
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_payslip_count
+  description: Update the 'payslip_count' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: int_32
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_payslip_count
+    inputTypeName: update_column_payrolls_payslip_count_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_payslip_count
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_payslip_count
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_primary_consultant_user_id
+  description: Update the 'primary_consultant_user_id' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_primary_consultant_user_id
+    inputTypeName: update_column_payrolls_primary_consultant_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_primary_consultant_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_primary_consultant_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_processing_days_before_eft
+  description: Update the 'processing_days_before_eft' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: int_32!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_processing_days_before_eft
+    inputTypeName: update_column_payrolls_processing_days_before_eft_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_processing_days_before_eft
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_processing_days_before_eft
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_processing_time
+  description: Update the 'processing_time' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: int_32!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_processing_time
+    inputTypeName: update_column_payrolls_processing_time_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_processing_time
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_processing_time
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_profit_margin
+  description: Update the 'profit_margin' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: bigdecimal
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_profit_margin
+    inputTypeName: update_column_payrolls_profit_margin_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_profit_margin
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_profit_margin
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_status
+  description: Update the 'status' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: enum!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_status
+    inputTypeName: update_column_payrolls_status_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_status
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_status
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_superseded_date
+  description: Update the 'superseded_date' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: date
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_superseded_date
+    inputTypeName: update_column_payrolls_superseded_date_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_superseded_date
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_superseded_date
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_terminated_employees
+  description: Update the 'terminated_employees' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: int_32
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_terminated_employees
+    inputTypeName: update_column_payrolls_terminated_employees_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_terminated_employees
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_terminated_employees
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_updated_at
+  description: Update the 'updated_at' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_updated_at
+    inputTypeName: update_column_payrolls_updated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_updated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_updated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_version_number
+  description: Update the 'version_number' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: int_32
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_version_number
+    inputTypeName: update_column_payrolls_version_number_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_version_number
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_version_number
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_payrolls_version_reason
+  description: Update the 'version_reason' column in the 'payrolls' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_payrolls_version_reason
+    inputTypeName: update_column_payrolls_version_reason_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_payrolls_version_reason
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_payrolls_version_reason
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_payrolls_by_id_update_columns
+  description: Update the columns of the 'payrolls' collection
+  fields:
+    - name: actual_hours
+      type: update_column_payrolls_actual_hours
+      description: Update the 'actual_hours' column in the 'payrolls' collection.
+    - name: actual_revenue
+      type: update_column_payrolls_actual_revenue
+      description: Update the 'actual_revenue' column in the 'payrolls' collection.
+    - name: backup_consultant_user_id
+      type: update_column_payrolls_backup_consultant_user_id
+      description: Update the 'backup_consultant_user_id' column in the 'payrolls'
+        collection.
+    - name: billing_status
+      type: update_column_payrolls_billing_status
+      description: Update the 'billing_status' column in the 'payrolls' collection.
+    - name: client_id
+      type: update_column_payrolls_client_id
+      description: Update the 'client_id' column in the 'payrolls' collection.
+    - name: created_at
+      type: update_column_payrolls_created_at
+      description: Update the 'created_at' column in the 'payrolls' collection.
+    - name: created_by_user_id
+      type: update_column_payrolls_created_by_user_id
+      description: Update the 'created_by_user_id' column in the 'payrolls' collection.
+    - name: cycle_id
+      type: update_column_payrolls_cycle_id
+      description: Update the 'cycle_id' column in the 'payrolls' collection.
+    - name: date_type_id
+      type: update_column_payrolls_date_type_id
+      description: Update the 'date_type_id' column in the 'payrolls' collection.
+    - name: date_value
+      type: update_column_payrolls_date_value
+      description: Update the 'date_value' column in the 'payrolls' collection.
+    - name: employee_count
+      type: update_column_payrolls_employee_count
+      description: Update the 'employee_count' column in the 'payrolls' collection.
+    - name: estimated_hours
+      type: update_column_payrolls_estimated_hours
+      description: Update the 'estimated_hours' column in the 'payrolls' collection.
+    - name: estimated_revenue
+      type: update_column_payrolls_estimated_revenue
+      description: Update the 'estimated_revenue' column in the 'payrolls' collection.
+    - name: go_live_date
+      type: update_column_payrolls_go_live_date
+      description: Update the 'go_live_date' column in the 'payrolls' collection.
+    - name: id
+      type: update_column_payrolls_id
+      description: Update the 'id' column in the 'payrolls' collection.
+    - name: last_billed_date
+      type: update_column_payrolls_last_billed_date
+      description: Update the 'last_billed_date' column in the 'payrolls' collection.
+    - name: manager_user_id
+      type: update_column_payrolls_manager_user_id
+      description: Update the 'manager_user_id' column in the 'payrolls' collection.
+    - name: name
+      type: update_column_payrolls_name
+      description: Update the 'name' column in the 'payrolls' collection.
+    - name: new_employees
+      type: update_column_payrolls_new_employees
+      description: Update the 'new_employees' column in the 'payrolls' collection.
+    - name: parent_payroll_id
+      type: update_column_payrolls_parent_payroll_id
+      description: Update the 'parent_payroll_id' column in the 'payrolls' collection.
+    - name: payroll_system
+      type: update_column_payrolls_payroll_system
+      description: Update the 'payroll_system' column in the 'payrolls' collection.
+    - name: payslip_count
+      type: update_column_payrolls_payslip_count
+      description: Update the 'payslip_count' column in the 'payrolls' collection.
+    - name: primary_consultant_user_id
+      type: update_column_payrolls_primary_consultant_user_id
+      description: Update the 'primary_consultant_user_id' column in the 'payrolls'
+        collection.
+    - name: processing_days_before_eft
+      type: update_column_payrolls_processing_days_before_eft
+      description: Update the 'processing_days_before_eft' column in the 'payrolls'
+        collection.
+    - name: processing_time
+      type: update_column_payrolls_processing_time
+      description: Update the 'processing_time' column in the 'payrolls' collection.
+    - name: profit_margin
+      type: update_column_payrolls_profit_margin
+      description: Update the 'profit_margin' column in the 'payrolls' collection.
+    - name: status
+      type: update_column_payrolls_status
+      description: Update the 'status' column in the 'payrolls' collection.
+    - name: superseded_date
+      type: update_column_payrolls_superseded_date
+      description: Update the 'superseded_date' column in the 'payrolls' collection.
+    - name: terminated_employees
+      type: update_column_payrolls_terminated_employees
+      description: Update the 'terminated_employees' column in the 'payrolls' collection.
+    - name: updated_at
+      type: update_column_payrolls_updated_at
+      description: Update the 'updated_at' column in the 'payrolls' collection.
+    - name: version_number
+      type: update_column_payrolls_version_number
+      description: Update the 'version_number' column in the 'payrolls' collection.
+    - name: version_reason
+      type: update_column_payrolls_version_reason
+      description: Update the 'version_reason' column in the 'payrolls' collection.
+  graphql:
+    typeName: update_payrolls_by_id_update_columns
+    inputTypeName: update_payrolls_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_payrolls_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_payrolls_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actual_hours
+          - actual_revenue
+          - backup_consultant_user_id
+          - billing_status
+          - client_id
+          - created_at
+          - created_by_user_id
+          - cycle_id
+          - date_type_id
+          - date_value
+          - employee_count
+          - estimated_hours
+          - estimated_revenue
+          - go_live_date
+          - id
+          - last_billed_date
+          - manager_user_id
+          - name
+          - new_employees
+          - parent_payroll_id
+          - payroll_system
+          - payslip_count
+          - primary_consultant_user_id
+          - processing_days_before_eft
+          - processing_time
+          - profit_margin
+          - status
+          - superseded_date
+          - terminated_employees
+          - updated_at
+          - version_number
+          - version_reason
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_payrolls_by_id_response
+  description: Responses from the 'update_payrolls_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[payrolls!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_payrolls_by_id_response
+    inputTypeName: update_payrolls_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_payrolls_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_payrolls_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_payrolls_by_id
+  outputType: update_payrolls_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+      description: Unique identifier for the payroll
+    - name: post_check
+      type: payrolls_bool_exp
+      description: Update permission post-condition predicate over the 'payrolls' collection
+    - name: pre_check
+      type: payrolls_bool_exp
+      description: Update permission pre-condition predicate over the 'payrolls' collection
+    - name: update_columns
+      type: update_payrolls_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_payrolls_by_id
+  graphql:
+    rootFieldName: update_payrolls_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'payrolls' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_payrolls_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

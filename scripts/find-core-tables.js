@@ -51,7 +51,7 @@ async function findCoreTables() {
     }
 
     // Find types that look like database tables
-    const tableTypes = data.data.__schema.types.filter(type => 
+    const tableTypes = data.data.schema.types.filter(type => 
       type.fields && 
       type.fields.length > 0 && 
       !type.name.startsWith('__') &&

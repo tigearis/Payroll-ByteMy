@@ -1,0 +1,63 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: delete_app_settings_by_id_response
+  description: Responses from the 'delete_app_settings_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[app_settings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: delete_app_settings_by_id_response
+    inputTypeName: delete_app_settings_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: delete_app_settings_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: delete_app_settings_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: delete_app_settings_by_id
+  outputType: delete_app_settings_by_id_response!
+  arguments:
+    - name: key_id
+      type: string!
+      description: Unique identifier for application setting
+    - name: pre_check
+      type: app_settings_bool_exp
+      description: Delete permission predicate over the 'app_settings' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: delete_app_settings_by_id
+  graphql:
+    rootFieldName: delete_app_settings_by_id
+    rootFieldKind: Mutation
+  description: Delete any row on the 'app_settings' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: delete_app_settings_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

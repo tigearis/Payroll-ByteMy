@@ -1,0 +1,263 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: permission_overrides
+  description: User-specific and role-specific permission overrides
+  fields:
+    - name: conditions
+      type: json
+      description: JSON conditions for conditional permissions
+    - name: created_at
+      type: timestamptz!
+    - name: created_by
+      type: uuid
+    - name: expires_at
+      type: timestamptz
+      description: When this override expires (NULL for permanent)
+    - name: granted
+      type: boolean!
+      description: Whether the permission is granted (true) or denied (false)
+    - name: id
+      type: uuid!
+    - name: operation
+      type: string!
+    - name: reason
+      type: string
+    - name: resource
+      type: string!
+    - name: role
+      type: string
+      description: Role name for role-based overrides (mutually exclusive with user_id)
+    - name: updated_at
+      type: timestamptz!
+    - name: user_id
+      type: uuid
+      description: User ID for user-specific overrides (mutually exclusive with role)
+  graphql:
+    typeName: permission_overrides
+    inputTypeName: permission_overrides_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: permission_overrides
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: permission_overrides
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - conditions
+          - created_at
+          - created_by
+          - expires_at
+          - granted
+          - id
+          - operation
+          - reason
+          - resource
+          - role
+          - updated_at
+          - user_id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: permission_overrides_bool_exp
+  operand:
+    object:
+      type: permission_overrides
+      comparableFields:
+        - fieldName: conditions
+          booleanExpressionType: jsonb_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: created_by
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: expires_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: granted
+          booleanExpressionType: bool_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: operation
+          booleanExpressionType: text_bool_exp
+        - fieldName: reason
+          booleanExpressionType: text_bool_exp
+        - fieldName: resource
+          booleanExpressionType: text_bool_exp
+        - fieldName: role
+          booleanExpressionType: text_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: user_id
+          booleanExpressionType: uuid_bool_exp
+      comparableRelationships:
+        - relationshipName: user
+        - relationshipName: user_by_user_id
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: permission_overrides_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: permission_overrides_agg_exp
+  operand:
+    object:
+      aggregatedType: permission_overrides
+      aggregatableFields:
+        - fieldName: conditions
+          aggregateExpression: jsonb_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: created_by
+          aggregateExpression: uuid_agg_exp
+        - fieldName: expires_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: granted
+          aggregateExpression: bool_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: operation
+          aggregateExpression: text_agg_exp
+        - fieldName: reason
+          aggregateExpression: text_agg_exp
+        - fieldName: resource
+          aggregateExpression: text_agg_exp
+        - fieldName: role
+          aggregateExpression: text_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: user_id
+          aggregateExpression: uuid_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: permission_overrides_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: permission_overrides_order_by_exp
+  operand:
+    object:
+      orderedType: permission_overrides
+      orderableFields:
+        - fieldName: conditions
+          orderByExpression: json_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: created_by
+          orderByExpression: uuid_order_by_exp
+        - fieldName: expires_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: granted
+          orderByExpression: boolean_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: operation
+          orderByExpression: string_order_by_exp
+        - fieldName: reason
+          orderByExpression: string_order_by_exp
+        - fieldName: resource
+          orderByExpression: string_order_by_exp
+        - fieldName: role
+          orderByExpression: string_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: user_id
+          orderByExpression: uuid_order_by_exp
+      orderableRelationships:
+        - relationshipName: user
+        - relationshipName: user_by_user_id
+  graphql:
+    expressionTypeName: permission_overrides_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: permission_overrides
+  objectType: permission_overrides
+  source:
+    dataConnectorName: payroll
+    collection: permission_overrides
+  filterExpressionType: permission_overrides_bool_exp
+  aggregateExpression: permission_overrides_agg_exp
+  orderByExpression: permission_overrides_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: permission_overrides
+      subscription:
+        rootField: permission_overrides
+    selectUniques:
+      - queryRootField: permission_overrides_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: permission_overrides_by_id
+    filterInputTypeName: permission_overrides_filter_input
+    aggregate:
+      queryRootField: permission_overrides_aggregate
+      subscription:
+        rootField: permission_overrides_aggregate
+  description: User-specific and role-specific permission overrides
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: permission_overrides
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: permission_overrides
+  target:
+    model:
+      name: users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: created_by
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user_by_user_id
+  sourceType: permission_overrides
+  target:
+    model:
+      name: users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: user_id
+      target:
+        modelField:
+          - fieldName: id
+

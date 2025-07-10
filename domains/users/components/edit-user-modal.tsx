@@ -1,12 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, User, Mail, Shield, Users } from "lucide-react";
+import { User, Mail, Shield, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Button } from "@/components/ui/button";
+import { ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
 import {
   Dialog,
   DialogContent,
@@ -39,7 +41,6 @@ import {
   Manager,
   UserPermissions,
 } from "@/hooks/use-user-management";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 
 const editUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -196,7 +197,7 @@ function EditUserModalInner({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
@@ -370,7 +371,7 @@ function EditUserModalInner({
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <ByteMySpinner size="sm" className="mr-2" />
                 )}
                 Update User
               </Button>

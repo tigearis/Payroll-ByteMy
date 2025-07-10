@@ -1,14 +1,14 @@
 // components/urgent-alerts.tsx
 "use client";
 
+import { useQuery } from "@apollo/client";
 import { format } from "date-fns";
 import { CalendarDays, User } from "lucide-react";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 import { GetUserUpcomingPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useStrategicQuery } from "@/hooks/use-strategic-query";
 import {
   UserUpcomingPayroll,
   UserUpcomingPayrollsData,
@@ -71,9 +71,8 @@ function UrgentAlertsInner() {
   const { currentUserId, loading: userLoading } = useCurrentUser();
   const today = new Date().toISOString().split("T")[0];
 
-  const { data, loading, error } = useStrategicQuery<UserUpcomingPayrollsData>(
+  const { data, loading, error } = useQuery<UserUpcomingPayrollsData>(
     GetUserUpcomingPayrollsDocument,
-    "payrolls",
     {
       variables: {
         userId: currentUserId,
@@ -81,6 +80,7 @@ function UrgentAlertsInner() {
         limit: 5,
       },
       skip: !currentUserId,
+      errorPolicy: "all",
     }
   );
 

@@ -11,12 +11,16 @@ configuration:
       custom_name: deactivatedAt
     deactivated_by:
       custom_name: deactivatedBy
+    default_admin_time_percentage:
+      custom_name: defaultAdminTimePercentage
     is_active:
       custom_name: isActive
     is_staff:
       custom_name: isStaff
     manager_id:
       custom_name: managerId
+    position:
+      custom_name: position
     updated_at:
       custom_name: updatedAt
   custom_column_names:
@@ -24,9 +28,11 @@ configuration:
     created_at: createdAt
     deactivated_at: deactivatedAt
     deactivated_by: deactivatedBy
+    default_admin_time_percentage: defaultAdminTimePercentage
     is_active: isActive
     is_staff: isStaff
     manager_id: managerId
+    position: position
     updated_at: updatedAt
   custom_name: users
   custom_root_fields:
@@ -49,7 +55,7 @@ object_relationships:
         remote_table:
           name: users
           schema: public
-  - name: user
+  - name: statusChangedByUser
     using:
       foreign_key_constraint_on: status_changed_by
 array_relationships:
@@ -75,6 +81,27 @@ array_relationships:
         column: backup_consultant_user_id
         table:
           name: payrolls
+          schema: public
+  - name: billingItems
+    using:
+      foreign_key_constraint_on:
+        column: approved_by
+        table:
+          name: billing_items
+          schema: public
+  - name: billingItemsConfirmedBy
+    using:
+      foreign_key_constraint_on:
+        column: confirmed_by
+        table:
+          name: billing_items
+          schema: public
+  - name: billingItemsUserId
+    using:
+      foreign_key_constraint_on:
+        column: staff_user_id
+        table:
+          name: billing_items
           schema: public
   - name: consultantAssignments
     using:
@@ -110,6 +137,34 @@ array_relationships:
         column: created_by
         table:
           name: permission_overrides
+          schema: public
+  - name: emailDrafts
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: email_drafts
+          schema: public
+  - name: emailSendLogs
+    using:
+      foreign_key_constraint_on:
+        column: sender_user_id
+        table:
+          name: email_send_logs
+          schema: public
+  - name: emailTemplates
+    using:
+      foreign_key_constraint_on:
+        column: approved_by_user_id
+        table:
+          name: email_templates
+          schema: public
+  - name: emailTemplatesCreatedByUserId
+    using:
+      foreign_key_constraint_on:
+        column: created_by_user_id
+        table:
+          name: email_templates
           schema: public
   - name: managedPayrolls
     using:
@@ -169,6 +224,20 @@ array_relationships:
         table:
           name: permission_audit_log
           schema: public
+  - name: timeEntries
+    using:
+      foreign_key_constraint_on:
+        column: staff_user_id
+        table:
+          name: time_entries
+          schema: public
+  - name: userEmailTemplateFavorites
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: user_email_template_favorites
+          schema: public
   - name: userInvitations
     using:
       foreign_key_constraint_on:
@@ -190,7 +259,7 @@ array_relationships:
         table:
           name: user_invitations
           schema: public
-  - name: userInvitationsMangerId
+  - name: userInvitationsManagerId
     using:
       foreign_key_constraint_on:
         column: manager_id
@@ -218,6 +287,13 @@ array_relationships:
         table:
           name: permission_overrides
           schema: public
+  - name: userSkills
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: user_skills
+          schema: public
   - name: userWorkSchedules
     using:
       foreign_key_constraint_on:
@@ -225,7 +301,7 @@ array_relationships:
         table:
           name: work_schedule
           schema: public
-  - name: users
+  - name: usersStatusChangedBy
     using:
       foreign_key_constraint_on:
         column: status_changed_by
@@ -266,6 +342,20 @@ insert_permissions:
         - clerk_user_id
     comment: Org admins can create any users
 select_permissions:
+  - role: ai_assistant
+    permission:
+      columns:
+        - id
+        - name
+        - email
+        - role
+        - is_active
+        - is_staff
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: AI Assistant can view basic user data for analysis (restricted fields only, read-only)
   - role: consultant
     permission:
       columns:
@@ -273,6 +363,7 @@ select_permissions:
         - created_at
         - deactivated_at
         - deactivated_by
+        - default_admin_time_percentage
         - email
         - id
         - image
@@ -280,6 +371,7 @@ select_permissions:
         - is_staff
         - manager_id
         - name
+        - position
         - role
         - updated_at
         - username
@@ -295,6 +387,7 @@ select_permissions:
           - originalConsultantAssignments:
               original_consultant_id:
                 _eq: X-Hasura-User-Id
+      allow_aggregations: true
     comment: Consultants can view their own profile, their team members, and users from assigned payrolls - no email access for security
   - role: developer
     permission:
@@ -309,6 +402,7 @@ select_permissions:
         - created_at
         - deactivated_at
         - deactivated_by
+        - default_admin_time_percentage
         - email
         - id
         - image
@@ -316,6 +410,7 @@ select_permissions:
         - is_staff
         - manager_id
         - name
+        - position
         - role
         - updated_at
         - username
@@ -329,6 +424,7 @@ select_permissions:
         - created_at
         - deactivated_at
         - deactivated_by
+        - default_admin_time_percentage
         - email
         - id
         - image
@@ -336,6 +432,7 @@ select_permissions:
         - is_staff
         - manager_id
         - name
+        - position
         - role
         - updated_at
         - username
@@ -349,6 +446,7 @@ select_permissions:
         - created_at
         - deactivated_at
         - deactivated_by
+        - default_admin_time_percentage
         - email
         - id
         - image
@@ -356,10 +454,12 @@ select_permissions:
         - is_staff
         - manager_id
         - name
+        - position
         - role
         - updated_at
         - username
       filter: {}
+      allow_aggregations: true
     comment: Viewers can see basic user information
 update_permissions:
   - role: consultant

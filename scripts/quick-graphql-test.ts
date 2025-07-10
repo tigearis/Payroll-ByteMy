@@ -11,8 +11,8 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 
 // ES module equivalent of __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = dirname(filename);
 
 // Load environment variables
 config({ path: resolve(__dirname, '../.env') });

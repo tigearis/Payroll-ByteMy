@@ -1,0 +1,94 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_user_skills_object
+  fields:
+    - name: proficiency_level
+      type: string
+    - name: skill_name
+      type: string
+    - name: user_id
+      type: uuid
+  graphql:
+    typeName: insert_user_skills_object
+    inputTypeName: insert_user_skills_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_user_skills_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_user_skills_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - proficiency_level
+          - skill_name
+          - user_id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_user_skills_response
+  description: Responses from the 'insert_user_skills' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[user_skills!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_user_skills_response
+    inputTypeName: insert_user_skills_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_user_skills_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_user_skills_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_user_skills
+  outputType: insert_user_skills_response!
+  arguments:
+    - name: objects
+      type: "[insert_user_skills_object!]!"
+    - name: post_check
+      type: user_skills_bool_exp
+      description: Insert permission predicate over the 'user_skills' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_user_skills
+  graphql:
+    rootFieldName: insert_user_skills
+    rootFieldKind: Mutation
+  description: Insert into the user_skills table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_user_skills
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -202,9 +202,9 @@ query GetPermissionAuditLogs(
 # ================================
 
 # Get pending invitations (admin view)
-query GetPendingInvitations($limit: Int = 50, $offset: Int = 0) {
+query GetPendingInvitations($limit: Int = 50, $offset: Int = 0, $now: timestamptz!) {
   userInvitations(
-    where: { invitationStatus: { _eq: "pending" }, expiresAt: { _gt: "now()" } }
+    where: { invitationStatus: { _eq: "pending" }, expiresAt: { _gt: $now } }
     orderBy: { createdAt: DESC }
     limit: $limit
     offset: $offset
@@ -232,7 +232,7 @@ query GetInvitationHistory($email: String!, $limit: Int = 10) {
     firstName
     lastName
     invitedRole
-    status
+    invitationStatus
     invitedAt
     acceptedAt
     expiresAt
@@ -260,7 +260,7 @@ query GetInvitationsBySender($invitedBy: uuid!, $limit: Int = 50) {
     firstName
     lastName
     invitedRole
-    status
+    invitationStatus
     invitedAt
     acceptedAt
     expiresAt
@@ -272,10 +272,10 @@ query GetInvitationsBySender($invitedBy: uuid!, $limit: Int = 50) {
 }
 
 # Get expired invitations for cleanup
-query GetExpiredInvitations {
+query GetExpiredInvitations($now: timestamptz!) {
   userInvitations(
     where: {
-      _or: [{ status: { _eq: "expired" } }, { expiresAt: { _lt: "now()" } }]
+      _or: [{ status: { _eq: "expired" } }, { expiresAt: { _lt: $now } }]
     }
     orderBy: { expiresAt: DESC }
   ) {
@@ -369,9 +369,9 @@ query GetInvitationsWithStatus(
 }
 
 # Get invitation dashboard statistics
-query GetInvitationDashboardStats {
+query GetInvitationDashboardStats($now: timestamptz!, $sevenDaysFromNow: timestamptz!) {
   pending: userInvitationsAggregate(
-    where: { invitationStatus: { _eq: "pending" }, expiresAt: { _gt: "now()" } }
+    where: { invitationStatus: { _eq: "pending" }, expiresAt: { _gt: $now } }
   ) {
     aggregate { count }
   }
@@ -397,10 +397,29 @@ query GetInvitationDashboardStats {
   expiringSoon: userInvitationsAggregate(
     where: {
       invitationStatus: { _eq: "pending" }
-      expiresAt: { _gt: "now()", _lt: "now() + interval '7 days'" }
+      expiresAt: { _gt: $now, _lt: $sevenDaysFromNow }
     }
   ) {
     aggregate { count }
+  }
+
+  recentInvitations: userInvitations(
+    orderBy: { createdAt: DESC }
+    limit: 10
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitedRole
+    invitationStatus
+    createdAt
+    expiresAt
+    invitedByUser {
+      id
+      name
+      email
+    }
   }
 }
 
@@ -441,13 +460,13 @@ query GetInvitationAuditHistory(
 }
 
 # Get expiring invitations for notifications
-query GetExpiringInvitations($daysUntilExpiry: Int = 7) {
+query GetExpiringInvitations($now: timestamptz!, $futureDate: timestamptz!) {
   userInvitations(
     where: {
       invitationStatus: { _eq: "pending" }
       expiresAt: {
-        _gt: "now()"
-        _lt: "now() + interval '${daysUntilExpiry} days'"
+        _gt: $now
+        _lt: $futureDate
       }
     }
     orderBy: { expiresAt: ASC }
@@ -464,15 +483,15 @@ query SearchInvitations(
   userInvitations(
     where: {
       _or: [
-        { email: { _ilike: "%${searchTerm}%" } }
-        { firstName: { _ilike: "%${searchTerm}%" } }
-        { lastName: { _ilike: "%${searchTerm}%" } }
+        { email: { _ilike: $searchTerm } }
+        { firstName: { _ilike: $searchTerm } }
+        { lastName: { _ilike: $searchTerm } }
       ]
     }
     orderBy: { createdAt: DESC }
     limit: $limit
   ) {
-    ...UserInvitationCore
+    ...UserInvitationWithDetails
   }
 }
 
@@ -527,7 +546,7 @@ query GetUsersByStatus(
 }
 
 # Get user status dashboard statistics
-query GetUserStatusDashboardStats {
+query GetUserStatusDashboardStats($thirtyDaysAgo: timestamptz = "2024-01-01T00:00:00Z") {
   active: usersAggregate(
     where: { status: { _eq: "active" } }
   ) {
@@ -553,7 +572,7 @@ query GetUserStatusDashboardStats {
   }
   
   recentStatusChanges: users(
-    where: { statusChangedAt: { _gte: "now() - interval '30 days'" } }
+    where: { statusChangedAt: { _gte: $thirtyDaysAgo } }
     orderBy: { statusChangedAt: DESC }
     limit: 10
   ) {

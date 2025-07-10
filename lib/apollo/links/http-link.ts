@@ -31,6 +31,8 @@ export function createUnifiedHttpLink(): ApolloLink {
     throw new Error("NEXT_PUBLIC_HASURA_GRAPHQL_URL is not defined");
   }
 
+  // Direct connection to Hasura Cloud instance
+
   return createHttpLink({
     uri,
     credentials: "include",

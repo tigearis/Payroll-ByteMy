@@ -1,0 +1,121 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_email_drafts_object
+  fields:
+    - name: business_context
+      type: json
+    - name: created_at
+      type: timestamptz
+    - name: html_content
+      type: string
+    - name: id
+      type: uuid
+    - name: recipient_emails
+      type: "[string]!"
+    - name: scheduled_for
+      type: timestamptz
+    - name: subject
+      type: string
+    - name: template_id
+      type: uuid
+    - name: text_content
+      type: string
+    - name: updated_at
+      type: timestamptz
+    - name: user_id
+      type: uuid!
+    - name: variable_values
+      type: json
+  graphql:
+    typeName: insert_email_drafts_object
+    inputTypeName: insert_email_drafts_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_email_drafts_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_email_drafts_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - business_context
+          - created_at
+          - html_content
+          - id
+          - recipient_emails
+          - scheduled_for
+          - subject
+          - template_id
+          - text_content
+          - updated_at
+          - user_id
+          - variable_values
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_email_drafts_response
+  description: Responses from the 'insert_email_drafts' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[email_drafts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_email_drafts_response
+    inputTypeName: insert_email_drafts_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_email_drafts_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_email_drafts_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_email_drafts
+  outputType: insert_email_drafts_response!
+  arguments:
+    - name: objects
+      type: "[insert_email_drafts_object!]!"
+    - name: post_check
+      type: email_drafts_bool_exp
+      description: Insert permission predicate over the 'email_drafts' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_email_drafts
+  graphql:
+    rootFieldName: insert_email_drafts
+    rootFieldKind: Mutation
+  description: Insert into the email_drafts table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_email_drafts
+  permissions:
+    - role: admin
+      allowExecution: true
+

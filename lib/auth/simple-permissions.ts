@@ -1,41 +1,105 @@
 /**
- * Minimal permissions for backward compatibility
+ * Simple Permissions - Hierarchical Integration
+ * 
+ * Bridge between simple auth components and hierarchical permission system.
+ * Provides role-level checking with hierarchical role inheritance.
  */
 
-// Simple role type
-export type SimpleRole = "developer" | "org_admin" | "manager" | "consultant" | "viewer";
+import type { UserRole } from "@/lib/permissions/hierarchical-permissions";
 
-// Always return true for permission checks (simplified)
-export function hasRoleLevel(userRole: SimpleRole, requiredRole: SimpleRole): boolean {
-  return true;
+// Simple role type for backward compatibility
+export type SimpleRole = UserRole;
+
+/**
+ * Role hierarchy levels for comparison
+ */
+const ROLE_LEVELS: Record<UserRole, number> = {
+  viewer: 1,
+  consultant: 2,
+  manager: 3,
+  org_admin: 4,
+  developer: 5
+};
+
+/**
+ * Check if user has a specific role level or higher
+ * Uses hierarchical role inheritance
+ */
+export function hasRoleLevel(userRole: UserRole | null, requiredRole: UserRole): boolean {
+  if (!userRole) return false;
+  
+  const userLevel = ROLE_LEVELS[userRole] || 0;
+  const requiredLevel = ROLE_LEVELS[requiredRole] || 0;
+  
+  return userLevel >= requiredLevel;
 }
 
-export function getPermissionsForRole(role: SimpleRole): string[] {
-  return []; // No permissions needed in simplified system
+/**
+ * Check if user has admin privileges (org_admin or developer)
+ */
+export function isAdmin(userRole: UserRole | null): boolean {
+  return hasRoleLevel(userRole, 'org_admin');
 }
 
-export function sanitizeRole(role: unknown): SimpleRole {
-  return "viewer"; // Safe default
+/**
+ * Check if user has manager privileges (manager or higher)
+ */
+export function isManager(userRole: UserRole | null): boolean {
+  return hasRoleLevel(userRole, 'manager');
 }
 
-// Legacy functions for backward compatibility
-export function isAdmin(role: SimpleRole): boolean {
-  return true;
+/**
+ * Check if user has developer privileges
+ */
+export function isDeveloper(userRole: UserRole | null): boolean {
+  return userRole === 'developer';
 }
 
-export function isManager(role: SimpleRole): boolean {
-  return true;
+/**
+ * Check if user is staff (consultant or higher)
+ */
+export function isStaff(userRole: UserRole | null): boolean {
+  return hasRoleLevel(userRole, 'consultant');
 }
 
-export function canManageUsers(role: SimpleRole): boolean {
-  return true;
+/**
+ * Get display name for role
+ */
+export function getRoleDisplayName(role: UserRole): string {
+  const roleNames: Record<UserRole, string> = {
+    developer: 'Developer',
+    org_admin: 'Administrator',
+    manager: 'Manager', 
+    consultant: 'Consultant',
+    viewer: 'Viewer'
+  };
+  
+  return roleNames[role] || role;
 }
 
-// Additional missing functions for backward compatibility
-export function getAllowedRoles(role: SimpleRole): SimpleRole[] {
-  return ["viewer", "consultant", "manager", "org_admin", "developer"];
+/**
+ * Get role hierarchy level
+ */
+export function getRoleLevel(role: UserRole): number {
+  return ROLE_LEVELS[role] || 0;
 }
 
-export function getAssignableRoles(role: SimpleRole): SimpleRole[] {
-  return ["viewer", "consultant", "manager", "org_admin", "developer"];
+/**
+ * Get all roles at or below a certain level
+ */
+export function getRolesAtOrBelow(role: UserRole): UserRole[] {
+  const targetLevel = ROLE_LEVELS[role];
+  return Object.entries(ROLE_LEVELS)
+    .filter(([_, level]) => level <= targetLevel)
+    .map(([roleName]) => roleName as UserRole);
+}
+
+/**
+ * Get all roles at or above a certain level
+ */
+export function getRolesAtOrAbove(role: UserRole): UserRole[] {
+  const targetLevel = ROLE_LEVELS[role];
+  return Object.entries(ROLE_LEVELS)
+    .filter(([_, level]) => level >= targetLevel)
+    .map(([roleName]) => roleName as UserRole);
 }

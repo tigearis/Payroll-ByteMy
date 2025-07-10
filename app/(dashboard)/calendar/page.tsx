@@ -4,5 +4,9 @@
 import { PayrollSchedule } from "@/domains/payrolls/components";
 
 export default function CalendarPage() {
-  return <PayrollSchedule />;
+  return (
+    <div className="container mx-auto py-6 space-y-6">
+      <PayrollSchedule />
+    </div>
+  );
 }

@@ -1,0 +1,208 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: role_permissions
+  fields:
+    - name: conditions
+      type: json
+    - name: created_at
+      type: timestamptz!
+    - name: id
+      type: uuid!
+    - name: permission_id
+      type: uuid!
+    - name: role_id
+      type: uuid!
+    - name: updated_at
+      type: timestamptz!
+  graphql:
+    typeName: role_permissions
+    inputTypeName: role_permissions_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: role_permissions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: role_permissions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - conditions
+          - created_at
+          - id
+          - permission_id
+          - role_id
+          - updated_at
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: role_permissions_bool_exp
+  operand:
+    object:
+      type: role_permissions
+      comparableFields:
+        - fieldName: conditions
+          booleanExpressionType: jsonb_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: permission_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: role_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+      comparableRelationships:
+        - relationshipName: permission
+        - relationshipName: role
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: role_permissions_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: role_permissions_agg_exp
+  operand:
+    object:
+      aggregatedType: role_permissions
+      aggregatableFields:
+        - fieldName: conditions
+          aggregateExpression: jsonb_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: permission_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: role_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: role_permissions_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: role_permissions_order_by_exp
+  operand:
+    object:
+      orderedType: role_permissions
+      orderableFields:
+        - fieldName: conditions
+          orderByExpression: json_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: permission_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: role_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+      orderableRelationships:
+        - relationshipName: permission
+        - relationshipName: role
+  graphql:
+    expressionTypeName: role_permissions_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: role_permissions
+  objectType: role_permissions
+  source:
+    dataConnectorName: payroll
+    collection: role_permissions
+  filterExpressionType: role_permissions_bool_exp
+  aggregateExpression: role_permissions_agg_exp
+  orderByExpression: role_permissions_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: role_permissions
+      subscription:
+        rootField: role_permissions
+    selectUniques:
+      - queryRootField: role_permissions_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: role_permissions_by_id
+      - queryRootField: role_permissions_by_role_permissions_role_id_permission_id_key
+        uniqueIdentifier:
+          - permission_id
+          - role_id
+        subscription:
+          rootField: role_permissions_by_role_permissions_role_id_permission_id_key
+    filterInputTypeName: role_permissions_filter_input
+    aggregate:
+      queryRootField: role_permissions_aggregate
+      subscription:
+        rootField: role_permissions_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: role_permissions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: permission
+  sourceType: role_permissions
+  target:
+    model:
+      name: permissions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: permission_id
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: role
+  sourceType: role_permissions
+  target:
+    model:
+      name: roles
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: role_id
+      target:
+        modelField:
+          - fieldName: id
+

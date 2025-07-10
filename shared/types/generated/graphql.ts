@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-06-29T05:55:23.194Z
+ * Generated: 2025-07-10T12:45:08.625Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -57,18 +57,36 @@ export type Scalars = {
   permission_action: { input: any; output: any; }
   timestamp: { input: any; output: any; }
   timestamptz: { input: string; output: string; }
+  user_position: { input: any; output: any; }
   user_role: { input: any; output: any; }
   user_status_enum: { input: any; output: any; }
   uuid: { input: string; output: string; }
 };
 
-export type AffectedAssignment = {
-  __typename?: 'AffectedAssignment';
-  adjustedEftDate: Scalars['String']['output'];
+export type AssignmentCalendarInput = {
+  endDate: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+export type AssignmentCalendarResponse = {
+  __typename?: 'AssignmentCalendarResponse';
+  calendarDays: Array<CalendarDay>;
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type AssignmentDetails = {
+  __typename?: 'AssignmentDetails';
+  clientName: Scalars['String']['output'];
+  eftDate: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  newConsultantId: Scalars['String']['output'];
-  originalConsultantId: Scalars['String']['output'];
-  payrollDateId: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  priority: Scalars['String']['output'];
+  processingDaysBeforeEft: Scalars['Int']['output'];
+  processingTime: Scalars['Float']['output'];
+  status: Scalars['String']['output'];
 };
 
 export type AuditEventInput = {
@@ -99,399 +117,6 @@ export type BigintComparisonExp = {
   _lte?: InputMaybe<Scalars['bigint']['input']>;
   _neq?: InputMaybe<Scalars['bigint']['input']>;
   _nin?: InputMaybe<Array<Scalars['bigint']['input']>>;
-};
-
-/** columns and relationships of "billing_invoice_item" */
-export type BillingInvoiceItem = {
-  __typename?: 'BillingInvoiceItem';
-  amount?: Maybe<Scalars['numeric']['output']>;
-  /** An object relationship */
-  billingInvoice: BillingInvoice;
-  createdAt?: Maybe<Scalars['timestamptz']['output']>;
-  description: Scalars['String']['output'];
-  id: Scalars['uuid']['output'];
-  invoiceId: Scalars['uuid']['output'];
-  quantity: Scalars['Int']['output'];
-  unitPrice: Scalars['numeric']['output'];
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-};
-
-/** aggregated selection of "billing_invoice_item" */
-export type BillingInvoiceItemAggregate = {
-  __typename?: 'BillingInvoiceItemAggregate';
-  aggregate?: Maybe<BillingInvoiceItemAggregateFields>;
-  nodes: Array<BillingInvoiceItem>;
-};
-
-export type BillingInvoiceItemAggregateBoolExp = {
-  count?: InputMaybe<BillingInvoiceItemAggregateBoolExpCount>;
-};
-
-/** aggregate fields of "billing_invoice_item" */
-export type BillingInvoiceItemAggregateFields = {
-  __typename?: 'BillingInvoiceItemAggregateFields';
-  avg?: Maybe<BillingInvoiceItemAvgFields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<BillingInvoiceItemMaxFields>;
-  min?: Maybe<BillingInvoiceItemMinFields>;
-  stddev?: Maybe<BillingInvoiceItemStddevFields>;
-  stddevPop?: Maybe<BillingInvoiceItemStddevPopFields>;
-  stddevSamp?: Maybe<BillingInvoiceItemStddevSampFields>;
-  sum?: Maybe<BillingInvoiceItemSumFields>;
-  varPop?: Maybe<BillingInvoiceItemVarPopFields>;
-  varSamp?: Maybe<BillingInvoiceItemVarSampFields>;
-  variance?: Maybe<BillingInvoiceItemVarianceFields>;
-};
-
-
-/** aggregate fields of "billing_invoice_item" */
-export type BillingInvoiceItemAggregateFieldsCountArgs = {
-  columns?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** order by aggregate values of table "billing_invoice_item" */
-export type BillingInvoiceItemAggregateOrderBy = {
-  avg?: InputMaybe<BillingInvoiceItemAvgOrderBy>;
-  count?: InputMaybe<OrderBy>;
-  max?: InputMaybe<BillingInvoiceItemMaxOrderBy>;
-  min?: InputMaybe<BillingInvoiceItemMinOrderBy>;
-  stddev?: InputMaybe<BillingInvoiceItemStddevOrderBy>;
-  stddevPop?: InputMaybe<BillingInvoiceItemStddevPopOrderBy>;
-  stddevSamp?: InputMaybe<BillingInvoiceItemStddevSampOrderBy>;
-  sum?: InputMaybe<BillingInvoiceItemSumOrderBy>;
-  varPop?: InputMaybe<BillingInvoiceItemVarPopOrderBy>;
-  varSamp?: InputMaybe<BillingInvoiceItemVarSampOrderBy>;
-  variance?: InputMaybe<BillingInvoiceItemVarianceOrderBy>;
-};
-
-/** input type for inserting array relation for remote table "billing_invoice_item" */
-export type BillingInvoiceItemArrRelInsertInput = {
-  data: Array<BillingInvoiceItemInsertInput>;
-  /** upsert condition */
-  onConflict?: InputMaybe<BillingInvoiceItemOnConflict>;
-};
-
-/** aggregate avg on columns */
-export type BillingInvoiceItemAvgFields = {
-  __typename?: 'BillingInvoiceItemAvgFields';
-  amount?: Maybe<Scalars['Float']['output']>;
-  quantity?: Maybe<Scalars['Float']['output']>;
-  unitPrice?: Maybe<Scalars['Float']['output']>;
-};
-
-/** order by avg() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemAvgOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** Boolean expression to filter rows from the table "billing_invoice_item". All fields are combined with a logical 'AND'. */
-export type BillingInvoiceItemBoolExp = {
-  _and?: InputMaybe<Array<BillingInvoiceItemBoolExp>>;
-  _not?: InputMaybe<BillingInvoiceItemBoolExp>;
-  _or?: InputMaybe<Array<BillingInvoiceItemBoolExp>>;
-  amount?: InputMaybe<NumericComparisonExp>;
-  billingInvoice?: InputMaybe<BillingInvoiceBoolExp>;
-  createdAt?: InputMaybe<TimestamptzComparisonExp>;
-  description?: InputMaybe<StringComparisonExp>;
-  id?: InputMaybe<UuidComparisonExp>;
-  invoiceId?: InputMaybe<UuidComparisonExp>;
-  quantity?: InputMaybe<IntComparisonExp>;
-  unitPrice?: InputMaybe<NumericComparisonExp>;
-  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
-
-/** unique or primary key constraints on table "billing_invoice_item" */
-export type BillingInvoiceItemConstraint =
-  /** unique or primary key constraint on columns "id" */
-  | 'billing_invoice_item_pkey'
-  | '%future added value';
-
-/** input type for incrementing numeric columns in table "billing_invoice_item" */
-export type BillingInvoiceItemIncInput = {
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-};
-
-/** input type for inserting data into table "billing_invoice_item" */
-export type BillingInvoiceItemInsertInput = {
-  billingInvoice?: InputMaybe<BillingInvoiceObjRelInsertInput>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** aggregate max on columns */
-export type BillingInvoiceItemMaxFields = {
-  __typename?: 'BillingInvoiceItemMaxFields';
-  amount?: Maybe<Scalars['numeric']['output']>;
-  createdAt?: Maybe<Scalars['timestamptz']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['uuid']['output']>;
-  invoiceId?: Maybe<Scalars['uuid']['output']>;
-  quantity?: Maybe<Scalars['Int']['output']>;
-  unitPrice?: Maybe<Scalars['numeric']['output']>;
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-};
-
-/** order by max() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemMaxOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  createdAt?: InputMaybe<OrderBy>;
-  description?: InputMaybe<OrderBy>;
-  id?: InputMaybe<OrderBy>;
-  invoiceId?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-  updatedAt?: InputMaybe<OrderBy>;
-};
-
-/** aggregate min on columns */
-export type BillingInvoiceItemMinFields = {
-  __typename?: 'BillingInvoiceItemMinFields';
-  amount?: Maybe<Scalars['numeric']['output']>;
-  createdAt?: Maybe<Scalars['timestamptz']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['uuid']['output']>;
-  invoiceId?: Maybe<Scalars['uuid']['output']>;
-  quantity?: Maybe<Scalars['Int']['output']>;
-  unitPrice?: Maybe<Scalars['numeric']['output']>;
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-};
-
-/** order by min() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemMinOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  createdAt?: InputMaybe<OrderBy>;
-  description?: InputMaybe<OrderBy>;
-  id?: InputMaybe<OrderBy>;
-  invoiceId?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-  updatedAt?: InputMaybe<OrderBy>;
-};
-
-/** response of any mutation on the table "billing_invoice_item" */
-export type BillingInvoiceItemMutationResponse = {
-  __typename?: 'BillingInvoiceItemMutationResponse';
-  /** number of rows affected by the mutation */
-  affectedRows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<BillingInvoiceItem>;
-};
-
-/** on_conflict condition type for table "billing_invoice_item" */
-export type BillingInvoiceItemOnConflict = {
-  constraint: BillingInvoiceItemConstraint;
-  updateColumns?: Array<BillingInvoiceItemUpdateColumn>;
-  where?: InputMaybe<BillingInvoiceItemBoolExp>;
-};
-
-/** Ordering options when selecting data from "billing_invoice_item". */
-export type BillingInvoiceItemOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  billingInvoice?: InputMaybe<BillingInvoiceOrderBy>;
-  createdAt?: InputMaybe<OrderBy>;
-  description?: InputMaybe<OrderBy>;
-  id?: InputMaybe<OrderBy>;
-  invoiceId?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-  updatedAt?: InputMaybe<OrderBy>;
-};
-
-/** primary key columns input for table: billing_invoice_item */
-export type BillingInvoiceItemPkColumnsInput = {
-  id: Scalars['uuid']['input'];
-};
-
-/** select columns of table "billing_invoice_item" */
-export type BillingInvoiceItemSelectColumn =
-  /** column name */
-  | 'amount'
-  /** column name */
-  | 'createdAt'
-  /** column name */
-  | 'description'
-  /** column name */
-  | 'id'
-  /** column name */
-  | 'invoiceId'
-  /** column name */
-  | 'quantity'
-  /** column name */
-  | 'unitPrice'
-  /** column name */
-  | 'updatedAt'
-  | '%future added value';
-
-/** input type for updating data in table "billing_invoice_item" */
-export type BillingInvoiceItemSetInput = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** aggregate stddev on columns */
-export type BillingInvoiceItemStddevFields = {
-  __typename?: 'BillingInvoiceItemStddevFields';
-  amount?: Maybe<Scalars['Float']['output']>;
-  quantity?: Maybe<Scalars['Float']['output']>;
-  unitPrice?: Maybe<Scalars['Float']['output']>;
-};
-
-/** order by stddev() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemStddevOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** aggregate stddevPop on columns */
-export type BillingInvoiceItemStddevPopFields = {
-  __typename?: 'BillingInvoiceItemStddevPopFields';
-  amount?: Maybe<Scalars['Float']['output']>;
-  quantity?: Maybe<Scalars['Float']['output']>;
-  unitPrice?: Maybe<Scalars['Float']['output']>;
-};
-
-/** order by stddevPop() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemStddevPopOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** aggregate stddevSamp on columns */
-export type BillingInvoiceItemStddevSampFields = {
-  __typename?: 'BillingInvoiceItemStddevSampFields';
-  amount?: Maybe<Scalars['Float']['output']>;
-  quantity?: Maybe<Scalars['Float']['output']>;
-  unitPrice?: Maybe<Scalars['Float']['output']>;
-};
-
-/** order by stddevSamp() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemStddevSampOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** Streaming cursor of the table "billing_invoice_item" */
-export type BillingInvoiceItemStreamCursorInput = {
-  /** Stream column input with initial value */
-  initialValue: BillingInvoiceItemStreamCursorValueInput;
-  /** cursor ordering */
-  ordering?: InputMaybe<CursorOrdering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type BillingInvoiceItemStreamCursorValueInput = {
-  amount?: InputMaybe<Scalars['numeric']['input']>;
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  unitPrice?: InputMaybe<Scalars['numeric']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** aggregate sum on columns */
-export type BillingInvoiceItemSumFields = {
-  __typename?: 'BillingInvoiceItemSumFields';
-  amount?: Maybe<Scalars['numeric']['output']>;
-  quantity?: Maybe<Scalars['Int']['output']>;
-  unitPrice?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** order by sum() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemSumOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** update columns of table "billing_invoice_item" */
-export type BillingInvoiceItemUpdateColumn =
-  /** column name */
-  | 'createdAt'
-  /** column name */
-  | 'description'
-  /** column name */
-  | 'id'
-  /** column name */
-  | 'invoiceId'
-  /** column name */
-  | 'quantity'
-  /** column name */
-  | 'unitPrice'
-  /** column name */
-  | 'updatedAt'
-  | '%future added value';
-
-export type BillingInvoiceItemUpdates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<BillingInvoiceItemIncInput>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<BillingInvoiceItemSetInput>;
-  /** filter the rows which have to be updated */
-  where: BillingInvoiceItemBoolExp;
-};
-
-/** aggregate varPop on columns */
-export type BillingInvoiceItemVarPopFields = {
-  __typename?: 'BillingInvoiceItemVarPopFields';
-  amount?: Maybe<Scalars['Float']['output']>;
-  quantity?: Maybe<Scalars['Float']['output']>;
-  unitPrice?: Maybe<Scalars['Float']['output']>;
-};
-
-/** order by varPop() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemVarPopOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** aggregate varSamp on columns */
-export type BillingInvoiceItemVarSampFields = {
-  __typename?: 'BillingInvoiceItemVarSampFields';
-  amount?: Maybe<Scalars['Float']['output']>;
-  quantity?: Maybe<Scalars['Float']['output']>;
-  unitPrice?: Maybe<Scalars['Float']['output']>;
-};
-
-/** order by varSamp() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemVarSampOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
-};
-
-/** aggregate variance on columns */
-export type BillingInvoiceItemVarianceFields = {
-  __typename?: 'BillingInvoiceItemVarianceFields';
-  amount?: Maybe<Scalars['Float']['output']>;
-  quantity?: Maybe<Scalars['Float']['output']>;
-  unitPrice?: Maybe<Scalars['Float']['output']>;
-};
-
-/** order by variance() on columns of table "billing_invoice_item" */
-export type BillingInvoiceItemVarianceOrderBy = {
-  amount?: InputMaybe<OrderBy>;
-  quantity?: InputMaybe<OrderBy>;
-  unitPrice?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
@@ -540,27 +165,515 @@ export type BpcharComparisonExp = {
   _similar?: InputMaybe<Scalars['bpchar']['input']>;
 };
 
-export type CommitPayrollAssignmentsOutput = {
-  __typename?: 'CommitPayrollAssignmentsOutput';
-  affectedAssignments?: Maybe<Array<AffectedAssignment>>;
-  errors?: Maybe<Array<Scalars['String']['output']>>;
-  message?: Maybe<Scalars['String']['output']>;
-  success: Scalars['Boolean']['output'];
+export type CalendarDay = {
+  __typename?: 'CalendarDay';
+  adminTimeHours: Scalars['Float']['output'];
+  assignments: Array<AssignmentDetails>;
+  date: Scalars['String']['output'];
+  isOverallocated: Scalars['Boolean']['output'];
+  payrollCapacityHours: Scalars['Float']['output'];
+  totalAssignedHours: Scalars['Float']['output'];
+  utilization: Scalars['Int']['output'];
+  workHours: Scalars['Float']['output'];
 };
 
-export type ComplianceReportInput = {
-  endDate: Scalars['String']['input'];
-  includeDetails?: InputMaybe<Scalars['Boolean']['input']>;
-  reportType: Scalars['String']['input'];
-  startDate: Scalars['String']['input'];
+export type CapacitySummary = {
+  __typename?: 'CapacitySummary';
+  avgUtilization: Scalars['Int']['output'];
+  overallocatedPeriods: Scalars['Int']['output'];
+  periodsShown: Scalars['Int']['output'];
+  totalAssigned: Scalars['Float']['output'];
+  totalCapacity: Scalars['Float']['output'];
 };
 
-export type ComplianceReportResponse = {
-  __typename?: 'ComplianceReportResponse';
-  generatedAt: Scalars['String']['output'];
-  reportUrl?: Maybe<Scalars['String']['output']>;
-  success: Scalars['Boolean']['output'];
-  summary?: Maybe<Scalars['json']['output']>;
+/** Client service agreements with effective rates */
+export type ClientServicesWithRates = {
+  __typename?: 'ClientServicesWithRates';
+  agreementId?: Maybe<Scalars['uuid']['output']>;
+  billingFrequency?: Maybe<Scalars['String']['output']>;
+  billingUnit?: Maybe<Scalars['String']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  clientName?: Maybe<Scalars['String']['output']>;
+  customRate?: Maybe<Scalars['numeric']['output']>;
+  effectiveDate?: Maybe<Scalars['date']['output']>;
+  effectiveRate?: Maybe<Scalars['numeric']['output']>;
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  isEnabled?: Maybe<Scalars['Boolean']['output']>;
+  serviceDescription?: Maybe<Scalars['String']['output']>;
+  serviceId?: Maybe<Scalars['uuid']['output']>;
+  serviceName?: Maybe<Scalars['String']['output']>;
+  standardRate?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregated selection of "client_services_with_rates" */
+export type ClientServicesWithRatesAggregate = {
+  __typename?: 'ClientServicesWithRatesAggregate';
+  aggregate?: Maybe<ClientServicesWithRatesAggregateFields>;
+  nodes: Array<ClientServicesWithRates>;
+};
+
+/** aggregate fields of "client_services_with_rates" */
+export type ClientServicesWithRatesAggregateFields = {
+  __typename?: 'ClientServicesWithRatesAggregateFields';
+  avg?: Maybe<ClientServicesWithRatesAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<ClientServicesWithRatesMaxFields>;
+  min?: Maybe<ClientServicesWithRatesMinFields>;
+  stddev?: Maybe<ClientServicesWithRatesStddevFields>;
+  stddevPop?: Maybe<ClientServicesWithRatesStddevPopFields>;
+  stddevSamp?: Maybe<ClientServicesWithRatesStddevSampFields>;
+  sum?: Maybe<ClientServicesWithRatesSumFields>;
+  varPop?: Maybe<ClientServicesWithRatesVarPopFields>;
+  varSamp?: Maybe<ClientServicesWithRatesVarSampFields>;
+  variance?: Maybe<ClientServicesWithRatesVarianceFields>;
+};
+
+
+/** aggregate fields of "client_services_with_rates" */
+export type ClientServicesWithRatesAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<ClientServicesWithRatesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type ClientServicesWithRatesAvgFields = {
+  __typename?: 'ClientServicesWithRatesAvgFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+  effectiveRate?: Maybe<Scalars['Float']['output']>;
+  standardRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "client_services_with_rates". All fields are combined with a logical 'AND'. */
+export type ClientServicesWithRatesBoolExp = {
+  _and?: InputMaybe<Array<ClientServicesWithRatesBoolExp>>;
+  _not?: InputMaybe<ClientServicesWithRatesBoolExp>;
+  _or?: InputMaybe<Array<ClientServicesWithRatesBoolExp>>;
+  agreementId?: InputMaybe<UuidComparisonExp>;
+  billingFrequency?: InputMaybe<StringComparisonExp>;
+  billingUnit?: InputMaybe<StringComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  clientName?: InputMaybe<StringComparisonExp>;
+  customRate?: InputMaybe<NumericComparisonExp>;
+  effectiveDate?: InputMaybe<DateComparisonExp>;
+  effectiveRate?: InputMaybe<NumericComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isEnabled?: InputMaybe<BooleanComparisonExp>;
+  serviceDescription?: InputMaybe<StringComparisonExp>;
+  serviceId?: InputMaybe<UuidComparisonExp>;
+  serviceName?: InputMaybe<StringComparisonExp>;
+  standardRate?: InputMaybe<NumericComparisonExp>;
+};
+
+/** aggregate max on columns */
+export type ClientServicesWithRatesMaxFields = {
+  __typename?: 'ClientServicesWithRatesMaxFields';
+  agreementId?: Maybe<Scalars['uuid']['output']>;
+  billingFrequency?: Maybe<Scalars['String']['output']>;
+  billingUnit?: Maybe<Scalars['String']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  clientName?: Maybe<Scalars['String']['output']>;
+  customRate?: Maybe<Scalars['numeric']['output']>;
+  effectiveDate?: Maybe<Scalars['date']['output']>;
+  effectiveRate?: Maybe<Scalars['numeric']['output']>;
+  serviceDescription?: Maybe<Scalars['String']['output']>;
+  serviceId?: Maybe<Scalars['uuid']['output']>;
+  serviceName?: Maybe<Scalars['String']['output']>;
+  standardRate?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate min on columns */
+export type ClientServicesWithRatesMinFields = {
+  __typename?: 'ClientServicesWithRatesMinFields';
+  agreementId?: Maybe<Scalars['uuid']['output']>;
+  billingFrequency?: Maybe<Scalars['String']['output']>;
+  billingUnit?: Maybe<Scalars['String']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  clientName?: Maybe<Scalars['String']['output']>;
+  customRate?: Maybe<Scalars['numeric']['output']>;
+  effectiveDate?: Maybe<Scalars['date']['output']>;
+  effectiveRate?: Maybe<Scalars['numeric']['output']>;
+  serviceDescription?: Maybe<Scalars['String']['output']>;
+  serviceId?: Maybe<Scalars['uuid']['output']>;
+  serviceName?: Maybe<Scalars['String']['output']>;
+  standardRate?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** Ordering options when selecting data from "client_services_with_rates". */
+export type ClientServicesWithRatesOrderBy = {
+  agreementId?: InputMaybe<OrderBy>;
+  billingFrequency?: InputMaybe<OrderBy>;
+  billingUnit?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  clientName?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  effectiveDate?: InputMaybe<OrderBy>;
+  effectiveRate?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isEnabled?: InputMaybe<OrderBy>;
+  serviceDescription?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  serviceName?: InputMaybe<OrderBy>;
+  standardRate?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "client_services_with_rates" */
+export type ClientServicesWithRatesSelectColumn =
+  /** column name */
+  | 'agreementId'
+  /** column name */
+  | 'billingFrequency'
+  /** column name */
+  | 'billingUnit'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'clientName'
+  /** column name */
+  | 'customRate'
+  /** column name */
+  | 'effectiveDate'
+  /** column name */
+  | 'effectiveRate'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isEnabled'
+  /** column name */
+  | 'serviceDescription'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'serviceName'
+  /** column name */
+  | 'standardRate'
+  | '%future added value';
+
+/** aggregate stddev on columns */
+export type ClientServicesWithRatesStddevFields = {
+  __typename?: 'ClientServicesWithRatesStddevFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+  effectiveRate?: Maybe<Scalars['Float']['output']>;
+  standardRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type ClientServicesWithRatesStddevPopFields = {
+  __typename?: 'ClientServicesWithRatesStddevPopFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+  effectiveRate?: Maybe<Scalars['Float']['output']>;
+  standardRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type ClientServicesWithRatesStddevSampFields = {
+  __typename?: 'ClientServicesWithRatesStddevSampFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+  effectiveRate?: Maybe<Scalars['Float']['output']>;
+  standardRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "client_services_with_rates" */
+export type ClientServicesWithRatesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ClientServicesWithRatesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ClientServicesWithRatesStreamCursorValueInput = {
+  agreementId?: InputMaybe<Scalars['uuid']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  clientName?: InputMaybe<Scalars['String']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  effectiveDate?: InputMaybe<Scalars['date']['input']>;
+  effectiveRate?: InputMaybe<Scalars['numeric']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  serviceDescription?: InputMaybe<Scalars['String']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceName?: InputMaybe<Scalars['String']['input']>;
+  standardRate?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** aggregate sum on columns */
+export type ClientServicesWithRatesSumFields = {
+  __typename?: 'ClientServicesWithRatesSumFields';
+  customRate?: Maybe<Scalars['numeric']['output']>;
+  effectiveRate?: Maybe<Scalars['numeric']['output']>;
+  standardRate?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate varPop on columns */
+export type ClientServicesWithRatesVarPopFields = {
+  __typename?: 'ClientServicesWithRatesVarPopFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+  effectiveRate?: Maybe<Scalars['Float']['output']>;
+  standardRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type ClientServicesWithRatesVarSampFields = {
+  __typename?: 'ClientServicesWithRatesVarSampFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+  effectiveRate?: Maybe<Scalars['Float']['output']>;
+  standardRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type ClientServicesWithRatesVarianceFields = {
+  __typename?: 'ClientServicesWithRatesVarianceFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+  effectiveRate?: Maybe<Scalars['Float']['output']>;
+  standardRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** columns and relationships of "consultant_capacity_overview" */
+export type ConsultantCapacityOverview = {
+  __typename?: 'ConsultantCapacityOverview';
+  adminTimeHours?: Maybe<Scalars['numeric']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['numeric']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['numeric']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['numeric']['output']>;
+  position?: Maybe<Scalars['user_position']['output']>;
+  usesDefaultAdminTime?: Maybe<Scalars['Boolean']['output']>;
+  workDay?: Maybe<Scalars['String']['output']>;
+  workHours?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregated selection of "consultant_capacity_overview" */
+export type ConsultantCapacityOverviewAggregate = {
+  __typename?: 'ConsultantCapacityOverviewAggregate';
+  aggregate?: Maybe<ConsultantCapacityOverviewAggregateFields>;
+  nodes: Array<ConsultantCapacityOverview>;
+};
+
+/** aggregate fields of "consultant_capacity_overview" */
+export type ConsultantCapacityOverviewAggregateFields = {
+  __typename?: 'ConsultantCapacityOverviewAggregateFields';
+  avg?: Maybe<ConsultantCapacityOverviewAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<ConsultantCapacityOverviewMaxFields>;
+  min?: Maybe<ConsultantCapacityOverviewMinFields>;
+  stddev?: Maybe<ConsultantCapacityOverviewStddevFields>;
+  stddevPop?: Maybe<ConsultantCapacityOverviewStddevPopFields>;
+  stddevSamp?: Maybe<ConsultantCapacityOverviewStddevSampFields>;
+  sum?: Maybe<ConsultantCapacityOverviewSumFields>;
+  varPop?: Maybe<ConsultantCapacityOverviewVarPopFields>;
+  varSamp?: Maybe<ConsultantCapacityOverviewVarSampFields>;
+  variance?: Maybe<ConsultantCapacityOverviewVarianceFields>;
+};
+
+
+/** aggregate fields of "consultant_capacity_overview" */
+export type ConsultantCapacityOverviewAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<ConsultantCapacityOverviewSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type ConsultantCapacityOverviewAvgFields = {
+  __typename?: 'ConsultantCapacityOverviewAvgFields';
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['Float']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
+  workHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "consultant_capacity_overview". All fields are combined with a logical 'AND'. */
+export type ConsultantCapacityOverviewBoolExp = {
+  _and?: InputMaybe<Array<ConsultantCapacityOverviewBoolExp>>;
+  _not?: InputMaybe<ConsultantCapacityOverviewBoolExp>;
+  _or?: InputMaybe<Array<ConsultantCapacityOverviewBoolExp>>;
+  adminTimeHours?: InputMaybe<NumericComparisonExp>;
+  adminTimePercentageActual?: InputMaybe<NumericComparisonExp>;
+  defaultAdminTimePercentage?: InputMaybe<NumericComparisonExp>;
+  email?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  payrollCapacityHours?: InputMaybe<NumericComparisonExp>;
+  position?: InputMaybe<UserPositionComparisonExp>;
+  usesDefaultAdminTime?: InputMaybe<BooleanComparisonExp>;
+  workDay?: InputMaybe<StringComparisonExp>;
+  workHours?: InputMaybe<NumericComparisonExp>;
+};
+
+/** aggregate max on columns */
+export type ConsultantCapacityOverviewMaxFields = {
+  __typename?: 'ConsultantCapacityOverviewMaxFields';
+  adminTimeHours?: Maybe<Scalars['numeric']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['numeric']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['numeric']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['numeric']['output']>;
+  position?: Maybe<Scalars['user_position']['output']>;
+  workDay?: Maybe<Scalars['String']['output']>;
+  workHours?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate min on columns */
+export type ConsultantCapacityOverviewMinFields = {
+  __typename?: 'ConsultantCapacityOverviewMinFields';
+  adminTimeHours?: Maybe<Scalars['numeric']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['numeric']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['numeric']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['numeric']['output']>;
+  position?: Maybe<Scalars['user_position']['output']>;
+  workDay?: Maybe<Scalars['String']['output']>;
+  workHours?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** Ordering options when selecting data from "consultant_capacity_overview". */
+export type ConsultantCapacityOverviewOrderBy = {
+  adminTimeHours?: InputMaybe<OrderBy>;
+  adminTimePercentageActual?: InputMaybe<OrderBy>;
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  email?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  payrollCapacityHours?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
+  usesDefaultAdminTime?: InputMaybe<OrderBy>;
+  workDay?: InputMaybe<OrderBy>;
+  workHours?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "consultant_capacity_overview" */
+export type ConsultantCapacityOverviewSelectColumn =
+  /** column name */
+  | 'adminTimeHours'
+  /** column name */
+  | 'adminTimePercentageActual'
+  /** column name */
+  | 'defaultAdminTimePercentage'
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'payrollCapacityHours'
+  /** column name */
+  | 'position'
+  /** column name */
+  | 'usesDefaultAdminTime'
+  /** column name */
+  | 'workDay'
+  /** column name */
+  | 'workHours'
+  | '%future added value';
+
+/** aggregate stddev on columns */
+export type ConsultantCapacityOverviewStddevFields = {
+  __typename?: 'ConsultantCapacityOverviewStddevFields';
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['Float']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
+  workHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type ConsultantCapacityOverviewStddevPopFields = {
+  __typename?: 'ConsultantCapacityOverviewStddevPopFields';
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['Float']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
+  workHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type ConsultantCapacityOverviewStddevSampFields = {
+  __typename?: 'ConsultantCapacityOverviewStddevSampFields';
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['Float']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
+  workHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "consultant_capacity_overview" */
+export type ConsultantCapacityOverviewStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ConsultantCapacityOverviewStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ConsultantCapacityOverviewStreamCursorValueInput = {
+  adminTimeHours?: InputMaybe<Scalars['numeric']['input']>;
+  adminTimePercentageActual?: InputMaybe<Scalars['numeric']['input']>;
+  defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  payrollCapacityHours?: InputMaybe<Scalars['numeric']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  usesDefaultAdminTime?: InputMaybe<Scalars['Boolean']['input']>;
+  workDay?: InputMaybe<Scalars['String']['input']>;
+  workHours?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** aggregate sum on columns */
+export type ConsultantCapacityOverviewSumFields = {
+  __typename?: 'ConsultantCapacityOverviewSumFields';
+  adminTimeHours?: Maybe<Scalars['numeric']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['numeric']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['numeric']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['numeric']['output']>;
+  workHours?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate varPop on columns */
+export type ConsultantCapacityOverviewVarPopFields = {
+  __typename?: 'ConsultantCapacityOverviewVarPopFields';
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['Float']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
+  workHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type ConsultantCapacityOverviewVarSampFields = {
+  __typename?: 'ConsultantCapacityOverviewVarSampFields';
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['Float']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
+  workHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type ConsultantCapacityOverviewVarianceFields = {
+  __typename?: 'ConsultantCapacityOverviewVarianceFields';
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  adminTimePercentageActual?: Maybe<Scalars['Float']['output']>;
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
+  workHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** ordering argument of a cursor */
@@ -582,6 +695,1314 @@ export type DateComparisonExp = {
   _lte?: InputMaybe<Scalars['date']['input']>;
   _neq?: InputMaybe<Scalars['date']['input']>;
   _nin?: InputMaybe<Array<Scalars['date']['input']>>;
+};
+
+/** Draft emails saved for later sending */
+export type EmailDrafts = {
+  __typename?: 'EmailDrafts';
+  businessContext?: Maybe<Scalars['jsonb']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  emailTemplate?: Maybe<EmailTemplates>;
+  htmlContent?: Maybe<Scalars['String']['output']>;
+  id: Scalars['uuid']['output'];
+  recipientEmails: Array<Scalars['String']['output']>;
+  scheduledFor?: Maybe<Scalars['timestamptz']['output']>;
+  subject?: Maybe<Scalars['String']['output']>;
+  templateId?: Maybe<Scalars['uuid']['output']>;
+  textContent?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  user: Users;
+  userId: Scalars['uuid']['output'];
+  variableValues?: Maybe<Scalars['jsonb']['output']>;
+};
+
+
+/** Draft emails saved for later sending */
+export type EmailDraftsBusinessContextArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Draft emails saved for later sending */
+export type EmailDraftsVariableValuesArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "email_drafts" */
+export type EmailDraftsAggregate = {
+  __typename?: 'EmailDraftsAggregate';
+  aggregate?: Maybe<EmailDraftsAggregateFields>;
+  nodes: Array<EmailDrafts>;
+};
+
+export type EmailDraftsAggregateBoolExp = {
+  count?: InputMaybe<EmailDraftsAggregateBoolExpCount>;
+};
+
+/** aggregate fields of "email_drafts" */
+export type EmailDraftsAggregateFields = {
+  __typename?: 'EmailDraftsAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<EmailDraftsMaxFields>;
+  min?: Maybe<EmailDraftsMinFields>;
+};
+
+
+/** aggregate fields of "email_drafts" */
+export type EmailDraftsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "email_drafts" */
+export type EmailDraftsAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<EmailDraftsMaxOrderBy>;
+  min?: InputMaybe<EmailDraftsMinOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type EmailDraftsAppendInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  variableValues?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "email_drafts" */
+export type EmailDraftsArrRelInsertInput = {
+  data: Array<EmailDraftsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<EmailDraftsOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "email_drafts". All fields are combined with a logical 'AND'. */
+export type EmailDraftsBoolExp = {
+  _and?: InputMaybe<Array<EmailDraftsBoolExp>>;
+  _not?: InputMaybe<EmailDraftsBoolExp>;
+  _or?: InputMaybe<Array<EmailDraftsBoolExp>>;
+  businessContext?: InputMaybe<JsonbComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  emailTemplate?: InputMaybe<EmailTemplatesBoolExp>;
+  htmlContent?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  recipientEmails?: InputMaybe<StringArrayComparisonExp>;
+  scheduledFor?: InputMaybe<TimestamptzComparisonExp>;
+  subject?: InputMaybe<StringComparisonExp>;
+  templateId?: InputMaybe<UuidComparisonExp>;
+  textContent?: InputMaybe<StringComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+  variableValues?: InputMaybe<JsonbComparisonExp>;
+};
+
+/** unique or primary key constraints on table "email_drafts" */
+export type EmailDraftsConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'email_drafts_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type EmailDraftsDeleteAtPathInput = {
+  businessContext?: InputMaybe<Array<Scalars['String']['input']>>;
+  variableValues?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type EmailDraftsDeleteElemInput = {
+  businessContext?: InputMaybe<Scalars['Int']['input']>;
+  variableValues?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type EmailDraftsDeleteKeyInput = {
+  businessContext?: InputMaybe<Scalars['String']['input']>;
+  variableValues?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "email_drafts" */
+export type EmailDraftsInsertInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  emailTemplate?: InputMaybe<EmailTemplatesObjRelInsertInput>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+  variableValues?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** aggregate max on columns */
+export type EmailDraftsMaxFields = {
+  __typename?: 'EmailDraftsMaxFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  htmlContent?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  recipientEmails?: Maybe<Array<Scalars['String']['output']>>;
+  scheduledFor?: Maybe<Scalars['timestamptz']['output']>;
+  subject?: Maybe<Scalars['String']['output']>;
+  templateId?: Maybe<Scalars['uuid']['output']>;
+  textContent?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by max() on columns of table "email_drafts" */
+export type EmailDraftsMaxOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type EmailDraftsMinFields = {
+  __typename?: 'EmailDraftsMinFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  htmlContent?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  recipientEmails?: Maybe<Array<Scalars['String']['output']>>;
+  scheduledFor?: Maybe<Scalars['timestamptz']['output']>;
+  subject?: Maybe<Scalars['String']['output']>;
+  templateId?: Maybe<Scalars['uuid']['output']>;
+  textContent?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by min() on columns of table "email_drafts" */
+export type EmailDraftsMinOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "email_drafts" */
+export type EmailDraftsMutationResponse = {
+  __typename?: 'EmailDraftsMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<EmailDrafts>;
+};
+
+/** on_conflict condition type for table "email_drafts" */
+export type EmailDraftsOnConflict = {
+  constraint: EmailDraftsConstraint;
+  updateColumns?: Array<EmailDraftsUpdateColumn>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+/** Ordering options when selecting data from "email_drafts". */
+export type EmailDraftsOrderBy = {
+  businessContext?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  emailTemplate?: InputMaybe<EmailTemplatesOrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+  variableValues?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: email_drafts */
+export type EmailDraftsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type EmailDraftsPrependInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  variableValues?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "email_drafts" */
+export type EmailDraftsSelectColumn =
+  /** column name */
+  | 'businessContext'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'recipientEmails'
+  /** column name */
+  | 'scheduledFor'
+  /** column name */
+  | 'subject'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'textContent'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'userId'
+  /** column name */
+  | 'variableValues'
+  | '%future added value';
+
+/** input type for updating data in table "email_drafts" */
+export type EmailDraftsSetInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+  variableValues?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** Streaming cursor of the table "email_drafts" */
+export type EmailDraftsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: EmailDraftsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type EmailDraftsStreamCursorValueInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+  variableValues?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** update columns of table "email_drafts" */
+export type EmailDraftsUpdateColumn =
+  /** column name */
+  | 'businessContext'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'recipientEmails'
+  /** column name */
+  | 'scheduledFor'
+  /** column name */
+  | 'subject'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'textContent'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'userId'
+  /** column name */
+  | 'variableValues'
+  | '%future added value';
+
+export type EmailDraftsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<EmailDraftsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<EmailDraftsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<EmailDraftsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<EmailDraftsDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<EmailDraftsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<EmailDraftsSetInput>;
+  /** filter the rows which have to be updated */
+  where: EmailDraftsBoolExp;
+};
+
+/** Audit log of all emails sent through the system */
+export type EmailSendLogs = {
+  __typename?: 'EmailSendLogs';
+  businessContext?: Maybe<Scalars['jsonb']['output']>;
+  clickedAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  deliveredAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  emailTemplate?: Maybe<EmailTemplates>;
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  htmlContent?: Maybe<Scalars['String']['output']>;
+  id: Scalars['uuid']['output'];
+  openedAt?: Maybe<Scalars['timestamptz']['output']>;
+  recipientEmails: Array<Scalars['String']['output']>;
+  resendEmailId?: Maybe<Scalars['String']['output']>;
+  resendResponse?: Maybe<Scalars['jsonb']['output']>;
+  scheduledFor?: Maybe<Scalars['timestamptz']['output']>;
+  sendStatus?: Maybe<Scalars['String']['output']>;
+  /** An object relationship */
+  senderUser: Users;
+  senderUserId: Scalars['uuid']['output'];
+  sentAt?: Maybe<Scalars['timestamptz']['output']>;
+  subject: Scalars['String']['output'];
+  templateId?: Maybe<Scalars['uuid']['output']>;
+  textContent?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Audit log of all emails sent through the system */
+export type EmailSendLogsBusinessContextArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Audit log of all emails sent through the system */
+export type EmailSendLogsResendResponseArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "email_send_logs" */
+export type EmailSendLogsAggregate = {
+  __typename?: 'EmailSendLogsAggregate';
+  aggregate?: Maybe<EmailSendLogsAggregateFields>;
+  nodes: Array<EmailSendLogs>;
+};
+
+export type EmailSendLogsAggregateBoolExp = {
+  count?: InputMaybe<EmailSendLogsAggregateBoolExpCount>;
+};
+
+/** aggregate fields of "email_send_logs" */
+export type EmailSendLogsAggregateFields = {
+  __typename?: 'EmailSendLogsAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<EmailSendLogsMaxFields>;
+  min?: Maybe<EmailSendLogsMinFields>;
+};
+
+
+/** aggregate fields of "email_send_logs" */
+export type EmailSendLogsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "email_send_logs" */
+export type EmailSendLogsAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<EmailSendLogsMaxOrderBy>;
+  min?: InputMaybe<EmailSendLogsMinOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type EmailSendLogsAppendInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  resendResponse?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "email_send_logs" */
+export type EmailSendLogsArrRelInsertInput = {
+  data: Array<EmailSendLogsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<EmailSendLogsOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "email_send_logs". All fields are combined with a logical 'AND'. */
+export type EmailSendLogsBoolExp = {
+  _and?: InputMaybe<Array<EmailSendLogsBoolExp>>;
+  _not?: InputMaybe<EmailSendLogsBoolExp>;
+  _or?: InputMaybe<Array<EmailSendLogsBoolExp>>;
+  businessContext?: InputMaybe<JsonbComparisonExp>;
+  clickedAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  deliveredAt?: InputMaybe<TimestamptzComparisonExp>;
+  emailTemplate?: InputMaybe<EmailTemplatesBoolExp>;
+  errorMessage?: InputMaybe<StringComparisonExp>;
+  htmlContent?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  openedAt?: InputMaybe<TimestamptzComparisonExp>;
+  recipientEmails?: InputMaybe<StringArrayComparisonExp>;
+  resendEmailId?: InputMaybe<StringComparisonExp>;
+  resendResponse?: InputMaybe<JsonbComparisonExp>;
+  scheduledFor?: InputMaybe<TimestamptzComparisonExp>;
+  sendStatus?: InputMaybe<StringComparisonExp>;
+  senderUser?: InputMaybe<UsersBoolExp>;
+  senderUserId?: InputMaybe<UuidComparisonExp>;
+  sentAt?: InputMaybe<TimestamptzComparisonExp>;
+  subject?: InputMaybe<StringComparisonExp>;
+  templateId?: InputMaybe<UuidComparisonExp>;
+  textContent?: InputMaybe<StringComparisonExp>;
+};
+
+/** unique or primary key constraints on table "email_send_logs" */
+export type EmailSendLogsConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'email_send_logs_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type EmailSendLogsDeleteAtPathInput = {
+  businessContext?: InputMaybe<Array<Scalars['String']['input']>>;
+  resendResponse?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type EmailSendLogsDeleteElemInput = {
+  businessContext?: InputMaybe<Scalars['Int']['input']>;
+  resendResponse?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type EmailSendLogsDeleteKeyInput = {
+  businessContext?: InputMaybe<Scalars['String']['input']>;
+  resendResponse?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "email_send_logs" */
+export type EmailSendLogsInsertInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  clickedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deliveredAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  emailTemplate?: InputMaybe<EmailTemplatesObjRelInsertInput>;
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  openedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  resendEmailId?: InputMaybe<Scalars['String']['input']>;
+  resendResponse?: InputMaybe<Scalars['jsonb']['input']>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  sendStatus?: InputMaybe<Scalars['String']['input']>;
+  senderUser?: InputMaybe<UsersObjRelInsertInput>;
+  senderUserId?: InputMaybe<Scalars['uuid']['input']>;
+  sentAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregate max on columns */
+export type EmailSendLogsMaxFields = {
+  __typename?: 'EmailSendLogsMaxFields';
+  clickedAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  deliveredAt?: Maybe<Scalars['timestamptz']['output']>;
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  htmlContent?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  openedAt?: Maybe<Scalars['timestamptz']['output']>;
+  recipientEmails?: Maybe<Array<Scalars['String']['output']>>;
+  resendEmailId?: Maybe<Scalars['String']['output']>;
+  scheduledFor?: Maybe<Scalars['timestamptz']['output']>;
+  sendStatus?: Maybe<Scalars['String']['output']>;
+  senderUserId?: Maybe<Scalars['uuid']['output']>;
+  sentAt?: Maybe<Scalars['timestamptz']['output']>;
+  subject?: Maybe<Scalars['String']['output']>;
+  templateId?: Maybe<Scalars['uuid']['output']>;
+  textContent?: Maybe<Scalars['String']['output']>;
+};
+
+/** order by max() on columns of table "email_send_logs" */
+export type EmailSendLogsMaxOrderBy = {
+  clickedAt?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  deliveredAt?: InputMaybe<OrderBy>;
+  errorMessage?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  openedAt?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  resendEmailId?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  sendStatus?: InputMaybe<OrderBy>;
+  senderUserId?: InputMaybe<OrderBy>;
+  sentAt?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type EmailSendLogsMinFields = {
+  __typename?: 'EmailSendLogsMinFields';
+  clickedAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  deliveredAt?: Maybe<Scalars['timestamptz']['output']>;
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  htmlContent?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  openedAt?: Maybe<Scalars['timestamptz']['output']>;
+  recipientEmails?: Maybe<Array<Scalars['String']['output']>>;
+  resendEmailId?: Maybe<Scalars['String']['output']>;
+  scheduledFor?: Maybe<Scalars['timestamptz']['output']>;
+  sendStatus?: Maybe<Scalars['String']['output']>;
+  senderUserId?: Maybe<Scalars['uuid']['output']>;
+  sentAt?: Maybe<Scalars['timestamptz']['output']>;
+  subject?: Maybe<Scalars['String']['output']>;
+  templateId?: Maybe<Scalars['uuid']['output']>;
+  textContent?: Maybe<Scalars['String']['output']>;
+};
+
+/** order by min() on columns of table "email_send_logs" */
+export type EmailSendLogsMinOrderBy = {
+  clickedAt?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  deliveredAt?: InputMaybe<OrderBy>;
+  errorMessage?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  openedAt?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  resendEmailId?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  sendStatus?: InputMaybe<OrderBy>;
+  senderUserId?: InputMaybe<OrderBy>;
+  sentAt?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "email_send_logs" */
+export type EmailSendLogsMutationResponse = {
+  __typename?: 'EmailSendLogsMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<EmailSendLogs>;
+};
+
+/** on_conflict condition type for table "email_send_logs" */
+export type EmailSendLogsOnConflict = {
+  constraint: EmailSendLogsConstraint;
+  updateColumns?: Array<EmailSendLogsUpdateColumn>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+/** Ordering options when selecting data from "email_send_logs". */
+export type EmailSendLogsOrderBy = {
+  businessContext?: InputMaybe<OrderBy>;
+  clickedAt?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  deliveredAt?: InputMaybe<OrderBy>;
+  emailTemplate?: InputMaybe<EmailTemplatesOrderBy>;
+  errorMessage?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  openedAt?: InputMaybe<OrderBy>;
+  recipientEmails?: InputMaybe<OrderBy>;
+  resendEmailId?: InputMaybe<OrderBy>;
+  resendResponse?: InputMaybe<OrderBy>;
+  scheduledFor?: InputMaybe<OrderBy>;
+  sendStatus?: InputMaybe<OrderBy>;
+  senderUser?: InputMaybe<UsersOrderBy>;
+  senderUserId?: InputMaybe<OrderBy>;
+  sentAt?: InputMaybe<OrderBy>;
+  subject?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: email_send_logs */
+export type EmailSendLogsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type EmailSendLogsPrependInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  resendResponse?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "email_send_logs" */
+export type EmailSendLogsSelectColumn =
+  /** column name */
+  | 'businessContext'
+  /** column name */
+  | 'clickedAt'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'deliveredAt'
+  /** column name */
+  | 'errorMessage'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'openedAt'
+  /** column name */
+  | 'recipientEmails'
+  /** column name */
+  | 'resendEmailId'
+  /** column name */
+  | 'resendResponse'
+  /** column name */
+  | 'scheduledFor'
+  /** column name */
+  | 'sendStatus'
+  /** column name */
+  | 'senderUserId'
+  /** column name */
+  | 'sentAt'
+  /** column name */
+  | 'subject'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'textContent'
+  | '%future added value';
+
+/** input type for updating data in table "email_send_logs" */
+export type EmailSendLogsSetInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  clickedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deliveredAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  openedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  resendEmailId?: InputMaybe<Scalars['String']['input']>;
+  resendResponse?: InputMaybe<Scalars['jsonb']['input']>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  sendStatus?: InputMaybe<Scalars['String']['input']>;
+  senderUserId?: InputMaybe<Scalars['uuid']['input']>;
+  sentAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Streaming cursor of the table "email_send_logs" */
+export type EmailSendLogsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: EmailSendLogsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type EmailSendLogsStreamCursorValueInput = {
+  businessContext?: InputMaybe<Scalars['jsonb']['input']>;
+  clickedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  deliveredAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  openedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  recipientEmails?: InputMaybe<Array<Scalars['String']['input']>>;
+  resendEmailId?: InputMaybe<Scalars['String']['input']>;
+  resendResponse?: InputMaybe<Scalars['jsonb']['input']>;
+  scheduledFor?: InputMaybe<Scalars['timestamptz']['input']>;
+  sendStatus?: InputMaybe<Scalars['String']['input']>;
+  senderUserId?: InputMaybe<Scalars['uuid']['input']>;
+  sentAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  subject?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** update columns of table "email_send_logs" */
+export type EmailSendLogsUpdateColumn =
+  /** column name */
+  | 'businessContext'
+  /** column name */
+  | 'clickedAt'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'deliveredAt'
+  /** column name */
+  | 'errorMessage'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'openedAt'
+  /** column name */
+  | 'recipientEmails'
+  /** column name */
+  | 'resendEmailId'
+  /** column name */
+  | 'resendResponse'
+  /** column name */
+  | 'scheduledFor'
+  /** column name */
+  | 'sendStatus'
+  /** column name */
+  | 'senderUserId'
+  /** column name */
+  | 'sentAt'
+  /** column name */
+  | 'subject'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'textContent'
+  | '%future added value';
+
+export type EmailSendLogsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<EmailSendLogsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<EmailSendLogsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<EmailSendLogsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<EmailSendLogsDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<EmailSendLogsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<EmailSendLogsSetInput>;
+  /** filter the rows which have to be updated */
+  where: EmailSendLogsBoolExp;
+};
+
+/** Email templates for various business communications */
+export type EmailTemplates = {
+  __typename?: 'EmailTemplates';
+  approvedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  approvedByUser?: Maybe<Users>;
+  approvedByUserId?: Maybe<Scalars['uuid']['output']>;
+  availableVariables: Scalars['jsonb']['output'];
+  category: Scalars['String']['output'];
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  createdByUser: Users;
+  createdByUserId: Scalars['uuid']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  /** An array relationship */
+  emailDrafts: Array<EmailDrafts>;
+  /** An aggregate relationship */
+  emailDraftsAggregate: EmailDraftsAggregate;
+  /** An array relationship */
+  emailSendLogs: Array<EmailSendLogs>;
+  /** An aggregate relationship */
+  emailSendLogsAggregate: EmailSendLogsAggregate;
+  htmlContent: Scalars['String']['output'];
+  id: Scalars['uuid']['output'];
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  isSystemTemplate?: Maybe<Scalars['Boolean']['output']>;
+  name: Scalars['String']['output'];
+  requiresApproval?: Maybe<Scalars['Boolean']['output']>;
+  subjectTemplate: Scalars['String']['output'];
+  textContent?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An array relationship */
+  userFavorites: Array<UserEmailTemplateFavorites>;
+  /** An aggregate relationship */
+  userFavoritesAggregate: UserEmailTemplateFavoritesAggregate;
+};
+
+
+/** Email templates for various business communications */
+export type EmailTemplatesAvailableVariablesArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Email templates for various business communications */
+export type EmailTemplatesEmailDraftsArgs = {
+  distinctOn?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailDraftsOrderBy>>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+
+/** Email templates for various business communications */
+export type EmailTemplatesEmailDraftsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailDraftsOrderBy>>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+
+/** Email templates for various business communications */
+export type EmailTemplatesEmailSendLogsArgs = {
+  distinctOn?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailSendLogsOrderBy>>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+
+/** Email templates for various business communications */
+export type EmailTemplatesEmailSendLogsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailSendLogsOrderBy>>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+
+/** Email templates for various business communications */
+export type EmailTemplatesUserFavoritesArgs = {
+  distinctOn?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserEmailTemplateFavoritesOrderBy>>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+};
+
+
+/** Email templates for various business communications */
+export type EmailTemplatesUserFavoritesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserEmailTemplateFavoritesOrderBy>>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+};
+
+/** aggregated selection of "email_templates" */
+export type EmailTemplatesAggregate = {
+  __typename?: 'EmailTemplatesAggregate';
+  aggregate?: Maybe<EmailTemplatesAggregateFields>;
+  nodes: Array<EmailTemplates>;
+};
+
+export type EmailTemplatesAggregateBoolExp = {
+  bool_and?: InputMaybe<EmailTemplatesAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<EmailTemplatesAggregateBoolExpBool_Or>;
+  count?: InputMaybe<EmailTemplatesAggregateBoolExpCount>;
+};
+
+/** aggregate fields of "email_templates" */
+export type EmailTemplatesAggregateFields = {
+  __typename?: 'EmailTemplatesAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<EmailTemplatesMaxFields>;
+  min?: Maybe<EmailTemplatesMinFields>;
+};
+
+
+/** aggregate fields of "email_templates" */
+export type EmailTemplatesAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "email_templates" */
+export type EmailTemplatesAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<EmailTemplatesMaxOrderBy>;
+  min?: InputMaybe<EmailTemplatesMinOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type EmailTemplatesAppendInput = {
+  availableVariables?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "email_templates" */
+export type EmailTemplatesArrRelInsertInput = {
+  data: Array<EmailTemplatesInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<EmailTemplatesOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "email_templates". All fields are combined with a logical 'AND'. */
+export type EmailTemplatesBoolExp = {
+  _and?: InputMaybe<Array<EmailTemplatesBoolExp>>;
+  _not?: InputMaybe<EmailTemplatesBoolExp>;
+  _or?: InputMaybe<Array<EmailTemplatesBoolExp>>;
+  approvedAt?: InputMaybe<TimestamptzComparisonExp>;
+  approvedByUser?: InputMaybe<UsersBoolExp>;
+  approvedByUserId?: InputMaybe<UuidComparisonExp>;
+  availableVariables?: InputMaybe<JsonbComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdByUser?: InputMaybe<UsersBoolExp>;
+  createdByUserId?: InputMaybe<UuidComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  emailDrafts?: InputMaybe<EmailDraftsBoolExp>;
+  emailDraftsAggregate?: InputMaybe<EmailDraftsAggregateBoolExp>;
+  emailSendLogs?: InputMaybe<EmailSendLogsBoolExp>;
+  emailSendLogsAggregate?: InputMaybe<EmailSendLogsAggregateBoolExp>;
+  htmlContent?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isSystemTemplate?: InputMaybe<BooleanComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  requiresApproval?: InputMaybe<BooleanComparisonExp>;
+  subjectTemplate?: InputMaybe<StringComparisonExp>;
+  textContent?: InputMaybe<StringComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  userFavorites?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+  userFavoritesAggregate?: InputMaybe<UserEmailTemplateFavoritesAggregateBoolExp>;
+};
+
+/** unique or primary key constraints on table "email_templates" */
+export type EmailTemplatesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'email_templates_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type EmailTemplatesDeleteAtPathInput = {
+  availableVariables?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type EmailTemplatesDeleteElemInput = {
+  availableVariables?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type EmailTemplatesDeleteKeyInput = {
+  availableVariables?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "email_templates" */
+export type EmailTemplatesInsertInput = {
+  approvedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedByUser?: InputMaybe<UsersObjRelInsertInput>;
+  approvedByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  availableVariables?: InputMaybe<Scalars['jsonb']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdByUser?: InputMaybe<UsersObjRelInsertInput>;
+  createdByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  emailDrafts?: InputMaybe<EmailDraftsArrRelInsertInput>;
+  emailSendLogs?: InputMaybe<EmailSendLogsArrRelInsertInput>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isSystemTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  requiresApproval?: InputMaybe<Scalars['Boolean']['input']>;
+  subjectTemplate?: InputMaybe<Scalars['String']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  userFavorites?: InputMaybe<UserEmailTemplateFavoritesArrRelInsertInput>;
+};
+
+/** aggregate max on columns */
+export type EmailTemplatesMaxFields = {
+  __typename?: 'EmailTemplatesMaxFields';
+  approvedAt?: Maybe<Scalars['timestamptz']['output']>;
+  approvedByUserId?: Maybe<Scalars['uuid']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdByUserId?: Maybe<Scalars['uuid']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  htmlContent?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  subjectTemplate?: Maybe<Scalars['String']['output']>;
+  textContent?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by max() on columns of table "email_templates" */
+export type EmailTemplatesMaxOrderBy = {
+  approvedAt?: InputMaybe<OrderBy>;
+  approvedByUserId?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdByUserId?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  subjectTemplate?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type EmailTemplatesMinFields = {
+  __typename?: 'EmailTemplatesMinFields';
+  approvedAt?: Maybe<Scalars['timestamptz']['output']>;
+  approvedByUserId?: Maybe<Scalars['uuid']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdByUserId?: Maybe<Scalars['uuid']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  htmlContent?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  subjectTemplate?: Maybe<Scalars['String']['output']>;
+  textContent?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by min() on columns of table "email_templates" */
+export type EmailTemplatesMinOrderBy = {
+  approvedAt?: InputMaybe<OrderBy>;
+  approvedByUserId?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdByUserId?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  subjectTemplate?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "email_templates" */
+export type EmailTemplatesMutationResponse = {
+  __typename?: 'EmailTemplatesMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<EmailTemplates>;
+};
+
+/** input type for inserting object relation for remote table "email_templates" */
+export type EmailTemplatesObjRelInsertInput = {
+  data: EmailTemplatesInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<EmailTemplatesOnConflict>;
+};
+
+/** on_conflict condition type for table "email_templates" */
+export type EmailTemplatesOnConflict = {
+  constraint: EmailTemplatesConstraint;
+  updateColumns?: Array<EmailTemplatesUpdateColumn>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
+};
+
+/** Ordering options when selecting data from "email_templates". */
+export type EmailTemplatesOrderBy = {
+  approvedAt?: InputMaybe<OrderBy>;
+  approvedByUser?: InputMaybe<UsersOrderBy>;
+  approvedByUserId?: InputMaybe<OrderBy>;
+  availableVariables?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdByUser?: InputMaybe<UsersOrderBy>;
+  createdByUserId?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  emailDraftsAggregate?: InputMaybe<EmailDraftsAggregateOrderBy>;
+  emailSendLogsAggregate?: InputMaybe<EmailSendLogsAggregateOrderBy>;
+  htmlContent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isSystemTemplate?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  requiresApproval?: InputMaybe<OrderBy>;
+  subjectTemplate?: InputMaybe<OrderBy>;
+  textContent?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  userFavoritesAggregate?: InputMaybe<UserEmailTemplateFavoritesAggregateOrderBy>;
+};
+
+/** primary key columns input for table: email_templates */
+export type EmailTemplatesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type EmailTemplatesPrependInput = {
+  availableVariables?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "email_templates" */
+export type EmailTemplatesSelectColumn =
+  /** column name */
+  | 'approvedAt'
+  /** column name */
+  | 'approvedByUserId'
+  /** column name */
+  | 'availableVariables'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdByUserId'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemTemplate'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'requiresApproval'
+  /** column name */
+  | 'subjectTemplate'
+  /** column name */
+  | 'textContent'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** select "emailTemplatesAggregateBoolExpBool_andArgumentsColumns" columns of table "email_templates" */
+export type EmailTemplatesSelectColumnEmailTemplatesAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemTemplate'
+  /** column name */
+  | 'requiresApproval'
+  | '%future added value';
+
+/** select "emailTemplatesAggregateBoolExpBool_orArgumentsColumns" columns of table "email_templates" */
+export type EmailTemplatesSelectColumnEmailTemplatesAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemTemplate'
+  /** column name */
+  | 'requiresApproval'
+  | '%future added value';
+
+/** input type for updating data in table "email_templates" */
+export type EmailTemplatesSetInput = {
+  approvedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  availableVariables?: InputMaybe<Scalars['jsonb']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isSystemTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  requiresApproval?: InputMaybe<Scalars['Boolean']['input']>;
+  subjectTemplate?: InputMaybe<Scalars['String']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** Streaming cursor of the table "email_templates" */
+export type EmailTemplatesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: EmailTemplatesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type EmailTemplatesStreamCursorValueInput = {
+  approvedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  availableVariables?: InputMaybe<Scalars['jsonb']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdByUserId?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  htmlContent?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isSystemTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  requiresApproval?: InputMaybe<Scalars['Boolean']['input']>;
+  subjectTemplate?: InputMaybe<Scalars['String']['input']>;
+  textContent?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** update columns of table "email_templates" */
+export type EmailTemplatesUpdateColumn =
+  /** column name */
+  | 'approvedAt'
+  /** column name */
+  | 'approvedByUserId'
+  /** column name */
+  | 'availableVariables'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdByUserId'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'htmlContent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemTemplate'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'requiresApproval'
+  /** column name */
+  | 'subjectTemplate'
+  /** column name */
+  | 'textContent'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type EmailTemplatesUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<EmailTemplatesAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<EmailTemplatesDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<EmailTemplatesDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<EmailTemplatesDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<EmailTemplatesPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<EmailTemplatesSetInput>;
+  /** filter the rows which have to be updated */
+  where: EmailTemplatesBoolExp;
 };
 
 /** Boolean expression to compare columns of type "inet". All fields are combined with logical 'AND'. */
@@ -664,6 +2085,14 @@ export type JsonbComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['jsonb']['input']>>;
 };
 
+export type LeaveResponse = {
+  __typename?: 'LeaveResponse';
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  leaveId?: Maybe<Scalars['String']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
 /** Boolean expression to compare columns of type "leave_status_enum". All fields are combined with logical 'AND'. */
 export type LeaveStatusEnumComparisonExp = {
   _eq?: InputMaybe<Scalars['leave_status_enum']['input']>;
@@ -719,13 +2148,6 @@ export type OrderBy =
   | 'DESC_NULLS_LAST'
   | '%future added value';
 
-export type PayrollAssignmentInput = {
-  date: Scalars['String']['input'];
-  fromConsultantId: Scalars['String']['input'];
-  payrollId: Scalars['String']['input'];
-  toConsultantId: Scalars['String']['input'];
-};
-
 /** Boolean expression to compare columns of type "payroll_cycle_type". All fields are combined with logical 'AND'. */
 export type PayrollCycleTypeComparisonExp = {
   _eq?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
@@ -752,6 +2174,278 @@ export type PayrollDateTypeComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['payroll_date_type']['input']>>;
 };
 
+/** Profitability analysis for individual payroll jobs */
+export type PayrollProfitability = {
+  __typename?: 'PayrollProfitability';
+  billingItemsCount?: Maybe<Scalars['bigint']['output']>;
+  billingStatus?: Maybe<Scalars['String']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  clientName?: Maybe<Scalars['String']['output']>;
+  employeeCount?: Maybe<Scalars['Int']['output']>;
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  payrollName?: Maybe<Scalars['String']['output']>;
+  payslipCount?: Maybe<Scalars['Int']['output']>;
+  revenuePerHour?: Maybe<Scalars['numeric']['output']>;
+  timeEntriesCount?: Maybe<Scalars['bigint']['output']>;
+  totalHours?: Maybe<Scalars['numeric']['output']>;
+  totalRevenue?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregated selection of "payroll_profitability" */
+export type PayrollProfitabilityAggregate = {
+  __typename?: 'PayrollProfitabilityAggregate';
+  aggregate?: Maybe<PayrollProfitabilityAggregateFields>;
+  nodes: Array<PayrollProfitability>;
+};
+
+/** aggregate fields of "payroll_profitability" */
+export type PayrollProfitabilityAggregateFields = {
+  __typename?: 'PayrollProfitabilityAggregateFields';
+  avg?: Maybe<PayrollProfitabilityAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<PayrollProfitabilityMaxFields>;
+  min?: Maybe<PayrollProfitabilityMinFields>;
+  stddev?: Maybe<PayrollProfitabilityStddevFields>;
+  stddevPop?: Maybe<PayrollProfitabilityStddevPopFields>;
+  stddevSamp?: Maybe<PayrollProfitabilityStddevSampFields>;
+  sum?: Maybe<PayrollProfitabilitySumFields>;
+  varPop?: Maybe<PayrollProfitabilityVarPopFields>;
+  varSamp?: Maybe<PayrollProfitabilityVarSampFields>;
+  variance?: Maybe<PayrollProfitabilityVarianceFields>;
+};
+
+
+/** aggregate fields of "payroll_profitability" */
+export type PayrollProfitabilityAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<PayrollProfitabilitySelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type PayrollProfitabilityAvgFields = {
+  __typename?: 'PayrollProfitabilityAvgFields';
+  billingItemsCount?: Maybe<Scalars['Float']['output']>;
+  employeeCount?: Maybe<Scalars['Float']['output']>;
+  payslipCount?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  timeEntriesCount?: Maybe<Scalars['Float']['output']>;
+  totalHours?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_profitability". All fields are combined with a logical 'AND'. */
+export type PayrollProfitabilityBoolExp = {
+  _and?: InputMaybe<Array<PayrollProfitabilityBoolExp>>;
+  _not?: InputMaybe<PayrollProfitabilityBoolExp>;
+  _or?: InputMaybe<Array<PayrollProfitabilityBoolExp>>;
+  billingItemsCount?: InputMaybe<BigintComparisonExp>;
+  billingStatus?: InputMaybe<StringComparisonExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  clientName?: InputMaybe<StringComparisonExp>;
+  employeeCount?: InputMaybe<IntComparisonExp>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  payrollName?: InputMaybe<StringComparisonExp>;
+  payslipCount?: InputMaybe<IntComparisonExp>;
+  revenuePerHour?: InputMaybe<NumericComparisonExp>;
+  timeEntriesCount?: InputMaybe<BigintComparisonExp>;
+  totalHours?: InputMaybe<NumericComparisonExp>;
+  totalRevenue?: InputMaybe<NumericComparisonExp>;
+};
+
+/** aggregate max on columns */
+export type PayrollProfitabilityMaxFields = {
+  __typename?: 'PayrollProfitabilityMaxFields';
+  billingItemsCount?: Maybe<Scalars['bigint']['output']>;
+  billingStatus?: Maybe<Scalars['String']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  clientName?: Maybe<Scalars['String']['output']>;
+  employeeCount?: Maybe<Scalars['Int']['output']>;
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  payrollName?: Maybe<Scalars['String']['output']>;
+  payslipCount?: Maybe<Scalars['Int']['output']>;
+  revenuePerHour?: Maybe<Scalars['numeric']['output']>;
+  timeEntriesCount?: Maybe<Scalars['bigint']['output']>;
+  totalHours?: Maybe<Scalars['numeric']['output']>;
+  totalRevenue?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate min on columns */
+export type PayrollProfitabilityMinFields = {
+  __typename?: 'PayrollProfitabilityMinFields';
+  billingItemsCount?: Maybe<Scalars['bigint']['output']>;
+  billingStatus?: Maybe<Scalars['String']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  clientName?: Maybe<Scalars['String']['output']>;
+  employeeCount?: Maybe<Scalars['Int']['output']>;
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  payrollName?: Maybe<Scalars['String']['output']>;
+  payslipCount?: Maybe<Scalars['Int']['output']>;
+  revenuePerHour?: Maybe<Scalars['numeric']['output']>;
+  timeEntriesCount?: Maybe<Scalars['bigint']['output']>;
+  totalHours?: Maybe<Scalars['numeric']['output']>;
+  totalRevenue?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** Ordering options when selecting data from "payroll_profitability". */
+export type PayrollProfitabilityOrderBy = {
+  billingItemsCount?: InputMaybe<OrderBy>;
+  billingStatus?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  clientName?: InputMaybe<OrderBy>;
+  employeeCount?: InputMaybe<OrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  payrollName?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+  revenuePerHour?: InputMaybe<OrderBy>;
+  timeEntriesCount?: InputMaybe<OrderBy>;
+  totalHours?: InputMaybe<OrderBy>;
+  totalRevenue?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "payroll_profitability" */
+export type PayrollProfitabilitySelectColumn =
+  /** column name */
+  | 'billingItemsCount'
+  /** column name */
+  | 'billingStatus'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'clientName'
+  /** column name */
+  | 'employeeCount'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'payrollName'
+  /** column name */
+  | 'payslipCount'
+  /** column name */
+  | 'revenuePerHour'
+  /** column name */
+  | 'timeEntriesCount'
+  /** column name */
+  | 'totalHours'
+  /** column name */
+  | 'totalRevenue'
+  | '%future added value';
+
+/** aggregate stddev on columns */
+export type PayrollProfitabilityStddevFields = {
+  __typename?: 'PayrollProfitabilityStddevFields';
+  billingItemsCount?: Maybe<Scalars['Float']['output']>;
+  employeeCount?: Maybe<Scalars['Float']['output']>;
+  payslipCount?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  timeEntriesCount?: Maybe<Scalars['Float']['output']>;
+  totalHours?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type PayrollProfitabilityStddevPopFields = {
+  __typename?: 'PayrollProfitabilityStddevPopFields';
+  billingItemsCount?: Maybe<Scalars['Float']['output']>;
+  employeeCount?: Maybe<Scalars['Float']['output']>;
+  payslipCount?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  timeEntriesCount?: Maybe<Scalars['Float']['output']>;
+  totalHours?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type PayrollProfitabilityStddevSampFields = {
+  __typename?: 'PayrollProfitabilityStddevSampFields';
+  billingItemsCount?: Maybe<Scalars['Float']['output']>;
+  employeeCount?: Maybe<Scalars['Float']['output']>;
+  payslipCount?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  timeEntriesCount?: Maybe<Scalars['Float']['output']>;
+  totalHours?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "payroll_profitability" */
+export type PayrollProfitabilityStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PayrollProfitabilityStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PayrollProfitabilityStreamCursorValueInput = {
+  billingItemsCount?: InputMaybe<Scalars['bigint']['input']>;
+  billingStatus?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  clientName?: InputMaybe<Scalars['String']['input']>;
+  employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  payrollName?: InputMaybe<Scalars['String']['input']>;
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
+  revenuePerHour?: InputMaybe<Scalars['numeric']['input']>;
+  timeEntriesCount?: InputMaybe<Scalars['bigint']['input']>;
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
+  totalRevenue?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** aggregate sum on columns */
+export type PayrollProfitabilitySumFields = {
+  __typename?: 'PayrollProfitabilitySumFields';
+  billingItemsCount?: Maybe<Scalars['bigint']['output']>;
+  employeeCount?: Maybe<Scalars['Int']['output']>;
+  payslipCount?: Maybe<Scalars['Int']['output']>;
+  revenuePerHour?: Maybe<Scalars['numeric']['output']>;
+  timeEntriesCount?: Maybe<Scalars['bigint']['output']>;
+  totalHours?: Maybe<Scalars['numeric']['output']>;
+  totalRevenue?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate varPop on columns */
+export type PayrollProfitabilityVarPopFields = {
+  __typename?: 'PayrollProfitabilityVarPopFields';
+  billingItemsCount?: Maybe<Scalars['Float']['output']>;
+  employeeCount?: Maybe<Scalars['Float']['output']>;
+  payslipCount?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  timeEntriesCount?: Maybe<Scalars['Float']['output']>;
+  totalHours?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type PayrollProfitabilityVarSampFields = {
+  __typename?: 'PayrollProfitabilityVarSampFields';
+  billingItemsCount?: Maybe<Scalars['Float']['output']>;
+  employeeCount?: Maybe<Scalars['Float']['output']>;
+  payslipCount?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  timeEntriesCount?: Maybe<Scalars['Float']['output']>;
+  totalHours?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type PayrollProfitabilityVarianceFields = {
+  __typename?: 'PayrollProfitabilityVarianceFields';
+  billingItemsCount?: Maybe<Scalars['Float']['output']>;
+  employeeCount?: Maybe<Scalars['Float']['output']>;
+  payslipCount?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  timeEntriesCount?: Maybe<Scalars['Float']['output']>;
+  totalHours?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+};
+
+export type PayrollResponse = {
+  __typename?: 'PayrollResponse';
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  message?: Maybe<Scalars['String']['output']>;
+  payrollId?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
 /** Boolean expression to compare columns of type "payroll_status". All fields are combined with logical 'AND'. */
 export type PayrollStatusComparisonExp = {
   _eq?: InputMaybe<Scalars['payroll_status']['input']>;
@@ -776,6 +2470,480 @@ export type PermissionActionComparisonExp = {
   _lte?: InputMaybe<Scalars['permission_action']['input']>;
   _neq?: InputMaybe<Scalars['permission_action']['input']>;
   _nin?: InputMaybe<Array<Scalars['permission_action']['input']>>;
+};
+
+/** columns and relationships of "position_admin_defaults" */
+export type PositionAdminDefaults = {
+  __typename?: 'PositionAdminDefaults';
+  defaultAdminPercentage: Scalars['numeric']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  position: Scalars['user_position']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregated selection of "position_admin_defaults" */
+export type PositionAdminDefaultsAggregate = {
+  __typename?: 'PositionAdminDefaultsAggregate';
+  aggregate?: Maybe<PositionAdminDefaultsAggregateFields>;
+  nodes: Array<PositionAdminDefaults>;
+};
+
+/** aggregate fields of "position_admin_defaults" */
+export type PositionAdminDefaultsAggregateFields = {
+  __typename?: 'PositionAdminDefaultsAggregateFields';
+  avg?: Maybe<PositionAdminDefaultsAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<PositionAdminDefaultsMaxFields>;
+  min?: Maybe<PositionAdminDefaultsMinFields>;
+  stddev?: Maybe<PositionAdminDefaultsStddevFields>;
+  stddevPop?: Maybe<PositionAdminDefaultsStddevPopFields>;
+  stddevSamp?: Maybe<PositionAdminDefaultsStddevSampFields>;
+  sum?: Maybe<PositionAdminDefaultsSumFields>;
+  varPop?: Maybe<PositionAdminDefaultsVarPopFields>;
+  varSamp?: Maybe<PositionAdminDefaultsVarSampFields>;
+  variance?: Maybe<PositionAdminDefaultsVarianceFields>;
+};
+
+
+/** aggregate fields of "position_admin_defaults" */
+export type PositionAdminDefaultsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<PositionAdminDefaultsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type PositionAdminDefaultsAvgFields = {
+  __typename?: 'PositionAdminDefaultsAvgFields';
+  defaultAdminPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "position_admin_defaults". All fields are combined with a logical 'AND'. */
+export type PositionAdminDefaultsBoolExp = {
+  _and?: InputMaybe<Array<PositionAdminDefaultsBoolExp>>;
+  _not?: InputMaybe<PositionAdminDefaultsBoolExp>;
+  _or?: InputMaybe<Array<PositionAdminDefaultsBoolExp>>;
+  defaultAdminPercentage?: InputMaybe<NumericComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  position?: InputMaybe<UserPositionComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  updatedBy?: InputMaybe<UuidComparisonExp>;
+};
+
+/** unique or primary key constraints on table "position_admin_defaults" */
+export type PositionAdminDefaultsConstraint =
+  /** unique or primary key constraint on columns "position" */
+  | 'position_admin_defaults_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "position_admin_defaults" */
+export type PositionAdminDefaultsIncInput = {
+  defaultAdminPercentage?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "position_admin_defaults" */
+export type PositionAdminDefaultsInsertInput = {
+  defaultAdminPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type PositionAdminDefaultsMaxFields = {
+  __typename?: 'PositionAdminDefaultsMaxFields';
+  defaultAdminPercentage?: Maybe<Scalars['numeric']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  position?: Maybe<Scalars['user_position']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type PositionAdminDefaultsMinFields = {
+  __typename?: 'PositionAdminDefaultsMinFields';
+  defaultAdminPercentage?: Maybe<Scalars['numeric']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  position?: Maybe<Scalars['user_position']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** response of any mutation on the table "position_admin_defaults" */
+export type PositionAdminDefaultsMutationResponse = {
+  __typename?: 'PositionAdminDefaultsMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<PositionAdminDefaults>;
+};
+
+/** on_conflict condition type for table "position_admin_defaults" */
+export type PositionAdminDefaultsOnConflict = {
+  constraint: PositionAdminDefaultsConstraint;
+  updateColumns?: Array<PositionAdminDefaultsUpdateColumn>;
+  where?: InputMaybe<PositionAdminDefaultsBoolExp>;
+};
+
+/** Ordering options when selecting data from "position_admin_defaults". */
+export type PositionAdminDefaultsOrderBy = {
+  defaultAdminPercentage?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: position_admin_defaults */
+export type PositionAdminDefaultsPkColumnsInput = {
+  position: Scalars['user_position']['input'];
+};
+
+/** select columns of table "position_admin_defaults" */
+export type PositionAdminDefaultsSelectColumn =
+  /** column name */
+  | 'defaultAdminPercentage'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'position'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+/** input type for updating data in table "position_admin_defaults" */
+export type PositionAdminDefaultsSetInput = {
+  defaultAdminPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type PositionAdminDefaultsStddevFields = {
+  __typename?: 'PositionAdminDefaultsStddevFields';
+  defaultAdminPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type PositionAdminDefaultsStddevPopFields = {
+  __typename?: 'PositionAdminDefaultsStddevPopFields';
+  defaultAdminPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type PositionAdminDefaultsStddevSampFields = {
+  __typename?: 'PositionAdminDefaultsStddevSampFields';
+  defaultAdminPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "position_admin_defaults" */
+export type PositionAdminDefaultsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PositionAdminDefaultsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PositionAdminDefaultsStreamCursorValueInput = {
+  defaultAdminPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate sum on columns */
+export type PositionAdminDefaultsSumFields = {
+  __typename?: 'PositionAdminDefaultsSumFields';
+  defaultAdminPercentage?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** update columns of table "position_admin_defaults" */
+export type PositionAdminDefaultsUpdateColumn =
+  /** column name */
+  | 'defaultAdminPercentage'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'position'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+export type PositionAdminDefaultsUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<PositionAdminDefaultsIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<PositionAdminDefaultsSetInput>;
+  /** filter the rows which have to be updated */
+  where: PositionAdminDefaultsBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type PositionAdminDefaultsVarPopFields = {
+  __typename?: 'PositionAdminDefaultsVarPopFields';
+  defaultAdminPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type PositionAdminDefaultsVarSampFields = {
+  __typename?: 'PositionAdminDefaultsVarSampFields';
+  defaultAdminPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type PositionAdminDefaultsVarianceFields = {
+  __typename?: 'PositionAdminDefaultsVarianceFields';
+  defaultAdminPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ScheduleResponse = {
+  __typename?: 'ScheduleResponse';
+  dates?: Maybe<Array<Scalars['String']['output']>>;
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  message?: Maybe<Scalars['String']['output']>;
+  scheduleId?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
+/** Staff performance metrics for billing and time tracking */
+export type StaffBillingPerformance = {
+  __typename?: 'StaffBillingPerformance';
+  billingItemsCreated?: Maybe<Scalars['bigint']['output']>;
+  distinctClientsServed?: Maybe<Scalars['bigint']['output']>;
+  payrollsWorked?: Maybe<Scalars['bigint']['output']>;
+  revenuePerHour?: Maybe<Scalars['numeric']['output']>;
+  staffId?: Maybe<Scalars['uuid']['output']>;
+  staffName?: Maybe<Scalars['String']['output']>;
+  totalHoursLogged?: Maybe<Scalars['numeric']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregated selection of "staff_billing_performance" */
+export type StaffBillingPerformanceAggregate = {
+  __typename?: 'StaffBillingPerformanceAggregate';
+  aggregate?: Maybe<StaffBillingPerformanceAggregateFields>;
+  nodes: Array<StaffBillingPerformance>;
+};
+
+/** aggregate fields of "staff_billing_performance" */
+export type StaffBillingPerformanceAggregateFields = {
+  __typename?: 'StaffBillingPerformanceAggregateFields';
+  avg?: Maybe<StaffBillingPerformanceAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<StaffBillingPerformanceMaxFields>;
+  min?: Maybe<StaffBillingPerformanceMinFields>;
+  stddev?: Maybe<StaffBillingPerformanceStddevFields>;
+  stddevPop?: Maybe<StaffBillingPerformanceStddevPopFields>;
+  stddevSamp?: Maybe<StaffBillingPerformanceStddevSampFields>;
+  sum?: Maybe<StaffBillingPerformanceSumFields>;
+  varPop?: Maybe<StaffBillingPerformanceVarPopFields>;
+  varSamp?: Maybe<StaffBillingPerformanceVarSampFields>;
+  variance?: Maybe<StaffBillingPerformanceVarianceFields>;
+};
+
+
+/** aggregate fields of "staff_billing_performance" */
+export type StaffBillingPerformanceAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<StaffBillingPerformanceSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type StaffBillingPerformanceAvgFields = {
+  __typename?: 'StaffBillingPerformanceAvgFields';
+  billingItemsCreated?: Maybe<Scalars['Float']['output']>;
+  distinctClientsServed?: Maybe<Scalars['Float']['output']>;
+  payrollsWorked?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  totalHoursLogged?: Maybe<Scalars['Float']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "staff_billing_performance". All fields are combined with a logical 'AND'. */
+export type StaffBillingPerformanceBoolExp = {
+  _and?: InputMaybe<Array<StaffBillingPerformanceBoolExp>>;
+  _not?: InputMaybe<StaffBillingPerformanceBoolExp>;
+  _or?: InputMaybe<Array<StaffBillingPerformanceBoolExp>>;
+  billingItemsCreated?: InputMaybe<BigintComparisonExp>;
+  distinctClientsServed?: InputMaybe<BigintComparisonExp>;
+  payrollsWorked?: InputMaybe<BigintComparisonExp>;
+  revenuePerHour?: InputMaybe<NumericComparisonExp>;
+  staffId?: InputMaybe<UuidComparisonExp>;
+  staffName?: InputMaybe<StringComparisonExp>;
+  totalHoursLogged?: InputMaybe<NumericComparisonExp>;
+  totalRevenueGenerated?: InputMaybe<NumericComparisonExp>;
+};
+
+/** aggregate max on columns */
+export type StaffBillingPerformanceMaxFields = {
+  __typename?: 'StaffBillingPerformanceMaxFields';
+  billingItemsCreated?: Maybe<Scalars['bigint']['output']>;
+  distinctClientsServed?: Maybe<Scalars['bigint']['output']>;
+  payrollsWorked?: Maybe<Scalars['bigint']['output']>;
+  revenuePerHour?: Maybe<Scalars['numeric']['output']>;
+  staffId?: Maybe<Scalars['uuid']['output']>;
+  staffName?: Maybe<Scalars['String']['output']>;
+  totalHoursLogged?: Maybe<Scalars['numeric']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate min on columns */
+export type StaffBillingPerformanceMinFields = {
+  __typename?: 'StaffBillingPerformanceMinFields';
+  billingItemsCreated?: Maybe<Scalars['bigint']['output']>;
+  distinctClientsServed?: Maybe<Scalars['bigint']['output']>;
+  payrollsWorked?: Maybe<Scalars['bigint']['output']>;
+  revenuePerHour?: Maybe<Scalars['numeric']['output']>;
+  staffId?: Maybe<Scalars['uuid']['output']>;
+  staffName?: Maybe<Scalars['String']['output']>;
+  totalHoursLogged?: Maybe<Scalars['numeric']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** Ordering options when selecting data from "staff_billing_performance". */
+export type StaffBillingPerformanceOrderBy = {
+  billingItemsCreated?: InputMaybe<OrderBy>;
+  distinctClientsServed?: InputMaybe<OrderBy>;
+  payrollsWorked?: InputMaybe<OrderBy>;
+  revenuePerHour?: InputMaybe<OrderBy>;
+  staffId?: InputMaybe<OrderBy>;
+  staffName?: InputMaybe<OrderBy>;
+  totalHoursLogged?: InputMaybe<OrderBy>;
+  totalRevenueGenerated?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "staff_billing_performance" */
+export type StaffBillingPerformanceSelectColumn =
+  /** column name */
+  | 'billingItemsCreated'
+  /** column name */
+  | 'distinctClientsServed'
+  /** column name */
+  | 'payrollsWorked'
+  /** column name */
+  | 'revenuePerHour'
+  /** column name */
+  | 'staffId'
+  /** column name */
+  | 'staffName'
+  /** column name */
+  | 'totalHoursLogged'
+  /** column name */
+  | 'totalRevenueGenerated'
+  | '%future added value';
+
+/** aggregate stddev on columns */
+export type StaffBillingPerformanceStddevFields = {
+  __typename?: 'StaffBillingPerformanceStddevFields';
+  billingItemsCreated?: Maybe<Scalars['Float']['output']>;
+  distinctClientsServed?: Maybe<Scalars['Float']['output']>;
+  payrollsWorked?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  totalHoursLogged?: Maybe<Scalars['Float']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type StaffBillingPerformanceStddevPopFields = {
+  __typename?: 'StaffBillingPerformanceStddevPopFields';
+  billingItemsCreated?: Maybe<Scalars['Float']['output']>;
+  distinctClientsServed?: Maybe<Scalars['Float']['output']>;
+  payrollsWorked?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  totalHoursLogged?: Maybe<Scalars['Float']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type StaffBillingPerformanceStddevSampFields = {
+  __typename?: 'StaffBillingPerformanceStddevSampFields';
+  billingItemsCreated?: Maybe<Scalars['Float']['output']>;
+  distinctClientsServed?: Maybe<Scalars['Float']['output']>;
+  payrollsWorked?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  totalHoursLogged?: Maybe<Scalars['Float']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "staff_billing_performance" */
+export type StaffBillingPerformanceStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: StaffBillingPerformanceStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type StaffBillingPerformanceStreamCursorValueInput = {
+  billingItemsCreated?: InputMaybe<Scalars['bigint']['input']>;
+  distinctClientsServed?: InputMaybe<Scalars['bigint']['input']>;
+  payrollsWorked?: InputMaybe<Scalars['bigint']['input']>;
+  revenuePerHour?: InputMaybe<Scalars['numeric']['input']>;
+  staffId?: InputMaybe<Scalars['uuid']['input']>;
+  staffName?: InputMaybe<Scalars['String']['input']>;
+  totalHoursLogged?: InputMaybe<Scalars['numeric']['input']>;
+  totalRevenueGenerated?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** aggregate sum on columns */
+export type StaffBillingPerformanceSumFields = {
+  __typename?: 'StaffBillingPerformanceSumFields';
+  billingItemsCreated?: Maybe<Scalars['bigint']['output']>;
+  distinctClientsServed?: Maybe<Scalars['bigint']['output']>;
+  payrollsWorked?: Maybe<Scalars['bigint']['output']>;
+  revenuePerHour?: Maybe<Scalars['numeric']['output']>;
+  totalHoursLogged?: Maybe<Scalars['numeric']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate varPop on columns */
+export type StaffBillingPerformanceVarPopFields = {
+  __typename?: 'StaffBillingPerformanceVarPopFields';
+  billingItemsCreated?: Maybe<Scalars['Float']['output']>;
+  distinctClientsServed?: Maybe<Scalars['Float']['output']>;
+  payrollsWorked?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  totalHoursLogged?: Maybe<Scalars['Float']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type StaffBillingPerformanceVarSampFields = {
+  __typename?: 'StaffBillingPerformanceVarSampFields';
+  billingItemsCreated?: Maybe<Scalars['Float']['output']>;
+  distinctClientsServed?: Maybe<Scalars['Float']['output']>;
+  payrollsWorked?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  totalHoursLogged?: Maybe<Scalars['Float']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type StaffBillingPerformanceVarianceFields = {
+  __typename?: 'StaffBillingPerformanceVarianceFields';
+  billingItemsCreated?: Maybe<Scalars['Float']['output']>;
+  distinctClientsServed?: Maybe<Scalars['Float']['output']>;
+  payrollsWorked?: Maybe<Scalars['Float']['output']>;
+  revenuePerHour?: Maybe<Scalars['Float']['output']>;
+  totalHoursLogged?: Maybe<Scalars['Float']['output']>;
+  totalRevenueGenerated?: Maybe<Scalars['Float']['output']>;
+};
+
+export type StaffResponse = {
+  __typename?: 'StaffResponse';
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+  userId?: Maybe<Scalars['String']['output']>;
 };
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
@@ -828,20 +2996,220 @@ export type StringComparisonExp = {
   _similar?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type SuspiciousActivityResponse = {
-  __typename?: 'SuspiciousActivityResponse';
-  events?: Maybe<Array<SuspiciousEvent>>;
-  message?: Maybe<Scalars['String']['output']>;
-  success: Scalars['Boolean']['output'];
-  suspicious: Scalars['Boolean']['output'];
+/** columns and relationships of "team_capacity_by_position" */
+export type TeamCapacityByPosition = {
+  __typename?: 'TeamCapacityByPosition';
+  avgAdminPercentage?: Maybe<Scalars['numeric']['output']>;
+  consultantCount?: Maybe<Scalars['bigint']['output']>;
+  position?: Maybe<Scalars['user_position']['output']>;
+  totalAdminHours?: Maybe<Scalars['numeric']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['numeric']['output']>;
+  totalWorkHours?: Maybe<Scalars['numeric']['output']>;
 };
 
-export type SuspiciousEvent = {
-  __typename?: 'SuspiciousEvent';
+/** aggregated selection of "team_capacity_by_position" */
+export type TeamCapacityByPositionAggregate = {
+  __typename?: 'TeamCapacityByPositionAggregate';
+  aggregate?: Maybe<TeamCapacityByPositionAggregateFields>;
+  nodes: Array<TeamCapacityByPosition>;
+};
+
+/** aggregate fields of "team_capacity_by_position" */
+export type TeamCapacityByPositionAggregateFields = {
+  __typename?: 'TeamCapacityByPositionAggregateFields';
+  avg?: Maybe<TeamCapacityByPositionAvgFields>;
   count: Scalars['Int']['output'];
-  eventType: Scalars['String']['output'];
-  severity: Scalars['String']['output'];
-  timeframe: Scalars['String']['output'];
+  max?: Maybe<TeamCapacityByPositionMaxFields>;
+  min?: Maybe<TeamCapacityByPositionMinFields>;
+  stddev?: Maybe<TeamCapacityByPositionStddevFields>;
+  stddevPop?: Maybe<TeamCapacityByPositionStddevPopFields>;
+  stddevSamp?: Maybe<TeamCapacityByPositionStddevSampFields>;
+  sum?: Maybe<TeamCapacityByPositionSumFields>;
+  varPop?: Maybe<TeamCapacityByPositionVarPopFields>;
+  varSamp?: Maybe<TeamCapacityByPositionVarSampFields>;
+  variance?: Maybe<TeamCapacityByPositionVarianceFields>;
+};
+
+
+/** aggregate fields of "team_capacity_by_position" */
+export type TeamCapacityByPositionAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<TeamCapacityByPositionSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type TeamCapacityByPositionAvgFields = {
+  __typename?: 'TeamCapacityByPositionAvgFields';
+  avgAdminPercentage?: Maybe<Scalars['Float']['output']>;
+  consultantCount?: Maybe<Scalars['Float']['output']>;
+  totalAdminHours?: Maybe<Scalars['Float']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['Float']['output']>;
+  totalWorkHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "team_capacity_by_position". All fields are combined with a logical 'AND'. */
+export type TeamCapacityByPositionBoolExp = {
+  _and?: InputMaybe<Array<TeamCapacityByPositionBoolExp>>;
+  _not?: InputMaybe<TeamCapacityByPositionBoolExp>;
+  _or?: InputMaybe<Array<TeamCapacityByPositionBoolExp>>;
+  avgAdminPercentage?: InputMaybe<NumericComparisonExp>;
+  consultantCount?: InputMaybe<BigintComparisonExp>;
+  position?: InputMaybe<UserPositionComparisonExp>;
+  totalAdminHours?: InputMaybe<NumericComparisonExp>;
+  totalPayrollCapacity?: InputMaybe<NumericComparisonExp>;
+  totalWorkHours?: InputMaybe<NumericComparisonExp>;
+};
+
+/** aggregate max on columns */
+export type TeamCapacityByPositionMaxFields = {
+  __typename?: 'TeamCapacityByPositionMaxFields';
+  avgAdminPercentage?: Maybe<Scalars['numeric']['output']>;
+  consultantCount?: Maybe<Scalars['bigint']['output']>;
+  position?: Maybe<Scalars['user_position']['output']>;
+  totalAdminHours?: Maybe<Scalars['numeric']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['numeric']['output']>;
+  totalWorkHours?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate min on columns */
+export type TeamCapacityByPositionMinFields = {
+  __typename?: 'TeamCapacityByPositionMinFields';
+  avgAdminPercentage?: Maybe<Scalars['numeric']['output']>;
+  consultantCount?: Maybe<Scalars['bigint']['output']>;
+  position?: Maybe<Scalars['user_position']['output']>;
+  totalAdminHours?: Maybe<Scalars['numeric']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['numeric']['output']>;
+  totalWorkHours?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** Ordering options when selecting data from "team_capacity_by_position". */
+export type TeamCapacityByPositionOrderBy = {
+  avgAdminPercentage?: InputMaybe<OrderBy>;
+  consultantCount?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
+  totalAdminHours?: InputMaybe<OrderBy>;
+  totalPayrollCapacity?: InputMaybe<OrderBy>;
+  totalWorkHours?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "team_capacity_by_position" */
+export type TeamCapacityByPositionSelectColumn =
+  /** column name */
+  | 'avgAdminPercentage'
+  /** column name */
+  | 'consultantCount'
+  /** column name */
+  | 'position'
+  /** column name */
+  | 'totalAdminHours'
+  /** column name */
+  | 'totalPayrollCapacity'
+  /** column name */
+  | 'totalWorkHours'
+  | '%future added value';
+
+/** aggregate stddev on columns */
+export type TeamCapacityByPositionStddevFields = {
+  __typename?: 'TeamCapacityByPositionStddevFields';
+  avgAdminPercentage?: Maybe<Scalars['Float']['output']>;
+  consultantCount?: Maybe<Scalars['Float']['output']>;
+  totalAdminHours?: Maybe<Scalars['Float']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['Float']['output']>;
+  totalWorkHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type TeamCapacityByPositionStddevPopFields = {
+  __typename?: 'TeamCapacityByPositionStddevPopFields';
+  avgAdminPercentage?: Maybe<Scalars['Float']['output']>;
+  consultantCount?: Maybe<Scalars['Float']['output']>;
+  totalAdminHours?: Maybe<Scalars['Float']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['Float']['output']>;
+  totalWorkHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type TeamCapacityByPositionStddevSampFields = {
+  __typename?: 'TeamCapacityByPositionStddevSampFields';
+  avgAdminPercentage?: Maybe<Scalars['Float']['output']>;
+  consultantCount?: Maybe<Scalars['Float']['output']>;
+  totalAdminHours?: Maybe<Scalars['Float']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['Float']['output']>;
+  totalWorkHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "team_capacity_by_position" */
+export type TeamCapacityByPositionStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: TeamCapacityByPositionStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type TeamCapacityByPositionStreamCursorValueInput = {
+  avgAdminPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  consultantCount?: InputMaybe<Scalars['bigint']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  totalAdminHours?: InputMaybe<Scalars['numeric']['input']>;
+  totalPayrollCapacity?: InputMaybe<Scalars['numeric']['input']>;
+  totalWorkHours?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** aggregate sum on columns */
+export type TeamCapacityByPositionSumFields = {
+  __typename?: 'TeamCapacityByPositionSumFields';
+  avgAdminPercentage?: Maybe<Scalars['numeric']['output']>;
+  consultantCount?: Maybe<Scalars['bigint']['output']>;
+  totalAdminHours?: Maybe<Scalars['numeric']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['numeric']['output']>;
+  totalWorkHours?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate varPop on columns */
+export type TeamCapacityByPositionVarPopFields = {
+  __typename?: 'TeamCapacityByPositionVarPopFields';
+  avgAdminPercentage?: Maybe<Scalars['Float']['output']>;
+  consultantCount?: Maybe<Scalars['Float']['output']>;
+  totalAdminHours?: Maybe<Scalars['Float']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['Float']['output']>;
+  totalWorkHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type TeamCapacityByPositionVarSampFields = {
+  __typename?: 'TeamCapacityByPositionVarSampFields';
+  avgAdminPercentage?: Maybe<Scalars['Float']['output']>;
+  consultantCount?: Maybe<Scalars['Float']['output']>;
+  totalAdminHours?: Maybe<Scalars['Float']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['Float']['output']>;
+  totalWorkHours?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type TeamCapacityByPositionVarianceFields = {
+  __typename?: 'TeamCapacityByPositionVarianceFields';
+  avgAdminPercentage?: Maybe<Scalars['Float']['output']>;
+  consultantCount?: Maybe<Scalars['Float']['output']>;
+  totalAdminHours?: Maybe<Scalars['Float']['output']>;
+  totalPayrollCapacity?: Maybe<Scalars['Float']['output']>;
+  totalWorkHours?: Maybe<Scalars['Float']['output']>;
+};
+
+export type TeamCapacityInput = {
+  endDate: Scalars['String']['input'];
+  period: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
+  teamIds: Array<Scalars['String']['input']>;
+};
+
+export type TeamCapacityResponse = {
+  __typename?: 'TeamCapacityResponse';
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+  teamMembers: Array<WorkloadMetricsResponse>;
+  teamSummary: CapacitySummary;
 };
 
 /** Boolean expression to compare columns of type "timestamp". All fields are combined with logical 'AND'. */
@@ -870,6 +3238,223 @@ export type TimestamptzComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['timestamptz']['input']>>;
 };
 
+/** User favorite templates for quick access */
+export type UserEmailTemplateFavorites = {
+  __typename?: 'UserEmailTemplateFavorites';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  emailTemplate: EmailTemplates;
+  id: Scalars['uuid']['output'];
+  templateId: Scalars['uuid']['output'];
+  /** An object relationship */
+  user: Users;
+  userId: Scalars['uuid']['output'];
+};
+
+/** aggregated selection of "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesAggregate = {
+  __typename?: 'UserEmailTemplateFavoritesAggregate';
+  aggregate?: Maybe<UserEmailTemplateFavoritesAggregateFields>;
+  nodes: Array<UserEmailTemplateFavorites>;
+};
+
+export type UserEmailTemplateFavoritesAggregateBoolExp = {
+  count?: InputMaybe<UserEmailTemplateFavoritesAggregateBoolExpCount>;
+};
+
+/** aggregate fields of "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesAggregateFields = {
+  __typename?: 'UserEmailTemplateFavoritesAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<UserEmailTemplateFavoritesMaxFields>;
+  min?: Maybe<UserEmailTemplateFavoritesMinFields>;
+};
+
+
+/** aggregate fields of "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<UserEmailTemplateFavoritesMaxOrderBy>;
+  min?: InputMaybe<UserEmailTemplateFavoritesMinOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesArrRelInsertInput = {
+  data: Array<UserEmailTemplateFavoritesInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<UserEmailTemplateFavoritesOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "user_email_template_favorites". All fields are combined with a logical 'AND'. */
+export type UserEmailTemplateFavoritesBoolExp = {
+  _and?: InputMaybe<Array<UserEmailTemplateFavoritesBoolExp>>;
+  _not?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+  _or?: InputMaybe<Array<UserEmailTemplateFavoritesBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  emailTemplate?: InputMaybe<EmailTemplatesBoolExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  templateId?: InputMaybe<UuidComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** unique or primary key constraints on table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'user_email_template_favorites_pkey'
+  /** unique or primary key constraint on columns "user_id", "template_id" */
+  | 'user_email_template_favorites_user_id_template_id_key'
+  | '%future added value';
+
+/** input type for inserting data into table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesInsertInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  emailTemplate?: InputMaybe<EmailTemplatesObjRelInsertInput>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type UserEmailTemplateFavoritesMaxFields = {
+  __typename?: 'UserEmailTemplateFavoritesMaxFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  templateId?: Maybe<Scalars['uuid']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by max() on columns of table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesMaxOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type UserEmailTemplateFavoritesMinFields = {
+  __typename?: 'UserEmailTemplateFavoritesMinFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  templateId?: Maybe<Scalars['uuid']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by min() on columns of table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesMinOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesMutationResponse = {
+  __typename?: 'UserEmailTemplateFavoritesMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<UserEmailTemplateFavorites>;
+};
+
+/** on_conflict condition type for table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesOnConflict = {
+  constraint: UserEmailTemplateFavoritesConstraint;
+  updateColumns?: Array<UserEmailTemplateFavoritesUpdateColumn>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+};
+
+/** Ordering options when selecting data from "user_email_template_favorites". */
+export type UserEmailTemplateFavoritesOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  emailTemplate?: InputMaybe<EmailTemplatesOrderBy>;
+  id?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: user_email_template_favorites */
+export type UserEmailTemplateFavoritesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesSelectColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** input type for updating data in table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesSetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: UserEmailTemplateFavoritesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type UserEmailTemplateFavoritesStreamCursorValueInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "user_email_template_favorites" */
+export type UserEmailTemplateFavoritesUpdateColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+export type UserEmailTemplateFavoritesUpdates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<UserEmailTemplateFavoritesSetInput>;
+  /** filter the rows which have to be updated */
+  where: UserEmailTemplateFavoritesBoolExp;
+};
+
+/** Boolean expression to compare columns of type "user_position". All fields are combined with logical 'AND'. */
+export type UserPositionComparisonExp = {
+  _eq?: InputMaybe<Scalars['user_position']['input']>;
+  _gt?: InputMaybe<Scalars['user_position']['input']>;
+  _gte?: InputMaybe<Scalars['user_position']['input']>;
+  _in?: InputMaybe<Array<Scalars['user_position']['input']>>;
+  _isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['user_position']['input']>;
+  _lte?: InputMaybe<Scalars['user_position']['input']>;
+  _neq?: InputMaybe<Scalars['user_position']['input']>;
+  _nin?: InputMaybe<Array<Scalars['user_position']['input']>>;
+};
+
 /** Boolean expression to compare columns of type "user_role". All fields are combined with logical 'AND'. */
 export type UserRoleComparisonExp = {
   _eq?: InputMaybe<Scalars['user_role']['input']>;
@@ -881,6 +3466,15 @@ export type UserRoleComparisonExp = {
   _lte?: InputMaybe<Scalars['user_role']['input']>;
   _neq?: InputMaybe<Scalars['user_role']['input']>;
   _nin?: InputMaybe<Array<Scalars['user_role']['input']>>;
+};
+
+export type UserRoleResponse = {
+  __typename?: 'UserRoleResponse';
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  message?: Maybe<Scalars['String']['output']>;
+  newRole?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+  userId?: Maybe<Scalars['String']['output']>;
 };
 
 /** Boolean expression to compare columns of type "user_status_enum". All fields are combined with logical 'AND'. */
@@ -896,6 +3490,23 @@ export type UserStatusEnumComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['user_status_enum']['input']>>;
 };
 
+export type UtilizationStatsInput = {
+  endDate: Scalars['String']['input'];
+  period: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+export type UtilizationStatsResponse = {
+  __typename?: 'UtilizationStatsResponse';
+  averageUtilization: Scalars['Float']['output'];
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  message?: Maybe<Scalars['String']['output']>;
+  overallocatedPeriods: Scalars['Int']['output'];
+  success: Scalars['Boolean']['output'];
+  summary: CapacitySummary;
+};
+
 /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
 export type UuidComparisonExp = {
   _eq?: InputMaybe<Scalars['uuid']['input']>;
@@ -909,8 +3520,40 @@ export type UuidComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['uuid']['input']>>;
 };
 
+export type WorkloadMetricsInput = {
+  endDate: Scalars['String']['input'];
+  period: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+export type WorkloadMetricsResponse = {
+  __typename?: 'WorkloadMetricsResponse';
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  message?: Maybe<Scalars['String']['output']>;
+  periods: Array<WorkloadPeriodData>;
+  success: Scalars['Boolean']['output'];
+  summary: CapacitySummary;
+};
+
+export type WorkloadPeriodData = {
+  __typename?: 'WorkloadPeriodData';
+  adminTimeHours: Scalars['Float']['output'];
+  assignedHours: Scalars['Float']['output'];
+  assignments: Array<AssignmentDetails>;
+  date: Scalars['String']['output'];
+  fullDate: Scalars['String']['output'];
+  isOverallocated: Scalars['Boolean']['output'];
+  overflowHours: Scalars['Float']['output'];
+  payrollCapacityHours: Scalars['Float']['output'];
+  period: Scalars['String']['output'];
+  utilization: Scalars['Int']['output'];
+  utilizationHours: Scalars['Float']['output'];
+  workHours: Scalars['Float']['output'];
+};
+
 /** A union of all types that use the @key directive */
-export type _Entity = AdjustmentRules | AppSettings | AuditLogs | AuthEvents | BillingEventLogs | BillingInvoice | BillingItems | BillingPlans | ClientBillingAssignments | ClientExternalSystems | Clients | DataAccessLogs | ExternalSystems | FeatureFlags | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudits | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLogs | PermissionChanges | PermissionOverrides | Permissions | Resources | RolePermissions | Roles | SlowQueries | UserInvitations | UserRoles | Users | WorkSchedules;
+export type _Entity = PositionAdminDefaults | AdjustmentRules | AppSettings | AuditLogs | AuthEvents | BillingEventLogs | BillingInvoice | BillingItems | BillingPlans | ClientBillingAssignments | ClientExternalSystems | Clients | DataAccessLogs | ExternalSystems | FeatureFlags | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudits | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLogs | PermissionChanges | PermissionOverrides | Permissions | Resources | RolePermissions | Roles | SlowQueries | TimeEntries | UserInvitations | UserRoles | Users;
 
 export type _Service = {
   __typename?: '_Service';
@@ -1006,7 +3649,7 @@ export type AdjustmentRulesBoolExp = {
 
 /** unique or primary key constraints on table "adjustment_rules" */
 export type AdjustmentRulesConstraint =
-  /** unique or primary key constraint on columns "date_type_id", "cycle_id" */
+  /** unique or primary key constraint on columns "cycle_id", "date_type_id" */
   | 'adjustment_rules_cycle_id_date_type_id_key'
   /** unique or primary key constraint on columns "id" */
   | 'adjustment_rules_pkey'
@@ -2569,14 +5212,12 @@ export type BillingEventLogsUpdates = {
 export type BillingInvoice = {
   __typename?: 'billingInvoice';
   /** An array relationship */
-  billingEventLogs: Array<BillingEventLogs>;
-  /** An aggregate relationship */
-  billingEventLogsAggregate: BillingEventLogsAggregate;
-  /** An array relationship */
   billingInvoiceItems: Array<BillingInvoiceItem>;
   /** An aggregate relationship */
   billingInvoiceItemsAggregate: BillingInvoiceItemAggregate;
   billingPeriodEnd: Scalars['date']['output'];
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: Maybe<Scalars['uuid']['output']>;
   billingPeriodStart: Scalars['date']['output'];
   /** An object relationship */
   client: Clients;
@@ -2585,31 +5226,17 @@ export type BillingInvoice = {
   currency?: Maybe<Scalars['String']['output']>;
   dueDate?: Maybe<Scalars['date']['output']>;
   id: Scalars['uuid']['output'];
+  /** Unique invoice number for client reference */
+  invoiceNumber?: Maybe<Scalars['String']['output']>;
   issuedDate?: Maybe<Scalars['date']['output']>;
   notes?: Maybe<Scalars['String']['output']>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Int']['output']>;
   status: Scalars['String']['output'];
   totalAmount: Scalars['numeric']['output'];
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['numeric']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-};
-
-
-/** columns and relationships of "billing_invoice" */
-export type BillingInvoiceBillingEventLogsArgs = {
-  distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<BillingEventLogsOrderBy>>;
-  where?: InputMaybe<BillingEventLogsBoolExp>;
-};
-
-
-/** columns and relationships of "billing_invoice" */
-export type BillingInvoiceBillingEventLogsAggregateArgs = {
-  distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<BillingEventLogsOrderBy>>;
-  where?: InputMaybe<BillingEventLogsBoolExp>;
 };
 
 
@@ -2698,12 +5325,20 @@ export type BillingInvoiceArrRelInsertInput = {
 /** aggregate avg on columns */
 export type BillingInvoiceAvgFields = {
   __typename?: 'billingInvoiceAvgFields';
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Float']['output']>;
   totalAmount?: Maybe<Scalars['Float']['output']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by avg() on columns of table "billing_invoice" */
 export type BillingInvoiceAvgOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to filter rows from the table "billing_invoice". All fields are combined with a logical 'AND'. */
@@ -2711,11 +5346,10 @@ export type BillingInvoiceBoolExp = {
   _and?: InputMaybe<Array<BillingInvoiceBoolExp>>;
   _not?: InputMaybe<BillingInvoiceBoolExp>;
   _or?: InputMaybe<Array<BillingInvoiceBoolExp>>;
-  billingEventLogs?: InputMaybe<BillingEventLogsBoolExp>;
-  billingEventLogsAggregate?: InputMaybe<BillingEventLogsAggregateBoolExp>;
   billingInvoiceItems?: InputMaybe<BillingInvoiceItemBoolExp>;
   billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateBoolExp>;
   billingPeriodEnd?: InputMaybe<DateComparisonExp>;
+  billingPeriodId?: InputMaybe<UuidComparisonExp>;
   billingPeriodStart?: InputMaybe<DateComparisonExp>;
   client?: InputMaybe<ClientsBoolExp>;
   clientId?: InputMaybe<UuidComparisonExp>;
@@ -2723,29 +5357,39 @@ export type BillingInvoiceBoolExp = {
   currency?: InputMaybe<StringComparisonExp>;
   dueDate?: InputMaybe<DateComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
+  invoiceNumber?: InputMaybe<StringComparisonExp>;
   issuedDate?: InputMaybe<DateComparisonExp>;
   notes?: InputMaybe<StringComparisonExp>;
+  payrollCount?: InputMaybe<IntComparisonExp>;
   status?: InputMaybe<StringComparisonExp>;
   totalAmount?: InputMaybe<NumericComparisonExp>;
+  totalHours?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
 
 /** unique or primary key constraints on table "billing_invoice" */
 export type BillingInvoiceConstraint =
+  /** unique or primary key constraint on columns "invoice_number" */
+  | 'billing_invoice_invoice_number_key'
   /** unique or primary key constraint on columns "id" */
   | 'billing_invoice_pkey'
   | '%future added value';
 
 /** input type for incrementing numeric columns in table "billing_invoice" */
 export type BillingInvoiceIncInput = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<Scalars['Int']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** input type for inserting data into table "billing_invoice" */
 export type BillingInvoiceInsertInput = {
-  billingEventLogs?: InputMaybe<BillingEventLogsArrRelInsertInput>;
   billingInvoiceItems?: InputMaybe<BillingInvoiceItemArrRelInsertInput>;
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: InputMaybe<Scalars['uuid']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   client?: InputMaybe<ClientsObjRelInsertInput>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
@@ -2753,11 +5397,51 @@ export type BillingInvoiceInsertInput = {
   currency?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: InputMaybe<Scalars['String']['input']>;
   issuedDate?: InputMaybe<Scalars['date']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<Scalars['Int']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** columns and relationships of "billing_invoice_item" */
+export type BillingInvoiceItem = {
+  __typename?: 'billingInvoiceItem';
+  /** An object relationship */
+  billingInvoice: BillingInvoice;
+  /** An object relationship */
+  billingItem?: Maybe<BillingItems>;
+  billingPeriodEnd: Scalars['date']['output'];
+  billingPeriodStart: Scalars['date']['output'];
+  createdAt: Scalars['timestamptz']['output'];
+  descriptionOverride?: Maybe<Scalars['String']['output']>;
+  hourlyRate: Scalars['numeric']['output'];
+  id: Scalars['uuid']['output'];
+  invoiceId: Scalars['uuid']['output'];
+  itemId?: Maybe<Scalars['uuid']['output']>;
+  lineItemType?: Maybe<Scalars['String']['output']>;
+  netAmount?: Maybe<Scalars['numeric']['output']>;
+  quantityHours: Scalars['numeric']['output'];
+  taxAmount: Scalars['numeric']['output'];
+  totalAmount: Scalars['numeric']['output'];
+  updatedAt: Scalars['timestamptz']['output'];
+};
+
+/** aggregated selection of "billing_invoice_item" */
+export type BillingInvoiceItemAggregate = {
+  __typename?: 'billingInvoiceItemAggregate';
+  aggregate?: Maybe<BillingInvoiceItemAggregateFields>;
+  nodes: Array<BillingInvoiceItem>;
+};
+
+export type BillingInvoiceItemAggregateBoolExp = {
+  count?: InputMaybe<BillingInvoiceItemAggregateBoolExpCount>;
 };
 
 export type BillingInvoiceItemAggregateBoolExpCount = {
@@ -2767,36 +5451,534 @@ export type BillingInvoiceItemAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+/** aggregate fields of "billing_invoice_item" */
+export type BillingInvoiceItemAggregateFields = {
+  __typename?: 'billingInvoiceItemAggregateFields';
+  avg?: Maybe<BillingInvoiceItemAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<BillingInvoiceItemMaxFields>;
+  min?: Maybe<BillingInvoiceItemMinFields>;
+  stddev?: Maybe<BillingInvoiceItemStddevFields>;
+  stddevPop?: Maybe<BillingInvoiceItemStddevPopFields>;
+  stddevSamp?: Maybe<BillingInvoiceItemStddevSampFields>;
+  sum?: Maybe<BillingInvoiceItemSumFields>;
+  varPop?: Maybe<BillingInvoiceItemVarPopFields>;
+  varSamp?: Maybe<BillingInvoiceItemVarSampFields>;
+  variance?: Maybe<BillingInvoiceItemVarianceFields>;
+};
+
+
+/** aggregate fields of "billing_invoice_item" */
+export type BillingInvoiceItemAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "billing_invoice_item" */
+export type BillingInvoiceItemAggregateOrderBy = {
+  avg?: InputMaybe<BillingInvoiceItemAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<BillingInvoiceItemMaxOrderBy>;
+  min?: InputMaybe<BillingInvoiceItemMinOrderBy>;
+  stddev?: InputMaybe<BillingInvoiceItemStddevOrderBy>;
+  stddevPop?: InputMaybe<BillingInvoiceItemStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<BillingInvoiceItemStddevSampOrderBy>;
+  sum?: InputMaybe<BillingInvoiceItemSumOrderBy>;
+  varPop?: InputMaybe<BillingInvoiceItemVarPopOrderBy>;
+  varSamp?: InputMaybe<BillingInvoiceItemVarSampOrderBy>;
+  variance?: InputMaybe<BillingInvoiceItemVarianceOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "billing_invoice_item" */
+export type BillingInvoiceItemArrRelInsertInput = {
+  data: Array<BillingInvoiceItemInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<BillingInvoiceItemOnConflict>;
+};
+
+/** aggregate avg on columns */
+export type BillingInvoiceItemAvgFields = {
+  __typename?: 'billingInvoiceItemAvgFields';
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
+  netAmount?: Maybe<Scalars['Float']['output']>;
+  quantityHours?: Maybe<Scalars['Float']['output']>;
+  taxAmount?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemAvgOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "billing_invoice_item". All fields are combined with a logical 'AND'. */
+export type BillingInvoiceItemBoolExp = {
+  _and?: InputMaybe<Array<BillingInvoiceItemBoolExp>>;
+  _not?: InputMaybe<BillingInvoiceItemBoolExp>;
+  _or?: InputMaybe<Array<BillingInvoiceItemBoolExp>>;
+  billingInvoice?: InputMaybe<BillingInvoiceBoolExp>;
+  billingItem?: InputMaybe<BillingItemsBoolExp>;
+  billingPeriodEnd?: InputMaybe<DateComparisonExp>;
+  billingPeriodStart?: InputMaybe<DateComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  descriptionOverride?: InputMaybe<StringComparisonExp>;
+  hourlyRate?: InputMaybe<NumericComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  invoiceId?: InputMaybe<UuidComparisonExp>;
+  itemId?: InputMaybe<UuidComparisonExp>;
+  lineItemType?: InputMaybe<StringComparisonExp>;
+  netAmount?: InputMaybe<NumericComparisonExp>;
+  quantityHours?: InputMaybe<NumericComparisonExp>;
+  taxAmount?: InputMaybe<NumericComparisonExp>;
+  totalAmount?: InputMaybe<NumericComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "billing_invoice_item" */
+export type BillingInvoiceItemConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'billing_invoice_item_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "billing_invoice_item" */
+export type BillingInvoiceItemIncInput = {
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  quantityHours?: InputMaybe<Scalars['numeric']['input']>;
+  taxAmount?: InputMaybe<Scalars['numeric']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "billing_invoice_item" */
+export type BillingInvoiceItemInsertInput = {
+  billingInvoice?: InputMaybe<BillingInvoiceObjRelInsertInput>;
+  billingItem?: InputMaybe<BillingItemsObjRelInsertInput>;
+  billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  descriptionOverride?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  itemId?: InputMaybe<Scalars['uuid']['input']>;
+  lineItemType?: InputMaybe<Scalars['String']['input']>;
+  quantityHours?: InputMaybe<Scalars['numeric']['input']>;
+  taxAmount?: InputMaybe<Scalars['numeric']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate max on columns */
+export type BillingInvoiceItemMaxFields = {
+  __typename?: 'billingInvoiceItemMaxFields';
+  billingPeriodEnd?: Maybe<Scalars['date']['output']>;
+  billingPeriodStart?: Maybe<Scalars['date']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  descriptionOverride?: Maybe<Scalars['String']['output']>;
+  hourlyRate?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  invoiceId?: Maybe<Scalars['uuid']['output']>;
+  itemId?: Maybe<Scalars['uuid']['output']>;
+  lineItemType?: Maybe<Scalars['String']['output']>;
+  netAmount?: Maybe<Scalars['numeric']['output']>;
+  quantityHours?: Maybe<Scalars['numeric']['output']>;
+  taxAmount?: Maybe<Scalars['numeric']['output']>;
+  totalAmount?: Maybe<Scalars['numeric']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by max() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemMaxOrderBy = {
+  billingPeriodEnd?: InputMaybe<OrderBy>;
+  billingPeriodStart?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  descriptionOverride?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  invoiceId?: InputMaybe<OrderBy>;
+  itemId?: InputMaybe<OrderBy>;
+  lineItemType?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type BillingInvoiceItemMinFields = {
+  __typename?: 'billingInvoiceItemMinFields';
+  billingPeriodEnd?: Maybe<Scalars['date']['output']>;
+  billingPeriodStart?: Maybe<Scalars['date']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  descriptionOverride?: Maybe<Scalars['String']['output']>;
+  hourlyRate?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  invoiceId?: Maybe<Scalars['uuid']['output']>;
+  itemId?: Maybe<Scalars['uuid']['output']>;
+  lineItemType?: Maybe<Scalars['String']['output']>;
+  netAmount?: Maybe<Scalars['numeric']['output']>;
+  quantityHours?: Maybe<Scalars['numeric']['output']>;
+  taxAmount?: Maybe<Scalars['numeric']['output']>;
+  totalAmount?: Maybe<Scalars['numeric']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by min() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemMinOrderBy = {
+  billingPeriodEnd?: InputMaybe<OrderBy>;
+  billingPeriodStart?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  descriptionOverride?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  invoiceId?: InputMaybe<OrderBy>;
+  itemId?: InputMaybe<OrderBy>;
+  lineItemType?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "billing_invoice_item" */
+export type BillingInvoiceItemMutationResponse = {
+  __typename?: 'billingInvoiceItemMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<BillingInvoiceItem>;
+};
+
+/** on_conflict condition type for table "billing_invoice_item" */
+export type BillingInvoiceItemOnConflict = {
+  constraint: BillingInvoiceItemConstraint;
+  updateColumns?: Array<BillingInvoiceItemUpdateColumn>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+/** Ordering options when selecting data from "billing_invoice_item". */
+export type BillingInvoiceItemOrderBy = {
+  billingInvoice?: InputMaybe<BillingInvoiceOrderBy>;
+  billingItem?: InputMaybe<BillingItemsOrderBy>;
+  billingPeriodEnd?: InputMaybe<OrderBy>;
+  billingPeriodStart?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  descriptionOverride?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  invoiceId?: InputMaybe<OrderBy>;
+  itemId?: InputMaybe<OrderBy>;
+  lineItemType?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: billing_invoice_item */
+export type BillingInvoiceItemPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "billing_invoice_item" */
+export type BillingInvoiceItemSelectColumn =
+  /** column name */
+  | 'billingPeriodEnd'
+  /** column name */
+  | 'billingPeriodStart'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'descriptionOverride'
+  /** column name */
+  | 'hourlyRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'invoiceId'
+  /** column name */
+  | 'itemId'
+  /** column name */
+  | 'lineItemType'
+  /** column name */
+  | 'netAmount'
+  /** column name */
+  | 'quantityHours'
+  /** column name */
+  | 'taxAmount'
+  /** column name */
+  | 'totalAmount'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** input type for updating data in table "billing_invoice_item" */
+export type BillingInvoiceItemSetInput = {
+  billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  descriptionOverride?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  itemId?: InputMaybe<Scalars['uuid']['input']>;
+  lineItemType?: InputMaybe<Scalars['String']['input']>;
+  quantityHours?: InputMaybe<Scalars['numeric']['input']>;
+  taxAmount?: InputMaybe<Scalars['numeric']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type BillingInvoiceItemStddevFields = {
+  __typename?: 'billingInvoiceItemStddevFields';
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
+  netAmount?: Maybe<Scalars['Float']['output']>;
+  quantityHours?: Maybe<Scalars['Float']['output']>;
+  taxAmount?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemStddevOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevPop on columns */
+export type BillingInvoiceItemStddevPopFields = {
+  __typename?: 'billingInvoiceItemStddevPopFields';
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
+  netAmount?: Maybe<Scalars['Float']['output']>;
+  quantityHours?: Maybe<Scalars['Float']['output']>;
+  taxAmount?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevPop() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemStddevPopOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevSamp on columns */
+export type BillingInvoiceItemStddevSampFields = {
+  __typename?: 'billingInvoiceItemStddevSampFields';
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
+  netAmount?: Maybe<Scalars['Float']['output']>;
+  quantityHours?: Maybe<Scalars['Float']['output']>;
+  taxAmount?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevSamp() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemStddevSampOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "billingInvoiceItem" */
+export type BillingInvoiceItemStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: BillingInvoiceItemStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type BillingInvoiceItemStreamCursorValueInput = {
+  billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  descriptionOverride?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  itemId?: InputMaybe<Scalars['uuid']['input']>;
+  lineItemType?: InputMaybe<Scalars['String']['input']>;
+  netAmount?: InputMaybe<Scalars['numeric']['input']>;
+  quantityHours?: InputMaybe<Scalars['numeric']['input']>;
+  taxAmount?: InputMaybe<Scalars['numeric']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate sum on columns */
+export type BillingInvoiceItemSumFields = {
+  __typename?: 'billingInvoiceItemSumFields';
+  hourlyRate?: Maybe<Scalars['numeric']['output']>;
+  netAmount?: Maybe<Scalars['numeric']['output']>;
+  quantityHours?: Maybe<Scalars['numeric']['output']>;
+  taxAmount?: Maybe<Scalars['numeric']['output']>;
+  totalAmount?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** order by sum() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemSumOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "billing_invoice_item" */
+export type BillingInvoiceItemUpdateColumn =
+  /** column name */
+  | 'billingPeriodEnd'
+  /** column name */
+  | 'billingPeriodStart'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'descriptionOverride'
+  /** column name */
+  | 'hourlyRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'invoiceId'
+  /** column name */
+  | 'itemId'
+  /** column name */
+  | 'lineItemType'
+  /** column name */
+  | 'quantityHours'
+  /** column name */
+  | 'taxAmount'
+  /** column name */
+  | 'totalAmount'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type BillingInvoiceItemUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<BillingInvoiceItemIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<BillingInvoiceItemSetInput>;
+  /** filter the rows which have to be updated */
+  where: BillingInvoiceItemBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type BillingInvoiceItemVarPopFields = {
+  __typename?: 'billingInvoiceItemVarPopFields';
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
+  netAmount?: Maybe<Scalars['Float']['output']>;
+  quantityHours?: Maybe<Scalars['Float']['output']>;
+  taxAmount?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varPop() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemVarPopOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** aggregate varSamp on columns */
+export type BillingInvoiceItemVarSampFields = {
+  __typename?: 'billingInvoiceItemVarSampFields';
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
+  netAmount?: Maybe<Scalars['Float']['output']>;
+  quantityHours?: Maybe<Scalars['Float']['output']>;
+  taxAmount?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varSamp() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemVarSampOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
+/** aggregate variance on columns */
+export type BillingInvoiceItemVarianceFields = {
+  __typename?: 'billingInvoiceItemVarianceFields';
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
+  netAmount?: Maybe<Scalars['Float']['output']>;
+  quantityHours?: Maybe<Scalars['Float']['output']>;
+  taxAmount?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "billing_invoice_item" */
+export type BillingInvoiceItemVarianceOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+  netAmount?: InputMaybe<OrderBy>;
+  quantityHours?: InputMaybe<OrderBy>;
+  taxAmount?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
+};
+
 /** aggregate max on columns */
 export type BillingInvoiceMaxFields = {
   __typename?: 'billingInvoiceMaxFields';
   billingPeriodEnd?: Maybe<Scalars['date']['output']>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: Maybe<Scalars['uuid']['output']>;
   billingPeriodStart?: Maybe<Scalars['date']['output']>;
   clientId?: Maybe<Scalars['uuid']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   currency?: Maybe<Scalars['String']['output']>;
   dueDate?: Maybe<Scalars['date']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: Maybe<Scalars['String']['output']>;
   issuedDate?: Maybe<Scalars['date']['output']>;
   notes?: Maybe<Scalars['String']['output']>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Int']['output']>;
   status?: Maybe<Scalars['String']['output']>;
   totalAmount?: Maybe<Scalars['numeric']['output']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['numeric']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
 
 /** order by max() on columns of table "billing_invoice" */
 export type BillingInvoiceMaxOrderBy = {
   billingPeriodEnd?: InputMaybe<OrderBy>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   currency?: InputMaybe<OrderBy>;
   dueDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: InputMaybe<OrderBy>;
   issuedDate?: InputMaybe<OrderBy>;
   notes?: InputMaybe<OrderBy>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -2804,32 +5986,48 @@ export type BillingInvoiceMaxOrderBy = {
 export type BillingInvoiceMinFields = {
   __typename?: 'billingInvoiceMinFields';
   billingPeriodEnd?: Maybe<Scalars['date']['output']>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: Maybe<Scalars['uuid']['output']>;
   billingPeriodStart?: Maybe<Scalars['date']['output']>;
   clientId?: Maybe<Scalars['uuid']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   currency?: Maybe<Scalars['String']['output']>;
   dueDate?: Maybe<Scalars['date']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: Maybe<Scalars['String']['output']>;
   issuedDate?: Maybe<Scalars['date']['output']>;
   notes?: Maybe<Scalars['String']['output']>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Int']['output']>;
   status?: Maybe<Scalars['String']['output']>;
   totalAmount?: Maybe<Scalars['numeric']['output']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['numeric']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
 
 /** order by min() on columns of table "billing_invoice" */
 export type BillingInvoiceMinOrderBy = {
   billingPeriodEnd?: InputMaybe<OrderBy>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   currency?: InputMaybe<OrderBy>;
   dueDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: InputMaybe<OrderBy>;
   issuedDate?: InputMaybe<OrderBy>;
   notes?: InputMaybe<OrderBy>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -2858,9 +6056,9 @@ export type BillingInvoiceOnConflict = {
 
 /** Ordering options when selecting data from "billing_invoice". */
 export type BillingInvoiceOrderBy = {
-  billingEventLogsAggregate?: InputMaybe<BillingEventLogsAggregateOrderBy>;
   billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateOrderBy>;
   billingPeriodEnd?: InputMaybe<OrderBy>;
+  billingPeriodId?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
   client?: InputMaybe<ClientsOrderBy>;
   clientId?: InputMaybe<OrderBy>;
@@ -2868,10 +6066,13 @@ export type BillingInvoiceOrderBy = {
   currency?: InputMaybe<OrderBy>;
   dueDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  invoiceNumber?: InputMaybe<OrderBy>;
   issuedDate?: InputMaybe<OrderBy>;
   notes?: InputMaybe<OrderBy>;
+  payrollCount?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  totalHours?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -2885,6 +6086,8 @@ export type BillingInvoiceSelectColumn =
   /** column name */
   | 'billingPeriodEnd'
   /** column name */
+  | 'billingPeriodId'
+  /** column name */
   | 'billingPeriodStart'
   /** column name */
   | 'clientId'
@@ -2897,13 +6100,19 @@ export type BillingInvoiceSelectColumn =
   /** column name */
   | 'id'
   /** column name */
+  | 'invoiceNumber'
+  /** column name */
   | 'issuedDate'
   /** column name */
   | 'notes'
   /** column name */
+  | 'payrollCount'
+  /** column name */
   | 'status'
   /** column name */
   | 'totalAmount'
+  /** column name */
+  | 'totalHours'
   /** column name */
   | 'updatedAt'
   | '%future added value';
@@ -2911,50 +6120,82 @@ export type BillingInvoiceSelectColumn =
 /** input type for updating data in table "billing_invoice" */
 export type BillingInvoiceSetInput = {
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: InputMaybe<Scalars['uuid']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: InputMaybe<Scalars['String']['input']>;
   issuedDate?: InputMaybe<Scalars['date']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<Scalars['Int']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** aggregate stddev on columns */
 export type BillingInvoiceStddevFields = {
   __typename?: 'billingInvoiceStddevFields';
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Float']['output']>;
   totalAmount?: Maybe<Scalars['Float']['output']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddev() on columns of table "billing_invoice" */
 export type BillingInvoiceStddevOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** aggregate stddevPop on columns */
 export type BillingInvoiceStddevPopFields = {
   __typename?: 'billingInvoiceStddevPopFields';
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Float']['output']>;
   totalAmount?: Maybe<Scalars['Float']['output']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddevPop() on columns of table "billing_invoice" */
 export type BillingInvoiceStddevPopOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** aggregate stddevSamp on columns */
 export type BillingInvoiceStddevSampFields = {
   __typename?: 'billingInvoiceStddevSampFields';
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Float']['output']>;
   totalAmount?: Maybe<Scalars['Float']['output']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddevSamp() on columns of table "billing_invoice" */
 export type BillingInvoiceStddevSampOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "billingInvoice" */
@@ -2968,34 +6209,52 @@ export type BillingInvoiceStreamCursorInput = {
 /** Initial value of the column from where the streaming should start */
 export type BillingInvoiceStreamCursorValueInput = {
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Reference to billing period this invoice covers */
+  billingPeriodId?: InputMaybe<Scalars['uuid']['input']>;
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Unique invoice number for client reference */
+  invoiceNumber?: InputMaybe<Scalars['String']['input']>;
   issuedDate?: InputMaybe<Scalars['date']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<Scalars['Int']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** aggregate sum on columns */
 export type BillingInvoiceSumFields = {
   __typename?: 'billingInvoiceSumFields';
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Int']['output']>;
   totalAmount?: Maybe<Scalars['numeric']['output']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** order by sum() on columns of table "billing_invoice" */
 export type BillingInvoiceSumOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "billing_invoice" */
 export type BillingInvoiceUpdateColumn =
   /** column name */
   | 'billingPeriodEnd'
+  /** column name */
+  | 'billingPeriodId'
   /** column name */
   | 'billingPeriodStart'
   /** column name */
@@ -3009,13 +6268,19 @@ export type BillingInvoiceUpdateColumn =
   /** column name */
   | 'id'
   /** column name */
+  | 'invoiceNumber'
+  /** column name */
   | 'issuedDate'
   /** column name */
   | 'notes'
   /** column name */
+  | 'payrollCount'
+  /** column name */
   | 'status'
   /** column name */
   | 'totalAmount'
+  /** column name */
+  | 'totalHours'
   /** column name */
   | 'updatedAt'
   | '%future added value';
@@ -3032,49 +6297,130 @@ export type BillingInvoiceUpdates = {
 /** aggregate varPop on columns */
 export type BillingInvoiceVarPopFields = {
   __typename?: 'billingInvoiceVarPopFields';
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Float']['output']>;
   totalAmount?: Maybe<Scalars['Float']['output']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by varPop() on columns of table "billing_invoice" */
 export type BillingInvoiceVarPopOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** aggregate varSamp on columns */
 export type BillingInvoiceVarSampFields = {
   __typename?: 'billingInvoiceVarSampFields';
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Float']['output']>;
   totalAmount?: Maybe<Scalars['Float']['output']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by varSamp() on columns of table "billing_invoice" */
 export type BillingInvoiceVarSampOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** aggregate variance on columns */
 export type BillingInvoiceVarianceFields = {
   __typename?: 'billingInvoiceVarianceFields';
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: Maybe<Scalars['Float']['output']>;
   totalAmount?: Maybe<Scalars['Float']['output']>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by variance() on columns of table "billing_invoice" */
 export type BillingInvoiceVarianceOrderBy = {
+  /** Number of payroll jobs included in this invoice */
+  payrollCount?: InputMaybe<OrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  /** Total hours spent on services in this invoice */
+  totalHours?: InputMaybe<OrderBy>;
 };
 
 /** columns and relationships of "billing_items" */
 export type BillingItems = {
   __typename?: 'billingItems';
   amount?: Maybe<Scalars['numeric']['output']>;
+  approvalDate?: Maybe<Scalars['timestamptz']['output']>;
+  approvedBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  approver?: Maybe<Users>;
+  billingPlanId?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  billingPlanItems?: Maybe<BillingPlans>;
+  /** An object relationship */
+  billingServicePlan?: Maybe<BillingPlans>;
+  /** An object relationship */
+  client?: Maybe<Clients>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Manager who confirmed this item */
+  confirmedBy?: Maybe<Scalars['uuid']['output']>;
   createdAt?: Maybe<Scalars['timestamp']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  hourlyRate?: Maybe<Scalars['numeric']['output']>;
   id: Scalars['uuid']['output'];
   invoiceId?: Maybe<Scalars['uuid']['output']>;
+  isApproved?: Maybe<Scalars['Boolean']['output']>;
+  /** Additional notes about this billing item */
+  notes?: Maybe<Scalars['String']['output']>;
   payrollId?: Maybe<Scalars['uuid']['output']>;
   quantity: Scalars['Int']['output'];
   /** An object relationship */
   relatedPayroll?: Maybe<Payrolls>;
+  /** Reference to the service from service catalog */
+  serviceId?: Maybe<Scalars['uuid']['output']>;
+  serviceName?: Maybe<Scalars['String']['output']>;
+  /** An object relationship */
+  staffUser?: Maybe<Users>;
+  /** Staff member who performed the service */
+  staffUserId?: Maybe<Scalars['uuid']['output']>;
+  /** Status: draft, confirmed, billed */
+  status?: Maybe<Scalars['String']['output']>;
+  /** An array relationship */
+  timeEntries: Array<TimeEntries>;
+  /** An aggregate relationship */
+  timeEntriesAggregate: TimeEntriesAggregate;
+  totalAmount?: Maybe<Scalars['numeric']['output']>;
   unitPrice: Scalars['numeric']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  user?: Maybe<Users>;
+};
+
+
+/** columns and relationships of "billing_items" */
+export type BillingItemsTimeEntriesArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+
+/** columns and relationships of "billing_items" */
+export type BillingItemsTimeEntriesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
 };
 
 /** aggregated selection of "billing_items" */
@@ -3085,7 +6431,23 @@ export type BillingItemsAggregate = {
 };
 
 export type BillingItemsAggregateBoolExp = {
+  bool_and?: InputMaybe<BillingItemsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<BillingItemsAggregateBoolExpBool_Or>;
   count?: InputMaybe<BillingItemsAggregateBoolExpCount>;
+};
+
+export type BillingItemsAggregateBoolExpBool_And = {
+  arguments: BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingItemsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type BillingItemsAggregateBoolExpBool_Or = {
+  arguments: BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingItemsBoolExp>;
+  predicate: BooleanComparisonExp;
 };
 
 export type BillingItemsAggregateBoolExpCount = {
@@ -3144,14 +6506,18 @@ export type BillingItemsArrRelInsertInput = {
 export type BillingItemsAvgFields = {
   __typename?: 'billingItemsAvgFields';
   amount?: Maybe<Scalars['Float']['output']>;
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
   quantity?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
   unitPrice?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by avg() on columns of table "billing_items" */
 export type BillingItemsAvgOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
@@ -3161,14 +6527,37 @@ export type BillingItemsBoolExp = {
   _not?: InputMaybe<BillingItemsBoolExp>;
   _or?: InputMaybe<Array<BillingItemsBoolExp>>;
   amount?: InputMaybe<NumericComparisonExp>;
+  approvalDate?: InputMaybe<TimestamptzComparisonExp>;
+  approvedBy?: InputMaybe<UuidComparisonExp>;
+  approver?: InputMaybe<UsersBoolExp>;
+  billingPlanId?: InputMaybe<UuidComparisonExp>;
+  billingPlanItems?: InputMaybe<BillingPlansBoolExp>;
+  billingServicePlan?: InputMaybe<BillingPlansBoolExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  confirmedAt?: InputMaybe<TimestamptzComparisonExp>;
+  confirmedBy?: InputMaybe<UuidComparisonExp>;
   createdAt?: InputMaybe<TimestampComparisonExp>;
   description?: InputMaybe<StringComparisonExp>;
+  hourlyRate?: InputMaybe<NumericComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   invoiceId?: InputMaybe<UuidComparisonExp>;
+  isApproved?: InputMaybe<BooleanComparisonExp>;
+  notes?: InputMaybe<StringComparisonExp>;
   payrollId?: InputMaybe<UuidComparisonExp>;
   quantity?: InputMaybe<IntComparisonExp>;
   relatedPayroll?: InputMaybe<PayrollsBoolExp>;
+  serviceId?: InputMaybe<UuidComparisonExp>;
+  serviceName?: InputMaybe<StringComparisonExp>;
+  staffUser?: InputMaybe<UsersBoolExp>;
+  staffUserId?: InputMaybe<UuidComparisonExp>;
+  status?: InputMaybe<StringComparisonExp>;
+  timeEntries?: InputMaybe<TimeEntriesBoolExp>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
+  totalAmount?: InputMaybe<NumericComparisonExp>;
   unitPrice?: InputMaybe<NumericComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
 };
 
 /** unique or primary key constraints on table "billing_items" */
@@ -3179,70 +6568,180 @@ export type BillingItemsConstraint =
 
 /** input type for incrementing numeric columns in table "billing_items" */
 export type BillingItemsIncInput = {
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** input type for inserting data into table "billing_items" */
 export type BillingItemsInsertInput = {
+  approvalDate?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedBy?: InputMaybe<Scalars['uuid']['input']>;
+  approver?: InputMaybe<UsersObjRelInsertInput>;
+  billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
+  billingPlanItems?: InputMaybe<BillingPlansObjRelInsertInput>;
+  billingServicePlan?: InputMaybe<BillingPlansObjRelInsertInput>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Manager who confirmed this item */
+  confirmedBy?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  isApproved?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional notes about this billing item */
+  notes?: InputMaybe<Scalars['String']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
   relatedPayroll?: InputMaybe<PayrollsObjRelInsertInput>;
+  /** Reference to the service from service catalog */
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceName?: InputMaybe<Scalars['String']['input']>;
+  staffUser?: InputMaybe<UsersObjRelInsertInput>;
+  /** Staff member who performed the service */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Status: draft, confirmed, billed */
+  status?: InputMaybe<Scalars['String']['input']>;
+  timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
 };
 
 /** aggregate max on columns */
 export type BillingItemsMaxFields = {
   __typename?: 'billingItemsMaxFields';
   amount?: Maybe<Scalars['numeric']['output']>;
+  approvalDate?: Maybe<Scalars['timestamptz']['output']>;
+  approvedBy?: Maybe<Scalars['uuid']['output']>;
+  billingPlanId?: Maybe<Scalars['uuid']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Manager who confirmed this item */
+  confirmedBy?: Maybe<Scalars['uuid']['output']>;
   createdAt?: Maybe<Scalars['timestamp']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  hourlyRate?: Maybe<Scalars['numeric']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
   invoiceId?: Maybe<Scalars['uuid']['output']>;
+  /** Additional notes about this billing item */
+  notes?: Maybe<Scalars['String']['output']>;
   payrollId?: Maybe<Scalars['uuid']['output']>;
   quantity?: Maybe<Scalars['Int']['output']>;
+  /** Reference to the service from service catalog */
+  serviceId?: Maybe<Scalars['uuid']['output']>;
+  serviceName?: Maybe<Scalars['String']['output']>;
+  /** Staff member who performed the service */
+  staffUserId?: Maybe<Scalars['uuid']['output']>;
+  /** Status: draft, confirmed, billed */
+  status?: Maybe<Scalars['String']['output']>;
+  totalAmount?: Maybe<Scalars['numeric']['output']>;
   unitPrice?: Maybe<Scalars['numeric']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
 
 /** order by max() on columns of table "billing_items" */
 export type BillingItemsMaxOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  approvalDate?: InputMaybe<OrderBy>;
+  approvedBy?: InputMaybe<OrderBy>;
+  billingPlanId?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: InputMaybe<OrderBy>;
+  /** Manager who confirmed this item */
+  confirmedBy?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   invoiceId?: InputMaybe<OrderBy>;
+  /** Additional notes about this billing item */
+  notes?: InputMaybe<OrderBy>;
   payrollId?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  /** Reference to the service from service catalog */
+  serviceId?: InputMaybe<OrderBy>;
+  serviceName?: InputMaybe<OrderBy>;
+  /** Staff member who performed the service */
+  staffUserId?: InputMaybe<OrderBy>;
+  /** Status: draft, confirmed, billed */
+  status?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
 };
 
 /** aggregate min on columns */
 export type BillingItemsMinFields = {
   __typename?: 'billingItemsMinFields';
   amount?: Maybe<Scalars['numeric']['output']>;
+  approvalDate?: Maybe<Scalars['timestamptz']['output']>;
+  approvedBy?: Maybe<Scalars['uuid']['output']>;
+  billingPlanId?: Maybe<Scalars['uuid']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Manager who confirmed this item */
+  confirmedBy?: Maybe<Scalars['uuid']['output']>;
   createdAt?: Maybe<Scalars['timestamp']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  hourlyRate?: Maybe<Scalars['numeric']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
   invoiceId?: Maybe<Scalars['uuid']['output']>;
+  /** Additional notes about this billing item */
+  notes?: Maybe<Scalars['String']['output']>;
   payrollId?: Maybe<Scalars['uuid']['output']>;
   quantity?: Maybe<Scalars['Int']['output']>;
+  /** Reference to the service from service catalog */
+  serviceId?: Maybe<Scalars['uuid']['output']>;
+  serviceName?: Maybe<Scalars['String']['output']>;
+  /** Staff member who performed the service */
+  staffUserId?: Maybe<Scalars['uuid']['output']>;
+  /** Status: draft, confirmed, billed */
+  status?: Maybe<Scalars['String']['output']>;
+  totalAmount?: Maybe<Scalars['numeric']['output']>;
   unitPrice?: Maybe<Scalars['numeric']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
 
 /** order by min() on columns of table "billing_items" */
 export type BillingItemsMinOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  approvalDate?: InputMaybe<OrderBy>;
+  approvedBy?: InputMaybe<OrderBy>;
+  billingPlanId?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: InputMaybe<OrderBy>;
+  /** Manager who confirmed this item */
+  confirmedBy?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   invoiceId?: InputMaybe<OrderBy>;
+  /** Additional notes about this billing item */
+  notes?: InputMaybe<OrderBy>;
   payrollId?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  /** Reference to the service from service catalog */
+  serviceId?: InputMaybe<OrderBy>;
+  serviceName?: InputMaybe<OrderBy>;
+  /** Staff member who performed the service */
+  staffUserId?: InputMaybe<OrderBy>;
+  /** Status: draft, confirmed, billed */
+  status?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
 };
 
 /** response of any mutation on the table "billing_items" */
@@ -3252,6 +6751,13 @@ export type BillingItemsMutationResponse = {
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<BillingItems>;
+};
+
+/** input type for inserting object relation for remote table "billing_items" */
+export type BillingItemsObjRelInsertInput = {
+  data: BillingItemsInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<BillingItemsOnConflict>;
 };
 
 /** on_conflict condition type for table "billing_items" */
@@ -3264,14 +6770,36 @@ export type BillingItemsOnConflict = {
 /** Ordering options when selecting data from "billing_items". */
 export type BillingItemsOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  approvalDate?: InputMaybe<OrderBy>;
+  approvedBy?: InputMaybe<OrderBy>;
+  approver?: InputMaybe<UsersOrderBy>;
+  billingPlanId?: InputMaybe<OrderBy>;
+  billingPlanItems?: InputMaybe<BillingPlansOrderBy>;
+  billingServicePlan?: InputMaybe<BillingPlansOrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  confirmedAt?: InputMaybe<OrderBy>;
+  confirmedBy?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   invoiceId?: InputMaybe<OrderBy>;
+  isApproved?: InputMaybe<OrderBy>;
+  notes?: InputMaybe<OrderBy>;
   payrollId?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
   relatedPayroll?: InputMaybe<PayrollsOrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  serviceName?: InputMaybe<OrderBy>;
+  staffUser?: InputMaybe<UsersOrderBy>;
+  staffUserId?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
 };
 
 /** primary key columns input for table: billing_items */
@@ -3284,44 +6812,111 @@ export type BillingItemsSelectColumn =
   /** column name */
   | 'amount'
   /** column name */
+  | 'approvalDate'
+  /** column name */
+  | 'approvedBy'
+  /** column name */
+  | 'billingPlanId'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'confirmedAt'
+  /** column name */
+  | 'confirmedBy'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'description'
+  /** column name */
+  | 'hourlyRate'
   /** column name */
   | 'id'
   /** column name */
   | 'invoiceId'
   /** column name */
+  | 'isApproved'
+  /** column name */
+  | 'notes'
+  /** column name */
   | 'payrollId'
   /** column name */
   | 'quantity'
   /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'serviceName'
+  /** column name */
+  | 'staffUserId'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'totalAmount'
+  /** column name */
   | 'unitPrice'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** select "billingItemsAggregateBoolExpBool_andArgumentsColumns" columns of table "billing_items" */
+export type BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'isApproved'
+  | '%future added value';
+
+/** select "billingItemsAggregateBoolExpBool_orArgumentsColumns" columns of table "billing_items" */
+export type BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'isApproved'
   | '%future added value';
 
 /** input type for updating data in table "billing_items" */
 export type BillingItemsSetInput = {
+  approvalDate?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedBy?: InputMaybe<Scalars['uuid']['input']>;
+  billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Manager who confirmed this item */
+  confirmedBy?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  isApproved?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional notes about this billing item */
+  notes?: InputMaybe<Scalars['String']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+  /** Reference to the service from service catalog */
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceName?: InputMaybe<Scalars['String']['input']>;
+  /** Staff member who performed the service */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Status: draft, confirmed, billed */
+  status?: InputMaybe<Scalars['String']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** aggregate stddev on columns */
 export type BillingItemsStddevFields = {
   __typename?: 'billingItemsStddevFields';
   amount?: Maybe<Scalars['Float']['output']>;
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
   quantity?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
   unitPrice?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddev() on columns of table "billing_items" */
 export type BillingItemsStddevOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
@@ -3329,14 +6924,18 @@ export type BillingItemsStddevOrderBy = {
 export type BillingItemsStddevPopFields = {
   __typename?: 'billingItemsStddevPopFields';
   amount?: Maybe<Scalars['Float']['output']>;
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
   quantity?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
   unitPrice?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddevPop() on columns of table "billing_items" */
 export type BillingItemsStddevPopOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
@@ -3344,14 +6943,18 @@ export type BillingItemsStddevPopOrderBy = {
 export type BillingItemsStddevSampFields = {
   __typename?: 'billingItemsStddevSampFields';
   amount?: Maybe<Scalars['Float']['output']>;
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
   quantity?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
   unitPrice?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddevSamp() on columns of table "billing_items" */
 export type BillingItemsStddevSampOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
@@ -3366,46 +6969,101 @@ export type BillingItemsStreamCursorInput = {
 /** Initial value of the column from where the streaming should start */
 export type BillingItemsStreamCursorValueInput = {
   amount?: InputMaybe<Scalars['numeric']['input']>;
+  approvalDate?: InputMaybe<Scalars['timestamptz']['input']>;
+  approvedBy?: InputMaybe<Scalars['uuid']['input']>;
+  billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  /** When this item was confirmed by manager */
+  confirmedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Manager who confirmed this item */
+  confirmedBy?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   invoiceId?: InputMaybe<Scalars['uuid']['input']>;
+  isApproved?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional notes about this billing item */
+  notes?: InputMaybe<Scalars['String']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+  /** Reference to the service from service catalog */
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceName?: InputMaybe<Scalars['String']['input']>;
+  /** Staff member who performed the service */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Status: draft, confirmed, billed */
+  status?: InputMaybe<Scalars['String']['input']>;
+  totalAmount?: InputMaybe<Scalars['numeric']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** aggregate sum on columns */
 export type BillingItemsSumFields = {
   __typename?: 'billingItemsSumFields';
   amount?: Maybe<Scalars['numeric']['output']>;
+  hourlyRate?: Maybe<Scalars['numeric']['output']>;
   quantity?: Maybe<Scalars['Int']['output']>;
+  totalAmount?: Maybe<Scalars['numeric']['output']>;
   unitPrice?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** order by sum() on columns of table "billing_items" */
 export type BillingItemsSumOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "billing_items" */
 export type BillingItemsUpdateColumn =
   /** column name */
+  | 'approvalDate'
+  /** column name */
+  | 'approvedBy'
+  /** column name */
+  | 'billingPlanId'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'confirmedAt'
+  /** column name */
+  | 'confirmedBy'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'description'
+  /** column name */
+  | 'hourlyRate'
   /** column name */
   | 'id'
   /** column name */
   | 'invoiceId'
   /** column name */
+  | 'isApproved'
+  /** column name */
+  | 'notes'
+  /** column name */
   | 'payrollId'
   /** column name */
   | 'quantity'
   /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'serviceName'
+  /** column name */
+  | 'staffUserId'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'totalAmount'
+  /** column name */
   | 'unitPrice'
+  /** column name */
+  | 'updatedAt'
   | '%future added value';
 
 export type BillingItemsUpdates = {
@@ -3421,14 +7079,18 @@ export type BillingItemsUpdates = {
 export type BillingItemsVarPopFields = {
   __typename?: 'billingItemsVarPopFields';
   amount?: Maybe<Scalars['Float']['output']>;
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
   quantity?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
   unitPrice?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by varPop() on columns of table "billing_items" */
 export type BillingItemsVarPopOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
@@ -3436,14 +7098,18 @@ export type BillingItemsVarPopOrderBy = {
 export type BillingItemsVarSampFields = {
   __typename?: 'billingItemsVarSampFields';
   amount?: Maybe<Scalars['Float']['output']>;
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
   quantity?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
   unitPrice?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by varSamp() on columns of table "billing_items" */
 export type BillingItemsVarSampOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
 };
 
@@ -3451,20 +7117,344 @@ export type BillingItemsVarSampOrderBy = {
 export type BillingItemsVarianceFields = {
   __typename?: 'billingItemsVarianceFields';
   amount?: Maybe<Scalars['Float']['output']>;
+  hourlyRate?: Maybe<Scalars['Float']['output']>;
   quantity?: Maybe<Scalars['Float']['output']>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
   unitPrice?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by variance() on columns of table "billing_items" */
 export type BillingItemsVarianceOrderBy = {
   amount?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  totalAmount?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
+};
+
+/** Billing periods for consolidating multiple payroll jobs into client invoices */
+export type BillingPeriods = {
+  __typename?: 'billingPeriods';
+  /** An array relationship */
+  billingInvoices: Array<BillingInvoice>;
+  /** An aggregate relationship */
+  billingInvoicesAggregate: BillingInvoiceAggregate;
+  /** An object relationship */
+  client: Clients;
+  /** Client this billing period is for */
+  clientId: Scalars['uuid']['output'];
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id: Scalars['uuid']['output'];
+  /** End date of billing period */
+  periodEnd: Scalars['date']['output'];
+  /** Start date of billing period */
+  periodStart: Scalars['date']['output'];
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+
+/** Billing periods for consolidating multiple payroll jobs into client invoices */
+export type BillingPeriodsBillingInvoicesArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceOrderBy>>;
+  where?: InputMaybe<BillingInvoiceBoolExp>;
+};
+
+
+/** Billing periods for consolidating multiple payroll jobs into client invoices */
+export type BillingPeriodsBillingInvoicesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceOrderBy>>;
+  where?: InputMaybe<BillingInvoiceBoolExp>;
+};
+
+/** aggregated selection of "billing_periods" */
+export type BillingPeriodsAggregate = {
+  __typename?: 'billingPeriodsAggregate';
+  aggregate?: Maybe<BillingPeriodsAggregateFields>;
+  nodes: Array<BillingPeriods>;
+};
+
+export type BillingPeriodsAggregateBoolExp = {
+  count?: InputMaybe<BillingPeriodsAggregateBoolExpCount>;
+};
+
+export type BillingPeriodsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<BillingPeriodsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingPeriodsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+/** aggregate fields of "billing_periods" */
+export type BillingPeriodsAggregateFields = {
+  __typename?: 'billingPeriodsAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<BillingPeriodsMaxFields>;
+  min?: Maybe<BillingPeriodsMinFields>;
+};
+
+
+/** aggregate fields of "billing_periods" */
+export type BillingPeriodsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<BillingPeriodsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "billing_periods" */
+export type BillingPeriodsAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<BillingPeriodsMaxOrderBy>;
+  min?: InputMaybe<BillingPeriodsMinOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "billing_periods" */
+export type BillingPeriodsArrRelInsertInput = {
+  data: Array<BillingPeriodsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<BillingPeriodsOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "billing_periods". All fields are combined with a logical 'AND'. */
+export type BillingPeriodsBoolExp = {
+  _and?: InputMaybe<Array<BillingPeriodsBoolExp>>;
+  _not?: InputMaybe<BillingPeriodsBoolExp>;
+  _or?: InputMaybe<Array<BillingPeriodsBoolExp>>;
+  billingInvoices?: InputMaybe<BillingInvoiceBoolExp>;
+  billingInvoicesAggregate?: InputMaybe<BillingInvoiceAggregateBoolExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  periodEnd?: InputMaybe<DateComparisonExp>;
+  periodStart?: InputMaybe<DateComparisonExp>;
+  status?: InputMaybe<StringComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "billing_periods" */
+export type BillingPeriodsConstraint =
+  /** unique or primary key constraint on columns "period_end", "period_start", "client_id" */
+  | 'billing_periods_client_id_period_start_period_end_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'billing_periods_pkey'
+  | '%future added value';
+
+/** input type for inserting data into table "billing_periods" */
+export type BillingPeriodsInsertInput = {
+  billingInvoices?: InputMaybe<BillingInvoiceArrRelInsertInput>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  /** Client this billing period is for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** End date of billing period */
+  periodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Start date of billing period */
+  periodStart?: InputMaybe<Scalars['date']['input']>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate max on columns */
+export type BillingPeriodsMaxFields = {
+  __typename?: 'billingPeriodsMaxFields';
+  /** Client this billing period is for */
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  /** End date of billing period */
+  periodEnd?: Maybe<Scalars['date']['output']>;
+  /** Start date of billing period */
+  periodStart?: Maybe<Scalars['date']['output']>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by max() on columns of table "billing_periods" */
+export type BillingPeriodsMaxOrderBy = {
+  /** Client this billing period is for */
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  /** End date of billing period */
+  periodEnd?: InputMaybe<OrderBy>;
+  /** Start date of billing period */
+  periodStart?: InputMaybe<OrderBy>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type BillingPeriodsMinFields = {
+  __typename?: 'billingPeriodsMinFields';
+  /** Client this billing period is for */
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  /** End date of billing period */
+  periodEnd?: Maybe<Scalars['date']['output']>;
+  /** Start date of billing period */
+  periodStart?: Maybe<Scalars['date']['output']>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by min() on columns of table "billing_periods" */
+export type BillingPeriodsMinOrderBy = {
+  /** Client this billing period is for */
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  /** End date of billing period */
+  periodEnd?: InputMaybe<OrderBy>;
+  /** Start date of billing period */
+  periodStart?: InputMaybe<OrderBy>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "billing_periods" */
+export type BillingPeriodsMutationResponse = {
+  __typename?: 'billingPeriodsMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<BillingPeriods>;
+};
+
+/** on_conflict condition type for table "billing_periods" */
+export type BillingPeriodsOnConflict = {
+  constraint: BillingPeriodsConstraint;
+  updateColumns?: Array<BillingPeriodsUpdateColumn>;
+  where?: InputMaybe<BillingPeriodsBoolExp>;
+};
+
+/** Ordering options when selecting data from "billing_periods". */
+export type BillingPeriodsOrderBy = {
+  billingInvoicesAggregate?: InputMaybe<BillingInvoiceAggregateOrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  periodEnd?: InputMaybe<OrderBy>;
+  periodStart?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: billing_periods */
+export type BillingPeriodsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "billing_periods" */
+export type BillingPeriodsSelectColumn =
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'periodEnd'
+  /** column name */
+  | 'periodStart'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** input type for updating data in table "billing_periods" */
+export type BillingPeriodsSetInput = {
+  /** Client this billing period is for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** End date of billing period */
+  periodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Start date of billing period */
+  periodStart?: InputMaybe<Scalars['date']['input']>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** Streaming cursor of the table "billingPeriods" */
+export type BillingPeriodsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: BillingPeriodsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type BillingPeriodsStreamCursorValueInput = {
+  /** Client this billing period is for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** End date of billing period */
+  periodEnd?: InputMaybe<Scalars['date']['input']>;
+  /** Start date of billing period */
+  periodStart?: InputMaybe<Scalars['date']['input']>;
+  /** Status: open, ready_to_invoice, invoiced, paid */
+  status?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** update columns of table "billing_periods" */
+export type BillingPeriodsUpdateColumn =
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'periodEnd'
+  /** column name */
+  | 'periodStart'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type BillingPeriodsUpdates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<BillingPeriodsSetInput>;
+  /** filter the rows which have to be updated */
+  where: BillingPeriodsBoolExp;
 };
 
 /** columns and relationships of "billing_plan" */
 export type BillingPlans = {
   __typename?: 'billingPlans';
+  /** An array relationship */
+  billingPlanItems: Array<BillingItems>;
+  /** An aggregate relationship */
+  billingPlanItemsAggregate: BillingItemsAggregate;
+  /** An array relationship */
+  billingServiceItems: Array<BillingItems>;
+  /** An aggregate relationship */
+  billingServiceItemsAggregate: BillingItemsAggregate;
+  /** Unit of billing: Per Payroll, Per Payslip, Per Employee, Per Hour, Per State, Once Off, Per Month */
+  billingUnit?: Maybe<Scalars['String']['output']>;
+  /** Service category: Processing, Setup, Employee Management, Compliance, etc. */
+  category?: Maybe<Scalars['String']['output']>;
   /** An array relationship */
   clientBillingAssignments: Array<ClientBillingAssignments>;
   /** An aggregate relationship */
@@ -3473,9 +7463,52 @@ export type BillingPlans = {
   currency: Scalars['String']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['uuid']['output'];
+  /** Whether this service is currently available */
+  isActive?: Maybe<Scalars['Boolean']['output']>;
   name: Scalars['String']['output'];
-  ratePerPayroll: Scalars['numeric']['output'];
+  /** Standard rate for this service */
+  standardRate: Scalars['numeric']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+
+/** columns and relationships of "billing_plan" */
+export type BillingPlansBillingPlanItemsArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** columns and relationships of "billing_plan" */
+export type BillingPlansBillingPlanItemsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** columns and relationships of "billing_plan" */
+export type BillingPlansBillingServiceItemsArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** columns and relationships of "billing_plan" */
+export type BillingPlansBillingServiceItemsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
 };
 
 
@@ -3531,7 +7564,8 @@ export type BillingPlansAggregateFieldsCountArgs = {
 /** aggregate avg on columns */
 export type BillingPlansAvgFields = {
   __typename?: 'billingPlansAvgFields';
-  ratePerPayroll?: Maybe<Scalars['Float']['output']>;
+  /** Standard rate for this service */
+  standardRate?: Maybe<Scalars['Float']['output']>;
 };
 
 /** Boolean expression to filter rows from the table "billing_plan". All fields are combined with a logical 'AND'. */
@@ -3539,14 +7573,21 @@ export type BillingPlansBoolExp = {
   _and?: InputMaybe<Array<BillingPlansBoolExp>>;
   _not?: InputMaybe<BillingPlansBoolExp>;
   _or?: InputMaybe<Array<BillingPlansBoolExp>>;
+  billingPlanItems?: InputMaybe<BillingItemsBoolExp>;
+  billingPlanItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingServiceItems?: InputMaybe<BillingItemsBoolExp>;
+  billingServiceItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingUnit?: InputMaybe<StringComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
   clientBillingAssignments?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   clientBillingAssignmentsAggregate?: InputMaybe<ClientBillingAssignmentsAggregateBoolExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   currency?: InputMaybe<StringComparisonExp>;
   description?: InputMaybe<StringComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
   name?: InputMaybe<StringComparisonExp>;
-  ratePerPayroll?: InputMaybe<NumericComparisonExp>;
+  standardRate?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
 
@@ -3558,42 +7599,62 @@ export type BillingPlansConstraint =
 
 /** input type for incrementing numeric columns in table "billing_plan" */
 export type BillingPlansIncInput = {
-  ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
+  /** Standard rate for this service */
+  standardRate?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** input type for inserting data into table "billing_plan" */
 export type BillingPlansInsertInput = {
+  billingPlanItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  billingServiceItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  /** Unit of billing: Per Payroll, Per Payslip, Per Employee, Per Hour, Per State, Once Off, Per Month */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  /** Service category: Processing, Setup, Employee Management, Compliance, etc. */
+  category?: InputMaybe<Scalars['String']['input']>;
   clientBillingAssignments?: InputMaybe<ClientBillingAssignmentsArrRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether this service is currently available */
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
+  /** Standard rate for this service */
+  standardRate?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** aggregate max on columns */
 export type BillingPlansMaxFields = {
   __typename?: 'billingPlansMaxFields';
+  /** Unit of billing: Per Payroll, Per Payslip, Per Employee, Per Hour, Per State, Once Off, Per Month */
+  billingUnit?: Maybe<Scalars['String']['output']>;
+  /** Service category: Processing, Setup, Employee Management, Compliance, etc. */
+  category?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   currency?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  ratePerPayroll?: Maybe<Scalars['numeric']['output']>;
+  /** Standard rate for this service */
+  standardRate?: Maybe<Scalars['numeric']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
 
 /** aggregate min on columns */
 export type BillingPlansMinFields = {
   __typename?: 'billingPlansMinFields';
+  /** Unit of billing: Per Payroll, Per Payslip, Per Employee, Per Hour, Per State, Once Off, Per Month */
+  billingUnit?: Maybe<Scalars['String']['output']>;
+  /** Service category: Processing, Setup, Employee Management, Compliance, etc. */
+  category?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   currency?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  ratePerPayroll?: Maybe<Scalars['numeric']['output']>;
+  /** Standard rate for this service */
+  standardRate?: Maybe<Scalars['numeric']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
 
@@ -3622,13 +7683,18 @@ export type BillingPlansOnConflict = {
 
 /** Ordering options when selecting data from "billing_plan". */
 export type BillingPlansOrderBy = {
+  billingPlanItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingServiceItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingUnit?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
   clientBillingAssignmentsAggregate?: InputMaybe<ClientBillingAssignmentsAggregateOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   currency?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
   name?: InputMaybe<OrderBy>;
-  ratePerPayroll?: InputMaybe<OrderBy>;
+  standardRate?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -3640,6 +7706,10 @@ export type BillingPlansPkColumnsInput = {
 /** select columns of table "billing_plan" */
 export type BillingPlansSelectColumn =
   /** column name */
+  | 'billingUnit'
+  /** column name */
+  | 'category'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'currency'
@@ -3648,40 +7718,52 @@ export type BillingPlansSelectColumn =
   /** column name */
   | 'id'
   /** column name */
+  | 'isActive'
+  /** column name */
   | 'name'
   /** column name */
-  | 'ratePerPayroll'
+  | 'standardRate'
   /** column name */
   | 'updatedAt'
   | '%future added value';
 
 /** input type for updating data in table "billing_plan" */
 export type BillingPlansSetInput = {
+  /** Unit of billing: Per Payroll, Per Payslip, Per Employee, Per Hour, Per State, Once Off, Per Month */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  /** Service category: Processing, Setup, Employee Management, Compliance, etc. */
+  category?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether this service is currently available */
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
+  /** Standard rate for this service */
+  standardRate?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** aggregate stddev on columns */
 export type BillingPlansStddevFields = {
   __typename?: 'billingPlansStddevFields';
-  ratePerPayroll?: Maybe<Scalars['Float']['output']>;
+  /** Standard rate for this service */
+  standardRate?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddevPop on columns */
 export type BillingPlansStddevPopFields = {
   __typename?: 'billingPlansStddevPopFields';
-  ratePerPayroll?: Maybe<Scalars['Float']['output']>;
+  /** Standard rate for this service */
+  standardRate?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddevSamp on columns */
 export type BillingPlansStddevSampFields = {
   __typename?: 'billingPlansStddevSampFields';
-  ratePerPayroll?: Maybe<Scalars['Float']['output']>;
+  /** Standard rate for this service */
+  standardRate?: Maybe<Scalars['Float']['output']>;
 };
 
 /** Streaming cursor of the table "billingPlans" */
@@ -3694,23 +7776,35 @@ export type BillingPlansStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type BillingPlansStreamCursorValueInput = {
+  /** Unit of billing: Per Payroll, Per Payslip, Per Employee, Per Hour, Per State, Once Off, Per Month */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  /** Service category: Processing, Setup, Employee Management, Compliance, etc. */
+  category?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether this service is currently available */
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  ratePerPayroll?: InputMaybe<Scalars['numeric']['input']>;
+  /** Standard rate for this service */
+  standardRate?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** aggregate sum on columns */
 export type BillingPlansSumFields = {
   __typename?: 'billingPlansSumFields';
-  ratePerPayroll?: Maybe<Scalars['numeric']['output']>;
+  /** Standard rate for this service */
+  standardRate?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** update columns of table "billing_plan" */
 export type BillingPlansUpdateColumn =
+  /** column name */
+  | 'billingUnit'
+  /** column name */
+  | 'category'
   /** column name */
   | 'createdAt'
   /** column name */
@@ -3720,9 +7814,11 @@ export type BillingPlansUpdateColumn =
   /** column name */
   | 'id'
   /** column name */
+  | 'isActive'
+  /** column name */
   | 'name'
   /** column name */
-  | 'ratePerPayroll'
+  | 'standardRate'
   /** column name */
   | 'updatedAt'
   | '%future added value';
@@ -3739,19 +7835,22 @@ export type BillingPlansUpdates = {
 /** aggregate varPop on columns */
 export type BillingPlansVarPopFields = {
   __typename?: 'billingPlansVarPopFields';
-  ratePerPayroll?: Maybe<Scalars['Float']['output']>;
+  /** Standard rate for this service */
+  standardRate?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate varSamp on columns */
 export type BillingPlansVarSampFields = {
   __typename?: 'billingPlansVarSampFields';
-  ratePerPayroll?: Maybe<Scalars['Float']['output']>;
+  /** Standard rate for this service */
+  standardRate?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type BillingPlansVarianceFields = {
   __typename?: 'billingPlansVarianceFields';
-  ratePerPayroll?: Maybe<Scalars['Float']['output']>;
+  /** Standard rate for this service */
+  standardRate?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "client_billing_assignment" */
@@ -3761,12 +7860,20 @@ export type ClientBillingAssignments = {
   assignedBillingPlan: BillingPlans;
   /** An object relationship */
   assignedClient: Clients;
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: Maybe<Scalars['String']['output']>;
   billingPlanId: Scalars['uuid']['output'];
   clientId: Scalars['uuid']['output'];
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['numeric']['output']>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: Maybe<Scalars['date']['output']>;
   endDate?: Maybe<Scalars['date']['output']>;
   id: Scalars['uuid']['output'];
   isActive?: Maybe<Scalars['Boolean']['output']>;
+  /** Whether this service is enabled for this client */
+  isEnabled?: Maybe<Scalars['Boolean']['output']>;
   startDate: Scalars['date']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
@@ -3808,9 +7915,17 @@ export type ClientBillingAssignmentsAggregateBoolExpCount = {
 /** aggregate fields of "client_billing_assignment" */
 export type ClientBillingAssignmentsAggregateFields = {
   __typename?: 'clientBillingAssignmentsAggregateFields';
+  avg?: Maybe<ClientBillingAssignmentsAvgFields>;
   count: Scalars['Int']['output'];
   max?: Maybe<ClientBillingAssignmentsMaxFields>;
   min?: Maybe<ClientBillingAssignmentsMinFields>;
+  stddev?: Maybe<ClientBillingAssignmentsStddevFields>;
+  stddevPop?: Maybe<ClientBillingAssignmentsStddevPopFields>;
+  stddevSamp?: Maybe<ClientBillingAssignmentsStddevSampFields>;
+  sum?: Maybe<ClientBillingAssignmentsSumFields>;
+  varPop?: Maybe<ClientBillingAssignmentsVarPopFields>;
+  varSamp?: Maybe<ClientBillingAssignmentsVarSampFields>;
+  variance?: Maybe<ClientBillingAssignmentsVarianceFields>;
 };
 
 
@@ -3822,9 +7937,17 @@ export type ClientBillingAssignmentsAggregateFieldsCountArgs = {
 
 /** order by aggregate values of table "client_billing_assignment" */
 export type ClientBillingAssignmentsAggregateOrderBy = {
+  avg?: InputMaybe<ClientBillingAssignmentsAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<ClientBillingAssignmentsMaxOrderBy>;
   min?: InputMaybe<ClientBillingAssignmentsMinOrderBy>;
+  stddev?: InputMaybe<ClientBillingAssignmentsStddevOrderBy>;
+  stddevPop?: InputMaybe<ClientBillingAssignmentsStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<ClientBillingAssignmentsStddevSampOrderBy>;
+  sum?: InputMaybe<ClientBillingAssignmentsSumOrderBy>;
+  varPop?: InputMaybe<ClientBillingAssignmentsVarPopOrderBy>;
+  varSamp?: InputMaybe<ClientBillingAssignmentsVarSampOrderBy>;
+  variance?: InputMaybe<ClientBillingAssignmentsVarianceOrderBy>;
 };
 
 /** input type for inserting array relation for remote table "client_billing_assignment" */
@@ -3834,6 +7957,19 @@ export type ClientBillingAssignmentsArrRelInsertInput = {
   onConflict?: InputMaybe<ClientBillingAssignmentsOnConflict>;
 };
 
+/** aggregate avg on columns */
+export type ClientBillingAssignmentsAvgFields = {
+  __typename?: 'clientBillingAssignmentsAvgFields';
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsAvgOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
 /** Boolean expression to filter rows from the table "client_billing_assignment". All fields are combined with a logical 'AND'. */
 export type ClientBillingAssignmentsBoolExp = {
   _and?: InputMaybe<Array<ClientBillingAssignmentsBoolExp>>;
@@ -3841,12 +7977,16 @@ export type ClientBillingAssignmentsBoolExp = {
   _or?: InputMaybe<Array<ClientBillingAssignmentsBoolExp>>;
   assignedBillingPlan?: InputMaybe<BillingPlansBoolExp>;
   assignedClient?: InputMaybe<ClientsBoolExp>;
+  billingFrequency?: InputMaybe<StringComparisonExp>;
   billingPlanId?: InputMaybe<UuidComparisonExp>;
   clientId?: InputMaybe<UuidComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  customRate?: InputMaybe<NumericComparisonExp>;
+  effectiveDate?: InputMaybe<DateComparisonExp>;
   endDate?: InputMaybe<DateComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   isActive?: InputMaybe<BooleanComparisonExp>;
+  isEnabled?: InputMaybe<BooleanComparisonExp>;
   startDate?: InputMaybe<DateComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
@@ -3857,16 +7997,30 @@ export type ClientBillingAssignmentsConstraint =
   | 'client_billing_assignment_pkey'
   | '%future added value';
 
+/** input type for incrementing numeric columns in table "client_billing_assignment" */
+export type ClientBillingAssignmentsIncInput = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+};
+
 /** input type for inserting data into table "client_billing_assignment" */
 export type ClientBillingAssignmentsInsertInput = {
   assignedBillingPlan?: InputMaybe<BillingPlansObjRelInsertInput>;
   assignedClient?: InputMaybe<ClientsObjRelInsertInput>;
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: InputMaybe<Scalars['date']['input']>;
   endDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether this service is enabled for this client */
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   startDate?: InputMaybe<Scalars['date']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -3874,9 +8028,15 @@ export type ClientBillingAssignmentsInsertInput = {
 /** aggregate max on columns */
 export type ClientBillingAssignmentsMaxFields = {
   __typename?: 'clientBillingAssignmentsMaxFields';
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: Maybe<Scalars['String']['output']>;
   billingPlanId?: Maybe<Scalars['uuid']['output']>;
   clientId?: Maybe<Scalars['uuid']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['numeric']['output']>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: Maybe<Scalars['date']['output']>;
   endDate?: Maybe<Scalars['date']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
   startDate?: Maybe<Scalars['date']['output']>;
@@ -3885,9 +8045,15 @@ export type ClientBillingAssignmentsMaxFields = {
 
 /** order by max() on columns of table "client_billing_assignment" */
 export type ClientBillingAssignmentsMaxOrderBy = {
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: InputMaybe<OrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: InputMaybe<OrderBy>;
   endDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
@@ -3897,9 +8063,15 @@ export type ClientBillingAssignmentsMaxOrderBy = {
 /** aggregate min on columns */
 export type ClientBillingAssignmentsMinFields = {
   __typename?: 'clientBillingAssignmentsMinFields';
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: Maybe<Scalars['String']['output']>;
   billingPlanId?: Maybe<Scalars['uuid']['output']>;
   clientId?: Maybe<Scalars['uuid']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['numeric']['output']>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: Maybe<Scalars['date']['output']>;
   endDate?: Maybe<Scalars['date']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
   startDate?: Maybe<Scalars['date']['output']>;
@@ -3908,9 +8080,15 @@ export type ClientBillingAssignmentsMinFields = {
 
 /** order by min() on columns of table "client_billing_assignment" */
 export type ClientBillingAssignmentsMinOrderBy = {
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: InputMaybe<OrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: InputMaybe<OrderBy>;
   endDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
@@ -3937,12 +8115,16 @@ export type ClientBillingAssignmentsOnConflict = {
 export type ClientBillingAssignmentsOrderBy = {
   assignedBillingPlan?: InputMaybe<BillingPlansOrderBy>;
   assignedClient?: InputMaybe<ClientsOrderBy>;
+  billingFrequency?: InputMaybe<OrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  effectiveDate?: InputMaybe<OrderBy>;
   endDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   isActive?: InputMaybe<OrderBy>;
+  isEnabled?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -3955,17 +8137,25 @@ export type ClientBillingAssignmentsPkColumnsInput = {
 /** select columns of table "client_billing_assignment" */
 export type ClientBillingAssignmentsSelectColumn =
   /** column name */
+  | 'billingFrequency'
+  /** column name */
   | 'billingPlanId'
   /** column name */
   | 'clientId'
   /** column name */
   | 'createdAt'
   /** column name */
+  | 'customRate'
+  /** column name */
+  | 'effectiveDate'
+  /** column name */
   | 'endDate'
   /** column name */
   | 'id'
   /** column name */
   | 'isActive'
+  /** column name */
+  | 'isEnabled'
   /** column name */
   | 'startDate'
   /** column name */
@@ -3976,24 +8166,75 @@ export type ClientBillingAssignmentsSelectColumn =
 export type ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_AndArgumentsColumns =
   /** column name */
   | 'isActive'
+  /** column name */
+  | 'isEnabled'
   | '%future added value';
 
 /** select "clientBillingAssignmentsAggregateBoolExpBool_orArgumentsColumns" columns of table "client_billing_assignment" */
 export type ClientBillingAssignmentsSelectColumnClientBillingAssignmentsAggregateBoolExpBool_OrArgumentsColumns =
   /** column name */
   | 'isActive'
+  /** column name */
+  | 'isEnabled'
   | '%future added value';
 
 /** input type for updating data in table "client_billing_assignment" */
 export type ClientBillingAssignmentsSetInput = {
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: InputMaybe<Scalars['date']['input']>;
   endDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether this service is enabled for this client */
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   startDate?: InputMaybe<Scalars['date']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type ClientBillingAssignmentsStddevFields = {
+  __typename?: 'clientBillingAssignmentsStddevFields';
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsStddevOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevPop on columns */
+export type ClientBillingAssignmentsStddevPopFields = {
+  __typename?: 'clientBillingAssignmentsStddevPopFields';
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevPop() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsStddevPopOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevSamp on columns */
+export type ClientBillingAssignmentsStddevSampFields = {
+  __typename?: 'clientBillingAssignmentsStddevSampFields';
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevSamp() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsStddevSampOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "clientBillingAssignments" */
@@ -4006,18 +8247,41 @@ export type ClientBillingAssignmentsStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type ClientBillingAssignmentsStreamCursorValueInput = {
+  /** How often this service is billed: Per Job, Monthly, Quarterly, etc. */
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  /** When this rate agreement becomes effective */
+  effectiveDate?: InputMaybe<Scalars['date']['input']>;
   endDate?: InputMaybe<Scalars['date']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether this service is enabled for this client */
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   startDate?: InputMaybe<Scalars['date']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
+/** aggregate sum on columns */
+export type ClientBillingAssignmentsSumFields = {
+  __typename?: 'clientBillingAssignmentsSumFields';
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** order by sum() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsSumOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
 /** update columns of table "client_billing_assignment" */
 export type ClientBillingAssignmentsUpdateColumn =
+  /** column name */
+  | 'billingFrequency'
   /** column name */
   | 'billingPlanId'
   /** column name */
@@ -4025,11 +8289,17 @@ export type ClientBillingAssignmentsUpdateColumn =
   /** column name */
   | 'createdAt'
   /** column name */
+  | 'customRate'
+  /** column name */
+  | 'effectiveDate'
+  /** column name */
   | 'endDate'
   /** column name */
   | 'id'
   /** column name */
   | 'isActive'
+  /** column name */
+  | 'isEnabled'
   /** column name */
   | 'startDate'
   /** column name */
@@ -4037,10 +8307,51 @@ export type ClientBillingAssignmentsUpdateColumn =
   | '%future added value';
 
 export type ClientBillingAssignmentsUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<ClientBillingAssignmentsIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<ClientBillingAssignmentsSetInput>;
   /** filter the rows which have to be updated */
   where: ClientBillingAssignmentsBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type ClientBillingAssignmentsVarPopFields = {
+  __typename?: 'clientBillingAssignmentsVarPopFields';
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varPop() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsVarPopOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** aggregate varSamp on columns */
+export type ClientBillingAssignmentsVarSampFields = {
+  __typename?: 'clientBillingAssignmentsVarSampFields';
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varSamp() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsVarSampOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** aggregate variance on columns */
+export type ClientBillingAssignmentsVarianceFields = {
+  __typename?: 'clientBillingAssignmentsVarianceFields';
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "client_billing_assignment" */
+export type ClientBillingAssignmentsVarianceOrderBy = {
+  /** Client-specific rate override (null uses standard rate) */
+  customRate?: InputMaybe<OrderBy>;
 };
 
 /** columns and relationships of "client_external_systems" */
@@ -4128,7 +8439,7 @@ export type ClientExternalSystemsBoolExp = {
 
 /** unique or primary key constraints on table "client_external_systems" */
 export type ClientExternalSystemsConstraint =
-  /** unique or primary key constraint on columns "client_id", "system_id" */
+  /** unique or primary key constraint on columns "system_id", "client_id" */
   | 'client_external_systems_client_id_system_id_key'
   /** unique or primary key constraint on columns "id" */
   | 'client_external_systems_pkey'
@@ -4340,10 +8651,18 @@ export type Clients = {
   billingAssignments: Array<ClientBillingAssignments>;
   /** An aggregate relationship */
   billingAssignmentsAggregate: ClientBillingAssignmentsAggregate;
+  /** An array relationship */
+  billingInvoices: Array<BillingInvoice>;
   /** An aggregate relationship */
   billingInvoicesAggregate: BillingInvoiceAggregate;
   /** An array relationship */
-  billing_invoices: Array<BillingInvoice>;
+  billingItems: Array<BillingItems>;
+  /** An aggregate relationship */
+  billingItemsAggregate: BillingItemsAggregate;
+  /** An array relationship */
+  billingPeriods: Array<BillingPeriods>;
+  /** An aggregate relationship */
+  billingPeriodsAggregate: BillingPeriodsAggregate;
   /** Email address for the client contact */
   contactEmail?: Maybe<Scalars['String']['output']>;
   /** Primary contact person at the client */
@@ -4364,6 +8683,10 @@ export type Clients = {
   payrolls: Array<Payrolls>;
   /** An aggregate relationship */
   payrollsAggregate: PayrollsAggregate;
+  /** An array relationship */
+  timeEntries: Array<TimeEntries>;
+  /** An aggregate relationship */
+  timeEntriesAggregate: TimeEntriesAggregate;
   /** Timestamp when the client was last updated */
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
@@ -4390,6 +8713,16 @@ export type ClientsBillingAssignmentsAggregateArgs = {
 
 
 /** columns and relationships of "clients" */
+export type ClientsBillingInvoicesArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceOrderBy>>;
+  where?: InputMaybe<BillingInvoiceBoolExp>;
+};
+
+
+/** columns and relationships of "clients" */
 export type ClientsBillingInvoicesAggregateArgs = {
   distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -4400,12 +8733,42 @@ export type ClientsBillingInvoicesAggregateArgs = {
 
 
 /** columns and relationships of "clients" */
-export type ClientsBilling_InvoicesArgs = {
-  distinctOn?: InputMaybe<Array<BillingInvoiceSelectColumn>>;
+export type ClientsBillingItemsArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<BillingInvoiceOrderBy>>;
-  where?: InputMaybe<BillingInvoiceBoolExp>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** columns and relationships of "clients" */
+export type ClientsBillingItemsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** columns and relationships of "clients" */
+export type ClientsBillingPeriodsArgs = {
+  distinctOn?: InputMaybe<Array<BillingPeriodsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingPeriodsOrderBy>>;
+  where?: InputMaybe<BillingPeriodsBoolExp>;
+};
+
+
+/** columns and relationships of "clients" */
+export type ClientsBillingPeriodsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingPeriodsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingPeriodsOrderBy>>;
+  where?: InputMaybe<BillingPeriodsBoolExp>;
 };
 
 
@@ -4446,6 +8809,26 @@ export type ClientsPayrollsAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<PayrollsOrderBy>>;
   where?: InputMaybe<PayrollsBoolExp>;
+};
+
+
+/** columns and relationships of "clients" */
+export type ClientsTimeEntriesArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+
+/** columns and relationships of "clients" */
+export type ClientsTimeEntriesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
 };
 
 /** aggregated selection of "clients" */
@@ -4519,8 +8902,12 @@ export type ClientsBoolExp = {
   active?: InputMaybe<BooleanComparisonExp>;
   billingAssignments?: InputMaybe<ClientBillingAssignmentsBoolExp>;
   billingAssignmentsAggregate?: InputMaybe<ClientBillingAssignmentsAggregateBoolExp>;
-  billing_invoices?: InputMaybe<BillingInvoiceBoolExp>;
-  billing_invoicesAggregate?: InputMaybe<BillingInvoiceAggregateBoolExp>;
+  billingInvoices?: InputMaybe<BillingInvoiceBoolExp>;
+  billingInvoicesAggregate?: InputMaybe<BillingInvoiceAggregateBoolExp>;
+  billingItems?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingPeriods?: InputMaybe<BillingPeriodsBoolExp>;
+  billingPeriodsAggregate?: InputMaybe<BillingPeriodsAggregateBoolExp>;
   contactEmail?: InputMaybe<StringComparisonExp>;
   contactPerson?: InputMaybe<StringComparisonExp>;
   contactPhone?: InputMaybe<StringComparisonExp>;
@@ -4531,6 +8918,8 @@ export type ClientsBoolExp = {
   name?: InputMaybe<StringComparisonExp>;
   payrolls?: InputMaybe<PayrollsBoolExp>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
+  timeEntries?: InputMaybe<TimeEntriesBoolExp>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
 
@@ -4545,7 +8934,9 @@ export type ClientsInsertInput = {
   /** Whether the client is currently active */
   active?: InputMaybe<Scalars['Boolean']['input']>;
   billingAssignments?: InputMaybe<ClientBillingAssignmentsArrRelInsertInput>;
-  billing_invoices?: InputMaybe<BillingInvoiceArrRelInsertInput>;
+  billingInvoices?: InputMaybe<BillingInvoiceArrRelInsertInput>;
+  billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  billingPeriods?: InputMaybe<BillingPeriodsArrRelInsertInput>;
   /** Email address for the client contact */
   contactEmail?: InputMaybe<Scalars['String']['input']>;
   /** Primary contact person at the client */
@@ -4560,6 +8951,7 @@ export type ClientsInsertInput = {
   /** Client company name */
   name?: InputMaybe<Scalars['String']['input']>;
   payrolls?: InputMaybe<PayrollsArrRelInsertInput>;
+  timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
   /** Timestamp when the client was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -4665,7 +9057,9 @@ export type ClientsOnConflict = {
 export type ClientsOrderBy = {
   active?: InputMaybe<OrderBy>;
   billingAssignmentsAggregate?: InputMaybe<ClientBillingAssignmentsAggregateOrderBy>;
-  billing_invoicesAggregate?: InputMaybe<BillingInvoiceAggregateOrderBy>;
+  billingInvoicesAggregate?: InputMaybe<BillingInvoiceAggregateOrderBy>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingPeriodsAggregate?: InputMaybe<BillingPeriodsAggregateOrderBy>;
   contactEmail?: InputMaybe<OrderBy>;
   contactPerson?: InputMaybe<OrderBy>;
   contactPhone?: InputMaybe<OrderBy>;
@@ -4674,6 +9068,7 @@ export type ClientsOrderBy = {
   id?: InputMaybe<OrderBy>;
   name?: InputMaybe<OrderBy>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -5454,6 +9849,41 @@ export type DataAccessLogsVarSampFields = {
 export type DataAccessLogsVarianceFields = {
   __typename?: 'dataAccessLogsVarianceFields';
   rowCount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type EmailDraftsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<EmailDraftsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+export type EmailSendLogsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<EmailSendLogsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+export type EmailTemplatesAggregateBoolExpBool_And = {
+  arguments: EmailTemplatesSelectColumnEmailTemplatesAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<EmailTemplatesBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type EmailTemplatesAggregateBoolExpBool_Or = {
+  arguments: EmailTemplatesSelectColumnEmailTemplatesAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<EmailTemplatesBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type EmailTemplatesAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<EmailTemplatesBoolExp>;
+  predicate: IntComparisonExp;
 };
 
 /** columns and relationships of "external_systems" */
@@ -6632,6 +11062,8 @@ export type LatestPayrollVersionResultsVarianceFields = {
 /** columns and relationships of "leave" */
 export type Leave = {
   __typename?: 'leave';
+  /** Timestamp when the leave request was created */
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
   /** Last day of the leave period */
   endDate: Scalars['date']['output'];
   /** Unique identifier for the leave record */
@@ -6648,6 +11080,8 @@ export type Leave = {
   startDate: Scalars['date']['output'];
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: Maybe<Scalars['leave_status_enum']['output']>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
   /** Reference to the user taking leave */
   userId: Scalars['uuid']['output'];
 };
@@ -6704,6 +11138,7 @@ export type LeaveBoolExp = {
   _and?: InputMaybe<Array<LeaveBoolExp>>;
   _not?: InputMaybe<LeaveBoolExp>;
   _or?: InputMaybe<Array<LeaveBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
   endDate?: InputMaybe<DateComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   leaveRequester?: InputMaybe<UsersBoolExp>;
@@ -6712,6 +11147,7 @@ export type LeaveBoolExp = {
   reason?: InputMaybe<StringComparisonExp>;
   startDate?: InputMaybe<DateComparisonExp>;
   status?: InputMaybe<LeaveStatusEnumComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   userId?: InputMaybe<UuidComparisonExp>;
 };
 
@@ -6723,6 +11159,8 @@ export type LeaveConstraint =
 
 /** input type for inserting data into table "leave" */
 export type LeaveInsertInput = {
+  /** Timestamp when the leave request was created */
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Last day of the leave period */
   endDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the leave record */
@@ -6737,6 +11175,8 @@ export type LeaveInsertInput = {
   startDate?: InputMaybe<Scalars['date']['input']>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: InputMaybe<Scalars['leave_status_enum']['input']>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<Scalars['uuid']['input']>;
 };
@@ -6744,6 +11184,8 @@ export type LeaveInsertInput = {
 /** aggregate max on columns */
 export type LeaveMaxFields = {
   __typename?: 'leaveMaxFields';
+  /** Timestamp when the leave request was created */
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
   /** Last day of the leave period */
   endDate?: Maybe<Scalars['date']['output']>;
   /** Unique identifier for the leave record */
@@ -6756,12 +11198,16 @@ export type LeaveMaxFields = {
   startDate?: Maybe<Scalars['date']['output']>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: Maybe<Scalars['leave_status_enum']['output']>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
   /** Reference to the user taking leave */
   userId?: Maybe<Scalars['uuid']['output']>;
 };
 
 /** order by max() on columns of table "leave" */
 export type LeaveMaxOrderBy = {
+  /** Timestamp when the leave request was created */
+  createdAt?: InputMaybe<OrderBy>;
   /** Last day of the leave period */
   endDate?: InputMaybe<OrderBy>;
   /** Unique identifier for the leave record */
@@ -6774,6 +11220,8 @@ export type LeaveMaxOrderBy = {
   startDate?: InputMaybe<OrderBy>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: InputMaybe<OrderBy>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: InputMaybe<OrderBy>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<OrderBy>;
 };
@@ -6781,6 +11229,8 @@ export type LeaveMaxOrderBy = {
 /** aggregate min on columns */
 export type LeaveMinFields = {
   __typename?: 'leaveMinFields';
+  /** Timestamp when the leave request was created */
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
   /** Last day of the leave period */
   endDate?: Maybe<Scalars['date']['output']>;
   /** Unique identifier for the leave record */
@@ -6793,12 +11243,16 @@ export type LeaveMinFields = {
   startDate?: Maybe<Scalars['date']['output']>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: Maybe<Scalars['leave_status_enum']['output']>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
   /** Reference to the user taking leave */
   userId?: Maybe<Scalars['uuid']['output']>;
 };
 
 /** order by min() on columns of table "leave" */
 export type LeaveMinOrderBy = {
+  /** Timestamp when the leave request was created */
+  createdAt?: InputMaybe<OrderBy>;
   /** Last day of the leave period */
   endDate?: InputMaybe<OrderBy>;
   /** Unique identifier for the leave record */
@@ -6811,6 +11265,8 @@ export type LeaveMinOrderBy = {
   startDate?: InputMaybe<OrderBy>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: InputMaybe<OrderBy>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: InputMaybe<OrderBy>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<OrderBy>;
 };
@@ -6833,6 +11289,7 @@ export type LeaveOnConflict = {
 
 /** Ordering options when selecting data from "leave". */
 export type LeaveOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
   endDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   leaveRequester?: InputMaybe<UsersOrderBy>;
@@ -6841,6 +11298,7 @@ export type LeaveOrderBy = {
   reason?: InputMaybe<OrderBy>;
   startDate?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
 };
 
@@ -6852,6 +11310,8 @@ export type LeavePkColumnsInput = {
 
 /** select columns of table "leave" */
 export type LeaveSelectColumn =
+  /** column name */
+  | 'createdAt'
   /** column name */
   | 'endDate'
   /** column name */
@@ -6865,11 +11325,15 @@ export type LeaveSelectColumn =
   /** column name */
   | 'status'
   /** column name */
+  | 'updatedAt'
+  /** column name */
   | 'userId'
   | '%future added value';
 
 /** input type for updating data in table "leave" */
 export type LeaveSetInput = {
+  /** Timestamp when the leave request was created */
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Last day of the leave period */
   endDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the leave record */
@@ -6882,6 +11346,8 @@ export type LeaveSetInput = {
   startDate?: InputMaybe<Scalars['date']['input']>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: InputMaybe<Scalars['leave_status_enum']['input']>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<Scalars['uuid']['input']>;
 };
@@ -6896,6 +11362,8 @@ export type LeaveStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type LeaveStreamCursorValueInput = {
+  /** Timestamp when the leave request was created */
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Last day of the leave period */
   endDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the leave record */
@@ -6908,12 +11376,16 @@ export type LeaveStreamCursorValueInput = {
   startDate?: InputMaybe<Scalars['date']['input']>;
   /** Current status of the leave request (Pending, Approved, Denied) */
   status?: InputMaybe<Scalars['leave_status_enum']['input']>;
+  /** Timestamp when the leave request was last updated */
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Reference to the user taking leave */
   userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
 /** update columns of table "leave" */
 export type LeaveUpdateColumn =
+  /** column name */
+  | 'createdAt'
   /** column name */
   | 'endDate'
   /** column name */
@@ -6926,6 +11398,8 @@ export type LeaveUpdateColumn =
   | 'startDate'
   /** column name */
   | 'status'
+  /** column name */
+  | 'updatedAt'
   /** column name */
   | 'userId'
   | '%future added value';
@@ -6940,6 +11414,8 @@ export type LeaveUpdates = {
 /** mutation root */
 export type Mutation_Root = {
   __typename?: 'mutation_root';
+  approve_leave_request: LeaveResponse;
+  audit_event: AuditEventResponse;
   /** delete data from the table: "adjustment_rules" */
   bulkDeleteAdjustmentRules?: Maybe<AdjustmentRulesMutationResponse>;
   /** delete data from the table: "app_settings" */
@@ -6988,6 +11464,8 @@ export type Mutation_Root = {
   bulkDeletePayrollDateTypes?: Maybe<PayrollDateTypesMutationResponse>;
   /** delete data from the table: "payroll_dates" */
   bulkDeletePayrollDates?: Maybe<PayrollDatesMutationResponse>;
+  /** delete data from the table: "payroll_required_skills" */
+  bulkDeletePayrollRequiredSkill?: Maybe<PayrollRequiredSkillMutationResponse>;
   /** delete data from the table: "payroll_version_history_results" */
   bulkDeletePayrollVersionHistoryResults?: Maybe<PayrollVersionHistoryResultsMutationResponse>;
   /** delete data from the table: "payroll_version_results" */
@@ -7016,6 +11494,8 @@ export type Mutation_Root = {
   bulkDeleteUserInvitations?: Maybe<UserInvitationsMutationResponse>;
   /** delete data from the table: "user_roles" */
   bulkDeleteUserRoles?: Maybe<UserRolesMutationResponse>;
+  /** delete data from the table: "user_skills" */
+  bulkDeleteUserSkill?: Maybe<UserSkillMutationResponse>;
   /** delete data from the table: "users" */
   bulkDeleteUsers?: Maybe<UsersMutationResponse>;
   /** delete data from the table: "users_role_backup" */
@@ -7023,7 +11503,7 @@ export type Mutation_Root = {
   /** delete data from the table: "neon_auth.users_sync" */
   bulkDeleteUsersSync?: Maybe<AuthUsersSyncMutationResponse>;
   /** delete data from the table: "work_schedule" */
-  bulkDeleteWorkSchedules?: Maybe<WorkSchedulesMutationResponse>;
+  bulkDeleteWorkSchedule?: Maybe<WorkScheduleMutationResponse>;
   /** insert data into the table: "adjustment_rules" */
   bulkInsertAdjustmentRules?: Maybe<AdjustmentRulesMutationResponse>;
   /** insert data into the table: "app_settings" */
@@ -7072,6 +11552,8 @@ export type Mutation_Root = {
   bulkInsertPayrollDateTypes?: Maybe<PayrollDateTypesMutationResponse>;
   /** insert data into the table: "payroll_dates" */
   bulkInsertPayrollDates?: Maybe<PayrollDatesMutationResponse>;
+  /** insert data into the table: "payroll_required_skills" */
+  bulkInsertPayrollRequiredSkill?: Maybe<PayrollRequiredSkillMutationResponse>;
   /** insert data into the table: "payroll_version_history_results" */
   bulkInsertPayrollVersionHistoryResults?: Maybe<PayrollVersionHistoryResultsMutationResponse>;
   /** insert data into the table: "payroll_version_results" */
@@ -7100,6 +11582,8 @@ export type Mutation_Root = {
   bulkInsertUserInvitations?: Maybe<UserInvitationsMutationResponse>;
   /** insert data into the table: "user_roles" */
   bulkInsertUserRoles?: Maybe<UserRolesMutationResponse>;
+  /** insert data into the table: "user_skills" */
+  bulkInsertUserSkill?: Maybe<UserSkillMutationResponse>;
   /** insert data into the table: "users" */
   bulkInsertUsers?: Maybe<UsersMutationResponse>;
   /** insert data into the table: "users_role_backup" */
@@ -7107,7 +11591,7 @@ export type Mutation_Root = {
   /** insert data into the table: "neon_auth.users_sync" */
   bulkInsertUsersSync?: Maybe<AuthUsersSyncMutationResponse>;
   /** insert data into the table: "work_schedule" */
-  bulkInsertWorkSchedules?: Maybe<WorkSchedulesMutationResponse>;
+  bulkInsertWorkSchedule?: Maybe<WorkScheduleMutationResponse>;
   /** update data of the table: "adjustment_rules" */
   bulkUpdateAdjustmentRules?: Maybe<AdjustmentRulesMutationResponse>;
   /** update data of the table: "app_settings" */
@@ -7156,6 +11640,8 @@ export type Mutation_Root = {
   bulkUpdatePayrollDateTypes?: Maybe<PayrollDateTypesMutationResponse>;
   /** update data of the table: "payroll_dates" */
   bulkUpdatePayrollDates?: Maybe<PayrollDatesMutationResponse>;
+  /** update data of the table: "payroll_required_skills" */
+  bulkUpdatePayrollRequiredSkill?: Maybe<PayrollRequiredSkillMutationResponse>;
   /** update data of the table: "payroll_version_history_results" */
   bulkUpdatePayrollVersionHistoryResults?: Maybe<PayrollVersionHistoryResultsMutationResponse>;
   /** update data of the table: "payroll_version_results" */
@@ -7184,6 +11670,8 @@ export type Mutation_Root = {
   bulkUpdateUserInvitations?: Maybe<UserInvitationsMutationResponse>;
   /** update data of the table: "user_roles" */
   bulkUpdateUserRoles?: Maybe<UserRolesMutationResponse>;
+  /** update data of the table: "user_skills" */
+  bulkUpdateUserSkill?: Maybe<UserSkillMutationResponse>;
   /** update data of the table: "users" */
   bulkUpdateUsers?: Maybe<UsersMutationResponse>;
   /** update data of the table: "users_role_backup" */
@@ -7191,10 +11679,10 @@ export type Mutation_Root = {
   /** update data of the table: "neon_auth.users_sync" */
   bulkUpdateUsersSync?: Maybe<AuthUsersSyncMutationResponse>;
   /** update data of the table: "work_schedule" */
-  bulkUpdateWorkSchedules?: Maybe<WorkSchedulesMutationResponse>;
-  /** Check for suspicious activity patterns */
-  checkSuspiciousActivity?: Maybe<SuspiciousActivityResponse>;
-  commitPayrollAssignments?: Maybe<CommitPayrollAssignmentsOutput>;
+  bulkUpdateWorkSchedule?: Maybe<WorkScheduleMutationResponse>;
+  create_leave_request: LeaveResponse;
+  create_payroll: PayrollResponse;
+  create_staff_member: StaffResponse;
   /** delete single row from the table: "adjustment_rules" */
   deleteAdjustmentRuleById?: Maybe<AdjustmentRules>;
   /** delete single row from the table: "app_settings" */
@@ -7210,9 +11698,13 @@ export type Mutation_Root = {
   /** delete data from the table: "billing_invoice_item" */
   deleteBillingInvoiceItem?: Maybe<BillingInvoiceItemMutationResponse>;
   /** delete single row from the table: "billing_invoice_item" */
-  deleteBillingInvoiceItemByPk?: Maybe<BillingInvoiceItem>;
+  deleteBillingInvoiceItemById?: Maybe<BillingInvoiceItem>;
   /** delete single row from the table: "billing_items" */
   deleteBillingItemById?: Maybe<BillingItems>;
+  /** delete single row from the table: "billing_periods" */
+  deleteBillingPeriod?: Maybe<BillingPeriods>;
+  /** delete data from the table: "billing_periods" */
+  deleteBillingPeriods?: Maybe<BillingPeriodsMutationResponse>;
   /** delete single row from the table: "billing_plan" */
   deleteBillingPlanById?: Maybe<BillingPlans>;
   /** delete single row from the table: "client_billing_assignment" */
@@ -7223,6 +11715,18 @@ export type Mutation_Root = {
   deleteClientExternalSystemById?: Maybe<ClientExternalSystems>;
   /** delete single row from the table: "audit.data_access_log" */
   deleteDataAccessLogById?: Maybe<DataAccessLogs>;
+  /** delete data from the table: "email_drafts" */
+  deleteEmailDrafts?: Maybe<EmailDraftsMutationResponse>;
+  /** delete single row from the table: "email_drafts" */
+  deleteEmailDraftsByPk?: Maybe<EmailDrafts>;
+  /** delete data from the table: "email_send_logs" */
+  deleteEmailSendLogs?: Maybe<EmailSendLogsMutationResponse>;
+  /** delete single row from the table: "email_send_logs" */
+  deleteEmailSendLogsByPk?: Maybe<EmailSendLogs>;
+  /** delete data from the table: "email_templates" */
+  deleteEmailTemplates?: Maybe<EmailTemplatesMutationResponse>;
+  /** delete single row from the table: "email_templates" */
+  deleteEmailTemplatesByPk?: Maybe<EmailTemplates>;
   /** delete single row from the table: "external_systems" */
   deleteExternalSystemById?: Maybe<ExternalSystems>;
   /** delete single row from the table: "feature_flags" */
@@ -7261,6 +11765,10 @@ export type Mutation_Root = {
   deletePermissionChangeById?: Maybe<PermissionChanges>;
   /** delete single row from the table: "permission_overrides" */
   deletePermissionOverrideById?: Maybe<PermissionOverrides>;
+  /** delete data from the table: "position_admin_defaults" */
+  deletePositionAdminDefaults?: Maybe<PositionAdminDefaultsMutationResponse>;
+  /** delete single row from the table: "position_admin_defaults" */
+  deletePositionAdminDefaultsByPk?: Maybe<PositionAdminDefaults>;
   /** delete single row from the table: "resources" */
   deleteResourceById?: Maybe<Resources>;
   /** delete single row from the table: "roles" */
@@ -7269,8 +11777,16 @@ export type Mutation_Root = {
   deleteRolePermissionById?: Maybe<RolePermissions>;
   /** delete single row from the table: "audit.slow_queries" */
   deleteSlowQueryById?: Maybe<SlowQueries>;
+  /** delete data from the table: "time_entries" */
+  deleteTimeEntries?: Maybe<TimeEntriesMutationResponse>;
+  /** delete single row from the table: "time_entries" */
+  deleteTimeEntry?: Maybe<TimeEntries>;
   /** delete single row from the table: "users" */
   deleteUserById?: Maybe<Users>;
+  /** delete data from the table: "user_email_template_favorites" */
+  deleteUserEmailTemplateFavorites?: Maybe<UserEmailTemplateFavoritesMutationResponse>;
+  /** delete single row from the table: "user_email_template_favorites" */
+  deleteUserEmailTemplateFavoritesByPk?: Maybe<UserEmailTemplateFavorites>;
   /** delete single row from the table: "user_invitations" */
   deleteUserInvitationById?: Maybe<UserInvitations>;
   /** delete single row from the table: "user_roles" */
@@ -7278,9 +11794,8 @@ export type Mutation_Root = {
   /** delete single row from the table: "neon_auth.users_sync" */
   deleteUserSyncById?: Maybe<AuthUsersSync>;
   /** delete single row from the table: "work_schedule" */
-  deleteWorkScheduleById?: Maybe<WorkSchedules>;
-  /** Generate SOC2 compliance reports */
-  generateComplianceReport?: Maybe<ComplianceReportResponse>;
+  deleteWorkScheduleById?: Maybe<WorkSchedule>;
+  generate_payroll_schedule: ScheduleResponse;
   /** insert a single row into the table: "adjustment_rules" */
   insertAdjustmentRule?: Maybe<AdjustmentRules>;
   /** insert a single row into the table: "app_settings" */
@@ -7299,6 +11814,10 @@ export type Mutation_Root = {
   insertBillingInvoiceItemOne?: Maybe<BillingInvoiceItem>;
   /** insert a single row into the table: "billing_items" */
   insertBillingItem?: Maybe<BillingItems>;
+  /** insert data into the table: "billing_periods" */
+  insertBillingPeriod?: Maybe<BillingPeriodsMutationResponse>;
+  /** insert a single row into the table: "billing_periods" */
+  insertBillingPeriodOne?: Maybe<BillingPeriods>;
   /** insert a single row into the table: "billing_plan" */
   insertBillingPlan?: Maybe<BillingPlans>;
   /** insert a single row into the table: "clients" */
@@ -7309,6 +11828,18 @@ export type Mutation_Root = {
   insertClientExternalSystem?: Maybe<ClientExternalSystems>;
   /** insert a single row into the table: "audit.data_access_log" */
   insertDataAccessLog?: Maybe<DataAccessLogs>;
+  /** insert data into the table: "email_drafts" */
+  insertEmailDrafts?: Maybe<EmailDraftsMutationResponse>;
+  /** insert a single row into the table: "email_drafts" */
+  insertEmailDraftsOne?: Maybe<EmailDrafts>;
+  /** insert data into the table: "email_send_logs" */
+  insertEmailSendLogs?: Maybe<EmailSendLogsMutationResponse>;
+  /** insert a single row into the table: "email_send_logs" */
+  insertEmailSendLogsOne?: Maybe<EmailSendLogs>;
+  /** insert data into the table: "email_templates" */
+  insertEmailTemplates?: Maybe<EmailTemplatesMutationResponse>;
+  /** insert a single row into the table: "email_templates" */
+  insertEmailTemplatesOne?: Maybe<EmailTemplates>;
   /** insert a single row into the table: "external_systems" */
   insertExternalSystem?: Maybe<ExternalSystems>;
   /** insert a single row into the table: "feature_flags" */
@@ -7335,6 +11866,8 @@ export type Mutation_Root = {
   insertPayrollDate?: Maybe<PayrollDates>;
   /** insert a single row into the table: "payroll_date_types" */
   insertPayrollDateType?: Maybe<PayrollDateTypes>;
+  /** insert a single row into the table: "payroll_required_skills" */
+  insertPayrollRequiredSkill?: Maybe<PayrollRequiredSkill>;
   /** insert a single row into the table: "payroll_version_history_results" */
   insertPayrollVersionHistoryResult?: Maybe<PayrollVersionHistoryResults>;
   /** insert a single row into the table: "payroll_version_results" */
@@ -7347,6 +11880,10 @@ export type Mutation_Root = {
   insertPermissionChange?: Maybe<PermissionChanges>;
   /** insert a single row into the table: "permission_overrides" */
   insertPermissionOverride?: Maybe<PermissionOverrides>;
+  /** insert data into the table: "position_admin_defaults" */
+  insertPositionAdminDefaults?: Maybe<PositionAdminDefaultsMutationResponse>;
+  /** insert a single row into the table: "position_admin_defaults" */
+  insertPositionAdminDefaultsOne?: Maybe<PositionAdminDefaults>;
   /** insert a single row into the table: "resources" */
   insertResource?: Maybe<Resources>;
   /** insert a single row into the table: "roles" */
@@ -7355,22 +11892,30 @@ export type Mutation_Root = {
   insertRolePermission?: Maybe<RolePermissions>;
   /** insert a single row into the table: "audit.slow_queries" */
   insertSlowQuery?: Maybe<SlowQueries>;
+  /** insert data into the table: "time_entries" */
+  insertTimeEntry?: Maybe<TimeEntriesMutationResponse>;
+  /** insert a single row into the table: "time_entries" */
+  insertTimeEntryOne?: Maybe<TimeEntries>;
   /** insert a single row into the table: "users" */
   insertUser?: Maybe<Users>;
   /** insert a single row into the table: "audit.user_access_summary" */
   insertUserAccessSummary?: Maybe<UserAccessSummaries>;
+  /** insert data into the table: "user_email_template_favorites" */
+  insertUserEmailTemplateFavorites?: Maybe<UserEmailTemplateFavoritesMutationResponse>;
+  /** insert a single row into the table: "user_email_template_favorites" */
+  insertUserEmailTemplateFavoritesOne?: Maybe<UserEmailTemplateFavorites>;
   /** insert a single row into the table: "user_invitations" */
   insertUserInvitation?: Maybe<UserInvitations>;
   /** insert a single row into the table: "user_roles" */
   insertUserRole?: Maybe<UserRoles>;
+  /** insert a single row into the table: "user_skills" */
+  insertUserSkill?: Maybe<UserSkill>;
   /** insert a single row into the table: "neon_auth.users_sync" */
   insertUserSync?: Maybe<AuthUsersSync>;
   /** insert a single row into the table: "users_role_backup" */
   insertUsersRoleBackup?: Maybe<UsersRoleBackup>;
   /** insert a single row into the table: "work_schedule" */
-  insertWorkSchedule?: Maybe<WorkSchedules>;
-  /** Log audit events for SOC2 compliance */
-  logAuditEvent?: Maybe<AuditEventResponse>;
+  insertWorkSchedule?: Maybe<WorkSchedule>;
   /** update single row of the table: "adjustment_rules" */
   updateAdjustmentRuleById?: Maybe<AdjustmentRules>;
   /** update multiples rows of table: "adjustment_rules" */
@@ -7398,7 +11943,7 @@ export type Mutation_Root = {
   /** update data of the table: "billing_invoice_item" */
   updateBillingInvoiceItem?: Maybe<BillingInvoiceItemMutationResponse>;
   /** update single row of the table: "billing_invoice_item" */
-  updateBillingInvoiceItemByPk?: Maybe<BillingInvoiceItem>;
+  updateBillingInvoiceItemById?: Maybe<BillingInvoiceItem>;
   /** update multiples rows of table: "billing_invoice_item" */
   updateBillingInvoiceItemMany?: Maybe<Array<Maybe<BillingInvoiceItemMutationResponse>>>;
   /** update multiples rows of table: "billing_invoice" */
@@ -7407,6 +11952,12 @@ export type Mutation_Root = {
   updateBillingItemById?: Maybe<BillingItems>;
   /** update multiples rows of table: "billing_items" */
   updateBillingItemsMany?: Maybe<Array<Maybe<BillingItemsMutationResponse>>>;
+  /** update single row of the table: "billing_periods" */
+  updateBillingPeriod?: Maybe<BillingPeriods>;
+  /** update data of the table: "billing_periods" */
+  updateBillingPeriods?: Maybe<BillingPeriodsMutationResponse>;
+  /** update multiples rows of table: "billing_periods" */
+  updateBillingPeriodsMany?: Maybe<Array<Maybe<BillingPeriodsMutationResponse>>>;
   /** update single row of the table: "billing_plan" */
   updateBillingPlanById?: Maybe<BillingPlans>;
   /** update multiples rows of table: "billing_plan" */
@@ -7427,6 +11978,24 @@ export type Mutation_Root = {
   updateDataAccessLogById?: Maybe<DataAccessLogs>;
   /** update multiples rows of table: "audit.data_access_log" */
   updateDataAccessLogsMany?: Maybe<Array<Maybe<DataAccessLogsMutationResponse>>>;
+  /** update data of the table: "email_drafts" */
+  updateEmailDrafts?: Maybe<EmailDraftsMutationResponse>;
+  /** update single row of the table: "email_drafts" */
+  updateEmailDraftsByPk?: Maybe<EmailDrafts>;
+  /** update multiples rows of table: "email_drafts" */
+  updateEmailDraftsMany?: Maybe<Array<Maybe<EmailDraftsMutationResponse>>>;
+  /** update data of the table: "email_send_logs" */
+  updateEmailSendLogs?: Maybe<EmailSendLogsMutationResponse>;
+  /** update single row of the table: "email_send_logs" */
+  updateEmailSendLogsByPk?: Maybe<EmailSendLogs>;
+  /** update multiples rows of table: "email_send_logs" */
+  updateEmailSendLogsMany?: Maybe<Array<Maybe<EmailSendLogsMutationResponse>>>;
+  /** update data of the table: "email_templates" */
+  updateEmailTemplates?: Maybe<EmailTemplatesMutationResponse>;
+  /** update single row of the table: "email_templates" */
+  updateEmailTemplatesByPk?: Maybe<EmailTemplates>;
+  /** update multiples rows of table: "email_templates" */
+  updateEmailTemplatesMany?: Maybe<Array<Maybe<EmailTemplatesMutationResponse>>>;
   /** update single row of the table: "external_systems" */
   updateExternalSystemById?: Maybe<ExternalSystems>;
   /** update multiples rows of table: "external_systems" */
@@ -7477,6 +12046,8 @@ export type Mutation_Root = {
   updatePayrollDateTypesMany?: Maybe<Array<Maybe<PayrollDateTypesMutationResponse>>>;
   /** update multiples rows of table: "payroll_dates" */
   updatePayrollDatesMany?: Maybe<Array<Maybe<PayrollDatesMutationResponse>>>;
+  /** update multiples rows of table: "payroll_required_skills" */
+  updatePayrollRequiredSkillMany?: Maybe<Array<Maybe<PayrollRequiredSkillMutationResponse>>>;
   /** update single row of the table: "payroll_version_history_results" */
   updatePayrollVersionHistoryResultById?: Maybe<PayrollVersionHistoryResults>;
   /** update multiples rows of table: "payroll_version_history_results" */
@@ -7503,6 +12074,12 @@ export type Mutation_Root = {
   updatePermissionOverridesMany?: Maybe<Array<Maybe<PermissionOverridesMutationResponse>>>;
   /** update multiples rows of table: "permissions" */
   updatePermissionsMany?: Maybe<Array<Maybe<PermissionsMutationResponse>>>;
+  /** update data of the table: "position_admin_defaults" */
+  updatePositionAdminDefaults?: Maybe<PositionAdminDefaultsMutationResponse>;
+  /** update single row of the table: "position_admin_defaults" */
+  updatePositionAdminDefaultsByPk?: Maybe<PositionAdminDefaults>;
+  /** update multiples rows of table: "position_admin_defaults" */
+  updatePositionAdminDefaultsMany?: Maybe<Array<Maybe<PositionAdminDefaultsMutationResponse>>>;
   /** update single row of the table: "resources" */
   updateResourceById?: Maybe<Resources>;
   /** update multiples rows of table: "resources" */
@@ -7519,10 +12096,22 @@ export type Mutation_Root = {
   updateSlowQueriesMany?: Maybe<Array<Maybe<SlowQueriesMutationResponse>>>;
   /** update single row of the table: "audit.slow_queries" */
   updateSlowQueryById?: Maybe<SlowQueries>;
+  /** update data of the table: "time_entries" */
+  updateTimeEntries?: Maybe<TimeEntriesMutationResponse>;
+  /** update multiples rows of table: "time_entries" */
+  updateTimeEntriesMany?: Maybe<Array<Maybe<TimeEntriesMutationResponse>>>;
+  /** update single row of the table: "time_entries" */
+  updateTimeEntry?: Maybe<TimeEntries>;
   /** update multiples rows of table: "audit.user_access_summary" */
   updateUserAccessSummariesMany?: Maybe<Array<Maybe<UserAccessSummariesMutationResponse>>>;
   /** update single row of the table: "users" */
   updateUserById?: Maybe<Users>;
+  /** update data of the table: "user_email_template_favorites" */
+  updateUserEmailTemplateFavorites?: Maybe<UserEmailTemplateFavoritesMutationResponse>;
+  /** update single row of the table: "user_email_template_favorites" */
+  updateUserEmailTemplateFavoritesByPk?: Maybe<UserEmailTemplateFavorites>;
+  /** update multiples rows of table: "user_email_template_favorites" */
+  updateUserEmailTemplateFavoritesMany?: Maybe<Array<Maybe<UserEmailTemplateFavoritesMutationResponse>>>;
   /** update single row of the table: "user_invitations" */
   updateUserInvitationById?: Maybe<UserInvitations>;
   /** update multiples rows of table: "user_invitations" */
@@ -7531,6 +12120,8 @@ export type Mutation_Root = {
   updateUserRoleById?: Maybe<UserRoles>;
   /** update multiples rows of table: "user_roles" */
   updateUserRolesMany?: Maybe<Array<Maybe<UserRolesMutationResponse>>>;
+  /** update multiples rows of table: "user_skills" */
+  updateUserSkillMany?: Maybe<Array<Maybe<UserSkillMutationResponse>>>;
   /** update single row of the table: "neon_auth.users_sync" */
   updateUserSyncById?: Maybe<AuthUsersSync>;
   /** update multiples rows of table: "users" */
@@ -7538,9 +12129,26 @@ export type Mutation_Root = {
   /** update multiples rows of table: "users_role_backup" */
   updateUsersRoleBackupMany?: Maybe<Array<Maybe<UsersRoleBackupMutationResponse>>>;
   /** update single row of the table: "work_schedule" */
-  updateWorkScheduleById?: Maybe<WorkSchedules>;
+  updateWorkScheduleById?: Maybe<WorkSchedule>;
   /** update multiples rows of table: "work_schedule" */
-  updateWorkSchedulesMany?: Maybe<Array<Maybe<WorkSchedulesMutationResponse>>>;
+  updateWorkScheduleMany?: Maybe<Array<Maybe<WorkScheduleMutationResponse>>>;
+  update_payroll: PayrollResponse;
+  update_staff_member: StaffResponse;
+  update_user_role: UserRoleResponse;
+};
+
+
+/** mutation root */
+export type Mutation_RootApprove_Leave_RequestArgs = {
+  approvalStatus: Scalars['String']['input'];
+  leaveId: Scalars['String']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** mutation root */
+export type Mutation_RootAudit_EventArgs = {
+  input: AuditEventInput;
 };
 
 
@@ -7689,6 +12297,12 @@ export type Mutation_RootBulkDeletePayrollDatesArgs = {
 
 
 /** mutation root */
+export type Mutation_RootBulkDeletePayrollRequiredSkillArgs = {
+  where: PayrollRequiredSkillBoolExp;
+};
+
+
+/** mutation root */
 export type Mutation_RootBulkDeletePayrollVersionHistoryResultsArgs = {
   where: PayrollVersionHistoryResultsBoolExp;
 };
@@ -7773,6 +12387,12 @@ export type Mutation_RootBulkDeleteUserRolesArgs = {
 
 
 /** mutation root */
+export type Mutation_RootBulkDeleteUserSkillArgs = {
+  where: UserSkillBoolExp;
+};
+
+
+/** mutation root */
 export type Mutation_RootBulkDeleteUsersArgs = {
   where: UsersBoolExp;
 };
@@ -7791,8 +12411,8 @@ export type Mutation_RootBulkDeleteUsersSyncArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkDeleteWorkSchedulesArgs = {
-  where: WorkSchedulesBoolExp;
+export type Mutation_RootBulkDeleteWorkScheduleArgs = {
+  where: WorkScheduleBoolExp;
 };
 
 
@@ -7965,6 +12585,12 @@ export type Mutation_RootBulkInsertPayrollDatesArgs = {
 
 
 /** mutation root */
+export type Mutation_RootBulkInsertPayrollRequiredSkillArgs = {
+  objects: Array<PayrollRequiredSkillInsertInput>;
+};
+
+
+/** mutation root */
 export type Mutation_RootBulkInsertPayrollVersionHistoryResultsArgs = {
   objects: Array<PayrollVersionHistoryResultsInsertInput>;
   onConflict?: InputMaybe<PayrollVersionHistoryResultsOnConflict>;
@@ -8062,6 +12688,12 @@ export type Mutation_RootBulkInsertUserRolesArgs = {
 
 
 /** mutation root */
+export type Mutation_RootBulkInsertUserSkillArgs = {
+  objects: Array<UserSkillInsertInput>;
+};
+
+
+/** mutation root */
 export type Mutation_RootBulkInsertUsersArgs = {
   objects: Array<UsersInsertInput>;
   onConflict?: InputMaybe<UsersOnConflict>;
@@ -8082,9 +12714,9 @@ export type Mutation_RootBulkInsertUsersSyncArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkInsertWorkSchedulesArgs = {
-  objects: Array<WorkSchedulesInsertInput>;
-  onConflict?: InputMaybe<WorkSchedulesOnConflict>;
+export type Mutation_RootBulkInsertWorkScheduleArgs = {
+  objects: Array<WorkScheduleInsertInput>;
+  onConflict?: InputMaybe<WorkScheduleOnConflict>;
 };
 
 
@@ -8164,6 +12796,7 @@ export type Mutation_RootBulkUpdateBillingPlansArgs = {
 
 /** mutation root */
 export type Mutation_RootBulkUpdateClientBillingAssignmentsArgs = {
+  _inc?: InputMaybe<ClientBillingAssignmentsIncInput>;
   _set?: InputMaybe<ClientBillingAssignmentsSetInput>;
   where: ClientBillingAssignmentsBoolExp;
 };
@@ -8285,6 +12918,13 @@ export type Mutation_RootBulkUpdatePayrollDateTypesArgs = {
 export type Mutation_RootBulkUpdatePayrollDatesArgs = {
   _set?: InputMaybe<PayrollDatesSetInput>;
   where: PayrollDatesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootBulkUpdatePayrollRequiredSkillArgs = {
+  _set?: InputMaybe<PayrollRequiredSkillSetInput>;
+  where: PayrollRequiredSkillBoolExp;
 };
 
 
@@ -8416,7 +13056,15 @@ export type Mutation_RootBulkUpdateUserRolesArgs = {
 
 
 /** mutation root */
+export type Mutation_RootBulkUpdateUserSkillArgs = {
+  _set?: InputMaybe<UserSkillSetInput>;
+  where: UserSkillBoolExp;
+};
+
+
+/** mutation root */
 export type Mutation_RootBulkUpdateUsersArgs = {
+  _inc?: InputMaybe<UsersIncInput>;
   _set?: InputMaybe<UsersSetInput>;
   where: UsersBoolExp;
 };
@@ -8442,23 +13090,38 @@ export type Mutation_RootBulkUpdateUsersSyncArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateWorkSchedulesArgs = {
-  _inc?: InputMaybe<WorkSchedulesIncInput>;
-  _set?: InputMaybe<WorkSchedulesSetInput>;
-  where: WorkSchedulesBoolExp;
+export type Mutation_RootBulkUpdateWorkScheduleArgs = {
+  _inc?: InputMaybe<WorkScheduleIncInput>;
+  _set?: InputMaybe<WorkScheduleSetInput>;
+  where: WorkScheduleBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootCheckSuspiciousActivityArgs = {
-  timeWindow?: InputMaybe<Scalars['Int']['input']>;
-  userId?: InputMaybe<Scalars['String']['input']>;
+export type Mutation_RootCreate_Leave_RequestArgs = {
+  endDate: Scalars['String']['input'];
+  leaveType: Scalars['String']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
 /** mutation root */
-export type Mutation_RootCommitPayrollAssignmentsArgs = {
-  changes: Array<PayrollAssignmentInput>;
+export type Mutation_RootCreate_PayrollArgs = {
+  clientId: Scalars['String']['input'];
+  complexity: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  processingTime: Scalars['Int']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootCreate_Staff_MemberArgs = {
+  email: Scalars['String']['input'];
+  managerId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  role: Scalars['String']['input'];
 };
 
 
@@ -8505,7 +13168,7 @@ export type Mutation_RootDeleteBillingInvoiceItemArgs = {
 
 
 /** mutation root */
-export type Mutation_RootDeleteBillingInvoiceItemByPkArgs = {
+export type Mutation_RootDeleteBillingInvoiceItemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -8513,6 +13176,18 @@ export type Mutation_RootDeleteBillingInvoiceItemByPkArgs = {
 /** mutation root */
 export type Mutation_RootDeleteBillingItemByIdArgs = {
   id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteBillingPeriodArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteBillingPeriodsArgs = {
+  where: BillingPeriodsBoolExp;
 };
 
 
@@ -8542,6 +13217,42 @@ export type Mutation_RootDeleteClientExternalSystemByIdArgs = {
 
 /** mutation root */
 export type Mutation_RootDeleteDataAccessLogByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteEmailDraftsArgs = {
+  where: EmailDraftsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteEmailDraftsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteEmailSendLogsArgs = {
+  where: EmailSendLogsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteEmailSendLogsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteEmailTemplatesArgs = {
+  where: EmailTemplatesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteEmailTemplatesByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -8661,6 +13372,18 @@ export type Mutation_RootDeletePermissionOverrideByIdArgs = {
 
 
 /** mutation root */
+export type Mutation_RootDeletePositionAdminDefaultsArgs = {
+  where: PositionAdminDefaultsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeletePositionAdminDefaultsByPkArgs = {
+  position: Scalars['user_position']['input'];
+};
+
+
+/** mutation root */
 export type Mutation_RootDeleteResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
@@ -8685,7 +13408,31 @@ export type Mutation_RootDeleteSlowQueryByIdArgs = {
 
 
 /** mutation root */
+export type Mutation_RootDeleteTimeEntriesArgs = {
+  where: TimeEntriesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteTimeEntryArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
 export type Mutation_RootDeleteUserByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteUserEmailTemplateFavoritesArgs = {
+  where: UserEmailTemplateFavoritesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteUserEmailTemplateFavoritesByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -8715,8 +13462,10 @@ export type Mutation_RootDeleteWorkScheduleByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootGenerateComplianceReportArgs = {
-  input: ComplianceReportInput;
+export type Mutation_RootGenerate_Payroll_ScheduleArgs = {
+  cycleType: Scalars['String']['input'];
+  payrollId: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
 };
 
 
@@ -8784,6 +13533,20 @@ export type Mutation_RootInsertBillingItemArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsertBillingPeriodArgs = {
+  objects: Array<BillingPeriodsInsertInput>;
+  onConflict?: InputMaybe<BillingPeriodsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertBillingPeriodOneArgs = {
+  object: BillingPeriodsInsertInput;
+  onConflict?: InputMaybe<BillingPeriodsOnConflict>;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsertBillingPlanArgs = {
   object: BillingPlansInsertInput;
   onConflict?: InputMaybe<BillingPlansOnConflict>;
@@ -8815,6 +13578,48 @@ export type Mutation_RootInsertClientExternalSystemArgs = {
 export type Mutation_RootInsertDataAccessLogArgs = {
   object: DataAccessLogsInsertInput;
   onConflict?: InputMaybe<DataAccessLogsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertEmailDraftsArgs = {
+  objects: Array<EmailDraftsInsertInput>;
+  onConflict?: InputMaybe<EmailDraftsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertEmailDraftsOneArgs = {
+  object: EmailDraftsInsertInput;
+  onConflict?: InputMaybe<EmailDraftsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertEmailSendLogsArgs = {
+  objects: Array<EmailSendLogsInsertInput>;
+  onConflict?: InputMaybe<EmailSendLogsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertEmailSendLogsOneArgs = {
+  object: EmailSendLogsInsertInput;
+  onConflict?: InputMaybe<EmailSendLogsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertEmailTemplatesArgs = {
+  objects: Array<EmailTemplatesInsertInput>;
+  onConflict?: InputMaybe<EmailTemplatesOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertEmailTemplatesOneArgs = {
+  object: EmailTemplatesInsertInput;
+  onConflict?: InputMaybe<EmailTemplatesOnConflict>;
 };
 
 
@@ -8910,6 +13715,12 @@ export type Mutation_RootInsertPayrollDateTypeArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsertPayrollRequiredSkillArgs = {
+  object: PayrollRequiredSkillInsertInput;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsertPayrollVersionHistoryResultArgs = {
   object: PayrollVersionHistoryResultsInsertInput;
   onConflict?: InputMaybe<PayrollVersionHistoryResultsOnConflict>;
@@ -8952,6 +13763,20 @@ export type Mutation_RootInsertPermissionOverrideArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsertPositionAdminDefaultsArgs = {
+  objects: Array<PositionAdminDefaultsInsertInput>;
+  onConflict?: InputMaybe<PositionAdminDefaultsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertPositionAdminDefaultsOneArgs = {
+  object: PositionAdminDefaultsInsertInput;
+  onConflict?: InputMaybe<PositionAdminDefaultsOnConflict>;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsertResourceArgs = {
   object: ResourcesInsertInput;
   onConflict?: InputMaybe<ResourcesOnConflict>;
@@ -8980,6 +13805,20 @@ export type Mutation_RootInsertSlowQueryArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsertTimeEntryArgs = {
+  objects: Array<TimeEntriesInsertInput>;
+  onConflict?: InputMaybe<TimeEntriesOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertTimeEntryOneArgs = {
+  object: TimeEntriesInsertInput;
+  onConflict?: InputMaybe<TimeEntriesOnConflict>;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsertUserArgs = {
   object: UsersInsertInput;
   onConflict?: InputMaybe<UsersOnConflict>;
@@ -8989,6 +13828,20 @@ export type Mutation_RootInsertUserArgs = {
 /** mutation root */
 export type Mutation_RootInsertUserAccessSummaryArgs = {
   object: UserAccessSummariesInsertInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertUserEmailTemplateFavoritesArgs = {
+  objects: Array<UserEmailTemplateFavoritesInsertInput>;
+  onConflict?: InputMaybe<UserEmailTemplateFavoritesOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertUserEmailTemplateFavoritesOneArgs = {
+  object: UserEmailTemplateFavoritesInsertInput;
+  onConflict?: InputMaybe<UserEmailTemplateFavoritesOnConflict>;
 };
 
 
@@ -9007,6 +13860,12 @@ export type Mutation_RootInsertUserRoleArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsertUserSkillArgs = {
+  object: UserSkillInsertInput;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsertUserSyncArgs = {
   object: AuthUsersSyncInsertInput;
   onConflict?: InputMaybe<AuthUsersSyncOnConflict>;
@@ -9021,14 +13880,8 @@ export type Mutation_RootInsertUsersRoleBackupArgs = {
 
 /** mutation root */
 export type Mutation_RootInsertWorkScheduleArgs = {
-  object: WorkSchedulesInsertInput;
-  onConflict?: InputMaybe<WorkSchedulesOnConflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootLogAuditEventArgs = {
-  event: AuditEventInput;
+  object: WorkScheduleInsertInput;
+  onConflict?: InputMaybe<WorkScheduleOnConflict>;
 };
 
 
@@ -9135,7 +13988,7 @@ export type Mutation_RootUpdateBillingInvoiceItemArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateBillingInvoiceItemByPkArgs = {
+export type Mutation_RootUpdateBillingInvoiceItemByIdArgs = {
   _inc?: InputMaybe<BillingInvoiceItemIncInput>;
   _set?: InputMaybe<BillingInvoiceItemSetInput>;
   pkColumns: BillingInvoiceItemPkColumnsInput;
@@ -9169,6 +14022,26 @@ export type Mutation_RootUpdateBillingItemsManyArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdateBillingPeriodArgs = {
+  _set?: InputMaybe<BillingPeriodsSetInput>;
+  pkColumns: BillingPeriodsPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateBillingPeriodsArgs = {
+  _set?: InputMaybe<BillingPeriodsSetInput>;
+  where: BillingPeriodsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateBillingPeriodsManyArgs = {
+  updates: Array<BillingPeriodsUpdates>;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdateBillingPlanByIdArgs = {
   _inc?: InputMaybe<BillingPlansIncInput>;
   _set?: InputMaybe<BillingPlansSetInput>;
@@ -9184,6 +14057,7 @@ export type Mutation_RootUpdateBillingPlansManyArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdateClientBillingAssignmentByIdArgs = {
+  _inc?: InputMaybe<ClientBillingAssignmentsIncInput>;
   _set?: InputMaybe<ClientBillingAssignmentsSetInput>;
   pkColumns: ClientBillingAssignmentsPkColumnsInput;
 };
@@ -9237,6 +14111,96 @@ export type Mutation_RootUpdateDataAccessLogByIdArgs = {
 /** mutation root */
 export type Mutation_RootUpdateDataAccessLogsManyArgs = {
   updates: Array<DataAccessLogsUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateEmailDraftsArgs = {
+  _append?: InputMaybe<EmailDraftsAppendInput>;
+  _deleteAtPath?: InputMaybe<EmailDraftsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<EmailDraftsDeleteElemInput>;
+  _deleteKey?: InputMaybe<EmailDraftsDeleteKeyInput>;
+  _prepend?: InputMaybe<EmailDraftsPrependInput>;
+  _set?: InputMaybe<EmailDraftsSetInput>;
+  where: EmailDraftsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateEmailDraftsByPkArgs = {
+  _append?: InputMaybe<EmailDraftsAppendInput>;
+  _deleteAtPath?: InputMaybe<EmailDraftsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<EmailDraftsDeleteElemInput>;
+  _deleteKey?: InputMaybe<EmailDraftsDeleteKeyInput>;
+  _prepend?: InputMaybe<EmailDraftsPrependInput>;
+  _set?: InputMaybe<EmailDraftsSetInput>;
+  pkColumns: EmailDraftsPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateEmailDraftsManyArgs = {
+  updates: Array<EmailDraftsUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateEmailSendLogsArgs = {
+  _append?: InputMaybe<EmailSendLogsAppendInput>;
+  _deleteAtPath?: InputMaybe<EmailSendLogsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<EmailSendLogsDeleteElemInput>;
+  _deleteKey?: InputMaybe<EmailSendLogsDeleteKeyInput>;
+  _prepend?: InputMaybe<EmailSendLogsPrependInput>;
+  _set?: InputMaybe<EmailSendLogsSetInput>;
+  where: EmailSendLogsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateEmailSendLogsByPkArgs = {
+  _append?: InputMaybe<EmailSendLogsAppendInput>;
+  _deleteAtPath?: InputMaybe<EmailSendLogsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<EmailSendLogsDeleteElemInput>;
+  _deleteKey?: InputMaybe<EmailSendLogsDeleteKeyInput>;
+  _prepend?: InputMaybe<EmailSendLogsPrependInput>;
+  _set?: InputMaybe<EmailSendLogsSetInput>;
+  pkColumns: EmailSendLogsPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateEmailSendLogsManyArgs = {
+  updates: Array<EmailSendLogsUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateEmailTemplatesArgs = {
+  _append?: InputMaybe<EmailTemplatesAppendInput>;
+  _deleteAtPath?: InputMaybe<EmailTemplatesDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<EmailTemplatesDeleteElemInput>;
+  _deleteKey?: InputMaybe<EmailTemplatesDeleteKeyInput>;
+  _prepend?: InputMaybe<EmailTemplatesPrependInput>;
+  _set?: InputMaybe<EmailTemplatesSetInput>;
+  where: EmailTemplatesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateEmailTemplatesByPkArgs = {
+  _append?: InputMaybe<EmailTemplatesAppendInput>;
+  _deleteAtPath?: InputMaybe<EmailTemplatesDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<EmailTemplatesDeleteElemInput>;
+  _deleteKey?: InputMaybe<EmailTemplatesDeleteKeyInput>;
+  _prepend?: InputMaybe<EmailTemplatesPrependInput>;
+  _set?: InputMaybe<EmailTemplatesSetInput>;
+  pkColumns: EmailTemplatesPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateEmailTemplatesManyArgs = {
+  updates: Array<EmailTemplatesUpdates>;
 };
 
 
@@ -9413,6 +14377,12 @@ export type Mutation_RootUpdatePayrollDatesManyArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdatePayrollRequiredSkillManyArgs = {
+  updates: Array<PayrollRequiredSkillUpdates>;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdatePayrollVersionHistoryResultByIdArgs = {
   _inc?: InputMaybe<PayrollVersionHistoryResultsIncInput>;
   _set?: InputMaybe<PayrollVersionHistoryResultsSetInput>;
@@ -9514,6 +14484,28 @@ export type Mutation_RootUpdatePermissionsManyArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdatePositionAdminDefaultsArgs = {
+  _inc?: InputMaybe<PositionAdminDefaultsIncInput>;
+  _set?: InputMaybe<PositionAdminDefaultsSetInput>;
+  where: PositionAdminDefaultsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdatePositionAdminDefaultsByPkArgs = {
+  _inc?: InputMaybe<PositionAdminDefaultsIncInput>;
+  _set?: InputMaybe<PositionAdminDefaultsSetInput>;
+  pkColumns: PositionAdminDefaultsPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdatePositionAdminDefaultsManyArgs = {
+  updates: Array<PositionAdminDefaultsUpdates>;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdateResourceByIdArgs = {
   _set?: InputMaybe<ResourcesSetInput>;
   pkColumns: ResourcesPkColumnsInput;
@@ -9572,6 +14564,28 @@ export type Mutation_RootUpdateSlowQueryByIdArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdateTimeEntriesArgs = {
+  _inc?: InputMaybe<TimeEntriesIncInput>;
+  _set?: InputMaybe<TimeEntriesSetInput>;
+  where: TimeEntriesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateTimeEntriesManyArgs = {
+  updates: Array<TimeEntriesUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateTimeEntryArgs = {
+  _inc?: InputMaybe<TimeEntriesIncInput>;
+  _set?: InputMaybe<TimeEntriesSetInput>;
+  pkColumns: TimeEntriesPkColumnsInput;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdateUserAccessSummariesManyArgs = {
   updates: Array<UserAccessSummariesUpdates>;
 };
@@ -9579,8 +14593,29 @@ export type Mutation_RootUpdateUserAccessSummariesManyArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdateUserByIdArgs = {
+  _inc?: InputMaybe<UsersIncInput>;
   _set?: InputMaybe<UsersSetInput>;
   pkColumns: UsersPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateUserEmailTemplateFavoritesArgs = {
+  _set?: InputMaybe<UserEmailTemplateFavoritesSetInput>;
+  where: UserEmailTemplateFavoritesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateUserEmailTemplateFavoritesByPkArgs = {
+  _set?: InputMaybe<UserEmailTemplateFavoritesSetInput>;
+  pkColumns: UserEmailTemplateFavoritesPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateUserEmailTemplateFavoritesManyArgs = {
+  updates: Array<UserEmailTemplateFavoritesUpdates>;
 };
 
 
@@ -9616,6 +14651,12 @@ export type Mutation_RootUpdateUserRolesManyArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdateUserSkillManyArgs = {
+  updates: Array<UserSkillUpdates>;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdateUserSyncByIdArgs = {
   _append?: InputMaybe<AuthUsersSyncAppendInput>;
   _deleteAtPath?: InputMaybe<AuthUsersSyncDeleteAtPathInput>;
@@ -9641,15 +14682,41 @@ export type Mutation_RootUpdateUsersRoleBackupManyArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdateWorkScheduleByIdArgs = {
-  _inc?: InputMaybe<WorkSchedulesIncInput>;
-  _set?: InputMaybe<WorkSchedulesSetInput>;
-  pkColumns: WorkSchedulesPkColumnsInput;
+  _inc?: InputMaybe<WorkScheduleIncInput>;
+  _set?: InputMaybe<WorkScheduleSetInput>;
+  pkColumns: WorkSchedulePkColumnsInput;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateWorkSchedulesManyArgs = {
-  updates: Array<WorkSchedulesUpdates>;
+export type Mutation_RootUpdateWorkScheduleManyArgs = {
+  updates: Array<WorkScheduleUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_PayrollArgs = {
+  complexity?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  processingTime?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Staff_MemberArgs = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  managerId?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Scalars['String']['input']>;
+  userId: Scalars['String']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_User_RoleArgs = {
+  role: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 /** columns and relationships of "notes" */
@@ -11796,7 +16863,7 @@ export type PayrollDatesBoolExp = {
 
 /** unique or primary key constraints on table "payroll_dates" */
 export type PayrollDatesConstraint =
-  /** unique or primary key constraint on columns "original_eft_date", "payroll_id" */
+  /** unique or primary key constraint on columns "payroll_id", "original_eft_date" */
   | 'idx_unique_payroll_date'
   /** unique or primary key constraint on columns "id" */
   | 'payroll_dates_pkey'
@@ -12044,6 +17111,166 @@ export type PayrollDatesUpdates = {
   _set?: InputMaybe<PayrollDatesSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollDatesBoolExp;
+};
+
+/** columns and relationships of "payroll_required_skills" */
+export type PayrollRequiredSkill = {
+  __typename?: 'payrollRequiredSkill';
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  requiredLevel?: Maybe<Scalars['String']['output']>;
+  /** An object relationship */
+  requiringPayroll?: Maybe<Payrolls>;
+  skillName?: Maybe<Scalars['String']['output']>;
+};
+
+/** aggregated selection of "payroll_required_skills" */
+export type PayrollRequiredSkillAggregate = {
+  __typename?: 'payrollRequiredSkillAggregate';
+  aggregate?: Maybe<PayrollRequiredSkillAggregateFields>;
+  nodes: Array<PayrollRequiredSkill>;
+};
+
+export type PayrollRequiredSkillAggregateBoolExp = {
+  count?: InputMaybe<PayrollRequiredSkillAggregateBoolExpCount>;
+};
+
+export type PayrollRequiredSkillAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<PayrollRequiredSkillSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<PayrollRequiredSkillBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+/** aggregate fields of "payroll_required_skills" */
+export type PayrollRequiredSkillAggregateFields = {
+  __typename?: 'payrollRequiredSkillAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<PayrollRequiredSkillMaxFields>;
+  min?: Maybe<PayrollRequiredSkillMinFields>;
+};
+
+
+/** aggregate fields of "payroll_required_skills" */
+export type PayrollRequiredSkillAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<PayrollRequiredSkillSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "payroll_required_skills" */
+export type PayrollRequiredSkillAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<PayrollRequiredSkillMaxOrderBy>;
+  min?: InputMaybe<PayrollRequiredSkillMinOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "payroll_required_skills" */
+export type PayrollRequiredSkillArrRelInsertInput = {
+  data: Array<PayrollRequiredSkillInsertInput>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_required_skills". All fields are combined with a logical 'AND'. */
+export type PayrollRequiredSkillBoolExp = {
+  _and?: InputMaybe<Array<PayrollRequiredSkillBoolExp>>;
+  _not?: InputMaybe<PayrollRequiredSkillBoolExp>;
+  _or?: InputMaybe<Array<PayrollRequiredSkillBoolExp>>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  requiredLevel?: InputMaybe<StringComparisonExp>;
+  requiringPayroll?: InputMaybe<PayrollsBoolExp>;
+  skillName?: InputMaybe<StringComparisonExp>;
+};
+
+/** input type for inserting data into table "payroll_required_skills" */
+export type PayrollRequiredSkillInsertInput = {
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  requiredLevel?: InputMaybe<Scalars['String']['input']>;
+  requiringPayroll?: InputMaybe<PayrollsObjRelInsertInput>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregate max on columns */
+export type PayrollRequiredSkillMaxFields = {
+  __typename?: 'payrollRequiredSkillMaxFields';
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  requiredLevel?: Maybe<Scalars['String']['output']>;
+  skillName?: Maybe<Scalars['String']['output']>;
+};
+
+/** order by max() on columns of table "payroll_required_skills" */
+export type PayrollRequiredSkillMaxOrderBy = {
+  payrollId?: InputMaybe<OrderBy>;
+  requiredLevel?: InputMaybe<OrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type PayrollRequiredSkillMinFields = {
+  __typename?: 'payrollRequiredSkillMinFields';
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  requiredLevel?: Maybe<Scalars['String']['output']>;
+  skillName?: Maybe<Scalars['String']['output']>;
+};
+
+/** order by min() on columns of table "payroll_required_skills" */
+export type PayrollRequiredSkillMinOrderBy = {
+  payrollId?: InputMaybe<OrderBy>;
+  requiredLevel?: InputMaybe<OrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "payroll_required_skills" */
+export type PayrollRequiredSkillMutationResponse = {
+  __typename?: 'payrollRequiredSkillMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<PayrollRequiredSkill>;
+};
+
+/** Ordering options when selecting data from "payroll_required_skills". */
+export type PayrollRequiredSkillOrderBy = {
+  payrollId?: InputMaybe<OrderBy>;
+  requiredLevel?: InputMaybe<OrderBy>;
+  requiringPayroll?: InputMaybe<PayrollsOrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "payroll_required_skills" */
+export type PayrollRequiredSkillSelectColumn =
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'requiredLevel'
+  /** column name */
+  | 'skillName'
+  | '%future added value';
+
+/** input type for updating data in table "payroll_required_skills" */
+export type PayrollRequiredSkillSetInput = {
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  requiredLevel?: InputMaybe<Scalars['String']['input']>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Streaming cursor of the table "payrollRequiredSkill" */
+export type PayrollRequiredSkillStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PayrollRequiredSkillStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PayrollRequiredSkillStreamCursorValueInput = {
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  requiredLevel?: InputMaybe<Scalars['String']['input']>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PayrollRequiredSkillUpdates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<PayrollRequiredSkillSetInput>;
+  /** filter the rows which have to be updated */
+  where: PayrollRequiredSkillBoolExp;
 };
 
 /** columns and relationships of "payroll_triggers_status" */
@@ -12714,6 +17941,8 @@ export type PayrollVersionResultsVarianceFields = {
 /** columns and relationships of "payrolls" */
 export type Payrolls = {
   __typename?: 'payrolls';
+  actualHours?: Maybe<Scalars['numeric']['output']>;
+  actualRevenue?: Maybe<Scalars['numeric']['output']>;
   /** An object relationship */
   backupConsultant?: Maybe<Users>;
   /** Backup consultant for this payroll */
@@ -12722,6 +17951,8 @@ export type Payrolls = {
   billingItems: Array<BillingItems>;
   /** An aggregate relationship */
   billingItemsAggregate: BillingItemsAggregate;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: Maybe<Scalars['String']['output']>;
   /** An array relationship */
   childPayrolls: Array<Payrolls>;
   /** An aggregate relationship */
@@ -12741,16 +17972,21 @@ export type Payrolls = {
   dateValue?: Maybe<Scalars['Int']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Int']['output']>;
+  estimatedHours?: Maybe<Scalars['numeric']['output']>;
+  estimatedRevenue?: Maybe<Scalars['numeric']['output']>;
   /** The date when the payroll went live in the system */
   goLiveDate?: Maybe<Scalars['date']['output']>;
   /** Unique identifier for the payroll */
   id: Scalars['uuid']['output'];
+  lastBilledDate?: Maybe<Scalars['timestamptz']['output']>;
   /** An object relationship */
   manager?: Maybe<Users>;
   /** Manager overseeing this payroll */
   managerUserId?: Maybe<Scalars['uuid']['output']>;
   /** Name of the payroll */
   name: Scalars['String']['output'];
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Int']['output']>;
   /** An object relationship */
   parentPayroll?: Maybe<Payrolls>;
   parentPayrollId?: Maybe<Scalars['uuid']['output']>;
@@ -12762,8 +17998,14 @@ export type Payrolls = {
   payrollDates: Array<PayrollDates>;
   /** An aggregate relationship */
   payrollDatesAggregate: PayrollDatesAggregate;
+  /** An array relationship */
+  payrollRequiredSkills: Array<PayrollRequiredSkill>;
+  /** An aggregate relationship */
+  payrollRequiredSkillsAggregate: PayrollRequiredSkillAggregate;
   /** External payroll system used for this client */
   payrollSystem?: Maybe<Scalars['String']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Int']['output']>;
   /** An object relationship */
   primaryConsultant?: Maybe<Users>;
   /** Primary consultant responsible for this payroll */
@@ -12772,9 +18014,16 @@ export type Payrolls = {
   processingDaysBeforeEft: Scalars['Int']['output'];
   /** Number of hours required to process this payroll */
   processingTime: Scalars['Int']['output'];
+  profitMargin?: Maybe<Scalars['numeric']['output']>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status: Scalars['payroll_status']['output'];
   supersededDate?: Maybe<Scalars['date']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Int']['output']>;
+  /** An array relationship */
+  timeEntries: Array<TimeEntries>;
+  /** An aggregate relationship */
+  timeEntriesAggregate: TimeEntriesAggregate;
   /** Timestamp when the payroll was last updated */
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
   versionNumber?: Maybe<Scalars['Int']['output']>;
@@ -12839,6 +18088,46 @@ export type PayrollsPayrollDatesAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<PayrollDatesOrderBy>>;
   where?: InputMaybe<PayrollDatesBoolExp>;
+};
+
+
+/** columns and relationships of "payrolls" */
+export type PayrollsPayrollRequiredSkillsArgs = {
+  distinctOn?: InputMaybe<Array<PayrollRequiredSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollRequiredSkillOrderBy>>;
+  where?: InputMaybe<PayrollRequiredSkillBoolExp>;
+};
+
+
+/** columns and relationships of "payrolls" */
+export type PayrollsPayrollRequiredSkillsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollRequiredSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollRequiredSkillOrderBy>>;
+  where?: InputMaybe<PayrollRequiredSkillBoolExp>;
+};
+
+
+/** columns and relationships of "payrolls" */
+export type PayrollsTimeEntriesArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+
+/** columns and relationships of "payrolls" */
+export type PayrollsTimeEntriesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
 };
 
 /** aggregated selection of "payrolls" */
@@ -12907,27 +18196,49 @@ export type PayrollsArrRelInsertInput = {
 /** aggregate avg on columns */
 export type PayrollsAvgFields = {
   __typename?: 'payrollsAvgFields';
+  actualHours?: Maybe<Scalars['Float']['output']>;
+  actualRevenue?: Maybe<Scalars['Float']['output']>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: Maybe<Scalars['Float']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Float']['output']>;
+  estimatedHours?: Maybe<Scalars['Float']['output']>;
+  estimatedRevenue?: Maybe<Scalars['Float']['output']>;
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Float']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Float']['output']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: Maybe<Scalars['Float']['output']>;
   /** Number of hours required to process this payroll */
   processingTime?: Maybe<Scalars['Float']['output']>;
+  profitMargin?: Maybe<Scalars['Float']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Float']['output']>;
   versionNumber?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by avg() on columns of table "payrolls" */
 export type PayrollsAvgOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
@@ -12936,10 +18247,13 @@ export type PayrollsBoolExp = {
   _and?: InputMaybe<Array<PayrollsBoolExp>>;
   _not?: InputMaybe<PayrollsBoolExp>;
   _or?: InputMaybe<Array<PayrollsBoolExp>>;
+  actualHours?: InputMaybe<NumericComparisonExp>;
+  actualRevenue?: InputMaybe<NumericComparisonExp>;
   backupConsultant?: InputMaybe<UsersBoolExp>;
   backupConsultantUserId?: InputMaybe<UuidComparisonExp>;
   billingItems?: InputMaybe<BillingItemsBoolExp>;
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingStatus?: InputMaybe<StringComparisonExp>;
   childPayrolls?: InputMaybe<PayrollsBoolExp>;
   childPayrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   client?: InputMaybe<ClientsBoolExp>;
@@ -12950,24 +18264,35 @@ export type PayrollsBoolExp = {
   dateTypeId?: InputMaybe<UuidComparisonExp>;
   dateValue?: InputMaybe<IntComparisonExp>;
   employeeCount?: InputMaybe<IntComparisonExp>;
+  estimatedHours?: InputMaybe<NumericComparisonExp>;
+  estimatedRevenue?: InputMaybe<NumericComparisonExp>;
   goLiveDate?: InputMaybe<DateComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
+  lastBilledDate?: InputMaybe<TimestamptzComparisonExp>;
   manager?: InputMaybe<UsersBoolExp>;
   managerUserId?: InputMaybe<UuidComparisonExp>;
   name?: InputMaybe<StringComparisonExp>;
+  newEmployees?: InputMaybe<IntComparisonExp>;
   parentPayroll?: InputMaybe<PayrollsBoolExp>;
   parentPayrollId?: InputMaybe<UuidComparisonExp>;
   payrollCycle?: InputMaybe<PayrollCyclesBoolExp>;
   payrollDateType?: InputMaybe<PayrollDateTypesBoolExp>;
   payrollDates?: InputMaybe<PayrollDatesBoolExp>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateBoolExp>;
+  payrollRequiredSkills?: InputMaybe<PayrollRequiredSkillBoolExp>;
+  payrollRequiredSkillsAggregate?: InputMaybe<PayrollRequiredSkillAggregateBoolExp>;
   payrollSystem?: InputMaybe<StringComparisonExp>;
+  payslipCount?: InputMaybe<IntComparisonExp>;
   primaryConsultant?: InputMaybe<UsersBoolExp>;
   primaryConsultantUserId?: InputMaybe<UuidComparisonExp>;
   processingDaysBeforeEft?: InputMaybe<IntComparisonExp>;
   processingTime?: InputMaybe<IntComparisonExp>;
+  profitMargin?: InputMaybe<NumericComparisonExp>;
   status?: InputMaybe<PayrollStatusComparisonExp>;
   supersededDate?: InputMaybe<DateComparisonExp>;
+  terminatedEmployees?: InputMaybe<IntComparisonExp>;
+  timeEntries?: InputMaybe<TimeEntriesBoolExp>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   versionNumber?: InputMaybe<IntComparisonExp>;
   versionReason?: InputMaybe<StringComparisonExp>;
@@ -12983,23 +18308,38 @@ export type PayrollsConstraint =
 
 /** input type for incrementing numeric columns in table "payrolls" */
 export type PayrollsIncInput = {
+  actualHours?: InputMaybe<Scalars['numeric']['input']>;
+  actualRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<Scalars['Int']['input']>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  estimatedHours?: InputMaybe<Scalars['numeric']['input']>;
+  estimatedRevenue?: InputMaybe<Scalars['numeric']['input']>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<Scalars['Int']['input']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<Scalars['Int']['input']>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<Scalars['Int']['input']>;
+  profitMargin?: InputMaybe<Scalars['numeric']['input']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<Scalars['Int']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** input type for inserting data into table "payrolls" */
 export type PayrollsInsertInput = {
+  actualHours?: InputMaybe<Scalars['numeric']['input']>;
+  actualRevenue?: InputMaybe<Scalars['numeric']['input']>;
   backupConsultant?: InputMaybe<UsersObjRelInsertInput>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: InputMaybe<Scalars['String']['input']>;
   childPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   client?: InputMaybe<ClientsObjRelInsertInput>;
   /** Reference to the client this payroll belongs to */
@@ -13015,22 +18355,30 @@ export type PayrollsInsertInput = {
   dateValue?: InputMaybe<Scalars['Int']['input']>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  estimatedHours?: InputMaybe<Scalars['numeric']['input']>;
+  estimatedRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** The date when the payroll went live in the system */
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the payroll */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  lastBilledDate?: InputMaybe<Scalars['timestamptz']['input']>;
   manager?: InputMaybe<UsersObjRelInsertInput>;
   /** Manager overseeing this payroll */
   managerUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Name of the payroll */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<Scalars['Int']['input']>;
   parentPayroll?: InputMaybe<PayrollsObjRelInsertInput>;
   parentPayrollId?: InputMaybe<Scalars['uuid']['input']>;
   payrollCycle?: InputMaybe<PayrollCyclesObjRelInsertInput>;
   payrollDateType?: InputMaybe<PayrollDateTypesObjRelInsertInput>;
   payrollDates?: InputMaybe<PayrollDatesArrRelInsertInput>;
+  payrollRequiredSkills?: InputMaybe<PayrollRequiredSkillArrRelInsertInput>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
   primaryConsultant?: InputMaybe<UsersObjRelInsertInput>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
@@ -13038,9 +18386,13 @@ export type PayrollsInsertInput = {
   processingDaysBeforeEft?: InputMaybe<Scalars['Int']['input']>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<Scalars['Int']['input']>;
+  profitMargin?: InputMaybe<Scalars['numeric']['input']>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: InputMaybe<Scalars['payroll_status']['input']>;
   supersededDate?: InputMaybe<Scalars['date']['input']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<Scalars['Int']['input']>;
+  timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
@@ -13050,8 +18402,12 @@ export type PayrollsInsertInput = {
 /** aggregate max on columns */
 export type PayrollsMaxFields = {
   __typename?: 'payrollsMaxFields';
+  actualHours?: Maybe<Scalars['numeric']['output']>;
+  actualRevenue?: Maybe<Scalars['numeric']['output']>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: Maybe<Scalars['uuid']['output']>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: Maybe<Scalars['String']['output']>;
   /** Reference to the client this payroll belongs to */
   clientId?: Maybe<Scalars['uuid']['output']>;
   /** Timestamp when the payroll was created */
@@ -13065,26 +18421,36 @@ export type PayrollsMaxFields = {
   dateValue?: Maybe<Scalars['Int']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Int']['output']>;
+  estimatedHours?: Maybe<Scalars['numeric']['output']>;
+  estimatedRevenue?: Maybe<Scalars['numeric']['output']>;
   /** The date when the payroll went live in the system */
   goLiveDate?: Maybe<Scalars['date']['output']>;
   /** Unique identifier for the payroll */
   id?: Maybe<Scalars['uuid']['output']>;
+  lastBilledDate?: Maybe<Scalars['timestamptz']['output']>;
   /** Manager overseeing this payroll */
   managerUserId?: Maybe<Scalars['uuid']['output']>;
   /** Name of the payroll */
   name?: Maybe<Scalars['String']['output']>;
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Int']['output']>;
   parentPayrollId?: Maybe<Scalars['uuid']['output']>;
   /** External payroll system used for this client */
   payrollSystem?: Maybe<Scalars['String']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Int']['output']>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: Maybe<Scalars['uuid']['output']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: Maybe<Scalars['Int']['output']>;
   /** Number of hours required to process this payroll */
   processingTime?: Maybe<Scalars['Int']['output']>;
+  profitMargin?: Maybe<Scalars['numeric']['output']>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: Maybe<Scalars['payroll_status']['output']>;
   supersededDate?: Maybe<Scalars['date']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Int']['output']>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
   versionNumber?: Maybe<Scalars['Int']['output']>;
@@ -13093,8 +18459,12 @@ export type PayrollsMaxFields = {
 
 /** order by max() on columns of table "payrolls" */
 export type PayrollsMaxOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<OrderBy>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: InputMaybe<OrderBy>;
   /** Reference to the client this payroll belongs to */
   clientId?: InputMaybe<OrderBy>;
   /** Timestamp when the payroll was created */
@@ -13108,26 +18478,36 @@ export type PayrollsMaxOrderBy = {
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
   /** The date when the payroll went live in the system */
   goLiveDate?: InputMaybe<OrderBy>;
   /** Unique identifier for the payroll */
   id?: InputMaybe<OrderBy>;
+  lastBilledDate?: InputMaybe<OrderBy>;
   /** Manager overseeing this payroll */
   managerUserId?: InputMaybe<OrderBy>;
   /** Name of the payroll */
   name?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
   parentPayrollId?: InputMaybe<OrderBy>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: InputMaybe<OrderBy>;
   supersededDate?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
@@ -13137,8 +18517,12 @@ export type PayrollsMaxOrderBy = {
 /** aggregate min on columns */
 export type PayrollsMinFields = {
   __typename?: 'payrollsMinFields';
+  actualHours?: Maybe<Scalars['numeric']['output']>;
+  actualRevenue?: Maybe<Scalars['numeric']['output']>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: Maybe<Scalars['uuid']['output']>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: Maybe<Scalars['String']['output']>;
   /** Reference to the client this payroll belongs to */
   clientId?: Maybe<Scalars['uuid']['output']>;
   /** Timestamp when the payroll was created */
@@ -13152,26 +18536,36 @@ export type PayrollsMinFields = {
   dateValue?: Maybe<Scalars['Int']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Int']['output']>;
+  estimatedHours?: Maybe<Scalars['numeric']['output']>;
+  estimatedRevenue?: Maybe<Scalars['numeric']['output']>;
   /** The date when the payroll went live in the system */
   goLiveDate?: Maybe<Scalars['date']['output']>;
   /** Unique identifier for the payroll */
   id?: Maybe<Scalars['uuid']['output']>;
+  lastBilledDate?: Maybe<Scalars['timestamptz']['output']>;
   /** Manager overseeing this payroll */
   managerUserId?: Maybe<Scalars['uuid']['output']>;
   /** Name of the payroll */
   name?: Maybe<Scalars['String']['output']>;
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Int']['output']>;
   parentPayrollId?: Maybe<Scalars['uuid']['output']>;
   /** External payroll system used for this client */
   payrollSystem?: Maybe<Scalars['String']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Int']['output']>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: Maybe<Scalars['uuid']['output']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: Maybe<Scalars['Int']['output']>;
   /** Number of hours required to process this payroll */
   processingTime?: Maybe<Scalars['Int']['output']>;
+  profitMargin?: Maybe<Scalars['numeric']['output']>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: Maybe<Scalars['payroll_status']['output']>;
   supersededDate?: Maybe<Scalars['date']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Int']['output']>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
   versionNumber?: Maybe<Scalars['Int']['output']>;
@@ -13180,8 +18574,12 @@ export type PayrollsMinFields = {
 
 /** order by min() on columns of table "payrolls" */
 export type PayrollsMinOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<OrderBy>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: InputMaybe<OrderBy>;
   /** Reference to the client this payroll belongs to */
   clientId?: InputMaybe<OrderBy>;
   /** Timestamp when the payroll was created */
@@ -13195,26 +18593,36 @@ export type PayrollsMinOrderBy = {
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
   /** The date when the payroll went live in the system */
   goLiveDate?: InputMaybe<OrderBy>;
   /** Unique identifier for the payroll */
   id?: InputMaybe<OrderBy>;
+  lastBilledDate?: InputMaybe<OrderBy>;
   /** Manager overseeing this payroll */
   managerUserId?: InputMaybe<OrderBy>;
   /** Name of the payroll */
   name?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
   parentPayrollId?: InputMaybe<OrderBy>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: InputMaybe<OrderBy>;
   supersededDate?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
@@ -13246,9 +18654,12 @@ export type PayrollsOnConflict = {
 
 /** Ordering options when selecting data from "payrolls". */
 export type PayrollsOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   backupConsultant?: InputMaybe<UsersOrderBy>;
   backupConsultantUserId?: InputMaybe<OrderBy>;
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingStatus?: InputMaybe<OrderBy>;
   childPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   client?: InputMaybe<ClientsOrderBy>;
   clientId?: InputMaybe<OrderBy>;
@@ -13258,23 +18669,32 @@ export type PayrollsOrderBy = {
   dateTypeId?: InputMaybe<OrderBy>;
   dateValue?: InputMaybe<OrderBy>;
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
   goLiveDate?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  lastBilledDate?: InputMaybe<OrderBy>;
   manager?: InputMaybe<UsersOrderBy>;
   managerUserId?: InputMaybe<OrderBy>;
   name?: InputMaybe<OrderBy>;
+  newEmployees?: InputMaybe<OrderBy>;
   parentPayroll?: InputMaybe<PayrollsOrderBy>;
   parentPayrollId?: InputMaybe<OrderBy>;
   payrollCycle?: InputMaybe<PayrollCyclesOrderBy>;
   payrollDateType?: InputMaybe<PayrollDateTypesOrderBy>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateOrderBy>;
+  payrollRequiredSkillsAggregate?: InputMaybe<PayrollRequiredSkillAggregateOrderBy>;
   payrollSystem?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
   primaryConsultant?: InputMaybe<UsersOrderBy>;
   primaryConsultantUserId?: InputMaybe<OrderBy>;
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   supersededDate?: InputMaybe<OrderBy>;
+  terminatedEmployees?: InputMaybe<OrderBy>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
   versionReason?: InputMaybe<OrderBy>;
@@ -13289,7 +18709,13 @@ export type PayrollsPkColumnsInput = {
 /** select columns of table "payrolls" */
 export type PayrollsSelectColumn =
   /** column name */
+  | 'actualHours'
+  /** column name */
+  | 'actualRevenue'
+  /** column name */
   | 'backupConsultantUserId'
+  /** column name */
+  | 'billingStatus'
   /** column name */
   | 'clientId'
   /** column name */
@@ -13305,17 +18731,27 @@ export type PayrollsSelectColumn =
   /** column name */
   | 'employeeCount'
   /** column name */
+  | 'estimatedHours'
+  /** column name */
+  | 'estimatedRevenue'
+  /** column name */
   | 'goLiveDate'
   /** column name */
   | 'id'
+  /** column name */
+  | 'lastBilledDate'
   /** column name */
   | 'managerUserId'
   /** column name */
   | 'name'
   /** column name */
+  | 'newEmployees'
+  /** column name */
   | 'parentPayrollId'
   /** column name */
   | 'payrollSystem'
+  /** column name */
+  | 'payslipCount'
   /** column name */
   | 'primaryConsultantUserId'
   /** column name */
@@ -13323,9 +18759,13 @@ export type PayrollsSelectColumn =
   /** column name */
   | 'processingTime'
   /** column name */
+  | 'profitMargin'
+  /** column name */
   | 'status'
   /** column name */
   | 'supersededDate'
+  /** column name */
+  | 'terminatedEmployees'
   /** column name */
   | 'updatedAt'
   /** column name */
@@ -13336,8 +18776,12 @@ export type PayrollsSelectColumn =
 
 /** input type for updating data in table "payrolls" */
 export type PayrollsSetInput = {
+  actualHours?: InputMaybe<Scalars['numeric']['input']>;
+  actualRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: InputMaybe<Scalars['String']['input']>;
   /** Reference to the client this payroll belongs to */
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the payroll was created */
@@ -13351,26 +18795,36 @@ export type PayrollsSetInput = {
   dateValue?: InputMaybe<Scalars['Int']['input']>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  estimatedHours?: InputMaybe<Scalars['numeric']['input']>;
+  estimatedRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** The date when the payroll went live in the system */
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the payroll */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  lastBilledDate?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Manager overseeing this payroll */
   managerUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Name of the payroll */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<Scalars['Int']['input']>;
   parentPayrollId?: InputMaybe<Scalars['uuid']['input']>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<Scalars['Int']['input']>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<Scalars['Int']['input']>;
+  profitMargin?: InputMaybe<Scalars['numeric']['input']>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: InputMaybe<Scalars['payroll_status']['input']>;
   supersededDate?: InputMaybe<Scalars['date']['input']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<Scalars['Int']['input']>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
@@ -13380,81 +18834,147 @@ export type PayrollsSetInput = {
 /** aggregate stddev on columns */
 export type PayrollsStddevFields = {
   __typename?: 'payrollsStddevFields';
+  actualHours?: Maybe<Scalars['Float']['output']>;
+  actualRevenue?: Maybe<Scalars['Float']['output']>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: Maybe<Scalars['Float']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Float']['output']>;
+  estimatedHours?: Maybe<Scalars['Float']['output']>;
+  estimatedRevenue?: Maybe<Scalars['Float']['output']>;
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Float']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Float']['output']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: Maybe<Scalars['Float']['output']>;
   /** Number of hours required to process this payroll */
   processingTime?: Maybe<Scalars['Float']['output']>;
+  profitMargin?: Maybe<Scalars['Float']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Float']['output']>;
   versionNumber?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddev() on columns of table "payrolls" */
 export type PayrollsStddevOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
 /** aggregate stddevPop on columns */
 export type PayrollsStddevPopFields = {
   __typename?: 'payrollsStddevPopFields';
+  actualHours?: Maybe<Scalars['Float']['output']>;
+  actualRevenue?: Maybe<Scalars['Float']['output']>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: Maybe<Scalars['Float']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Float']['output']>;
+  estimatedHours?: Maybe<Scalars['Float']['output']>;
+  estimatedRevenue?: Maybe<Scalars['Float']['output']>;
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Float']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Float']['output']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: Maybe<Scalars['Float']['output']>;
   /** Number of hours required to process this payroll */
   processingTime?: Maybe<Scalars['Float']['output']>;
+  profitMargin?: Maybe<Scalars['Float']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Float']['output']>;
   versionNumber?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddevPop() on columns of table "payrolls" */
 export type PayrollsStddevPopOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
 /** aggregate stddevSamp on columns */
 export type PayrollsStddevSampFields = {
   __typename?: 'payrollsStddevSampFields';
+  actualHours?: Maybe<Scalars['Float']['output']>;
+  actualRevenue?: Maybe<Scalars['Float']['output']>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: Maybe<Scalars['Float']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Float']['output']>;
+  estimatedHours?: Maybe<Scalars['Float']['output']>;
+  estimatedRevenue?: Maybe<Scalars['Float']['output']>;
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Float']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Float']['output']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: Maybe<Scalars['Float']['output']>;
   /** Number of hours required to process this payroll */
   processingTime?: Maybe<Scalars['Float']['output']>;
+  profitMargin?: Maybe<Scalars['Float']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Float']['output']>;
   versionNumber?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddevSamp() on columns of table "payrolls" */
 export type PayrollsStddevSampOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
@@ -13468,8 +18988,12 @@ export type PayrollsStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type PayrollsStreamCursorValueInput = {
+  actualHours?: InputMaybe<Scalars['numeric']['input']>;
+  actualRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** Backup consultant for this payroll */
   backupConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Billing status: pending, items_added, ready_to_bill, billed */
+  billingStatus?: InputMaybe<Scalars['String']['input']>;
   /** Reference to the client this payroll belongs to */
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the payroll was created */
@@ -13483,26 +19007,36 @@ export type PayrollsStreamCursorValueInput = {
   dateValue?: InputMaybe<Scalars['Int']['input']>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  estimatedHours?: InputMaybe<Scalars['numeric']['input']>;
+  estimatedRevenue?: InputMaybe<Scalars['numeric']['input']>;
   /** The date when the payroll went live in the system */
   goLiveDate?: InputMaybe<Scalars['date']['input']>;
   /** Unique identifier for the payroll */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  lastBilledDate?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Manager overseeing this payroll */
   managerUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Name of the payroll */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<Scalars['Int']['input']>;
   parentPayrollId?: InputMaybe<Scalars['uuid']['input']>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<Scalars['String']['input']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
   /** Primary consultant responsible for this payroll */
   primaryConsultantUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<Scalars['Int']['input']>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<Scalars['Int']['input']>;
+  profitMargin?: InputMaybe<Scalars['numeric']['input']>;
   /** Current status of the payroll (Implementation, Active, Inactive) */
   status?: InputMaybe<Scalars['payroll_status']['input']>;
   supersededDate?: InputMaybe<Scalars['date']['input']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<Scalars['Int']['input']>;
   /** Timestamp when the payroll was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   versionNumber?: InputMaybe<Scalars['Int']['input']>;
@@ -13512,34 +19046,62 @@ export type PayrollsStreamCursorValueInput = {
 /** aggregate sum on columns */
 export type PayrollsSumFields = {
   __typename?: 'payrollsSumFields';
+  actualHours?: Maybe<Scalars['numeric']['output']>;
+  actualRevenue?: Maybe<Scalars['numeric']['output']>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: Maybe<Scalars['Int']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Int']['output']>;
+  estimatedHours?: Maybe<Scalars['numeric']['output']>;
+  estimatedRevenue?: Maybe<Scalars['numeric']['output']>;
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Int']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Int']['output']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: Maybe<Scalars['Int']['output']>;
   /** Number of hours required to process this payroll */
   processingTime?: Maybe<Scalars['Int']['output']>;
+  profitMargin?: Maybe<Scalars['numeric']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Int']['output']>;
   versionNumber?: Maybe<Scalars['Int']['output']>;
 };
 
 /** order by sum() on columns of table "payrolls" */
 export type PayrollsSumOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "payrolls" */
 export type PayrollsUpdateColumn =
   /** column name */
+  | 'actualHours'
+  /** column name */
+  | 'actualRevenue'
+  /** column name */
   | 'backupConsultantUserId'
+  /** column name */
+  | 'billingStatus'
   /** column name */
   | 'clientId'
   /** column name */
@@ -13555,17 +19117,27 @@ export type PayrollsUpdateColumn =
   /** column name */
   | 'employeeCount'
   /** column name */
+  | 'estimatedHours'
+  /** column name */
+  | 'estimatedRevenue'
+  /** column name */
   | 'goLiveDate'
   /** column name */
   | 'id'
+  /** column name */
+  | 'lastBilledDate'
   /** column name */
   | 'managerUserId'
   /** column name */
   | 'name'
   /** column name */
+  | 'newEmployees'
+  /** column name */
   | 'parentPayrollId'
   /** column name */
   | 'payrollSystem'
+  /** column name */
+  | 'payslipCount'
   /** column name */
   | 'primaryConsultantUserId'
   /** column name */
@@ -13573,9 +19145,13 @@ export type PayrollsUpdateColumn =
   /** column name */
   | 'processingTime'
   /** column name */
+  | 'profitMargin'
+  /** column name */
   | 'status'
   /** column name */
   | 'supersededDate'
+  /** column name */
+  | 'terminatedEmployees'
   /** column name */
   | 'updatedAt'
   /** column name */
@@ -13596,81 +19172,147 @@ export type PayrollsUpdates = {
 /** aggregate varPop on columns */
 export type PayrollsVarPopFields = {
   __typename?: 'payrollsVarPopFields';
+  actualHours?: Maybe<Scalars['Float']['output']>;
+  actualRevenue?: Maybe<Scalars['Float']['output']>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: Maybe<Scalars['Float']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Float']['output']>;
+  estimatedHours?: Maybe<Scalars['Float']['output']>;
+  estimatedRevenue?: Maybe<Scalars['Float']['output']>;
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Float']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Float']['output']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: Maybe<Scalars['Float']['output']>;
   /** Number of hours required to process this payroll */
   processingTime?: Maybe<Scalars['Float']['output']>;
+  profitMargin?: Maybe<Scalars['Float']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Float']['output']>;
   versionNumber?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by varPop() on columns of table "payrolls" */
 export type PayrollsVarPopOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
 /** aggregate varSamp on columns */
 export type PayrollsVarSampFields = {
   __typename?: 'payrollsVarSampFields';
+  actualHours?: Maybe<Scalars['Float']['output']>;
+  actualRevenue?: Maybe<Scalars['Float']['output']>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: Maybe<Scalars['Float']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Float']['output']>;
+  estimatedHours?: Maybe<Scalars['Float']['output']>;
+  estimatedRevenue?: Maybe<Scalars['Float']['output']>;
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Float']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Float']['output']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: Maybe<Scalars['Float']['output']>;
   /** Number of hours required to process this payroll */
   processingTime?: Maybe<Scalars['Float']['output']>;
+  profitMargin?: Maybe<Scalars['Float']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Float']['output']>;
   versionNumber?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by varSamp() on columns of table "payrolls" */
 export type PayrollsVarSampOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
 /** aggregate variance on columns */
 export type PayrollsVarianceFields = {
   __typename?: 'payrollsVarianceFields';
+  actualHours?: Maybe<Scalars['Float']['output']>;
+  actualRevenue?: Maybe<Scalars['Float']['output']>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: Maybe<Scalars['Float']['output']>;
   /** Number of employees in this payroll */
   employeeCount?: Maybe<Scalars['Float']['output']>;
+  estimatedHours?: Maybe<Scalars['Float']['output']>;
+  estimatedRevenue?: Maybe<Scalars['Float']['output']>;
+  /** Number of new employees processed */
+  newEmployees?: Maybe<Scalars['Float']['output']>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: Maybe<Scalars['Float']['output']>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: Maybe<Scalars['Float']['output']>;
   /** Number of hours required to process this payroll */
   processingTime?: Maybe<Scalars['Float']['output']>;
+  profitMargin?: Maybe<Scalars['Float']['output']>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: Maybe<Scalars['Float']['output']>;
   versionNumber?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by variance() on columns of table "payrolls" */
 export type PayrollsVarianceOrderBy = {
+  actualHours?: InputMaybe<OrderBy>;
+  actualRevenue?: InputMaybe<OrderBy>;
   /** Specific value for date calculation (e.g., day of month) */
   dateValue?: InputMaybe<OrderBy>;
   /** Number of employees in this payroll */
   employeeCount?: InputMaybe<OrderBy>;
+  estimatedHours?: InputMaybe<OrderBy>;
+  estimatedRevenue?: InputMaybe<OrderBy>;
+  /** Number of new employees processed */
+  newEmployees?: InputMaybe<OrderBy>;
+  /** Number of payslips processed in this payroll run */
+  payslipCount?: InputMaybe<OrderBy>;
   /** Number of days before EFT that processing must complete */
   processingDaysBeforeEft?: InputMaybe<OrderBy>;
   /** Number of hours required to process this payroll */
   processingTime?: InputMaybe<OrderBy>;
+  profitMargin?: InputMaybe<OrderBy>;
+  /** Number of terminated employees processed */
+  terminatedEmployees?: InputMaybe<OrderBy>;
   versionNumber?: InputMaybe<OrderBy>;
 };
 
@@ -15279,9 +20921,9 @@ export type Query_Root = {
   authEventsAggregate: AuthEventsAggregate;
   /** fetch data from the table: "billing_event_log" using primary key columns */
   billingEventLogById?: Maybe<BillingEventLogs>;
-  /** An array relationship */
+  /** fetch data from the table: "billing_event_log" */
   billingEventLogs: Array<BillingEventLogs>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "billing_event_log" */
   billingEventLogsAggregate: BillingEventLogsAggregate;
   /** fetch data from the table: "billing_invoice" */
   billingInvoice: Array<BillingInvoice>;
@@ -15289,24 +20931,31 @@ export type Query_Root = {
   billingInvoiceAggregate: BillingInvoiceAggregate;
   /** fetch data from the table: "billing_invoice" using primary key columns */
   billingInvoiceById?: Maybe<BillingInvoice>;
-  /** fetch data from the table: "billing_invoice_item" */
-  billingInvoiceItem: Array<BillingInvoiceItem>;
-  /** fetch aggregated fields from the table: "billing_invoice_item" */
-  billingInvoiceItemAggregate: BillingInvoiceItemAggregate;
   /** fetch data from the table: "billing_invoice_item" using primary key columns */
-  billingInvoiceItemByPk?: Maybe<BillingInvoiceItem>;
+  billingInvoiceItemById?: Maybe<BillingInvoiceItem>;
+  /** An array relationship */
+  billingInvoiceItems: Array<BillingInvoiceItem>;
+  /** An aggregate relationship */
+  billingInvoiceItemsAggregate: BillingInvoiceItemAggregate;
   /** fetch data from the table: "billing_items" using primary key columns */
   billingItemById?: Maybe<BillingItems>;
   /** An array relationship */
   billingItems: Array<BillingItems>;
   /** An aggregate relationship */
   billingItemsAggregate: BillingItemsAggregate;
+  /** fetch data from the table: "billing_periods" using primary key columns */
+  billingPeriod?: Maybe<BillingPeriods>;
+  /** An array relationship */
+  billingPeriods: Array<BillingPeriods>;
+  /** An aggregate relationship */
+  billingPeriodsAggregate: BillingPeriodsAggregate;
   /** fetch data from the table: "billing_plan" using primary key columns */
   billingPlanById?: Maybe<BillingPlans>;
   /** fetch data from the table: "billing_plan" */
   billingPlans: Array<BillingPlans>;
   /** fetch aggregated fields from the table: "billing_plan" */
   billingPlansAggregate: BillingPlansAggregate;
+  calculate_utilization_stats: UtilizationStatsResponse;
   /** fetch data from the table: "client_billing_assignment" using primary key columns */
   clientBillingAssignmentById?: Maybe<ClientBillingAssignments>;
   /** An array relationship */
@@ -15321,10 +20970,18 @@ export type Query_Root = {
   clientExternalSystems: Array<ClientExternalSystems>;
   /** An aggregate relationship */
   clientExternalSystemsAggregate: ClientExternalSystemsAggregate;
+  /** fetch data from the table: "client_services_with_rates" */
+  clientServicesWithRates: Array<ClientServicesWithRates>;
+  /** fetch aggregated fields from the table: "client_services_with_rates" */
+  clientServicesWithRatesAggregate: ClientServicesWithRatesAggregate;
   /** fetch data from the table: "clients" */
   clients: Array<Clients>;
   /** fetch aggregated fields from the table: "clients" */
   clientsAggregate: ClientsAggregate;
+  /** fetch data from the table: "consultant_capacity_overview" */
+  consultantCapacityOverview: Array<ConsultantCapacityOverview>;
+  /** fetch aggregated fields from the table: "consultant_capacity_overview" */
+  consultantCapacityOverviewAggregate: ConsultantCapacityOverviewAggregate;
   /** execute function "create_payroll_version" which returns "payroll_version_results" */
   createPayrollVersion: Array<PayrollVersionResults>;
   /** execute function "create_payroll_version" and query aggregates on result of table type "payroll_version_results" */
@@ -15343,6 +21000,24 @@ export type Query_Root = {
   dataAccessLogs: Array<DataAccessLogs>;
   /** fetch aggregated fields from the table: "audit.data_access_log" */
   dataAccessLogsAggregate: DataAccessLogsAggregate;
+  /** An array relationship */
+  emailDrafts: Array<EmailDrafts>;
+  /** An aggregate relationship */
+  emailDraftsAggregate: EmailDraftsAggregate;
+  /** fetch data from the table: "email_drafts" using primary key columns */
+  emailDraftsByPk?: Maybe<EmailDrafts>;
+  /** An array relationship */
+  emailSendLogs: Array<EmailSendLogs>;
+  /** An aggregate relationship */
+  emailSendLogsAggregate: EmailSendLogsAggregate;
+  /** fetch data from the table: "email_send_logs" using primary key columns */
+  emailSendLogsByPk?: Maybe<EmailSendLogs>;
+  /** An array relationship */
+  emailTemplates: Array<EmailTemplates>;
+  /** An aggregate relationship */
+  emailTemplatesAggregate: EmailTemplatesAggregate;
+  /** fetch data from the table: "email_templates" using primary key columns */
+  emailTemplatesByPk?: Maybe<EmailTemplates>;
   /** fetch data from the table: "external_systems" using primary key columns */
   externalSystemById?: Maybe<ExternalSystems>;
   /** fetch data from the table: "external_systems" */
@@ -15367,6 +21042,9 @@ export type Query_Root = {
   getPayrollVersionHistory: Array<PayrollVersionHistoryResults>;
   /** execute function "get_payroll_version_history" and query aggregates on result of table type "payroll_version_history_results" */
   getPayrollVersionHistoryAggregate: PayrollVersionHistoryResultsAggregate;
+  get_assignment_calendar: AssignmentCalendarResponse;
+  get_team_capacity_overview: TeamCapacityResponse;
+  get_workload_metrics: WorkloadMetricsResponse;
   /** fetch data from the table: "holidays" using primary key columns */
   holidayById?: Maybe<Holidays>;
   /** fetch data from the table: "holidays" */
@@ -15433,6 +21111,14 @@ export type Query_Root = {
   payrollDates: Array<PayrollDates>;
   /** An aggregate relationship */
   payrollDatesAggregate: PayrollDatesAggregate;
+  /** fetch data from the table: "payroll_profitability" */
+  payrollProfitability: Array<PayrollProfitability>;
+  /** fetch aggregated fields from the table: "payroll_profitability" */
+  payrollProfitabilityAggregate: PayrollProfitabilityAggregate;
+  /** fetch data from the table: "payroll_required_skills" */
+  payrollRequiredSkill: Array<PayrollRequiredSkill>;
+  /** fetch aggregated fields from the table: "payroll_required_skills" */
+  payrollRequiredSkillAggregate: PayrollRequiredSkillAggregate;
   /** fetch data from the table: "payroll_triggers_status" */
   payrollTriggersStatus: Array<PayrollTriggersStatus>;
   /** fetch aggregated fields from the table: "payroll_triggers_status" */
@@ -15481,6 +21167,12 @@ export type Query_Root = {
   permissions: Array<Permissions>;
   /** fetch aggregated fields from the table: "permissions" */
   permissionsAggregate: PermissionsAggregate;
+  /** fetch data from the table: "position_admin_defaults" */
+  positionAdminDefaults: Array<PositionAdminDefaults>;
+  /** fetch aggregated fields from the table: "position_admin_defaults" */
+  positionAdminDefaultsAggregate: PositionAdminDefaultsAggregate;
+  /** fetch data from the table: "position_admin_defaults" using primary key columns */
+  positionAdminDefaultsByPk?: Maybe<PositionAdminDefaults>;
   /** fetch data from the table: "resources" using primary key columns */
   resourceById?: Maybe<Resources>;
   /** fetch data from the table: "resources" */
@@ -15505,12 +21197,32 @@ export type Query_Root = {
   slowQueriesAggregate: SlowQueriesAggregate;
   /** fetch data from the table: "audit.slow_queries" using primary key columns */
   slowQueryById?: Maybe<SlowQueries>;
+  /** fetch data from the table: "staff_billing_performance" */
+  staffBillingPerformance: Array<StaffBillingPerformance>;
+  /** fetch aggregated fields from the table: "staff_billing_performance" */
+  staffBillingPerformanceAggregate: StaffBillingPerformanceAggregate;
+  /** fetch data from the table: "team_capacity_by_position" */
+  teamCapacityByPosition: Array<TeamCapacityByPosition>;
+  /** fetch aggregated fields from the table: "team_capacity_by_position" */
+  teamCapacityByPositionAggregate: TeamCapacityByPositionAggregate;
+  /** An array relationship */
+  timeEntries: Array<TimeEntries>;
+  /** An aggregate relationship */
+  timeEntriesAggregate: TimeEntriesAggregate;
+  /** fetch data from the table: "time_entries" using primary key columns */
+  timeEntry?: Maybe<TimeEntries>;
   /** fetch data from the table: "audit.user_access_summary" */
   userAccessSummaries: Array<UserAccessSummaries>;
   /** fetch aggregated fields from the table: "audit.user_access_summary" */
   userAccessSummariesAggregate: UserAccessSummariesAggregate;
   /** fetch data from the table: "users" using primary key columns */
   userById?: Maybe<Users>;
+  /** An array relationship */
+  userEmailTemplateFavorites: Array<UserEmailTemplateFavorites>;
+  /** An aggregate relationship */
+  userEmailTemplateFavoritesAggregate: UserEmailTemplateFavoritesAggregate;
+  /** fetch data from the table: "user_email_template_favorites" using primary key columns */
+  userEmailTemplateFavoritesByPk?: Maybe<UserEmailTemplateFavorites>;
   /** fetch data from the table: "user_invitations" using primary key columns */
   userInvitationById?: Maybe<UserInvitations>;
   /** An array relationship */
@@ -15523,11 +21235,15 @@ export type Query_Root = {
   userRoles: Array<UserRoles>;
   /** fetch aggregated fields from the table: "user_roles" */
   userRolesAggregate: UserRolesAggregate;
+  /** fetch data from the table: "user_skills" */
+  userSkill: Array<UserSkill>;
+  /** fetch aggregated fields from the table: "user_skills" */
+  userSkillAggregate: UserSkillAggregate;
   /** fetch data from the table: "neon_auth.users_sync" using primary key columns */
   userSyncById?: Maybe<AuthUsersSync>;
-  /** An array relationship */
+  /** fetch data from the table: "users" */
   users: Array<Users>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "users" */
   usersAggregate: UsersAggregate;
   /** fetch data from the table: "users_role_backup" */
   usersRoleBackups: Array<UsersRoleBackup>;
@@ -15537,12 +21253,12 @@ export type Query_Root = {
   usersSync: Array<AuthUsersSync>;
   /** fetch aggregated fields from the table: "neon_auth.users_sync" */
   usersSyncAggregate: AuthUsersSyncAggregate;
-  /** fetch data from the table: "work_schedule" using primary key columns */
-  workScheduleById?: Maybe<WorkSchedules>;
   /** fetch data from the table: "work_schedule" */
-  workSchedules: Array<WorkSchedules>;
+  workSchedule: Array<WorkSchedule>;
   /** fetch aggregated fields from the table: "work_schedule" */
-  workSchedulesAggregate: WorkSchedulesAggregate;
+  workScheduleAggregate: WorkScheduleAggregate;
+  /** fetch data from the table: "work_schedule" using primary key columns */
+  workScheduleById?: Maybe<WorkSchedule>;
 };
 
 
@@ -15707,26 +21423,26 @@ export type Query_RootBillingInvoiceByIdArgs = {
 };
 
 
-export type Query_RootBillingInvoiceItemArgs = {
-  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
-  where?: InputMaybe<BillingInvoiceItemBoolExp>;
-};
-
-
-export type Query_RootBillingInvoiceItemAggregateArgs = {
-  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
-  where?: InputMaybe<BillingInvoiceItemBoolExp>;
-};
-
-
-export type Query_RootBillingInvoiceItemByPkArgs = {
+export type Query_RootBillingInvoiceItemByIdArgs = {
   id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootBillingInvoiceItemsArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+
+export type Query_RootBillingInvoiceItemsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
 };
 
 
@@ -15753,6 +21469,29 @@ export type Query_RootBillingItemsAggregateArgs = {
 };
 
 
+export type Query_RootBillingPeriodArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootBillingPeriodsArgs = {
+  distinctOn?: InputMaybe<Array<BillingPeriodsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingPeriodsOrderBy>>;
+  where?: InputMaybe<BillingPeriodsBoolExp>;
+};
+
+
+export type Query_RootBillingPeriodsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingPeriodsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingPeriodsOrderBy>>;
+  where?: InputMaybe<BillingPeriodsBoolExp>;
+};
+
+
 export type Query_RootBillingPlanByIdArgs = {
   id: Scalars['uuid']['input'];
 };
@@ -15773,6 +21512,11 @@ export type Query_RootBillingPlansAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<BillingPlansOrderBy>>;
   where?: InputMaybe<BillingPlansBoolExp>;
+};
+
+
+export type Query_RootCalculate_Utilization_StatsArgs = {
+  input: UtilizationStatsInput;
 };
 
 
@@ -15827,6 +21571,24 @@ export type Query_RootClientExternalSystemsAggregateArgs = {
 };
 
 
+export type Query_RootClientServicesWithRatesArgs = {
+  distinctOn?: InputMaybe<Array<ClientServicesWithRatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ClientServicesWithRatesOrderBy>>;
+  where?: InputMaybe<ClientServicesWithRatesBoolExp>;
+};
+
+
+export type Query_RootClientServicesWithRatesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ClientServicesWithRatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ClientServicesWithRatesOrderBy>>;
+  where?: InputMaybe<ClientServicesWithRatesBoolExp>;
+};
+
+
 export type Query_RootClientsArgs = {
   distinctOn?: InputMaybe<Array<ClientsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -15842,6 +21604,24 @@ export type Query_RootClientsAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<ClientsOrderBy>>;
   where?: InputMaybe<ClientsBoolExp>;
+};
+
+
+export type Query_RootConsultantCapacityOverviewArgs = {
+  distinctOn?: InputMaybe<Array<ConsultantCapacityOverviewSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ConsultantCapacityOverviewOrderBy>>;
+  where?: InputMaybe<ConsultantCapacityOverviewBoolExp>;
+};
+
+
+export type Query_RootConsultantCapacityOverviewAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ConsultantCapacityOverviewSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ConsultantCapacityOverviewOrderBy>>;
+  where?: InputMaybe<ConsultantCapacityOverviewBoolExp>;
 };
 
 
@@ -15923,6 +21703,75 @@ export type Query_RootDataAccessLogsAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<DataAccessLogsOrderBy>>;
   where?: InputMaybe<DataAccessLogsBoolExp>;
+};
+
+
+export type Query_RootEmailDraftsArgs = {
+  distinctOn?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailDraftsOrderBy>>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+
+export type Query_RootEmailDraftsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailDraftsOrderBy>>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+
+export type Query_RootEmailDraftsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootEmailSendLogsArgs = {
+  distinctOn?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailSendLogsOrderBy>>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+
+export type Query_RootEmailSendLogsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailSendLogsOrderBy>>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+
+export type Query_RootEmailSendLogsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootEmailTemplatesArgs = {
+  distinctOn?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailTemplatesOrderBy>>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
+};
+
+
+export type Query_RootEmailTemplatesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailTemplatesOrderBy>>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
+};
+
+
+export type Query_RootEmailTemplatesByPkArgs = {
+  id: Scalars['uuid']['input'];
 };
 
 
@@ -16029,6 +21878,21 @@ export type Query_RootGetPayrollVersionHistoryAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<PayrollVersionHistoryResultsOrderBy>>;
   where?: InputMaybe<PayrollVersionHistoryResultsBoolExp>;
+};
+
+
+export type Query_RootGet_Assignment_CalendarArgs = {
+  input: AssignmentCalendarInput;
+};
+
+
+export type Query_RootGet_Team_Capacity_OverviewArgs = {
+  input: TeamCapacityInput;
+};
+
+
+export type Query_RootGet_Workload_MetricsArgs = {
+  input: WorkloadMetricsInput;
 };
 
 
@@ -16285,6 +22149,42 @@ export type Query_RootPayrollDatesAggregateArgs = {
 };
 
 
+export type Query_RootPayrollProfitabilityArgs = {
+  distinctOn?: InputMaybe<Array<PayrollProfitabilitySelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollProfitabilityOrderBy>>;
+  where?: InputMaybe<PayrollProfitabilityBoolExp>;
+};
+
+
+export type Query_RootPayrollProfitabilityAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollProfitabilitySelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollProfitabilityOrderBy>>;
+  where?: InputMaybe<PayrollProfitabilityBoolExp>;
+};
+
+
+export type Query_RootPayrollRequiredSkillArgs = {
+  distinctOn?: InputMaybe<Array<PayrollRequiredSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollRequiredSkillOrderBy>>;
+  where?: InputMaybe<PayrollRequiredSkillBoolExp>;
+};
+
+
+export type Query_RootPayrollRequiredSkillAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollRequiredSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollRequiredSkillOrderBy>>;
+  where?: InputMaybe<PayrollRequiredSkillBoolExp>;
+};
+
+
 export type Query_RootPayrollTriggersStatusArgs = {
   distinctOn?: InputMaybe<Array<PayrollTriggersStatusSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -16477,6 +22377,29 @@ export type Query_RootPermissionsAggregateArgs = {
 };
 
 
+export type Query_RootPositionAdminDefaultsArgs = {
+  distinctOn?: InputMaybe<Array<PositionAdminDefaultsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PositionAdminDefaultsOrderBy>>;
+  where?: InputMaybe<PositionAdminDefaultsBoolExp>;
+};
+
+
+export type Query_RootPositionAdminDefaultsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PositionAdminDefaultsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PositionAdminDefaultsOrderBy>>;
+  where?: InputMaybe<PositionAdminDefaultsBoolExp>;
+};
+
+
+export type Query_RootPositionAdminDefaultsByPkArgs = {
+  position: Scalars['user_position']['input'];
+};
+
+
 export type Query_RootResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
@@ -16569,6 +22492,65 @@ export type Query_RootSlowQueryByIdArgs = {
 };
 
 
+export type Query_RootStaffBillingPerformanceArgs = {
+  distinctOn?: InputMaybe<Array<StaffBillingPerformanceSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<StaffBillingPerformanceOrderBy>>;
+  where?: InputMaybe<StaffBillingPerformanceBoolExp>;
+};
+
+
+export type Query_RootStaffBillingPerformanceAggregateArgs = {
+  distinctOn?: InputMaybe<Array<StaffBillingPerformanceSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<StaffBillingPerformanceOrderBy>>;
+  where?: InputMaybe<StaffBillingPerformanceBoolExp>;
+};
+
+
+export type Query_RootTeamCapacityByPositionArgs = {
+  distinctOn?: InputMaybe<Array<TeamCapacityByPositionSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TeamCapacityByPositionOrderBy>>;
+  where?: InputMaybe<TeamCapacityByPositionBoolExp>;
+};
+
+
+export type Query_RootTeamCapacityByPositionAggregateArgs = {
+  distinctOn?: InputMaybe<Array<TeamCapacityByPositionSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TeamCapacityByPositionOrderBy>>;
+  where?: InputMaybe<TeamCapacityByPositionBoolExp>;
+};
+
+
+export type Query_RootTimeEntriesArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+
+export type Query_RootTimeEntriesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+
+export type Query_RootTimeEntryArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
 export type Query_RootUserAccessSummariesArgs = {
   distinctOn?: InputMaybe<Array<UserAccessSummariesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -16588,6 +22570,29 @@ export type Query_RootUserAccessSummariesAggregateArgs = {
 
 
 export type Query_RootUserByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootUserEmailTemplateFavoritesArgs = {
+  distinctOn?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserEmailTemplateFavoritesOrderBy>>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+};
+
+
+export type Query_RootUserEmailTemplateFavoritesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserEmailTemplateFavoritesOrderBy>>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+};
+
+
+export type Query_RootUserEmailTemplateFavoritesByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -16635,6 +22640,24 @@ export type Query_RootUserRolesAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<UserRolesOrderBy>>;
   where?: InputMaybe<UserRolesBoolExp>;
+};
+
+
+export type Query_RootUserSkillArgs = {
+  distinctOn?: InputMaybe<Array<UserSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSkillOrderBy>>;
+  where?: InputMaybe<UserSkillBoolExp>;
+};
+
+
+export type Query_RootUserSkillAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSkillOrderBy>>;
+  where?: InputMaybe<UserSkillBoolExp>;
 };
 
 
@@ -16697,26 +22720,26 @@ export type Query_RootUsersSyncAggregateArgs = {
 };
 
 
+export type Query_RootWorkScheduleArgs = {
+  distinctOn?: InputMaybe<Array<WorkScheduleSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<WorkScheduleOrderBy>>;
+  where?: InputMaybe<WorkScheduleBoolExp>;
+};
+
+
+export type Query_RootWorkScheduleAggregateArgs = {
+  distinctOn?: InputMaybe<Array<WorkScheduleSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<WorkScheduleOrderBy>>;
+  where?: InputMaybe<WorkScheduleBoolExp>;
+};
+
+
 export type Query_RootWorkScheduleByIdArgs = {
   id: Scalars['uuid']['input'];
-};
-
-
-export type Query_RootWorkSchedulesArgs = {
-  distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<WorkSchedulesOrderBy>>;
-  where?: InputMaybe<WorkSchedulesBoolExp>;
-};
-
-
-export type Query_RootWorkSchedulesAggregateArgs = {
-  distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<WorkSchedulesOrderBy>>;
-  where?: InputMaybe<WorkSchedulesBoolExp>;
 };
 
 /** columns and relationships of "resources" */
@@ -17030,7 +23053,7 @@ export type RolePermissionsBoolExp = {
 export type RolePermissionsConstraint =
   /** unique or primary key constraint on columns "id" */
   | 'role_permissions_pkey'
-  /** unique or primary key constraint on columns "permission_id", "role_id" */
+  /** unique or primary key constraint on columns "role_id", "permission_id" */
   | 'role_permissions_role_id_permission_id_key'
   | '%future added value';
 
@@ -17790,9 +23813,9 @@ export type Subscription_Root = {
   authUsersSyncStream: Array<AuthUsersSync>;
   /** fetch data from the table: "billing_event_log" using primary key columns */
   billingEventLogById?: Maybe<BillingEventLogs>;
-  /** An array relationship */
+  /** fetch data from the table: "billing_event_log" */
   billingEventLogs: Array<BillingEventLogs>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "billing_event_log" */
   billingEventLogsAggregate: BillingEventLogsAggregate;
   /** fetch data from the table in a streaming manner: "billing_event_log" */
   billingEventLogsStream: Array<BillingEventLogs>;
@@ -17802,14 +23825,14 @@ export type Subscription_Root = {
   billingInvoiceAggregate: BillingInvoiceAggregate;
   /** fetch data from the table: "billing_invoice" using primary key columns */
   billingInvoiceById?: Maybe<BillingInvoice>;
-  /** fetch data from the table: "billing_invoice_item" */
-  billingInvoiceItem: Array<BillingInvoiceItem>;
-  /** fetch aggregated fields from the table: "billing_invoice_item" */
-  billingInvoiceItemAggregate: BillingInvoiceItemAggregate;
   /** fetch data from the table: "billing_invoice_item" using primary key columns */
-  billingInvoiceItemByPk?: Maybe<BillingInvoiceItem>;
+  billingInvoiceItemById?: Maybe<BillingInvoiceItem>;
+  /** An array relationship */
+  billingInvoiceItems: Array<BillingInvoiceItem>;
+  /** An aggregate relationship */
+  billingInvoiceItemsAggregate: BillingInvoiceItemAggregate;
   /** fetch data from the table in a streaming manner: "billing_invoice_item" */
-  billingInvoiceItemStream: Array<BillingInvoiceItem>;
+  billingInvoiceItemsStream: Array<BillingInvoiceItem>;
   /** fetch data from the table in a streaming manner: "billing_invoice" */
   billingInvoiceStream: Array<BillingInvoice>;
   /** fetch data from the table: "billing_items" using primary key columns */
@@ -17820,6 +23843,14 @@ export type Subscription_Root = {
   billingItemsAggregate: BillingItemsAggregate;
   /** fetch data from the table in a streaming manner: "billing_items" */
   billingItemsStream: Array<BillingItems>;
+  /** fetch data from the table: "billing_periods" using primary key columns */
+  billingPeriod?: Maybe<BillingPeriods>;
+  /** An array relationship */
+  billingPeriods: Array<BillingPeriods>;
+  /** An aggregate relationship */
+  billingPeriodsAggregate: BillingPeriodsAggregate;
+  /** fetch data from the table in a streaming manner: "billing_periods" */
+  billingPeriodsStream: Array<BillingPeriods>;
   /** fetch data from the table: "billing_plan" using primary key columns */
   billingPlanById?: Maybe<BillingPlans>;
   /** fetch data from the table: "billing_plan" */
@@ -17846,12 +23877,24 @@ export type Subscription_Root = {
   clientExternalSystemsAggregate: ClientExternalSystemsAggregate;
   /** fetch data from the table in a streaming manner: "client_external_systems" */
   clientExternalSystemsStream: Array<ClientExternalSystems>;
+  /** fetch data from the table: "client_services_with_rates" */
+  clientServicesWithRates: Array<ClientServicesWithRates>;
+  /** fetch aggregated fields from the table: "client_services_with_rates" */
+  clientServicesWithRatesAggregate: ClientServicesWithRatesAggregate;
+  /** fetch data from the table in a streaming manner: "client_services_with_rates" */
+  clientServicesWithRatesStream: Array<ClientServicesWithRates>;
   /** fetch data from the table: "clients" */
   clients: Array<Clients>;
   /** fetch aggregated fields from the table: "clients" */
   clientsAggregate: ClientsAggregate;
   /** fetch data from the table in a streaming manner: "clients" */
   clientsStream: Array<Clients>;
+  /** fetch data from the table: "consultant_capacity_overview" */
+  consultantCapacityOverview: Array<ConsultantCapacityOverview>;
+  /** fetch aggregated fields from the table: "consultant_capacity_overview" */
+  consultantCapacityOverviewAggregate: ConsultantCapacityOverviewAggregate;
+  /** fetch data from the table in a streaming manner: "consultant_capacity_overview" */
+  consultantCapacityOverviewStream: Array<ConsultantCapacityOverview>;
   /** execute function "create_payroll_version" which returns "payroll_version_results" */
   createPayrollVersion: Array<PayrollVersionResults>;
   /** execute function "create_payroll_version" and query aggregates on result of table type "payroll_version_results" */
@@ -17874,6 +23917,30 @@ export type Subscription_Root = {
   dataAccessLogsAggregate: DataAccessLogsAggregate;
   /** fetch data from the table in a streaming manner: "audit.data_access_log" */
   dataAccessLogsStream: Array<DataAccessLogs>;
+  /** An array relationship */
+  emailDrafts: Array<EmailDrafts>;
+  /** An aggregate relationship */
+  emailDraftsAggregate: EmailDraftsAggregate;
+  /** fetch data from the table: "email_drafts" using primary key columns */
+  emailDraftsByPk?: Maybe<EmailDrafts>;
+  /** fetch data from the table in a streaming manner: "email_drafts" */
+  emailDraftsStream: Array<EmailDrafts>;
+  /** An array relationship */
+  emailSendLogs: Array<EmailSendLogs>;
+  /** An aggregate relationship */
+  emailSendLogsAggregate: EmailSendLogsAggregate;
+  /** fetch data from the table: "email_send_logs" using primary key columns */
+  emailSendLogsByPk?: Maybe<EmailSendLogs>;
+  /** fetch data from the table in a streaming manner: "email_send_logs" */
+  emailSendLogsStream: Array<EmailSendLogs>;
+  /** An array relationship */
+  emailTemplates: Array<EmailTemplates>;
+  /** An aggregate relationship */
+  emailTemplatesAggregate: EmailTemplatesAggregate;
+  /** fetch data from the table: "email_templates" using primary key columns */
+  emailTemplatesByPk?: Maybe<EmailTemplates>;
+  /** fetch data from the table in a streaming manner: "email_templates" */
+  emailTemplatesStream: Array<EmailTemplates>;
   /** fetch data from the table: "external_systems" using primary key columns */
   externalSystemById?: Maybe<ExternalSystems>;
   /** fetch data from the table: "external_systems" */
@@ -17990,6 +24057,18 @@ export type Subscription_Root = {
   payrollDatesAggregate: PayrollDatesAggregate;
   /** fetch data from the table in a streaming manner: "payroll_dates" */
   payrollDatesStream: Array<PayrollDates>;
+  /** fetch data from the table: "payroll_profitability" */
+  payrollProfitability: Array<PayrollProfitability>;
+  /** fetch aggregated fields from the table: "payroll_profitability" */
+  payrollProfitabilityAggregate: PayrollProfitabilityAggregate;
+  /** fetch data from the table in a streaming manner: "payroll_profitability" */
+  payrollProfitabilityStream: Array<PayrollProfitability>;
+  /** fetch data from the table: "payroll_required_skills" */
+  payrollRequiredSkill: Array<PayrollRequiredSkill>;
+  /** fetch aggregated fields from the table: "payroll_required_skills" */
+  payrollRequiredSkillAggregate: PayrollRequiredSkillAggregate;
+  /** fetch data from the table in a streaming manner: "payroll_required_skills" */
+  payrollRequiredSkillStream: Array<PayrollRequiredSkill>;
   /** fetch data from the table: "payroll_triggers_status" */
   payrollTriggersStatus: Array<PayrollTriggersStatus>;
   /** fetch aggregated fields from the table: "payroll_triggers_status" */
@@ -18056,6 +24135,14 @@ export type Subscription_Root = {
   permissionsAggregate: PermissionsAggregate;
   /** fetch data from the table in a streaming manner: "permissions" */
   permissionsStream: Array<Permissions>;
+  /** fetch data from the table: "position_admin_defaults" */
+  positionAdminDefaults: Array<PositionAdminDefaults>;
+  /** fetch aggregated fields from the table: "position_admin_defaults" */
+  positionAdminDefaultsAggregate: PositionAdminDefaultsAggregate;
+  /** fetch data from the table: "position_admin_defaults" using primary key columns */
+  positionAdminDefaultsByPk?: Maybe<PositionAdminDefaults>;
+  /** fetch data from the table in a streaming manner: "position_admin_defaults" */
+  positionAdminDefaultsStream: Array<PositionAdminDefaults>;
   /** fetch data from the table: "resources" using primary key columns */
   resourceById?: Maybe<Resources>;
   /** fetch data from the table: "resources" */
@@ -18088,6 +24175,26 @@ export type Subscription_Root = {
   slowQueriesStream: Array<SlowQueries>;
   /** fetch data from the table: "audit.slow_queries" using primary key columns */
   slowQueryById?: Maybe<SlowQueries>;
+  /** fetch data from the table: "staff_billing_performance" */
+  staffBillingPerformance: Array<StaffBillingPerformance>;
+  /** fetch aggregated fields from the table: "staff_billing_performance" */
+  staffBillingPerformanceAggregate: StaffBillingPerformanceAggregate;
+  /** fetch data from the table in a streaming manner: "staff_billing_performance" */
+  staffBillingPerformanceStream: Array<StaffBillingPerformance>;
+  /** fetch data from the table: "team_capacity_by_position" */
+  teamCapacityByPosition: Array<TeamCapacityByPosition>;
+  /** fetch aggregated fields from the table: "team_capacity_by_position" */
+  teamCapacityByPositionAggregate: TeamCapacityByPositionAggregate;
+  /** fetch data from the table in a streaming manner: "team_capacity_by_position" */
+  teamCapacityByPositionStream: Array<TeamCapacityByPosition>;
+  /** An array relationship */
+  timeEntries: Array<TimeEntries>;
+  /** An aggregate relationship */
+  timeEntriesAggregate: TimeEntriesAggregate;
+  /** fetch data from the table in a streaming manner: "time_entries" */
+  timeEntriesStream: Array<TimeEntries>;
+  /** fetch data from the table: "time_entries" using primary key columns */
+  timeEntry?: Maybe<TimeEntries>;
   /** fetch data from the table: "audit.user_access_summary" */
   userAccessSummaries: Array<UserAccessSummaries>;
   /** fetch aggregated fields from the table: "audit.user_access_summary" */
@@ -18096,6 +24203,14 @@ export type Subscription_Root = {
   userAccessSummariesStream: Array<UserAccessSummaries>;
   /** fetch data from the table: "users" using primary key columns */
   userById?: Maybe<Users>;
+  /** An array relationship */
+  userEmailTemplateFavorites: Array<UserEmailTemplateFavorites>;
+  /** An aggregate relationship */
+  userEmailTemplateFavoritesAggregate: UserEmailTemplateFavoritesAggregate;
+  /** fetch data from the table: "user_email_template_favorites" using primary key columns */
+  userEmailTemplateFavoritesByPk?: Maybe<UserEmailTemplateFavorites>;
+  /** fetch data from the table in a streaming manner: "user_email_template_favorites" */
+  userEmailTemplateFavoritesStream: Array<UserEmailTemplateFavorites>;
   /** fetch data from the table: "user_invitations" using primary key columns */
   userInvitationById?: Maybe<UserInvitations>;
   /** An array relationship */
@@ -18112,11 +24227,17 @@ export type Subscription_Root = {
   userRolesAggregate: UserRolesAggregate;
   /** fetch data from the table in a streaming manner: "user_roles" */
   userRolesStream: Array<UserRoles>;
+  /** fetch data from the table: "user_skills" */
+  userSkill: Array<UserSkill>;
+  /** fetch aggregated fields from the table: "user_skills" */
+  userSkillAggregate: UserSkillAggregate;
+  /** fetch data from the table in a streaming manner: "user_skills" */
+  userSkillStream: Array<UserSkill>;
   /** fetch data from the table: "neon_auth.users_sync" using primary key columns */
   userSyncById?: Maybe<AuthUsersSync>;
-  /** An array relationship */
+  /** fetch data from the table: "users" */
   users: Array<Users>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "users" */
   usersAggregate: UsersAggregate;
   /** fetch data from the table in a streaming manner: "users_role_backup" */
   usersRoleBackupStream: Array<UsersRoleBackup>;
@@ -18130,14 +24251,14 @@ export type Subscription_Root = {
   usersSync: Array<AuthUsersSync>;
   /** fetch aggregated fields from the table: "neon_auth.users_sync" */
   usersSyncAggregate: AuthUsersSyncAggregate;
-  /** fetch data from the table: "work_schedule" using primary key columns */
-  workScheduleById?: Maybe<WorkSchedules>;
   /** fetch data from the table: "work_schedule" */
-  workSchedules: Array<WorkSchedules>;
+  workSchedule: Array<WorkSchedule>;
   /** fetch aggregated fields from the table: "work_schedule" */
-  workSchedulesAggregate: WorkSchedulesAggregate;
+  workScheduleAggregate: WorkScheduleAggregate;
+  /** fetch data from the table: "work_schedule" using primary key columns */
+  workScheduleById?: Maybe<WorkSchedule>;
   /** fetch data from the table in a streaming manner: "work_schedule" */
-  workSchedulesStream: Array<WorkSchedules>;
+  workScheduleStream: Array<WorkSchedule>;
 };
 
 
@@ -18339,30 +24460,30 @@ export type Subscription_RootBillingInvoiceByIdArgs = {
 };
 
 
-export type Subscription_RootBillingInvoiceItemArgs = {
-  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
-  where?: InputMaybe<BillingInvoiceItemBoolExp>;
-};
-
-
-export type Subscription_RootBillingInvoiceItemAggregateArgs = {
-  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
-  where?: InputMaybe<BillingInvoiceItemBoolExp>;
-};
-
-
-export type Subscription_RootBillingInvoiceItemByPkArgs = {
+export type Subscription_RootBillingInvoiceItemByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootBillingInvoiceItemStreamArgs = {
+export type Subscription_RootBillingInvoiceItemsArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+
+export type Subscription_RootBillingInvoiceItemsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+
+export type Subscription_RootBillingInvoiceItemsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<BillingInvoiceItemStreamCursorInput>>;
   where?: InputMaybe<BillingInvoiceItemBoolExp>;
@@ -18403,6 +24524,36 @@ export type Subscription_RootBillingItemsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<BillingItemsStreamCursorInput>>;
   where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+export type Subscription_RootBillingPeriodArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootBillingPeriodsArgs = {
+  distinctOn?: InputMaybe<Array<BillingPeriodsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingPeriodsOrderBy>>;
+  where?: InputMaybe<BillingPeriodsBoolExp>;
+};
+
+
+export type Subscription_RootBillingPeriodsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingPeriodsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingPeriodsOrderBy>>;
+  where?: InputMaybe<BillingPeriodsBoolExp>;
+};
+
+
+export type Subscription_RootBillingPeriodsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<BillingPeriodsStreamCursorInput>>;
+  where?: InputMaybe<BillingPeriodsBoolExp>;
 };
 
 
@@ -18501,6 +24652,31 @@ export type Subscription_RootClientExternalSystemsStreamArgs = {
 };
 
 
+export type Subscription_RootClientServicesWithRatesArgs = {
+  distinctOn?: InputMaybe<Array<ClientServicesWithRatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ClientServicesWithRatesOrderBy>>;
+  where?: InputMaybe<ClientServicesWithRatesBoolExp>;
+};
+
+
+export type Subscription_RootClientServicesWithRatesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ClientServicesWithRatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ClientServicesWithRatesOrderBy>>;
+  where?: InputMaybe<ClientServicesWithRatesBoolExp>;
+};
+
+
+export type Subscription_RootClientServicesWithRatesStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<ClientServicesWithRatesStreamCursorInput>>;
+  where?: InputMaybe<ClientServicesWithRatesBoolExp>;
+};
+
+
 export type Subscription_RootClientsArgs = {
   distinctOn?: InputMaybe<Array<ClientsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -18523,6 +24699,31 @@ export type Subscription_RootClientsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ClientsStreamCursorInput>>;
   where?: InputMaybe<ClientsBoolExp>;
+};
+
+
+export type Subscription_RootConsultantCapacityOverviewArgs = {
+  distinctOn?: InputMaybe<Array<ConsultantCapacityOverviewSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ConsultantCapacityOverviewOrderBy>>;
+  where?: InputMaybe<ConsultantCapacityOverviewBoolExp>;
+};
+
+
+export type Subscription_RootConsultantCapacityOverviewAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ConsultantCapacityOverviewSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ConsultantCapacityOverviewOrderBy>>;
+  where?: InputMaybe<ConsultantCapacityOverviewBoolExp>;
+};
+
+
+export type Subscription_RootConsultantCapacityOverviewStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<ConsultantCapacityOverviewStreamCursorInput>>;
+  where?: InputMaybe<ConsultantCapacityOverviewBoolExp>;
 };
 
 
@@ -18618,6 +24819,96 @@ export type Subscription_RootDataAccessLogsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<DataAccessLogsStreamCursorInput>>;
   where?: InputMaybe<DataAccessLogsBoolExp>;
+};
+
+
+export type Subscription_RootEmailDraftsArgs = {
+  distinctOn?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailDraftsOrderBy>>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+
+export type Subscription_RootEmailDraftsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailDraftsOrderBy>>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+
+export type Subscription_RootEmailDraftsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootEmailDraftsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<EmailDraftsStreamCursorInput>>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+
+export type Subscription_RootEmailSendLogsArgs = {
+  distinctOn?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailSendLogsOrderBy>>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+
+export type Subscription_RootEmailSendLogsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailSendLogsOrderBy>>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+
+export type Subscription_RootEmailSendLogsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootEmailSendLogsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<EmailSendLogsStreamCursorInput>>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+
+export type Subscription_RootEmailTemplatesArgs = {
+  distinctOn?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailTemplatesOrderBy>>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
+};
+
+
+export type Subscription_RootEmailTemplatesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailTemplatesOrderBy>>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
+};
+
+
+export type Subscription_RootEmailTemplatesByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootEmailTemplatesStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<EmailTemplatesStreamCursorInput>>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
 };
 
 
@@ -19071,6 +25362,56 @@ export type Subscription_RootPayrollDatesStreamArgs = {
 };
 
 
+export type Subscription_RootPayrollProfitabilityArgs = {
+  distinctOn?: InputMaybe<Array<PayrollProfitabilitySelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollProfitabilityOrderBy>>;
+  where?: InputMaybe<PayrollProfitabilityBoolExp>;
+};
+
+
+export type Subscription_RootPayrollProfitabilityAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollProfitabilitySelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollProfitabilityOrderBy>>;
+  where?: InputMaybe<PayrollProfitabilityBoolExp>;
+};
+
+
+export type Subscription_RootPayrollProfitabilityStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<PayrollProfitabilityStreamCursorInput>>;
+  where?: InputMaybe<PayrollProfitabilityBoolExp>;
+};
+
+
+export type Subscription_RootPayrollRequiredSkillArgs = {
+  distinctOn?: InputMaybe<Array<PayrollRequiredSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollRequiredSkillOrderBy>>;
+  where?: InputMaybe<PayrollRequiredSkillBoolExp>;
+};
+
+
+export type Subscription_RootPayrollRequiredSkillAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollRequiredSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollRequiredSkillOrderBy>>;
+  where?: InputMaybe<PayrollRequiredSkillBoolExp>;
+};
+
+
+export type Subscription_RootPayrollRequiredSkillStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<PayrollRequiredSkillStreamCursorInput>>;
+  where?: InputMaybe<PayrollRequiredSkillBoolExp>;
+};
+
+
 export type Subscription_RootPayrollTriggersStatusArgs = {
   distinctOn?: InputMaybe<Array<PayrollTriggersStatusSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -19326,6 +25667,36 @@ export type Subscription_RootPermissionsStreamArgs = {
 };
 
 
+export type Subscription_RootPositionAdminDefaultsArgs = {
+  distinctOn?: InputMaybe<Array<PositionAdminDefaultsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PositionAdminDefaultsOrderBy>>;
+  where?: InputMaybe<PositionAdminDefaultsBoolExp>;
+};
+
+
+export type Subscription_RootPositionAdminDefaultsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PositionAdminDefaultsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PositionAdminDefaultsOrderBy>>;
+  where?: InputMaybe<PositionAdminDefaultsBoolExp>;
+};
+
+
+export type Subscription_RootPositionAdminDefaultsByPkArgs = {
+  position: Scalars['user_position']['input'];
+};
+
+
+export type Subscription_RootPositionAdminDefaultsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<PositionAdminDefaultsStreamCursorInput>>;
+  where?: InputMaybe<PositionAdminDefaultsBoolExp>;
+};
+
+
 export type Subscription_RootResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
@@ -19446,6 +25817,86 @@ export type Subscription_RootSlowQueryByIdArgs = {
 };
 
 
+export type Subscription_RootStaffBillingPerformanceArgs = {
+  distinctOn?: InputMaybe<Array<StaffBillingPerformanceSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<StaffBillingPerformanceOrderBy>>;
+  where?: InputMaybe<StaffBillingPerformanceBoolExp>;
+};
+
+
+export type Subscription_RootStaffBillingPerformanceAggregateArgs = {
+  distinctOn?: InputMaybe<Array<StaffBillingPerformanceSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<StaffBillingPerformanceOrderBy>>;
+  where?: InputMaybe<StaffBillingPerformanceBoolExp>;
+};
+
+
+export type Subscription_RootStaffBillingPerformanceStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<StaffBillingPerformanceStreamCursorInput>>;
+  where?: InputMaybe<StaffBillingPerformanceBoolExp>;
+};
+
+
+export type Subscription_RootTeamCapacityByPositionArgs = {
+  distinctOn?: InputMaybe<Array<TeamCapacityByPositionSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TeamCapacityByPositionOrderBy>>;
+  where?: InputMaybe<TeamCapacityByPositionBoolExp>;
+};
+
+
+export type Subscription_RootTeamCapacityByPositionAggregateArgs = {
+  distinctOn?: InputMaybe<Array<TeamCapacityByPositionSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TeamCapacityByPositionOrderBy>>;
+  where?: InputMaybe<TeamCapacityByPositionBoolExp>;
+};
+
+
+export type Subscription_RootTeamCapacityByPositionStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<TeamCapacityByPositionStreamCursorInput>>;
+  where?: InputMaybe<TeamCapacityByPositionBoolExp>;
+};
+
+
+export type Subscription_RootTimeEntriesArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+
+export type Subscription_RootTimeEntriesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+
+export type Subscription_RootTimeEntriesStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<TimeEntriesStreamCursorInput>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+
+export type Subscription_RootTimeEntryArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
 export type Subscription_RootUserAccessSummariesArgs = {
   distinctOn?: InputMaybe<Array<UserAccessSummariesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -19473,6 +25924,36 @@ export type Subscription_RootUserAccessSummariesStreamArgs = {
 
 export type Subscription_RootUserByIdArgs = {
   id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootUserEmailTemplateFavoritesArgs = {
+  distinctOn?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserEmailTemplateFavoritesOrderBy>>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+};
+
+
+export type Subscription_RootUserEmailTemplateFavoritesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserEmailTemplateFavoritesOrderBy>>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+};
+
+
+export type Subscription_RootUserEmailTemplateFavoritesByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootUserEmailTemplateFavoritesStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<UserEmailTemplateFavoritesStreamCursorInput>>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
 };
 
 
@@ -19533,6 +26014,31 @@ export type Subscription_RootUserRolesStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UserRolesStreamCursorInput>>;
   where?: InputMaybe<UserRolesBoolExp>;
+};
+
+
+export type Subscription_RootUserSkillArgs = {
+  distinctOn?: InputMaybe<Array<UserSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSkillOrderBy>>;
+  where?: InputMaybe<UserSkillBoolExp>;
+};
+
+
+export type Subscription_RootUserSkillAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSkillOrderBy>>;
+  where?: InputMaybe<UserSkillBoolExp>;
+};
+
+
+export type Subscription_RootUserSkillStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<UserSkillStreamCursorInput>>;
+  where?: InputMaybe<UserSkillBoolExp>;
 };
 
 
@@ -19609,33 +26115,520 @@ export type Subscription_RootUsersSyncAggregateArgs = {
 };
 
 
+export type Subscription_RootWorkScheduleArgs = {
+  distinctOn?: InputMaybe<Array<WorkScheduleSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<WorkScheduleOrderBy>>;
+  where?: InputMaybe<WorkScheduleBoolExp>;
+};
+
+
+export type Subscription_RootWorkScheduleAggregateArgs = {
+  distinctOn?: InputMaybe<Array<WorkScheduleSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<WorkScheduleOrderBy>>;
+  where?: InputMaybe<WorkScheduleBoolExp>;
+};
+
+
 export type Subscription_RootWorkScheduleByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
 
-export type Subscription_RootWorkSchedulesArgs = {
-  distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<WorkSchedulesOrderBy>>;
-  where?: InputMaybe<WorkSchedulesBoolExp>;
-};
-
-
-export type Subscription_RootWorkSchedulesAggregateArgs = {
-  distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<WorkSchedulesOrderBy>>;
-  where?: InputMaybe<WorkSchedulesBoolExp>;
-};
-
-
-export type Subscription_RootWorkSchedulesStreamArgs = {
+export type Subscription_RootWorkScheduleStreamArgs = {
   batchSize: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<WorkSchedulesStreamCursorInput>>;
-  where?: InputMaybe<WorkSchedulesBoolExp>;
+  cursor: Array<InputMaybe<WorkScheduleStreamCursorInput>>;
+  where?: InputMaybe<WorkScheduleBoolExp>;
+};
+
+/** Time tracking for profitability analysis */
+export type TimeEntries = {
+  __typename?: 'timeEntries';
+  /** An object relationship */
+  billingItem?: Maybe<BillingItems>;
+  /** Billing item this time relates to */
+  billingItemId?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  client: Clients;
+  /** Client this work was for */
+  clientId: Scalars['uuid']['output'];
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Description of work performed */
+  description?: Maybe<Scalars['String']['output']>;
+  /** Hours spent on this work */
+  hoursSpent: Scalars['numeric']['output'];
+  id: Scalars['uuid']['output'];
+  /** An object relationship */
+  payroll?: Maybe<Payrolls>;
+  /** Specific payroll job this relates to */
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  /** Staff member who worked on this */
+  staffUserId: Scalars['uuid']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  user: Users;
+  /** Date the work was performed */
+  workDate: Scalars['date']['output'];
+};
+
+/** aggregated selection of "time_entries" */
+export type TimeEntriesAggregate = {
+  __typename?: 'timeEntriesAggregate';
+  aggregate?: Maybe<TimeEntriesAggregateFields>;
+  nodes: Array<TimeEntries>;
+};
+
+export type TimeEntriesAggregateBoolExp = {
+  count?: InputMaybe<TimeEntriesAggregateBoolExpCount>;
+};
+
+export type TimeEntriesAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<TimeEntriesBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+/** aggregate fields of "time_entries" */
+export type TimeEntriesAggregateFields = {
+  __typename?: 'timeEntriesAggregateFields';
+  avg?: Maybe<TimeEntriesAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<TimeEntriesMaxFields>;
+  min?: Maybe<TimeEntriesMinFields>;
+  stddev?: Maybe<TimeEntriesStddevFields>;
+  stddevPop?: Maybe<TimeEntriesStddevPopFields>;
+  stddevSamp?: Maybe<TimeEntriesStddevSampFields>;
+  sum?: Maybe<TimeEntriesSumFields>;
+  varPop?: Maybe<TimeEntriesVarPopFields>;
+  varSamp?: Maybe<TimeEntriesVarSampFields>;
+  variance?: Maybe<TimeEntriesVarianceFields>;
+};
+
+
+/** aggregate fields of "time_entries" */
+export type TimeEntriesAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "time_entries" */
+export type TimeEntriesAggregateOrderBy = {
+  avg?: InputMaybe<TimeEntriesAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<TimeEntriesMaxOrderBy>;
+  min?: InputMaybe<TimeEntriesMinOrderBy>;
+  stddev?: InputMaybe<TimeEntriesStddevOrderBy>;
+  stddevPop?: InputMaybe<TimeEntriesStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<TimeEntriesStddevSampOrderBy>;
+  sum?: InputMaybe<TimeEntriesSumOrderBy>;
+  varPop?: InputMaybe<TimeEntriesVarPopOrderBy>;
+  varSamp?: InputMaybe<TimeEntriesVarSampOrderBy>;
+  variance?: InputMaybe<TimeEntriesVarianceOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "time_entries" */
+export type TimeEntriesArrRelInsertInput = {
+  data: Array<TimeEntriesInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<TimeEntriesOnConflict>;
+};
+
+/** aggregate avg on columns */
+export type TimeEntriesAvgFields = {
+  __typename?: 'timeEntriesAvgFields';
+  /** Hours spent on this work */
+  hoursSpent?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "time_entries" */
+export type TimeEntriesAvgOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "time_entries". All fields are combined with a logical 'AND'. */
+export type TimeEntriesBoolExp = {
+  _and?: InputMaybe<Array<TimeEntriesBoolExp>>;
+  _not?: InputMaybe<TimeEntriesBoolExp>;
+  _or?: InputMaybe<Array<TimeEntriesBoolExp>>;
+  billingItem?: InputMaybe<BillingItemsBoolExp>;
+  billingItemId?: InputMaybe<UuidComparisonExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  hoursSpent?: InputMaybe<NumericComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  payroll?: InputMaybe<PayrollsBoolExp>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  staffUserId?: InputMaybe<UuidComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  workDate?: InputMaybe<DateComparisonExp>;
+};
+
+/** unique or primary key constraints on table "time_entries" */
+export type TimeEntriesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'time_entries_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "time_entries" */
+export type TimeEntriesIncInput = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "time_entries" */
+export type TimeEntriesInsertInput = {
+  billingItem?: InputMaybe<BillingItemsObjRelInsertInput>;
+  /** Billing item this time relates to */
+  billingItemId?: InputMaybe<Scalars['uuid']['input']>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  /** Client this work was for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Description of work performed */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payroll?: InputMaybe<PayrollsObjRelInsertInput>;
+  /** Specific payroll job this relates to */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Staff member who worked on this */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  /** Date the work was performed */
+  workDate?: InputMaybe<Scalars['date']['input']>;
+};
+
+/** aggregate max on columns */
+export type TimeEntriesMaxFields = {
+  __typename?: 'timeEntriesMaxFields';
+  /** Billing item this time relates to */
+  billingItemId?: Maybe<Scalars['uuid']['output']>;
+  /** Client this work was for */
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Description of work performed */
+  description?: Maybe<Scalars['String']['output']>;
+  /** Hours spent on this work */
+  hoursSpent?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  /** Specific payroll job this relates to */
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  /** Staff member who worked on this */
+  staffUserId?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Date the work was performed */
+  workDate?: Maybe<Scalars['date']['output']>;
+};
+
+/** order by max() on columns of table "time_entries" */
+export type TimeEntriesMaxOrderBy = {
+  /** Billing item this time relates to */
+  billingItemId?: InputMaybe<OrderBy>;
+  /** Client this work was for */
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  /** Description of work performed */
+  description?: InputMaybe<OrderBy>;
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  /** Specific payroll job this relates to */
+  payrollId?: InputMaybe<OrderBy>;
+  /** Staff member who worked on this */
+  staffUserId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  /** Date the work was performed */
+  workDate?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type TimeEntriesMinFields = {
+  __typename?: 'timeEntriesMinFields';
+  /** Billing item this time relates to */
+  billingItemId?: Maybe<Scalars['uuid']['output']>;
+  /** Client this work was for */
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Description of work performed */
+  description?: Maybe<Scalars['String']['output']>;
+  /** Hours spent on this work */
+  hoursSpent?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  /** Specific payroll job this relates to */
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  /** Staff member who worked on this */
+  staffUserId?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Date the work was performed */
+  workDate?: Maybe<Scalars['date']['output']>;
+};
+
+/** order by min() on columns of table "time_entries" */
+export type TimeEntriesMinOrderBy = {
+  /** Billing item this time relates to */
+  billingItemId?: InputMaybe<OrderBy>;
+  /** Client this work was for */
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  /** Description of work performed */
+  description?: InputMaybe<OrderBy>;
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  /** Specific payroll job this relates to */
+  payrollId?: InputMaybe<OrderBy>;
+  /** Staff member who worked on this */
+  staffUserId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  /** Date the work was performed */
+  workDate?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "time_entries" */
+export type TimeEntriesMutationResponse = {
+  __typename?: 'timeEntriesMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<TimeEntries>;
+};
+
+/** on_conflict condition type for table "time_entries" */
+export type TimeEntriesOnConflict = {
+  constraint: TimeEntriesConstraint;
+  updateColumns?: Array<TimeEntriesUpdateColumn>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+/** Ordering options when selecting data from "time_entries". */
+export type TimeEntriesOrderBy = {
+  billingItem?: InputMaybe<BillingItemsOrderBy>;
+  billingItemId?: InputMaybe<OrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  hoursSpent?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  payroll?: InputMaybe<PayrollsOrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  staffUserId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  workDate?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: time_entries */
+export type TimeEntriesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "time_entries" */
+export type TimeEntriesSelectColumn =
+  /** column name */
+  | 'billingItemId'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'hoursSpent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'staffUserId'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'workDate'
+  | '%future added value';
+
+/** input type for updating data in table "time_entries" */
+export type TimeEntriesSetInput = {
+  /** Billing item this time relates to */
+  billingItemId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Client this work was for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Description of work performed */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Specific payroll job this relates to */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Staff member who worked on this */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Date the work was performed */
+  workDate?: InputMaybe<Scalars['date']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type TimeEntriesStddevFields = {
+  __typename?: 'timeEntriesStddevFields';
+  /** Hours spent on this work */
+  hoursSpent?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "time_entries" */
+export type TimeEntriesStddevOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevPop on columns */
+export type TimeEntriesStddevPopFields = {
+  __typename?: 'timeEntriesStddevPopFields';
+  /** Hours spent on this work */
+  hoursSpent?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevPop() on columns of table "time_entries" */
+export type TimeEntriesStddevPopOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevSamp on columns */
+export type TimeEntriesStddevSampFields = {
+  __typename?: 'timeEntriesStddevSampFields';
+  /** Hours spent on this work */
+  hoursSpent?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevSamp() on columns of table "time_entries" */
+export type TimeEntriesStddevSampOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "timeEntries" */
+export type TimeEntriesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: TimeEntriesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type TimeEntriesStreamCursorValueInput = {
+  /** Billing item this time relates to */
+  billingItemId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Client this work was for */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Description of work performed */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Specific payroll job this relates to */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Staff member who worked on this */
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Date the work was performed */
+  workDate?: InputMaybe<Scalars['date']['input']>;
+};
+
+/** aggregate sum on columns */
+export type TimeEntriesSumFields = {
+  __typename?: 'timeEntriesSumFields';
+  /** Hours spent on this work */
+  hoursSpent?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** order by sum() on columns of table "time_entries" */
+export type TimeEntriesSumOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "time_entries" */
+export type TimeEntriesUpdateColumn =
+  /** column name */
+  | 'billingItemId'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'hoursSpent'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'staffUserId'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'workDate'
+  | '%future added value';
+
+export type TimeEntriesUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<TimeEntriesIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<TimeEntriesSetInput>;
+  /** filter the rows which have to be updated */
+  where: TimeEntriesBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type TimeEntriesVarPopFields = {
+  __typename?: 'timeEntriesVarPopFields';
+  /** Hours spent on this work */
+  hoursSpent?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varPop() on columns of table "time_entries" */
+export type TimeEntriesVarPopOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** aggregate varSamp on columns */
+export type TimeEntriesVarSampFields = {
+  __typename?: 'timeEntriesVarSampFields';
+  /** Hours spent on this work */
+  hoursSpent?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varSamp() on columns of table "time_entries" */
+export type TimeEntriesVarSampOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
+};
+
+/** aggregate variance on columns */
+export type TimeEntriesVarianceFields = {
+  __typename?: 'timeEntriesVarianceFields';
+  /** Hours spent on this work */
+  hoursSpent?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "time_entries" */
+export type TimeEntriesVarianceOrderBy = {
+  /** Hours spent on this work */
+  hoursSpent?: InputMaybe<OrderBy>;
 };
 
 /** columns and relationships of "audit.user_access_summary" */
@@ -19802,6 +26795,13 @@ export type UserAccessSummariesUpdates = {
   where: UserAccessSummariesBoolExp;
 };
 
+export type UserEmailTemplateFavoritesAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 /** Stores invitation metadata for two-stage user invitation flow with role-based access control */
 export type UserInvitations = {
   __typename?: 'userInvitations';
@@ -19830,6 +26830,8 @@ export type UserInvitations = {
   revokeReason?: Maybe<Scalars['String']['output']>;
   revokedAt?: Maybe<Scalars['timestamptz']['output']>;
   revokedBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  revokedByUser?: Maybe<Users>;
   status: Scalars['String']['output'];
   updatedAt: Scalars['timestamptz']['output'];
   /** An object relationship */
@@ -19921,6 +26923,7 @@ export type UserInvitationsBoolExp = {
   revokeReason?: InputMaybe<StringComparisonExp>;
   revokedAt?: InputMaybe<TimestamptzComparisonExp>;
   revokedBy?: InputMaybe<UuidComparisonExp>;
+  revokedByUser?: InputMaybe<UsersBoolExp>;
   status?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   user?: InputMaybe<UsersBoolExp>;
@@ -19971,6 +26974,7 @@ export type UserInvitationsInsertInput = {
   revokeReason?: InputMaybe<Scalars['String']['input']>;
   revokedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   revokedBy?: InputMaybe<Scalars['uuid']['input']>;
+  revokedByUser?: InputMaybe<UsersObjRelInsertInput>;
   status?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   user?: InputMaybe<UsersObjRelInsertInput>;
@@ -20114,6 +27118,7 @@ export type UserInvitationsOrderBy = {
   revokeReason?: InputMaybe<OrderBy>;
   revokedAt?: InputMaybe<OrderBy>;
   revokedBy?: InputMaybe<OrderBy>;
+  revokedByUser?: InputMaybe<UsersOrderBy>;
   status?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   user?: InputMaybe<UsersOrderBy>;
@@ -20375,7 +27380,7 @@ export type UserRolesBoolExp = {
 export type UserRolesConstraint =
   /** unique or primary key constraint on columns "id" */
   | 'user_roles_pkey'
-  /** unique or primary key constraint on columns "user_id", "role_id" */
+  /** unique or primary key constraint on columns "role_id", "user_id" */
   | 'user_roles_user_id_role_id_key'
   | '%future added value';
 
@@ -20521,9 +27526,171 @@ export type UserRolesUpdates = {
   where: UserRolesBoolExp;
 };
 
+/** columns and relationships of "user_skills" */
+export type UserSkill = {
+  __typename?: 'userSkill';
+  proficiencyLevel?: Maybe<Scalars['String']['output']>;
+  skillName?: Maybe<Scalars['String']['output']>;
+  /** An object relationship */
+  skilledUser?: Maybe<Users>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregated selection of "user_skills" */
+export type UserSkillAggregate = {
+  __typename?: 'userSkillAggregate';
+  aggregate?: Maybe<UserSkillAggregateFields>;
+  nodes: Array<UserSkill>;
+};
+
+export type UserSkillAggregateBoolExp = {
+  count?: InputMaybe<UserSkillAggregateBoolExpCount>;
+};
+
+export type UserSkillAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<UserSkillSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<UserSkillBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+/** aggregate fields of "user_skills" */
+export type UserSkillAggregateFields = {
+  __typename?: 'userSkillAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<UserSkillMaxFields>;
+  min?: Maybe<UserSkillMinFields>;
+};
+
+
+/** aggregate fields of "user_skills" */
+export type UserSkillAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<UserSkillSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "user_skills" */
+export type UserSkillAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<UserSkillMaxOrderBy>;
+  min?: InputMaybe<UserSkillMinOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "user_skills" */
+export type UserSkillArrRelInsertInput = {
+  data: Array<UserSkillInsertInput>;
+};
+
+/** Boolean expression to filter rows from the table "user_skills". All fields are combined with a logical 'AND'. */
+export type UserSkillBoolExp = {
+  _and?: InputMaybe<Array<UserSkillBoolExp>>;
+  _not?: InputMaybe<UserSkillBoolExp>;
+  _or?: InputMaybe<Array<UserSkillBoolExp>>;
+  proficiencyLevel?: InputMaybe<StringComparisonExp>;
+  skillName?: InputMaybe<StringComparisonExp>;
+  skilledUser?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** input type for inserting data into table "user_skills" */
+export type UserSkillInsertInput = {
+  proficiencyLevel?: InputMaybe<Scalars['String']['input']>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+  skilledUser?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type UserSkillMaxFields = {
+  __typename?: 'userSkillMaxFields';
+  proficiencyLevel?: Maybe<Scalars['String']['output']>;
+  skillName?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by max() on columns of table "user_skills" */
+export type UserSkillMaxOrderBy = {
+  proficiencyLevel?: InputMaybe<OrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type UserSkillMinFields = {
+  __typename?: 'userSkillMinFields';
+  proficiencyLevel?: Maybe<Scalars['String']['output']>;
+  skillName?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by min() on columns of table "user_skills" */
+export type UserSkillMinOrderBy = {
+  proficiencyLevel?: InputMaybe<OrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "user_skills" */
+export type UserSkillMutationResponse = {
+  __typename?: 'userSkillMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<UserSkill>;
+};
+
+/** Ordering options when selecting data from "user_skills". */
+export type UserSkillOrderBy = {
+  proficiencyLevel?: InputMaybe<OrderBy>;
+  skillName?: InputMaybe<OrderBy>;
+  skilledUser?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "user_skills" */
+export type UserSkillSelectColumn =
+  /** column name */
+  | 'proficiencyLevel'
+  /** column name */
+  | 'skillName'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** input type for updating data in table "user_skills" */
+export type UserSkillSetInput = {
+  proficiencyLevel?: InputMaybe<Scalars['String']['input']>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "userSkill" */
+export type UserSkillStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: UserSkillStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type UserSkillStreamCursorValueInput = {
+  proficiencyLevel?: InputMaybe<Scalars['String']['input']>;
+  skillName?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+export type UserSkillUpdates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<UserSkillSetInput>;
+  /** filter the rows which have to be updated */
+  where: UserSkillBoolExp;
+};
+
 /** columns and relationships of "users" */
 export type Users = {
   __typename?: 'users';
+  /** User address or location */
+  address?: Maybe<Scalars['String']['output']>;
   /** An array relationship */
   assignedRoles: Array<UserRoles>;
   /** An aggregate relationship */
@@ -20536,6 +27703,20 @@ export type Users = {
   backupConsultantPayrolls: Array<Payrolls>;
   /** An aggregate relationship */
   backupConsultantPayrollsAggregate: PayrollsAggregate;
+  /** An array relationship */
+  billingItems: Array<BillingItems>;
+  /** An aggregate relationship */
+  billingItemsAggregate: BillingItemsAggregate;
+  /** An array relationship */
+  billingItemsConfirmedBy: Array<BillingItems>;
+  /** An aggregate relationship */
+  billingItemsConfirmedByAggregate: BillingItemsAggregate;
+  /** An array relationship */
+  billingItemsUserId: Array<BillingItems>;
+  /** An aggregate relationship */
+  billingItemsUserIdAggregate: BillingItemsAggregate;
+  /** User biography or description */
+  bio?: Maybe<Scalars['String']['output']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: Maybe<Scalars['String']['output']>;
   /** An array relationship */
@@ -20562,8 +27743,26 @@ export type Users = {
   createdPermissionOverridesAggregate: PermissionOverridesAggregate;
   deactivatedAt?: Maybe<Scalars['timestamptz']['output']>;
   deactivatedBy?: Maybe<Scalars['String']['output']>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['numeric']['output']>;
   /** User's email address (unique) */
   email: Scalars['String']['output'];
+  /** An array relationship */
+  emailDrafts: Array<EmailDrafts>;
+  /** An aggregate relationship */
+  emailDraftsAggregate: EmailDraftsAggregate;
+  /** An array relationship */
+  emailSendLogs: Array<EmailSendLogs>;
+  /** An aggregate relationship */
+  emailSendLogsAggregate: EmailSendLogsAggregate;
+  /** An array relationship */
+  emailTemplates: Array<EmailTemplates>;
+  /** An aggregate relationship */
+  emailTemplatesAggregate: EmailTemplatesAggregate;
+  /** An array relationship */
+  emailTemplatesCreatedByUserId: Array<EmailTemplates>;
+  /** An aggregate relationship */
+  emailTemplatesCreatedByUserIdAggregate: EmailTemplatesAggregate;
   /** Unique identifier for the user */
   id: Scalars['uuid']['output'];
   /** URL to the user's profile image */
@@ -20601,6 +27800,10 @@ export type Users = {
   originalConsultantAuditTrail: Array<PayrollAssignmentAudits>;
   /** An aggregate relationship */
   originalConsultantAuditTrailAggregate: PayrollAssignmentAuditsAggregate;
+  /** User contact phone number */
+  phone?: Maybe<Scalars['String']['output']>;
+  /** Organizational position affecting admin time allocation */
+  position?: Maybe<Scalars['user_position']['output']>;
   /** An array relationship */
   primaryConsultantPayrolls: Array<Payrolls>;
   /** An aggregate relationship */
@@ -20615,14 +27818,22 @@ export type Users = {
   statusChangedAt?: Maybe<Scalars['timestamptz']['output']>;
   /** User ID who changed the status */
   statusChangedBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  statusChangedByUser?: Maybe<Users>;
   /** An array relationship */
   targetedPermissionAudits: Array<PermissionAuditLogs>;
   /** An aggregate relationship */
   targetedPermissionAuditsAggregate: PermissionAuditLogsAggregate;
+  /** An array relationship */
+  timeEntries: Array<TimeEntries>;
+  /** An aggregate relationship */
+  timeEntriesAggregate: TimeEntriesAggregate;
   /** Timestamp when the user was last updated */
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-  /** An object relationship */
-  user?: Maybe<Users>;
+  /** An array relationship */
+  userEmailTemplateFavorites: Array<UserEmailTemplateFavorites>;
+  /** An aggregate relationship */
+  userEmailTemplateFavoritesAggregate: UserEmailTemplateFavoritesAggregate;
   /** An array relationship */
   userInvitations: Array<UserInvitations>;
   /** An array relationship */
@@ -20636,9 +27847,9 @@ export type Users = {
   /** An aggregate relationship */
   userInvitationsInvitedByAggregate: UserInvitationsAggregate;
   /** An array relationship */
-  userInvitationsMangerId: Array<UserInvitations>;
+  userInvitationsManagerId: Array<UserInvitations>;
   /** An aggregate relationship */
-  userInvitationsMangerIdAggregate: UserInvitationsAggregate;
+  userInvitationsManagerIdAggregate: UserInvitationsAggregate;
   /** An array relationship */
   userLeaveRecords: Array<Leave>;
   /** An aggregate relationship */
@@ -20652,15 +27863,19 @@ export type Users = {
   /** An aggregate relationship */
   userPermissionOverridesAggregate: PermissionOverridesAggregate;
   /** An array relationship */
-  userWorkSchedules: Array<WorkSchedules>;
+  userSkills: Array<UserSkill>;
   /** An aggregate relationship */
-  userWorkSchedulesAggregate: WorkSchedulesAggregate;
+  userSkillsAggregate: UserSkillAggregate;
+  /** An array relationship */
+  userWorkSchedules: Array<WorkSchedule>;
+  /** An aggregate relationship */
+  userWorkSchedulesAggregate: WorkScheduleAggregate;
   /** User's unique username for login */
   username?: Maybe<Scalars['String']['output']>;
   /** An array relationship */
-  users: Array<Users>;
+  usersStatusChangedBy: Array<Users>;
   /** An aggregate relationship */
-  usersAggregate: UsersAggregate;
+  usersStatusChangedByAggregate: UsersAggregate;
 };
 
 
@@ -20721,6 +27936,66 @@ export type UsersBackupConsultantPayrollsAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<PayrollsOrderBy>>;
   where?: InputMaybe<PayrollsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersBillingItemsArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersBillingItemsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersBillingItemsConfirmedByArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersBillingItemsConfirmedByAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersBillingItemsUserIdArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersBillingItemsUserIdAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
 };
 
 
@@ -20821,6 +28096,86 @@ export type UsersCreatedPermissionOverridesAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<PermissionOverridesOrderBy>>;
   where?: InputMaybe<PermissionOverridesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersEmailDraftsArgs = {
+  distinctOn?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailDraftsOrderBy>>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersEmailDraftsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailDraftsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailDraftsOrderBy>>;
+  where?: InputMaybe<EmailDraftsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersEmailSendLogsArgs = {
+  distinctOn?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailSendLogsOrderBy>>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersEmailSendLogsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailSendLogsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailSendLogsOrderBy>>;
+  where?: InputMaybe<EmailSendLogsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersEmailTemplatesArgs = {
+  distinctOn?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailTemplatesOrderBy>>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersEmailTemplatesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailTemplatesOrderBy>>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersEmailTemplatesCreatedByUserIdArgs = {
+  distinctOn?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailTemplatesOrderBy>>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersEmailTemplatesCreatedByUserIdAggregateArgs = {
+  distinctOn?: InputMaybe<Array<EmailTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EmailTemplatesOrderBy>>;
+  where?: InputMaybe<EmailTemplatesBoolExp>;
 };
 
 
@@ -20985,6 +28340,46 @@ export type UsersTargetedPermissionAuditsAggregateArgs = {
 
 
 /** columns and relationships of "users" */
+export type UsersTimeEntriesArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersTimeEntriesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<TimeEntriesOrderBy>>;
+  where?: InputMaybe<TimeEntriesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserEmailTemplateFavoritesArgs = {
+  distinctOn?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserEmailTemplateFavoritesOrderBy>>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserEmailTemplateFavoritesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserEmailTemplateFavoritesOrderBy>>;
+  where?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
 export type UsersUserInvitationsArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -21045,7 +28440,7 @@ export type UsersUserInvitationsInvitedByAggregateArgs = {
 
 
 /** columns and relationships of "users" */
-export type UsersUserInvitationsMangerIdArgs = {
+export type UsersUserInvitationsManagerIdArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -21055,7 +28450,7 @@ export type UsersUserInvitationsMangerIdArgs = {
 
 
 /** columns and relationships of "users" */
-export type UsersUserInvitationsMangerIdAggregateArgs = {
+export type UsersUserInvitationsManagerIdAggregateArgs = {
   distinctOn?: InputMaybe<Array<UserInvitationsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -21125,27 +28520,47 @@ export type UsersUserPermissionOverridesAggregateArgs = {
 
 
 /** columns and relationships of "users" */
-export type UsersUserWorkSchedulesArgs = {
-  distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
+export type UsersUserSkillsArgs = {
+  distinctOn?: InputMaybe<Array<UserSkillSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<WorkSchedulesOrderBy>>;
-  where?: InputMaybe<WorkSchedulesBoolExp>;
+  orderBy?: InputMaybe<Array<UserSkillOrderBy>>;
+  where?: InputMaybe<UserSkillBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserSkillsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserSkillSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSkillOrderBy>>;
+  where?: InputMaybe<UserSkillBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserWorkSchedulesArgs = {
+  distinctOn?: InputMaybe<Array<WorkScheduleSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<WorkScheduleOrderBy>>;
+  where?: InputMaybe<WorkScheduleBoolExp>;
 };
 
 
 /** columns and relationships of "users" */
 export type UsersUserWorkSchedulesAggregateArgs = {
-  distinctOn?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
+  distinctOn?: InputMaybe<Array<WorkScheduleSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<WorkSchedulesOrderBy>>;
-  where?: InputMaybe<WorkSchedulesBoolExp>;
+  orderBy?: InputMaybe<Array<WorkScheduleOrderBy>>;
+  where?: InputMaybe<WorkScheduleBoolExp>;
 };
 
 
 /** columns and relationships of "users" */
-export type UsersUsersArgs = {
+export type UsersUsersStatusChangedByArgs = {
   distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -21155,7 +28570,7 @@ export type UsersUsersArgs = {
 
 
 /** columns and relationships of "users" */
-export type UsersUsersAggregateArgs = {
+export type UsersUsersStatusChangedByAggregateArgs = {
   distinctOn?: InputMaybe<Array<UsersSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -21200,9 +28615,17 @@ export type UsersAggregateBoolExpCount = {
 /** aggregate fields of "users" */
 export type UsersAggregateFields = {
   __typename?: 'usersAggregateFields';
+  avg?: Maybe<UsersAvgFields>;
   count: Scalars['Int']['output'];
   max?: Maybe<UsersMaxFields>;
   min?: Maybe<UsersMinFields>;
+  stddev?: Maybe<UsersStddevFields>;
+  stddevPop?: Maybe<UsersStddevPopFields>;
+  stddevSamp?: Maybe<UsersStddevSampFields>;
+  sum?: Maybe<UsersSumFields>;
+  varPop?: Maybe<UsersVarPopFields>;
+  varSamp?: Maybe<UsersVarSampFields>;
+  variance?: Maybe<UsersVarianceFields>;
 };
 
 
@@ -21214,9 +28637,17 @@ export type UsersAggregateFieldsCountArgs = {
 
 /** order by aggregate values of table "users" */
 export type UsersAggregateOrderBy = {
+  avg?: InputMaybe<UsersAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<UsersMaxOrderBy>;
   min?: InputMaybe<UsersMinOrderBy>;
+  stddev?: InputMaybe<UsersStddevOrderBy>;
+  stddevPop?: InputMaybe<UsersStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<UsersStddevSampOrderBy>;
+  sum?: InputMaybe<UsersSumOrderBy>;
+  varPop?: InputMaybe<UsersVarPopOrderBy>;
+  varSamp?: InputMaybe<UsersVarSampOrderBy>;
+  variance?: InputMaybe<UsersVarianceOrderBy>;
 };
 
 /** input type for inserting array relation for remote table "users" */
@@ -21226,17 +28657,38 @@ export type UsersArrRelInsertInput = {
   onConflict?: InputMaybe<UsersOnConflict>;
 };
 
+/** aggregate avg on columns */
+export type UsersAvgFields = {
+  __typename?: 'usersAvgFields';
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "users" */
+export type UsersAvgOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
 /** Boolean expression to filter rows from the table "users". All fields are combined with a logical 'AND'. */
 export type UsersBoolExp = {
   _and?: InputMaybe<Array<UsersBoolExp>>;
   _not?: InputMaybe<UsersBoolExp>;
   _or?: InputMaybe<Array<UsersBoolExp>>;
+  address?: InputMaybe<StringComparisonExp>;
   assignedRoles?: InputMaybe<UserRolesBoolExp>;
   assignedRolesAggregate?: InputMaybe<UserRolesAggregateBoolExp>;
   authoredNotes?: InputMaybe<NotesBoolExp>;
   authoredNotesAggregate?: InputMaybe<NotesAggregateBoolExp>;
   backupConsultantPayrolls?: InputMaybe<PayrollsBoolExp>;
   backupConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
+  billingItems?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingItemsConfirmedBy?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsConfirmedByAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingItemsUserId?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsUserIdAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  bio?: InputMaybe<StringComparisonExp>;
   clerkUserId?: InputMaybe<StringComparisonExp>;
   consultantAssignments?: InputMaybe<PayrollAssignmentsBoolExp>;
   consultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateBoolExp>;
@@ -21251,7 +28703,16 @@ export type UsersBoolExp = {
   createdPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateBoolExp>;
   deactivatedAt?: InputMaybe<TimestamptzComparisonExp>;
   deactivatedBy?: InputMaybe<StringComparisonExp>;
+  defaultAdminTimePercentage?: InputMaybe<NumericComparisonExp>;
   email?: InputMaybe<StringComparisonExp>;
+  emailDrafts?: InputMaybe<EmailDraftsBoolExp>;
+  emailDraftsAggregate?: InputMaybe<EmailDraftsAggregateBoolExp>;
+  emailSendLogs?: InputMaybe<EmailSendLogsBoolExp>;
+  emailSendLogsAggregate?: InputMaybe<EmailSendLogsAggregateBoolExp>;
+  emailTemplates?: InputMaybe<EmailTemplatesBoolExp>;
+  emailTemplatesAggregate?: InputMaybe<EmailTemplatesAggregateBoolExp>;
+  emailTemplatesCreatedByUserId?: InputMaybe<EmailTemplatesBoolExp>;
+  emailTemplatesCreatedByUserIdAggregate?: InputMaybe<EmailTemplatesAggregateBoolExp>;
   id?: InputMaybe<UuidComparisonExp>;
   image?: InputMaybe<StringComparisonExp>;
   isActive?: InputMaybe<BooleanComparisonExp>;
@@ -21271,6 +28732,8 @@ export type UsersBoolExp = {
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateBoolExp>;
   originalConsultantAuditTrail?: InputMaybe<PayrollAssignmentAuditsBoolExp>;
   originalConsultantAuditTrailAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateBoolExp>;
+  phone?: InputMaybe<StringComparisonExp>;
+  position?: InputMaybe<UserPositionComparisonExp>;
   primaryConsultantPayrolls?: InputMaybe<PayrollsBoolExp>;
   primaryConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   role?: InputMaybe<UserRoleComparisonExp>;
@@ -21278,29 +28741,35 @@ export type UsersBoolExp = {
   statusChangeReason?: InputMaybe<StringComparisonExp>;
   statusChangedAt?: InputMaybe<TimestamptzComparisonExp>;
   statusChangedBy?: InputMaybe<UuidComparisonExp>;
+  statusChangedByUser?: InputMaybe<UsersBoolExp>;
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsBoolExp>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateBoolExp>;
+  timeEntries?: InputMaybe<TimeEntriesBoolExp>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-  user?: InputMaybe<UsersBoolExp>;
+  userEmailTemplateFavorites?: InputMaybe<UserEmailTemplateFavoritesBoolExp>;
+  userEmailTemplateFavoritesAggregate?: InputMaybe<UserEmailTemplateFavoritesAggregateBoolExp>;
   userInvitations?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsAcceptedBy?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userInvitationsAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userInvitationsInvitedBy?: InputMaybe<UserInvitationsBoolExp>;
   userInvitationsInvitedByAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
-  userInvitationsMangerId?: InputMaybe<UserInvitationsBoolExp>;
-  userInvitationsMangerIdAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
+  userInvitationsManagerId?: InputMaybe<UserInvitationsBoolExp>;
+  userInvitationsManagerIdAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
   userLeaveRecords?: InputMaybe<LeaveBoolExp>;
   userLeaveRecordsAggregate?: InputMaybe<LeaveAggregateBoolExp>;
   userPermissionAudits?: InputMaybe<PermissionAuditLogsBoolExp>;
   userPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateBoolExp>;
   userPermissionOverrides?: InputMaybe<PermissionOverridesBoolExp>;
   userPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateBoolExp>;
-  userWorkSchedules?: InputMaybe<WorkSchedulesBoolExp>;
-  userWorkSchedulesAggregate?: InputMaybe<WorkSchedulesAggregateBoolExp>;
+  userSkills?: InputMaybe<UserSkillBoolExp>;
+  userSkillsAggregate?: InputMaybe<UserSkillAggregateBoolExp>;
+  userWorkSchedules?: InputMaybe<WorkScheduleBoolExp>;
+  userWorkSchedulesAggregate?: InputMaybe<WorkScheduleAggregateBoolExp>;
   username?: InputMaybe<StringComparisonExp>;
-  users?: InputMaybe<UsersBoolExp>;
-  usersAggregate?: InputMaybe<UsersAggregateBoolExp>;
+  usersStatusChangedBy?: InputMaybe<UsersBoolExp>;
+  usersStatusChangedByAggregate?: InputMaybe<UsersAggregateBoolExp>;
 };
 
 /** unique or primary key constraints on table "users" */
@@ -21315,11 +28784,24 @@ export type UsersConstraint =
   | 'users_username_key'
   | '%future added value';
 
+/** input type for incrementing numeric columns in table "users" */
+export type UsersIncInput = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
+};
+
 /** input type for inserting data into table "users" */
 export type UsersInsertInput = {
+  /** User address or location */
+  address?: InputMaybe<Scalars['String']['input']>;
   assignedRoles?: InputMaybe<UserRolesArrRelInsertInput>;
   authoredNotes?: InputMaybe<NotesArrRelInsertInput>;
   backupConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
+  billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  billingItemsConfirmedBy?: InputMaybe<BillingItemsArrRelInsertInput>;
+  billingItemsUserId?: InputMaybe<BillingItemsArrRelInsertInput>;
+  /** User biography or description */
+  bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
   consultantAssignments?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
@@ -21331,8 +28813,14 @@ export type UsersInsertInput = {
   createdPermissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
+  emailDrafts?: InputMaybe<EmailDraftsArrRelInsertInput>;
+  emailSendLogs?: InputMaybe<EmailSendLogsArrRelInsertInput>;
+  emailTemplates?: InputMaybe<EmailTemplatesArrRelInsertInput>;
+  emailTemplatesCreatedByUserId?: InputMaybe<EmailTemplatesArrRelInsertInput>;
   /** Unique identifier for the user */
   id?: InputMaybe<Scalars['uuid']['input']>;
   /** URL to the user's profile image */
@@ -21351,6 +28839,10 @@ export type UsersInsertInput = {
   newConsultantAuditTrail?: InputMaybe<PayrollAssignmentAuditsArrRelInsertInput>;
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
   originalConsultantAuditTrail?: InputMaybe<PayrollAssignmentAuditsArrRelInsertInput>;
+  /** User contact phone number */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** Organizational position affecting admin time allocation */
+  position?: InputMaybe<Scalars['user_position']['input']>;
   primaryConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
@@ -21362,32 +28854,41 @@ export type UsersInsertInput = {
   statusChangedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User ID who changed the status */
   statusChangedBy?: InputMaybe<Scalars['uuid']['input']>;
+  statusChangedByUser?: InputMaybe<UsersObjRelInsertInput>;
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
+  timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  user?: InputMaybe<UsersObjRelInsertInput>;
+  userEmailTemplateFavorites?: InputMaybe<UserEmailTemplateFavoritesArrRelInsertInput>;
   userInvitations?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userInvitationsAcceptedBy?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userInvitationsInvitedBy?: InputMaybe<UserInvitationsArrRelInsertInput>;
-  userInvitationsMangerId?: InputMaybe<UserInvitationsArrRelInsertInput>;
+  userInvitationsManagerId?: InputMaybe<UserInvitationsArrRelInsertInput>;
   userLeaveRecords?: InputMaybe<LeaveArrRelInsertInput>;
   userPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
   userPermissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
-  userWorkSchedules?: InputMaybe<WorkSchedulesArrRelInsertInput>;
+  userSkills?: InputMaybe<UserSkillArrRelInsertInput>;
+  userWorkSchedules?: InputMaybe<WorkScheduleArrRelInsertInput>;
   /** User's unique username for login */
   username?: InputMaybe<Scalars['String']['input']>;
-  users?: InputMaybe<UsersArrRelInsertInput>;
+  usersStatusChangedBy?: InputMaybe<UsersArrRelInsertInput>;
 };
 
 /** aggregate max on columns */
 export type UsersMaxFields = {
   __typename?: 'usersMaxFields';
+  /** User address or location */
+  address?: Maybe<Scalars['String']['output']>;
+  /** User biography or description */
+  bio?: Maybe<Scalars['String']['output']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: Maybe<Scalars['String']['output']>;
   /** Timestamp when the user was created */
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   deactivatedAt?: Maybe<Scalars['timestamptz']['output']>;
   deactivatedBy?: Maybe<Scalars['String']['output']>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['numeric']['output']>;
   /** User's email address (unique) */
   email?: Maybe<Scalars['String']['output']>;
   /** Unique identifier for the user */
@@ -21398,6 +28899,10 @@ export type UsersMaxFields = {
   managerId?: Maybe<Scalars['uuid']['output']>;
   /** User's full name */
   name?: Maybe<Scalars['String']['output']>;
+  /** User contact phone number */
+  phone?: Maybe<Scalars['String']['output']>;
+  /** Organizational position affecting admin time allocation */
+  position?: Maybe<Scalars['user_position']['output']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: Maybe<Scalars['user_role']['output']>;
   /** Current user status - must be consistent with isActive field */
@@ -21416,12 +28921,18 @@ export type UsersMaxFields = {
 
 /** order by max() on columns of table "users" */
 export type UsersMaxOrderBy = {
+  /** User address or location */
+  address?: InputMaybe<OrderBy>;
+  /** User biography or description */
+  bio?: InputMaybe<OrderBy>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<OrderBy>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<OrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
   /** User's email address (unique) */
   email?: InputMaybe<OrderBy>;
   /** Unique identifier for the user */
@@ -21432,6 +28943,10 @@ export type UsersMaxOrderBy = {
   managerId?: InputMaybe<OrderBy>;
   /** User's full name */
   name?: InputMaybe<OrderBy>;
+  /** User contact phone number */
+  phone?: InputMaybe<OrderBy>;
+  /** Organizational position affecting admin time allocation */
+  position?: InputMaybe<OrderBy>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<OrderBy>;
   /** Current user status - must be consistent with isActive field */
@@ -21451,12 +28966,18 @@ export type UsersMaxOrderBy = {
 /** aggregate min on columns */
 export type UsersMinFields = {
   __typename?: 'usersMinFields';
+  /** User address or location */
+  address?: Maybe<Scalars['String']['output']>;
+  /** User biography or description */
+  bio?: Maybe<Scalars['String']['output']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: Maybe<Scalars['String']['output']>;
   /** Timestamp when the user was created */
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   deactivatedAt?: Maybe<Scalars['timestamptz']['output']>;
   deactivatedBy?: Maybe<Scalars['String']['output']>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['numeric']['output']>;
   /** User's email address (unique) */
   email?: Maybe<Scalars['String']['output']>;
   /** Unique identifier for the user */
@@ -21467,6 +28988,10 @@ export type UsersMinFields = {
   managerId?: Maybe<Scalars['uuid']['output']>;
   /** User's full name */
   name?: Maybe<Scalars['String']['output']>;
+  /** User contact phone number */
+  phone?: Maybe<Scalars['String']['output']>;
+  /** Organizational position affecting admin time allocation */
+  position?: Maybe<Scalars['user_position']['output']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: Maybe<Scalars['user_role']['output']>;
   /** Current user status - must be consistent with isActive field */
@@ -21485,12 +29010,18 @@ export type UsersMinFields = {
 
 /** order by min() on columns of table "users" */
 export type UsersMinOrderBy = {
+  /** User address or location */
+  address?: InputMaybe<OrderBy>;
+  /** User biography or description */
+  bio?: InputMaybe<OrderBy>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<OrderBy>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<OrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
   /** User's email address (unique) */
   email?: InputMaybe<OrderBy>;
   /** Unique identifier for the user */
@@ -21501,6 +29032,10 @@ export type UsersMinOrderBy = {
   managerId?: InputMaybe<OrderBy>;
   /** User's full name */
   name?: InputMaybe<OrderBy>;
+  /** User contact phone number */
+  phone?: InputMaybe<OrderBy>;
+  /** Organizational position affecting admin time allocation */
+  position?: InputMaybe<OrderBy>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<OrderBy>;
   /** Current user status - must be consistent with isActive field */
@@ -21542,9 +29077,14 @@ export type UsersOnConflict = {
 
 /** Ordering options when selecting data from "users". */
 export type UsersOrderBy = {
+  address?: InputMaybe<OrderBy>;
   assignedRolesAggregate?: InputMaybe<UserRolesAggregateOrderBy>;
   authoredNotesAggregate?: InputMaybe<NotesAggregateOrderBy>;
   backupConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingItemsConfirmedByAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingItemsUserIdAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  bio?: InputMaybe<OrderBy>;
   clerkUserId?: InputMaybe<OrderBy>;
   consultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
   createdAssignmentAuditsAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateOrderBy>;
@@ -21554,7 +29094,12 @@ export type UsersOrderBy = {
   createdPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
   email?: InputMaybe<OrderBy>;
+  emailDraftsAggregate?: InputMaybe<EmailDraftsAggregateOrderBy>;
+  emailSendLogsAggregate?: InputMaybe<EmailSendLogsAggregateOrderBy>;
+  emailTemplatesAggregate?: InputMaybe<EmailTemplatesAggregateOrderBy>;
+  emailTemplatesCreatedByUserIdAggregate?: InputMaybe<EmailTemplatesAggregateOrderBy>;
   id?: InputMaybe<OrderBy>;
   image?: InputMaybe<OrderBy>;
   isActive?: InputMaybe<OrderBy>;
@@ -21568,25 +29113,30 @@ export type UsersOrderBy = {
   newConsultantAuditTrailAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateOrderBy>;
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
   originalConsultantAuditTrailAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateOrderBy>;
+  phone?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
   primaryConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   role?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   statusChangeReason?: InputMaybe<OrderBy>;
   statusChangedAt?: InputMaybe<OrderBy>;
   statusChangedBy?: InputMaybe<OrderBy>;
+  statusChangedByUser?: InputMaybe<UsersOrderBy>;
   targetedPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateOrderBy>;
+  timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
-  user?: InputMaybe<UsersOrderBy>;
+  userEmailTemplateFavoritesAggregate?: InputMaybe<UserEmailTemplateFavoritesAggregateOrderBy>;
   userInvitationsAcceptedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userInvitationsAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userInvitationsInvitedByAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
-  userInvitationsMangerIdAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
+  userInvitationsManagerIdAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   userLeaveRecordsAggregate?: InputMaybe<LeaveAggregateOrderBy>;
   userPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateOrderBy>;
   userPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
-  userWorkSchedulesAggregate?: InputMaybe<WorkSchedulesAggregateOrderBy>;
+  userSkillsAggregate?: InputMaybe<UserSkillAggregateOrderBy>;
+  userWorkSchedulesAggregate?: InputMaybe<WorkScheduleAggregateOrderBy>;
   username?: InputMaybe<OrderBy>;
-  usersAggregate?: InputMaybe<UsersAggregateOrderBy>;
+  usersStatusChangedByAggregate?: InputMaybe<UsersAggregateOrderBy>;
 };
 
 /** primary key columns input for table: users */
@@ -21726,6 +29276,10 @@ export type UsersRoleBackupUpdates = {
 /** select columns of table "users" */
 export type UsersSelectColumn =
   /** column name */
+  | 'address'
+  /** column name */
+  | 'bio'
+  /** column name */
   | 'clerkUserId'
   /** column name */
   | 'createdAt'
@@ -21733,6 +29287,8 @@ export type UsersSelectColumn =
   | 'deactivatedAt'
   /** column name */
   | 'deactivatedBy'
+  /** column name */
+  | 'defaultAdminTimePercentage'
   /** column name */
   | 'email'
   /** column name */
@@ -21747,6 +29303,10 @@ export type UsersSelectColumn =
   | 'managerId'
   /** column name */
   | 'name'
+  /** column name */
+  | 'phone'
+  /** column name */
+  | 'position'
   /** column name */
   | 'role'
   /** column name */
@@ -21781,12 +29341,18 @@ export type UsersSelectColumnUsersAggregateBoolExpBool_OrArgumentsColumns =
 
 /** input type for updating data in table "users" */
 export type UsersSetInput = {
+  /** User address or location */
+  address?: InputMaybe<Scalars['String']['input']>;
+  /** User biography or description */
+  bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
   /** Unique identifier for the user */
@@ -21800,6 +29366,10 @@ export type UsersSetInput = {
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   /** User's full name */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** User contact phone number */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** Organizational position affecting admin time allocation */
+  position?: InputMaybe<Scalars['user_position']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
   /** Current user status - must be consistent with isActive field */
@@ -21814,6 +29384,45 @@ export type UsersSetInput = {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User's unique username for login */
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type UsersStddevFields = {
+  __typename?: 'usersStddevFields';
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "users" */
+export type UsersStddevOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevPop on columns */
+export type UsersStddevPopFields = {
+  __typename?: 'usersStddevPopFields';
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevPop() on columns of table "users" */
+export type UsersStddevPopOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevSamp on columns */
+export type UsersStddevSampFields = {
+  __typename?: 'usersStddevSampFields';
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevSamp() on columns of table "users" */
+export type UsersStddevSampOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "users" */
@@ -21826,12 +29435,18 @@ export type UsersStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type UsersStreamCursorValueInput = {
+  /** User address or location */
+  address?: InputMaybe<Scalars['String']['input']>;
+  /** User biography or description */
+  bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
   /** Unique identifier for the user */
@@ -21845,6 +29460,10 @@ export type UsersStreamCursorValueInput = {
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   /** User's full name */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** User contact phone number */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** Organizational position affecting admin time allocation */
+  position?: InputMaybe<Scalars['user_position']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
   /** Current user status - must be consistent with isActive field */
@@ -21861,8 +29480,25 @@ export type UsersStreamCursorValueInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** aggregate sum on columns */
+export type UsersSumFields = {
+  __typename?: 'usersSumFields';
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** order by sum() on columns of table "users" */
+export type UsersSumOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
 /** update columns of table "users" */
 export type UsersUpdateColumn =
+  /** column name */
+  | 'address'
+  /** column name */
+  | 'bio'
   /** column name */
   | 'clerkUserId'
   /** column name */
@@ -21871,6 +29507,8 @@ export type UsersUpdateColumn =
   | 'deactivatedAt'
   /** column name */
   | 'deactivatedBy'
+  /** column name */
+  | 'defaultAdminTimePercentage'
   /** column name */
   | 'email'
   /** column name */
@@ -21885,6 +29523,10 @@ export type UsersUpdateColumn =
   | 'managerId'
   /** column name */
   | 'name'
+  /** column name */
+  | 'phone'
+  /** column name */
+  | 'position'
   /** column name */
   | 'role'
   /** column name */
@@ -21902,126 +29544,197 @@ export type UsersUpdateColumn =
   | '%future added value';
 
 export type UsersUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<UsersIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<UsersSetInput>;
   /** filter the rows which have to be updated */
   where: UsersBoolExp;
 };
 
+/** aggregate varPop on columns */
+export type UsersVarPopFields = {
+  __typename?: 'usersVarPopFields';
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varPop() on columns of table "users" */
+export type UsersVarPopOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
+/** aggregate varSamp on columns */
+export type UsersVarSampFields = {
+  __typename?: 'usersVarSampFields';
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varSamp() on columns of table "users" */
+export type UsersVarSampOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
+/** aggregate variance on columns */
+export type UsersVarianceFields = {
+  __typename?: 'usersVarianceFields';
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "users" */
+export type UsersVarianceOrderBy = {
+  /** Default admin time percentage for this user */
+  defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+};
+
 /** columns and relationships of "work_schedule" */
-export type WorkSchedules = {
-  __typename?: 'workSchedules';
+export type WorkSchedule = {
+  __typename?: 'workSchedule';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['numeric']['output']>;
   /** Timestamp when the schedule entry was created */
   createdAt?: Maybe<Scalars['timestamp']['output']>;
   /** Unique identifier for the work schedule entry */
   id: Scalars['uuid']['output'];
-  /** An object relationship */
-  scheduleOwner: Users;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['numeric']['output']>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: Maybe<Scalars['timestamp']['output']>;
+  /** An object relationship */
+  user: Users;
   /** Reference to the user this schedule belongs to */
   userId: Scalars['uuid']['output'];
+  /** Whether to use position-based default admin time or custom override */
+  usesDefaultAdminTime?: Maybe<Scalars['Boolean']['output']>;
   /** Day of the week (Monday, Tuesday, etc.) */
   workDay: Scalars['String']['output'];
   /** Number of hours worked on this day */
   workHours: Scalars['numeric']['output'];
-  /** An object relationship */
-  workScheduleUser: Users;
 };
 
 /** aggregated selection of "work_schedule" */
-export type WorkSchedulesAggregate = {
-  __typename?: 'workSchedulesAggregate';
-  aggregate?: Maybe<WorkSchedulesAggregateFields>;
-  nodes: Array<WorkSchedules>;
+export type WorkScheduleAggregate = {
+  __typename?: 'workScheduleAggregate';
+  aggregate?: Maybe<WorkScheduleAggregateFields>;
+  nodes: Array<WorkSchedule>;
 };
 
-export type WorkSchedulesAggregateBoolExp = {
-  count?: InputMaybe<WorkSchedulesAggregateBoolExpCount>;
+export type WorkScheduleAggregateBoolExp = {
+  bool_and?: InputMaybe<WorkScheduleAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<WorkScheduleAggregateBoolExpBool_Or>;
+  count?: InputMaybe<WorkScheduleAggregateBoolExpCount>;
 };
 
-export type WorkSchedulesAggregateBoolExpCount = {
-  arguments?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
+export type WorkScheduleAggregateBoolExpBool_And = {
+  arguments: WorkScheduleSelectColumnWorkScheduleAggregateBoolExpBool_AndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
-  filter?: InputMaybe<WorkSchedulesBoolExp>;
+  filter?: InputMaybe<WorkScheduleBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type WorkScheduleAggregateBoolExpBool_Or = {
+  arguments: WorkScheduleSelectColumnWorkScheduleAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<WorkScheduleBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type WorkScheduleAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<WorkScheduleSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<WorkScheduleBoolExp>;
   predicate: IntComparisonExp;
 };
 
 /** aggregate fields of "work_schedule" */
-export type WorkSchedulesAggregateFields = {
-  __typename?: 'workSchedulesAggregateFields';
-  avg?: Maybe<WorkSchedulesAvgFields>;
+export type WorkScheduleAggregateFields = {
+  __typename?: 'workScheduleAggregateFields';
+  avg?: Maybe<WorkScheduleAvgFields>;
   count: Scalars['Int']['output'];
-  max?: Maybe<WorkSchedulesMaxFields>;
-  min?: Maybe<WorkSchedulesMinFields>;
-  stddev?: Maybe<WorkSchedulesStddevFields>;
-  stddevPop?: Maybe<WorkSchedulesStddevPopFields>;
-  stddevSamp?: Maybe<WorkSchedulesStddevSampFields>;
-  sum?: Maybe<WorkSchedulesSumFields>;
-  varPop?: Maybe<WorkSchedulesVarPopFields>;
-  varSamp?: Maybe<WorkSchedulesVarSampFields>;
-  variance?: Maybe<WorkSchedulesVarianceFields>;
+  max?: Maybe<WorkScheduleMaxFields>;
+  min?: Maybe<WorkScheduleMinFields>;
+  stddev?: Maybe<WorkScheduleStddevFields>;
+  stddevPop?: Maybe<WorkScheduleStddevPopFields>;
+  stddevSamp?: Maybe<WorkScheduleStddevSampFields>;
+  sum?: Maybe<WorkScheduleSumFields>;
+  varPop?: Maybe<WorkScheduleVarPopFields>;
+  varSamp?: Maybe<WorkScheduleVarSampFields>;
+  variance?: Maybe<WorkScheduleVarianceFields>;
 };
 
 
 /** aggregate fields of "work_schedule" */
-export type WorkSchedulesAggregateFieldsCountArgs = {
-  columns?: InputMaybe<Array<WorkSchedulesSelectColumn>>;
+export type WorkScheduleAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<WorkScheduleSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** order by aggregate values of table "work_schedule" */
-export type WorkSchedulesAggregateOrderBy = {
-  avg?: InputMaybe<WorkSchedulesAvgOrderBy>;
+export type WorkScheduleAggregateOrderBy = {
+  avg?: InputMaybe<WorkScheduleAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
-  max?: InputMaybe<WorkSchedulesMaxOrderBy>;
-  min?: InputMaybe<WorkSchedulesMinOrderBy>;
-  stddev?: InputMaybe<WorkSchedulesStddevOrderBy>;
-  stddevPop?: InputMaybe<WorkSchedulesStddevPopOrderBy>;
-  stddevSamp?: InputMaybe<WorkSchedulesStddevSampOrderBy>;
-  sum?: InputMaybe<WorkSchedulesSumOrderBy>;
-  varPop?: InputMaybe<WorkSchedulesVarPopOrderBy>;
-  varSamp?: InputMaybe<WorkSchedulesVarSampOrderBy>;
-  variance?: InputMaybe<WorkSchedulesVarianceOrderBy>;
+  max?: InputMaybe<WorkScheduleMaxOrderBy>;
+  min?: InputMaybe<WorkScheduleMinOrderBy>;
+  stddev?: InputMaybe<WorkScheduleStddevOrderBy>;
+  stddevPop?: InputMaybe<WorkScheduleStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<WorkScheduleStddevSampOrderBy>;
+  sum?: InputMaybe<WorkScheduleSumOrderBy>;
+  varPop?: InputMaybe<WorkScheduleVarPopOrderBy>;
+  varSamp?: InputMaybe<WorkScheduleVarSampOrderBy>;
+  variance?: InputMaybe<WorkScheduleVarianceOrderBy>;
 };
 
 /** input type for inserting array relation for remote table "work_schedule" */
-export type WorkSchedulesArrRelInsertInput = {
-  data: Array<WorkSchedulesInsertInput>;
+export type WorkScheduleArrRelInsertInput = {
+  data: Array<WorkScheduleInsertInput>;
   /** upsert condition */
-  onConflict?: InputMaybe<WorkSchedulesOnConflict>;
+  onConflict?: InputMaybe<WorkScheduleOnConflict>;
 };
 
 /** aggregate avg on columns */
-export type WorkSchedulesAvgFields = {
-  __typename?: 'workSchedulesAvgFields';
+export type WorkScheduleAvgFields = {
+  __typename?: 'workScheduleAvgFields';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
   /** Number of hours worked on this day */
   workHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by avg() on columns of table "work_schedule" */
-export type WorkSchedulesAvgOrderBy = {
+export type WorkScheduleAvgOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to filter rows from the table "work_schedule". All fields are combined with a logical 'AND'. */
-export type WorkSchedulesBoolExp = {
-  _and?: InputMaybe<Array<WorkSchedulesBoolExp>>;
-  _not?: InputMaybe<WorkSchedulesBoolExp>;
-  _or?: InputMaybe<Array<WorkSchedulesBoolExp>>;
+export type WorkScheduleBoolExp = {
+  _and?: InputMaybe<Array<WorkScheduleBoolExp>>;
+  _not?: InputMaybe<WorkScheduleBoolExp>;
+  _or?: InputMaybe<Array<WorkScheduleBoolExp>>;
+  adminTimeHours?: InputMaybe<NumericComparisonExp>;
   createdAt?: InputMaybe<TimestampComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
-  scheduleOwner?: InputMaybe<UsersBoolExp>;
+  payrollCapacityHours?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestampComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
   userId?: InputMaybe<UuidComparisonExp>;
+  usesDefaultAdminTime?: InputMaybe<BooleanComparisonExp>;
   workDay?: InputMaybe<StringComparisonExp>;
   workHours?: InputMaybe<NumericComparisonExp>;
-  workScheduleUser?: InputMaybe<UsersBoolExp>;
 };
 
 /** unique or primary key constraints on table "work_schedule" */
-export type WorkSchedulesConstraint =
+export type WorkScheduleConstraint =
   /** unique or primary key constraint on columns "user_id", "work_day" */
   | 'unique_user_work_day'
   /** unique or primary key constraint on columns "id" */
@@ -22029,36 +29742,49 @@ export type WorkSchedulesConstraint =
   | '%future added value';
 
 /** input type for incrementing numeric columns in table "work_schedule" */
-export type WorkSchedulesIncInput = {
+export type WorkScheduleIncInput = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<Scalars['numeric']['input']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** input type for inserting data into table "work_schedule" */
-export type WorkSchedulesInsertInput = {
+export type WorkScheduleInsertInput = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Unique identifier for the work schedule entry */
   id?: InputMaybe<Scalars['uuid']['input']>;
-  scheduleOwner?: InputMaybe<UsersObjRelInsertInput>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
   /** Reference to the user this schedule belongs to */
   userId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether to use position-based default admin time or custom override */
+  usesDefaultAdminTime?: InputMaybe<Scalars['Boolean']['input']>;
   /** Day of the week (Monday, Tuesday, etc.) */
   workDay?: InputMaybe<Scalars['String']['input']>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<Scalars['numeric']['input']>;
-  workScheduleUser?: InputMaybe<UsersObjRelInsertInput>;
 };
 
 /** aggregate max on columns */
-export type WorkSchedulesMaxFields = {
-  __typename?: 'workSchedulesMaxFields';
+export type WorkScheduleMaxFields = {
+  __typename?: 'workScheduleMaxFields';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['numeric']['output']>;
   /** Timestamp when the schedule entry was created */
   createdAt?: Maybe<Scalars['timestamp']['output']>;
   /** Unique identifier for the work schedule entry */
   id?: Maybe<Scalars['uuid']['output']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['numeric']['output']>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: Maybe<Scalars['timestamp']['output']>;
   /** Reference to the user this schedule belongs to */
@@ -22070,11 +29796,15 @@ export type WorkSchedulesMaxFields = {
 };
 
 /** order by max() on columns of table "work_schedule" */
-export type WorkSchedulesMaxOrderBy = {
+export type WorkScheduleMaxOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Unique identifier for the work schedule entry */
   id?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: InputMaybe<OrderBy>;
   /** Reference to the user this schedule belongs to */
@@ -22086,12 +29816,16 @@ export type WorkSchedulesMaxOrderBy = {
 };
 
 /** aggregate min on columns */
-export type WorkSchedulesMinFields = {
-  __typename?: 'workSchedulesMinFields';
+export type WorkScheduleMinFields = {
+  __typename?: 'workScheduleMinFields';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['numeric']['output']>;
   /** Timestamp when the schedule entry was created */
   createdAt?: Maybe<Scalars['timestamp']['output']>;
   /** Unique identifier for the work schedule entry */
   id?: Maybe<Scalars['uuid']['output']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['numeric']['output']>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: Maybe<Scalars['timestamp']['output']>;
   /** Reference to the user this schedule belongs to */
@@ -22103,11 +29837,15 @@ export type WorkSchedulesMinFields = {
 };
 
 /** order by min() on columns of table "work_schedule" */
-export type WorkSchedulesMinOrderBy = {
+export type WorkScheduleMinOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Unique identifier for the work schedule entry */
   id?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: InputMaybe<OrderBy>;
   /** Reference to the user this schedule belongs to */
@@ -22119,65 +29857,91 @@ export type WorkSchedulesMinOrderBy = {
 };
 
 /** response of any mutation on the table "work_schedule" */
-export type WorkSchedulesMutationResponse = {
-  __typename?: 'workSchedulesMutationResponse';
+export type WorkScheduleMutationResponse = {
+  __typename?: 'workScheduleMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
-  returning: Array<WorkSchedules>;
+  returning: Array<WorkSchedule>;
 };
 
 /** on_conflict condition type for table "work_schedule" */
-export type WorkSchedulesOnConflict = {
-  constraint: WorkSchedulesConstraint;
-  updateColumns?: Array<WorkSchedulesUpdateColumn>;
-  where?: InputMaybe<WorkSchedulesBoolExp>;
+export type WorkScheduleOnConflict = {
+  constraint: WorkScheduleConstraint;
+  updateColumns?: Array<WorkScheduleUpdateColumn>;
+  where?: InputMaybe<WorkScheduleBoolExp>;
 };
 
 /** Ordering options when selecting data from "work_schedule". */
-export type WorkSchedulesOrderBy = {
+export type WorkScheduleOrderBy = {
+  adminTimeHours?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
-  scheduleOwner?: InputMaybe<UsersOrderBy>;
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
   userId?: InputMaybe<OrderBy>;
+  usesDefaultAdminTime?: InputMaybe<OrderBy>;
   workDay?: InputMaybe<OrderBy>;
   workHours?: InputMaybe<OrderBy>;
-  workScheduleUser?: InputMaybe<UsersOrderBy>;
 };
 
 /** primary key columns input for table: work_schedule */
-export type WorkSchedulesPkColumnsInput = {
+export type WorkSchedulePkColumnsInput = {
   /** Unique identifier for the work schedule entry */
   id: Scalars['uuid']['input'];
 };
 
 /** select columns of table "work_schedule" */
-export type WorkSchedulesSelectColumn =
+export type WorkScheduleSelectColumn =
+  /** column name */
+  | 'adminTimeHours'
   /** column name */
   | 'createdAt'
   /** column name */
   | 'id'
   /** column name */
+  | 'payrollCapacityHours'
+  /** column name */
   | 'updatedAt'
   /** column name */
   | 'userId'
+  /** column name */
+  | 'usesDefaultAdminTime'
   /** column name */
   | 'workDay'
   /** column name */
   | 'workHours'
   | '%future added value';
 
+/** select "workScheduleAggregateBoolExpBool_andArgumentsColumns" columns of table "work_schedule" */
+export type WorkScheduleSelectColumnWorkScheduleAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'usesDefaultAdminTime'
+  | '%future added value';
+
+/** select "workScheduleAggregateBoolExpBool_orArgumentsColumns" columns of table "work_schedule" */
+export type WorkScheduleSelectColumnWorkScheduleAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'usesDefaultAdminTime'
+  | '%future added value';
+
 /** input type for updating data in table "work_schedule" */
-export type WorkSchedulesSetInput = {
+export type WorkScheduleSetInput = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Unique identifier for the work schedule entry */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Reference to the user this schedule belongs to */
   userId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether to use position-based default admin time or custom override */
+  usesDefaultAdminTime?: InputMaybe<Scalars['Boolean']['input']>;
   /** Day of the week (Monday, Tuesday, etc.) */
   workDay?: InputMaybe<Scalars['String']['input']>;
   /** Number of hours worked on this day */
@@ -22185,62 +29949,92 @@ export type WorkSchedulesSetInput = {
 };
 
 /** aggregate stddev on columns */
-export type WorkSchedulesStddevFields = {
-  __typename?: 'workSchedulesStddevFields';
+export type WorkScheduleStddevFields = {
+  __typename?: 'workScheduleStddevFields';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
   /** Number of hours worked on this day */
   workHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddev() on columns of table "work_schedule" */
-export type WorkSchedulesStddevOrderBy = {
+export type WorkScheduleStddevOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** aggregate stddevPop on columns */
-export type WorkSchedulesStddevPopFields = {
-  __typename?: 'workSchedulesStddevPopFields';
+export type WorkScheduleStddevPopFields = {
+  __typename?: 'workScheduleStddevPopFields';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
   /** Number of hours worked on this day */
   workHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddevPop() on columns of table "work_schedule" */
-export type WorkSchedulesStddevPopOrderBy = {
+export type WorkScheduleStddevPopOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** aggregate stddevSamp on columns */
-export type WorkSchedulesStddevSampFields = {
-  __typename?: 'workSchedulesStddevSampFields';
+export type WorkScheduleStddevSampFields = {
+  __typename?: 'workScheduleStddevSampFields';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
   /** Number of hours worked on this day */
   workHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddevSamp() on columns of table "work_schedule" */
-export type WorkSchedulesStddevSampOrderBy = {
+export type WorkScheduleStddevSampOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
-/** Streaming cursor of the table "workSchedules" */
-export type WorkSchedulesStreamCursorInput = {
+/** Streaming cursor of the table "workSchedule" */
+export type WorkScheduleStreamCursorInput = {
   /** Stream column input with initial value */
-  initialValue: WorkSchedulesStreamCursorValueInput;
+  initialValue: WorkScheduleStreamCursorValueInput;
   /** cursor ordering */
   ordering?: InputMaybe<CursorOrdering>;
 };
 
 /** Initial value of the column from where the streaming should start */
-export type WorkSchedulesStreamCursorValueInput = {
+export type WorkScheduleStreamCursorValueInput = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was created */
   createdAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Unique identifier for the work schedule entry */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<Scalars['numeric']['input']>;
   /** Timestamp when the schedule entry was last updated */
   updatedAt?: InputMaybe<Scalars['timestamp']['input']>;
   /** Reference to the user this schedule belongs to */
   userId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether to use position-based default admin time or custom override */
+  usesDefaultAdminTime?: InputMaybe<Scalars['Boolean']['input']>;
   /** Day of the week (Monday, Tuesday, etc.) */
   workDay?: InputMaybe<Scalars['String']['input']>;
   /** Number of hours worked on this day */
@@ -22248,78 +30042,116 @@ export type WorkSchedulesStreamCursorValueInput = {
 };
 
 /** aggregate sum on columns */
-export type WorkSchedulesSumFields = {
-  __typename?: 'workSchedulesSumFields';
+export type WorkScheduleSumFields = {
+  __typename?: 'workScheduleSumFields';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['numeric']['output']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['numeric']['output']>;
   /** Number of hours worked on this day */
   workHours?: Maybe<Scalars['numeric']['output']>;
 };
 
 /** order by sum() on columns of table "work_schedule" */
-export type WorkSchedulesSumOrderBy = {
+export type WorkScheduleSumOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "work_schedule" */
-export type WorkSchedulesUpdateColumn =
+export type WorkScheduleUpdateColumn =
+  /** column name */
+  | 'adminTimeHours'
   /** column name */
   | 'createdAt'
   /** column name */
   | 'id'
   /** column name */
+  | 'payrollCapacityHours'
+  /** column name */
   | 'updatedAt'
   /** column name */
   | 'userId'
+  /** column name */
+  | 'usesDefaultAdminTime'
   /** column name */
   | 'workDay'
   /** column name */
   | 'workHours'
   | '%future added value';
 
-export type WorkSchedulesUpdates = {
+export type WorkScheduleUpdates = {
   /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<WorkSchedulesIncInput>;
+  _inc?: InputMaybe<WorkScheduleIncInput>;
   /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<WorkSchedulesSetInput>;
+  _set?: InputMaybe<WorkScheduleSetInput>;
   /** filter the rows which have to be updated */
-  where: WorkSchedulesBoolExp;
+  where: WorkScheduleBoolExp;
 };
 
 /** aggregate varPop on columns */
-export type WorkSchedulesVarPopFields = {
-  __typename?: 'workSchedulesVarPopFields';
+export type WorkScheduleVarPopFields = {
+  __typename?: 'workScheduleVarPopFields';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
   /** Number of hours worked on this day */
   workHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by varPop() on columns of table "work_schedule" */
-export type WorkSchedulesVarPopOrderBy = {
+export type WorkScheduleVarPopOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** aggregate varSamp on columns */
-export type WorkSchedulesVarSampFields = {
-  __typename?: 'workSchedulesVarSampFields';
+export type WorkScheduleVarSampFields = {
+  __typename?: 'workScheduleVarSampFields';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
   /** Number of hours worked on this day */
   workHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by varSamp() on columns of table "work_schedule" */
-export type WorkSchedulesVarSampOrderBy = {
+export type WorkScheduleVarSampOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
 
 /** aggregate variance on columns */
-export type WorkSchedulesVarianceFields = {
-  __typename?: 'workSchedulesVarianceFields';
+export type WorkScheduleVarianceFields = {
+  __typename?: 'workScheduleVarianceFields';
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: Maybe<Scalars['Float']['output']>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: Maybe<Scalars['Float']['output']>;
   /** Number of hours worked on this day */
   workHours?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by variance() on columns of table "work_schedule" */
-export type WorkSchedulesVarianceOrderBy = {
+export type WorkScheduleVarianceOrderBy = {
+  /** Hours allocated to administrative tasks */
+  adminTimeHours?: InputMaybe<OrderBy>;
+  /** Hours available for payroll processing (work_hours - admin_time_hours) */
+  payrollCapacityHours?: InputMaybe<OrderBy>;
   /** Number of hours worked on this day */
   workHours?: InputMaybe<OrderBy>;
 };
@@ -22332,9 +30164,9 @@ export type UserBasicFragment = { __typename?: 'users', createdAt?: string | nul
 
 export type UserBaseFragment = { __typename?: 'users', createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string };
 
-export type UserWithRoleFragment = { __typename?: 'users', createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, assignedRoles: Array<{ __typename?: 'userRoles', assignedRole: { __typename?: 'roles', id: string, name: string, displayName: string } }> };
+export type UserWithRoleFragment = { __typename?: 'users', username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string };
 
-export type UserProfileFragment = { __typename?: 'users', username?: string | null, clerkUserId?: string | null, image?: string | null, isStaff?: boolean | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null, assignedRoles: Array<{ __typename?: 'userRoles', assignedRole: { __typename?: 'roles', id: string, name: string, displayName: string } }> };
+export type UserProfileFragment = { __typename?: 'users', clerkUserId?: string | null, image?: string | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null };
 
 export type UserSearchResultFragment = { __typename?: 'users', username?: string | null, isStaff?: boolean | null, role: any, isActive?: boolean | null, id: string, name: string, email: string };
 
@@ -22412,7 +30244,7 @@ export type GetCurrentUserQueryVariables = Exact<{
 }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'query_root', user?: { __typename?: 'users', username?: string | null, clerkUserId?: string | null, image?: string | null, isStaff?: boolean | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null, assignedRoles: Array<{ __typename?: 'userRoles', assignedRole: { __typename?: 'roles', id: string, name: string, displayName: string } }> } | null };
+export type GetCurrentUserQuery = { __typename?: 'query_root', user?: { __typename?: 'users', clerkUserId?: string | null, image?: string | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
 
 export type GetUsersForDropdownQueryVariables = Exact<{
   role?: InputMaybe<Scalars['user_role']['input']>;
@@ -22463,8 +30295,8 @@ export const UserMinimalFragmentDoc = {"kind":"Document","definitions":[{"kind":
 export const UserCoreSharedFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<UserCoreSharedFragment, unknown>;
 export const UserBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserBasicFragment, unknown>;
 export const UserBaseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserBaseFragment, unknown>;
-export const UserWithRoleFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithRoleFragment, unknown>;
-export const UserProfileFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}}]} as unknown as DocumentNode<UserProfileFragment, unknown>;
+export const UserWithRoleFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithRoleFragment, unknown>;
+export const UserProfileFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserProfileFragment, unknown>;
 export const UserSearchResultFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSearchResult"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserSearchResultFragment, unknown>;
 export const ClientMinimalFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<ClientMinimalFragment, unknown>;
 export const ClientBaseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"contactPerson"}},{"kind":"Field","name":{"kind":"Name","value":"contactPhone"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<ClientBaseFragment, unknown>;
@@ -22490,7 +30322,7 @@ export const RefreshDataDocument = {"kind":"Document","definitions":[{"kind":"Op
 export const GetDashboardMetricsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardMetrics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrollsAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_nin"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Completed","block":false},{"kind":"StringValue","value":"Failed","block":false}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalEmployeesAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcomingPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_nin"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Completed","block":false},{"kind":"StringValue","value":"Failed","block":false},{"kind":"StringValue","value":"Cancelled","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetDashboardMetricsQuery, GetDashboardMetricsQueryVariables>;
 export const GetDashboardStatsOptimizedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardStatsOptimized"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalPayrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcomingPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetDashboardStatsOptimizedQuery, GetDashboardStatsOptimizedQueryVariables>;
 export const GetClientsDashboardStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientsDashboardStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"activeClientsCount"},"name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalPayrollsCount"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalEmployeesSum"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"clientsNeedingAttention"},"name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrolls"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetClientsDashboardStatsQuery, GetClientsDashboardStatsQueryVariables>;
-export const GetCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"user"},"name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"assignedRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assignedRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
+export const GetCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"user"},"name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
 export const GetUsersForDropdownDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersForDropdown"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"user_role"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetUsersForDropdownQuery, GetUsersForDropdownQueryVariables>;
 export const GetSystemHealthDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSystemHealth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"databaseHealth"},"name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"recentActivity"},"name":{"kind":"Name","value":"auditLogsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '1 hour'","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetSystemHealthQuery, GetSystemHealthQueryVariables>;
 export const GlobalSearchDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GlobalSearch"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"contactEmail"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"client"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<GlobalSearchQuery, GlobalSearchQueryVariables>;

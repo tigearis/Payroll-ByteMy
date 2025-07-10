@@ -1,10 +1,371 @@
-# Billing Domain Queries - TEMPORARILY DISABLED FOR SCHEMA FIXES
-# Security Classification: HIGH - Financial and billing data
-# SOC2 Compliance: Row-level security and audit logging enforced
+# Core Billing Queries - Enhanced Semi-Automated System
 
-# Placeholder query to keep file valid during schema fixes
-query PlaceholderBillingQuery {
-  billingInvoice(limit: 1) {
+# Staff Performance Queries
+query GetStaffBillingPerformance($staffId: uuid, $dateFrom: date, $dateTo: date) {
+  staff_billing_performance: users(
+    where: {
+      _and: [
+        { id: { _eq: $staffId } }
+        { isActive: { _eq: true } }
+      ]
+    }
+  ) {
     id
+    name
+    email
+    totalBilledHours: primaryConsultantPayrollsAggregate {
+      aggregate {
+        sum {
+          actualHours
+        }
+      }
+    }
+    totalRevenue: primaryConsultantPayrollsAggregate {
+      aggregate {
+        sum {
+          estimatedRevenue
+        }
+      }
+    }
+  }
+}
+
+# Client Profitability Queries
+query GetClientProfitability($clientId: uuid, $dateFrom: date, $dateTo: date) {
+  client_profitability: clients(
+    where: { id: { _eq: $clientId } }
+  ) {
+    id
+    name
+    totalRevenue: payrollsAggregate {
+      aggregate {
+        sum {
+          estimatedRevenue
+        }
+      }
+    }
+    totalCosts: payrollsAggregate {
+      aggregate {
+        sum {
+          actualHours
+        }
+      }
+    }
+    profitability: payrolls {
+      id
+      name
+      estimatedRevenue
+      actualHours
+      status
+    }
+  }
+}
+
+# Time Entry Queries - Using payroll data as placeholder
+query GetTimeEntries($payrollId: uuid, $userId: uuid) {
+  timeEntries: payrolls(
+    where: { 
+      id: { _eq: $payrollId }
+    }
+  ) {
+    id
+    name
+    actualHours
+    estimatedHours
+    status
+  }
+}
+
+# Time Entry Queries - Placeholder (time_entries table not yet implemented)  
+# query GetTimeEntries($payrollId: uuid, $userId: uuid) {
+#   timeEntries: timeEntries(
+#     where: {
+#       _and: [
+#         { payrollId: { _eq: $payrollId } }
+#         { userId: { _eq: $userId } }
+#       ]
+#     }
+#     orderBy: { date: ASC }
+#   ) {
+#     id
+#     date
+#     hours
+#     description
+#     billableHours
+#     rate
+#     amount
+#   }
+# }
+
+# Payroll Billing Queries
+query GetPayrollForBilling($payrollId: uuid!) {
+  payrollById(id: $payrollId) {
+    id
+    name
+    status
+    employeeCount
+    processingTime
+    processingDaysBeforeEft
+    clientId
+    primaryConsultantUserId
+    backupConsultantUserId
+    managerUserId
+    client {
+      id
+      name
+    }
+    payrollDates {
+      id
+      originalEftDate
+      adjustedEftDate
+      notes
+    }
+  }
+}
+
+query GetClientServicesWithRates($clientId: uuid!) {
+  clientBillingAssignments(
+    where: { 
+      clientId: { _eq: $clientId }
+      isActive: { _eq: true }
+    }
+  ) {
+    id
+    billingPlanId
+    clientId
+    customRate
+    billingFrequency
+    isActive
+    effectiveDate
+    assignedBillingPlan {
+      id
+      name
+      description
+      standardRate
+      billingUnit
+      category
+    }
+  }
+}
+
+# Service Catalog Queries
+query GetServiceCatalog($category: String, $isActive: Boolean) {
+  billingPlans(
+    where: { 
+      category: { _ilike: $category }
+      isActive: { _eq: $isActive } 
+    }
+    orderBy: { category: ASC, name: ASC }
+  ) {
+    id
+    name
+    description
+    standardRate
+    billingUnit
+    category
+    isActive
+    currency
+    createdAt
+    updatedAt
+  }
+}
+
+query GetServiceById($id: uuid!) {
+  billingPlanById(id: $id) {
+    id
+    name
+    description
+    standardRate
+    billingUnit
+    category
+    isActive
+    currency
+    createdAt
+    updatedAt
+  }
+}
+
+# Client Service Agreement Queries
+query GetClientServiceAgreements($clientId: uuid!) {
+  clientBillingAssignments(
+    where: { 
+      clientId: { _eq: $clientId }
+      isActive: { _eq: true }
+      isEnabled: { _eq: true }
+    }
+    orderBy: { createdAt: ASC }
+  ) {
+    id
+    clientId
+    billingPlanId
+    customRate
+    billingFrequency
+    effectiveDate
+    isEnabled
+    isActive
+    startDate
+    endDate
+    createdAt
+    updatedAt
+    assignedBillingPlan {
+      id
+      name
+      description
+      standardRate
+      billingUnit
+      category
+      isActive
+    }
+  }
+}
+
+# Billing Items Queries
+query GetBillingItemsByPayroll($payrollId: uuid!) {
+  billingItems(
+    where: { payrollId: { _eq: $payrollId } }
+    orderBy: { createdAt: ASC }
+  ) {
+    id
+    invoiceId
+    description
+    quantity
+    amount
+    payrollId
+    billingPlanId
+    clientId
+    staffUserId
+    serviceName
+    hourlyRate
+    isApproved
+    approvalDate
+    approvedBy
+    createdAt
+  }
+}
+
+query GetBillingItemsByClient($clientId: uuid!) {
+  billingItems(
+    where: { clientId: { _eq: $clientId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    invoiceId
+    description
+    quantity
+    amount
+    payrollId
+    billingPlanId
+    clientId
+    staffUserId
+    serviceName
+    hourlyRate
+    isApproved
+    approvalDate
+    approvedBy
+    createdAt
+  }
+}
+
+# Time Entries Queries
+query GetTimeEntriesByPayroll($payrollId: uuid!) {
+  timeEntries(
+    where: { payrollId: { _eq: $payrollId } }
+    orderBy: { workDate: ASC }
+  ) {
+    id
+    staffUserId
+    clientId
+    payrollId
+    billingItemId
+    workDate
+    hoursSpent
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+query GetTimeEntriesByStaff($staffUserId: uuid!, $startDate: date, $endDate: date) {
+  timeEntries(
+    where: { 
+      staffUserId: { _eq: $staffUserId }
+      workDate: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: { workDate: DESC }
+  ) {
+    id
+    staffUserId
+    clientId
+    payrollId
+    billingItemId
+    workDate
+    hoursSpent
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+# Payroll Billing Queries
+query GetPayrollWithBillingData($payrollId: uuid!) {
+  payrollById(id: $payrollId) {
+    id
+    name
+    clientId
+    employeeCount
+    billingStatus
+    estimatedRevenue
+    actualRevenue
+    estimatedHours
+    actualHours
+    profitMargin
+    lastBilledDate
+    createdAt
+    updatedAt
+    client {
+      id
+      name
+    }
+    billingItems {
+      id
+      description
+      quantity
+      amount
+      serviceName
+      hourlyRate
+      isApproved
+    }
+    timeEntries {
+      id
+      staffUserId
+      workDate
+      hoursSpent
+      description
+    }
+  }
+}
+
+# Profitability Analytics
+query GetPayrollProfitability($startDate: timestamptz, $endDate: timestamptz) {
+  payrolls(
+    where: {
+      createdAt: { _gte: $startDate, _lte: $endDate }
+      billingStatus: { _neq: "not_started" }
+    }
+    orderBy: { profitMargin: DESC }
+  ) {
+    id
+    name
+    clientId
+    estimatedRevenue
+    actualRevenue
+    estimatedHours
+    actualHours
+    profitMargin
+    billingStatus
+    client {
+      id
+      name
+    }
   }
 }

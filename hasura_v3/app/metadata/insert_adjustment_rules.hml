@@ -1,0 +1,113 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_adjustment_rules_object
+  fields:
+    - name: created_at
+      type: timestamptz
+      description: Timestamp when the rule was created
+    - name: cycle_id
+      type: uuid!
+      description: Reference to the payroll cycle this rule applies to
+    - name: date_type_id
+      type: uuid!
+      description: Reference to the payroll date type this rule affects
+    - name: id
+      type: uuid
+      description: Unique identifier for the adjustment rule
+    - name: rule_code
+      type: string!
+      description: Code/formula used to calculate date adjustments
+    - name: rule_description
+      type: string!
+      description: Human-readable description of the adjustment rule
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the rule was last updated
+  graphql:
+    typeName: insert_adjustment_rules_object
+    inputTypeName: insert_adjustment_rules_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_adjustment_rules_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_adjustment_rules_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - cycle_id
+          - date_type_id
+          - id
+          - rule_code
+          - rule_description
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_adjustment_rules_response
+  description: Responses from the 'insert_adjustment_rules' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[adjustment_rules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_adjustment_rules_response
+    inputTypeName: insert_adjustment_rules_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_adjustment_rules_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_adjustment_rules_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_adjustment_rules
+  outputType: insert_adjustment_rules_response!
+  arguments:
+    - name: objects
+      type: "[insert_adjustment_rules_object!]!"
+    - name: post_check
+      type: adjustment_rules_bool_exp
+      description: Insert permission predicate over the 'adjustment_rules' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_adjustment_rules
+  graphql:
+    rootFieldName: insert_adjustment_rules
+    rootFieldKind: Mutation
+  description: Insert into the adjustment_rules table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_adjustment_rules
+  permissions:
+    - role: admin
+      allowExecution: true
+

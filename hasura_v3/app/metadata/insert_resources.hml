@@ -1,0 +1,103 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_resources_object
+  fields:
+    - name: created_at
+      type: timestamptz
+    - name: description
+      type: string
+    - name: display_name
+      type: string!
+    - name: id
+      type: uuid
+    - name: name
+      type: string!
+    - name: updated_at
+      type: timestamptz
+  graphql:
+    typeName: insert_resources_object
+    inputTypeName: insert_resources_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_resources_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_resources_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - description
+          - display_name
+          - id
+          - name
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_resources_response
+  description: Responses from the 'insert_resources' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[resources!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_resources_response
+    inputTypeName: insert_resources_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_resources_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_resources_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_resources
+  outputType: insert_resources_response!
+  arguments:
+    - name: objects
+      type: "[insert_resources_object!]!"
+    - name: post_check
+      type: resources_bool_exp
+      description: Insert permission predicate over the 'resources' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_resources
+  graphql:
+    rootFieldName: insert_resources
+    rootFieldKind: Mutation
+  description: Insert into the resources table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_resources
+  permissions:
+    - role: admin
+      allowExecution: true
+

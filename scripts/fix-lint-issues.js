@@ -281,12 +281,12 @@ class LintFixer {
     // Write suggestions to file
     const suggestionsContent = this.formatTypeSuggestions(suggestions);
     if (!this.dryRun) {
-      writeFileSync("LINT_TYPE_SUGGESTIONS.md", suggestionsContent);
+      writeFileSync("LINTTYPESUGGESTIONS.md", suggestionsContent);
       console.log(
-        "📝 Type improvement suggestions written to LINT_TYPE_SUGGESTIONS.md"
+        "📝 Type improvement suggestions written to LINTTYPESUGGESTIONS.md"
       );
     } else {
-      console.log("Would write type suggestions to LINT_TYPE_SUGGESTIONS.md");
+      console.log("Would write type suggestions to LINTTYPESUGGESTIONS.md");
     }
   }
 

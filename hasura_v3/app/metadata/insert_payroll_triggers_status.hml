@@ -1,0 +1,100 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_payroll_triggers_status_object
+  fields:
+    - name: action_statement
+      type: string
+    - name: action_timing
+      type: string
+    - name: event_manipulation
+      type: string
+    - name: event_object_table
+      type: json
+    - name: trigger_name
+      type: json
+  graphql:
+    typeName: insert_payroll_triggers_status_object
+    inputTypeName: insert_payroll_triggers_status_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_payroll_triggers_status_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_payroll_triggers_status_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action_statement
+          - action_timing
+          - event_manipulation
+          - event_object_table
+          - trigger_name
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_payroll_triggers_status_response
+  description: Responses from the 'insert_payroll_triggers_status' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[payroll_triggers_status!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_payroll_triggers_status_response
+    inputTypeName: insert_payroll_triggers_status_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_payroll_triggers_status_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_payroll_triggers_status_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_payroll_triggers_status
+  outputType: insert_payroll_triggers_status_response!
+  arguments:
+    - name: objects
+      type: "[insert_payroll_triggers_status_object!]!"
+    - name: post_check
+      type: payroll_triggers_status_bool_exp
+      description: Insert permission predicate over the 'payroll_triggers_status' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_payroll_triggers_status
+  graphql:
+    rootFieldName: insert_payroll_triggers_status
+    rootFieldKind: Mutation
+  description: Insert into the payroll_triggers_status table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_payroll_triggers_status
+  permissions:
+    - role: admin
+      allowExecution: true
+

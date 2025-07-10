@@ -9,6 +9,7 @@ fragment UserCore on users {
   isActive
   isStaff
   role
+  position
   clerkUserId
   createdAt
   updatedAt
@@ -18,38 +19,14 @@ fragment UserWithProfile on users {
   ...UserCore
   username
   image
+  phone
+  address
+  bio
 }
 
 fragment UserWithRoles on users {
   ...UserCore
-  assignedRoles {
-    id
-    roleId
-    assignedRole {
-      id
-      name
-      displayName
-      description
-      priority
-      isSystemRole
-      assignedPermissions {
-        id
-        conditions
-        permissionId
-        grantedPermission {
-          id
-          action
-          description
-          relatedResource {
-            id
-            name
-            displayName
-            description
-          }
-        }
-      }
-    }
-  }
+  # assignedRoles removed - using simple role field instead
 }
 
 fragment UserWithTeam on users {
@@ -63,6 +40,9 @@ fragment UserWithWorkSchedule on users {
     id
     workDay
     workHours
+    adminTimeHours
+    payrollCapacityHours
+    usesDefaultAdminTime
     createdAt
     updatedAt
   }
@@ -74,22 +54,15 @@ fragment UserWithPayrolls on users {
 
 fragment UserWithAllRelations on users {
   ...UserWithProfile
-  assignedRoles {
-    id
-    roleId
-    assignedRole {
-      id
-      name
-      displayName
-      description
-      priority
-    }
-  }
+  # assignedRoles removed - using simple role field instead
   # Team members not available in schema - removed
   userWorkSchedules {
     id
     workDay
     workHours
+    adminTimeHours
+    payrollCapacityHours
+    usesDefaultAdminTime
     createdAt
     updatedAt
   }
@@ -100,6 +73,7 @@ fragment UserBasicInfo on users {
   name
   email
   role
+  position
   username
   image
   isStaff
@@ -138,35 +112,14 @@ fragment UserRoleInfo on users {
   email
   role
   isActive
-  assignedRoles {
-    roleId
-    assignedRole {
-      name
-      description
-    }
-  }
+  # assignedRoles removed - using simple role field instead
 }
 
 fragment UserPermissionsInfo on users {
   id
   name
   role
-  assignedRoles {
-    roleId
-    assignedRole {
-      name
-      assignedPermissions {
-        permissionId
-        grantedPermission {
-          relatedResource {
-            name
-          }
-          action
-          description
-        }
-      }
-    }
-  }
+  # assignedRoles removed - using simple role field instead
 }
 
 # Performance-optimized fragments for Phase 2
@@ -175,6 +128,7 @@ fragment UserSummary on users {
   id
   name
   role
+  position
   isActive
   isStaff
 }

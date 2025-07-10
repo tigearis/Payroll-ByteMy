@@ -26,6 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { QuickLoading } from "@/components/ui/smart-loading";
 import {
   Table,
   TableBody,
@@ -34,6 +35,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+// Create specific loading component for clients table
+function ClientsTableLoading() {
+  return <QuickLoading.Minimal />;
+}
 
 // Column definitions
 const COLUMN_DEFINITIONS = [
@@ -89,7 +95,7 @@ export function ClientsTable({
   clients,
   loading = false,
   onRefresh,
-  visibleColumns = COLUMN_DEFINITIONS.filter(col => col.defaultVisible).map(
+  visibleColumns = COLUMNDEFINITIONS.filter(col => col.defaultVisible).map(
     col => col.key
   ),
   sortField = "name",
@@ -97,7 +103,7 @@ export function ClientsTable({
   onSort,
 }: ClientsTableProps) {
   const renderSortableHeader = (label: string, field: string) => {
-    const column = COLUMN_DEFINITIONS.find(col => col.key === field);
+    const column = COLUMNDEFINITIONS.find(col => col.key === field);
     if (!column?.sortable || !onSort) {
       return label;
     }
@@ -192,10 +198,7 @@ export function ClientsTable({
                     className="h-24 text-center"
                   >
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                      <span className="ml-2 text-muted-foreground">
-                        Loading clients...
-                      </span>
+                      <ClientsTableLoading />
                     </div>
                   </TableCell>
                 </TableRow>

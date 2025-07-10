@@ -104,7 +104,6 @@ fragment UserInvitationCore on userInvitations {
   acceptedAt
   acceptedBy
   expiresAt
-  status
   invitationStatus
   revokedAt
   revokedBy

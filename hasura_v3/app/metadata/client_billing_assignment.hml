@@ -1,0 +1,260 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: client_billing_assignment
+  fields:
+    - name: billing_frequency
+      type: string
+      description: "How often this service is billed: Per Job, Monthly, Quarterly, etc."
+    - name: billing_plan_id
+      type: uuid!
+    - name: client_id
+      type: uuid!
+    - name: created_at
+      type: timestamptz
+    - name: custom_rate
+      type: bigdecimal
+      description: Client-specific rate override (null uses standard rate)
+    - name: effective_date
+      type: date
+      description: When this rate agreement becomes effective
+    - name: end_date
+      type: date
+    - name: id
+      type: uuid!
+    - name: is_active
+      type: boolean
+    - name: is_enabled
+      type: boolean
+      description: Whether this service is enabled for this client
+    - name: start_date
+      type: date!
+    - name: updated_at
+      type: timestamptz
+  graphql:
+    typeName: client_billing_assignment
+    inputTypeName: client_billing_assignment_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: client_billing_assignment
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: client_billing_assignment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - billing_frequency
+          - billing_plan_id
+          - client_id
+          - created_at
+          - custom_rate
+          - effective_date
+          - end_date
+          - id
+          - is_active
+          - is_enabled
+          - start_date
+          - updated_at
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: client_billing_assignment_bool_exp
+  operand:
+    object:
+      type: client_billing_assignment
+      comparableFields:
+        - fieldName: billing_frequency
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: billing_plan_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: client_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: custom_rate
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: effective_date
+          booleanExpressionType: date_bool_exp
+        - fieldName: end_date
+          booleanExpressionType: date_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: is_active
+          booleanExpressionType: bool_bool_exp
+        - fieldName: is_enabled
+          booleanExpressionType: bool_bool_exp
+        - fieldName: start_date
+          booleanExpressionType: date_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+      comparableRelationships:
+        - relationshipName: billing_plan
+        - relationshipName: client
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: client_billing_assignment_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: client_billing_assignment_agg_exp
+  operand:
+    object:
+      aggregatedType: client_billing_assignment
+      aggregatableFields:
+        - fieldName: billing_frequency
+          aggregateExpression: varchar_agg_exp
+        - fieldName: billing_plan_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: client_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: custom_rate
+          aggregateExpression: numeric_agg_exp
+        - fieldName: effective_date
+          aggregateExpression: date_agg_exp
+        - fieldName: end_date
+          aggregateExpression: date_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: is_active
+          aggregateExpression: bool_agg_exp
+        - fieldName: is_enabled
+          aggregateExpression: bool_agg_exp
+        - fieldName: start_date
+          aggregateExpression: date_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: client_billing_assignment_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: client_billing_assignment_order_by_exp
+  operand:
+    object:
+      orderedType: client_billing_assignment
+      orderableFields:
+        - fieldName: billing_frequency
+          orderByExpression: string_order_by_exp
+        - fieldName: billing_plan_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: client_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: custom_rate
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: effective_date
+          orderByExpression: date_order_by_exp
+        - fieldName: end_date
+          orderByExpression: date_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: is_active
+          orderByExpression: boolean_order_by_exp
+        - fieldName: is_enabled
+          orderByExpression: boolean_order_by_exp
+        - fieldName: start_date
+          orderByExpression: date_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+      orderableRelationships:
+        - relationshipName: billing_plan
+        - relationshipName: client
+  graphql:
+    expressionTypeName: client_billing_assignment_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: client_billing_assignment
+  objectType: client_billing_assignment
+  source:
+    dataConnectorName: payroll
+    collection: client_billing_assignment
+  filterExpressionType: client_billing_assignment_bool_exp
+  aggregateExpression: client_billing_assignment_agg_exp
+  orderByExpression: client_billing_assignment_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: client_billing_assignment
+      subscription:
+        rootField: client_billing_assignment
+    selectUniques:
+      - queryRootField: client_billing_assignment_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: client_billing_assignment_by_id
+    filterInputTypeName: client_billing_assignment_filter_input
+    aggregate:
+      queryRootField: client_billing_assignment_aggregate
+      subscription:
+        rootField: client_billing_assignment_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: client_billing_assignment
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: billing_plan
+  sourceType: client_billing_assignment
+  target:
+    model:
+      name: billing_plan
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: billing_plan_id
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: client
+  sourceType: client_billing_assignment
+  target:
+    model:
+      name: clients
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: client_id
+      target:
+        modelField:
+          - fieldName: id
+

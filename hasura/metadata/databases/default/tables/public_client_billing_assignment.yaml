@@ -3,18 +3,39 @@ table:
   schema: public
 configuration:
   column_config:
+    billing_frequency:
+      custom_name: billingFrequency
     billing_plan_id:
       custom_name: billingPlanId
     client_id:
       custom_name: clientId
     created_at:
       custom_name: createdAt
+    custom_rate:
+      custom_name: customRate
+    effective_date:
+      custom_name: effectiveDate
+    end_date:
+      custom_name: endDate
+    is_active:
+      custom_name: isActive
+    is_enabled:
+      custom_name: isEnabled
+    start_date:
+      custom_name: startDate
     updated_at:
       custom_name: updatedAt
   custom_column_names:
+    billing_frequency: billingFrequency
     billing_plan_id: billingPlanId
     client_id: clientId
     created_at: createdAt
+    custom_rate: customRate
+    effective_date: effectiveDate
+    end_date: endDate
+    is_active: isActive
+    is_enabled: isEnabled
+    start_date: startDate
     updated_at: updatedAt
   custom_name: clientBillingAssignments
   custom_root_fields:
@@ -44,10 +65,17 @@ select_permissions:
   - role: consultant
     permission:
       columns:
+        - billing_frequency
         - billing_plan_id
         - client_id
         - created_at
+        - custom_rate
+        - effective_date
+        - end_date
         - id
+        - is_active
+        - is_enabled
+        - start_date
         - updated_at
       filter: {}
     comment: Consultants can view relevant data
@@ -60,10 +88,17 @@ select_permissions:
   - role: manager
     permission:
       columns:
+        - billing_frequency
         - billing_plan_id
         - client_id
         - created_at
+        - custom_rate
+        - effective_date
+        - end_date
         - id
+        - is_active
+        - is_enabled
+        - start_date
         - updated_at
       filter: {}
       allow_aggregations: true
@@ -71,10 +106,17 @@ select_permissions:
   - role: org_admin
     permission:
       columns:
+        - billing_frequency
         - billing_plan_id
         - client_id
         - created_at
+        - custom_rate
+        - effective_date
+        - end_date
         - id
+        - is_active
+        - is_enabled
+        - start_date
         - updated_at
       filter: {}
       allow_aggregations: true
@@ -82,10 +124,17 @@ select_permissions:
   - role: viewer
     permission:
       columns:
+        - billing_frequency
         - billing_plan_id
         - client_id
         - created_at
+        - custom_rate
+        - effective_date
+        - end_date
         - id
+        - is_active
+        - is_enabled
+        - start_date
         - updated_at
       filter: {}
     comment: Viewers can see basic information

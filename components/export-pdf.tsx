@@ -1,6 +1,4 @@
 // components/export-pdf.tsx
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth";
 import { useQuery } from "@apollo/client";
 import { format, parseISO } from "date-fns";
 import { jsPDF } from "jspdf";
@@ -18,11 +16,6 @@ interface ExportPdfProps {
 }
 
 export function ExportPdf({ payrollId }: ExportPdfProps) {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('reports:export')) {
-    return null;
-  }
   const { data } = useQuery(GetPayrollDatesDocument, {
     variables: { payrollId },
     skip: !payrollId,

@@ -31,11 +31,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { QuickLoading } from "@/components/ui/smart-loading";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GetPayrollsByMonthDocument } from "../graphql/generated/graphql";
-import { useAuthContext } from "@/lib/auth";
-import { PermissionGuard } from "@/components/auth/permission-guard";
-
+import {
+  GetAllStaffWorkloadDocument,
+  GetAllStaffWorkloadQuery,
+} from "@/domains/work-schedule/graphql/generated/graphql";
 
 // Import generated GraphQL operations from the payrolls domain
 
@@ -93,12 +95,6 @@ type Payroll = any;
 type Holiday = any;
 
 export function PayrollSchedule() {
-  const { hasPermission } = useAuthContext();
-  
-  if (!hasPermission('payroll:read')) {
-    return null;
-  }
-
   const [currentView, setCurrentView] = useState<CalendarView>("month");
   const [weekOrientation, setWeekOrientation] =
     useState<WeekOrientation>("days-as-rows");
@@ -139,7 +135,7 @@ export function PayrollSchedule() {
   // GraphQL Data Fetching using domain queries
   const {
     data: payrollsData,
-    loading: payrollsLoading,
+    loading: bytemyLoading,
     error: payrollsError,
     refetch: refetchPayrolls,
   } = useQuery(GetPayrollsByMonthDocument, {
@@ -150,6 +146,15 @@ export function PayrollSchedule() {
     errorPolicy: "all",
     fetchPolicy: "cache-and-network",
   });
+
+  // Get all staff workload to show all consultants (not just those with payrolls)
+  const { data: staffData, loading: staffLoading } = useQuery<GetAllStaffWorkloadQuery>(
+    GetAllStaffWorkloadDocument,
+    {
+      errorPolicy: "all",
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   // Use GetPayrollsByMonth for holidays data
   const { data: holidaysData, loading: holidaysLoading } = useQuery(
@@ -164,7 +169,7 @@ export function PayrollSchedule() {
     }
   );
 
-  const loading = payrollsLoading || holidaysLoading;
+  const loading = bytemyLoading || holidaysLoading || staffLoading;
   const error = payrollsError;
   const payrolls = payrollsData?.payrolls || [];
   const holidays: Holiday[] = [];
@@ -175,7 +180,7 @@ export function PayrollSchedule() {
       startDate: startDate,
       endDate: endDate,
     });
-  }, [startDate, endDate, refetchPayrolls]);
+  }, [startDate, endDate]); // Removed 'refetchPayrolls' - Apollo functions are stable
 
   // Transform payroll data to events
   const events = useMemo(() => {
@@ -245,15 +250,19 @@ export function PayrollSchedule() {
     const consultantMap = new Map();
     consultantMap.set("all", { id: "all", name: "All Consultants" });
 
-    payrolls.forEach((payroll: any) => {
-      const consultant = payroll.userByPrimaryConsultantUserId;
-      if (consultant && !consultantMap.has(consultant.id)) {
-        consultantMap.set(consultant.id, consultant);
-      }
-    });
+    // Get consultants from staff data (shows ALL consultants, not just those with payrolls)
+    if (staffData?.users) {
+      staffData.users
+        .filter(user => user.role === 'consultant' || user.role === 'manager' || user.role === 'org_admin')
+        .forEach(user => {
+          if (!consultantMap.has(user.id)) {
+            consultantMap.set(user.id, { id: user.id, name: user.name });
+          }
+        });
+    }
 
     return Array.from(consultantMap.values());
-  }, [payrolls]);
+  }, [staffData]);
 
   // Filter events based on selected filters
   const filteredEvents = useMemo(() => {
@@ -499,10 +508,9 @@ export function PayrollSchedule() {
   if (loading && !payrollsData && !holidaysData) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading payroll schedule...</p>
-        </div>
+        <QuickLoading.Page
+          title="Loading payroll schedule..."
+        />
       </div>
     );
   }

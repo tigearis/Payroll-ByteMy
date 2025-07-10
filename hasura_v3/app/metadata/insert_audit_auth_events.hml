@@ -1,0 +1,118 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_audit_auth_events_object
+  fields:
+    - name: created_at
+      type: timestamptz
+    - name: event_time
+      type: timestamptz
+    - name: event_type
+      type: string!
+    - name: failure_reason
+      type: string
+    - name: id
+      type: uuid
+    - name: ip_address
+      type: json
+    - name: metadata
+      type: json
+    - name: success
+      type: boolean
+    - name: user_agent
+      type: string
+    - name: user_email
+      type: string
+    - name: user_id
+      type: uuid
+  graphql:
+    typeName: insert_audit_auth_events_object
+    inputTypeName: insert_audit_auth_events_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_audit_auth_events_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_audit_auth_events_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - event_time
+          - event_type
+          - failure_reason
+          - id
+          - ip_address
+          - metadata
+          - success
+          - user_agent
+          - user_email
+          - user_id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_audit_auth_events_response
+  description: Responses from the 'insert_audit_auth_events' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[audit_auth_events!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_audit_auth_events_response
+    inputTypeName: insert_audit_auth_events_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_audit_auth_events_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_audit_auth_events_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_audit_auth_events
+  outputType: insert_audit_auth_events_response!
+  arguments:
+    - name: objects
+      type: "[insert_audit_auth_events_object!]!"
+    - name: post_check
+      type: audit_auth_events_bool_exp
+      description: Insert permission predicate over the 'audit_auth_events' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_audit_auth_events
+  graphql:
+    rootFieldName: insert_audit_auth_events
+    rootFieldKind: Mutation
+  description: Insert into the audit_auth_events table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_audit_auth_events
+  permissions:
+    - role: admin
+      allowExecution: true
+

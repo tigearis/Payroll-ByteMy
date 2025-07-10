@@ -1,0 +1,97 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_neon_auth_users_sync_object
+  fields:
+    - name: deleted_at
+      type: timestamptz
+      description: Timestamp when the user was deleted in the auth system
+    - name: raw_json
+      type: json!
+      description: Complete JSON data from the authentication provider
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the user was last updated in the auth system
+  graphql:
+    typeName: insert_neon_auth_users_sync_object
+    inputTypeName: insert_neon_auth_users_sync_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_neon_auth_users_sync_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_neon_auth_users_sync_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - deleted_at
+          - raw_json
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_neon_auth_users_sync_response
+  description: Responses from the 'insert_neon_auth_users_sync' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[neon_auth_users_sync!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_neon_auth_users_sync_response
+    inputTypeName: insert_neon_auth_users_sync_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_neon_auth_users_sync_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_neon_auth_users_sync_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_neon_auth_users_sync
+  outputType: insert_neon_auth_users_sync_response!
+  arguments:
+    - name: objects
+      type: "[insert_neon_auth_users_sync_object!]!"
+    - name: post_check
+      type: neon_auth_users_sync_bool_exp
+      description: Insert permission predicate over the 'neon_auth_users_sync' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_neon_auth_users_sync
+  graphql:
+    rootFieldName: insert_neon_auth_users_sync
+    rootFieldKind: Mutation
+  description: Insert into the neon_auth_users_sync table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_neon_auth_users_sync
+  permissions:
+    - role: admin
+      allowExecution: true
+

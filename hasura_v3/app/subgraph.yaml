@@ -1,0 +1,19 @@
+kind: Subgraph
+version: v2
+definition:
+  name: app
+  generator:
+    rootPath: .
+    namingConvention: snake_case
+  includePaths:
+    - metadata
+  envMapping:
+    APP_PAYROLL_AUTHORIZATION_HEADER:
+      fromEnv: APP_PAYROLL_AUTHORIZATION_HEADER
+    APP_PAYROLL_READ_URL:
+      fromEnv: APP_PAYROLL_READ_URL
+    APP_PAYROLL_WRITE_URL:
+      fromEnv: APP_PAYROLL_WRITE_URL
+  connectors:
+    - path: connector/payroll/connector.yaml
+      connectorLinkName: payroll

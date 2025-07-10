@@ -1,0 +1,219 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: audit_data_access_log
+  fields:
+    - name: access_type
+      type: string!
+    - name: accessed_at
+      type: timestamptz!
+    - name: data_classification
+      type: string
+    - name: fields_accessed
+      type: "[string]"
+    - name: id
+      type: uuid!
+    - name: ip_address
+      type: json
+    - name: metadata
+      type: json
+    - name: query_executed
+      type: string
+    - name: resource_id
+      type: string
+    - name: resource_type
+      type: string!
+    - name: row_count
+      type: int_32
+    - name: session_id
+      type: string
+    - name: user_id
+      type: uuid!
+  graphql:
+    typeName: audit_data_access_log
+    inputTypeName: audit_data_access_log_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: audit_data_access_log
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: audit_data_access_log
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - access_type
+          - accessed_at
+          - data_classification
+          - fields_accessed
+          - id
+          - ip_address
+          - metadata
+          - query_executed
+          - resource_id
+          - resource_type
+          - row_count
+          - session_id
+          - user_id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: audit_data_access_log_bool_exp
+  operand:
+    object:
+      type: audit_data_access_log
+      comparableFields:
+        - fieldName: access_type
+          booleanExpressionType: text_bool_exp
+        - fieldName: accessed_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: data_classification
+          booleanExpressionType: text_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: ip_address
+          booleanExpressionType: inet_bool_exp
+        - fieldName: metadata
+          booleanExpressionType: jsonb_bool_exp
+        - fieldName: query_executed
+          booleanExpressionType: text_bool_exp
+        - fieldName: resource_id
+          booleanExpressionType: text_bool_exp
+        - fieldName: resource_type
+          booleanExpressionType: text_bool_exp
+        - fieldName: row_count
+          booleanExpressionType: int_4_bool_exp
+        - fieldName: session_id
+          booleanExpressionType: text_bool_exp
+        - fieldName: user_id
+          booleanExpressionType: uuid_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: audit_data_access_log_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: audit_data_access_log_agg_exp
+  operand:
+    object:
+      aggregatedType: audit_data_access_log
+      aggregatableFields:
+        - fieldName: access_type
+          aggregateExpression: text_agg_exp
+        - fieldName: accessed_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: data_classification
+          aggregateExpression: text_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: ip_address
+          aggregateExpression: inet_agg_exp
+        - fieldName: metadata
+          aggregateExpression: jsonb_agg_exp
+        - fieldName: query_executed
+          aggregateExpression: text_agg_exp
+        - fieldName: resource_id
+          aggregateExpression: text_agg_exp
+        - fieldName: resource_type
+          aggregateExpression: text_agg_exp
+        - fieldName: row_count
+          aggregateExpression: int_4_agg_exp
+        - fieldName: session_id
+          aggregateExpression: text_agg_exp
+        - fieldName: user_id
+          aggregateExpression: uuid_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: audit_data_access_log_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: audit_data_access_log_order_by_exp
+  operand:
+    object:
+      orderedType: audit_data_access_log
+      orderableFields:
+        - fieldName: access_type
+          orderByExpression: string_order_by_exp
+        - fieldName: accessed_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: data_classification
+          orderByExpression: string_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: ip_address
+          orderByExpression: json_order_by_exp
+        - fieldName: metadata
+          orderByExpression: json_order_by_exp
+        - fieldName: query_executed
+          orderByExpression: string_order_by_exp
+        - fieldName: resource_id
+          orderByExpression: string_order_by_exp
+        - fieldName: resource_type
+          orderByExpression: string_order_by_exp
+        - fieldName: row_count
+          orderByExpression: int_32_order_by_exp
+        - fieldName: session_id
+          orderByExpression: string_order_by_exp
+        - fieldName: user_id
+          orderByExpression: uuid_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: audit_data_access_log_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: audit_data_access_log
+  objectType: audit_data_access_log
+  source:
+    dataConnectorName: payroll
+    collection: audit_data_access_log
+  filterExpressionType: audit_data_access_log_bool_exp
+  aggregateExpression: audit_data_access_log_agg_exp
+  orderByExpression: audit_data_access_log_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: audit_data_access_log
+      subscription:
+        rootField: audit_data_access_log
+    selectUniques:
+      - queryRootField: audit_data_access_log_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: audit_data_access_log_by_id
+    filterInputTypeName: audit_data_access_log_filter_input
+    aggregate:
+      queryRootField: audit_data_access_log_aggregate
+      subscription:
+        rootField: audit_data_access_log_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: audit_data_access_log
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

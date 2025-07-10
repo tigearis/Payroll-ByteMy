@@ -1,0 +1,107 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_audit_permission_usage_report_object
+  fields:
+    - name: action
+      type: enum
+    - name: last_used
+      type: timestamptz
+    - name: resource_name
+      type: string
+    - name: role_name
+      type: string
+    - name: total_usage_count
+      type: int_64
+    - name: users_who_used_permission
+      type: int_64
+    - name: users_with_permission
+      type: int_64
+  graphql:
+    typeName: insert_audit_permission_usage_report_object
+    inputTypeName: insert_audit_permission_usage_report_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_audit_permission_usage_report_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_audit_permission_usage_report_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - last_used
+          - resource_name
+          - role_name
+          - total_usage_count
+          - users_who_used_permission
+          - users_with_permission
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_audit_permission_usage_report_response
+  description: Responses from the 'insert_audit_permission_usage_report' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[audit_permission_usage_report!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_audit_permission_usage_report_response
+    inputTypeName: insert_audit_permission_usage_report_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_audit_permission_usage_report_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_audit_permission_usage_report_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_audit_permission_usage_report
+  outputType: insert_audit_permission_usage_report_response!
+  arguments:
+    - name: objects
+      type: "[insert_audit_permission_usage_report_object!]!"
+    - name: post_check
+      type: audit_permission_usage_report_bool_exp
+      description: Insert permission predicate over the
+        'audit_permission_usage_report' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_audit_permission_usage_report
+  graphql:
+    rootFieldName: insert_audit_permission_usage_report
+    rootFieldKind: Mutation
+  description: Insert into the audit_permission_usage_report table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_audit_permission_usage_report
+  permissions:
+    - role: admin
+      allowExecution: true
+

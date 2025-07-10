@@ -15,7 +15,7 @@ import { writeFileSync } from "fs";
 
 class ErrorMarkdownReporter {
   constructor(options = {}) {
-    this.outputFile = options.outputFile || "TS_LINT_ERRORS_REPORT.md";
+    this.outputFile = options.outputFile || "TSLINTERRORS_REPORT.md";
     this.includeWarnings = options.includeWarnings !== false;
     this.includeSuggestions = options.includeSuggestions !== false;
     this.groupByFile = options.groupByFile !== false;
@@ -353,7 +353,7 @@ class ErrorMarkdownReporter {
     // Footer
     md += `---\n\n`;
     md += `**Next Steps:**\n`;
-    md += `1. Review the [Lint Remediation Plan](./LINT_REMEDIATION_PLAN.md)\n`;
+    md += `1. Review the [Lint Remediation Plan](./LINTREMEDIATIONPLAN.md)\n`;
     md += `2. Run \`pnpm lint:fix-dry-run\` to preview automated fixes\n`;
     md += `3. Execute fixes in phases with proper testing\n`;
     md += `4. Re-run this report to track progress: \`pnpm report:errors\`\n`;
@@ -377,7 +377,7 @@ const args = process.argv.slice(2);
 const options = {
   outputFile:
     args.find(arg => arg.startsWith("--output="))?.split("=")[1] ||
-    "TS_LINT_ERRORS_REPORT.md",
+    "TSLINTERRORS_REPORT.md",
   includeWarnings: !args.includes("--no-warnings"),
   includeSuggestions: !args.includes("--no-suggestions"),
   groupByFile: !args.includes("--no-grouping"),

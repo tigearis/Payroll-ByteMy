@@ -96,12 +96,14 @@ The application will be available at `http://localhost:3000`.
 
 ### 🛡️ Security & Compliance
 
-**🔒 Production-Ready Security (Updated December 2024)**
+**🔒 Production-Ready Security (Updated January 2025)**
 - **SOC2 Type II Compliance**: 95%+ compliance score with comprehensive audit logging
 - **Zero Critical Vulnerabilities**: All security issues resolved and validated
-- **Enterprise-Grade Protection**: 23 granular permissions across 5 role levels
+- **Hierarchical Permission System**: 128 granular permissions with 71% JWT size reduction
+- **Role Inheritance**: Developer → Org Admin → Manager → Consultant → Viewer
+- **Smart Exclusions**: Small exclusion lists instead of full permission arrays
 - **OAuth Security**: Fixed privilege escalation with least-privilege defaults
-- **Component Guards**: 100% coverage on sensitive UI components
+- **Component Guards**: 100% coverage on sensitive UI components with hasAny logic
 - **API Security**: Complete authentication and authorization on all endpoints
 - **Data Classification**: 4-tier security levels (CRITICAL, HIGH, MEDIUM, LOW)
 - **Row Level Security**: Database-level access controls
@@ -134,12 +136,12 @@ The application will be available at `http://localhost:3000`.
 - **[SOC2 Compliance](docs/SOC2_COMPLIANCE_OVERVIEW.md)** - Detailed compliance documentation
 - **[Payroll System](docs/PAYROLL_SYSTEM_DOCUMENTATION.md)** - Core payroll processing logic
 
-### 🔒 Security Documentation (Updated December 2024)
+### 🔒 Security Documentation (Updated January 2025)
 
-- **[Security Audit Completion Report](docs/security/SECURITY_AUDIT_COMPLETION_REPORT.md)** - ✅ **NEW**: Complete security fixes summary
-- **[Permission System Guide](docs/PERMISSION_SYSTEM_GUIDE.md)** - Updated with 23 granular permissions
-- **[Component Permission Guards](docs/security/COMPONENT_PERMISSION_GUARDS_GUIDE.md)** - ✅ **NEW**: Component protection guide
-- **[API Authentication Guide](docs/security/API_AUTHENTICATION_GUIDE.md)** - ✅ **NEW**: Production-ready API security
+- **[Security Audit Completion Report](docs/security/SECURITY_AUDIT_COMPLETION_REPORT.md)** - ✅ Complete security fixes summary
+- **[Hierarchical Permission System](docs/HIERARCHICAL_PERMISSION_SYSTEM_REFERENCE.md)** - ✅ **NEW**: Modern role inheritance system
+- **[Component Permission Guards](docs/security/COMPONENT_PERMISSION_GUARDS_GUIDE.md)** - ✅ Component protection with hasAny logic
+- **[API Authentication Guide](docs/security/API_AUTHENTICATION_GUIDE.md)** - ✅ Production-ready API security
 
 ### Development Guides
 

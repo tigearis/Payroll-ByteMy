@@ -1,0 +1,379 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_roles_created_at
+  description: Update the 'created_at' column in the 'roles' collection
+  fields:
+    - name: set
+      type: timestamptz!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_roles_created_at
+    inputTypeName: update_column_roles_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_roles_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_roles_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_roles_description
+  description: Update the 'description' column in the 'roles' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_roles_description
+    inputTypeName: update_column_roles_description_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_roles_description
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_roles_description
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_roles_display_name
+  description: Update the 'display_name' column in the 'roles' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_roles_display_name
+    inputTypeName: update_column_roles_display_name_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_roles_display_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_roles_display_name
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_roles_id
+  description: Update the 'id' column in the 'roles' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_roles_id
+    inputTypeName: update_column_roles_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_roles_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_roles_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_roles_is_system_role
+  description: Update the 'is_system_role' column in the 'roles' collection
+  fields:
+    - name: set
+      type: boolean!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_roles_is_system_role
+    inputTypeName: update_column_roles_is_system_role_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_roles_is_system_role
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_roles_is_system_role
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_roles_name
+  description: Update the 'name' column in the 'roles' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_roles_name
+    inputTypeName: update_column_roles_name_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_roles_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_roles_name
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_roles_priority
+  description: Update the 'priority' column in the 'roles' collection
+  fields:
+    - name: set
+      type: int_32!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_roles_priority
+    inputTypeName: update_column_roles_priority_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_roles_priority
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_roles_priority
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_roles_updated_at
+  description: Update the 'updated_at' column in the 'roles' collection
+  fields:
+    - name: set
+      type: timestamptz!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_roles_updated_at
+    inputTypeName: update_column_roles_updated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_roles_updated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_roles_updated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_roles_by_id_update_columns
+  description: Update the columns of the 'roles' collection
+  fields:
+    - name: created_at
+      type: update_column_roles_created_at
+      description: Update the 'created_at' column in the 'roles' collection.
+    - name: description
+      type: update_column_roles_description
+      description: Update the 'description' column in the 'roles' collection.
+    - name: display_name
+      type: update_column_roles_display_name
+      description: Update the 'display_name' column in the 'roles' collection.
+    - name: id
+      type: update_column_roles_id
+      description: Update the 'id' column in the 'roles' collection.
+    - name: is_system_role
+      type: update_column_roles_is_system_role
+      description: Update the 'is_system_role' column in the 'roles' collection.
+    - name: name
+      type: update_column_roles_name
+      description: Update the 'name' column in the 'roles' collection.
+    - name: priority
+      type: update_column_roles_priority
+      description: Update the 'priority' column in the 'roles' collection.
+    - name: updated_at
+      type: update_column_roles_updated_at
+      description: Update the 'updated_at' column in the 'roles' collection.
+  graphql:
+    typeName: update_roles_by_id_update_columns
+    inputTypeName: update_roles_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_roles_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_roles_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - description
+          - display_name
+          - id
+          - is_system_role
+          - name
+          - priority
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_roles_by_id_response
+  description: Responses from the 'update_roles_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[roles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_roles_by_id_response
+    inputTypeName: update_roles_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_roles_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_roles_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_roles_by_id
+  outputType: update_roles_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+    - name: post_check
+      type: roles_bool_exp
+      description: Update permission post-condition predicate over the 'roles' collection
+    - name: pre_check
+      type: roles_bool_exp
+      description: Update permission pre-condition predicate over the 'roles' collection
+    - name: update_columns
+      type: update_roles_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_roles_by_id
+  graphql:
+    rootFieldName: update_roles_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'roles' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_roles_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

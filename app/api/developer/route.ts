@@ -28,8 +28,6 @@ export const GET = withAuth(async () => {
       { status: 500 }
     );
   }
-}, {
-  allowedRoles: ["developer"]
 });
 
 export const POST = withAuth(async (req: NextRequest) => {
@@ -52,6 +50,4 @@ export const POST = withAuth(async (req: NextRequest) => {
   } catch (error) {
     return NextResponse.json({ error: "Operation failed" }, { status: 500 });
   }
-}, {
-  allowedRoles: ["developer"]
 });

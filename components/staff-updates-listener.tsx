@@ -1,6 +1,6 @@
 import { DocumentNode } from "@apollo/client";
-import { RealTimeUpdates } from "@/components/real-time-updates";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { RealTimeUpdates } from "@/components/real-time-updates";
 import { 
   ActiveUsersDocument,
   GetStaffListDocument,

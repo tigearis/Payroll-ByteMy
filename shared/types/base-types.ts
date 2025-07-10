@@ -52,7 +52,7 @@ export type Scalars = {
   permission_action: { input: string; output: string; }
   timestamp: { input: string; output: string; }
   timestamptz: { input: string; output: string; }
-  user_role: { input: string; output: string; }
+  userrole: { input: string; output: string; }
   uuid: { input: string; output: string; }
 };
 
@@ -487,17 +487,17 @@ export interface TimestamptzComparisonExp {
   _nin?: InputMaybe<Array<Scalars['timestamptz']['input']>>;
 }
 
-/** Boolean expression to compare columns of type "user_role". All fields are combined with logical 'AND'. */
+/** Boolean expression to compare columns of type "userrole". All fields are combined with logical 'AND'. */
 export interface UserRoleComparisonExp {
-  _eq?: InputMaybe<Scalars['user_role']['input']>;
-  _gt?: InputMaybe<Scalars['user_role']['input']>;
-  _gte?: InputMaybe<Scalars['user_role']['input']>;
-  _in?: InputMaybe<Array<Scalars['user_role']['input']>>;
+  _eq?: InputMaybe<Scalars['userrole']['input']>;
+  _gt?: InputMaybe<Scalars['userrole']['input']>;
+  _gte?: InputMaybe<Scalars['userrole']['input']>;
+  _in?: InputMaybe<Array<Scalars['userrole']['input']>>;
   _isNull?: InputMaybe<Scalars['Boolean']['input']>;
-  _lt?: InputMaybe<Scalars['user_role']['input']>;
-  _lte?: InputMaybe<Scalars['user_role']['input']>;
-  _neq?: InputMaybe<Scalars['user_role']['input']>;
-  _nin?: InputMaybe<Array<Scalars['user_role']['input']>>;
+  _lt?: InputMaybe<Scalars['userrole']['input']>;
+  _lte?: InputMaybe<Scalars['userrole']['input']>;
+  _neq?: InputMaybe<Scalars['userrole']['input']>;
+  _nin?: InputMaybe<Array<Scalars['userrole']['input']>>;
 }
 
 /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
@@ -1677,7 +1677,7 @@ export interface AuthEventsUpdates {
   where: AuthEventsBoolExp;
 }
 
-/** columns and relationships of "neon_auth.users_sync" */
+/** columns and relationships of "neonauth.users_sync" */
 export interface AuthUsersSync {
   __typename?: 'authUsersSync';
   /** Timestamp when the user was created in the auth system */
@@ -1697,19 +1697,19 @@ export interface AuthUsersSync {
 }
 
 
-/** columns and relationships of "neon_auth.users_sync" */
+/** columns and relationships of "neonauth.users_sync" */
 export type AuthUsersSyncRawJsonArgs = {
   path: InputMaybe<Scalars['String']['input']>;
 };
 
-/** aggregated selection of "neon_auth.users_sync" */
+/** aggregated selection of "neonauth.users_sync" */
 export interface AuthUsersSyncAggregate {
   __typename?: 'authUsersSyncAggregate';
   aggregate: Maybe<AuthUsersSyncAggregateFields>;
   nodes: Array<AuthUsersSync>;
 }
 
-/** aggregate fields of "neon_auth.users_sync" */
+/** aggregate fields of "neonauth.users_sync" */
 export interface AuthUsersSyncAggregateFields {
   __typename?: 'authUsersSyncAggregateFields';
   count: Scalars['Int']['output'];
@@ -1718,7 +1718,7 @@ export interface AuthUsersSyncAggregateFields {
 }
 
 
-/** aggregate fields of "neon_auth.users_sync" */
+/** aggregate fields of "neonauth.users_sync" */
 export type AuthUsersSyncAggregateFieldsCountArgs = {
   columns: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
   distinct: InputMaybe<Scalars['Boolean']['input']>;
@@ -1730,7 +1730,7 @@ export interface AuthUsersSyncAppendInput {
   rawJson?: InputMaybe<Scalars['jsonb']['input']>;
 }
 
-/** Boolean expression to filter rows from the table "neon_auth.users_sync". All fields are combined with a logical 'AND'. */
+/** Boolean expression to filter rows from the table "neonauth.users_sync". All fields are combined with a logical 'AND'. */
 export interface AuthUsersSyncBoolExp {
   _and?: InputMaybe<Array<AuthUsersSyncBoolExp>>;
   _not?: InputMaybe<AuthUsersSyncBoolExp>;
@@ -1744,7 +1744,7 @@ export interface AuthUsersSyncBoolExp {
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 }
 
-/** unique or primary key constraints on table "neon_auth.users_sync" */
+/** unique or primary key constraints on table "neonauth.users_sync" */
 export enum AuthUsersSyncConstraint {
   /** unique or primary key constraint on columns "id" */
   users_sync_pkey = 'users_sync_pkey'
@@ -1768,7 +1768,7 @@ export interface AuthUsersSyncDeleteKeyInput {
   rawJson?: InputMaybe<Scalars['String']['input']>;
 }
 
-/** input type for inserting data into table "neon_auth.users_sync" */
+/** input type for inserting data into table "neonauth.users_sync" */
 export interface AuthUsersSyncInsertInput {
   /** Timestamp when the user was deleted in the auth system */
   deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -1812,7 +1812,7 @@ export interface AuthUsersSyncMinFields {
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
 }
 
-/** response of any mutation on the table "neon_auth.users_sync" */
+/** response of any mutation on the table "neonauth.users_sync" */
 export interface AuthUsersSyncMutationResponse {
   __typename?: 'authUsersSyncMutationResponse';
   /** number of rows affected by the mutation */
@@ -1821,14 +1821,14 @@ export interface AuthUsersSyncMutationResponse {
   returning: Array<AuthUsersSync>;
 }
 
-/** on_conflict condition type for table "neon_auth.users_sync" */
+/** on_conflict condition type for table "neonauth.users_sync" */
 export interface AuthUsersSyncOnConflict {
   constraint: AuthUsersSyncConstraint;
   updateColumns?: Array<AuthUsersSyncUpdateColumn>;
   where?: InputMaybe<AuthUsersSyncBoolExp>;
 }
 
-/** Ordering options when selecting data from "neon_auth.users_sync". */
+/** Ordering options when selecting data from "neonauth.users_sync". */
 export interface AuthUsersSyncOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   deletedAt?: InputMaybe<OrderBy>;
@@ -1839,7 +1839,7 @@ export interface AuthUsersSyncOrderBy {
   updatedAt?: InputMaybe<OrderBy>;
 }
 
-/** primary key columns input for table: neon_auth.users_sync */
+/** primary key columns input for table: neonauth.users_sync */
 export interface AuthUsersSyncPkColumnsInput {
   /** Unique identifier from the authentication provider */
   id: Scalars['String']['input'];
@@ -1851,7 +1851,7 @@ export interface AuthUsersSyncPrependInput {
   rawJson?: InputMaybe<Scalars['jsonb']['input']>;
 }
 
-/** select columns of table "neon_auth.users_sync" */
+/** select columns of table "neonauth.users_sync" */
 export enum AuthUsersSyncSelectColumn {
   /** column name */
   createdAt = 'createdAt',
@@ -1869,7 +1869,7 @@ export enum AuthUsersSyncSelectColumn {
   updatedAt = 'updatedAt'
 }
 
-/** input type for updating data in table "neon_auth.users_sync" */
+/** input type for updating data in table "neonauth.users_sync" */
 export interface AuthUsersSyncSetInput {
   /** Timestamp when the user was deleted in the auth system */
   deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -1905,7 +1905,7 @@ export interface AuthUsersSyncStreamCursorValueInput {
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 }
 
-/** update columns of table "neon_auth.users_sync" */
+/** update columns of table "neonauth.users_sync" */
 export enum AuthUsersSyncUpdateColumn {
   /** column name */
   deletedAt = 'deletedAt',
@@ -6571,13 +6571,13 @@ export interface MutationRoot {
   bulkDeleteUserAccessSummaries: Maybe<UserAccessSummariesMutationResponse>;
   /** delete data from the table: "user_invitations" */
   bulkDeleteUserInvitations: Maybe<UserInvitationsMutationResponse>;
-  /** delete data from the table: "user_roles" */
+  /** delete data from the table: "userroles" */
   bulkDeleteUserRoles: Maybe<UserRolesMutationResponse>;
   /** delete data from the table: "users" */
   bulkDeleteUsers: Maybe<UsersMutationResponse>;
-  /** delete data from the table: "users_role_backup" */
+  /** delete data from the table: "usersrole_backup" */
   bulkDeleteUsersRoleBackups: Maybe<UsersRoleBackupMutationResponse>;
-  /** delete data from the table: "neon_auth.users_sync" */
+  /** delete data from the table: "neonauth.users_sync" */
   bulkDeleteUsersSync: Maybe<AuthUsersSyncMutationResponse>;
   /** delete data from the table: "work_schedule" */
   bulkDeleteWorkSchedules: Maybe<WorkSchedulesMutationResponse>;
@@ -6655,13 +6655,13 @@ export interface MutationRoot {
   bulkInsertUserAccessSummaries: Maybe<UserAccessSummariesMutationResponse>;
   /** insert data into the table: "user_invitations" */
   bulkInsertUserInvitations: Maybe<UserInvitationsMutationResponse>;
-  /** insert data into the table: "user_roles" */
+  /** insert data into the table: "userroles" */
   bulkInsertUserRoles: Maybe<UserRolesMutationResponse>;
   /** insert data into the table: "users" */
   bulkInsertUsers: Maybe<UsersMutationResponse>;
-  /** insert data into the table: "users_role_backup" */
+  /** insert data into the table: "usersrole_backup" */
   bulkInsertUsersRoleBackups: Maybe<UsersRoleBackupMutationResponse>;
-  /** insert data into the table: "neon_auth.users_sync" */
+  /** insert data into the table: "neonauth.users_sync" */
   bulkInsertUsersSync: Maybe<AuthUsersSyncMutationResponse>;
   /** insert data into the table: "work_schedule" */
   bulkInsertWorkSchedules: Maybe<WorkSchedulesMutationResponse>;
@@ -6739,13 +6739,13 @@ export interface MutationRoot {
   bulkUpdateUserAccessSummaries: Maybe<UserAccessSummariesMutationResponse>;
   /** update data of the table: "user_invitations" */
   bulkUpdateUserInvitations: Maybe<UserInvitationsMutationResponse>;
-  /** update data of the table: "user_roles" */
+  /** update data of the table: "userroles" */
   bulkUpdateUserRoles: Maybe<UserRolesMutationResponse>;
   /** update data of the table: "users" */
   bulkUpdateUsers: Maybe<UsersMutationResponse>;
-  /** update data of the table: "users_role_backup" */
+  /** update data of the table: "usersrole_backup" */
   bulkUpdateUsersRoleBackups: Maybe<UsersRoleBackupMutationResponse>;
-  /** update data of the table: "neon_auth.users_sync" */
+  /** update data of the table: "neonauth.users_sync" */
   bulkUpdateUsersSync: Maybe<AuthUsersSyncMutationResponse>;
   /** update data of the table: "work_schedule" */
   bulkUpdateWorkSchedules: Maybe<WorkSchedulesMutationResponse>;
@@ -6826,9 +6826,9 @@ export interface MutationRoot {
   deleteUserById: Maybe<Users>;
   /** delete single row from the table: "user_invitations" */
   deleteUserInvitationById: Maybe<UserInvitations>;
-  /** delete single row from the table: "user_roles" */
+  /** delete single row from the table: "userroles" */
   deleteUserRoleById: Maybe<UserRoles>;
-  /** delete single row from the table: "neon_auth.users_sync" */
+  /** delete single row from the table: "neonauth.users_sync" */
   deleteUserSyncById: Maybe<AuthUsersSync>;
   /** delete single row from the table: "work_schedule" */
   deleteWorkScheduleById: Maybe<WorkSchedules>;
@@ -6910,11 +6910,11 @@ export interface MutationRoot {
   insertUserAccessSummary: Maybe<UserAccessSummaries>;
   /** insert a single row into the table: "user_invitations" */
   insertUserInvitation: Maybe<UserInvitations>;
-  /** insert a single row into the table: "user_roles" */
+  /** insert a single row into the table: "userroles" */
   insertUserRole: Maybe<UserRoles>;
-  /** insert a single row into the table: "neon_auth.users_sync" */
+  /** insert a single row into the table: "neonauth.users_sync" */
   insertUserSync: Maybe<AuthUsersSync>;
-  /** insert a single row into the table: "users_role_backup" */
+  /** insert a single row into the table: "usersrole_backup" */
   insertUsersRoleBackup: Maybe<UsersRoleBackup>;
   /** insert a single row into the table: "work_schedule" */
   insertWorkSchedule: Maybe<WorkSchedules>;
@@ -6936,7 +6936,7 @@ export interface MutationRoot {
   updateAuthEventById: Maybe<AuthEvents>;
   /** update multiples rows of table: "audit.auth_events" */
   updateAuthEventsMany: Maybe<Array<Maybe<AuthEventsMutationResponse>>>;
-  /** update multiples rows of table: "neon_auth.users_sync" */
+  /** update multiples rows of table: "neonauth.users_sync" */
   updateAuthUsersSyncMany: Maybe<Array<Maybe<AuthUsersSyncMutationResponse>>>;
   /** update single row of the table: "billing_event_log" */
   updateBillingEventLogById: Maybe<BillingEventLogs>;
@@ -7070,15 +7070,15 @@ export interface MutationRoot {
   updateUserInvitationById: Maybe<UserInvitations>;
   /** update multiples rows of table: "user_invitations" */
   updateUserInvitationsMany: Maybe<Array<Maybe<UserInvitationsMutationResponse>>>;
-  /** update single row of the table: "user_roles" */
+  /** update single row of the table: "userroles" */
   updateUserRoleById: Maybe<UserRoles>;
-  /** update multiples rows of table: "user_roles" */
+  /** update multiples rows of table: "userroles" */
   updateUserRolesMany: Maybe<Array<Maybe<UserRolesMutationResponse>>>;
-  /** update single row of the table: "neon_auth.users_sync" */
+  /** update single row of the table: "neonauth.users_sync" */
   updateUserSyncById: Maybe<AuthUsersSync>;
   /** update multiples rows of table: "users" */
   updateUsersMany: Maybe<Array<Maybe<UsersMutationResponse>>>;
-  /** update multiples rows of table: "users_role_backup" */
+  /** update multiples rows of table: "usersrole_backup" */
   updateUsersRoleBackupMany: Maybe<Array<Maybe<UsersRoleBackupMutationResponse>>>;
   /** update single row of the table: "work_schedule" */
   updateWorkScheduleById: Maybe<WorkSchedules>;
@@ -15006,25 +15006,25 @@ export interface QueryRoot {
   userInvitations: Array<UserInvitations>;
   /** fetch aggregated fields from the table: "user_invitations" */
   userInvitationsAggregate: UserInvitationsAggregate;
-  /** fetch data from the table: "user_roles" using primary key columns */
+  /** fetch data from the table: "userroles" using primary key columns */
   userRoleById: Maybe<UserRoles>;
-  /** fetch data from the table: "user_roles" */
+  /** fetch data from the table: "userroles" */
   userRoles: Array<UserRoles>;
-  /** fetch aggregated fields from the table: "user_roles" */
+  /** fetch aggregated fields from the table: "userroles" */
   userRolesAggregate: UserRolesAggregate;
-  /** fetch data from the table: "neon_auth.users_sync" using primary key columns */
+  /** fetch data from the table: "neonauth.users_sync" using primary key columns */
   userSyncById: Maybe<AuthUsersSync>;
   /** fetch data from the table: "users" */
   users: Array<Users>;
   /** fetch aggregated fields from the table: "users" */
   usersAggregate: UsersAggregate;
-  /** fetch data from the table: "users_role_backup" */
+  /** fetch data from the table: "usersrole_backup" */
   usersRoleBackups: Array<UsersRoleBackup>;
-  /** fetch aggregated fields from the table: "users_role_backup" */
+  /** fetch aggregated fields from the table: "usersrole_backup" */
   usersRoleBackupsAggregate: UsersRoleBackupAggregate;
-  /** fetch data from the table: "neon_auth.users_sync" */
+  /** fetch data from the table: "neonauth.users_sync" */
   usersSync: Array<AuthUsersSync>;
-  /** fetch aggregated fields from the table: "neon_auth.users_sync" */
+  /** fetch aggregated fields from the table: "neonauth.users_sync" */
   usersSyncAggregate: AuthUsersSyncAggregate;
   /** fetch data from the table: "work_schedule" using primary key columns */
   workScheduleById: Maybe<WorkSchedules>;
@@ -16497,7 +16497,7 @@ export enum RolePermissionsConstraint {
   /** unique or primary key constraint on columns "id" */
   role_permissions_pkey = 'role_permissions_pkey',
   /** unique or primary key constraint on columns "permission_id", "role_id" */
-  role_permissions_role_id_permission_id_key = 'role_permissions_role_id_permission_id_key'
+  role_permissionsrole_id_permission_id_key = 'role_permissionsrole_id_permission_id_key'
 }
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -17252,7 +17252,7 @@ export interface SubscriptionRoot {
   authEventsAggregate: AuthEventsAggregate;
   /** fetch data from the table in a streaming manner: "audit.auth_events" */
   authEventsStream: Array<AuthEvents>;
-  /** fetch data from the table in a streaming manner: "neon_auth.users_sync" */
+  /** fetch data from the table in a streaming manner: "neonauth.users_sync" */
   authUsersSyncStream: Array<AuthUsersSync>;
   /** fetch data from the table: "billing_event_log" using primary key columns */
   billingEventLogById: Maybe<BillingEventLogs>;
@@ -17562,31 +17562,31 @@ export interface SubscriptionRoot {
   userInvitationsAggregate: UserInvitationsAggregate;
   /** fetch data from the table in a streaming manner: "user_invitations" */
   userInvitationsStream: Array<UserInvitations>;
-  /** fetch data from the table: "user_roles" using primary key columns */
+  /** fetch data from the table: "userroles" using primary key columns */
   userRoleById: Maybe<UserRoles>;
-  /** fetch data from the table: "user_roles" */
+  /** fetch data from the table: "userroles" */
   userRoles: Array<UserRoles>;
-  /** fetch aggregated fields from the table: "user_roles" */
+  /** fetch aggregated fields from the table: "userroles" */
   userRolesAggregate: UserRolesAggregate;
-  /** fetch data from the table in a streaming manner: "user_roles" */
+  /** fetch data from the table in a streaming manner: "userroles" */
   userRolesStream: Array<UserRoles>;
-  /** fetch data from the table: "neon_auth.users_sync" using primary key columns */
+  /** fetch data from the table: "neonauth.users_sync" using primary key columns */
   userSyncById: Maybe<AuthUsersSync>;
   /** fetch data from the table: "users" */
   users: Array<Users>;
   /** fetch aggregated fields from the table: "users" */
   usersAggregate: UsersAggregate;
-  /** fetch data from the table in a streaming manner: "users_role_backup" */
+  /** fetch data from the table in a streaming manner: "usersrole_backup" */
   usersRoleBackupStream: Array<UsersRoleBackup>;
-  /** fetch data from the table: "users_role_backup" */
+  /** fetch data from the table: "usersrole_backup" */
   usersRoleBackups: Array<UsersRoleBackup>;
-  /** fetch aggregated fields from the table: "users_role_backup" */
+  /** fetch aggregated fields from the table: "usersrole_backup" */
   usersRoleBackupsAggregate: UsersRoleBackupAggregate;
   /** fetch data from the table in a streaming manner: "users" */
   usersStream: Array<Users>;
-  /** fetch data from the table: "neon_auth.users_sync" */
+  /** fetch data from the table: "neonauth.users_sync" */
   usersSync: Array<AuthUsersSync>;
-  /** fetch aggregated fields from the table: "neon_auth.users_sync" */
+  /** fetch aggregated fields from the table: "neonauth.users_sync" */
   usersSyncAggregate: AuthUsersSyncAggregate;
   /** fetch data from the table: "work_schedule" using primary key columns */
   workScheduleById: Maybe<WorkSchedules>;
@@ -19075,7 +19075,7 @@ export interface UserAccessSummaries {
   isActive: Maybe<Scalars['Boolean']['output']>;
   isStaff: Maybe<Scalars['Boolean']['output']>;
   name: Maybe<Scalars['String']['output']>;
-  role: Maybe<Scalars['user_role']['output']>;
+  role: Maybe<Scalars['userrole']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
 }
 
@@ -19124,7 +19124,7 @@ export interface UserAccessSummariesInsertInput {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   isStaff?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['user_role']['input']>;
+  role?: InputMaybe<Scalars['userrole']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 }
 
@@ -19135,7 +19135,7 @@ export interface UserAccessSummariesMaxFields {
   email: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   name: Maybe<Scalars['String']['output']>;
-  role: Maybe<Scalars['user_role']['output']>;
+  role: Maybe<Scalars['userrole']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
 }
 
@@ -19146,7 +19146,7 @@ export interface UserAccessSummariesMinFields {
   email: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   name: Maybe<Scalars['String']['output']>;
-  role: Maybe<Scalars['user_role']['output']>;
+  role: Maybe<Scalars['userrole']['output']>;
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
 }
 
@@ -19199,7 +19199,7 @@ export interface UserAccessSummariesSetInput {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   isStaff?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['user_role']['input']>;
+  role?: InputMaybe<Scalars['userrole']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 }
 
@@ -19219,7 +19219,7 @@ export interface UserAccessSummariesStreamCursorValueInput {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   isStaff?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['user_role']['input']>;
+  role?: InputMaybe<Scalars['userrole']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 }
 
@@ -19598,7 +19598,7 @@ export interface UserInvitationsUpdates {
   where: UserInvitationsBoolExp;
 }
 
-/** columns and relationships of "user_roles" */
+/** columns and relationships of "userroles" */
 export interface UserRoles {
   __typename?: 'userRoles';
   /** An object relationship */
@@ -19612,7 +19612,7 @@ export interface UserRoles {
   userId: Scalars['uuid']['output'];
 }
 
-/** aggregated selection of "user_roles" */
+/** aggregated selection of "userroles" */
 export interface UserRolesAggregate {
   __typename?: 'userRolesAggregate';
   aggregate: Maybe<UserRolesAggregateFields>;
@@ -19630,7 +19630,7 @@ export interface UserRolesAggregateBoolExpCount {
   predicate: IntComparisonExp;
 }
 
-/** aggregate fields of "user_roles" */
+/** aggregate fields of "userroles" */
 export interface UserRolesAggregateFields {
   __typename?: 'userRolesAggregateFields';
   count: Scalars['Int']['output'];
@@ -19639,27 +19639,27 @@ export interface UserRolesAggregateFields {
 }
 
 
-/** aggregate fields of "user_roles" */
+/** aggregate fields of "userroles" */
 export type UserRolesAggregateFieldsCountArgs = {
   columns: InputMaybe<Array<UserRolesSelectColumn>>;
   distinct: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** order by aggregate values of table "user_roles" */
+/** order by aggregate values of table "userroles" */
 export interface UserRolesAggregateOrderBy {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<UserRolesMaxOrderBy>;
   min?: InputMaybe<UserRolesMinOrderBy>;
 }
 
-/** input type for inserting array relation for remote table "user_roles" */
+/** input type for inserting array relation for remote table "userroles" */
 export interface UserRolesArrRelInsertInput {
   data: Array<UserRolesInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<UserRolesOnConflict>;
 }
 
-/** Boolean expression to filter rows from the table "user_roles". All fields are combined with a logical 'AND'. */
+/** Boolean expression to filter rows from the table "userroles". All fields are combined with a logical 'AND'. */
 export interface UserRolesBoolExp {
   _and?: InputMaybe<Array<UserRolesBoolExp>>;
   _not?: InputMaybe<UserRolesBoolExp>;
@@ -19673,15 +19673,15 @@ export interface UserRolesBoolExp {
   userId?: InputMaybe<UuidComparisonExp>;
 }
 
-/** unique or primary key constraints on table "user_roles" */
+/** unique or primary key constraints on table "userroles" */
 export enum UserRolesConstraint {
   /** unique or primary key constraint on columns "id" */
-  user_roles_pkey = 'user_roles_pkey',
+  userroles_pkey = 'userroles_pkey',
   /** unique or primary key constraint on columns "user_id", "role_id" */
-  user_roles_user_id_role_id_key = 'user_roles_user_id_role_id_key'
+  userroles_user_idrole_id_key = 'userroles_user_idrole_id_key'
 }
 
-/** input type for inserting data into table "user_roles" */
+/** input type for inserting data into table "userroles" */
 export interface UserRolesInsertInput {
   assignedRole?: InputMaybe<RolesObjRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -19702,7 +19702,7 @@ export interface UserRolesMaxFields {
   userId: Maybe<Scalars['uuid']['output']>;
 }
 
-/** order by max() on columns of table "user_roles" */
+/** order by max() on columns of table "userroles" */
 export interface UserRolesMaxOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -19721,7 +19721,7 @@ export interface UserRolesMinFields {
   userId: Maybe<Scalars['uuid']['output']>;
 }
 
-/** order by min() on columns of table "user_roles" */
+/** order by min() on columns of table "userroles" */
 export interface UserRolesMinOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -19730,7 +19730,7 @@ export interface UserRolesMinOrderBy {
   userId?: InputMaybe<OrderBy>;
 }
 
-/** response of any mutation on the table "user_roles" */
+/** response of any mutation on the table "userroles" */
 export interface UserRolesMutationResponse {
   __typename?: 'userRolesMutationResponse';
   /** number of rows affected by the mutation */
@@ -19739,14 +19739,14 @@ export interface UserRolesMutationResponse {
   returning: Array<UserRoles>;
 }
 
-/** on_conflict condition type for table "user_roles" */
+/** on_conflict condition type for table "userroles" */
 export interface UserRolesOnConflict {
   constraint: UserRolesConstraint;
   updateColumns?: Array<UserRolesUpdateColumn>;
   where?: InputMaybe<UserRolesBoolExp>;
 }
 
-/** Ordering options when selecting data from "user_roles". */
+/** Ordering options when selecting data from "userroles". */
 export interface UserRolesOrderBy {
   assignedRole?: InputMaybe<RolesOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
@@ -19757,12 +19757,12 @@ export interface UserRolesOrderBy {
   userId?: InputMaybe<OrderBy>;
 }
 
-/** primary key columns input for table: user_roles */
+/** primary key columns input for table: userroles */
 export interface UserRolesPkColumnsInput {
   id: Scalars['uuid']['input'];
 }
 
-/** select columns of table "user_roles" */
+/** select columns of table "userroles" */
 export enum UserRolesSelectColumn {
   /** column name */
   createdAt = 'createdAt',
@@ -19776,7 +19776,7 @@ export enum UserRolesSelectColumn {
   userId = 'userId'
 }
 
-/** input type for updating data in table "user_roles" */
+/** input type for updating data in table "userroles" */
 export interface UserRolesSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -19802,7 +19802,7 @@ export interface UserRolesStreamCursorValueInput {
   userId?: InputMaybe<Scalars['uuid']['input']>;
 }
 
-/** update columns of table "user_roles" */
+/** update columns of table "userroles" */
 export enum UserRolesUpdateColumn {
   /** column name */
   createdAt = 'createdAt',
@@ -19908,7 +19908,7 @@ export interface Users {
   /** An aggregate relationship */
   primaryConsultantPayrollsAggregate: PayrollsAggregate;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role: Scalars['user_role']['output'];
+  role: Scalars['userrole']['output'];
   /** An array relationship */
   targetedPermissionAudits: Array<PermissionAuditLogs>;
   /** An aggregate relationship */
@@ -20510,7 +20510,7 @@ export interface UsersInsertInput {
   originalConsultantAuditTrail?: InputMaybe<PayrollAssignmentAuditsArrRelInsertInput>;
   primaryConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role?: InputMaybe<Scalars['user_role']['input']>;
+  role?: InputMaybe<Scalars['userrole']['input']>;
   targetedPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -20542,7 +20542,7 @@ export interface UsersMaxFields {
   /** User's full name */
   name: Maybe<Scalars['String']['output']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role: Maybe<Scalars['user_role']['output']>;
+  role: Maybe<Scalars['userrole']['output']>;
   /** Timestamp when the user was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   /** User's unique username for login */
@@ -20595,7 +20595,7 @@ export interface UsersMinFields {
   /** User's full name */
   name: Maybe<Scalars['String']['output']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role: Maybe<Scalars['user_role']['output']>;
+  role: Maybe<Scalars['userrole']['output']>;
   /** Timestamp when the user was last updated */
   updatedAt: Maybe<Scalars['timestamptz']['output']>;
   /** User's unique username for login */
@@ -20696,23 +20696,23 @@ export interface UsersPkColumnsInput {
   id: Scalars['uuid']['input'];
 }
 
-/** columns and relationships of "users_role_backup" */
+/** columns and relationships of "usersrole_backup" */
 export interface UsersRoleBackup {
   __typename?: 'usersRoleBackup';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   email: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
-  role: Maybe<Scalars['user_role']['output']>;
+  role: Maybe<Scalars['userrole']['output']>;
 }
 
-/** aggregated selection of "users_role_backup" */
+/** aggregated selection of "usersrole_backup" */
 export interface UsersRoleBackupAggregate {
   __typename?: 'usersRoleBackupAggregate';
   aggregate: Maybe<UsersRoleBackupAggregateFields>;
   nodes: Array<UsersRoleBackup>;
 }
 
-/** aggregate fields of "users_role_backup" */
+/** aggregate fields of "usersrole_backup" */
 export interface UsersRoleBackupAggregateFields {
   __typename?: 'usersRoleBackupAggregateFields';
   count: Scalars['Int']['output'];
@@ -20721,13 +20721,13 @@ export interface UsersRoleBackupAggregateFields {
 }
 
 
-/** aggregate fields of "users_role_backup" */
+/** aggregate fields of "usersrole_backup" */
 export type UsersRoleBackupAggregateFieldsCountArgs = {
   columns: InputMaybe<Array<UsersRoleBackupSelectColumn>>;
   distinct: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** Boolean expression to filter rows from the table "users_role_backup". All fields are combined with a logical 'AND'. */
+/** Boolean expression to filter rows from the table "usersrole_backup". All fields are combined with a logical 'AND'. */
 export interface UsersRoleBackupBoolExp {
   _and?: InputMaybe<Array<UsersRoleBackupBoolExp>>;
   _not?: InputMaybe<UsersRoleBackupBoolExp>;
@@ -20738,12 +20738,12 @@ export interface UsersRoleBackupBoolExp {
   role?: InputMaybe<UserRoleComparisonExp>;
 }
 
-/** input type for inserting data into table "users_role_backup" */
+/** input type for inserting data into table "usersrole_backup" */
 export interface UsersRoleBackupInsertInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
-  role?: InputMaybe<Scalars['user_role']['input']>;
+  role?: InputMaybe<Scalars['userrole']['input']>;
 }
 
 /** aggregate max on columns */
@@ -20752,7 +20752,7 @@ export interface UsersRoleBackupMaxFields {
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   email: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
-  role: Maybe<Scalars['user_role']['output']>;
+  role: Maybe<Scalars['userrole']['output']>;
 }
 
 /** aggregate min on columns */
@@ -20761,10 +20761,10 @@ export interface UsersRoleBackupMinFields {
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   email: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
-  role: Maybe<Scalars['user_role']['output']>;
+  role: Maybe<Scalars['userrole']['output']>;
 }
 
-/** response of any mutation on the table "users_role_backup" */
+/** response of any mutation on the table "usersrole_backup" */
 export interface UsersRoleBackupMutationResponse {
   __typename?: 'usersRoleBackupMutationResponse';
   /** number of rows affected by the mutation */
@@ -20773,7 +20773,7 @@ export interface UsersRoleBackupMutationResponse {
   returning: Array<UsersRoleBackup>;
 }
 
-/** Ordering options when selecting data from "users_role_backup". */
+/** Ordering options when selecting data from "usersrole_backup". */
 export interface UsersRoleBackupOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   email?: InputMaybe<OrderBy>;
@@ -20781,7 +20781,7 @@ export interface UsersRoleBackupOrderBy {
   role?: InputMaybe<OrderBy>;
 }
 
-/** select columns of table "users_role_backup" */
+/** select columns of table "usersrole_backup" */
 export enum UsersRoleBackupSelectColumn {
   /** column name */
   createdAt = 'createdAt',
@@ -20793,12 +20793,12 @@ export enum UsersRoleBackupSelectColumn {
   role = 'role'
 }
 
-/** input type for updating data in table "users_role_backup" */
+/** input type for updating data in table "usersrole_backup" */
 export interface UsersRoleBackupSetInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
-  role?: InputMaybe<Scalars['user_role']['input']>;
+  role?: InputMaybe<Scalars['userrole']['input']>;
 }
 
 /** Streaming cursor of the table "usersRoleBackup" */
@@ -20814,7 +20814,7 @@ export interface UsersRoleBackupStreamCursorValueInput {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
-  role?: InputMaybe<Scalars['user_role']['input']>;
+  role?: InputMaybe<Scalars['userrole']['input']>;
 }
 
 export interface UsersRoleBackupUpdates {
@@ -20894,7 +20894,7 @@ export interface UsersSetInput {
   /** User's full name */
   name?: InputMaybe<Scalars['String']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role?: InputMaybe<Scalars['user_role']['input']>;
+  role?: InputMaybe<Scalars['userrole']['input']>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User's unique username for login */
@@ -20931,7 +20931,7 @@ export interface UsersStreamCursorValueInput {
   /** User's full name */
   name?: InputMaybe<Scalars['String']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role?: InputMaybe<Scalars['user_role']['input']>;
+  role?: InputMaybe<Scalars['userrole']['input']>;
   /** Timestamp when the user was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User's unique username for login */

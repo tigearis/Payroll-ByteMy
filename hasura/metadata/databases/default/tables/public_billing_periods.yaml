@@ -1,0 +1,142 @@
+table:
+  name: billing_periods
+  schema: public
+configuration:
+  column_config:
+    client_id:
+      custom_name: clientId
+    created_at:
+      custom_name: createdAt
+    period_end:
+      custom_name: periodEnd
+    period_start:
+      custom_name: periodStart
+    updated_at:
+      custom_name: updatedAt
+  custom_column_names:
+    client_id: clientId
+    created_at: createdAt
+    period_end: periodEnd
+    period_start: periodStart
+    updated_at: updatedAt
+  custom_name: billingPeriods
+  custom_root_fields:
+    delete: deleteBillingPeriods
+    delete_by_pk: deleteBillingPeriod
+    insert: insertBillingPeriod
+    insert_one: insertBillingPeriodOne
+    select: billingPeriods
+    select_aggregate: billingPeriodsAggregate
+    select_by_pk: billingPeriod
+    update: updateBillingPeriods
+    update_by_pk: updateBillingPeriod
+    update_many: updateBillingPeriodsMany
+object_relationships:
+  - name: client
+    using:
+      foreign_key_constraint_on: client_id
+array_relationships:
+  - name: billingInvoices
+    using:
+      foreign_key_constraint_on:
+        column: billing_period_id
+        table:
+          name: billing_invoice
+          schema: public
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
+  - role: manager
+    permission:
+      check: {}
+      columns:
+        - client_id
+        - period_end
+        - period_start
+        - status
+  - role: org_admin
+    permission:
+      check: {}
+      columns:
+        - client_id
+        - period_end
+        - period_start
+        - status
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - client_id
+        - created_at
+        - id
+        - period_end
+        - period_start
+        - status
+        - updated_at
+      filter: {}
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
+    comment: Developer role has full select access
+  - role: manager
+    permission:
+      columns:
+        - client_id
+        - created_at
+        - id
+        - period_end
+        - period_start
+        - status
+        - updated_at
+      filter: {}
+  - role: org_admin
+    permission:
+      columns:
+        - client_id
+        - created_at
+        - id
+        - period_end
+        - period_start
+        - status
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+  - role: manager
+    permission:
+      columns:
+        - period_end
+        - period_start
+        - status
+      filter: {}
+      check: null
+  - role: org_admin
+    permission:
+      columns:
+        - period_end
+        - period_start
+        - status
+      filter: {}
+      check: {}
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
+  - role: manager
+    permission:
+      filter: {}
+  - role: org_admin
+    permission:
+      filter: {}

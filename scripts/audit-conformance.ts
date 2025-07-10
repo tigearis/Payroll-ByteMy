@@ -1,3 +1,4 @@
+// audit-conformance.ts
 #!/usr/bin/env npx tsx
 /**
  * CLAUDE.md Conformance Audit Script

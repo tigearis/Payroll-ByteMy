@@ -1,13 +1,13 @@
 /**
  * GraphQL Code Generator Configuration
- * 
+ *
  * ARCHITECTURE OVERVIEW:
  * =====================
- * 
+ *
  * This configuration implements a domain-driven GraphQL code generation strategy
- * with shared fragment support and SOC2 compliance. Each domain generates 
+ * with shared fragment support and SOC2 compliance. Each domain generates
  * self-contained TypeScript types while having access to shared fragments.
- * 
+ *
  * KEY FEATURES:
  * - ✅ Domain isolation with shared fragment access
  * - ✅ SOC2 compliant security classifications
@@ -15,50 +15,50 @@
  * - ✅ Automatic type generation for active domains
  * - ✅ Fragment deduplication and optimization
  * - ✅ Client preset for modern React/Apollo patterns
- * 
+ *
  * FRAGMENT SHARING STRATEGY:
  * =========================
- * 
+ *
  * While shared fragments appear in each domain's generated files, this is the
  * RECOMMENDED approach per GraphQL Codegen best practices because:
- * 
+ *
  * 1. VALIDATION: GraphQL requires all fragments to be available during validation
  * 2. SELF-CONTAINED: Each domain module is independent (no runtime dependencies)
  * 3. OPTIMIZATION: dedupeFragments handles build-time optimization
  * 4. BUNDLING: Better for code splitting and module bundling
  * 5. TYPE SAFETY: Prevents circular import issues and runtime errors
- * 
+ *
  * DIRECTORY STRUCTURE:
  * ===================
- * 
+ *
  * shared/
  * ├── graphql/fragments.graphql     # Shared fragments (UserCore, RoleCore, etc.)
- * ├── graphql/queries.graphql       # Cross-domain queries  
+ * ├── graphql/queries.graphql       # Cross-domain queries
  * └── types/generated/              # Base types for all domains
- * 
+ *
  * domains/{domain}/
  * ├── graphql/queries.graphql       # Domain-specific operations
  * ├── graphql/mutations.graphql     # Domain mutations
  * ├── graphql/fragments.graphql     # Domain fragments
  * └── graphql/generated/            # Self-contained generated types
- * 
+ *
  * SECURITY CLASSIFICATIONS:
  * ========================
- * 
+ *
  * CRITICAL: Auth, user roles, financial data (admin + MFA required)
  * HIGH:     PII, client data, employee info (role-based access)
  * MEDIUM:   Internal business data (authentication required)
  * LOW:      Public/aggregate data (basic access control)
- * 
+ *
  * USAGE:
  * ======
- * 
+ *
  * # Generate all types
  * pnpm codegen
- * 
+ *
  * # Watch mode (development)
  * pnpm codegen:watch
- * 
+ *
  * @see https://the-guild.dev/graphql/codegen/docs/guides/react-vue
  * @see https://the-guild.dev/blog/unleash-the-power-of-fragments-with-graphql-codegen
  */
@@ -72,20 +72,19 @@ import { existsSync, readFileSync } from "fs";
 dotenv.config({ path: resolve(process.cwd(), ".env.local") });
 
 // Load environment variables
-const HASURA_URL =
-  process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL ||
-  "https://bytemy.hasura.app/v1/graphql";
+const HASURA_URL = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL || "";
 const HASURA_SECRET =
   process.env.HASURA_GRAPHQL_ADMIN_SECRET ||
   process.env.HASURA_ADMIN_SECRET ||
-  "3w+sHTuq8wQwddK4xyWO5LDeRH+anvJoFVyOMvtq8Lo=";
+  "";
+("");
 
 if (
   !process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL ||
   (!process.env.HASURA_GRAPHQL_ADMIN_SECRET && !process.env.HASURA_ADMIN_SECRET)
 ) {
   console.warn(
-    "⚠️  Using default values for HASURA_URL and HASURA_SECRET. Set environment variables for production use."
+    "⚠️  Using default values for HASURA_URL and HASURASECRET. Set environment variables for production use."
   );
 }
 
@@ -153,6 +152,11 @@ const domains = {
     name: "billing",
     security: "HIGH",
     description: "Financial operations",
+  },
+  email: {
+    name: "email",
+    security: "HIGH",
+    description: "Email communication and templates",
   },
 
   // MEDIUM Security Level - Authentication required
@@ -263,7 +267,7 @@ const generateDomainConfig = (domainName: string) => {
         futureProofEnums: true, // Handle enum additions gracefully
         futureProofUnions: true, // Handle union additions gracefully
         nonOptionalTypename: false, // Make __typename optional
-        
+
         // Fragment and Type Management
         // Note: While shared fragments appear in each domain's generated files,
         // this is the recommended approach per GraphQL Codegen best practices:
@@ -273,7 +277,7 @@ const generateDomainConfig = (domainName: string) => {
         // 4. dedupeFragments handles optimization during generation
         baseTypesPath: "../../shared/types/generated/graphql", // Import base types
         onlyOperationTypes: true, // Generate only operation types, import others
-        
+
         // SOC2 Compliance metadata
         security: {
           level: domain.security,
@@ -293,20 +297,23 @@ const generateDomainConfig = (domainName: string) => {
 };
 
 // Main GraphQL Code Generator Configuration
-// 
+//
 // Architecture: Domain-Driven Generation with Shared Types
 // - Each domain generates self-contained types for independence
 // - Shared fragments and types are included in each domain for validation
 // - SOC2 compliant with security classifications and audit trails
 //
 const config: CodegenConfig = {
-  schema: {
-    [HASURA_URL]: {
-      headers: {
-        "x-hasura-admin-secret": HASURA_SECRET,
-      },
-    },
-  },
+  schema: HASURA_SECRET
+    ? {
+        [HASURA_URL]: {
+          headers: {
+            "x-hasura-admin-secret": HASURA_SECRET,
+          },
+        },
+      }
+    : // Fallback to local schema file if no admin secret
+      "./shared/schema/schema.graphql",
   generates: {
     // Shared Types Generation
     // Contains base GraphQL types, shared fragments, and common operations
@@ -327,7 +334,7 @@ const config: CodegenConfig = {
       config: {
         scalars: SHARED_SCALARS, // Consistent scalar types
         skipTypename: false, // Include __typename for Apollo
-        maybeValue: "T | null | undefined", // Nullable type representation  
+        maybeValue: "T | null | undefined", // Nullable type representation
         enumsAsTypes: true,
         futureProofEnums: true,
         futureProofUnions: true,
@@ -447,8 +454,8 @@ const config: CodegenConfig = {
 
   // Performance and debugging options
   verbose: false, // Set to true for detailed generation logs
-  debug: false,   // Set to true for debugging generation issues
-  
+  debug: false, // Set to true for debugging generation issues
+
   // Common troubleshooting:
   // 1. "Unknown fragment" errors: Ensure shared fragments are in /shared/graphql/fragments.graphql
   // 2. "Duplicate operation names": Check for naming conflicts between domains and shared

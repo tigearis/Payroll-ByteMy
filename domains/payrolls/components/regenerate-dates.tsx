@@ -5,13 +5,13 @@ import { useLazyQuery } from "@apollo/client";
 import { format, addMonths } from "date-fns";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   GeneratePayrollDatesQueryDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 
 interface RegenerateDatesProps {
   payrollId: string;

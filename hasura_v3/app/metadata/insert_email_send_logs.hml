@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_email_send_logs_object
+  fields:
+    - name: business_context
+      type: json
+    - name: clicked_at
+      type: timestamptz
+    - name: created_at
+      type: timestamptz
+    - name: delivered_at
+      type: timestamptz
+    - name: error_message
+      type: string
+    - name: html_content
+      type: string
+    - name: id
+      type: uuid
+    - name: opened_at
+      type: timestamptz
+    - name: recipient_emails
+      type: "[string]!"
+    - name: resend_email_id
+      type: string
+    - name: resend_response
+      type: json
+    - name: scheduled_for
+      type: timestamptz
+    - name: send_status
+      type: string
+    - name: sender_user_id
+      type: uuid!
+    - name: sent_at
+      type: timestamptz
+    - name: subject
+      type: string!
+    - name: template_id
+      type: uuid
+    - name: text_content
+      type: string
+  graphql:
+    typeName: insert_email_send_logs_object
+    inputTypeName: insert_email_send_logs_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_email_send_logs_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_email_send_logs_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - business_context
+          - clicked_at
+          - created_at
+          - delivered_at
+          - error_message
+          - html_content
+          - id
+          - opened_at
+          - recipient_emails
+          - resend_email_id
+          - resend_response
+          - scheduled_for
+          - send_status
+          - sender_user_id
+          - sent_at
+          - subject
+          - template_id
+          - text_content
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_email_send_logs_response
+  description: Responses from the 'insert_email_send_logs' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[email_send_logs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_email_send_logs_response
+    inputTypeName: insert_email_send_logs_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_email_send_logs_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_email_send_logs_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_email_send_logs
+  outputType: insert_email_send_logs_response!
+  arguments:
+    - name: objects
+      type: "[insert_email_send_logs_object!]!"
+    - name: post_check
+      type: email_send_logs_bool_exp
+      description: Insert permission predicate over the 'email_send_logs' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_email_send_logs
+  graphql:
+    rootFieldName: insert_email_send_logs
+    rootFieldKind: Mutation
+  description: Insert into the email_send_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_email_send_logs
+  permissions:
+    - role: admin
+      allowExecution: true
+

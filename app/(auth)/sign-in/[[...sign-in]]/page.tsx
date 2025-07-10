@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
 
 export default function SignInPage() {
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -142,10 +143,10 @@ export default function SignInPage() {
             {!isLoaded && (
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-3"></div>
-                  <p className="text-sm text-blue-800">
-                    Loading authentication...
-                  </p>
+                  <ByteMyLoadingIcon
+                    title="Loading authentication..."
+                    size="default"
+                  />
                 </div>
               </div>
             )}
@@ -245,7 +246,7 @@ export default function SignInPage() {
               >
                 {isLoading ? (
                   <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
+                    <ByteMyLoadingIcon title="Signing in..." size="default" />
                     Signing in...
                   </div>
                 ) : (

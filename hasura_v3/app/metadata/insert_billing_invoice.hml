@@ -1,0 +1,137 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_billing_invoice_object
+  fields:
+    - name: billing_period_end
+      type: date!
+    - name: billing_period_id
+      type: uuid
+      description: Reference to billing period this invoice covers
+    - name: billing_period_start
+      type: date!
+    - name: client_id
+      type: uuid!
+    - name: created_at
+      type: timestamptz
+    - name: currency
+      type: string
+    - name: due_date
+      type: date
+    - name: id
+      type: uuid
+    - name: invoice_number
+      type: string
+      description: Unique invoice number for client reference
+    - name: issued_date
+      type: date
+    - name: notes
+      type: string
+    - name: payroll_count
+      type: int_32
+      description: Number of payroll jobs included in this invoice
+    - name: status
+      type: string
+    - name: total_amount
+      type: bigdecimal
+    - name: total_hours
+      type: bigdecimal
+      description: Total hours spent on services in this invoice
+    - name: updated_at
+      type: timestamptz
+  graphql:
+    typeName: insert_billing_invoice_object
+    inputTypeName: insert_billing_invoice_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_billing_invoice_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_billing_invoice_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - billing_period_end
+          - billing_period_id
+          - billing_period_start
+          - client_id
+          - created_at
+          - currency
+          - due_date
+          - id
+          - invoice_number
+          - issued_date
+          - notes
+          - payroll_count
+          - status
+          - total_amount
+          - total_hours
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_billing_invoice_response
+  description: Responses from the 'insert_billing_invoice' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[billing_invoice!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_billing_invoice_response
+    inputTypeName: insert_billing_invoice_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_billing_invoice_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_billing_invoice_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_billing_invoice
+  outputType: insert_billing_invoice_response!
+  arguments:
+    - name: objects
+      type: "[insert_billing_invoice_object!]!"
+    - name: post_check
+      type: billing_invoice_bool_exp
+      description: Insert permission predicate over the 'billing_invoice' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_billing_invoice
+  graphql:
+    rootFieldName: insert_billing_invoice
+    rootFieldKind: Mutation
+  description: Insert into the billing_invoice table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_billing_invoice
+  permissions:
+    - role: admin
+      allowExecution: true
+

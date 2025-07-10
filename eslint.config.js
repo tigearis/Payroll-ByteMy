@@ -2,8 +2,8 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 
-const _filename = fileURLToPath(import.meta.url);
-const _dirname = dirname(_filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = dirname(filename);
 
 const compat = new FlatCompat({
   baseDirectory: _dirname,
@@ -69,7 +69,7 @@ const eslintConfig = [
           filter: {
             // Ignore GraphQL/Hasura generated type patterns - comprehensive list
             regex:
-              "^(query_root.*|subscription_root.*|mutation_root.*|.*StreamCursorValueInput|.*StreamCursorInput|.*StreamArgs|.*InsertInput|.*UpdateInput|.*SetInput|.*OnConflictInput|.*AggregateFields|.*MinFields|.*MaxFields|.*AvgFields|.*SumFields|.*StddevFields|.*StddevPopFields|.*StddevSampFields|.*VarianceFields|.*VarPopFields|.*VarSampFields|.*BoolExp|.*OrderBy|.*PkColumnsInput|.*ArgsInput|.*WhereUniqueInput|.*Args|.*Aggregate.*|.*MutationResponse|.*SelectColumn|.*UpdateColumn|.*Constraint|.*IncInput|.*AppendInput|.*PrependInput|.*DeleteAtPathInput|.*DeleteElemInput|.*DeleteKeyInput|.*Updates|users.*|roles.*|resources.*|permissions.*|userRoles.*|rolePermissions.*|userInvitations.*|userAccessSummaries.*|slowQueries.*|workSchedules.*|usersRoleBackup.*)$",
+              "^(queryroot.*|subscriptionroot.*|mutationroot.*|.*StreamCursorValueInput|.*StreamCursorInput|.*StreamArgs|.*InsertInput|.*UpdateInput|.*SetInput|.*OnConflictInput|.*AggregateFields|.*MinFields|.*MaxFields|.*AvgFields|.*SumFields|.*StddevFields|.*StddevPopFields|.*StddevSampFields|.*VarianceFields|.*VarPopFields|.*VarSampFields|.*BoolExp|.*OrderBy|.*PkColumnsInput|.*ArgsInput|.*WhereUniqueInput|.*Args|.*Aggregate.*|.*MutationResponse|.*SelectColumn|.*UpdateColumn|.*Constraint|.*IncInput|.*AppendInput|.*PrependInput|.*DeleteAtPathInput|.*DeleteElemInput|.*DeleteKeyInput|.*Updates|users.*|roles.*|resources.*|permissions.*|userRoles.*|rolePermissions.*|userInvitations.*|userAccessSummaries.*|slowQueries.*|workSchedules.*|usersRoleBackup.*)$",
             match: false,
           },
         },

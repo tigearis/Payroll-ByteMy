@@ -1,0 +1,123 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_roles_by_name_update_columns
+  description: Update the columns of the 'roles' collection
+  fields:
+    - name: created_at
+      type: update_column_roles_created_at
+      description: Update the 'created_at' column in the 'roles' collection.
+    - name: description
+      type: update_column_roles_description
+      description: Update the 'description' column in the 'roles' collection.
+    - name: display_name
+      type: update_column_roles_display_name
+      description: Update the 'display_name' column in the 'roles' collection.
+    - name: id
+      type: update_column_roles_id
+      description: Update the 'id' column in the 'roles' collection.
+    - name: is_system_role
+      type: update_column_roles_is_system_role
+      description: Update the 'is_system_role' column in the 'roles' collection.
+    - name: name
+      type: update_column_roles_name
+      description: Update the 'name' column in the 'roles' collection.
+    - name: priority
+      type: update_column_roles_priority
+      description: Update the 'priority' column in the 'roles' collection.
+    - name: updated_at
+      type: update_column_roles_updated_at
+      description: Update the 'updated_at' column in the 'roles' collection.
+  graphql:
+    typeName: update_roles_by_name_update_columns
+    inputTypeName: update_roles_by_name_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_roles_by_name_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_roles_by_name_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - description
+          - display_name
+          - id
+          - is_system_role
+          - name
+          - priority
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_roles_by_name_response
+  description: Responses from the 'update_roles_by_name' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[roles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_roles_by_name_response
+    inputTypeName: update_roles_by_name_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_roles_by_name_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_roles_by_name_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_roles_by_name
+  outputType: update_roles_by_name_response!
+  arguments:
+    - name: key_name
+      type: string!
+    - name: post_check
+      type: roles_bool_exp
+      description: Update permission post-condition predicate over the 'roles' collection
+    - name: pre_check
+      type: roles_bool_exp
+      description: Update permission pre-condition predicate over the 'roles' collection
+    - name: update_columns
+      type: update_roles_by_name_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_roles_by_name
+  graphql:
+    rootFieldName: update_roles_by_name
+    rootFieldKind: Mutation
+  description: Update any row on the 'roles' collection using the 'name' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_roles_by_name
+  permissions:
+    - role: admin
+      allowExecution: true
+

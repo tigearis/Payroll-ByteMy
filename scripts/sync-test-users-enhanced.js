@@ -204,13 +204,13 @@ async function syncTestUser(email) {
       emailAddress: [email]
     });
 
-    if (users.length === 0) {
+    if (users.data.length === 0) {
       console.error(`❌ User not found in Clerk: ${email}`);
       console.log(`   💡 Run 'node scripts/create-test-users.js' first`);
       return null;
     }
 
-    const clerkUser = users[0];
+    const clerkUser = users.data[0];
     console.log(`✅ Found Clerk user: ${clerkUser.id}`);
 
     // Sync to database
@@ -243,8 +243,8 @@ async function verifyJWTTemplate() {
   console.log('\n{');
   console.log('  "https://hasura.io/jwt/claims": {');
   console.log('    "metadata": "{{user.public_metadata}}",');
-  console.log('    "x-hasura-role": "{{user.public_metadata.role}}",');
-  console.log('    "x-hasura-user-id": "{{user.public_metadata.databaseId}}",');
+  console.log('    "x-hasura-role": "{{user.publicmetadata.role}}",');
+  console.log('    "x-hasura-user-id": "{{user.publicmetadata.databaseId}}",');
   console.log('    "x-hasura-default-role": "viewer",');
   console.log('    "x-hasura-allowed-roles": ["developer", "org_admin", "manager", "consultant", "viewer"],');
   console.log('    "x-hasura-clerk-user-id": "{{user.id}}"');
@@ -263,8 +263,8 @@ async function main() {
     process.exit(1);
   }
 
-  if (!process.env.CLERK_SECRET_KEY.startsWith('sk_test_')) {
-    console.error('❌ CLERK_SECRET_KEY must be for test environment (sk_test_...)');
+  if (!process.env.CLERKSECRETKEY.startsWith('sk_test_')) {
+    console.error('❌ CLERK_SECRET_KEY must be for test environment (sktest_...)');
     process.exit(1);
   }
 

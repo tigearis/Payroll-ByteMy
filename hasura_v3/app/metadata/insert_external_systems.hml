@@ -1,0 +1,113 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_external_systems_object
+  fields:
+    - name: created_at
+      type: timestamptz
+      description: Timestamp when the system was created
+    - name: description
+      type: string
+      description: Description of the external system and its purpose
+    - name: icon
+      type: string
+      description: Path or reference to the system icon
+    - name: id
+      type: uuid
+      description: Unique identifier for the external system
+    - name: name
+      type: string!
+      description: Name of the external system
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the system was last updated
+    - name: url
+      type: string!
+      description: URL endpoint for the external system
+  graphql:
+    typeName: insert_external_systems_object
+    inputTypeName: insert_external_systems_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_external_systems_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_external_systems_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - description
+          - icon
+          - id
+          - name
+          - updated_at
+          - url
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_external_systems_response
+  description: Responses from the 'insert_external_systems' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[external_systems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_external_systems_response
+    inputTypeName: insert_external_systems_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_external_systems_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_external_systems_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_external_systems
+  outputType: insert_external_systems_response!
+  arguments:
+    - name: objects
+      type: "[insert_external_systems_object!]!"
+    - name: post_check
+      type: external_systems_bool_exp
+      description: Insert permission predicate over the 'external_systems' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_external_systems
+  graphql:
+    rootFieldName: insert_external_systems
+    rootFieldKind: Mutation
+  description: Insert into the external_systems table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_external_systems
+  permissions:
+    - role: admin
+      allowExecution: true
+

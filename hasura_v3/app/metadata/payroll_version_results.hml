@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: payroll_version_results
+  fields:
+    - name: created_at
+      type: timestamptz
+    - name: created_by_user_id
+      type: uuid
+    - name: dates_deleted
+      type: int_32!
+    - name: id
+      type: uuid!
+    - name: message
+      type: string!
+    - name: new_payroll_id
+      type: uuid!
+    - name: new_version_number
+      type: int_32!
+    - name: old_payroll_id
+      type: uuid!
+  graphql:
+    typeName: payroll_version_results
+    inputTypeName: payroll_version_results_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: payroll_version_results
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: payroll_version_results
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - created_by_user_id
+          - dates_deleted
+          - id
+          - message
+          - new_payroll_id
+          - new_version_number
+          - old_payroll_id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: payroll_version_results_bool_exp
+  operand:
+    object:
+      type: payroll_version_results
+      comparableFields:
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: created_by_user_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: dates_deleted
+          booleanExpressionType: int_4_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: message
+          booleanExpressionType: text_bool_exp
+        - fieldName: new_payroll_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: new_version_number
+          booleanExpressionType: int_4_bool_exp
+        - fieldName: old_payroll_id
+          booleanExpressionType: uuid_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: payroll_version_results_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: payroll_version_results_agg_exp
+  operand:
+    object:
+      aggregatedType: payroll_version_results
+      aggregatableFields:
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: created_by_user_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: dates_deleted
+          aggregateExpression: int_4_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: message
+          aggregateExpression: text_agg_exp
+        - fieldName: new_payroll_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: new_version_number
+          aggregateExpression: int_4_agg_exp
+        - fieldName: old_payroll_id
+          aggregateExpression: uuid_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: payroll_version_results_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: payroll_version_results_order_by_exp
+  operand:
+    object:
+      orderedType: payroll_version_results
+      orderableFields:
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: created_by_user_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: dates_deleted
+          orderByExpression: int_32_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: message
+          orderByExpression: string_order_by_exp
+        - fieldName: new_payroll_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: new_version_number
+          orderByExpression: int_32_order_by_exp
+        - fieldName: old_payroll_id
+          orderByExpression: uuid_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: payroll_version_results_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: payroll_version_results
+  objectType: payroll_version_results
+  source:
+    dataConnectorName: payroll
+    collection: payroll_version_results
+  filterExpressionType: payroll_version_results_bool_exp
+  aggregateExpression: payroll_version_results_agg_exp
+  orderByExpression: payroll_version_results_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: payroll_version_results
+      subscription:
+        rootField: payroll_version_results
+    selectUniques:
+      - queryRootField: payroll_version_results_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payroll_version_results_by_id
+    filterInputTypeName: payroll_version_results_filter_input
+    aggregate:
+      queryRootField: payroll_version_results_aggregate
+      subscription:
+        rootField: payroll_version_results_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: payroll_version_results
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

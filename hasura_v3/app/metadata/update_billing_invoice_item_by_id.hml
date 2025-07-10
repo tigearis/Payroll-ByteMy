@@ -1,0 +1,570 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_billing_period_end
+  description: Update the 'billing_period_end' column in the
+    'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: date!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_billing_period_end
+    inputTypeName: update_column_billing_invoice_item_billing_period_end_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_billing_period_end
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_billing_period_end
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_billing_period_start
+  description: Update the 'billing_period_start' column in the
+    'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: date!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_billing_period_start
+    inputTypeName: update_column_billing_invoice_item_billing_period_start_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_billing_period_start
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_billing_period_start
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_created_at
+  description: Update the 'created_at' column in the 'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: timestamptz!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_created_at
+    inputTypeName: update_column_billing_invoice_item_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_description_override
+  description: Update the 'description_override' column in the
+    'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_description_override
+    inputTypeName: update_column_billing_invoice_item_description_override_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_description_override
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_description_override
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_hourly_rate
+  description: Update the 'hourly_rate' column in the 'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: bigdecimal!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_hourly_rate
+    inputTypeName: update_column_billing_invoice_item_hourly_rate_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_hourly_rate
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_hourly_rate
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_id
+  description: Update the 'id' column in the 'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_id
+    inputTypeName: update_column_billing_invoice_item_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_invoice_id
+  description: Update the 'invoice_id' column in the 'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_invoice_id
+    inputTypeName: update_column_billing_invoice_item_invoice_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_invoice_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_invoice_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_item_id
+  description: Update the 'item_id' column in the 'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_item_id
+    inputTypeName: update_column_billing_invoice_item_item_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_item_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_item_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_line_item_type
+  description: Update the 'line_item_type' column in the 'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_line_item_type
+    inputTypeName: update_column_billing_invoice_item_line_item_type_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_line_item_type
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_line_item_type
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_quantity_hours
+  description: Update the 'quantity_hours' column in the 'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: bigdecimal!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_quantity_hours
+    inputTypeName: update_column_billing_invoice_item_quantity_hours_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_quantity_hours
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_quantity_hours
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_tax_amount
+  description: Update the 'tax_amount' column in the 'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: bigdecimal!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_tax_amount
+    inputTypeName: update_column_billing_invoice_item_tax_amount_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_tax_amount
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_tax_amount
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_total_amount
+  description: Update the 'total_amount' column in the 'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: bigdecimal!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_total_amount
+    inputTypeName: update_column_billing_invoice_item_total_amount_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_total_amount
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_total_amount
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_billing_invoice_item_updated_at
+  description: Update the 'updated_at' column in the 'billing_invoice_item' collection
+  fields:
+    - name: set
+      type: timestamptz!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_billing_invoice_item_updated_at
+    inputTypeName: update_column_billing_invoice_item_updated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_billing_invoice_item_updated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_billing_invoice_item_updated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_billing_invoice_item_by_id_update_columns
+  description: Update the columns of the 'billing_invoice_item' collection
+  fields:
+    - name: billing_period_end
+      type: update_column_billing_invoice_item_billing_period_end
+      description: Update the 'billing_period_end' column in the
+        'billing_invoice_item' collection.
+    - name: billing_period_start
+      type: update_column_billing_invoice_item_billing_period_start
+      description: Update the 'billing_period_start' column in the
+        'billing_invoice_item' collection.
+    - name: created_at
+      type: update_column_billing_invoice_item_created_at
+      description: Update the 'created_at' column in the 'billing_invoice_item' collection.
+    - name: description_override
+      type: update_column_billing_invoice_item_description_override
+      description: Update the 'description_override' column in the
+        'billing_invoice_item' collection.
+    - name: hourly_rate
+      type: update_column_billing_invoice_item_hourly_rate
+      description: Update the 'hourly_rate' column in the 'billing_invoice_item' collection.
+    - name: id
+      type: update_column_billing_invoice_item_id
+      description: Update the 'id' column in the 'billing_invoice_item' collection.
+    - name: invoice_id
+      type: update_column_billing_invoice_item_invoice_id
+      description: Update the 'invoice_id' column in the 'billing_invoice_item' collection.
+    - name: item_id
+      type: update_column_billing_invoice_item_item_id
+      description: Update the 'item_id' column in the 'billing_invoice_item' collection.
+    - name: line_item_type
+      type: update_column_billing_invoice_item_line_item_type
+      description: Update the 'line_item_type' column in the 'billing_invoice_item'
+        collection.
+    - name: quantity_hours
+      type: update_column_billing_invoice_item_quantity_hours
+      description: Update the 'quantity_hours' column in the 'billing_invoice_item'
+        collection.
+    - name: tax_amount
+      type: update_column_billing_invoice_item_tax_amount
+      description: Update the 'tax_amount' column in the 'billing_invoice_item' collection.
+    - name: total_amount
+      type: update_column_billing_invoice_item_total_amount
+      description: Update the 'total_amount' column in the 'billing_invoice_item'
+        collection.
+    - name: updated_at
+      type: update_column_billing_invoice_item_updated_at
+      description: Update the 'updated_at' column in the 'billing_invoice_item' collection.
+  graphql:
+    typeName: update_billing_invoice_item_by_id_update_columns
+    inputTypeName: update_billing_invoice_item_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_billing_invoice_item_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_billing_invoice_item_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - billing_period_end
+          - billing_period_start
+          - created_at
+          - description_override
+          - hourly_rate
+          - id
+          - invoice_id
+          - item_id
+          - line_item_type
+          - quantity_hours
+          - tax_amount
+          - total_amount
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_billing_invoice_item_by_id_response
+  description: Responses from the 'update_billing_invoice_item_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[billing_invoice_item!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_billing_invoice_item_by_id_response
+    inputTypeName: update_billing_invoice_item_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_billing_invoice_item_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_billing_invoice_item_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_billing_invoice_item_by_id
+  outputType: update_billing_invoice_item_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+    - name: post_check
+      type: billing_invoice_item_bool_exp
+      description: Update permission post-condition predicate over the
+        'billing_invoice_item' collection
+    - name: pre_check
+      type: billing_invoice_item_bool_exp
+      description: Update permission pre-condition predicate over the
+        'billing_invoice_item' collection
+    - name: update_columns
+      type: update_billing_invoice_item_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_billing_invoice_item_by_id
+  graphql:
+    rootFieldName: update_billing_invoice_item_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'billing_invoice_item' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_billing_invoice_item_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

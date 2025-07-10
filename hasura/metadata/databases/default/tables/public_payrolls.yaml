@@ -3,8 +3,14 @@ table:
   schema: public
 configuration:
   column_config:
+    actual_hours:
+      custom_name: actualHours
+    actual_revenue:
+      custom_name: actualRevenue
     backup_consultant_user_id:
       custom_name: backupConsultantUserId
+    billing_status:
+      custom_name: billingStatus
     client_id:
       custom_name: clientId
     created_at:
@@ -19,8 +25,14 @@ configuration:
       custom_name: dateValue
     employee_count:
       custom_name: employeeCount
+    estimated_hours:
+      custom_name: estimatedHours
+    estimated_revenue:
+      custom_name: estimatedRevenue
     go_live_date:
       custom_name: goLiveDate
+    last_billed_date:
+      custom_name: lastBilledDate
     manager_user_id:
       custom_name: managerUserId
     parent_payroll_id:
@@ -33,6 +45,8 @@ configuration:
       custom_name: processingDaysBeforeEft
     processing_time:
       custom_name: processingTime
+    profit_margin:
+      custom_name: profitMargin
     superseded_date:
       custom_name: supersededDate
     updated_at:
@@ -42,7 +56,10 @@ configuration:
     version_reason:
       custom_name: versionReason
   custom_column_names:
+    actual_hours: actualHours
+    actual_revenue: actualRevenue
     backup_consultant_user_id: backupConsultantUserId
+    billing_status: billingStatus
     client_id: clientId
     created_at: createdAt
     created_by_user_id: createdByUserId
@@ -50,13 +67,17 @@ configuration:
     date_type_id: dateTypeId
     date_value: dateValue
     employee_count: employeeCount
+    estimated_hours: estimatedHours
+    estimated_revenue: estimatedRevenue
     go_live_date: goLiveDate
+    last_billed_date: lastBilledDate
     manager_user_id: managerUserId
     parent_payroll_id: parentPayrollId
     payroll_system: payrollSystem
     primary_consultant_user_id: primaryConsultantUserId
     processing_days_before_eft: processingDaysBeforeEft
     processing_time: processingTime
+    profit_margin: profitMargin
     superseded_date: supersededDate
     updated_at: updatedAt
     version_number: versionNumber
@@ -116,6 +137,20 @@ array_relationships:
         table:
           name: payroll_dates
           schema: public
+  - name: payrollRequiredSkills
+    using:
+      foreign_key_constraint_on:
+        column: payroll_id
+        table:
+          name: payroll_required_skills
+          schema: public
+  - name: timeEntries
+    using:
+      foreign_key_constraint_on:
+        column: payroll_id
+        table:
+          name: time_entries
+          schema: public
 insert_permissions:
   - role: developer
     permission:
@@ -161,6 +196,34 @@ insert_permissions:
         - employee_count
     comment: Org Admins can create any payrolls
 select_permissions:
+  - role: ai_assistant
+    permission:
+      columns:
+        - id
+        - name
+        - client_id
+        - cycle_id
+        - date_type_id
+        - date_value
+        - primary_consultant_user_id
+        - backup_consultant_user_id
+        - manager_user_id
+        - processing_days_before_eft
+        - status
+        - payroll_system
+        - processing_time
+        - employee_count
+        - go_live_date
+        - superseded_date
+        - version_number
+        - parent_payroll_id
+        - version_reason
+        - created_by_user_id
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: AI Assistant can view payroll data for analysis and reporting (read-only)
   - role: consultant
     permission:
       columns:

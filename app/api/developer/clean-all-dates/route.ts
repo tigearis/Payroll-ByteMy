@@ -12,7 +12,7 @@ export const POST = withAuth(
 
     try {
       // Rate limiting - allow only 5 requests per hour for this destructive operation
-      if (!checkRateLimit(`clean-dates-${session.userId}`, 5, 3600000)) {
+      if (!checkRateLimit(`clean-dates-${session.userId}`, { limit: 5, window: 3600000 })) {
         return NextResponse.json(
           {
             error:
@@ -23,7 +23,7 @@ export const POST = withAuth(
       }
 
       console.log(
-        `🔄 Admin ${session.userId} (${session.role}) starting clean all dates and versions...`
+        `🔄 Admin ${session.userId} starting clean all dates and versions...`
       );
 
       // Use domain operation to clean payroll dates
@@ -46,7 +46,6 @@ export const POST = withAuth(
         resetPayrolls,
         performedBy: {
           userId: session.userId,
-          role: session.role,
           timestamp: new Date().toISOString(),
         },
       });
@@ -60,6 +59,5 @@ export const POST = withAuth(
         { status: 500 }
       );
     }
-  },
-  { requiredRole: "developer" } // Only admins can perform this operation
+  }
 );

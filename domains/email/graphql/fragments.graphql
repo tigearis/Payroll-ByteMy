@@ -1,0 +1,132 @@
+# Email Domain Fragments
+# Security Classification: HIGH - Email communication data
+# SOC2 Compliance: Email tracking and audit requirements
+
+# Basic email template fragment
+fragment EmailTemplateBase on EmailTemplates {
+  id
+  name
+  description
+  category
+  subjectTemplate
+  htmlContent
+  textContent
+  availableVariables
+  isActive
+  isSystemTemplate
+  requiresApproval
+  createdAt
+  updatedAt
+}
+
+# Full email template with relationships
+fragment EmailTemplateWithRelations on EmailTemplates {
+  ...EmailTemplateBase
+  createdByUserId
+  approvedByUserId
+  approvedAt
+  createdByUser {
+    id
+    name
+    email
+  }
+  approvedByUser {
+    id
+    name
+    email
+  }
+}
+
+# Email send log fragment
+fragment EmailSendLogBase on EmailSendLogs {
+  id
+  templateId
+  resendEmailId
+  recipientEmails
+  senderUserId
+  subject
+  businessContext
+  sendStatus
+  scheduledFor
+  sentAt
+  deliveredAt
+  openedAt
+  clickedAt
+  createdAt
+}
+
+# Full email send log with relationships
+fragment EmailSendLogWithRelations on EmailSendLogs {
+  ...EmailSendLogBase
+  htmlContent
+  textContent
+  resendResponse
+  errorMessage
+  emailTemplate {
+    id
+    name
+    category
+  }
+  senderUser {
+    id
+    name
+    email
+  }
+}
+
+# Email draft fragment
+fragment EmailDraftBase on EmailDrafts {
+  id
+  userId
+  templateId
+  recipientEmails
+  subject
+  htmlContent
+  textContent
+  variableValues
+  businessContext
+  scheduledFor
+  createdAt
+  updatedAt
+}
+
+# Email draft with relationships
+fragment EmailDraftWithRelations on EmailDrafts {
+  ...EmailDraftBase
+  user {
+    id
+    name
+    email
+  }
+  emailTemplate {
+    id
+    name
+    category
+    subjectTemplate
+    htmlContent
+    availableVariables
+  }
+}
+
+# User favorite template fragment
+fragment UserEmailTemplateFavorite on UserEmailTemplateFavorites {
+  id
+  userId
+  templateId
+  createdAt
+  emailTemplate {
+    ...EmailTemplateBase
+  }
+}
+
+# Template usage statistics
+fragment TemplateUsageStats on EmailTemplates {
+  id
+  name
+  category
+  emailSendLogsAggregate {
+    aggregate {
+      count
+    }
+  }
+}

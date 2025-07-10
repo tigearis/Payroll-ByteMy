@@ -1,0 +1,172 @@
+table:
+  name: email_templates
+  schema: public
+object_relationships:
+  - name: approvedByUser
+    using:
+      foreign_key_constraint_on: approved_by_user_id
+  - name: createdByUser
+    using:
+      foreign_key_constraint_on: created_by_user_id
+array_relationships:
+  - name: emailDrafts
+    using:
+      foreign_key_constraint_on:
+        column: template_id
+        table:
+          name: email_drafts
+          schema: public
+  - name: emailSendLogs
+    using:
+      foreign_key_constraint_on:
+        column: template_id
+        table:
+          name: email_send_logs
+          schema: public
+  - name: userFavorites
+    using:
+      foreign_key_constraint_on:
+        column: template_id
+        table:
+          name: user_email_template_favorites
+          schema: public
+insert_permissions:
+  - role: manager
+    permission:
+      check:
+        created_by_user_id:
+          _eq: X-Hasura-User-Id
+      columns:
+        - name
+        - description
+        - category
+        - subject_template
+        - html_content
+        - text_content
+        - available_variables
+        - is_active
+        - requires_approval
+  - role: org_admin
+    permission:
+      check: {}
+      columns:
+        - name
+        - description
+        - category
+        - subject_template
+        - html_content
+        - text_content
+        - available_variables
+        - is_active
+        - is_system_template
+        - requires_approval
+        - created_by_user_id
+        - approved_by_user_id
+        - approved_at
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - name
+        - description
+        - category
+        - subject_template
+        - html_content
+        - text_content
+        - available_variables
+        - is_active
+        - is_system_template
+        - created_at
+        - updated_at
+      filter:
+        _or:
+          - is_system_template:
+              _eq: true
+          - created_by_user_id:
+              _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: manager
+    permission:
+      columns:
+        - id
+        - name
+        - description
+        - category
+        - subject_template
+        - html_content
+        - text_content
+        - available_variables
+        - is_active
+        - is_system_template
+        - requires_approval
+        - created_by_user_id
+        - approved_by_user_id
+        - approved_at
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - name
+        - description
+        - category
+        - subject_template
+        - html_content
+        - text_content
+        - available_variables
+        - is_active
+        - is_system_template
+        - requires_approval
+        - created_by_user_id
+        - approved_by_user_id
+        - approved_at
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+update_permissions:
+  - role: manager
+    permission:
+      columns:
+        - name
+        - description
+        - subject_template
+        - html_content
+        - text_content
+        - available_variables
+        - is_active
+      filter:
+        _and:
+          - created_by_user_id:
+              _eq: X-Hasura-User-Id
+          - is_system_template:
+              _eq: false
+      check:
+        created_by_user_id:
+          _eq: X-Hasura-User-Id
+  - role: org_admin
+    permission:
+      columns:
+        - name
+        - description
+        - subject_template
+        - html_content
+        - text_content
+        - available_variables
+        - is_active
+        - is_system_template
+        - requires_approval
+        - approved_by_user_id
+        - approved_at
+      filter: {}
+      check: {}
+delete_permissions:
+  - role: org_admin
+    permission:
+      filter:
+        is_system_template:
+          _eq: false

@@ -1,0 +1,407 @@
+# Invoice Management Operations - Semi-Automated Billing System
+
+# Core Invoice Queries
+query GetInvoices($where: billingInvoiceBoolExp, $orderBy: [billingInvoiceOrderBy!], $limit: Int, $offset: Int) {
+  billingInvoice(
+    where: $where
+    orderBy: $orderBy
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    invoiceNumber
+    clientId
+    billingPeriodId
+    issuedDate
+    dueDate
+    status
+    totalAmount
+    currency
+    notes
+    payrollCount
+    totalHours
+    createdAt
+    updatedAt
+    client {
+      id
+      name
+      contactPerson
+      contactEmail
+      contactPhone
+    }
+    billingInvoiceItems {
+      id
+      descriptionOverride
+      quantityHours
+      hourlyRate
+      netAmount
+      totalAmount
+    }
+  }
+}
+
+query GetInvoiceById($id: uuid!) {
+  billingInvoiceById(id: $id) {
+    id
+    invoiceNumber
+    clientId
+    billingPeriodId
+    issuedDate
+    dueDate
+    status
+    totalAmount
+    currency
+    notes
+    payrollCount
+    totalHours
+    createdAt
+    updatedAt
+    client {
+      id
+      name
+      contactPerson
+      contactEmail
+      contactPhone
+    }
+    billingInvoiceItems {
+      id
+      descriptionOverride
+      quantityHours
+      hourlyRate
+      netAmount
+      totalAmount
+      createdAt
+    }
+  }
+}
+
+query GetBillingItemsForInvoice($clientId: uuid, $payrollIds: [uuid!]) {
+  billingItems(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { payrollId: { _in: $payrollIds } }
+        { isApproved: { _eq: true } }
+        { invoiceId: { _isNull: true } }
+      ]
+    }
+    orderBy: { createdAt: ASC }
+  ) {
+    id
+    description
+    quantity
+    unitPrice
+    amount
+    payrollId
+    billingPlanId
+    clientId
+    staffUserId
+    serviceName
+    hourlyRate
+    totalAmount
+    isApproved
+    approvalDate
+    approvedBy
+    createdAt
+    updatedAt
+  }
+}
+
+query GetClientForInvoice($clientId: uuid!) {
+  clientById(id: $clientId) {
+    id
+    name
+    contactPerson
+    contactEmail
+    contactPhone
+    createdAt
+  }
+}
+
+# Invoice Statistics and Analytics
+query GetInvoiceStats($clientId: uuid, $startDate: timestamptz, $endDate: timestamptz) {
+  billingInvoiceAggregate(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { createdAt: { _gte: $startDate, _lte: $endDate } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+      sum {
+        totalAmount
+        payrollCount
+        totalHours
+      }
+    }
+  }
+  
+  # Status breakdown
+  draftInvoices: billingInvoiceAggregate(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { status: { _eq: "draft" } }
+        { createdAt: { _gte: $startDate, _lte: $endDate } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+      sum { totalAmount }
+    }
+  }
+  
+  sentInvoices: billingInvoiceAggregate(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { status: { _eq: "sent" } }
+        { createdAt: { _gte: $startDate, _lte: $endDate } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+      sum { totalAmount }
+    }
+  }
+  
+  paidInvoices: billingInvoiceAggregate(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { status: { _eq: "paid" } }
+        { createdAt: { _gte: $startDate, _lte: $endDate } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+      sum { totalAmount }
+    }
+  }
+}
+
+# Clients with Unbilled Items
+query GetClientsWithUnbilledItems {
+  clients {
+    id
+    name
+    contactPerson
+    contactEmail
+  }
+}
+
+# Invoice Mutations
+mutation CreateInvoice($input: billingInvoiceInsertInput!) {
+  insertBillingInvoice(object: $input) {
+    id
+    invoiceNumber
+    clientId
+    status
+    totalAmount
+    currency
+    createdAt
+  }
+}
+
+mutation UpdateInvoiceStatus($id: uuid!, $status: String!, $notes: String) {
+  updateBillingInvoiceById(
+    pkColumns: { id: $id }
+    _set: { 
+      status: $status
+      notes: $notes
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    status
+    updatedAt
+  }
+}
+
+mutation UpdateInvoiceDetails(
+  $id: uuid!
+  $invoiceNumber: String
+  $dueDate: date
+  $totalAmount: numeric
+  $currency: String
+  $notes: String
+) {
+  updateBillingInvoiceById(
+    pkColumns: { id: $id }
+    _set: {
+      invoiceNumber: $invoiceNumber
+      dueDate: $dueDate
+      totalAmount: $totalAmount
+      currency: $currency
+      notes: $notes
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    invoiceNumber
+    dueDate
+    totalAmount
+    currency
+    notes
+    updatedAt
+  }
+}
+
+# Link billing items to invoice after creation
+mutation LinkBillingItemsToInvoice($billingItemIds: [uuid!]!, $invoiceId: uuid!) {
+  bulkUpdateBillingItems(
+    where: { id: { _in: $billingItemIds } }
+    _set: { 
+      invoiceId: $invoiceId
+      updatedAt: "now()"
+    }
+  ) {
+    affectedRows
+    returning {
+      id
+      invoiceId
+    }
+  }
+}
+
+# Cancel/Delete Invoice
+mutation CancelInvoice($id: uuid!) {
+  updateBillingInvoiceById(
+    pkColumns: { id: $id }
+    _set: { 
+      status: "cancelled"
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    status
+    updatedAt
+  }
+  
+  # Unlink billing items
+  bulkUpdateBillingItems(
+    where: { invoiceId: { _eq: $id } }
+    _set: { 
+      invoiceId: null
+      updatedAt: "now()"
+    }
+  ) {
+    affectedRows
+  }
+}
+
+# Invoice Actions
+mutation SendInvoice($invoiceId: uuid!) {
+  updateBillingInvoiceById(
+    pkColumns: { id: $invoiceId }
+    _set: { 
+      status: "sent"
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    status
+    updatedAt
+  }
+}
+
+mutation MarkInvoiceAsPaid($invoiceId: uuid!, $paymentDate: date) {
+  updateBillingInvoiceById(
+    pkColumns: { id: $invoiceId }
+    _set: { 
+      status: "paid"
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    status
+    updatedAt
+  }
+}
+
+# Generate Invoice PDF/Export
+mutation GenerateInvoice($invoiceId: uuid!) {
+  updateBillingInvoiceById(
+    pkColumns: { id: $invoiceId }
+    _set: { 
+      status: "generating"
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    status
+    updatedAt
+  }
+}
+
+# Simplified consolidation for available schema
+query GetBillingItemsForConsolidation($clientIds: [uuid!]!) {
+  billingItems(
+    where: {
+      _and: [
+        { clientId: { _in: $clientIds } }
+        { invoiceId: { _isNull: true } }
+        { isApproved: { _eq: true } }
+      ]
+    }
+  ) {
+    id
+    clientId
+    totalAmount
+  }
+}
+
+# Missing operations for invoice consolidation manager
+query GetBillingPeriodsForConsolidation($clientIds: [uuid!]) {
+  billingPeriods(
+    where: {
+      clientId: { _in: $clientIds }
+      status: { _eq: "active" }
+    }
+    orderBy: { periodStart: DESC }
+  ) {
+    id
+    clientId
+    periodStart
+    periodEnd
+    status
+    client {
+      id
+      name
+    }
+  }
+}
+
+mutation ConsolidateInvoices($clientId: uuid!, $consolidationDate: date!) {
+  # Create invoice for client with unbilled items
+  insertBillingInvoice(object: {
+    clientId: $clientId
+    issuedDate: $consolidationDate
+    status: "draft"
+    currency: "AUD"
+  }) {
+    id
+    clientId
+    status
+    createdAt
+  }
+}
+
+mutation AutoGenerateInvoices($billingPeriods: [billingPeriodsInsertInput!]!) {
+  # Generate billing periods for invoice creation
+  insertBillingPeriod(objects: $billingPeriods) {
+    affectedRows
+    returning {
+      id
+      clientId
+      periodStart
+      periodEnd
+      status
+    }
+  }
+}

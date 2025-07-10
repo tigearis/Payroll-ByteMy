@@ -21,6 +21,7 @@ fragment ClientCore on clients {
 # Standard client information for most operations
 fragment ClientBasic on clients {
   ...ClientCore
+  active
   contactEmail
   contactPhone
   createdAt

@@ -1,0 +1,213 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: payroll_profitability
+  description: Profitability analysis for individual payroll jobs
+  fields:
+    - name: billing_items_count
+      type: int_64
+    - name: billing_status
+      type: string
+    - name: client_id
+      type: uuid
+    - name: client_name
+      type: string
+    - name: employee_count
+      type: int_32
+    - name: payroll_id
+      type: uuid
+    - name: payroll_name
+      type: string
+    - name: payslip_count
+      type: int_32
+    - name: revenue_per_hour
+      type: bigdecimal
+    - name: time_entries_count
+      type: int_64
+    - name: total_hours
+      type: bigdecimal
+    - name: total_revenue
+      type: bigdecimal
+  graphql:
+    typeName: payroll_profitability
+    inputTypeName: payroll_profitability_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: payroll_profitability
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: payroll_profitability
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - billing_items_count
+          - billing_status
+          - client_id
+          - client_name
+          - employee_count
+          - payroll_id
+          - payroll_name
+          - payslip_count
+          - revenue_per_hour
+          - time_entries_count
+          - total_hours
+          - total_revenue
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: payroll_profitability_bool_exp
+  operand:
+    object:
+      type: payroll_profitability
+      comparableFields:
+        - fieldName: billing_items_count
+          booleanExpressionType: int_8_bool_exp
+        - fieldName: billing_status
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: client_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: client_name
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: employee_count
+          booleanExpressionType: int_4_bool_exp
+        - fieldName: payroll_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: payroll_name
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: payslip_count
+          booleanExpressionType: int_4_bool_exp
+        - fieldName: revenue_per_hour
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: time_entries_count
+          booleanExpressionType: int_8_bool_exp
+        - fieldName: total_hours
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: total_revenue
+          booleanExpressionType: numeric_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: payroll_profitability_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: payroll_profitability_agg_exp
+  operand:
+    object:
+      aggregatedType: payroll_profitability
+      aggregatableFields:
+        - fieldName: billing_items_count
+          aggregateExpression: int_8_agg_exp
+        - fieldName: billing_status
+          aggregateExpression: varchar_agg_exp
+        - fieldName: client_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: client_name
+          aggregateExpression: varchar_agg_exp
+        - fieldName: employee_count
+          aggregateExpression: int_4_agg_exp
+        - fieldName: payroll_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: payroll_name
+          aggregateExpression: varchar_agg_exp
+        - fieldName: payslip_count
+          aggregateExpression: int_4_agg_exp
+        - fieldName: revenue_per_hour
+          aggregateExpression: numeric_agg_exp
+        - fieldName: time_entries_count
+          aggregateExpression: int_8_agg_exp
+        - fieldName: total_hours
+          aggregateExpression: numeric_agg_exp
+        - fieldName: total_revenue
+          aggregateExpression: numeric_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: payroll_profitability_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: payroll_profitability_order_by_exp
+  operand:
+    object:
+      orderedType: payroll_profitability
+      orderableFields:
+        - fieldName: billing_items_count
+          orderByExpression: int_64_order_by_exp
+        - fieldName: billing_status
+          orderByExpression: string_order_by_exp
+        - fieldName: client_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: client_name
+          orderByExpression: string_order_by_exp
+        - fieldName: employee_count
+          orderByExpression: int_32_order_by_exp
+        - fieldName: payroll_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: payroll_name
+          orderByExpression: string_order_by_exp
+        - fieldName: payslip_count
+          orderByExpression: int_32_order_by_exp
+        - fieldName: revenue_per_hour
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: time_entries_count
+          orderByExpression: int_64_order_by_exp
+        - fieldName: total_hours
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: total_revenue
+          orderByExpression: bigdecimal_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: payroll_profitability_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: payroll_profitability
+  objectType: payroll_profitability
+  source:
+    dataConnectorName: payroll
+    collection: payroll_profitability
+  filterExpressionType: payroll_profitability_bool_exp
+  aggregateExpression: payroll_profitability_agg_exp
+  orderByExpression: payroll_profitability_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: payroll_profitability
+      subscription:
+        rootField: payroll_profitability
+    selectUniques: []
+    filterInputTypeName: payroll_profitability_filter_input
+    aggregate:
+      queryRootField: payroll_profitability_aggregate
+      subscription:
+        rootField: payroll_profitability_aggregate
+  description: Profitability analysis for individual payroll jobs
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: payroll_profitability
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

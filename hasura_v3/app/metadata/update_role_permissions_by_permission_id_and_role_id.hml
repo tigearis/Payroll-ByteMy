@@ -1,0 +1,121 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_role_permissions_by_permission_id_and_role_id_update_columns
+  description: Update the columns of the 'role_permissions' collection
+  fields:
+    - name: conditions
+      type: update_column_role_permissions_conditions
+      description: Update the 'conditions' column in the 'role_permissions' collection.
+    - name: created_at
+      type: update_column_role_permissions_created_at
+      description: Update the 'created_at' column in the 'role_permissions' collection.
+    - name: id
+      type: update_column_role_permissions_id
+      description: Update the 'id' column in the 'role_permissions' collection.
+    - name: permission_id
+      type: update_column_role_permissions_permission_id
+      description: Update the 'permission_id' column in the 'role_permissions' collection.
+    - name: role_id
+      type: update_column_role_permissions_role_id
+      description: Update the 'role_id' column in the 'role_permissions' collection.
+    - name: updated_at
+      type: update_column_role_permissions_updated_at
+      description: Update the 'updated_at' column in the 'role_permissions' collection.
+  graphql:
+    typeName: update_role_permissions_by_permission_id_and_role_id_update_columns
+    inputTypeName: update_role_permissions_by_permission_id_and_role_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_role_permissions_by_permission_id_and_role_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_role_permissions_by_permission_id_and_role_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - conditions
+          - created_at
+          - id
+          - permission_id
+          - role_id
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_role_permissions_by_permission_id_and_role_id_response
+  description: Responses from the
+    'update_role_permissions_by_permission_id_and_role_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[role_permissions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_role_permissions_by_permission_id_and_role_id_response
+    inputTypeName: update_role_permissions_by_permission_id_and_role_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_role_permissions_by_permission_id_and_role_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_role_permissions_by_permission_id_and_role_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_role_permissions_by_permission_id_and_role_id
+  outputType: update_role_permissions_by_permission_id_and_role_id_response!
+  arguments:
+    - name: key_permission_id
+      type: uuid!
+    - name: key_role_id
+      type: uuid!
+    - name: post_check
+      type: role_permissions_bool_exp
+      description: Update permission post-condition predicate over the
+        'role_permissions' collection
+    - name: pre_check
+      type: role_permissions_bool_exp
+      description: Update permission pre-condition predicate over the
+        'role_permissions' collection
+    - name: update_columns
+      type: update_role_permissions_by_permission_id_and_role_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_role_permissions_by_permission_id_and_role_id
+  graphql:
+    rootFieldName: update_role_permissions_by_permission_id_and_role_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'role_permissions' collection using the
+    'permission_id' and 'role_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_role_permissions_by_permission_id_and_role_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

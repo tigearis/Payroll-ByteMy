@@ -1,0 +1,100 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_user_roles_object
+  fields:
+    - name: created_at
+      type: timestamptz
+    - name: id
+      type: uuid
+    - name: role_id
+      type: uuid!
+    - name: updated_at
+      type: timestamptz
+    - name: user_id
+      type: uuid!
+  graphql:
+    typeName: insert_user_roles_object
+    inputTypeName: insert_user_roles_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_user_roles_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_user_roles_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - id
+          - role_id
+          - updated_at
+          - user_id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_user_roles_response
+  description: Responses from the 'insert_user_roles' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[user_roles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_user_roles_response
+    inputTypeName: insert_user_roles_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_user_roles_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_user_roles_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_user_roles
+  outputType: insert_user_roles_response!
+  arguments:
+    - name: objects
+      type: "[insert_user_roles_object!]!"
+    - name: post_check
+      type: user_roles_bool_exp
+      description: Insert permission predicate over the 'user_roles' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_user_roles
+  graphql:
+    rootFieldName: insert_user_roles
+    rootFieldKind: Mutation
+  description: Insert into the user_roles table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_user_roles
+  permissions:
+    - role: admin
+      allowExecution: true
+

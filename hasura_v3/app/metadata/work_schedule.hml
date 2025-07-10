@@ -1,0 +1,224 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: work_schedule
+  fields:
+    - name: admin_time_hours
+      type: bigdecimal
+      description: Hours allocated to administrative tasks
+    - name: created_at
+      type: timestamp
+      description: Timestamp when the schedule entry was created
+    - name: id
+      type: uuid!
+      description: Unique identifier for the work schedule entry
+    - name: payroll_capacity_hours
+      type: bigdecimal
+      description: Hours available for payroll processing (work_hours - admin_time_hours)
+    - name: updated_at
+      type: timestamp
+      description: Timestamp when the schedule entry was last updated
+    - name: user_id
+      type: uuid!
+      description: Reference to the user this schedule belongs to
+    - name: uses_default_admin_time
+      type: boolean
+      description: Whether to use position-based default admin time or custom override
+    - name: work_day
+      type: string!
+      description: Day of the week (Monday, Tuesday, etc.)
+    - name: work_hours
+      type: bigdecimal!
+      description: Number of hours worked on this day
+  graphql:
+    typeName: work_schedule
+    inputTypeName: work_schedule_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: work_schedule
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: work_schedule
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - admin_time_hours
+          - created_at
+          - id
+          - payroll_capacity_hours
+          - updated_at
+          - user_id
+          - uses_default_admin_time
+          - work_day
+          - work_hours
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: work_schedule_bool_exp
+  operand:
+    object:
+      type: work_schedule
+      comparableFields:
+        - fieldName: admin_time_hours
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamp_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: payroll_capacity_hours
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamp_bool_exp
+        - fieldName: user_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: uses_default_admin_time
+          booleanExpressionType: bool_bool_exp
+        - fieldName: work_day
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: work_hours
+          booleanExpressionType: numeric_bool_exp
+      comparableRelationships:
+        - relationshipName: user
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: work_schedule_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: work_schedule_agg_exp
+  operand:
+    object:
+      aggregatedType: work_schedule
+      aggregatableFields:
+        - fieldName: admin_time_hours
+          aggregateExpression: numeric_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamp_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: payroll_capacity_hours
+          aggregateExpression: numeric_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamp_agg_exp
+        - fieldName: user_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: uses_default_admin_time
+          aggregateExpression: bool_agg_exp
+        - fieldName: work_day
+          aggregateExpression: varchar_agg_exp
+        - fieldName: work_hours
+          aggregateExpression: numeric_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: work_schedule_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: work_schedule_order_by_exp
+  operand:
+    object:
+      orderedType: work_schedule
+      orderableFields:
+        - fieldName: admin_time_hours
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamp_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: payroll_capacity_hours
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamp_order_by_exp
+        - fieldName: user_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: uses_default_admin_time
+          orderByExpression: boolean_order_by_exp
+        - fieldName: work_day
+          orderByExpression: string_order_by_exp
+        - fieldName: work_hours
+          orderByExpression: bigdecimal_order_by_exp
+      orderableRelationships:
+        - relationshipName: user
+  graphql:
+    expressionTypeName: work_schedule_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: work_schedule
+  objectType: work_schedule
+  source:
+    dataConnectorName: payroll
+    collection: work_schedule
+  filterExpressionType: work_schedule_bool_exp
+  aggregateExpression: work_schedule_agg_exp
+  orderByExpression: work_schedule_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: work_schedule
+      subscription:
+        rootField: work_schedule
+    selectUniques:
+      - queryRootField: work_schedule_by_unique_user_work_day
+        uniqueIdentifier:
+          - user_id
+          - work_day
+        subscription:
+          rootField: work_schedule_by_unique_user_work_day
+      - queryRootField: work_schedule_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: work_schedule_by_id
+    filterInputTypeName: work_schedule_filter_input
+    aggregate:
+      queryRootField: work_schedule_aggregate
+      subscription:
+        rootField: work_schedule_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: work_schedule
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: work_schedule
+  target:
+    model:
+      name: users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: user_id
+      target:
+        modelField:
+          - fieldName: id
+

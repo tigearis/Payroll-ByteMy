@@ -5,15 +5,8 @@ import { RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { useEnhancedPermissions } from "@/lib/auth";
 
 export function SyncUserButton() {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('staff:write')) {
-    return null;
-  }
-
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSync = async () => {

@@ -40,7 +40,8 @@ export function useCurrentUser() {
     // Method 3: Extract from JWT session claims (fallback)
     const hasuraClaims = sessionClaims?.["https://hasura.io/jwt/claims"] as any;
     const jwtUserId = hasuraClaims?.["x-hasura-user-id"] as string;
-    const jwtRole = sessionClaims?.["x-hasura-default-role"] as string;
+    const jwtClerkId = hasuraClaims?.["x-hasura-clerk-id"] as string;
+    const jwtRole = hasuraClaims?.["x-hasura-default-role"] as any;
 
     // Priority: user metadata, session metadata, then JWT claims
     const extractedUserId =
@@ -51,6 +52,7 @@ export function useCurrentUser() {
       metadataUserId,
       sessionUserId,
       jwtUserId,
+      jwtClerkId,
       jwtRole,
       clerkUserId,
       userRole: user.publicMetadata?.role,
@@ -65,6 +67,7 @@ export function useCurrentUser() {
             ? "jwt-claims"
             : "none",
       fullPublicMetadata: user.publicMetadata,
+      fullJwtClaims: hasuraClaims,
     });
 
     // Additional validation that the extracted ID looks like a UUID

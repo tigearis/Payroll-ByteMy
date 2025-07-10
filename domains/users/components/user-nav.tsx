@@ -18,7 +18,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuthContext } from "@/lib/auth";
 
 /**
  * UserNav Component
@@ -43,7 +42,6 @@ export function UserNav() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
-  const { hasPermission } = useAuthContext();
 
   /**
    * Determines the best avatar image to display for the user
@@ -137,11 +135,10 @@ export function UserNav() {
           <DropdownMenuItem onClick={() => router.push("/profile")}>
             Profile
           </DropdownMenuItem>
-          {hasPermission("settings:write") && (
-            <DropdownMenuItem onClick={() => router.push("/settings/account")}>
-              Settings
-            </DropdownMenuItem>
-          )}
+
+          <DropdownMenuItem onClick={() => router.push("/settings/account")}>
+            Settings
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>Log out</DropdownMenuItem>

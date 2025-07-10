@@ -1,0 +1,218 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: audit_log
+  fields:
+    - name: action
+      type: string!
+    - name: created_at
+      type: timestamptz
+    - name: entity_id
+      type: string!
+    - name: entity_type
+      type: string!
+    - name: id
+      type: uuid!
+    - name: ip_address
+      type: json
+    - name: new_values
+      type: json
+    - name: old_values
+      type: json
+    - name: user_agent
+      type: string
+    - name: user_id
+      type: uuid
+  graphql:
+    typeName: audit_log
+    inputTypeName: audit_log_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: audit_log
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: audit_log
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - created_at
+          - entity_id
+          - entity_type
+          - id
+          - ip_address
+          - new_values
+          - old_values
+          - user_agent
+          - user_id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: audit_log_bool_exp
+  operand:
+    object:
+      type: audit_log
+      comparableFields:
+        - fieldName: action
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: entity_id
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: entity_type
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: ip_address
+          booleanExpressionType: inet_bool_exp
+        - fieldName: new_values
+          booleanExpressionType: jsonb_bool_exp
+        - fieldName: old_values
+          booleanExpressionType: jsonb_bool_exp
+        - fieldName: user_agent
+          booleanExpressionType: text_bool_exp
+        - fieldName: user_id
+          booleanExpressionType: uuid_bool_exp
+      comparableRelationships:
+        - relationshipName: user
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: audit_log_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: audit_log_agg_exp
+  operand:
+    object:
+      aggregatedType: audit_log
+      aggregatableFields:
+        - fieldName: action
+          aggregateExpression: varchar_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: entity_id
+          aggregateExpression: varchar_agg_exp
+        - fieldName: entity_type
+          aggregateExpression: varchar_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: ip_address
+          aggregateExpression: inet_agg_exp
+        - fieldName: new_values
+          aggregateExpression: jsonb_agg_exp
+        - fieldName: old_values
+          aggregateExpression: jsonb_agg_exp
+        - fieldName: user_agent
+          aggregateExpression: text_agg_exp
+        - fieldName: user_id
+          aggregateExpression: uuid_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: audit_log_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: audit_log_order_by_exp
+  operand:
+    object:
+      orderedType: audit_log
+      orderableFields:
+        - fieldName: action
+          orderByExpression: string_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: entity_id
+          orderByExpression: string_order_by_exp
+        - fieldName: entity_type
+          orderByExpression: string_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: ip_address
+          orderByExpression: json_order_by_exp
+        - fieldName: new_values
+          orderByExpression: json_order_by_exp
+        - fieldName: old_values
+          orderByExpression: json_order_by_exp
+        - fieldName: user_agent
+          orderByExpression: string_order_by_exp
+        - fieldName: user_id
+          orderByExpression: uuid_order_by_exp
+      orderableRelationships:
+        - relationshipName: user
+  graphql:
+    expressionTypeName: audit_log_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: audit_log
+  objectType: audit_log
+  source:
+    dataConnectorName: payroll
+    collection: audit_log
+  filterExpressionType: audit_log_bool_exp
+  aggregateExpression: audit_log_agg_exp
+  orderByExpression: audit_log_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: audit_log
+      subscription:
+        rootField: audit_log
+    selectUniques:
+      - queryRootField: audit_log_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: audit_log_by_id
+    filterInputTypeName: audit_log_filter_input
+    aggregate:
+      queryRootField: audit_log_aggregate
+      subscription:
+        rootField: audit_log_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: audit_log
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: audit_log
+  target:
+    model:
+      name: users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: user_id
+      target:
+        modelField:
+          - fieldName: id
+

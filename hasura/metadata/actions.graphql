@@ -1,26 +1,101 @@
 type Mutation {
-  checkSuspiciousActivity(
-    userId: String
-    timeWindow: Int
-  ): SuspiciousActivityResponse
+  approve_leave_request(
+    leaveId: String!
+    approvalStatus: String!
+    notes: String
+  ): LeaveResponse!
 }
 
 type Mutation {
-  commitPayrollAssignments(
-    changes: [PayrollAssignmentInput!]!
-  ): CommitPayrollAssignmentsOutput
+  audit_event(
+    input: AuditEventInput!
+  ): AuditEventResponse!
+}
+
+type Query {
+  calculate_utilization_stats(
+    input: UtilizationStatsInput!
+  ): UtilizationStatsResponse!
 }
 
 type Mutation {
-  generateComplianceReport(
-    input: ComplianceReportInput!
-  ): ComplianceReportResponse
+  create_leave_request(
+    userId: String!
+    startDate: String!
+    endDate: String!
+    leaveType: String!
+    reason: String
+  ): LeaveResponse!
 }
 
 type Mutation {
-  logAuditEvent(
-    event: AuditEventInput!
-  ): AuditEventResponse
+  create_payroll(
+    name: String!
+    clientId: String!
+    processingTime: Int!
+    complexity: String!
+  ): PayrollResponse!
+}
+
+type Mutation {
+  create_staff_member(
+    name: String!
+    email: String!
+    role: String!
+    managerId: String
+  ): StaffResponse!
+}
+
+type Mutation {
+  generate_payroll_schedule(
+    payrollId: String!
+    startDate: String!
+    cycleType: String!
+  ): ScheduleResponse!
+}
+
+type Query {
+  get_assignment_calendar(
+    input: AssignmentCalendarInput!
+  ): AssignmentCalendarResponse!
+}
+
+type Query {
+  get_team_capacity_overview(
+    input: TeamCapacityInput!
+  ): TeamCapacityResponse!
+}
+
+type Query {
+  get_workload_metrics(
+    input: WorkloadMetricsInput!
+  ): WorkloadMetricsResponse!
+}
+
+type Mutation {
+  update_payroll(
+    id: String!
+    name: String
+    processingTime: Int
+    complexity: String
+  ): PayrollResponse!
+}
+
+type Mutation {
+  update_staff_member(
+    userId: String!
+    name: String
+    email: String
+    role: String
+    managerId: String
+  ): StaffResponse!
+}
+
+type Mutation {
+  update_user_role(
+    userId: String!
+    role: String!
+  ): UserRoleResponse!
 }
 
 input PayrollAssignmentInput {
@@ -45,6 +120,33 @@ input ComplianceReportInput {
   startDate: String!
   endDate: String!
   includeDetails: Boolean
+}
+
+input WorkloadMetricsInput {
+  userId: String!
+  period: String!
+  startDate: String!
+  endDate: String!
+}
+
+input TeamCapacityInput {
+  teamIds: [String!]!
+  period: String!
+  startDate: String!
+  endDate: String!
+}
+
+input AssignmentCalendarInput {
+  userId: String!
+  startDate: String!
+  endDate: String!
+}
+
+input UtilizationStatsInput {
+  userId: String!
+  period: String!
+  startDate: String!
+  endDate: String!
 }
 
 type AffectedAssignment {
@@ -87,5 +189,119 @@ type SuspiciousEvent {
   count: Int!
   timeframe: String!
   severity: String!
+}
+
+type PayrollResponse {
+  success: Boolean!
+  payrollId: String
+  message: String
+  errors: [String!]
+}
+
+type ScheduleResponse {
+  success: Boolean!
+  scheduleId: String
+  dates: [String!]
+  message: String
+  errors: [String!]
+}
+
+type LeaveResponse {
+  success: Boolean!
+  leaveId: String
+  message: String
+  errors: [String!]
+}
+
+type UserRoleResponse {
+  success: Boolean!
+  userId: String
+  newRole: String
+  message: String
+  errors: [String!]
+}
+
+type StaffResponse {
+  success: Boolean!
+  userId: String
+  message: String
+  errors: [String!]
+}
+
+type WorkloadMetricsResponse {
+  success: Boolean!
+  periods: [WorkloadPeriodData!]!
+  summary: CapacitySummary!
+  message: String
+  errors: [String!]
+}
+
+type TeamCapacityResponse {
+  success: Boolean!
+  teamMembers: [WorkloadMetricsResponse!]!
+  teamSummary: CapacitySummary!
+  message: String
+  errors: [String!]
+}
+
+type AssignmentCalendarResponse {
+  success: Boolean!
+  calendarDays: [CalendarDay!]!
+  message: String
+  errors: [String!]
+}
+
+type UtilizationStatsResponse {
+  success: Boolean!
+  summary: CapacitySummary!
+  overallocatedPeriods: Int!
+  averageUtilization: Float!
+  message: String
+  errors: [String!]
+}
+
+type WorkloadPeriodData {
+  date: String!
+  period: String!
+  fullDate: String!
+  workHours: Float!
+  adminTimeHours: Float!
+  payrollCapacityHours: Float!
+  assignedHours: Float!
+  utilization: Int!
+  utilizationHours: Float!
+  overflowHours: Float!
+  assignments: [AssignmentDetails!]!
+  isOverallocated: Boolean!
+}
+
+type CapacitySummary {
+  totalCapacity: Float!
+  totalAssigned: Float!
+  avgUtilization: Int!
+  overallocatedPeriods: Int!
+  periodsShown: Int!
+}
+
+type AssignmentDetails {
+  id: String!
+  name: String!
+  clientName: String!
+  processingTime: Float!
+  processingDaysBeforeEft: Int!
+  eftDate: String!
+  status: String!
+  priority: String!
+}
+
+type CalendarDay {
+  date: String!
+  workHours: Float!
+  adminTimeHours: Float!
+  payrollCapacityHours: Float!
+  assignments: [AssignmentDetails!]!
+  totalAssignedHours: Float!
+  utilization: Int!
+  isOverallocated: Boolean!
 }
 

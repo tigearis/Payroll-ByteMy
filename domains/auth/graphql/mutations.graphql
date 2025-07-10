@@ -156,7 +156,7 @@ mutation CreateUserInvitation(
       invitationMetadata: $invitationMetadata
       invitedBy: $invitedBy
       expiresAt: $expiresAt
-      status: "pending"
+      invitationStatus: "pending"
     }
   ) {
     ...UserInvitationDetail
@@ -188,7 +188,7 @@ mutation CompleteInvitationAcceptance(
 
   updateUserInvitationById(
     pkColumns: { id: $invitationId }
-    _set: { status: "accepted", acceptedAt: "now()", updatedAt: "now()" }
+    _set: { invitationStatus: "accepted", acceptedAt: "now()", updatedAt: "now()" }
   ) {
     id
     status
@@ -218,7 +218,7 @@ mutation AssignInvitationRole(
 mutation CancelUserInvitation($invitationId: uuid!) {
   updateUserInvitationById(
     pkColumns: { id: $invitationId }
-    _set: { status: "cancelled", updatedAt: "now()" }
+    _set: { invitationStatus: "cancelled", updatedAt: "now()" }
   ) {
     ...UserInvitationDetail
   }
@@ -237,7 +237,7 @@ mutation ResendUserInvitation(
       expiresAt: $newExpiresAt
       clerkTicket: $newClerkTicket
       clerkInvitationId: $newClerkInvitationId
-      status: "pending"
+      invitationStatus: "pending"
       updatedAt: "now()"
     }
   ) {
@@ -249,7 +249,7 @@ mutation ResendUserInvitation(
 mutation MarkExpiredInvitations {
   bulkUpdateUserInvitations: bulkUpdateUserInvitations(
     where: { invitationStatus: { _eq: "pending" }, expiresAt: { _lt: "now()" } }
-    _set: { invitationStatus: "expired", status: "expired", updatedAt: "now()" }
+    _set: { invitationStatus: "expired", updatedAt: "now()" }
   ) {
     affectedRows
   }
@@ -270,7 +270,6 @@ mutation RevokeInvitation(
     pkColumns: { id: $invitationId }
     _set: {
       invitationStatus: "revoked"
-      status: "cancelled"
       revokedAt: "now()"
       revokedBy: $revokedBy
       revokeReason: $revokeReason
@@ -295,7 +294,6 @@ mutation ResendInvitationEnhanced(
       clerkTicket: $newClerkTicket
       clerkInvitationId: $newClerkInvitationId
       invitationStatus: "pending"
-      status: "pending"
       updatedAt: "now()"
     }
   ) {
@@ -328,7 +326,6 @@ mutation CreateInvitationEnhanced(
       invitationMetadata: $invitationMetadata
       invitedBy: $invitedBy
       expiresAt: $expiresAt
-      status: "pending"
       invitationStatus: "pending"
     }
   ) {
@@ -345,7 +342,6 @@ mutation AcceptInvitationEnhanced(
     pkColumns: { id: $invitationId }
     _set: {
       invitationStatus: "accepted"
-      status: "accepted"
       acceptedAt: "now()"
       acceptedBy: $acceptedBy
       updatedAt: "now()"
@@ -365,7 +361,6 @@ mutation BulkRevokeInvitations(
     where: { id: { _in: $invitationIds } }
     _set: {
       invitationStatus: "revoked"
-      status: "cancelled"
       revokedAt: "now()"
       revokedBy: $revokedBy
       revokeReason: $revokeReason

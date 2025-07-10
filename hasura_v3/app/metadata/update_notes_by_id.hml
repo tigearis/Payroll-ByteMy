@@ -1,0 +1,380 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_notes_content
+  description: Update the 'content' column in the 'notes' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_notes_content
+    inputTypeName: update_column_notes_content_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_notes_content
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_notes_content
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_notes_created_at
+  description: Update the 'created_at' column in the 'notes' collection
+  fields:
+    - name: set
+      type: timestamp
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_notes_created_at
+    inputTypeName: update_column_notes_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_notes_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_notes_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_notes_entity_id
+  description: Update the 'entity_id' column in the 'notes' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_notes_entity_id
+    inputTypeName: update_column_notes_entity_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_notes_entity_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_notes_entity_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_notes_entity_type
+  description: Update the 'entity_type' column in the 'notes' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_notes_entity_type
+    inputTypeName: update_column_notes_entity_type_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_notes_entity_type
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_notes_entity_type
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_notes_id
+  description: Update the 'id' column in the 'notes' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_notes_id
+    inputTypeName: update_column_notes_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_notes_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_notes_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_notes_is_important
+  description: Update the 'is_important' column in the 'notes' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_notes_is_important
+    inputTypeName: update_column_notes_is_important_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_notes_is_important
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_notes_is_important
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_notes_updated_at
+  description: Update the 'updated_at' column in the 'notes' collection
+  fields:
+    - name: set
+      type: timestamp
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_notes_updated_at
+    inputTypeName: update_column_notes_updated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_notes_updated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_notes_updated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_notes_user_id
+  description: Update the 'user_id' column in the 'notes' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_notes_user_id
+    inputTypeName: update_column_notes_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_notes_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_notes_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_notes_by_id_update_columns
+  description: Update the columns of the 'notes' collection
+  fields:
+    - name: content
+      type: update_column_notes_content
+      description: Update the 'content' column in the 'notes' collection.
+    - name: created_at
+      type: update_column_notes_created_at
+      description: Update the 'created_at' column in the 'notes' collection.
+    - name: entity_id
+      type: update_column_notes_entity_id
+      description: Update the 'entity_id' column in the 'notes' collection.
+    - name: entity_type
+      type: update_column_notes_entity_type
+      description: Update the 'entity_type' column in the 'notes' collection.
+    - name: id
+      type: update_column_notes_id
+      description: Update the 'id' column in the 'notes' collection.
+    - name: is_important
+      type: update_column_notes_is_important
+      description: Update the 'is_important' column in the 'notes' collection.
+    - name: updated_at
+      type: update_column_notes_updated_at
+      description: Update the 'updated_at' column in the 'notes' collection.
+    - name: user_id
+      type: update_column_notes_user_id
+      description: Update the 'user_id' column in the 'notes' collection.
+  graphql:
+    typeName: update_notes_by_id_update_columns
+    inputTypeName: update_notes_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_notes_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_notes_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - content
+          - created_at
+          - entity_id
+          - entity_type
+          - id
+          - is_important
+          - updated_at
+          - user_id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_notes_by_id_response
+  description: Responses from the 'update_notes_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[notes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_notes_by_id_response
+    inputTypeName: update_notes_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_notes_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_notes_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_notes_by_id
+  outputType: update_notes_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+      description: Unique identifier for the note
+    - name: post_check
+      type: notes_bool_exp
+      description: Update permission post-condition predicate over the 'notes' collection
+    - name: pre_check
+      type: notes_bool_exp
+      description: Update permission pre-condition predicate over the 'notes' collection
+    - name: update_columns
+      type: update_notes_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_notes_by_id
+  graphql:
+    rootFieldName: update_notes_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'notes' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_notes_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

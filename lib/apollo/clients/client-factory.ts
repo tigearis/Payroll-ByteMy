@@ -109,11 +109,13 @@ export function createUnifiedApolloClient(
       },
       wsLink, // Real-time subscriptions go to WebSocket
       // All other operations go through the standard link chain  
-      from([errorLink, complexityLink, retryLink, dataLoaderLink, authLink, httpLink])
+      // Temporarily disable dataLoaderLink to debug error
+      from([errorLink, complexityLink, retryLink, authLink, httpLink])
     );
   } else {
     // Standard HTTP-only link chain (server/admin contexts)
-    link = from([errorLink, complexityLink, retryLink, dataLoaderLink, authLink, httpLink]);
+    // Temporarily disable dataLoaderLink to debug error
+    link = from([errorLink, complexityLink, retryLink, authLink, httpLink]);
   }
 
   return new ApolloClient({

@@ -15,7 +15,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 import { Button } from "@/components/ui/button";
-import { useAuthContext } from "@/lib/auth";
 
 // Local utility function
 function cn(...inputs: ClassValue[]) {
@@ -24,7 +23,6 @@ function cn(...inputs: ClassValue[]) {
 
 export function MainNav() {
   const pathname = usePathname();
-  const authContext = useAuthContext();
 
   const allRoutes = [
     {
@@ -39,14 +37,12 @@ export function MainNav() {
       label: "Clients",
       icon: Users,
       active: pathname.startsWith("/clients"),
-      checkAccess: (auth: any) => auth.hasPermission("client:read"),
     },
     {
       href: "/payrolls",
       label: "Payrolls",
       icon: Calculator,
       active: pathname.startsWith("/payrolls"),
-      checkAccess: (auth: any) => auth.hasPermission("payroll:read"),
     },
     {
       href: "/calendar",
@@ -54,21 +50,18 @@ export function MainNav() {
       icon: CalendarDays,
       active: pathname === "/calendar",
       devOnly: true, // Only show in development
-      checkAccess: () => true,
     },
     {
       href: "/payroll-schedule",
       label: "Schedule",
       icon: CalendarDays,
       active: pathname === "/payroll-schedule",
-      checkAccess: (auth: any) => auth.hasPermission("payroll:read"),
     },
     {
       href: "/staff",
       label: "Staff",
       icon: UserCog,
       active: pathname.startsWith("/staff"),
-      checkAccess: (auth: any) => auth.hasPermission("staff:read"),
     },
     {
       href: "/tax-calculator",
@@ -76,14 +69,13 @@ export function MainNav() {
       icon: DollarSign,
       active: pathname === "/tax-calculator",
       devOnly: true, // Only show in development
-      checkAccess: () => true,
     },
     {
       href: "/settings",
       label: "Settings",
       icon: Settings,
       active: pathname === "/settings",
-      checkAccess: (auth: any) => auth.hasPermission("settings:write"),
+
       hidden: true, // Temporarily hidden - may use in the future
     },
   ];
@@ -94,32 +86,29 @@ export function MainNav() {
     if (route.devOnly && process.env.NODE_ENV === "production") {
       return false;
     }
-    
+
     // Hide routes marked as hidden
     if (route.hidden) {
       return false;
     }
-    
-    // Check authentication and permissions
-    if (!authContext.isLoading && authContext.isAuthenticated) {
-      return route.checkAccess ? route.checkAccess(authContext) : true;
-    }
-    
-    return false;
+
+    // Show route if it passes all filters
+    return true;
   });
 
   return (
-    <nav className="flex items-center space-x-4 lg:space-x-6">
+    <nav className="flex items-center space-x-2 sm:space-x-3 lg:space-x-6">
       {routes.map(route => (
         <Button
           key={route.href}
           variant={route.active ? "default" : "ghost"}
+          size="sm"
           asChild
         >
           <Link
             href={route.href}
             className={cn(
-              "flex items-center space-x-2",
+              "flex items-center space-x-1 sm:space-x-2",
               route.active ? "text-white" : "text-gray-600 hover:text-blue-600"
             )}
           >

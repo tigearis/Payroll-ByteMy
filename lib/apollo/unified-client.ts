@@ -15,11 +15,14 @@ export {
 
 // Export client factory and instances
 export { 
-  createUnifiedApolloClient,
+  createUnifiedApolloClient
+} from "./clients";
+
+export { 
   clientApolloClient,
   serverApolloClient,
   adminApolloClient
-} from "./clients";
+} from "./clients/instances";
 
 // Export error handling utilities for backward compatibility
 export {
@@ -27,7 +30,7 @@ export {
   isAuthError,
   getSimpleErrorMessage,
   type GraphQLErrorDetails,
-} from "@/lib/utils/handle-graphql-error";
+} from "../utils/handle-graphql-error";
 
 // Export cache utilities
 export { 

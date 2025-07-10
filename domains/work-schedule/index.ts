@@ -34,5 +34,8 @@
 // Export domain-specific GraphQL operations and types
 export * from './graphql/generated/graphql';
 
+// Export workload types
+export * from './types/workload';
+
 // Note: Fragment masking and gql utilities are exported from shared/types/generated
 // Import those directly when needed to avoid conflicts

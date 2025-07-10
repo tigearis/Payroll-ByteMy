@@ -24,14 +24,14 @@ test.describe('Authentication Flow', () => {
   test('should display sign-in form on initial visit', async ({ page }) => {
     await page.goto('/sign-in');
     
-    await expect(page.locator(TEST_SELECTORS.signInForm)).toBeVisible();
-    await expect(page.locator(TEST_SELECTORS.emailInput)).toBeVisible();
-    await expect(page.locator(TEST_SELECTORS.passwordInput)).toBeVisible();
-    await expect(page.locator(TEST_SELECTORS.signInButton)).toBeVisible();
+    await expect(page.locator(TESTSELECTORS.signInForm)).toBeVisible();
+    await expect(page.locator(TESTSELECTORS.emailInput)).toBeVisible();
+    await expect(page.locator(TESTSELECTORS.passwordInput)).toBeVisible();
+    await expect(page.locator(TESTSELECTORS.signInButton)).toBeVisible();
   });
 
   test('should successfully sign in with valid credentials', async ({ page }) => {
-    await authHelpers.signIn(TEST_CREDENTIALS.valid.email, TEST_CREDENTIALS.valid.password);
+    await authHelpers.signIn(TESTCREDENTIALS.valid.email, TESTCREDENTIALS.valid.password);
     
     // Should be redirected to dashboard
     expect(page.url()).toContain('/dashboard');
@@ -43,12 +43,12 @@ test.describe('Authentication Flow', () => {
   test('should show error with invalid credentials', async ({ page }) => {
     await page.goto('/sign-in');
     
-    await page.fill(TEST_SELECTORS.emailInput, TEST_CREDENTIALS.invalid.email);
-    await page.fill(TEST_SELECTORS.passwordInput, TEST_CREDENTIALS.invalid.password);
-    await page.click(TEST_SELECTORS.signInButton);
+    await page.fill(TESTSELECTORS.emailInput, TESTCREDENTIALS.invalid.email);
+    await page.fill(TESTSELECTORS.passwordInput, TESTCREDENTIALS.invalid.password);
+    await page.click(TESTSELECTORS.signInButton);
     
     // Should show error message
-    await expect(page.locator(TEST_SELECTORS.errorMessage)).toBeVisible();
+    await expect(page.locator(TESTSELECTORS.errorMessage)).toBeVisible();
     
     // Should remain on sign-in page
     expect(page.url()).toContain('/sign-in');
@@ -65,7 +65,7 @@ test.describe('Authentication Flow', () => {
 
   test('should successfully sign out', async ({ page }) => {
     // First sign in
-    await authHelpers.signIn(TEST_CREDENTIALS.valid.email, TEST_CREDENTIALS.valid.password);
+    await authHelpers.signIn(TESTCREDENTIALS.valid.email, TESTCREDENTIALS.valid.password);
     await authHelpers.expectSignedIn();
     
     // Then sign out
@@ -75,7 +75,7 @@ test.describe('Authentication Flow', () => {
 
   test('should persist authentication across page reloads', async ({ page }) => {
     // Sign in
-    await authHelpers.signIn(TEST_CREDENTIALS.valid.email, TEST_CREDENTIALS.valid.password);
+    await authHelpers.signIn(TESTCREDENTIALS.valid.email, TESTCREDENTIALS.valid.password);
     await authHelpers.expectSignedIn();
     
     // Reload page
@@ -88,7 +88,7 @@ test.describe('Authentication Flow', () => {
 
   test('should handle session expiration gracefully', async ({ page }) => {
     // Sign in
-    await authHelpers.signIn(TEST_CREDENTIALS.valid.email, TEST_CREDENTIALS.valid.password);
+    await authHelpers.signIn(TESTCREDENTIALS.valid.email, TESTCREDENTIALS.valid.password);
     await authHelpers.expectSignedIn();
     
     // Clear storage to simulate expired session
@@ -108,11 +108,11 @@ test.describe('Authentication Flow', () => {
     await page.goto('/sign-in');
     
     // Try to submit empty form
-    await page.click(TEST_SELECTORS.signInButton);
+    await page.click(TESTSELECTORS.signInButton);
     
     // Should show validation errors
-    const emailInput = page.locator(TEST_SELECTORS.emailInput);
-    const passwordInput = page.locator(TEST_SELECTORS.passwordInput);
+    const emailInput = page.locator(TESTSELECTORS.emailInput);
+    const passwordInput = page.locator(TESTSELECTORS.passwordInput);
     
     await expect(emailInput).toHaveAttribute('required');
     await expect(passwordInput).toHaveAttribute('required');
@@ -123,11 +123,11 @@ test.describe('Authentication Flow', () => {
     await page.route('**/api/**', route => route.abort());
     
     await page.goto('/sign-in');
-    await page.fill(TEST_SELECTORS.emailInput, TEST_CREDENTIALS.valid.email);
-    await page.fill(TEST_SELECTORS.passwordInput, TEST_CREDENTIALS.valid.password);
-    await page.click(TEST_SELECTORS.signInButton);
+    await page.fill(TESTSELECTORS.emailInput, TESTCREDENTIALS.valid.email);
+    await page.fill(TESTSELECTORS.passwordInput, TESTCREDENTIALS.valid.password);
+    await page.click(TESTSELECTORS.signInButton);
     
     // Should show error message
-    await expect(page.locator(TEST_SELECTORS.errorMessage)).toBeVisible();
+    await expect(page.locator(TESTSELECTORS.errorMessage)).toBeVisible();
   });
 });

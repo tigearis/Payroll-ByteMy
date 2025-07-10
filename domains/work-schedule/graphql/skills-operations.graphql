@@ -1,0 +1,252 @@
+# Skills Domain Operations for Work Schedule System
+# Security Classification: MEDIUM - Skill management and assignment
+
+# User Skills Operations
+fragment UserSkillBasic on userSkill {
+  skillName
+  proficiencyLevel
+  userId
+}
+
+fragment UserSkillComplete on userSkill {
+  skillName
+  proficiencyLevel
+  userId
+  skilledUser {
+    id
+    name
+    email
+    role
+  }
+}
+
+# Payroll Required Skills Operations
+fragment PayrollRequiredSkillBasic on payrollRequiredSkill {
+  skillName
+  requiredLevel
+  payrollId
+}
+
+fragment PayrollRequiredSkillComplete on payrollRequiredSkill {
+  skillName
+  requiredLevel
+  payrollId
+  requiringPayroll {
+    id
+    name
+    status
+  }
+}
+
+# Queries
+query GetUserSkills($userId: uuid!) {
+  userSkill(where: { userId: { _eq: $userId } }) {
+    ...UserSkillBasic
+  }
+}
+
+query GetUserSkillByCompositeKey($userId: uuid!, $skillName: String!) {
+  userSkill(
+    where: { 
+      _and: [
+        { userId: { _eq: $userId } }
+        { skillName: { _eq: $skillName } }
+      ]
+    }
+  ) {
+    ...UserSkillBasic
+  }
+}
+
+query GetAllUserSkills {
+  userSkill {
+    ...UserSkillComplete
+  }
+}
+
+query GetUsersWithSkills {
+  users(where: { isStaff: { _eq: true } }) {
+    id
+    name
+    email
+    role
+    userSkills {
+      ...UserSkillBasic
+    }
+  }
+}
+
+query GetPayrollRequiredSkills($payrollId: uuid!) {
+  payrollRequiredSkill(where: { payrollId: { _eq: $payrollId } }) {
+    ...PayrollRequiredSkillBasic
+  }
+}
+
+query GetPayrollRequiredSkillByCompositeKey($payrollId: uuid!, $skillName: String!) {
+  payrollRequiredSkill(
+    where: { 
+      _and: [
+        { payrollId: { _eq: $payrollId } }
+        { skillName: { _eq: $skillName } }
+      ]
+    }
+  ) {
+    ...PayrollRequiredSkillBasic
+  }
+}
+
+query GetPayrollsWithRequiredSkills {
+  payrolls(where: { supersededDate: { _isNull: true } }) {
+    id
+    name
+    status
+    processingTime
+    payrollRequiredSkills {
+      ...PayrollRequiredSkillBasic
+    }
+  }
+}
+
+# Skills matching for assignment
+query GetConsultantsWithSkills($requiredSkills: [String!]!) {
+  users(
+    where: {
+      _and: [
+        { isStaff: { _eq: true } }
+        { isActive: { _eq: true } }
+        { role: { _in: ["consultant", "manager", "org_admin"] } }
+        { userSkills: { skillName: { _in: $requiredSkills } } }
+      ]
+    }
+  ) {
+    id
+    name
+    email
+    role
+    defaultAdminTimePercentage
+    userSkills {
+      ...UserSkillBasic
+    }
+    userWorkSchedules {
+      id
+      workDay
+      workHours
+      adminTimeHours
+      payrollCapacityHours
+      usesDefaultAdminTime
+    }
+  }
+}
+
+# Mutations
+mutation CreateUserSkill($skillName: String!, $proficiencyLevel: String!, $userId: uuid!) {
+  insertUserSkill(
+    object: {
+      skillName: $skillName
+      proficiencyLevel: $proficiencyLevel
+      userId: $userId
+    }
+  ) {
+    ...UserSkillBasic
+  }
+}
+
+mutation BulkCreateUserSkills($userSkills: [userSkillInsertInput!]!) {
+  bulkInsertUserSkill(objects: $userSkills) {
+    returning {
+      ...UserSkillBasic
+    }
+    affectedRows
+  }
+}
+
+mutation UpdateUserSkill(
+  $userId: uuid!
+  $skillName: String!
+  $proficiencyLevel: String!
+) {
+  bulkUpdateUserSkill(
+    where: { 
+      _and: [
+        { userId: { _eq: $userId } }
+        { skillName: { _eq: $skillName } }
+      ]
+    }
+    _set: { proficiencyLevel: $proficiencyLevel }
+  ) {
+    returning {
+      ...UserSkillBasic
+    }
+    affectedRows
+  }
+}
+
+mutation DeleteUserSkill($userId: uuid!, $skillName: String!) {
+  bulkDeleteUserSkill(
+    where: { 
+      _and: [
+        { userId: { _eq: $userId } }
+        { skillName: { _eq: $skillName } }
+      ]
+    }
+  ) {
+    affectedRows
+    returning {
+      ...UserSkillBasic
+    }
+  }
+}
+
+mutation CreatePayrollRequiredSkill(
+  $payrollId: uuid!
+  $skillName: String!
+  $requiredLevel: String!
+) {
+  insertPayrollRequiredSkill(
+    object: {
+      payrollId: $payrollId
+      skillName: $skillName
+      requiredLevel: $requiredLevel
+    }
+  ) {
+    ...PayrollRequiredSkillBasic
+  }
+}
+
+mutation BulkCreatePayrollRequiredSkills($skills: [payrollRequiredSkillInsertInput!]!) {
+  bulkInsertPayrollRequiredSkill(objects: $skills) {
+    returning {
+      ...PayrollRequiredSkillBasic
+    }
+    affectedRows
+  }
+}
+
+mutation DeletePayrollRequiredSkill($payrollId: uuid!, $skillName: String!) {
+  bulkDeletePayrollRequiredSkill(
+    where: { 
+      _and: [
+        { payrollId: { _eq: $payrollId } }
+        { skillName: { _eq: $skillName } }
+      ]
+    }
+  ) {
+    affectedRows
+    returning {
+      ...PayrollRequiredSkillBasic
+    }
+  }
+}
+
+# Bulk operations for seeding
+mutation BulkDeleteUserSkills($where: userSkillBoolExp!) {
+  bulkDeleteUserSkill(where: $where) {
+    affectedRows
+  }
+}
+
+mutation BulkDeletePayrollRequiredSkills($where: payrollRequiredSkillBoolExp!) {
+  bulkDeletePayrollRequiredSkill(where: $where) {
+    affectedRows
+  }
+}

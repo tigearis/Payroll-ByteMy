@@ -1,0 +1,119 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_hdb_catalog_hdb_scheduled_events_object
+  fields:
+    - name: comment
+      type: string
+    - name: created_at
+      type: timestamptz
+    - name: header_conf
+      type: json
+    - name: id
+      type: string
+    - name: next_retry_at
+      type: timestamptz
+    - name: payload
+      type: json
+    - name: retry_conf
+      type: json
+    - name: scheduled_time
+      type: timestamptz!
+    - name: status
+      type: string
+    - name: tries
+      type: int_32
+    - name: webhook_conf
+      type: json!
+  graphql:
+    typeName: insert_hdb_catalog_hdb_scheduled_events_object
+    inputTypeName: insert_hdb_catalog_hdb_scheduled_events_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_hdb_catalog_hdb_scheduled_events_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_hdb_catalog_hdb_scheduled_events_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - created_at
+          - header_conf
+          - id
+          - next_retry_at
+          - payload
+          - retry_conf
+          - scheduled_time
+          - status
+          - tries
+          - webhook_conf
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_hdb_catalog_hdb_scheduled_events_response
+  description: Responses from the 'insert_hdb_catalog_hdb_scheduled_events' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[hdb_catalog_hdb_scheduled_events!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_hdb_catalog_hdb_scheduled_events_response
+    inputTypeName: insert_hdb_catalog_hdb_scheduled_events_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_hdb_catalog_hdb_scheduled_events_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_hdb_catalog_hdb_scheduled_events_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_hdb_catalog_hdb_scheduled_events
+  outputType: insert_hdb_catalog_hdb_scheduled_events_response!
+  arguments:
+    - name: objects
+      type: "[insert_hdb_catalog_hdb_scheduled_events_object!]!"
+    - name: post_check
+      type: hdb_catalog_hdb_scheduled_events_bool_exp
+      description: Insert permission predicate over the
+        'hdb_catalog_hdb_scheduled_events' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_hdb_catalog_hdb_scheduled_events
+  graphql:
+    rootFieldName: insert_hdb_catalog_hdb_scheduled_events
+    rootFieldKind: Mutation
+  description: Insert into the hdb_catalog_hdb_scheduled_events table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_hdb_catalog_hdb_scheduled_events
+  permissions:
+    - role: admin
+      allowExecution: true
+

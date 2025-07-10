@@ -61,7 +61,7 @@ export const POST = withAuth(
         throw new Error(data.errors[0].message);
       }
 
-      const deletedDates = data.data.deletepayroll_dates.affected_rows;
+      const deletedDates = data.data.deletepayrolldates.affected_rows;
       const deletedVersions = data.data.deletepayrolls.affected_rows;
       const updated = data.data.update_payrolls_by_pk ? 1 : 0;
 
@@ -86,8 +86,5 @@ export const POST = withAuth(
         { status: 500 }
       );
     }
-  },
-  {
-    requiredRole: "developer",
   }
 );

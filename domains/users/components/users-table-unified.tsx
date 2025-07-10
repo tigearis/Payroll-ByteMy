@@ -1,16 +1,7 @@
 "use client";
 
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth";
-import {
-  Shield,
-  UserCheck,
-  Eye,
-  Edit,
-  UserX,
-  Mail,
-  Calendar,
-} from "lucide-react";
+import { Shield, UserCheck, Eye, Edit, UserX, Mail } from "lucide-react";
+import { memo } from "react";
 import {
   UnifiedDataTable,
   DataTableColumn,
@@ -92,7 +83,7 @@ const roleStatusConfig: Record<string, StatusConfig> = {
   },
 };
 
-export function UsersTableUnified({
+function UsersTableUnifiedComponent({
   users,
   loading = false,
   onRefresh,
@@ -103,11 +94,6 @@ export function UsersTableUnified({
   onEditUser,
   onViewUser,
 }: UsersTableProps) {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('staff:read')) {
-    return null;
-  }
   // Create cell renderers with combined status configs
   const cellRenderers = createCellRenderers<User>({
     ...userStatusConfig,
@@ -262,5 +248,65 @@ export function UsersTableUnified({
     />
   );
 }
+
+// ============================================================================
+// PERFORMANCE OPTIMIZED EXPORT WITH REACT.MEMO
+// ============================================================================
+
+/**
+ * Custom comparison function for UsersTableUnified React.memo
+ * Optimizes re-renders for user table with complex data arrays
+ */
+function areUsersTablePropsEqual(
+  prevProps: UsersTableProps,
+  nextProps: UsersTableProps
+): boolean {
+  // Quick primitive checks first
+  if (
+    prevProps.loading !== nextProps.loading ||
+    prevProps.sortField !== nextProps.sortField ||
+    prevProps.sortDirection !== nextProps.sortDirection
+  ) {
+    return false;
+  }
+
+  // Users array comparison (most expensive check)
+  if (prevProps.users !== nextProps.users) {
+    // If arrays are different lengths, definitely different
+    if (prevProps.users.length !== nextProps.users.length) {
+      return false;
+    }
+    
+    // For performance, do shallow comparison of users array
+    // In most cases, users will be a new array reference when it changes
+    return false;
+  }
+
+  // Visible columns comparison
+  if (prevProps.visibleColumns !== nextProps.visibleColumns) {
+    if (!prevProps.visibleColumns || !nextProps.visibleColumns) {
+      return prevProps.visibleColumns === nextProps.visibleColumns;
+    }
+    if (prevProps.visibleColumns.length !== nextProps.visibleColumns.length) {
+      return false;
+    }
+    return JSON.stringify(prevProps.visibleColumns) === JSON.stringify(nextProps.visibleColumns);
+  }
+
+  // Function callbacks typically change, but table behavior stays consistent
+  
+  return true;
+}
+
+/**
+ * Memoized UsersTableUnified Component
+ * 
+ * Prevents unnecessary re-renders when user data hasn't changed.
+ * Optimized for large user lists and complex table interactions.
+ */
+export const UsersTableUnified = memo(
+  UsersTableUnifiedComponent,
+  areUsersTablePropsEqual
+);
 
 export default UsersTableUnified;

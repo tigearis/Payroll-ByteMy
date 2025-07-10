@@ -4,6 +4,7 @@ import { useMutation } from "@apollo/client";
 import { Edit, Save, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,7 +18,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { UpdatePayrollDateNotesDocument } from "@/domains/payrolls/graphql/generated/graphql";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 
 interface Note {
   id: string;
@@ -79,7 +79,7 @@ export function NotesModal({ note, refetchNotes, trigger }: NotesModalProps) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Edit Payroll Date Notes</DialogTitle>
           <DialogDescription>

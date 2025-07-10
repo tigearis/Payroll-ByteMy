@@ -31,7 +31,7 @@ async function verifyClerkUsers() {
         emailAddress: [email]
       });
       
-      if (users.length === 0) {
+      if (users.data.length === 0) {
         results.push({
           email,
           status: 'missing',
@@ -40,7 +40,7 @@ async function verifyClerkUsers() {
         continue;
       }
       
-      const user = users[0];
+      const user = users.data[0];
       const metadata = user.publicMetadata;
       
       // Check required metadata

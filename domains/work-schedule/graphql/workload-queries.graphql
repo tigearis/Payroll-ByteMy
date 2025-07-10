@@ -1,0 +1,264 @@
+# Fetch comprehensive payroll workload data for a consultant
+query GetConsultantPayrollWorkload(
+  $userId: uuid!
+  $startDate: date!
+  $endDate: date!
+) {
+  # User basic info
+  userById(id: $userId) {
+    id
+    name
+    email
+    role
+    defaultAdminTimePercentage
+  }
+
+  # Work schedule with capacity calculations (get all days for this user)
+  workSchedule(where: { userId: { _eq: $userId } }, orderBy: { workDay: ASC }) {
+    id
+    workDay
+    workHours
+    adminTimeHours
+    payrollCapacityHours
+    usesDefaultAdminTime
+  }
+
+  # Primary consultant payrolls with processing requirements
+  primaryPayrolls: payrolls(
+    where: {
+      primaryConsultantUserId: { _eq: $userId }
+      status: { _in: ["Active", "Implementation", "pending_approval", "approved"] }
+    }
+  ) {
+    id
+    name
+    processingTime
+    processingDaysBeforeEft
+    status
+    client {
+      id
+      name
+    }
+    payrollDates(
+      where: { originalEftDate: { _gte: $startDate, _lte: $endDate } }
+      orderBy: { originalEftDate: ASC }
+    ) {
+      id
+      originalEftDate
+      processingDate
+    }
+  }
+
+  # Backup consultant payrolls
+  backupPayrolls: payrolls(
+    where: {
+      backupConsultantUserId: { _eq: $userId }
+      status: { _in: ["Active", "Implementation", "pending_approval", "approved"] }
+    }
+  ) {
+    id
+    name
+    processingTime
+    processingDaysBeforeEft
+    status
+    client {
+      id
+      name
+    }
+    payrollDates(
+      where: { originalEftDate: { _gte: $startDate, _lte: $endDate } }
+      orderBy: { originalEftDate: ASC }
+    ) {
+      id
+      originalEftDate
+      processingDate
+    }
+  }
+}
+
+# Fetch team workload overview for managers
+query GetTeamPayrollWorkload(
+  $managerId: uuid!
+  $startDate: date!
+  $endDate: date!
+) {
+  # Team members under this manager
+  teamMembers: users(
+    where: {
+      managerId: { _eq: $managerId }
+      isStaff: { _eq: true }
+      isActive: { _eq: true }
+    }
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
+    email
+    role
+    defaultAdminTimePercentage
+
+    # Work schedules (all days for this user)
+    userWorkSchedules(orderBy: { workDay: ASC }) {
+      id
+      workDay
+      workHours
+      adminTimeHours
+      payrollCapacityHours
+      usesDefaultAdminTime
+    }
+
+    # Primary payroll assignments
+    primaryConsultantPayrolls(
+      where: { status: { _in: ["Active", "pending_approval", "Implementation"] } }
+    ) {
+      id
+      name
+      processingTime
+      processingDaysBeforeEft
+      status
+      client {
+        id
+        name
+      }
+      payrollDates(
+        where: { originalEftDate: { _gte: $startDate, _lte: $endDate } }
+        orderBy: { originalEftDate: ASC }
+      ) {
+        id
+        originalEftDate
+        processingDate
+      }
+    }
+
+    # Backup payroll assignments
+    backupConsultantPayrolls(
+      where: { status: { _in: ["Active", "pending_approval", "Implementation"] } }
+    ) {
+      id
+      name
+      processingTime
+      processingDaysBeforeEft
+      status
+      client {
+        id
+        name
+      }
+      payrollDates(
+        where: { originalEftDate: { _gte: $startDate, _lte: $endDate } }
+        orderBy: { originalEftDate: ASC }
+      ) {
+        id
+        originalEftDate
+        processingDate
+      }
+    }
+  }
+}
+
+# Fetch payroll workload summary statistics
+query GetPayrollWorkloadStats(
+  $userId: uuid!
+  $startDate: date!
+  $endDate: date!
+) {
+  # Aggregate work schedule capacity
+  workScheduleStats: workScheduleAggregate(
+    where: { userId: { _eq: $userId } }
+  ) {
+    aggregate {
+      sum {
+        workHours
+        adminTimeHours
+        payrollCapacityHours
+      }
+      avg {
+        workHours
+        payrollCapacityHours
+      }
+      count
+    }
+  }
+
+  # Count active payrolls for this consultant
+  primaryPayrollCount: payrollsAggregate(
+    where: {
+      primaryConsultantUserId: { _eq: $userId }
+      status: { _in: ["Active", "Implementation", "pending_approval", "approved"] }
+    }
+  ) {
+    aggregate {
+      count
+      sum {
+        processingTime
+      }
+    }
+  }
+
+  backupPayrollCount: payrollsAggregate(
+    where: {
+      backupConsultantUserId: { _eq: $userId }
+      status: { _in: ["Active", "Implementation", "pending_approval", "approved"] }
+    }
+  ) {
+    aggregate {
+      count
+      sum {
+        processingTime
+      }
+    }
+  }
+
+  # Upcoming payroll dates count
+  upcomingPayrollDates: payrollDatesAggregate(
+    where: {
+      relatedPayroll: {
+        _or: [
+          { primaryConsultantUserId: { _eq: $userId } }
+          { backupConsultantUserId: { _eq: $userId } }
+        ]
+      }
+      originalEftDate: { _gte: $startDate, _lte: $endDate }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Fetch specific payroll assignment details for drill-down
+query GetPayrollAssignmentDetails(
+  $payrollId: uuid!
+  $startDate: date!
+  $endDate: date!
+) {
+  payrollById(id: $payrollId) {
+    id
+    name
+    processingTime
+    processingDaysBeforeEft
+    status
+    client {
+      id
+      name
+    }
+    primaryConsultant {
+      id
+      name
+      email
+    }
+    backupConsultant {
+      id
+      name
+      email
+    }
+    payrollDates(
+      where: { originalEftDate: { _gte: $startDate, _lte: $endDate } }
+      orderBy: { originalEftDate: ASC }
+    ) {
+      id
+      originalEftDate
+      processingDate
+    }
+  }
+}

@@ -1,0 +1,524 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_country_code
+  description: Update the 'country_code' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_country_code
+    inputTypeName: update_column_holidays_country_code_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_country_code
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_country_code
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_created_at
+  description: Update the 'created_at' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_created_at
+    inputTypeName: update_column_holidays_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_date
+  description: Update the 'date' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: date!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_date
+    inputTypeName: update_column_holidays_date_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_date
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_date
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_id
+  description: Update the 'id' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_id
+    inputTypeName: update_column_holidays_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_is_fixed
+  description: Update the 'is_fixed' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_is_fixed
+    inputTypeName: update_column_holidays_is_fixed_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_is_fixed
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_is_fixed
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_is_global
+  description: Update the 'is_global' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_is_global
+    inputTypeName: update_column_holidays_is_global_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_is_global
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_is_global
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_launch_year
+  description: Update the 'launch_year' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: int_32
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_launch_year
+    inputTypeName: update_column_holidays_launch_year_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_launch_year
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_launch_year
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_local_name
+  description: Update the 'local_name' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_local_name
+    inputTypeName: update_column_holidays_local_name_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_local_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_local_name
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_name
+  description: Update the 'name' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_name
+    inputTypeName: update_column_holidays_name_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_name
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_region
+  description: Update the 'region' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: "[string]"
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_region
+    inputTypeName: update_column_holidays_region_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_region
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_region
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_types
+  description: Update the 'types' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: "[string]!"
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_types
+    inputTypeName: update_column_holidays_types_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_types
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_types
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_holidays_updated_at
+  description: Update the 'updated_at' column in the 'holidays' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_holidays_updated_at
+    inputTypeName: update_column_holidays_updated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_holidays_updated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_holidays_updated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_holidays_by_id_update_columns
+  description: Update the columns of the 'holidays' collection
+  fields:
+    - name: country_code
+      type: update_column_holidays_country_code
+      description: Update the 'country_code' column in the 'holidays' collection.
+    - name: created_at
+      type: update_column_holidays_created_at
+      description: Update the 'created_at' column in the 'holidays' collection.
+    - name: date
+      type: update_column_holidays_date
+      description: Update the 'date' column in the 'holidays' collection.
+    - name: id
+      type: update_column_holidays_id
+      description: Update the 'id' column in the 'holidays' collection.
+    - name: is_fixed
+      type: update_column_holidays_is_fixed
+      description: Update the 'is_fixed' column in the 'holidays' collection.
+    - name: is_global
+      type: update_column_holidays_is_global
+      description: Update the 'is_global' column in the 'holidays' collection.
+    - name: launch_year
+      type: update_column_holidays_launch_year
+      description: Update the 'launch_year' column in the 'holidays' collection.
+    - name: local_name
+      type: update_column_holidays_local_name
+      description: Update the 'local_name' column in the 'holidays' collection.
+    - name: name
+      type: update_column_holidays_name
+      description: Update the 'name' column in the 'holidays' collection.
+    - name: region
+      type: update_column_holidays_region
+      description: Update the 'region' column in the 'holidays' collection.
+    - name: types
+      type: update_column_holidays_types
+      description: Update the 'types' column in the 'holidays' collection.
+    - name: updated_at
+      type: update_column_holidays_updated_at
+      description: Update the 'updated_at' column in the 'holidays' collection.
+  graphql:
+    typeName: update_holidays_by_id_update_columns
+    inputTypeName: update_holidays_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_holidays_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_holidays_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - country_code
+          - created_at
+          - date
+          - id
+          - is_fixed
+          - is_global
+          - launch_year
+          - local_name
+          - name
+          - region
+          - types
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_holidays_by_id_response
+  description: Responses from the 'update_holidays_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[holidays!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_holidays_by_id_response
+    inputTypeName: update_holidays_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_holidays_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_holidays_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_holidays_by_id
+  outputType: update_holidays_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+      description: Unique identifier for the holiday
+    - name: post_check
+      type: holidays_bool_exp
+      description: Update permission post-condition predicate over the 'holidays' collection
+    - name: pre_check
+      type: holidays_bool_exp
+      description: Update permission pre-condition predicate over the 'holidays' collection
+    - name: update_columns
+      type: update_holidays_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_holidays_by_id
+  graphql:
+    rootFieldName: update_holidays_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'holidays' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_holidays_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

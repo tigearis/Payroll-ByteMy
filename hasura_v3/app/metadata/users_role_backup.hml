@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: users_role_backup
+  fields:
+    - name: created_at
+      type: timestamptz
+    - name: email
+      type: string
+    - name: id
+      type: uuid
+    - name: role
+      type: enum
+  graphql:
+    typeName: users_role_backup
+    inputTypeName: users_role_backup_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: users_role_backup
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: users_role_backup
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - email
+          - id
+          - role
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: users_role_backup_bool_exp
+  operand:
+    object:
+      type: users_role_backup
+      comparableFields:
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: email
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: role
+          booleanExpressionType: user_role_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: users_role_backup_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: users_role_backup_agg_exp
+  operand:
+    object:
+      aggregatedType: users_role_backup
+      aggregatableFields:
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: email
+          aggregateExpression: varchar_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: role
+          aggregateExpression: user_role_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: users_role_backup_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: users_role_backup_order_by_exp
+  operand:
+    object:
+      orderedType: users_role_backup
+      orderableFields:
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: email
+          orderByExpression: string_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: role
+          orderByExpression: enum_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: users_role_backup_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: users_role_backup
+  objectType: users_role_backup
+  source:
+    dataConnectorName: payroll
+    collection: users_role_backup
+  filterExpressionType: users_role_backup_bool_exp
+  aggregateExpression: users_role_backup_agg_exp
+  orderByExpression: users_role_backup_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: users_role_backup
+      subscription:
+        rootField: users_role_backup
+    selectUniques: []
+    filterInputTypeName: users_role_backup_filter_input
+    aggregate:
+      queryRootField: users_role_backup_aggregate
+      subscription:
+        rootField: users_role_backup_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: users_role_backup
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

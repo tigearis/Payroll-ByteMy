@@ -1,7 +1,5 @@
 "use client";
 
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth";
 import { useAuth } from "@clerk/nextjs";
 import {
   MoreHorizontal,
@@ -41,18 +39,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  User,
-  UserPermissions,
-  useUserManagement,
-} from "@/hooks/use-user-management";
+import { User } from "@/domains/users/types";
 
 interface UserTableProps {
   users: User[];
   loading: boolean;
   onEditUser: (userId: string) => void;
   currentUserRole: string | null;
-  permissions: UserPermissions | null;
 }
 
 export function UserTable({
@@ -60,17 +53,10 @@ export function UserTable({
   loading,
   onEditUser,
   currentUserRole,
-  permissions,
 }: UserTableProps) {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('staff:read')) {
-    return null;
-  }
   const { userId } = useAuth(); // Get current user's Clerk ID
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const { deleteUser, canEditUser, canDeleteUser } = useUserManagement();
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
@@ -107,11 +93,6 @@ export function UserTable({
   };
 
   const handleDeleteUser = async (user: User) => {
-    if (!canDeleteUser(user)) {
-      toast.error("You don't have permission to delete this user");
-      return;
-    }
-
     if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
       const success = await deleteUser(user.id);
       if (success) {
@@ -153,7 +134,7 @@ export function UserTable({
             <TableHead>Status</TableHead>
             <TableHead>Last Active</TableHead>
             <TableHead>Joined</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
+            <TableHead className="w-24">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -227,7 +208,7 @@ export function UserTable({
               <TableCell>
                 <div className="text-sm flex items-center text-muted-foreground">
                   <Calendar className="h-3 w-3 mr-1" />
-                  {user.createdAt ? formatDate(user.createdAt) : '-'}
+                  {user.createdAt ? formatDate(user.createdAt) : "-"}
                 </div>
               </TableCell>
               <TableCell>
@@ -348,7 +329,10 @@ export function UserTable({
                   <div className="space-y-1 text-sm">
                     <div className="flex items-center">
                       <Calendar className="mr-2 h-4 w-4" />
-                      Joined {selectedUser.createdAt ? formatDate(selectedUser.createdAt) : 'Unknown'}
+                      Joined{" "}
+                      {selectedUser.createdAt
+                        ? formatDate(selectedUser.createdAt)
+                        : "Unknown"}
                     </div>
                     <div className="flex items-center">
                       <Clock className="mr-2 h-4 w-4" />

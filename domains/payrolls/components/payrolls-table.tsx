@@ -1,7 +1,5 @@
 "use client";
 
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth";
 import {
   MoreHorizontal,
   Download,
@@ -34,6 +32,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { QuickLoading } from "@/components/ui/smart-loading";
 import {
   Table,
   TableBody,
@@ -149,13 +148,13 @@ const formatPayrollCycle = (payroll: any) => {
   // Get the cycle name from the relationship
   const cycleEnum = payroll?.payrollCycle?.name;
   if (cycleEnum) {
-    const cycle = PAYROLL_CYCLES.find(c => c.id === cycleEnum);
+    const cycle = PAYROLLCYCLES.find(c => c.id === cycleEnum);
     return cycle ? cycle.name : cycleEnum;
   }
 
   // Fallback to cycleId if available
   if (payroll?.cycleId) {
-    const cycle = PAYROLL_CYCLES.find(c => c.id === payroll.cycleId);
+    const cycle = PAYROLLCYCLES.find(c => c.id === payroll.cycleId);
     return cycle ? cycle.name : `${payroll.cycleId} (Unknown)`;
   }
 
@@ -249,20 +248,15 @@ export function PayrollsTable({
   selectedPayrolls = [],
   onSelectPayroll,
   onSelectAll,
-  visibleColumns = COLUMN_DEFINITIONS.filter(col => col.defaultVisible).map(
+  visibleColumns = COLUMNDEFINITIONS.filter(col => col.defaultVisible).map(
     col => col.key
   ),
   sortField = "name",
   sortDirection = "ASC",
   onSort,
 }: PayrollsTableProps) {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('payroll:read')) {
-    return null;
-  }
   const renderSortableHeader = (label: string, field: string) => {
-    const column = COLUMN_DEFINITIONS.find(col => col.key === field);
+    const column = COLUMNDEFINITIONS.find(col => col.key === field);
     if (!column?.sortable || !onSort) {
       return label;
     }
@@ -371,10 +365,7 @@ export function PayrollsTable({
                     className="h-24 text-center"
                   >
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                      <span className="ml-2 text-muted-foreground">
-                        Loading payrolls...
-                      </span>
+                      <QuickLoading.Minimal />
                     </div>
                   </TableCell>
                 </TableRow>
@@ -476,8 +467,12 @@ export function PayrollsTable({
                           <div className="flex items-center gap-2">
                             <CalendarDays className="w-4 h-4 text-gray-500" />
                             <span className="text-sm">
-                              {payroll.nextPayrollDate?.[0]?.adjustedEftDate || payroll.nextPayrollDate?.[0]?.originalEftDate
-                                ? formatDate(payroll.nextPayrollDate[0]?.adjustedEftDate || payroll.nextPayrollDate[0]?.originalEftDate)
+                              {payroll.nextEftDate?.[0]?.adjustedEftDate ||
+                              payroll.nextEftDate?.[0]?.originalEftDate
+                                ? formatDate(
+                                    payroll.nextEftDate[0]?.adjustedEftDate ||
+                                    payroll.nextEftDate[0]?.originalEftDate
+                                  )
                                 : "Not scheduled"}
                             </span>
                           </div>

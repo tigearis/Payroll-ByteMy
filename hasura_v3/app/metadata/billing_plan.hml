@@ -1,0 +1,273 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: billing_plan
+  fields:
+    - name: billing_unit
+      type: string
+      description: "Unit of billing: Per Payroll, Per Payslip, Per Employee, Per Hour,
+        Per State, Once Off, Per Month"
+    - name: category
+      type: string
+      description: "Service category: Processing, Setup, Employee Management,
+        Compliance, etc."
+    - name: created_at
+      type: timestamptz
+    - name: currency
+      type: string!
+    - name: description
+      type: string
+    - name: id
+      type: uuid!
+    - name: is_active
+      type: boolean
+      description: Whether this service is currently available
+    - name: name
+      type: string!
+    - name: standard_rate
+      type: bigdecimal!
+      description: Standard rate for this service
+    - name: updated_at
+      type: timestamptz
+  graphql:
+    typeName: billing_plan
+    inputTypeName: billing_plan_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: billing_plan
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: billing_plan
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - billing_unit
+          - category
+          - created_at
+          - currency
+          - description
+          - id
+          - is_active
+          - name
+          - standard_rate
+          - updated_at
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: billing_plan_bool_exp
+  operand:
+    object:
+      type: billing_plan
+      comparableFields:
+        - fieldName: billing_unit
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: category
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: currency
+          booleanExpressionType: text_bool_exp
+        - fieldName: description
+          booleanExpressionType: text_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: is_active
+          booleanExpressionType: bool_bool_exp
+        - fieldName: name
+          booleanExpressionType: text_bool_exp
+        - fieldName: standard_rate
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+      comparableRelationships:
+        - relationshipName: billing_items
+        - relationshipName: billing_items_by_service_id
+        - relationshipName: client_billing_assignments
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: billing_plan_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: billing_plan_agg_exp
+  operand:
+    object:
+      aggregatedType: billing_plan
+      aggregatableFields:
+        - fieldName: billing_unit
+          aggregateExpression: varchar_agg_exp
+        - fieldName: category
+          aggregateExpression: varchar_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: currency
+          aggregateExpression: text_agg_exp
+        - fieldName: description
+          aggregateExpression: text_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: is_active
+          aggregateExpression: bool_agg_exp
+        - fieldName: name
+          aggregateExpression: text_agg_exp
+        - fieldName: standard_rate
+          aggregateExpression: numeric_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: billing_plan_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: billing_plan_order_by_exp
+  operand:
+    object:
+      orderedType: billing_plan
+      orderableFields:
+        - fieldName: billing_unit
+          orderByExpression: string_order_by_exp
+        - fieldName: category
+          orderByExpression: string_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: currency
+          orderByExpression: string_order_by_exp
+        - fieldName: description
+          orderByExpression: string_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: is_active
+          orderByExpression: boolean_order_by_exp
+        - fieldName: name
+          orderByExpression: string_order_by_exp
+        - fieldName: standard_rate
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: billing_plan_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: billing_plan
+  objectType: billing_plan
+  source:
+    dataConnectorName: payroll
+    collection: billing_plan
+  filterExpressionType: billing_plan_bool_exp
+  aggregateExpression: billing_plan_agg_exp
+  orderByExpression: billing_plan_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: billing_plan
+      subscription:
+        rootField: billing_plan
+    selectUniques:
+      - queryRootField: billing_plan_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: billing_plan_by_id
+    filterInputTypeName: billing_plan_filter_input
+    aggregate:
+      queryRootField: billing_plan_aggregate
+      subscription:
+        rootField: billing_plan_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: billing_plan
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: billing_items
+  sourceType: billing_plan
+  target:
+    model:
+      name: billing_items
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: billing_items_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: billing_plan_id
+  graphql:
+    aggregateFieldName: billing_items_aggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: billing_items_by_service_id
+  sourceType: billing_plan
+  target:
+    model:
+      name: billing_items
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: billing_items_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: service_id
+  graphql:
+    aggregateFieldName: billing_items_by_service_id_aggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: client_billing_assignments
+  sourceType: billing_plan
+  target:
+    model:
+      name: client_billing_assignment
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: client_billing_assignment_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: billing_plan_id
+  graphql:
+    aggregateFieldName: client_billing_assignments_aggregate
+
